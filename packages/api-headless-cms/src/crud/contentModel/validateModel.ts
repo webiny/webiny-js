@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { CmsContext, CmsModel } from "~/types";
+import { CmsContext, CmsApiModel } from "~/types";
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 
 interface ValidateModelParams {
-    model: CmsModel;
-    original?: CmsModel;
+    model: CmsApiModel;
+    original?: CmsApiModel;
     context: CmsContext;
 }
 

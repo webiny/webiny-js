@@ -13,6 +13,7 @@ import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
+
 export interface HeadlessCms
     extends CmsSettingsContext,
         CmsSystemContext,
@@ -48,6 +49,7 @@ export interface HeadlessCms
      */
     storageOperations: HeadlessCmsStorageOperations;
 }
+
 /**
  * @description This combines all contexts used in the CMS into a single one.
  *
@@ -99,6 +101,7 @@ interface CmsModelFieldRenderer {
      */
     name: string;
 }
+
 /**
  * A definition for content model field settings.
  *
@@ -132,6 +135,7 @@ export interface CmsModelFieldSettings {
      */
     [key: string]: any;
 }
+
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -264,6 +268,7 @@ export interface CmsModelDynamicZoneField extends CmsModelField {
 export interface CmsModelFieldWithParent extends CmsModelField {
     parent?: CmsModelFieldWithParent | null;
 }
+
 export interface CmsModelDynamicZoneFieldWithParent extends CmsModelDynamicZoneField {
     parent?: CmsModelDynamicZoneFieldWithParent | null;
 }
@@ -398,6 +403,7 @@ export interface LockedField {
     type: string;
     [key: string]: any;
 }
+
 /**
  * @category Database model
  * @category CmsModel
@@ -412,13 +418,14 @@ export interface CmsModelGroup {
      */
     name: string;
 }
+
 /**
- * Cms Model defining an entry.
+ * Base CMS Model. Should not be exported and used outside of this package.
  *
  * @category Database model
  * @category CmsModel
  */
-export interface CmsModel {
+export interface BaseCmsModel {
     /**
      * Name of the content model.
      */
@@ -487,6 +494,45 @@ export interface CmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
+}
+
+/**
+ * CMS Model definition for the API usage.
+ *
+ * @category Database model
+ * @category CmsModel
+ */
+export interface CmsApiModel extends BaseCmsModel {
+    /**
+     * Name of the content model in singular form to be used in the API.
+     * example:
+     * - Article
+     * - Fruit
+     * - Vegetable
+     * - Car
+     */
+    singularApiName: string;
+    /**
+     * Name of the content model in plural form to be used in the API.
+     * example:
+     * - Articles
+     * - Fruits
+     * - Vegetables
+     * - Cars
+     */
+    pluralApiName: string;
+    isPrivate?: never;
+}
+
+/**
+ * CMS Model definition for the code usage only.
+ *
+ * @category Database model
+ * @category CmsModel
+ */
+export interface CmsPrivateModel extends BaseCmsModel {
+    singularApiName?: never;
+    pluralApiName?: never;
     /**
      * Is model private?
      * This is meant to be used for some internal models - will not be visible in the schema.
@@ -496,11 +542,20 @@ export interface CmsModel {
 }
 
 /**
+ * CMS Model intersect of both CmsApiModel and CmsPrivateModel.
+ * We need to do it like this because we want to have models for API and models for private usage (code only).
+ *
+ * @category Database model
+ * @category CmsModel
+ */
+export type CmsModel = CmsApiModel | CmsPrivateModel;
+
+/**
  * When sending model to the storage operations, it must contain createValueKeyToStorageConverter and createValueKeyFromStorageConverter
  *
  * @category CmsModel
  */
-export interface StorageOperationsCmsModel extends CmsModel {
+export interface StorageOperationsCmsModel extends BaseCmsModel {
     convertValueKeyToStorage: CmsModelConverterCallable;
     convertValueKeyFromStorage: CmsModelConverterCallable;
 }
@@ -520,6 +575,7 @@ interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     field: TField;
     createFieldResolvers: any;
 }
+
 export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
     (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
@@ -533,9 +589,11 @@ export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams<
     fields: TField[];
     originalFields: TField[];
 }
+
 export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidate {
     (params: CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams): void;
 }
+
 export interface CmsModelFieldToGraphQLPluginValidateChildFieldsParams<
     TField extends CmsModelField = CmsModelField
 > {
@@ -543,11 +601,13 @@ export interface CmsModelFieldToGraphQLPluginValidateChildFieldsParams<
     originalField?: TField;
     validate: CmsModelFieldToGraphQLPluginValidateChildFieldsValidate;
 }
+
 export interface CmsModelFieldToGraphQLPluginValidateChildFields<
     TField extends CmsModelField = CmsModelField
 > {
     (params: CmsModelFieldToGraphQLPluginValidateChildFieldsParams<TField>): void;
 }
+
 /**
  * @category Plugin
  * @category ModelField
@@ -1049,6 +1109,7 @@ export interface OnGroupBeforeCreateTopicParams {
 export interface OnGroupAfterCreateTopicParams {
     group: CmsGroup;
 }
+
 /**
  * @category CmsGroup
  * @category Topic
@@ -1076,6 +1137,7 @@ export interface OnGroupAfterUpdateTopicParams {
     original: CmsGroup;
     group: CmsGroup;
 }
+
 /**
  * @category CmsGroup
  * @category Topic
@@ -1102,6 +1164,7 @@ export interface OnGroupBeforeDeleteTopicParams {
 export interface OnGroupAfterDeleteTopicParams {
     group: CmsGroup;
 }
+
 /**
  * @category CmsGroup
  * @category Topic
@@ -1211,6 +1274,14 @@ export interface CmsModelCreateInput {
      * Name of the content model.
      */
     name: string;
+    /**
+     * Singular name of the content model to be used in the API.
+     */
+    singularApiName: string;
+    /**
+     * Plural name of the content model to be used in the API.
+     */
+    pluralApiName: string;
     /**
      * Unique ID of the content model. Created from name if not sent by the user. Cannot be changed.
      */
@@ -1339,6 +1410,14 @@ export interface CmsModelUpdateInput {
      */
     name?: string;
     /**
+     * A new singular name of the content model to be used in the API.
+     */
+    singularApiName?: string;
+    /**
+     * A new plural name of the content model to be used in the API.
+     */
+    pluralApiName?: string;
+    /**
      * A group we want to move the model to.
      */
     group?: string;
@@ -1393,6 +1472,7 @@ export interface ModelManagerPlugin extends Plugin {
      */
     create: (context: CmsContext, model: CmsModel) => Promise<CmsModelManager>;
 }
+
 /**
  * A content entry values definition for and from the database.
  *
@@ -1402,6 +1482,7 @@ export interface ModelManagerPlugin extends Plugin {
 export interface CmsEntryValues {
     [key: string]: any;
 }
+
 /**
  * A content entry definition for and from the database.
  *
@@ -1545,15 +1626,17 @@ export interface CmsModelManager {
  */
 export interface OnModelBeforeCreateTopicParams {
     input: CmsModelCreateInput;
-    model: CmsModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelAfterCreateTopicParams {
     input: CmsModelCreateInput;
-    model: CmsModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelCreateErrorTopicParams {
     input: CmsModelCreateInput;
-    model: CmsModel;
+    model: CmsApiModel;
     error: Error;
 }
 
@@ -1562,18 +1645,20 @@ export interface OnModelCreateErrorTopicParams {
  */
 export interface OnModelBeforeCreateFromTopicParams {
     input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
+    original: CmsApiModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelAfterCreateFromTopicParams {
     input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
+    original: CmsApiModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelCreateFromErrorParams {
     input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
+    original: CmsApiModel;
+    model: CmsApiModel;
     error: Error;
 }
 
@@ -1582,31 +1667,36 @@ export interface OnModelCreateFromErrorParams {
  */
 export interface OnModelBeforeUpdateTopicParams {
     input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
+    original: CmsApiModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelAfterUpdateTopicParams {
     input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
+    original: CmsApiModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelUpdateErrorTopicParams {
     input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
+    original: CmsApiModel;
+    model: CmsApiModel;
     error: Error;
 }
+
 /**
  * Delete
  */
 export interface OnModelBeforeDeleteTopicParams {
-    model: CmsModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelAfterDeleteTopicParams {
-    model: CmsModel;
+    model: CmsApiModel;
 }
+
 export interface OnModelDeleteErrorTopicParams {
-    model: CmsModel;
+    model: CmsApiModel;
     error: Error;
 }
 
@@ -1622,8 +1712,8 @@ export interface OnModelInitializeParams {
  *
  */
 export interface CmsModelUpdateDirectParams {
-    model: CmsModel;
-    original: CmsModel;
+    model: CmsApiModel;
+    original: CmsApiModel;
 }
 
 /**
@@ -1759,6 +1849,7 @@ export interface CmsEntryListWhereRef {
     entryId_in?: string[];
     entryId_not_in?: string[];
 }
+
 /**
  * Entry listing where params.
  *
@@ -1907,6 +1998,7 @@ export interface OnEntryBeforeCreateTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryAfterCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
@@ -1956,6 +2048,7 @@ export interface OnEntryBeforeUpdateTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryAfterUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
@@ -2037,6 +2130,7 @@ export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -2052,6 +2146,7 @@ export interface OnEntryRevisionBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryRevisionAfterDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -2097,6 +2192,7 @@ export interface CreateFromCmsEntryInput {
 export interface UpdateCmsEntryInput {
     [key: string]: any;
 }
+
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2107,53 +2203,53 @@ export interface CmsEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    getEntry: (model: CmsModel, params: CmsEntryGetParams) => Promise<CmsEntry | null>;
+    getEntry: (model: BaseCmsModel, params: CmsEntryGetParams) => Promise<CmsEntry | null>;
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[]>;
+    getEntriesByIds: (model: BaseCmsModel, revisions: string[]) => Promise<CmsEntry[]>;
     /**
      * Get the entry for a model by a given ID.
      */
-    getEntryById: (model: CmsModel, revision: string) => Promise<CmsEntry>;
+    getEntryById: (model: BaseCmsModel, revision: string) => Promise<CmsEntry>;
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
     listEntries: (
-        model: CmsModel,
+        model: BaseCmsModel,
         params: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Lists the latest entries. Used for manage API.
      */
     listLatestEntries: (
-        model: CmsModel,
+        model: BaseCmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * List published entries. Used for read API.
      */
     listPublishedEntries: (
-        model: CmsModel,
+        model: BaseCmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * List published entries by IDs.
      */
-    getPublishedEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getPublishedEntriesByIds: (model: BaseCmsModel, ids: string[]) => Promise<CmsEntry[]>;
     /**
      * List latest entries by IDs.
      */
-    getLatestEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getLatestEntriesByIds: (model: BaseCmsModel, ids: string[]) => Promise<CmsEntry[]>;
     /**
      * Create a new content entry.
      */
-    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
+    createEntry: (model: BaseCmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
-        model: CmsModel,
+        model: BaseCmsModel,
         id: string,
         input: CreateFromCmsEntryInput
     ) => Promise<CmsEntry>;
@@ -2161,7 +2257,7 @@ export interface CmsEntryContext {
      * Update existing entry.
      */
     updateEntry: (
-        model: CmsModel,
+        model: BaseCmsModel,
         id: string,
         input: UpdateCmsEntryInput,
         meta?: Record<string, any>
@@ -2170,27 +2266,27 @@ export interface CmsEntryContext {
      * Method that republishes entry with given identifier.
      * @internal
      */
-    republishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    republishEntry: (model: BaseCmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Delete only a certain revision of the entry.
      */
-    deleteEntryRevision: (model: CmsModel, id: string) => Promise<void>;
+    deleteEntryRevision: (model: BaseCmsModel, id: string) => Promise<void>;
     /**
      * Delete entry with all its revisions.
      */
-    deleteEntry: (model: CmsModel, id: string) => Promise<void>;
+    deleteEntry: (model: BaseCmsModel, id: string) => Promise<void>;
     /**
      * Publish entry.
      */
-    publishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    publishEntry: (model: BaseCmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Unpublish entry.
      */
-    unpublishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    unpublishEntry: (model: BaseCmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Get all entry revisions.
      */
-    getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
+    getEntryRevisions: (model: BaseCmsModel, id: string) => Promise<CmsEntry[]>;
     /**
      * Lifecyle events - deprecated.
      */
@@ -2333,6 +2429,7 @@ export interface BaseCmsSecurityPermission extends SecurityPermission {
     own?: boolean;
     rwd: string | number;
 }
+
 /**
  * A security permission for content model.
  *
@@ -2402,6 +2499,7 @@ export interface CmsGroupStorageOperationsListWhereParams {
     locale: string;
     [key: string]: any;
 }
+
 export interface CmsGroupStorageOperationsListParams {
     where: CmsGroupStorageOperationsListWhereParams;
     sort?: string[];
@@ -2464,15 +2562,15 @@ export interface CmsModelStorageOperationsListParams {
 }
 
 export interface CmsModelStorageOperationsCreateParams {
-    model: CmsModel;
+    model: CmsApiModel;
 }
 
 export interface CmsModelStorageOperationsUpdateParams {
-    model: CmsModel;
+    model: CmsApiModel;
 }
 
 export interface CmsModelStorageOperationsDeleteParams {
-    model: CmsModel;
+    model: CmsApiModel;
 }
 
 /**
@@ -2484,23 +2582,23 @@ export interface CmsModelStorageOperations {
     /**
      * Gets content model by given id.
      */
-    get: (params: CmsModelStorageOperationsGetParams) => Promise<CmsModel | null>;
+    get: (params: CmsModelStorageOperationsGetParams) => Promise<CmsApiModel | null>;
     /**
      * List all content models. Filterable via params.
      */
-    list: (params: CmsModelStorageOperationsListParams) => Promise<CmsModel[]>;
+    list: (params: CmsModelStorageOperationsListParams) => Promise<CmsApiModel[]>;
     /**
      * Create a new content model.
      */
-    create: (params: CmsModelStorageOperationsCreateParams) => Promise<CmsModel>;
+    create: (params: CmsModelStorageOperationsCreateParams) => Promise<CmsApiModel>;
     /**
      * Update existing content model.
      */
-    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<CmsModel>;
+    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<CmsApiModel>;
     /**
      * Delete the content model.
      */
-    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<CmsModel>;
+    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<CmsApiModel>;
 }
 
 export interface CmsEntryStorageOperationsGetParams {
@@ -2635,6 +2733,7 @@ export interface CmsEntryStorageOperationsGetRevisionParams {
 export interface CmsEntryStorageOperationsGetPublishedRevisionParams {
     id: string;
 }
+
 export interface CmsEntryStorageOperationsGetLatestRevisionParams {
     id: string;
 }

@@ -20,7 +20,9 @@ import {
     OnModelCreateFromErrorParams,
     OnModelUpdateErrorTopicParams,
     OnModelDeleteErrorTopicParams,
-    CmsModelGroup
+    CmsModelGroup,
+    BaseCmsModel,
+    CmsApiModel
 } from "~/types";
 
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -47,6 +49,7 @@ import {
     createModelUpdateValidation
 } from "~/crud/contentModel/validation";
 import { createZodError } from "@webiny/utils";
+import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
@@ -134,7 +137,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     }
                     return true;
                 })
-                .map<CmsModel>(plugin => {
+                .map<BaseCmsModel>(plugin => {
                     return {
                         ...plugin.contentModel,
                         tags: ensureTypeTag(plugin.contentModel),
@@ -146,7 +149,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         );
     };
 
-    const modelsGet = async (modelId: string): Promise<CmsModel> => {
+    const modelsGet = async (modelId: string): Promise<BaseCmsModel> => {
         const pluginModel = getModelsAsPlugins().find(model => model.modelId === modelId);
 
         if (pluginModel) {
@@ -190,10 +193,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         });
     };
 
-    const getModel = async (modelId: string): Promise<CmsModel> => {
+    const getModel = async <T extends BaseCmsModel>(modelId: string): Promise<T> => {
         const permission = await checkModelPermissions("r");
 
-        const model = await modelsGet(modelId);
+        const model = (await modelsGet(modelId)) as T;
 
         checkOwnership(context, permission, model);
         await checkModelAccess(context, model);
@@ -327,7 +330,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             context.security.disableAuthorization();
             const group = await context.cms.getGroup(data.group);
@@ -341,6 +344,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 name: data.name,
                 description: data.description || "",
                 modelId: data.modelId || "",
+                singularApiName: data.singularApiName,
+                pluralApiName: data.pluralApiName,
                 titleFieldId: "id",
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -444,20 +449,17 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             /**
              * Get a model record; this will also perform ownership validation.
              */
-            const original = await getModel(modelId);
+            const original = await getModel<CmsApiModel>(modelId);
 
             const result = await createModelCreateFromValidation().safeParseAsync({
-                name: userInput.name,
-                modelId: userInput.modelId,
-                description: userInput.description || original.description,
-                group: userInput.group,
-                locale: userInput.locale
+                ...userInput,
+                description: userInput.description || original.description
             });
             if (!result.success) {
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             const locale = await context.i18n.getLocale(data.locale || original.locale);
             if (!locale) {
@@ -476,8 +478,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             }
 
             const identity = getIdentity();
-            const model: CmsModel = {
+            const model: CmsApiModel = {
                 ...original,
+                singularApiName: data.singularApiName,
+                pluralApiName: data.pluralApiName,
                 locale: locale.code,
                 group: {
                     id: group.id,
@@ -533,14 +537,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             await checkModelPermissions("w");
 
             // Get a model record; this will also perform ownership validation.
-            const original = await getModel(modelId);
+            const original = await getModel<CmsApiModel>(modelId);
 
             const result = await createModelUpdateValidation().safeParseAsync(input);
             if (!result.success) {
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             if (Object.keys(data).length === 0) {
                 /**
@@ -564,7 +568,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     name: groupData.name
                 };
             }
-            const model: CmsModel = {
+            const model: CmsApiModel = {
                 ...original,
                 ...data,
                 group,
@@ -611,7 +615,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         async deleteModel(modelId) {
             await checkModelPermissions("d");
 
-            const model = await getModel(modelId);
+            const model = await getModel<CmsApiModel>(modelId);
 
             try {
                 await onModelBeforeDelete.publish({

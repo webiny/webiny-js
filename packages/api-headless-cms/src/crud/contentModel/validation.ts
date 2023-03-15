@@ -101,6 +101,8 @@ export const createModelCreateValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString,
+        singularApiName: shortString,
+        pluralApiName: shortString,
         description: optionalShortString.nullish(),
         group: shortString,
         fields: zod.array(fieldSchema).default([]),
@@ -114,6 +116,8 @@ export const createModelCreateFromValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString,
+        singularApiName: shortString,
+        pluralApiName: shortString,
         description: optionalShortString.nullish(),
         group: shortString,
         locale: optionalShortString
@@ -123,6 +127,8 @@ export const createModelCreateFromValidation = () => {
 export const createModelUpdateValidation = () => {
     return zod.object({
         name: optionalShortString,
+        singularApiName: optionalShortString,
+        pluralApiName: optionalShortString,
         description: optionalShortString.nullish(),
         group: optionalShortString,
         fields: zod.array(fieldSchema),

@@ -1,4 +1,9 @@
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext, CmsModel } from "~/types";
+import {
+    CmsModelFieldToGraphQLPlugin,
+    CmsFieldTypePlugins,
+    CmsContext,
+    CmsApiModel
+} from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
@@ -10,8 +15,9 @@ import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
-    models: CmsModel[];
+    models: CmsApiModel[];
 }
+
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<CmsGraphQLSchemaPlugin[]> => {
@@ -39,16 +45,6 @@ export const generateSchemaPlugins = async (
         CmsGraphQLSchemaSorterPlugin.type
     );
 
-    // const schemas = getSchemaFromFieldPlugins({
-    //     models,
-    //     fieldTypePlugins,
-    //     type
-    // });
-
-    // const newPlugins: CmsGraphQLSchemaPlugin[] = [];
-    // for (const schema of schemas) {
-    //     newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
-    // }
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldTypePlugins,

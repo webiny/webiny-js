@@ -1,4 +1,4 @@
-import { CmsContext, CmsModel } from "~/types";
+import { CmsContext, CmsApiModel } from "~/types";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
 import { GraphQLSchema } from "graphql/type";
@@ -6,7 +6,7 @@ import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface GenerateSchemaParams {
     context: CmsContext;
-    models: CmsModel[];
+    models: CmsApiModel[];
 }
 export const generateSchema = async (params: GenerateSchemaParams): Promise<GraphQLSchema> => {
     const { context, models } = params;

@@ -4,7 +4,7 @@ import pluralize from "pluralize";
 import {
     OnModelBeforeCreateFromTopicParams,
     OnModelBeforeCreateTopicParams,
-    CmsModel,
+    CmsApiModel,
     HeadlessCmsStorageOperations,
     CmsContext
 } from "~/types";
@@ -104,7 +104,7 @@ const checkModelIdEndingAllowed = (modelId: string): void => {
     }
 };
 
-const getModelId = (model: CmsModel): string => {
+const getModelId = (model: CmsApiModel): string => {
     const { modelId, name } = model;
     if (!!modelId) {
         return camelCase(modelId.trim());

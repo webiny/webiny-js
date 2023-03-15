@@ -1,15 +1,15 @@
+import gql from "graphql-tag";
+import WebinyError from "@webiny/error";
 import {
+    CmsApiModel,
     CmsContext,
-    CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelFieldToGraphQLPluginValidateChildFieldsValidate,
     CmsModelLockedFieldPlugin,
     LockedField
 } from "~/types";
-import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
-import gql from "graphql-tag";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
@@ -87,7 +87,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
     return target.fieldId;
 };
 
-const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
+const extractInvalidField = (model: CmsApiModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
 
     /**
@@ -158,6 +158,7 @@ interface ValidateFieldsParams {
     originalFields: CmsModelField[];
     lockedFields: LockedField[];
 }
+
 const validateFields = (params: ValidateFieldsParams) => {
     const { plugins, fields, originalFields, lockedFields } = params;
 
@@ -271,15 +272,19 @@ const validateFields = (params: ValidateFieldsParams) => {
         });
     }
 };
+
 interface CreateGraphQLSchemaParams {
     context: CmsContext;
-    model: CmsModel;
+    model: CmsApiModel;
 }
+
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
     context.security.disableAuthorization();
-    const models = await context.cms.listModels();
+    const models = (await context.cms.listModels()).filter((model): model is CmsApiModel => {
+        return !model.isPrivate;
+    });
     context.security.enableAuthorization();
 
     const modelPlugins = await buildSchemaPlugins({
@@ -315,10 +320,11 @@ const extractErrorObject = (error: any) => {
 };
 
 interface ValidateModelFieldsParams {
-    model: CmsModel;
-    original?: CmsModel;
+    model: CmsApiModel;
+    original?: CmsApiModel;
     context: CmsContext;
 }
+
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
     const { model, original, context } = params;
     const { titleFieldId } = model;
