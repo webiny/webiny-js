@@ -10,7 +10,10 @@ interface Params {
      */
     locale?: string;
     tenant?: string;
-    modelDefinition: Omit<CmsModel, "locale" | "tenant" | "webinyVersion" | "group">;
+    modelDefinition: Omit<
+        CmsModel,
+        "locale" | "tenant" | "webinyVersion" | "group" | "singularApiName" | "pluralApiName"
+    > & { isPrivate: true };
 }
 
 export const modelFactory = (params: Params): CmsModelPlugin => {
