@@ -8,7 +8,6 @@ import {
     CmsEntryContext,
     CmsEntryPermission,
     CmsEntry,
-    CmsModel,
     CmsContext,
     CmsStorageEntry,
     HeadlessCmsStorageOperations,
@@ -46,7 +45,7 @@ import {
     OnEntryBeforeRepublishTopicParams,
     OnEntryAfterRepublishTopicParams,
     OnEntryRepublishErrorTopicParams,
-    BaseCmsModel
+    CmsModel
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -419,7 +418,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     /**
      * A helper to get entries by revision IDs
      */
-    const getEntriesByIds = async (initialModel: BaseCmsModel, ids: string[]) => {
+    const getEntriesByIds = async (initialModel: CmsModel, ids: string[]) => {
         const permission = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, initialModel);
 

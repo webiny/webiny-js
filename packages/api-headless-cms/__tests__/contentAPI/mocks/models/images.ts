@@ -4,6 +4,8 @@ export const createImageModel = (group: Pick<CmsGroup, "id" | "name">): CmsModel
     const model: CmsModel = {
         name: "Images Model",
         modelId: "imagesModel",
+        singularApiName: "ImagesModel",
+        pluralApiName: "ImagesModels",
         fields: [
             {
                 id: "name",

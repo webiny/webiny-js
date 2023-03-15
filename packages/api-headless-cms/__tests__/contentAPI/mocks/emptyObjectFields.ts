@@ -1,6 +1,6 @@
-import { CmsApiModel } from "~/types";
+import { CmsModel } from "~/types";
 
-export const emptyObjectFields: Pick<CmsApiModel, "fields" | "layout"> = {
+export const emptyObjectFields: Pick<CmsModel, "fields" | "layout"> = {
     layout: [["T87zmyqoF"]],
     fields: [
         {

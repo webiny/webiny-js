@@ -1,5 +1,5 @@
 import { createContentModelGroup } from "./contentModelGroup";
-import { CmsApiModel } from "~/types";
+import { CmsModel } from "~/types";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
@@ -87,7 +87,7 @@ const ids = {
     field704: "category"
 };
 
-const models: CmsApiModel[] = [
+const models: CmsModel[] = [
     // category
     {
         createdOn: new Date().toISOString(),

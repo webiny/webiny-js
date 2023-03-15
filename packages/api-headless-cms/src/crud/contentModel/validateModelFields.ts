@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import WebinyError from "@webiny/error";
 import {
-    CmsApiModel,
+    CmsModel,
     CmsContext,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
@@ -87,7 +87,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
     return target.fieldId;
 };
 
-const extractInvalidField = (model: CmsApiModel, err: GraphQLError) => {
+const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
 
     /**
@@ -275,14 +275,14 @@ const validateFields = (params: ValidateFieldsParams) => {
 
 interface CreateGraphQLSchemaParams {
     context: CmsContext;
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
     context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter((model): model is CmsApiModel => {
+    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
         return !model.isPrivate;
     });
     context.security.enableAuthorization();
@@ -320,8 +320,8 @@ const extractErrorObject = (error: any) => {
 };
 
 interface ValidateModelFieldsParams {
-    model: CmsApiModel;
-    original?: CmsApiModel;
+    model: CmsModel;
+    original?: CmsModel;
     context: CmsContext;
 }
 

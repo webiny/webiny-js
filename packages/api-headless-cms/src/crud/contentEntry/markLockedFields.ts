@@ -1,12 +1,5 @@
 import WebinyError from "@webiny/error";
-import {
-    CmsEntry,
-    CmsModel,
-    CmsContext,
-    CmsModelLockedFieldPlugin,
-    LockedField,
-    CmsApiModel
-} from "~/types";
+import { CmsEntry, CmsContext, CmsModelLockedFieldPlugin, LockedField, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
@@ -70,13 +63,13 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
     try {
         await context.cms.updateModelDirect({
             /**
-             * At this point we know this is a CmsApiModel, so it is safe to cast.
+             * At this point we know this is a CmsModel, so it is safe to cast.
              */
-            original: model as CmsApiModel,
+            original: model as CmsModel,
             model: {
                 ...model,
                 lockedFields: newLockedFields
-            } as CmsApiModel
+            } as CmsModel
         });
         model.lockedFields = newLockedFields;
     } catch (ex) {
@@ -109,11 +102,11 @@ export const markUnlockedFields = async (params: MarkFieldsUnlockedParams) => {
 
     try {
         await context.cms.updateModelDirect({
-            original: model as CmsApiModel,
+            original: model as CmsModel,
             model: {
                 ...model,
                 lockedFields: []
-            } as CmsApiModel
+            } as CmsModel
         });
         model.lockedFields = [];
     } catch (ex) {

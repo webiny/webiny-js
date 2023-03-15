@@ -425,7 +425,7 @@ export interface CmsModelGroup {
  * @category Database model
  * @category CmsModel
  */
-export interface BaseCmsModel {
+export interface CmsModel {
     /**
      * Name of the content model.
      */
@@ -434,6 +434,24 @@ export interface BaseCmsModel {
      * Unique ID for the content model. Created from name if not defined by user.
      */
     modelId: string;
+    /**
+     * Name of the content model in singular form to be used in the API.
+     * example:
+     * - Article
+     * - Fruit
+     * - Vegetable
+     * - Car
+     */
+    singularApiName: string;
+    /**
+     * Name of the content model in plural form to be used in the API.
+     * example:
+     * - Articles
+     * - Fruits
+     * - Vegetables
+     * - Cars
+     */
+    pluralApiName: string;
     /**
      * Model tenant.
      */
@@ -494,45 +512,7 @@ export interface BaseCmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
-}
 
-/**
- * CMS Model definition for the API usage.
- *
- * @category Database model
- * @category CmsModel
- */
-export interface CmsApiModel extends BaseCmsModel {
-    /**
-     * Name of the content model in singular form to be used in the API.
-     * example:
-     * - Article
-     * - Fruit
-     * - Vegetable
-     * - Car
-     */
-    singularApiName: string;
-    /**
-     * Name of the content model in plural form to be used in the API.
-     * example:
-     * - Articles
-     * - Fruits
-     * - Vegetables
-     * - Cars
-     */
-    pluralApiName: string;
-    isPrivate?: never;
-}
-
-/**
- * CMS Model definition for the code usage only.
- *
- * @category Database model
- * @category CmsModel
- */
-export interface CmsPrivateModel extends BaseCmsModel {
-    singularApiName?: never;
-    pluralApiName?: never;
     /**
      * Is model private?
      * This is meant to be used for some internal models - will not be visible in the schema.
@@ -542,20 +522,11 @@ export interface CmsPrivateModel extends BaseCmsModel {
 }
 
 /**
- * CMS Model intersect of both CmsApiModel and CmsPrivateModel.
- * We need to do it like this because we want to have models for API and models for private usage (code only).
- *
- * @category Database model
- * @category CmsModel
- */
-export type CmsModel = CmsApiModel | CmsPrivateModel;
-
-/**
  * When sending model to the storage operations, it must contain createValueKeyToStorageConverter and createValueKeyFromStorageConverter
  *
  * @category CmsModel
  */
-export interface StorageOperationsCmsModel extends BaseCmsModel {
+export interface StorageOperationsCmsModel extends CmsModel {
     convertValueKeyToStorage: CmsModelConverterCallable;
     convertValueKeyFromStorage: CmsModelConverterCallable;
 }
@@ -1626,17 +1597,17 @@ export interface CmsModelManager {
  */
 export interface OnModelBeforeCreateTopicParams {
     input: CmsModelCreateInput;
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 export interface OnModelAfterCreateTopicParams {
     input: CmsModelCreateInput;
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 export interface OnModelCreateErrorTopicParams {
     input: CmsModelCreateInput;
-    model: CmsApiModel;
+    model: CmsModel;
     error: Error;
 }
 
@@ -1645,20 +1616,20 @@ export interface OnModelCreateErrorTopicParams {
  */
 export interface OnModelBeforeCreateFromTopicParams {
     input: CmsModelCreateInput;
-    original: CmsApiModel;
-    model: CmsApiModel;
+    original: CmsModel;
+    model: CmsModel;
 }
 
 export interface OnModelAfterCreateFromTopicParams {
     input: CmsModelCreateInput;
-    original: CmsApiModel;
-    model: CmsApiModel;
+    original: CmsModel;
+    model: CmsModel;
 }
 
 export interface OnModelCreateFromErrorParams {
     input: CmsModelCreateInput;
-    original: CmsApiModel;
-    model: CmsApiModel;
+    original: CmsModel;
+    model: CmsModel;
     error: Error;
 }
 
@@ -1667,20 +1638,20 @@ export interface OnModelCreateFromErrorParams {
  */
 export interface OnModelBeforeUpdateTopicParams {
     input: CmsModelUpdateInput;
-    original: CmsApiModel;
-    model: CmsApiModel;
+    original: CmsModel;
+    model: CmsModel;
 }
 
 export interface OnModelAfterUpdateTopicParams {
     input: CmsModelUpdateInput;
-    original: CmsApiModel;
-    model: CmsApiModel;
+    original: CmsModel;
+    model: CmsModel;
 }
 
 export interface OnModelUpdateErrorTopicParams {
     input: CmsModelUpdateInput;
-    original: CmsApiModel;
-    model: CmsApiModel;
+    original: CmsModel;
+    model: CmsModel;
     error: Error;
 }
 
@@ -1688,15 +1659,15 @@ export interface OnModelUpdateErrorTopicParams {
  * Delete
  */
 export interface OnModelBeforeDeleteTopicParams {
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 export interface OnModelAfterDeleteTopicParams {
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 export interface OnModelDeleteErrorTopicParams {
-    model: CmsApiModel;
+    model: CmsModel;
     error: Error;
 }
 
@@ -1712,8 +1683,8 @@ export interface OnModelInitializeParams {
  *
  */
 export interface CmsModelUpdateDirectParams {
-    model: CmsApiModel;
-    original: CmsApiModel;
+    model: CmsModel;
+    original: CmsModel;
 }
 
 /**
@@ -2203,53 +2174,53 @@ export interface CmsEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    getEntry: (model: BaseCmsModel, params: CmsEntryGetParams) => Promise<CmsEntry | null>;
+    getEntry: (model: CmsModel, params: CmsEntryGetParams) => Promise<CmsEntry | null>;
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getEntriesByIds: (model: BaseCmsModel, revisions: string[]) => Promise<CmsEntry[]>;
+    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[]>;
     /**
      * Get the entry for a model by a given ID.
      */
-    getEntryById: (model: BaseCmsModel, revision: string) => Promise<CmsEntry>;
+    getEntryById: (model: CmsModel, revision: string) => Promise<CmsEntry>;
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
     listEntries: (
-        model: BaseCmsModel,
+        model: CmsModel,
         params: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Lists the latest entries. Used for manage API.
      */
     listLatestEntries: (
-        model: BaseCmsModel,
+        model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * List published entries. Used for read API.
      */
     listPublishedEntries: (
-        model: BaseCmsModel,
+        model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * List published entries by IDs.
      */
-    getPublishedEntriesByIds: (model: BaseCmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getPublishedEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
     /**
      * List latest entries by IDs.
      */
-    getLatestEntriesByIds: (model: BaseCmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getLatestEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
     /**
      * Create a new content entry.
      */
-    createEntry: (model: BaseCmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
+    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
-        model: BaseCmsModel,
+        model: CmsModel,
         id: string,
         input: CreateFromCmsEntryInput
     ) => Promise<CmsEntry>;
@@ -2257,7 +2228,7 @@ export interface CmsEntryContext {
      * Update existing entry.
      */
     updateEntry: (
-        model: BaseCmsModel,
+        model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput,
         meta?: Record<string, any>
@@ -2266,27 +2237,27 @@ export interface CmsEntryContext {
      * Method that republishes entry with given identifier.
      * @internal
      */
-    republishEntry: (model: BaseCmsModel, id: string) => Promise<CmsEntry>;
+    republishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Delete only a certain revision of the entry.
      */
-    deleteEntryRevision: (model: BaseCmsModel, id: string) => Promise<void>;
+    deleteEntryRevision: (model: CmsModel, id: string) => Promise<void>;
     /**
      * Delete entry with all its revisions.
      */
-    deleteEntry: (model: BaseCmsModel, id: string) => Promise<void>;
+    deleteEntry: (model: CmsModel, id: string) => Promise<void>;
     /**
      * Publish entry.
      */
-    publishEntry: (model: BaseCmsModel, id: string) => Promise<CmsEntry>;
+    publishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Unpublish entry.
      */
-    unpublishEntry: (model: BaseCmsModel, id: string) => Promise<CmsEntry>;
+    unpublishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Get all entry revisions.
      */
-    getEntryRevisions: (model: BaseCmsModel, id: string) => Promise<CmsEntry[]>;
+    getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
     /**
      * Lifecyle events - deprecated.
      */
@@ -2562,15 +2533,15 @@ export interface CmsModelStorageOperationsListParams {
 }
 
 export interface CmsModelStorageOperationsCreateParams {
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 export interface CmsModelStorageOperationsUpdateParams {
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 export interface CmsModelStorageOperationsDeleteParams {
-    model: CmsApiModel;
+    model: CmsModel;
 }
 
 /**
@@ -2582,23 +2553,23 @@ export interface CmsModelStorageOperations {
     /**
      * Gets content model by given id.
      */
-    get: (params: CmsModelStorageOperationsGetParams) => Promise<CmsApiModel | null>;
+    get: (params: CmsModelStorageOperationsGetParams) => Promise<CmsModel | null>;
     /**
      * List all content models. Filterable via params.
      */
-    list: (params: CmsModelStorageOperationsListParams) => Promise<CmsApiModel[]>;
+    list: (params: CmsModelStorageOperationsListParams) => Promise<CmsModel[]>;
     /**
      * Create a new content model.
      */
-    create: (params: CmsModelStorageOperationsCreateParams) => Promise<CmsApiModel>;
+    create: (params: CmsModelStorageOperationsCreateParams) => Promise<CmsModel>;
     /**
      * Update existing content model.
      */
-    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<CmsApiModel>;
+    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<CmsModel>;
     /**
      * Delete the content model.
      */
-    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<CmsApiModel>;
+    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<CmsModel>;
 }
 
 export interface CmsEntryStorageOperationsGetParams {

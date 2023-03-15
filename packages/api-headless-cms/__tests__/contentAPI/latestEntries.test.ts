@@ -1,5 +1,5 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsApiModel, CmsGroup } from "~/types";
+import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler";
@@ -120,8 +120,8 @@ describe("latest entries", function () {
         return entry;
     };
 
-    let categoryModel: CmsApiModel;
-    let articleModel: CmsApiModel;
+    let categoryModel: CmsModel;
+    let articleModel: CmsModel;
 
     let fruitCategory: any;
     let vehicleCategory: any;

@@ -1,4 +1,4 @@
-import { CmsModelFieldInput, CmsGroup, CmsModelField, CmsApiModel } from "~/types";
+import { CmsModelFieldInput, CmsGroup, CmsModelField, CmsModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import * as helpers from "../testHelpers/helpers";
 import models from "./mocks/contentModels";
@@ -472,15 +472,13 @@ describe("content model test", () => {
     test("update content model with new fields", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
-        const modelData: Pick<
-            CmsApiModel,
-            "name" | "modelId" | "singularApiName" | "pluralApiName"
-        > = {
-            name: "Test Content model",
-            modelId: "test-content-model",
-            singularApiName: "TestContentModel",
-            pluralApiName: "TestContentModels"
-        };
+        const modelData: Pick<CmsModel, "name" | "modelId" | "singularApiName" | "pluralApiName"> =
+            {
+                name: "Test Content model",
+                modelId: "test-content-model",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels"
+            };
         const realModelId = "testContentModel";
         const [createResponse] = await createContentModelMutation({
             data: {

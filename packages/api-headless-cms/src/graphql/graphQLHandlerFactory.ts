@@ -1,5 +1,5 @@
 import { GraphQLSchema } from "graphql";
-import { ApiEndpoint, CmsApiModel, CmsContext } from "~/types";
+import { ApiEndpoint, CmsModel, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -58,7 +58,7 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
      * Private models are hidden in the GraphQL, so filter them out.
      */
     context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter((model): model is CmsApiModel => {
+    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
         return model.isPrivate !== true;
     });
     context.security.enableAuthorization();

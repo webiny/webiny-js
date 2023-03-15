@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { CmsEntry, CmsGroup, CmsApiModel } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
@@ -57,7 +57,7 @@ describe("MANAGE - Resolvers", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupModel = async (model?: CmsApiModel) => {
+    const setupModel = async (model?: CmsModel) => {
         if (!model) {
             model = models.find(m => m.modelId === "category");
             if (!model) {

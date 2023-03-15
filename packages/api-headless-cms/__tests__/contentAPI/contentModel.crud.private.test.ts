@@ -1,7 +1,7 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { CmsGroup, CmsApiModel } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import { CreateContentModelMutationVariables } from "~tests/testHelpers/graphql/contentModel";
 
 const privateGroup = new CmsGroupPlugin({
@@ -73,7 +73,7 @@ describe("Private Groups and Models", function () {
 
     const createModel = async (
         data: CreateContentModelMutationVariables["data"]
-    ): Promise<CmsApiModel> => {
+    ): Promise<CmsModel> => {
         const [createResponse] = await createContentModelMutation({
             data
         });

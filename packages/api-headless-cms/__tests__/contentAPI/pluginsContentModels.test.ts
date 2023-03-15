@@ -1,5 +1,5 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsGroup, CmsApiModel } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
 const contentModelPlugin = new CmsModelPlugin({
@@ -129,7 +129,7 @@ describe("content model plugins", () => {
     beforeEach(async () => {
         await storageOperations.models.delete({
             model: {
-                ...(contentModelPlugin.contentModel as CmsApiModel),
+                ...(contentModelPlugin.contentModel as CmsModel),
                 webinyVersion: "x.x.x"
             }
         });
@@ -137,7 +137,7 @@ describe("content model plugins", () => {
     afterEach(async () => {
         await storageOperations.models.delete({
             model: {
-                ...(contentModelPlugin.contentModel as CmsApiModel),
+                ...(contentModelPlugin.contentModel as CmsModel),
                 webinyVersion: "x.x.x"
             }
         });
@@ -317,6 +317,8 @@ describe("content model plugins", () => {
                         layout: [["name"], ["sku", "price"]],
                         modelId: "product",
                         name: "Product",
+                        singularApiName: "Product",
+                        pluralApiName: "Products",
                         plugin: true,
                         savedOn: null,
                         titleFieldId: "name"
@@ -391,6 +393,8 @@ describe("content model plugins", () => {
                             layout: [["name"], ["sku", "price"]],
                             modelId: "product",
                             name: "Product",
+                            singularApiName: "Product",
+                            pluralApiName: "Products",
                             plugin: true,
                             savedOn: null,
                             titleFieldId: "name"

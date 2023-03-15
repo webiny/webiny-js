@@ -1,5 +1,5 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsGroup, CmsApiModel, CmsModelField } from "~/types";
+import { CmsGroup, CmsModel, CmsModelField } from "~/types";
 import models from "./mocks/contentModels";
 import { toSlug } from "~/utils/toSlug";
 
@@ -16,7 +16,7 @@ const setEmptyTextsAsNull = (fields: CmsModelField[]): CmsModelField[] => {
     });
 };
 
-const createExpectedModel = (original: CmsApiModel, group?: CmsGroup) => {
+const createExpectedModel = (original: CmsModel, group?: CmsGroup) => {
     return {
         ...original,
         group: {
@@ -52,7 +52,7 @@ describe("content model - cloning", () => {
 
     let defaultGroup: CmsGroup;
     let cloneGroup: CmsGroup;
-    let originalModel: CmsApiModel;
+    let originalModel: CmsModel;
 
     beforeEach(async () => {
         const [createDefaultGroupResponse] = await createContentModelGroupMutation({
@@ -112,7 +112,7 @@ describe("content model - cloning", () => {
             }
         });
 
-        const expectedModel: CmsApiModel = createExpectedModel({
+        const expectedModel: CmsModel = createExpectedModel({
             ...originalModel,
             singularApiName: "ClonedModel",
             pluralApiName: "ClonedModels"
@@ -168,7 +168,7 @@ describe("content model - cloning", () => {
             }
         });
 
-        const expectedModel: CmsApiModel = createExpectedModel(
+        const expectedModel: CmsModel = createExpectedModel(
             {
                 ...originalModel,
                 singularApiName: "ClonedModel",
@@ -272,7 +272,7 @@ describe("content model - cloning", () => {
             }
         });
 
-        const expectedModel: CmsApiModel = createExpectedModel(
+        const expectedModel: CmsModel = createExpectedModel(
             {
                 ...originalModel,
                 singularApiName: "ClonedModel",

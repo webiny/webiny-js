@@ -1,5 +1,5 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsEntry, CmsGroup, CmsApiModel } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
@@ -27,7 +27,7 @@ describe("Content model locked fields", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsGroup): Promise<CmsApiModel> => {
+    const setupCategoryModel = async (contentModelGroup: CmsGroup): Promise<CmsModel> => {
         const model = models.find(m => m.modelId === "category");
         if (!model) {
             throw new Error(`Could not find model "category".`);
@@ -91,7 +91,7 @@ describe("Content model locked fields", () => {
             }
         });
 
-        const contentModel = createResponse.data.createContentModel.data as CmsApiModel;
+        const contentModel = createResponse.data.createContentModel.data as CmsModel;
 
         await updateContentModelMutation({
             modelId: contentModel.modelId,

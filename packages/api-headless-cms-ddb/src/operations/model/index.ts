@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import {
-    CmsApiModel,
+    CmsModel,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,
@@ -127,7 +127,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const item = await getRecord<CmsApiModel>({
+            const item = await getRecord<CmsModel>({
                 entity,
                 keys
             });
@@ -154,7 +154,7 @@ export const createModelsStorageOperations = (
             }
         };
         try {
-            const items = await queryAll<CmsApiModel>(queryAllParams);
+            const items = await queryAll<CmsModel>(queryAllParams);
 
             return cleanupItems(entity, items);
         } catch (ex) {

@@ -1,4 +1,4 @@
-import { CmsApiModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types";
+import { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
@@ -6,7 +6,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateReadSDLParams {
-    model: CmsApiModel;
+    model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }

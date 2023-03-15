@@ -1,5 +1,5 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsGroup, CmsApiModel } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 
@@ -77,8 +77,8 @@ describe("fieldValidations", () => {
         return update.data.updateContentModel.data;
     };
     const setupContentModels = async (contentModelGroup: CmsGroup) => {
-        const models: Record<string, CmsApiModel> = {
-            fruit: null as unknown as CmsApiModel
+        const models: Record<string, CmsModel> = {
+            fruit: null as unknown as CmsModel
         };
         for (const name in models) {
             models[name] = await setupContentModel(contentModelGroup, name);

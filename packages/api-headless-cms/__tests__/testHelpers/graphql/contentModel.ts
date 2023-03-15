@@ -1,4 +1,4 @@
-import { CmsApiModel, CmsModelField } from "~/types";
+import { CmsModel, CmsModelField } from "~/types";
 
 const DATA_FIELD = /* GraphQL*/ `
     {
@@ -114,7 +114,7 @@ export interface CreateContentModelMutationResponse {
     errors?: any[];
     data: {
         createContentModel: {
-            data: CmsApiModel;
+            data: CmsModel;
             error: {
                 message: string;
                 code: any;

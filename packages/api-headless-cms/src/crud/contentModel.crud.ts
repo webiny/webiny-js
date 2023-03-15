@@ -20,9 +20,7 @@ import {
     OnModelCreateFromErrorParams,
     OnModelUpdateErrorTopicParams,
     OnModelDeleteErrorTopicParams,
-    CmsModelGroup,
-    BaseCmsModel,
-    CmsApiModel
+    CmsModelGroup
 } from "~/types";
 
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -137,7 +135,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     }
                     return true;
                 })
-                .map<BaseCmsModel>(plugin => {
+                .map(plugin => {
                     return {
                         ...plugin.contentModel,
                         tags: ensureTypeTag(plugin.contentModel),
@@ -149,7 +147,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         );
     };
 
-    const modelsGet = async (modelId: string): Promise<BaseCmsModel> => {
+    const modelsGet = async (modelId: string) => {
         const pluginModel = getModelsAsPlugins().find(model => model.modelId === modelId);
 
         if (pluginModel) {
@@ -193,10 +191,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         });
     };
 
-    const getModel = async <T extends BaseCmsModel>(modelId: string): Promise<T> => {
+    const getModel = async (modelId: string): Promise<CmsModel> => {
         const permission = await checkModelPermissions("r");
 
-        const model = (await modelsGet(modelId)) as T;
+        const model = await modelsGet(modelId);
 
         checkOwnership(context, permission, model);
         await checkModelAccess(context, model);
@@ -449,7 +447,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             /**
              * Get a model record; this will also perform ownership validation.
              */
-            const original = await getModel<CmsApiModel>(modelId);
+            const original = await getModel(modelId);
 
             const result = await createModelCreateFromValidation().safeParseAsync({
                 ...userInput,
@@ -478,7 +476,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             }
 
             const identity = getIdentity();
-            const model: CmsApiModel = {
+            const model: CmsModel = {
                 ...original,
                 singularApiName: data.singularApiName,
                 pluralApiName: data.pluralApiName,
@@ -537,7 +535,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             await checkModelPermissions("w");
 
             // Get a model record; this will also perform ownership validation.
-            const original = await getModel<CmsApiModel>(modelId);
+            const original = await getModel(modelId);
 
             const result = await createModelUpdateValidation().safeParseAsync(input);
             if (!result.success) {
@@ -568,7 +566,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     name: groupData.name
                 };
             }
-            const model: CmsApiModel = {
+            const model: CmsModel = {
                 ...original,
                 ...data,
                 group,
@@ -615,7 +613,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         async deleteModel(modelId) {
             await checkModelPermissions("d");
 
-            const model = await getModel<CmsApiModel>(modelId);
+            const model = await getModel(modelId);
 
             try {
                 await onModelBeforeDelete.publish({

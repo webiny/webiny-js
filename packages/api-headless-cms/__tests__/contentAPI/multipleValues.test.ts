@@ -1,4 +1,4 @@
-import { CmsEntry, CmsGroup, CmsModel, CmsModelField } from "~/types";
+import { CmsEntry, CmsGroup, CmsModelField } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";

@@ -1,4 +1,4 @@
-import { CmsContext, CmsApiModel } from "~/types";
+import { CmsContext, CmsModel } from "~/types";
 import { createModelsSchema } from "./schema/contentModels";
 import { createContentEntriesSchema } from "./schema/contentEntries";
 import { createGroupsSchema } from "./schema/contentModelGroups";
@@ -11,7 +11,7 @@ import { CmsGraphQLSchemaPlugin } from "~/plugins";
  */
 interface BuildSchemaPluginsParams {
     context: CmsContext;
-    models: CmsApiModel[];
+    models: CmsModel[];
 }
 export const buildSchemaPlugins = async (
     params: BuildSchemaPluginsParams

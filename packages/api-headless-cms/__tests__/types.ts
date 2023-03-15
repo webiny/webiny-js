@@ -1,4 +1,4 @@
-import { CmsGroup as BaseCmsGroup, CmsApiModel as BaseCmsModel } from "~/types";
+import { CmsGroup as BaseCmsGroup, CmsModel as BaseCmsModel } from "~/types";
 import { useCategoryManageHandler } from "./testHelpers/useCategoryManageHandler";
 import { useProductManageHandler } from "./testHelpers/useProductManageHandler";
 

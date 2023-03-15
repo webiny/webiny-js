@@ -1,6 +1,6 @@
-import { CmsApiModel } from "~/types";
+import { CmsModel } from "~/types";
 
-export const createTestModel = (model: Partial<CmsApiModel> = {}): CmsApiModel => {
+export const createTestModel = (model: Partial<CmsModel> = {}): CmsModel => {
     return {
         modelId: "test",
         name: "Testing Model",
