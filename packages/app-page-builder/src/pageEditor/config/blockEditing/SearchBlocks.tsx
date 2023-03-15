@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
 import get from "lodash/get";
+import orderBy from "lodash/orderBy";
 import { useMutation, useApolloClient } from "@apollo/react-hooks";
 import { ReactComponent as RefreshIcon } from "@material-design-icons/svg/round/refresh.svg";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -101,7 +102,11 @@ const SearchBar = () => {
     const allCategories = useMemo(
         () => [
             allBlockCategory,
-            ...plugins.byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
+            ...orderBy(
+                plugins.byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category"),
+                "title",
+                "asc"
+            )
         ],
         []
     );
