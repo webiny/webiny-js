@@ -58,10 +58,10 @@ const Container = styled("div")({
             margin: 0
         }
     },
-    '&.single-entry':{
+    "&.single-entry": {
         height: 295,
-        '>div':{
-            height: 270,
+        ">div": {
+            height: 270
         }
     }
 });
@@ -260,7 +260,12 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                 <FieldName>{field.label}</FieldName>
                 <RecordCount>({message})</RecordCount>
             </FieldLabel>
-            <Container className={(entries.length < 1 ? "no-entries" : "has-entries")+(entries.length == 1 ? " single-entry" : "")}>
+            <Container
+                className={
+                    (entries.length < 1 ? "no-entries" : "has-entries") +
+                    (entries.length == 1 ? " single-entry" : "")
+                }
+            >
                 {loading && <Loader />}
                 <Entries entries={entries} loadMore={loadMore}>
                     {(entry, index) => {
@@ -268,6 +273,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                         const isLast = index >= values.length - 1;
                         return (
                             <Entry
+                                placement="multiRef"
                                 key={`reference-entry-${entry.id}`}
                                 index={index}
                                 entry={entry}

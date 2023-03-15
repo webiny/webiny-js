@@ -1,17 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 
-const Container = styled("div")(({ maxWidth }: Props) => {
-    return {
-        maxWidth: maxWidth || "140px",
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "end"
-    };
-});
-
-const Button = styled("a")({
+const Button: any = styled("a")({
     display: "flex",
     height: 35,
     fontWeight: 500,
@@ -24,15 +14,50 @@ const Button = styled("a")({
     cursor: "pointer",
     color: "var(--mdc-theme-primary)",
     " > svg": {
-        marginRight: "10px"
+        marginRight: "10px",
+        color: "var(--mdc-theme-primary)",
     },
     "&:hover": {
         textDecoration: "underline"
     }
 });
 
+const Container = styled("div")(({ maxWidth }: Props) => {
+    return {
+        maxWidth: maxWidth || "140px",
+        width: 'auto',
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        '&.has-tooltip':{
+            [Button]:{
+                '>span':{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    display: "flex",
+                    " > svg": {
+                        marginRight: "10px"
+                    },
+                }
+            }
+        },
+        '&.disabled':{
+            pointerEvents: 'none',
+            cursor: 'not-allowed',
+            [Button]:{
+                color: "var(--mdc-theme-on-background)",
+                '>svg':{
+                    color: "var(--mdc-theme-on-background)"
+                }
+            }
+        }
+    };
+});
+
 interface Props {
     children: React.ReactNode;
+    className?: string,
     maxWidth?: `${string}px`;
 }
 
@@ -49,9 +74,9 @@ interface PropsWithHref extends Props {
 }
 
 export const ButtonLink: React.VFC<PropsWithClick | PropsWithHref> = props => {
-    const { children, href, target, onClick, ...styles } = props;
+    const { children, href, target, onClick, className, ...styles } = props;
     return (
-        <Container {...styles}>
+        <Container className={className} {...styles}>
             <Button href={href} target={target} onClick={onClick}>
                 {children}
             </Button>
