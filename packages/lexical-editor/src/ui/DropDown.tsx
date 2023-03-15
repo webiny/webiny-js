@@ -150,7 +150,7 @@ export function DropDown({
     children: ReactNode;
     stopCloseOnClickSelf?: boolean;
     showScroll?: boolean;
-    style: object;
+    style?: object;
 }): JSX.Element {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [showDropDown, setShowDropDown] = useState(false);
