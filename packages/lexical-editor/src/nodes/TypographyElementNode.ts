@@ -1,21 +1,17 @@
 import {
-    $createParagraphNode,
     createCommand,
-    DOMConversionOutput,
     EditorConfig,
     ElementNode,
     LexicalCommand,
     LexicalEditor,
     LexicalNode,
     NodeKey,
-    RangeSelection,
     SerializedElementNode,
     Spread
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { styleObjectToString } from "~/utils/styleObjectToString";
 import { TypographyHTMLTag, TypographyValue } from "~/types";
-import { $createHeadingNode } from "@lexical/rich-text";
 
 // Command and payload
 export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(
@@ -41,26 +37,6 @@ export type SerializedTypographyNode = Spread<
     },
     SerializedElementNode
 >;
-
-function convertElement(domNode: Node): DOMConversionOutput {
-    const nodeName = domNode.nodeName.toLowerCase();
-    let node = null;
-    if (
-        nodeName === "h1" ||
-        nodeName === "h2" ||
-        nodeName === "h3" ||
-        nodeName === "h4" ||
-        nodeName === "h5" ||
-        nodeName === "h6"
-    ) {
-        node = $createHeadingNode(nodeName);
-    }
-
-    if (nodeName === "p") {
-        node = $createParagraphNode();
-    }
-    return { node };
-}
 
 /**
  * Main responsibility of this node is to apply custom or Webiny theme typography to selected text.
@@ -144,7 +120,7 @@ export class TypographyElementNode extends ElementNode {
         return this.addStylesHTMLElement(element, config.theme);
     }
 
-    override updateDOM(_prevNode: unknown, _dom: HTMLElement, _config: EditorConfig): boolean {
+    override updateDOM(): boolean {
         return false;
     }
 }

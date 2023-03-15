@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $getSelection,
-    $isNodeSelection,
     $isRangeSelection,
     $isRootOrShadowRoot,
     COMMAND_PRIORITY_CRITICAL,
@@ -19,11 +18,8 @@ import {
     TypographyElementNode,
     TypographyPayload
 } from "~/nodes/TypographyElementNode";
-import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
+import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
-import { ListNode } from "@lexical/list";
-import { useLexicalEditor } from "@lexical/react/DEPRECATED_useLexicalEditor";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -89,7 +85,6 @@ export const TypographyAction: TypographyAction = () => {
                 element = anchorNode.getTopLevelElementOrThrow();
             }
 
-            // Update links
             const node = getSelectedNode(selection);
             const parent = node.getParent();
 

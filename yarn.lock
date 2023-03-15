@@ -15195,6 +15195,7 @@ __metadata:
     lexical: 0.8.1
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-style-object-to-css: ^1.1.2
   languageName: unknown
   linkType: soft
 
@@ -36862,6 +36863,13 @@ __metadata:
   version: 1.1.4
   resolution: "react-spinner-material@npm:1.1.4"
   checksum: 86ff13664dd6c7d5bf8c3dc794b6187a83866943afb6ab75e559220be5f1fdfa71a8cb7b1f7c857be988560686a2ea718f004ad22afb824475111405843748b6
+  languageName: node
+  linkType: hard
+
+"react-style-object-to-css@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "react-style-object-to-css@npm:1.1.2"
+  checksum: 1f854bf5c7fabcc0be3db3e35e4b346dd0d3cb2b09079f100380ab299d2db94ba75ab225254446958d820933c7be67b609219746610a14cda2c42e708711cc78
   languageName: node
   linkType: hard
 

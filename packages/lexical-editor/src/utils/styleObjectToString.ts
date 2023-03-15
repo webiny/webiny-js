@@ -1,3 +1,5 @@
+const reactToCSS = require("react-style-object-to-css");
+
 /*
  * Converts CSS style objects to string
  * Example:
@@ -7,16 +9,5 @@ export const styleObjectToString = (styleObject: Record<string, any>): string =>
     if (!styleObject) {
         return styleObject;
     }
-    return Object.keys(styleObject).reduce(
-        (acc, key) =>
-            acc +
-            key
-                .split(/(?=[A-Z])/)
-                .join("-")
-                .toLowerCase() +
-            ":" +
-            styleObject[key] +
-            ";",
-        ""
-    );
+    return reactToCSS(styleObject);
 };
