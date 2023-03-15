@@ -1,5 +1,6 @@
+import WebinyError from "@webiny/error";
 import {
-    CmsModel,
+    CmsApiModel,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,
@@ -9,7 +10,6 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
 import { configurations } from "~/configurations";
-import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
@@ -19,6 +19,7 @@ interface PartitionKeysParams {
     tenant: string;
     locale: string;
 }
+
 const createPartitionKey = (params: PartitionKeysParams): string => {
     const { tenant, locale } = params;
     return `T#${tenant}#L#${locale}#CMS#CM`;
@@ -27,6 +28,7 @@ const createPartitionKey = (params: PartitionKeysParams): string => {
 interface SortKeyParams {
     modelId: string;
 }
+
 const createSortKey = (params: SortKeyParams): string => {
     return params.modelId;
 };
@@ -35,6 +37,7 @@ interface Keys {
     PK: string;
     SK: string;
 }
+
 const createKeys = (params: PartitionKeysParams & SortKeyParams): Keys => {
     return {
         PK: createPartitionKey(params),
@@ -50,6 +53,7 @@ export interface CreateModelsStorageOperationsParams {
     entity: Entity<any>;
     elasticsearch: Client;
 }
+
 export const createModelsStorageOperations = (
     params: CreateModelsStorageOperationsParams
 ): CmsModelStorageOperations => {
@@ -169,7 +173,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const item = await getRecord<CmsModel>({
+            const item = await getRecord<CmsApiModel>({
                 entity,
                 keys
             });
@@ -196,7 +200,7 @@ export const createModelsStorageOperations = (
             }
         };
         try {
-            const items = await queryAll<CmsModel>(queryAllParams);
+            const items = await queryAll<CmsApiModel>(queryAllParams);
 
             return cleanupItems(entity, items);
         } catch (ex) {
