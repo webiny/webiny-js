@@ -113,7 +113,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
                                             <FolderTree
                                                 title={t`Root folder`}
                                                 type={type}
-                                                focusedFolderId={currentParentId || undefined}
+                                                focusedFolderId={parentId || undefined}
                                                 onFolderClick={data =>
                                                     setParentId(data?.id || null)
                                                 }
