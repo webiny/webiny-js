@@ -5,12 +5,12 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 
 interface Props {
     onClick: (ev: React.MouseEvent) => void;
-    className?: string
+    className?: string;
 }
 
 export const MoveDown: React.VFC<Props> = ({ onClick, className }) => {
     return (
-        <ButtonLink className={"has-tooltip "+className} onClick={onClick} maxWidth={"100px"}>
+        <ButtonLink className={"has-tooltip " + className} onClick={onClick} maxWidth={"100px"}>
             <Tooltip content={"Shift+Click to move to bottom"} placement={"top"}>
                 <MoveDownIcon /> <span>Move Down</span>
             </Tooltip>

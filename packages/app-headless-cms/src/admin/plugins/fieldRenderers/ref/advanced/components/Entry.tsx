@@ -46,7 +46,7 @@ const FooterContainer = styled("div")({
     padding: "10px",
     flexWrap: "wrap-reverse",
     justifyContent: "center",
-    marginBottom: '-10px'
+    marginBottom: "-10px"
 });
 
 const LeftContainer = styled("div")({
@@ -57,7 +57,7 @@ const LeftContainer = styled("div")({
     flexShrink: 1,
     flexGrow: 1,
     justifyContent: "space-around",
-    borderBottom: '1px solid var(--mdc-theme-on-background)',
+    borderBottom: "1px solid var(--mdc-theme-on-background)",
     paddingBottom: 10,
     marginTop: -10,
     paddingTop: 15
@@ -70,7 +70,7 @@ const RightContainer = styled("div")({
     flexShrink: 1,
     flexGrow: 1,
     justifyContent: "space-around",
-    borderBottom: '1px solid var(--mdc-theme-on-background)',
+    borderBottom: "1px solid var(--mdc-theme-on-background)",
     paddingBottom: 10,
     ">div": {
         minWidth: "100px"
@@ -95,7 +95,7 @@ interface PropsWithRemove {
     onMoveDown?: (index: number, toBottom: boolean) => void;
     onChange?: never;
     selected?: never;
-    placement?: string
+    placement?: string;
 }
 
 export const Entry: React.VFC<PropsWithRemove | Props> = ({
@@ -144,12 +144,18 @@ export const Entry: React.VFC<PropsWithRemove | Props> = ({
                     <ModifiedBy modifiedBy={entry.modifiedBy} savedOn={entry.savedOn} />
                 </LeftContainer>
                 <RightContainer>
-                    {placement=='multiRef' && (
+                    {placement == "multiRef" && (
                         <>
-                            <MoveUp className={onMoveUpClick ? 'active' : 'disabled'} onClick={onMoveUp} />
-                            <MoveDown className={onMoveDownClick ? 'active' : 'disabled'} onClick={onMoveDown} />
+                            <MoveUp
+                                className={onMoveUpClick ? "active" : "disabled"}
+                                onClick={onMoveUp}
+                            />
+                            <MoveDown
+                                className={onMoveDownClick ? "active" : "disabled"}
+                                onClick={onMoveDown}
+                            />
                         </>
-                    )} 
+                    )}
                     <View entry={entry} />
                     {onChange && <Select entry={entry} onChange={onChange} selected={selected} />}
                     {onRemove && <Remove entry={entry} onRemove={onRemove} />}

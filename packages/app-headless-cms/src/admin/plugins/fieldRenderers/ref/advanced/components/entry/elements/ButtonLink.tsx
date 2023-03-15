@@ -15,7 +15,7 @@ const Button: any = styled("a")({
     color: "var(--mdc-theme-primary)",
     " > svg": {
         marginRight: "10px",
-        color: "var(--mdc-theme-primary)",
+        color: "var(--mdc-theme-primary)"
     },
     "&:hover": {
         textDecoration: "underline"
@@ -25,29 +25,29 @@ const Button: any = styled("a")({
 const Container = styled("div")(({ maxWidth }: Props) => {
     return {
         maxWidth: maxWidth || "140px",
-        width: 'auto',
+        width: "auto",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        '&.has-tooltip':{
-            [Button]:{
-                '>span':{
+        "&.has-tooltip": {
+            [Button]: {
+                ">span": {
                     alignItems: "center",
                     justifyContent: "center",
                     display: "flex",
                     " > svg": {
                         marginRight: "10px"
-                    },
+                    }
                 }
             }
         },
-        '&.disabled':{
-            pointerEvents: 'none',
-            cursor: 'not-allowed',
-            [Button]:{
+        "&.disabled": {
+            pointerEvents: "none",
+            cursor: "not-allowed",
+            [Button]: {
                 color: "var(--mdc-theme-on-background)",
-                '>svg':{
+                ">svg": {
                     color: "var(--mdc-theme-on-background)"
                 }
             }
@@ -57,7 +57,7 @@ const Container = styled("div")(({ maxWidth }: Props) => {
 
 interface Props {
     children: React.ReactNode;
-    className?: string,
+    className?: string;
     maxWidth?: `${string}px`;
 }
 

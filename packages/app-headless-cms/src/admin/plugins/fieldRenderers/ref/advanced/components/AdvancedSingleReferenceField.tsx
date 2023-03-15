@@ -160,7 +160,12 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
             <Container>
                 {loading && <Loader />}
                 {!loadingEntries && !!entries[0] && (
-                    <Entry placement="singleRefField" index={0} entry={entries[0]} onRemove={onRemove} />
+                    <Entry
+                        placement="singleRefField"
+                        index={0}
+                        entry={entries[0]}
+                        onRemove={onRemove}
+                    />
                 )}
                 <Options
                     models={models}
