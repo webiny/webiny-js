@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ReactComponent as FileIcon } from "./icons/round-description-24px.svg";
+import { ReactComponent as FileIcon } from "@material-design-icons/svg/outlined/description.svg";
 import { css } from "emotion";
 import { FileManagerFileTypePlugin } from "~/plugins/FileManagerFileTypePlugin";
 

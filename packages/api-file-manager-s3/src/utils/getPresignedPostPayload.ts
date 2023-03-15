@@ -2,6 +2,7 @@
 import mdbid from "mdbid";
 import sanitizeFilename from "sanitize-filename";
 import S3 from "aws-sdk/clients/s3";
+import mime from "mime";
 import { validation } from "@webiny/validation";
 import { PresignedPostPayloadData, PresignedPostPayloadDataResponse } from "~/types";
 import { FileManagerSettings } from "@webiny/api-file-manager/types";
@@ -46,6 +47,12 @@ export default async (
 
     // Replace all whitespace.
     key = key.replace(/\s/g, "");
+
+    // Make sure file key contains a file extension
+    const ext = mime.getExtension(contentType);
+    if (!key.endsWith(`.${ext}`)) {
+        key = key + `.${ext}`;
+    }
 
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(

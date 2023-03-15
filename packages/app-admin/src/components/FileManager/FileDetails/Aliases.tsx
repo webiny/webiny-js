@@ -1,6 +1,4 @@
 import React, { Fragment, useMemo, useState } from "react";
-import { cloneDeep } from "lodash";
-
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Input } from "@webiny/ui/Input";
 import styled from "@emotion/styled";
@@ -13,8 +11,6 @@ import { ReactComponent as LinkIcon } from "@material-design-icons/svg/filled/li
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/filled/edit.svg";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/filled/delete.svg";
 import { useFile } from "~/components/FileManager/FileDetails/FileProvider";
-import { useUpdateFile } from "~/components/FileManager/FileDetails/useUpdateFile";
-import { LIST_FILES, ListFilesQueryResponse } from "~/components/FileManager/graphql";
 import { useFileManager } from "~/components/FileManager/FileManagerContext";
 import { useSnackbar } from "~/hooks/useSnackbar";
 
@@ -136,7 +132,7 @@ const EmptyAddAlias = styled(ButtonDefault)`
 
 const ButtonsWrapper = styled.div`
     margin-top: 16px;
-    & button:first-child {
+    & button:first-of-type {
         margin-right: 16px;
     }
 `;
@@ -146,11 +142,12 @@ interface AliasesFormData {
 }
 
 export const Aliases = () => {
-    const { queryParams } = useFileManager();
-    const { file, isEditingAllowed } = useFile();
-    const { updateFile, updateInProgress } = useUpdateFile(file);
+    const { updateFile, canEdit } = useFileManager();
+    const { file } = useFile();
     const [isEditing, setIsEditing] = useState(false);
     const { showSnackbar } = useSnackbar();
+    const [updating, setUpdating] = useState(false);
+    const isEditingAllowed = canEdit(file);
 
     const getUrlWithAlias = (alias: string) => {
         const url = new URL(file.src);
@@ -160,30 +157,11 @@ export const Aliases = () => {
 
     const onEdit = () => setIsEditing(true);
     const cancelEdit = () => setIsEditing(false);
+
     const onSubmit: FormOnSubmit<AliasesFormData> = async ({ aliases }) => {
-        await updateFile({ aliases }, cache => {
-            const data = cloneDeep(
-                cache.readQuery<ListFilesQueryResponse>({
-                    query: LIST_FILES,
-                    variables: queryParams
-                })
-            );
-
-            if (data) {
-                data.fileManager.listFiles.data.forEach(item => {
-                    if (item.id === file.id) {
-                        item.aliases = aliases;
-                    }
-                });
-            }
-
-            cache.writeQuery({
-                query: LIST_FILES,
-                variables: queryParams,
-                data: data
-            });
-        });
-
+        setUpdating(true);
+        await updateFile(file.id, { aliases });
+        setUpdating(false);
         setIsEditing(false);
         showSnackbar("Aliases successfully updated.");
     };
@@ -226,10 +204,10 @@ export const Aliases = () => {
                                 <ButtonPrimary
                                     small
                                     onClick={submit}
-                                    disabled={updateInProgress}
+                                    disabled={updating}
                                     data-testid={"fm.aliases.submit"}
                                 >
-                                    {updateInProgress ? "Saving..." : "Save changes"}
+                                    {updating ? "Saving..." : "Save changes"}
                                 </ButtonPrimary>
                                 <ButtonSecondary small onClick={cancelEdit}>
                                     Cancel

@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 import { FileManagerFileItem } from "~/components/FileManager";
 const t = i18n.ns("app-admin/file-manager/files/delete-action");
 
-import { ReactComponent as DeleteIcon } from "../../../components/FileManager/icons/delete.svg";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { DELETE_FILE } from "~/components/FileManager/graphql";
 
 interface DeleteActionProps {

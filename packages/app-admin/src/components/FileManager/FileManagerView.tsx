@@ -1,28 +1,23 @@
-import React, { useRef, useCallback, useMemo } from "react";
+import React, { useRef, useCallback } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import Files, { FilesRenderChildren } from "react-butterfiles";
+import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import File, { FileProps } from "./File";
-import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
+import FileThumbnail, { FileProps } from "./File";
+import { useQuery } from "@apollo/react-hooks";
 import { FilesRules } from "react-butterfiles";
 import {
     LIST_FILES,
-    CREATE_FILE,
     GET_FILE_SETTINGS,
-    CreateFileMutationVariables,
-    CreateFileMutationResponse,
     ListFilesQueryResponse,
     ListFilesQueryVariables
 } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
-import getFileUploader from "./getFileUploader";
 import { outputFileSelectionError } from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
-import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
 import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
@@ -31,20 +26,14 @@ import { useSnackbar } from "~/hooks/useSnackbar";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
-import { useSecurity } from "@webiny/app-security";
-/**
- * Package react-hotkeyz is missing types.
- */
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
-import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
-import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
-import NoPermissionView from "./NoPermissionView";
-import { FileItem, FileManagerSecurityPermission } from "~/components/FileManager/types";
-import { MutationUpdaterFn } from "apollo-client/core/watchQueryOptions";
-import { SecurityPermission } from "@webiny/app-security/types";
+import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
+import { ReactComponent as UploadIcon } from "@material-design-icons/svg/outlined/cloud_upload.svg";
+import { FileItem } from "~/components/FileManager/types";
 import { ObservableQueryFields } from "@apollo/react-common/lib/types/types";
+import { EmptyView } from "./EmptyView";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -141,7 +130,7 @@ const renderFile: React.FC<RenderFileProps> = props => {
         return null;
     }
     return (
-        <File {...props} key={file.id}>
+        <FileThumbnail {...props} key={file.id}>
             {plugin.render({
                 /**
                  * TODO @ts-refactor
@@ -149,26 +138,8 @@ const renderFile: React.FC<RenderFileProps> = props => {
                 // @ts-ignore
                 file
             })}
-        </File>
+        </FileThumbnail>
     );
-};
-interface RenderEmptyProps {
-    hasPreviouslyUploadedFiles: boolean;
-    browseFiles: FilesRenderChildren["browseFiles"];
-    fmFilePermission: SecurityPermission | null;
-}
-const renderEmpty: React.FC<RenderEmptyProps> = ({
-    hasPreviouslyUploadedFiles,
-    browseFiles,
-    fmFilePermission
-}) => {
-    if (!fmFilePermission) {
-        return <NoPermissionView />;
-    }
-    if (hasPreviouslyUploadedFiles) {
-        return <NoResults />;
-    }
-    return <DropFilesHere empty onClick={() => browseFiles()} />;
 };
 
 interface RefreshOnScrollParams {
@@ -179,7 +150,7 @@ interface RefreshOnScrollParams {
 }
 
 interface FileError {
-    file: FileItem;
+    file: File;
     e: Error;
 }
 
@@ -212,51 +183,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         queryParams,
         setQueryParams,
         hasPreviouslyUploadedFiles,
-        setHasPreviouslyUploadedFiles
+        setHasPreviouslyUploadedFiles,
+        ...fileManager
     } = useFileManager();
     const { showSnackbar } = useSnackbar();
-
-    const { identity, getPermission } = useSecurity();
-    const fmFilePermission = useMemo((): FileManagerSecurityPermission | null => {
-        return getPermission<FileManagerSecurityPermission>("fm.file");
-    }, [identity]);
-    const canCreate = useMemo(() => {
-        // Bail out early if no access
-        if (!fmFilePermission) {
-            return false;
-        }
-
-        if (fmFilePermission.own) {
-            return true;
-        }
-
-        if (typeof fmFilePermission.rwd === "string") {
-            return fmFilePermission.rwd.includes("w");
-        }
-
-        return true;
-    }, [fmFilePermission]);
-    const canEdit = useCallback(
-        item => {
-            // Bail out early if no access
-            if (!fmFilePermission) {
-                return false;
-            }
-            const creatorId = get(item, "createdBy.id");
-
-            if (fmFilePermission.own && creatorId) {
-                const identityId = identity ? identity.id || identity.login : null;
-                return creatorId === identityId;
-            }
-
-            if (typeof fmFilePermission.rwd === "string") {
-                return fmFilePermission.rwd.includes("w");
-            }
-
-            return true;
-        },
-        [fmFilePermission]
-    );
 
     const searchOnChange = useCallback(
         // @ts-ignore
@@ -289,32 +219,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         return e.message;
     }, []);
 
-    const updateCacheAfterCreateFile: MutationUpdaterFn<CreateFileMutationResponse> = (
-        cache,
-        newFile
-    ) => {
-        const newFileData = get(newFile, "data.fileManager.createFile.data");
-
-        const data = cache.readQuery<ListFilesQueryResponse>({
-            query: LIST_FILES,
-            variables: queryParams
-        });
-
-        cache.writeQuery({
-            query: LIST_FILES,
-            variables: queryParams,
-            data: {
-                fileManager: {
-                    ...(data?.fileManager || {}),
-                    listFiles: {
-                        ...(data?.fileManager || {}).listFiles,
-                        data: [newFileData, ...((data?.fileManager?.listFiles || {}).data || [])]
-                    }
-                }
-            }
-        });
-    };
-
     const getFileDetailsFile = useCallback(({ src, list }: GetFileDetailsFileParams): FileItem => {
         return list.find(item => item.src === src) as FileItem;
     }, []);
@@ -327,8 +231,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     });
 
     const searchInput = useRef<HTMLInputElement>(null);
-
-    const apolloClient = useApolloClient();
 
     const gqlQuery = useQuery<ListFilesQueryResponse, ListFilesQueryVariables>(LIST_FILES, {
         variables: queryParams,
@@ -375,40 +277,21 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { data, fetchMore, loading } = gqlQuery;
 
     const list: FileItem[] = get(data, "fileManager.listFiles.data") || [];
-    const [createFile] = useMutation<CreateFileMutationResponse, CreateFileMutationVariables>(
-        CREATE_FILE,
-        {
-            update: updateCacheAfterCreateFile
-        }
-    );
-    const uploadFile = async (files: FileItem | FileItem[]): Promise<number | null> => {
+
+    const uploadFile = async (files: File | File[]): Promise<number | null> => {
         setUploading(true);
-        const list: FileItem[] = Array.isArray(files) ? files : [files];
+        const list: File[] = Array.isArray(files) ? files : [files];
 
         const errors: FileError[] = [];
         const uploadedFiles: FileItem[] = [];
         await Promise.all(
             list.map(async file => {
                 try {
-                    const response = await getFileUploader()(file, { apolloClient });
-                    /**
-                     * Add "tags" while creating the new file.
-                     */
-                    const createFileResponse = await createFile({
-                        variables: {
-                            data: {
-                                ...response,
-                                tags: queryParams.scope ? [queryParams.scope] : []
-                            }
-                        }
-                    });
-                    // Save create file data for later
-                    uploadedFiles.push(
-                        get(
-                            createFileResponse,
-                            "data.fileManager.createFile.data"
-                        ) as unknown as FileItem
-                    );
+                    const newFile = await fileManager.uploadFile(file);
+
+                    if (newFile) {
+                        uploadedFiles.push(newFile);
+                    }
                 } catch (e) {
                     errors.push({ file, e });
                 }
@@ -455,7 +338,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
 
     const renderUploadFileAction = useCallback(
         ({ browseFiles }) => {
-            if (!canCreate) {
+            if (!fileManager.canCreate) {
                 return null;
             }
             return (
@@ -465,7 +348,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 </ButtonPrimary>
             );
         },
-        [uploading, canCreate]
+        [uploading, fileManager.canCreate]
     );
 
     const settingsQuery = useQuery(GET_FILE_SETTINGS);
@@ -478,7 +361,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             multipleMaxCount={multipleMaxCount}
             accept={accept}
             onSuccess={files => {
-                uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
+                const filesToUpload = files.map(file => file.src.file).filter(Boolean) as File[];
+                uploadFile(filesToUpload);
             }}
             onError={errors => {
                 console.log("onError", errors);
@@ -504,7 +388,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 ref={searchInput}
                                 onChange={e => searchOnChange(e.target.value)}
                                 placeholder={t`Search by filename or tags`}
-                                disabled={!fmFilePermission}
+                                disabled={!fileManager.canRead}
                                 data-testid={"file-manager.search-input"}
                             />
                         </InputSearch>
@@ -540,15 +424,15 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                             />
                         )}
 
-                        <FileDetails
-                            validateFiles={validateFiles}
-                            uploadFile={uploadFile}
-                            file={getFileDetailsFile({
-                                list,
-                                src: showingFileDetails
-                            })}
-                            canEdit={canEdit}
-                        />
+                        {showingFileDetails ? (
+                            <FileDetails
+                                validateFiles={validateFiles}
+                                file={getFileDetailsFile({
+                                    list,
+                                    src: showingFileDetails
+                                })}
+                            />
+                        ) : null}
 
                         <LeftSidebar
                             queryParams={queryParams}
@@ -571,34 +455,30 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 }
                             >
                                 <FileList>
-                                    {list.length
-                                        ? list.map(file =>
-                                              renderFile({
-                                                  uploadFile,
-                                                  file,
-                                                  showFileDetails: () => showFileDetails(file.src),
-                                                  selected: selected.find(
-                                                      (current: FileItem) =>
-                                                          current.src === file.src
-                                                  ),
-                                                  onSelect: async () => {
-                                                      if (typeof onChange === "function") {
-                                                          if (multiple) {
-                                                              toggleSelected(file);
-                                                              return;
-                                                          }
+                                    {list.length ? (
+                                        list.map(file =>
+                                            renderFile({
+                                                file,
+                                                showFileDetails: () => showFileDetails(file.src),
+                                                selected: selected.some(
+                                                    current => current.src === file.src
+                                                ),
+                                                onSelect: async () => {
+                                                    if (typeof onChange === "function") {
+                                                        if (multiple) {
+                                                            toggleSelected(file);
+                                                            return;
+                                                        }
 
-                                                          await onChange(file);
-                                                          onClose && onClose();
-                                                      }
-                                                  }
-                                              })
-                                          )
-                                        : renderEmpty({
-                                              hasPreviouslyUploadedFiles,
-                                              browseFiles,
-                                              fmFilePermission
-                                          })}
+                                                        await onChange(file);
+                                                        onClose && onClose();
+                                                    }
+                                                }
+                                            })
+                                        )
+                                    ) : (
+                                        <EmptyView browseFiles={browseFiles} />
+                                    )}
                                 </FileList>
                             </Scrollbar>
                             <BottomInfoBar accept={accept} uploading={uploading} />

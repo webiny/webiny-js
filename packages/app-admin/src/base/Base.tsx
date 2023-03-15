@@ -5,8 +5,8 @@ import { plugins } from "@webiny/plugins";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
 import { ReactComponent as SlackIcon } from "~/assets/icons/slack-logo.svg";
 import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
-import { ReactComponent as FileIcon } from "~/assets/icons/insert_drive_file-24px.svg";
-import { ReactComponent as SettingsIcon } from "~/assets/icons/round-settings-24px.svg";
+import { ReactComponent as FileIcon } from "@material-design-icons/svg/filled/insert_drive_file.svg";
+import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
 import { FileManager } from "~/components";
 
 import { defaultFileTypePlugin, imageFileTypePlugin } from "~/plugins/fileManager";

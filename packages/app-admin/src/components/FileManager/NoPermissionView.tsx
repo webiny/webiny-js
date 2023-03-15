@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
-import { ReactComponent as PermissionIcon } from "./icons/privacy_tip-24px.svg";
+import { ReactComponent as PermissionIcon } from "@material-design-icons/svg/outlined/privacy_tip.svg";
 import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view/no-permission");

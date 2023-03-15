@@ -27,10 +27,6 @@ const ERROR_FIELDS = /* GraphQL */ `
     }
 `;
 
-/**
- * ##################
- * List Files Query Response
- */
 export interface ListFilesListFilesResponse {
     data: FileItem[];
     error?: Error | null;
@@ -40,11 +36,13 @@ export interface ListFilesListFilesResponse {
         cursor: string | null;
     };
 }
+
 export interface ListFilesQueryResponse {
     fileManager: {
         listFiles: ListFilesListFilesResponse;
     };
 }
+
 export interface ListFilesQueryVariables {
     types?: string[];
     tags?: string[];
@@ -52,6 +50,7 @@ export interface ListFilesQueryVariables {
     search?: string;
     after?: string;
 }
+
 export const LIST_FILES = gql`
     query ListFiles(
         $types: [String],
@@ -79,16 +78,14 @@ export const LIST_FILES = gql`
         }
     }
 `;
-/**
- * ##################
- * List File Tags Query Response
- */
+
 export interface ListFileTagsQueryResponse {
     fileManager: {
         listTags: string[];
         error: Error | null;
     };
 }
+
 export const LIST_TAGS = gql`
     query ListTags($where: TagWhereInput) {
         fileManager {
@@ -96,10 +93,7 @@ export const LIST_TAGS = gql`
         }
     }
 `;
-/**
- * ##################
- * Create File Mutation Response
- */
+
 export interface CreateFileMutationResponse {
     fileManager: {
         createFile: {
@@ -108,17 +102,21 @@ export interface CreateFileMutationResponse {
         };
     };
 }
+
 export interface FileInput {
     key: string;
     name: string;
     size: number;
     type: string;
-    tags: string;
+    tags: string[];
+    aliases?: string[];
     meta: Record<string, any>;
 }
+
 export interface CreateFileMutationVariables {
     data: FileInput;
 }
+
 export const CREATE_FILE = gql`
     mutation CreateFile($data: CreateFileInput!) {
         fileManager {
@@ -129,10 +127,7 @@ export const CREATE_FILE = gql`
         }
     }
 `;
-/**
- * ##################
- * Update File Mutation Response
- */
+
 export interface UpdateFileMutationResponse {
     fileManager: {
         updateFile: {
@@ -141,10 +136,12 @@ export interface UpdateFileMutationResponse {
         };
     };
 }
+
 export interface UpdateFileMutationVariables {
     id: string;
     data: Partial<FileInput>;
 }
+
 export const UPDATE_FILE = gql`
     mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
         fileManager {
@@ -161,10 +158,6 @@ export const UPDATE_FILE = gql`
     }
 `;
 
-/**
- * ##################
- * Delete File Mutation Response
- */
 export interface DeleteFileMutationResponse {
     fileManager: {
         updateFile: {
@@ -173,11 +166,13 @@ export interface DeleteFileMutationResponse {
         };
     };
 }
+
 export interface DeleteFileMutationVariables {
     id: string;
 }
+
 export const DELETE_FILE = gql`
-    mutation deleteFile($id: ID!) {
+    mutation DeleteFile($id: ID!) {
         fileManager {
             deleteFile(id: $id) {
                 data
@@ -188,7 +183,7 @@ export const DELETE_FILE = gql`
 `;
 
 export const GET_FILE_SETTINGS = gql`
-    query getSettings {
+    query GetSettings {
         fileManager {
             getSettings {
                 data {
