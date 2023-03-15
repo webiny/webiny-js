@@ -11,7 +11,7 @@ const Text = styled("span")({
     fontSize: "14px",
     lineHeight: "20px",
     letterSpacing: "0.1px",
-    textTransform: "uppercase",
+    textTransform: "uppercase"
 });
 
 interface Props {

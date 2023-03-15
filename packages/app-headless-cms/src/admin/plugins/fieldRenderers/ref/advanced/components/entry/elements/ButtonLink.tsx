@@ -7,7 +7,7 @@ const Container = styled("div")(({ maxWidth }: Props) => {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: 'end'
+        justifyContent: "end"
     };
 });
 
@@ -26,8 +26,8 @@ const Button = styled("a")({
     " > svg": {
         marginRight: "10px"
     },
-    '&:hover':{
-        textDecoration: 'underline'
+    "&:hover": {
+        textDecoration: "underline"
     }
 });
 

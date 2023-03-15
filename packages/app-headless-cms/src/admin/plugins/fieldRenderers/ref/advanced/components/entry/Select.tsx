@@ -11,7 +11,7 @@ const Container = styled("div")({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: 'end'
+    justifyContent: "end"
 });
 
 const SelectButton = styled("button")({
@@ -22,8 +22,8 @@ const SelectButton = styled("button")({
     background: "transparent",
     color: "var(--mdc-theme-primary)",
     cursor: "pointer",
-    '&:hover':{
-        textDecoration: 'underline'
+    "&:hover": {
+        textDecoration: "underline"
     }
 });
 

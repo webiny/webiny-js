@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 
 const Container = styled("div")({
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "row"
 });
 
 const Icon = styled("div")({

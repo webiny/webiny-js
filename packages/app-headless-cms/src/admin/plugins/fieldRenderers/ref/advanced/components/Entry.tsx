@@ -31,7 +31,7 @@ const ContentContainer = styled("div")({
     width: "100%",
     display: "grid",
     gridTemplateColumns: "166px auto",
-    borderBottom: "1px solid var(--mdc-theme-background)"
+    borderBottom: "1px solid var(--mdc-theme-background)",
 });
 
 const Content = styled("div")({
@@ -43,21 +43,30 @@ const Content = styled("div")({
 const FooterContainer = styled("div")({
     display: "flex",
     flexDirection: "row",
-    padding: "10px"
+    padding: "10px",
+    flexWrap: 'wrap',
+    justifyContent: 'center'
 });
 
-const LeftContainer = styled('div')({
-    display: 'flex',
-    flexWrap: 'nowrap',
-    flex: '0 0 60%',
-    alignItems: 'center'
+const LeftContainer = styled("div")({
+    display: "flex",
+    flexWrap: "nowrap",
+    flexBasis: "50%",
+    alignItems: "center",
+    flexShrink: 0,
+    flexGrow: 1,
+    justifyContent: 'space-around',
+
 });
 
-const RightContainer = styled('div')({
-    display: 'flex',
-    flexWrap: 'nowrap',
-    flex: '0 0 40%',
-    '>div':{
+const RightContainer = styled("div")({
+    display: "flex",
+    flexWrap: "nowrap",
+    flexBasis: "50%",
+    flexShrink: 0,
+    flexGrow: 1,
+    justifyContent: 'space-around',
+    ">div": {
         minWidth: "100px"
     }
 });

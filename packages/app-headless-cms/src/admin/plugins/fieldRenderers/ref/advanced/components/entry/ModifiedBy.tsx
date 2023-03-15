@@ -15,7 +15,7 @@ interface Props {
 export const ModifiedBy: React.VFC<Props> = ({ modifiedBy, savedOn }) => {
     const showInformation = !!(modifiedBy?.displayName && savedOn);
 
-    if(!showInformation){
+    if (!showInformation) {
         return null;
     }
 
@@ -23,7 +23,8 @@ export const ModifiedBy: React.VFC<Props> = ({ modifiedBy, savedOn }) => {
         <Box icon={null} name={"Modified By"}>
             {showInformation && (
                 <>
-                    {modifiedBy?.displayName} <br/><TimeAgo datetime={savedOn} />
+                    {modifiedBy?.displayName} <br />
+                    <TimeAgo datetime={savedOn} />
                 </>
             )}
         </Box>

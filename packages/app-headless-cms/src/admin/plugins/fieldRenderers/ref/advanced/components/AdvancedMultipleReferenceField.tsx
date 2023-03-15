@@ -20,24 +20,52 @@ import { NewReferencedEntryDialog } from "../components/NewReferencedEntryDialog
 import { parseIdentifier } from "@webiny/utils";
 import { Entries } from "./Entries";
 
-const Container = styled("div")({
-    borderLeft: "3px solid var(--mdc-theme-background)",
-    paddingLeft: "10px",
-    width: "100%",
-    boxSizing: "border-box",
-    minHeight: "100px",
-    position: "relative"
-});
-
 const FieldLabel = styled("h3")({
     fontSize: 24,
     fontWeight: "normal",
     borderBottom: "1px solid var(--mdc-theme-background)",
     marginBottom: "20px",
     paddingBottom: "5px",
-    " span": {
-        color: "var(--mdc-theme-text-secondary-on-background)"
+    display: 'flex',
+    justifyContent: 'space-between'
+});
+
+const OptionsContainer: any= styled('div')({
+    borderTop: "1px solid var(--mdc-theme-on-background)",
+    borderRight: "1px solid var(--mdc-theme-surface)",
+    backgroundColor: "var(--mdc-theme-surface)",
+    marginLeft: '-21px',
+    marginBottom: '-21px',
+    marginRight: '-1px'
+})
+
+const Container = styled("div")({
+    border: "1px solid var(--mdc-theme-on-background)",
+    paddingLeft: "10px",
+    width: "100%",
+    boxSizing: "border-box",
+    position: "relative",
+    padding: '20px 0 20px 20px',
+    backgroundColor: "var(--mdc-theme-background)",
+    '&.no-entries':{
+        backgroundColor: "var(--mdc-theme-surface)",
+        border: 'none',
+        borderLeft: "3px solid var(--mdc-theme-background)",
+        padding: 0,
+        paddingLeft: 10,
+        [OptionsContainer]:{
+            border: 'none',
+            margin: 0
+        }
     }
+});
+
+const FieldName = styled('span')({});
+const RecordCount = styled('span')({
+    color: "var(--mdc-theme-text-secondary-on-background)",
+    fontSize: '0.6em',
+    lineHeight: '100%',
+    alignSelf: 'center'
 });
 
 interface Props extends CmsEditorFieldRendererProps {
@@ -212,12 +240,21 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const loading = loadingEntries || loadingModels;
 
+    let message = 'no records selected';
+    if(values.length>0){
+        message = "1 record selected";
+        if(values.length>1){
+            message = values.length+" records selected";
+        }
+    }
+
     return (
         <>
             <FieldLabel>
-                {field.label} <span>({values.length} Records Selected)</span>
+                <FieldName>{field.label}</FieldName> 
+                <RecordCount>({message})</RecordCount>
             </FieldLabel>
-            <Container>
+            <Container className={(entries.length<1 ? 'no-entries' : 'has-entries')}>
                 {loading && <Loader />}
                 <Entries entries={entries} loadMore={loadMore}>
                     {(entry, index) => {
@@ -235,30 +272,33 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                         );
                     }}
                 </Entries>
-                <Options
-                    models={models}
-                    onNewRecord={onNewRecord}
-                    onLinkExistingRecord={onExistingRecord}
-                />
 
-                {newEntryDialogModel && (
-                    <NewReferencedEntryDialog
-                        model={newEntryDialogModel}
-                        onClose={onNewEntryDialogClose}
-                        onChange={onNewEntryCreate}
+                <OptionsContainer>
+                    <Options
+                        models={models}
+                        onNewRecord={onNewRecord}
+                        onLinkExistingRecord={onExistingRecord}
                     />
-                )}
 
-                {linkEntryDialogModel && (
-                    <ReferencesDialog
-                        {...props}
-                        multiple={true}
-                        values={values}
-                        contentModel={linkEntryDialogModel}
-                        storeValues={storeValues}
-                        onDialogClose={onLinkEntryDialogClose}
-                    />
-                )}
+                    {newEntryDialogModel && (
+                        <NewReferencedEntryDialog
+                            model={newEntryDialogModel}
+                            onClose={onNewEntryDialogClose}
+                            onChange={onNewEntryCreate}
+                        />
+                    )}
+
+                    {linkEntryDialogModel && (
+                        <ReferencesDialog
+                            {...props}
+                            multiple={true}
+                            values={values}
+                            contentModel={linkEntryDialogModel}
+                            storeValues={storeValues}
+                            onDialogClose={onLinkEntryDialogClose}
+                        />
+                    )}
+                </OptionsContainer>
             </Container>
         </>
     );
