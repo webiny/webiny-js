@@ -14,13 +14,18 @@ const createGroupData = () => {
 
 const createModelData = (
     group: CmsGroup
-): Pick<CmsModel, "name" | "modelId" | "fields" | "layout" | "titleFieldId"> & {
+): Pick<
+    CmsModel,
+    "name" | "modelId" | "fields" | "layout" | "titleFieldId" | "singularApiName" | "pluralApiName"
+> & {
     group: string;
 } => {
     return {
         name: "Product",
         group: group.id,
         modelId: "product",
+        singularApiName: "Product",
+        pluralApiName: "Products",
         fields: [
             {
                 id: "name",
