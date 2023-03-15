@@ -26,18 +26,18 @@ const FieldLabel = styled("h3")({
     borderBottom: "1px solid var(--mdc-theme-background)",
     marginBottom: "20px",
     paddingBottom: "5px",
-    display: 'flex',
-    justifyContent: 'space-between'
+    display: "flex",
+    justifyContent: "space-between"
 });
 
-const OptionsContainer: any= styled('div')({
+const OptionsContainer: any = styled("div")({
     borderTop: "1px solid var(--mdc-theme-on-background)",
     borderRight: "1px solid var(--mdc-theme-surface)",
     backgroundColor: "var(--mdc-theme-surface)",
-    marginLeft: '-21px',
-    marginBottom: '-21px',
-    marginRight: '-1px'
-})
+    marginLeft: "-21px",
+    marginBottom: "-21px",
+    marginRight: "-1px"
+});
 
 const Container = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
@@ -45,27 +45,33 @@ const Container = styled("div")({
     width: "100%",
     boxSizing: "border-box",
     position: "relative",
-    padding: '20px 0 20px 20px',
+    padding: "20px 0 20px 20px",
     backgroundColor: "var(--mdc-theme-background)",
-    '&.no-entries':{
+    "&.no-entries": {
         backgroundColor: "var(--mdc-theme-surface)",
-        border: 'none',
+        border: "none",
         borderLeft: "3px solid var(--mdc-theme-background)",
         padding: 0,
         paddingLeft: 10,
-        [OptionsContainer]:{
-            border: 'none',
+        [OptionsContainer]: {
+            border: "none",
             margin: 0
+        }
+    },
+    '&.single-entry':{
+        height: 295,
+        '>div':{
+            height: 270,
         }
     }
 });
 
-const FieldName = styled('span')({});
-const RecordCount = styled('span')({
+const FieldName = styled("span")({});
+const RecordCount = styled("span")({
     color: "var(--mdc-theme-text-secondary-on-background)",
-    fontSize: '0.6em',
-    lineHeight: '100%',
-    alignSelf: 'center'
+    fontSize: "0.6em",
+    lineHeight: "100%",
+    alignSelf: "center"
 });
 
 interface Props extends CmsEditorFieldRendererProps {
@@ -240,21 +246,21 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const loading = loadingEntries || loadingModels;
 
-    let message = 'no records selected';
-    if(values.length>0){
+    let message = "no records selected";
+    if (values.length > 0) {
         message = "1 record selected";
-        if(values.length>1){
-            message = values.length+" records selected";
+        if (values.length > 1) {
+            message = values.length + " records selected";
         }
     }
 
     return (
         <>
             <FieldLabel>
-                <FieldName>{field.label}</FieldName> 
+                <FieldName>{field.label}</FieldName>
                 <RecordCount>({message})</RecordCount>
             </FieldLabel>
-            <Container className={(entries.length<1 ? 'no-entries' : 'has-entries')}>
+            <Container className={(entries.length < 1 ? "no-entries" : "has-entries")+(entries.length == 1 ? " single-entry" : "")}>
                 {loading && <Loader />}
                 <Entries entries={entries} loadMore={loadMore}>
                     {(entry, index) => {

@@ -31,7 +31,7 @@ const ContentContainer = styled("div")({
     width: "100%",
     display: "grid",
     gridTemplateColumns: "166px auto",
-    borderBottom: "1px solid var(--mdc-theme-background)",
+    borderBottom: "1px solid var(--mdc-theme-background)"
 });
 
 const Content = styled("div")({
@@ -44,8 +44,8 @@ const FooterContainer = styled("div")({
     display: "flex",
     flexDirection: "row",
     padding: "10px",
-    flexWrap: 'wrap',
-    justifyContent: 'center'
+    flexWrap: "wrap",
+    justifyContent: "center"
 });
 
 const LeftContainer = styled("div")({
@@ -55,8 +55,7 @@ const LeftContainer = styled("div")({
     alignItems: "center",
     flexShrink: 0,
     flexGrow: 1,
-    justifyContent: 'space-around',
-
+    justifyContent: "space-around"
 });
 
 const RightContainer = styled("div")({
@@ -65,7 +64,7 @@ const RightContainer = styled("div")({
     flexBasis: "50%",
     flexShrink: 0,
     flexGrow: 1,
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
     ">div": {
         minWidth: "100px"
     }
