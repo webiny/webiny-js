@@ -8,8 +8,8 @@ import classNames from "classnames";
 import { css, keyframes } from "emotion";
 import { Ripple } from "@webiny/ui/Ripple";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
-import { ReactComponent as SettingsIcon } from "../../assets/icons/round-settings-24px.svg";
+import { ReactComponent as Checked } from "@material-design-icons/svg/outlined/check_box.svg";
+import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
 import { FileItem } from "~/components/FileManager/types";
 
 const COMPONENT_WIDTH = 200;
@@ -103,7 +103,6 @@ const styles = css({
 export interface FileProps {
     file: FileItem;
     selected: boolean;
-    uploadFile: (item: FileItem | FileItem[]) => Promise<number | null>;
     onSelect: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
     options?: Array<{ label: string; onClick: (file: Object) => void }>;

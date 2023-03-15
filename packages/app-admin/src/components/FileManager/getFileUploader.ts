@@ -1,7 +1,7 @@
 import { plugins } from "@webiny/plugins";
 import { AppFileManagerStoragePlugin } from "@webiny/app/types";
 
-export default (): AppFileManagerStoragePlugin["upload"] => {
+export const getFileUploader = (): AppFileManagerStoragePlugin["upload"] => {
     const fileStoragePlugin = plugins.byName<AppFileManagerStoragePlugin>(
         "app-file-manager-storage"
     );

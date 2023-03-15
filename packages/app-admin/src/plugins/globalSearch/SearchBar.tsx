@@ -17,7 +17,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import SearchBarDropdown from "./SearchBarDropdown";
 
 // Icons
-import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
+import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 
 // Local components
 import {

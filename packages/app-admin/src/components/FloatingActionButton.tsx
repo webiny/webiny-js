@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { ReactComponent as AddIcon } from "../assets/icons/round-add-24px.svg";
+import { ReactComponent as AddIcon } from "@material-design-icons/svg/outlined/add.svg";
 
 // Set "styles" inline, since no customizations are possible / needed here.
 const FloatingActionButton: React.FC = props => {

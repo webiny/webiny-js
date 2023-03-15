@@ -1,29 +1,23 @@
 import React, { useMemo } from "react";
-import { cloneDeep } from "lodash";
 import { Input } from "@webiny/ui/Input";
 import { Form, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { useSnackbar } from "~/hooks/useSnackbar";
-import { LIST_FILES, ListFilesQueryResponse } from "./../graphql";
 import { useFileManager } from "./../FileManagerContext";
 import { FileItem } from "../types";
-import { useUpdateFile } from "./useUpdateFile";
 
 interface NameProps {
     file: FileItem;
-    canEdit: (file: FileItem) => boolean;
 }
 
 interface NameFormData {
     name: string;
 }
 
-const Name: React.FC<NameProps> = ({ file, canEdit }) => {
+const Name: React.FC<NameProps> = ({ file }) => {
     const name = file.name || "";
     const { showSnackbar } = useSnackbar();
-    const { updateFile } = useUpdateFile(file);
-
-    const { queryParams } = useFileManager();
+    const { updateFile, canEdit } = useFileManager();
 
     const onSubmit: FormOnSubmit<NameFormData> = async ({ name }) => {
         // Bail out if name is same as the current file name.
@@ -31,28 +25,7 @@ const Name: React.FC<NameProps> = ({ file, canEdit }) => {
             return;
         }
 
-        await updateFile({ name }, cache => {
-            const data = cloneDeep(
-                cache.readQuery<ListFilesQueryResponse>({
-                    query: LIST_FILES,
-                    variables: queryParams
-                })
-            );
-
-            if (data) {
-                data.fileManager.listFiles.data.forEach(item => {
-                    if (item.src === file.src) {
-                        item.name = name;
-                    }
-                });
-            }
-
-            cache.writeQuery({
-                query: LIST_FILES,
-                variables: queryParams,
-                data: data
-            });
-        });
+        await updateFile(file.id, { name });
 
         showSnackbar("Name successfully updated.");
     };

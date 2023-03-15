@@ -1,17 +1,3 @@
-interface FileItem {
-    id: string;
-    name: string;
-    key: string;
-    src: string;
-    size: number;
-    type: string;
-    tags: string[];
-    createdOn: string;
-    createdBy: {
-        id: string;
-    };
-    [key: string]: any;
-}
 declare module "react-butterfiles" {
     export type SelectedFile = {
         id: string;
@@ -19,7 +5,11 @@ declare module "react-butterfiles" {
         type: string;
         size: number;
         src: {
-            file?: FileItem;
+            /**
+             * Native browser File
+             * @see https://developer.mozilla.org/en-US/docs/Web/API/File
+             */
+            file?: File;
             base64?: string;
         };
     };

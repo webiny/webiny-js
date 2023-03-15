@@ -2,8 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 import { Icon } from "@webiny/ui/Icon";
-
-import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
+import { ReactComponent as UploadIcon } from "@material-design-icons/svg/outlined/cloud_upload.svg";
 
 const styles = css({
     margin: "0 auto",

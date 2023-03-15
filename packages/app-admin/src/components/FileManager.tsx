@@ -181,6 +181,8 @@ export const FileManager: React.FC<FileManagerProps> = ({
         setShow(true);
     }, []);
 
+    // TODO: move Provider outside of the renderer
+
     return (
         <>
             {show &&

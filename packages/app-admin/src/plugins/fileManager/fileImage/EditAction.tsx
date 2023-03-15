@@ -1,12 +1,6 @@
 import * as React from "react";
-/**
- * Package react-hotkeyz has no types.
- */
 // @ts-ignore
 import { Hotkeys } from "react-hotkeyz";
-/**
- * Package dataurl-to-blob has no types.
- */
 // @ts-ignore
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
@@ -14,8 +8,9 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { outputFileSelectionError } from "~/components/FileManager/outputFileSelectionError";
 import { useSnackbar } from "~/hooks/useSnackbar";
-import { ReactComponent as EditIcon } from "../icons/edit.svg";
+import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { FileItem } from "~/components/FileManager/types";
+import { useFileManager } from "~/components/FileManager/FileManagerContext";
 
 function toDataUrl(url: string): Promise<string> {
     return new Promise((resolve: (value: string) => void) => {
@@ -63,13 +58,12 @@ const reducer = (state: State, action: Action): State => {
 
 interface EditActionProps {
     file: FileItem;
-    uploadFile: (file: FileItem) => void;
     validateFiles: (blobs: any[]) => Error[];
-    canEdit: (file: FileItem) => boolean;
 }
 
 const EditAction: React.FC<EditActionProps> = props => {
-    const { file, uploadFile, validateFiles, canEdit } = props;
+    const { file, validateFiles } = props;
+    const { uploadFile, canEdit } = useFileManager();
     const [state, dispatch] = React.useReducer(reducer, initialState);
     const { showSnackbar } = useSnackbar();
     // Render nothing if the user don't have required permission for "edit".

@@ -5,10 +5,11 @@ import sortBy from "lodash/sortBy";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as TagIcon } from "./icons/round-label-24px.svg";
+import { ReactComponent as TagIcon } from "@material-design-icons/svg/outlined/label.svg";
 import { LIST_TAGS } from "./graphql";
 import { getWhere } from "./FileManagerContext";
 import { formatTagAsLabel } from "./FileDetails/Tags";
+import { StateQueryParams } from "~/components/FileManager/FileManagerContext/stateReducer";
 
 const style = {
     leftDrawer: css({
@@ -55,10 +56,7 @@ const Tag = styled("div")({
 
 interface LeftSidebarProps {
     toggleTag: (item: string) => void;
-    queryParams: {
-        tags: string[];
-        scope: string;
-    };
+    queryParams: StateQueryParams;
 }
 const LeftSidebar: React.FC<LeftSidebarProps> = props => {
     const {
