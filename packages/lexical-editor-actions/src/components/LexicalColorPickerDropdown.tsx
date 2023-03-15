@@ -4,19 +4,18 @@ import { LexicalColorPicker } from "~/components/LexicalColorPicker/LexicalColor
 
 import { css } from "emotion";
 const selectedColor = css({
-    '.icon.font-color':{
-        borderBottom: '3px solid var(--selected-color)'
+    ".icon.font-color": {
+        borderBottom: "3px solid var(--selected-color)"
     }
 });
-
 
 export const LexicalColorPickerDropdown = () => {
     const { value, applyColor } = useFontColorPicker();
 
     return (
         <DropDown
-            buttonClassName={"toolbar-item color-picker "+selectedColor}
-            style={{'--selected-color': value} as React.CSSProperties}
+            buttonClassName={"toolbar-item color-picker " + selectedColor}
+            style={{ "--selected-color": value } as React.CSSProperties}
             buttonAriaLabel={"Formatting options for font size"}
             buttonIconClassName="icon font-color"
             stopCloseOnClickSelf={true}
