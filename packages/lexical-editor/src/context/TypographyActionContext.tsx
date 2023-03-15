@@ -1,13 +1,5 @@
 import React from "react";
-
-export type TypographyValue = {
-    // CSSObject type
-    styleObject: Record<string, any>;
-    // variable name defined in the theme
-    themeTypographyName: string;
-    // Show on UI
-    displayName: string;
-};
+import { TypographyValue } from "~/types";
 
 export interface TypographyActionContextProps {
     /*

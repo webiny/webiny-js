@@ -1,18 +1,18 @@
 import React from "react";
-import { DropDown, DropDownItem, useTypographyAction } from "@webiny/lexical-editor";
+import {
+    DropDown,
+    DropDownItem,
+    getTypographyMetaByName,
+    useTypographyAction
+} from "@webiny/lexical-editor";
 import { usePageElements } from "@webiny/app-page-builder-elements";
-import { TypographyValue } from "@webiny/lexical-editor/types";
+import { TypographyHTMLTag } from "@webiny/lexical-editor/types";
 
-const TYPOGRAPHY_DISPLAY_NAMES: Record<string, string> = {
-    normal: "Normal",
-    heading1: "Heading 1",
-    heading2: "Heading 2",
-    heading3: "Heading 3",
-    heading4: "Heading 4",
-    heading5: "Heading 5",
-    heading6: "Heading 6",
-    paragraph1: "Paragraph 1",
-    paragraph2: "Paragraph 2"
+type TypographyDropDownItem = {
+    styleObject: Record<string, any>;
+    themeTypographyName: string;
+    htmlTag: TypographyHTMLTag;
+    displayName: string;
 };
 
 export const TypographyDropDown = () => {
@@ -20,27 +20,23 @@ export const TypographyDropDown = () => {
     const { theme } = usePageElements();
     const typographyStyles = theme.styles?.typography;
 
-    const getTypographyDisplayName = (themeTypographyName: string): string => {
-        const name = TYPOGRAPHY_DISPLAY_NAMES[themeTypographyName];
-        return name ? name : themeTypographyName;
-    };
-
     const hasTypographyStyles = (): boolean => {
         return !!typographyStyles;
     };
 
-    const typographyList = (): TypographyValue[] => {
-        const list: TypographyValue[] = [];
+    const typographyList = (): TypographyDropDownItem[] => {
+        const list: TypographyDropDownItem[] = [];
         for (const key in typographyStyles) {
             const styleObject = typographyStyles[key];
+            const metadata = getTypographyMetaByName(key);
             // filter only headings and paragraphs
             if (key.includes("heading") || key.includes("paragraph")) {
-                const typographyValue = {
+                list.push({
                     styleObject,
                     themeTypographyName: key,
-                    displayName: getTypographyDisplayName(key)
-                };
-                list.push(typographyValue);
+                    htmlTag: metadata.htmlTag,
+                    displayName: metadata.displayName
+                });
             }
         }
         return list;
@@ -52,7 +48,9 @@ export const TypographyDropDown = () => {
                 <DropDown
                     buttonClassName="toolbar-item typography-dropdown"
                     buttonAriaLabel={"Formatting options for font size"}
-                    buttonLabel={value?.displayName || "Normal"}
+                    buttonLabel={
+                        getTypographyMetaByName(value?.themeTypographyName || "normal").displayName
+                    }
                     stopCloseOnClickSelf={true}
                     disabled={false}
                     showScroll={false}
@@ -64,7 +62,13 @@ export const TypographyDropDown = () => {
                                     ? "active dropdown-item-active"
                                     : ""
                             }`}
-                            onClick={() => applyTypography(option)}
+                            onClick={() =>
+                                applyTypography({
+                                    styleObject: option.styleObject,
+                                    themeTypographyName: option.themeTypographyName,
+                                    htmlTag: option.htmlTag
+                                })
+                            }
                             key={option.themeTypographyName}
                         >
                             <span className="text">{option.displayName}</span>

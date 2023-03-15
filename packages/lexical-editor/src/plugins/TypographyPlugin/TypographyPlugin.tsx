@@ -1,45 +1,24 @@
 import React, { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
 import {
-    $createParagraphNode,
-    $getSelection,
-    $insertNodes,
-    $isRangeSelection,
-    $isRootOrShadowRoot,
-    COMMAND_PRIORITY_EDITOR
-} from "lexical";
-import { $wrapNodeInElement } from "@lexical/utils";
-import {
-    $applyStylesToNode,
     $createTypographyNode,
-    ADD_TYPOGRAPHY_COMMAND,
+    ADD_TYPOGRAPHY_ELEMENT_COMMAND,
     TypographyPayload
-} from "~/nodes/TypographyNode";
+} from "~/nodes/TypographyElementNode";
+import { $wrapNodes } from "@lexical/selection";
 
 export const TypographyPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
         return editor.registerCommand<TypographyPayload>(
-            ADD_TYPOGRAPHY_COMMAND,
+            ADD_TYPOGRAPHY_ELEMENT_COMMAND,
             payload => {
-                editor.update(() => {
-                    const { value } = payload;
-                    const selection = $getSelection();
-
-                    if ($isRangeSelection(selection)) {
-                        const typographyNode = $createTypographyNode(
-                            selection.getTextContent(),
-                            value.styleObject,
-                            value.themeTypographyName
-                        );
-                        $applyStylesToNode(typographyNode, selection);
-                        $insertNodes([typographyNode]);
-                        if ($isRootOrShadowRoot(typographyNode.getParentOrThrow())) {
-                            $wrapNodeInElement(typographyNode, $createParagraphNode).selectEnd();
-                        }
-                    }
-                });
+                const selection = $getSelection();
+                if ($isRangeSelection(selection)) {
+                    $wrapNodes(selection, () => $createTypographyNode(payload.value));
+                }
                 return true;
             },
             COMMAND_PRIORITY_EDITOR

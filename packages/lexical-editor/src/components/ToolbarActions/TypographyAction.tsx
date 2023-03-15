@@ -1,14 +1,29 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, LexicalCommand } from "lexical";
-import { Compose, makeComposable } from "@webiny/react-composition";
-import { getSelectedNode } from "~/utils/getSelectedNode";
-import { TypographyActionContext, TypographyValue } from "~/context/TypographyActionContext";
 import {
-    $isTypographyNode,
-    ADD_TYPOGRAPHY_COMMAND,
+    $getSelection,
+    $isNodeSelection,
+    $isRangeSelection,
+    $isRootOrShadowRoot,
+    COMMAND_PRIORITY_CRITICAL,
+    LexicalCommand,
+    SELECTION_CHANGE_COMMAND
+} from "lexical";
+import { Compose, makeComposable } from "@webiny/react-composition";
+import { TypographyActionContext } from "~/context/TypographyActionContext";
+
+import { TypographyValue } from "~/types";
+import {
+    $isTypographyElementNode,
+    ADD_TYPOGRAPHY_ELEMENT_COMMAND,
+    TypographyElementNode,
     TypographyPayload
-} from "~/nodes/TypographyNode";
+} from "~/nodes/TypographyElementNode";
+import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
+import { getSelectedNode } from "~/utils/getSelectedNode";
+import { ListNode } from "@lexical/list";
+import { useLexicalEditor } from "@lexical/react/DEPRECATED_useLexicalEditor";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -40,6 +55,7 @@ export interface TypographyAction extends React.FC<unknown> {
 
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();
+    const [activeEditor, setActiveEditor] = useState(editor);
     const [typography, setTypography] = useState<TypographyValue>();
 
     const setTypographySelect = useCallback(
@@ -50,34 +66,61 @@ export const TypographyAction: TypographyAction = () => {
     );
 
     const onTypographySelect = useCallback((value: TypographyValue) => {
-        console.log("Value", value);
         setTypographySelect(value);
-        editor.dispatchCommand<LexicalCommand<TypographyPayload>>(ADD_TYPOGRAPHY_COMMAND, {
+        editor.dispatchCommand<LexicalCommand<TypographyPayload>>(ADD_TYPOGRAPHY_ELEMENT_COMMAND, {
             value
         });
     }, []);
 
-    /*const updatePopup = useCallback(() => {
-        editor.getEditorState().read(() => {
-            const selection = $getSelection();
-            if (!$isRangeSelection(selection)) {
-                return;
+    const updateToolbar = useCallback(() => {
+        const selection = $getSelection();
+
+        if ($isRangeSelection(selection)) {
+            const anchorNode = selection.anchor.getNode();
+            let element =
+                anchorNode.getKey() === "root"
+                    ? anchorNode
+                    : $findMatchingParent(anchorNode, e => {
+                          const parent = e.getParent();
+                          return parent !== null && $isRootOrShadowRoot(parent);
+                      });
+
+            if (element === null) {
+                element = anchorNode.getTopLevelElementOrThrow();
             }
+
+            // Update links
             const node = getSelectedNode(selection);
-            if ($isTypographyNode(node)) {
-                // const colorStyle = node.getColorStyle();
-               // setFontColor(colorStyle.color);
-                console.log("$isTypographyNode", node.getTypographyValue())
+            const parent = node.getParent();
+
+            if ($isTypographyElementNode(parent)) {
+                const el = element as TypographyElementNode;
+                setTypography(el.getTypographyValue());
             }
-        });
-    }, [editor]);
+        }
+    }, [activeEditor]);
 
     useEffect(() => {
-        document.addEventListener("selectionchange", updatePopup);
-        return () => {
-            document.removeEventListener("selectionchange", updatePopup);
-        };
-    }, [updatePopup])*/
+        return mergeRegister(
+            activeEditor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
+                    updateToolbar();
+                });
+            })
+        );
+    }, [activeEditor, editor, updateToolbar]);
+
+    useEffect(() => {
+        return editor.registerCommand(
+            SELECTION_CHANGE_COMMAND,
+            (_payload, newEditor) => {
+                updateToolbar();
+                setActiveEditor(newEditor);
+                return false;
+            },
+            COMMAND_PRIORITY_CRITICAL
+        );
+    }, [editor, updateToolbar]);
 
     return (
         <TypographyActionContext.Provider
