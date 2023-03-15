@@ -1,5 +1,6 @@
+import WebinyError from "@webiny/error";
 import {
-    CmsModel,
+    CmsApiModel,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,
@@ -8,7 +9,6 @@ import {
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
-import WebinyError from "@webiny/error";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
@@ -127,7 +127,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const item = await getRecord<CmsModel>({
+            const item = await getRecord<CmsApiModel>({
                 entity,
                 keys
             });
@@ -154,7 +154,7 @@ export const createModelsStorageOperations = (
             }
         };
         try {
-            const items = await queryAll<CmsModel>(queryAllParams);
+            const items = await queryAll<CmsApiModel>(queryAllParams);
 
             return cleanupItems(entity, items);
         } catch (ex) {
