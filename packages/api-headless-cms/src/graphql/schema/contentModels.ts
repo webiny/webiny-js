@@ -159,6 +159,8 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
 
             input CmsContentModelCreateInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
                 description: String
@@ -170,6 +172,8 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
 
             input CmsContentModelCreateFromInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
                 description: String
@@ -178,6 +182,8 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
 
             input CmsContentModelUpdateInput {
                 name: String
+                singularApiName: String
+                pluralApiName: String
                 group: RefInput
                 description: String
                 layout: [[ID!]!]!
@@ -256,6 +262,8 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
 
             type CmsContentModel {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String!
                 description: String
                 group: CmsContentModelGroup!

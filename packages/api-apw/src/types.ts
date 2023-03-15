@@ -94,6 +94,7 @@ export interface PageSettingsWithWorkflow extends PageSettings {
         contentReviewId: string | null;
     };
 }
+
 export interface PageWithWorkflow extends Page {
     settings: PageSettingsWithWorkflow;
 }
@@ -157,6 +158,7 @@ export interface ApwReviewer extends ApwBaseFields {
     type: string;
     email?: string;
 }
+
 export interface ApwReviewerWithEmail extends Omit<ApwReviewer, "email"> {
     email: string;
 }
@@ -208,6 +210,7 @@ interface ApwWorkflowScopeCmsEntry {
     id: string;
     modelId: string;
 }
+
 export interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
@@ -957,7 +960,7 @@ export interface OnWorkflowAfterDeleteTopicParams {
 export type WorkflowModelDefinition = Pick<
     CmsModel,
     "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
->;
+> & { isPrivate: true };
 
 /**
  * Headless CMS
@@ -966,10 +969,12 @@ export interface OnCmsEntryBeforePublishTopicParams
     extends Omit<OnEntryBeforePublishTopicParams, "entry"> {
     entry: ApwCmsEntry;
 }
+
 export interface OnCmsEntryAfterPublishTopicParams
     extends Omit<OnEntryAfterPublishTopicParams, "entry"> {
     entry: ApwCmsEntry;
 }
+
 export interface OnCmsEntryAfterUnpublishTopicParams
     extends Omit<OnEntryAfterUnpublishTopicParams, "entry"> {
     entry: ApwCmsEntry;

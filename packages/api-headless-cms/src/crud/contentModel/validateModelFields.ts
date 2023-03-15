@@ -1,15 +1,15 @@
+import gql from "graphql-tag";
+import WebinyError from "@webiny/error";
 import {
-    CmsContext,
     CmsModel,
+    CmsContext,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelFieldToGraphQLPluginValidateChildFieldsValidate,
     CmsModelLockedFieldPlugin,
     LockedField
 } from "~/types";
-import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
-import gql from "graphql-tag";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
@@ -158,6 +158,7 @@ interface ValidateFieldsParams {
     originalFields: CmsModelField[];
     lockedFields: LockedField[];
 }
+
 const validateFields = (params: ValidateFieldsParams) => {
     const { plugins, fields, originalFields, lockedFields } = params;
 
@@ -271,15 +272,19 @@ const validateFields = (params: ValidateFieldsParams) => {
         });
     }
 };
+
 interface CreateGraphQLSchemaParams {
     context: CmsContext;
     model: CmsModel;
 }
+
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
     context.security.disableAuthorization();
-    const models = await context.cms.listModels();
+    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
+        return !model.isPrivate;
+    });
     context.security.enableAuthorization();
 
     const modelPlugins = await buildSchemaPlugins({
@@ -319,6 +324,7 @@ interface ValidateModelFieldsParams {
     original?: CmsModel;
     context: CmsContext;
 }
+
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
     const { model, original, context } = params;
     const { titleFieldId } = model;

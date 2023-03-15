@@ -13,6 +13,7 @@ import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
+
 export interface HeadlessCms
     extends CmsSettingsContext,
         CmsSystemContext,
@@ -48,6 +49,7 @@ export interface HeadlessCms
      */
     storageOperations: HeadlessCmsStorageOperations;
 }
+
 /**
  * @description This combines all contexts used in the CMS into a single one.
  *
@@ -99,6 +101,7 @@ interface CmsModelFieldRenderer {
      */
     name: string;
 }
+
 /**
  * A definition for content model field settings.
  *
@@ -132,6 +135,7 @@ export interface CmsModelFieldSettings {
      */
     [key: string]: any;
 }
+
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -264,6 +268,7 @@ export interface CmsModelDynamicZoneField extends CmsModelField {
 export interface CmsModelFieldWithParent extends CmsModelField {
     parent?: CmsModelFieldWithParent | null;
 }
+
 export interface CmsModelDynamicZoneFieldWithParent extends CmsModelDynamicZoneField {
     parent?: CmsModelDynamicZoneFieldWithParent | null;
 }
@@ -398,6 +403,7 @@ export interface LockedField {
     type: string;
     [key: string]: any;
 }
+
 /**
  * @category Database model
  * @category CmsModel
@@ -412,8 +418,9 @@ export interface CmsModelGroup {
      */
     name: string;
 }
+
 /**
- * Cms Model defining an entry.
+ * Base CMS Model. Should not be exported and used outside of this package.
  *
  * @category Database model
  * @category CmsModel
@@ -427,6 +434,24 @@ export interface CmsModel {
      * Unique ID for the content model. Created from name if not defined by user.
      */
     modelId: string;
+    /**
+     * Name of the content model in singular form to be used in the API.
+     * example:
+     * - Article
+     * - Fruit
+     * - Vegetable
+     * - Car
+     */
+    singularApiName: string;
+    /**
+     * Name of the content model in plural form to be used in the API.
+     * example:
+     * - Articles
+     * - Fruits
+     * - Vegetables
+     * - Cars
+     */
+    pluralApiName: string;
     /**
      * Model tenant.
      */
@@ -487,6 +512,7 @@ export interface CmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
+
     /**
      * Is model private?
      * This is meant to be used for some internal models - will not be visible in the schema.
@@ -520,6 +546,7 @@ interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     field: TField;
     createFieldResolvers: any;
 }
+
 export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
     (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
@@ -533,9 +560,11 @@ export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams<
     fields: TField[];
     originalFields: TField[];
 }
+
 export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidate {
     (params: CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams): void;
 }
+
 export interface CmsModelFieldToGraphQLPluginValidateChildFieldsParams<
     TField extends CmsModelField = CmsModelField
 > {
@@ -543,11 +572,13 @@ export interface CmsModelFieldToGraphQLPluginValidateChildFieldsParams<
     originalField?: TField;
     validate: CmsModelFieldToGraphQLPluginValidateChildFieldsValidate;
 }
+
 export interface CmsModelFieldToGraphQLPluginValidateChildFields<
     TField extends CmsModelField = CmsModelField
 > {
     (params: CmsModelFieldToGraphQLPluginValidateChildFieldsParams<TField>): void;
 }
+
 /**
  * @category Plugin
  * @category ModelField
@@ -1049,6 +1080,7 @@ export interface OnGroupBeforeCreateTopicParams {
 export interface OnGroupAfterCreateTopicParams {
     group: CmsGroup;
 }
+
 /**
  * @category CmsGroup
  * @category Topic
@@ -1076,6 +1108,7 @@ export interface OnGroupAfterUpdateTopicParams {
     original: CmsGroup;
     group: CmsGroup;
 }
+
 /**
  * @category CmsGroup
  * @category Topic
@@ -1102,6 +1135,7 @@ export interface OnGroupBeforeDeleteTopicParams {
 export interface OnGroupAfterDeleteTopicParams {
     group: CmsGroup;
 }
+
 /**
  * @category CmsGroup
  * @category Topic
@@ -1211,6 +1245,14 @@ export interface CmsModelCreateInput {
      * Name of the content model.
      */
     name: string;
+    /**
+     * Singular name of the content model to be used in the API.
+     */
+    singularApiName: string;
+    /**
+     * Plural name of the content model to be used in the API.
+     */
+    pluralApiName: string;
     /**
      * Unique ID of the content model. Created from name if not sent by the user. Cannot be changed.
      */
@@ -1339,6 +1381,14 @@ export interface CmsModelUpdateInput {
      */
     name?: string;
     /**
+     * A new singular name of the content model to be used in the API.
+     */
+    singularApiName?: string;
+    /**
+     * A new plural name of the content model to be used in the API.
+     */
+    pluralApiName?: string;
+    /**
      * A group we want to move the model to.
      */
     group?: string;
@@ -1393,6 +1443,7 @@ export interface ModelManagerPlugin extends Plugin {
      */
     create: (context: CmsContext, model: CmsModel) => Promise<CmsModelManager>;
 }
+
 /**
  * A content entry values definition for and from the database.
  *
@@ -1402,6 +1453,7 @@ export interface ModelManagerPlugin extends Plugin {
 export interface CmsEntryValues {
     [key: string]: any;
 }
+
 /**
  * A content entry definition for and from the database.
  *
@@ -1547,10 +1599,12 @@ export interface OnModelBeforeCreateTopicParams {
     input: CmsModelCreateInput;
     model: CmsModel;
 }
+
 export interface OnModelAfterCreateTopicParams {
     input: CmsModelCreateInput;
     model: CmsModel;
 }
+
 export interface OnModelCreateErrorTopicParams {
     input: CmsModelCreateInput;
     model: CmsModel;
@@ -1565,11 +1619,13 @@ export interface OnModelBeforeCreateFromTopicParams {
     original: CmsModel;
     model: CmsModel;
 }
+
 export interface OnModelAfterCreateFromTopicParams {
     input: CmsModelCreateInput;
     original: CmsModel;
     model: CmsModel;
 }
+
 export interface OnModelCreateFromErrorParams {
     input: CmsModelCreateInput;
     original: CmsModel;
@@ -1585,26 +1641,31 @@ export interface OnModelBeforeUpdateTopicParams {
     original: CmsModel;
     model: CmsModel;
 }
+
 export interface OnModelAfterUpdateTopicParams {
     input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
+
 export interface OnModelUpdateErrorTopicParams {
     input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
     error: Error;
 }
+
 /**
  * Delete
  */
 export interface OnModelBeforeDeleteTopicParams {
     model: CmsModel;
 }
+
 export interface OnModelAfterDeleteTopicParams {
     model: CmsModel;
 }
+
 export interface OnModelDeleteErrorTopicParams {
     model: CmsModel;
     error: Error;
@@ -1759,6 +1820,7 @@ export interface CmsEntryListWhereRef {
     entryId_in?: string[];
     entryId_not_in?: string[];
 }
+
 /**
  * Entry listing where params.
  *
@@ -1907,6 +1969,7 @@ export interface OnEntryBeforeCreateTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryAfterCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
@@ -1956,6 +2019,7 @@ export interface OnEntryBeforeUpdateTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryAfterUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
@@ -2037,6 +2101,7 @@ export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -2052,6 +2117,7 @@ export interface OnEntryRevisionBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
 }
+
 export interface OnEntryRevisionAfterDeleteTopicParams {
     entry: CmsEntry;
     model: StorageOperationsCmsModel;
@@ -2097,6 +2163,7 @@ export interface CreateFromCmsEntryInput {
 export interface UpdateCmsEntryInput {
     [key: string]: any;
 }
+
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -2333,6 +2400,7 @@ export interface BaseCmsSecurityPermission extends SecurityPermission {
     own?: boolean;
     rwd: string | number;
 }
+
 /**
  * A security permission for content model.
  *
@@ -2402,6 +2470,7 @@ export interface CmsGroupStorageOperationsListWhereParams {
     locale: string;
     [key: string]: any;
 }
+
 export interface CmsGroupStorageOperationsListParams {
     where: CmsGroupStorageOperationsListWhereParams;
     sort?: string[];
@@ -2635,6 +2704,7 @@ export interface CmsEntryStorageOperationsGetRevisionParams {
 export interface CmsEntryStorageOperationsGetPublishedRevisionParams {
     id: string;
 }
+
 export interface CmsEntryStorageOperationsGetLatestRevisionParams {
     id: string;
 }

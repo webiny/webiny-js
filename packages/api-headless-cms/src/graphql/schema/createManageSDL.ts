@@ -1,11 +1,9 @@
 import { CmsFieldTypePlugins, CmsModel } from "~/types";
-import { createManageTypeName, createTypeName } from "~/utils/createTypeName";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
-import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateManageSDLParams {
@@ -13,6 +11,7 @@ interface CreateManageSDLParams {
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }
+
 interface CreateManageSDL {
     (params: CreateManageSDLParams): string;
 }
@@ -22,9 +21,6 @@ export const createManageSDL: CreateManageSDL = ({
     fieldTypePlugins,
     sorterPlugins
 }): string => {
-    const typeName = createTypeName(model.modelId);
-    const mTypeName = createManageTypeName(typeName);
-
     const listFilterFieldsRender = renderListFilterFields({
         model,
         type: "manage",
@@ -42,40 +38,40 @@ export const createManageSDL: CreateManageSDL = ({
 
     return /* GraphQL */ `
         """${model.description || model.modelId}"""
-        type ${mTypeName} {
+        type ${model.singularApiName} {
             id: ID!
             entryId: String!
             createdOn: DateTime!
             savedOn: DateTime!
             createdBy: CmsCreatedBy!
             ownedBy: CmsOwnedBy!
-            meta: ${mTypeName}Meta
+            meta: ${model.singularApiName}Meta
             ${fields.map(f => f.fields).join("\n")}
         }
 
-        type ${mTypeName}Meta {
-            modelId: String
-            version: Int
-            locked: Boolean
-            publishedOn: DateTime
-            status: String
-            """
-            CAUTION: this field is resolved by making an extra query to DB.
-            RECOMMENDATION: Use it only with "get" queries (avoid in "list")
-            """
-            revisions: [${mTypeName}]
-            title: String
-            """
-            Custom meta data stored in the root of the entry object.
-            """
-            data: JSON
+        type ${model.singularApiName}Meta {
+        modelId: String
+        version: Int
+        locked: Boolean
+        publishedOn: DateTime
+        status: String
+        """
+        CAUTION: this field is resolved by making an extra query to DB.
+        RECOMMENDATION: Use it only with "get" queries (avoid in "list")
+        """
+        revisions: [${model.singularApiName}]
+        title: String
+        """
+        Custom meta data stored in the root of the entry object.
+        """
+        data: JSON
         }
 
         ${fields
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
-        
+
         ${inputFields
             .map(f => f.typeDefs)
             .filter(Boolean)
@@ -83,7 +79,7 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${
             inputFields &&
-            `input ${mTypeName}Input {
+            `input ${model.singularApiName}Input {
                 id: ID
             ${inputFields.map(f => f.fields).join("\n")}
         }`
@@ -91,7 +87,7 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${
             getFilterFieldsRender &&
-            `input ${mTypeName}GetWhereInput {
+            `input ${model.singularApiName}GetWhereInput {
             ${getFilterFieldsRender}
         }`
         }
@@ -99,65 +95,73 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${
             listFilterFieldsRender &&
-            `input ${mTypeName}ListWhereInput {
+            `input ${model.singularApiName}ListWhereInput {
                 ${listFilterFieldsRender}
-                AND: [${mTypeName}ListWhereInput!]
-                OR: [${mTypeName}ListWhereInput!]
+                AND: [${model.singularApiName}ListWhereInput!]
+                OR: [${model.singularApiName}ListWhereInput!]
         }`
         }
 
-        type ${mTypeName}Response {
-            data: ${mTypeName}
-            error: CmsError
-        }
-        
-        type ${mTypeName}ArrayResponse {
-            data: [${mTypeName}]
-            error: CmsError
+        type ${model.singularApiName}Response {
+        data: ${model.singularApiName}
+        error: CmsError
         }
 
-        type ${mTypeName}ListResponse {
-            data: [${mTypeName}]
-            meta: CmsListMeta
-            error: CmsError
+        type ${model.singularApiName}ArrayResponse {
+        data: [${model.singularApiName}]
+        error: CmsError
+        }
+
+        type ${model.singularApiName}ListResponse {
+        data: [${model.singularApiName}]
+        meta: CmsListMeta
+        error: CmsError
         }
 
         ${
             sortEnumRender &&
-            `enum ${mTypeName}ListSorter {
+            `enum ${model.singularApiName}ListSorter {
             ${sortEnumRender}
         }`
         }
 
         extend type Query {
-            get${typeName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${mTypeName}Response
-            
-            get${typeName}Revisions(id: ID!): ${mTypeName}ArrayResponse
-            
-            get${pluralizedTypeName(typeName)}ByIds(revisions: [ID!]!): ${mTypeName}ArrayResponse
+        get${model.singularApiName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${
+        model.singularApiName
+    }Response
 
-            list${pluralizedTypeName(typeName)}(
-                where: ${mTypeName}ListWhereInput
-                sort: [${mTypeName}ListSorter]
-                limit: Int
-                after: String
-            ): ${mTypeName}ListResponse
+        get${model.singularApiName}Revisions(id: ID!): ${model.singularApiName}ArrayResponse
+
+        get${model.pluralApiName}ByIds(revisions: [ID!]!): ${model.singularApiName}ArrayResponse
+
+        list${model.pluralApiName}(
+        where: ${model.singularApiName}ListWhereInput
+        sort: [${model.singularApiName}ListSorter]
+        limit: Int
+        after: String
+        ): ${model.singularApiName}ListResponse
         }
 
         extend type Mutation{
-            create${typeName}(data: ${mTypeName}Input!): ${mTypeName}Response
+        create${model.singularApiName}(data: ${model.singularApiName}Input!): ${
+        model.singularApiName
+    }Response
 
-            create${typeName}From(revision: ID!, data: ${mTypeName}Input): ${mTypeName}Response
+        create${model.singularApiName}From(revision: ID!, data: ${model.singularApiName}Input): ${
+        model.singularApiName
+    }Response
 
-            update${typeName}(revision: ID!, data: ${mTypeName}Input!): ${mTypeName}Response
+        update${model.singularApiName}(revision: ID!, data: ${model.singularApiName}Input!): ${
+        model.singularApiName
+    }Response
 
-            delete${typeName}(revision: ID!): CmsDeleteResponse
+        delete${model.singularApiName}(revision: ID!): CmsDeleteResponse
 
-            publish${typeName}(revision: ID!): ${mTypeName}Response
-        
-            republish${typeName}(revision: ID!): ${mTypeName}Response
+        publish${model.singularApiName}(revision: ID!): ${model.singularApiName}Response
 
-            unpublish${typeName}(revision: ID!): ${mTypeName}Response
+        republish${model.singularApiName}(revision: ID!): ${model.singularApiName}Response
+
+        unpublish${model.singularApiName}(revision: ID!): ${model.singularApiName}Response
         }
     `;
 };

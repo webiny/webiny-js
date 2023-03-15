@@ -12,6 +12,7 @@ interface GenerateSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
 }
+
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<CmsGraphQLSchemaPlugin[]> => {
@@ -39,16 +40,6 @@ export const generateSchemaPlugins = async (
         CmsGraphQLSchemaSorterPlugin.type
     );
 
-    // const schemas = getSchemaFromFieldPlugins({
-    //     models,
-    //     fieldTypePlugins,
-    //     type
-    // });
-
-    // const newPlugins: CmsGraphQLSchemaPlugin[] = [];
-    // for (const schema of schemas) {
-    //     newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
-    // }
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldTypePlugins,

@@ -47,6 +47,7 @@ import {
     createModelUpdateValidation
 } from "~/crud/contentModel/validation";
 import { createZodError } from "@webiny/utils";
+import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
@@ -134,7 +135,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     }
                     return true;
                 })
-                .map<CmsModel>(plugin => {
+                .map(plugin => {
                     return {
                         ...plugin.contentModel,
                         tags: ensureTypeTag(plugin.contentModel),
@@ -146,7 +147,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         );
     };
 
-    const modelsGet = async (modelId: string): Promise<CmsModel> => {
+    const modelsGet = async (modelId: string) => {
         const pluginModel = getModelsAsPlugins().find(model => model.modelId === modelId);
 
         if (pluginModel) {
@@ -327,7 +328,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             context.security.disableAuthorization();
             const group = await context.cms.getGroup(data.group);
@@ -341,6 +342,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 name: data.name,
                 description: data.description || "",
                 modelId: data.modelId || "",
+                singularApiName: data.singularApiName,
+                pluralApiName: data.pluralApiName,
                 titleFieldId: "id",
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -447,17 +450,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const original = await getModel(modelId);
 
             const result = await createModelCreateFromValidation().safeParseAsync({
-                name: userInput.name,
-                modelId: userInput.modelId,
-                description: userInput.description || original.description,
-                group: userInput.group,
-                locale: userInput.locale
+                ...userInput,
+                description: userInput.description || original.description
             });
             if (!result.success) {
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             const locale = await context.i18n.getLocale(data.locale || original.locale);
             if (!locale) {
@@ -478,6 +478,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const identity = getIdentity();
             const model: CmsModel = {
                 ...original,
+                singularApiName: data.singularApiName,
+                pluralApiName: data.pluralApiName,
                 locale: locale.code,
                 group: {
                     id: group.id,
@@ -540,7 +542,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             if (Object.keys(data).length === 0) {
                 /**

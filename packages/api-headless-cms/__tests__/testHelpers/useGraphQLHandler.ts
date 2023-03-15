@@ -12,10 +12,13 @@ import {
 import {
     CREATE_CONTENT_MODEL_FROM_MUTATION,
     CREATE_CONTENT_MODEL_MUTATION,
+    CreateContentModelMutationVariables,
     DELETE_CONTENT_MODEL_MUTATION,
     GET_CONTENT_MODEL_QUERY,
     LIST_CONTENT_MODELS_QUERY,
-    UPDATE_CONTENT_MODEL_MUTATION
+    UPDATE_CONTENT_MODEL_MUTATION,
+    CreateContentModelMutationResponse,
+    CreateContentModelFromMutationVariables
 } from "./graphql/contentModel";
 import { PluginsContainer } from "@webiny/plugins/types";
 
@@ -54,7 +57,12 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         }
     });
 
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
+    const invoke = async <T = any>({
+        httpMethod = "POST",
+        body,
+        headers = {},
+        ...rest
+    }: InvokeParams): Promise<[T, any]> => {
         const response = await handler(
             {
                 /**
@@ -118,10 +126,12 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         async listContentModelsQuery(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_CONTENT_MODELS_QUERY, variables } });
         },
-        async createContentModelMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_CONTENT_MODEL_MUTATION, variables } });
+        async createContentModelMutation(variables: CreateContentModelMutationVariables) {
+            return invoke<CreateContentModelMutationResponse>({
+                body: { query: CREATE_CONTENT_MODEL_MUTATION, variables }
+            });
         },
-        async createContentModelFromMutation(variables: Record<string, any>) {
+        async createContentModelFromMutation(variables: CreateContentModelFromMutationVariables) {
             return invoke({ body: { query: CREATE_CONTENT_MODEL_FROM_MUTATION, variables } });
         },
         async updateContentModelMutation(variables: Record<string, any>) {

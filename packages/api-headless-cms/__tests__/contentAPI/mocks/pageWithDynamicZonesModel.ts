@@ -17,6 +17,8 @@ export const pageModel: CmsModel = {
     },
     description: "Page",
     modelId: "page",
+    singularApiName: "Page",
+    pluralApiName: "Pages",
     savedOn: "2022-12-19T19:10:02.731Z",
     titleFieldId: "id",
     lockedFields: [],

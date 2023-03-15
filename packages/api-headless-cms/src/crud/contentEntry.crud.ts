@@ -8,7 +8,6 @@ import {
     CmsEntryContext,
     CmsEntryPermission,
     CmsEntry,
-    CmsModel,
     CmsContext,
     CmsStorageEntry,
     HeadlessCmsStorageOperations,
@@ -45,7 +44,8 @@ import {
     OnEntryRevisionDeleteErrorTopicParams,
     OnEntryBeforeRepublishTopicParams,
     OnEntryAfterRepublishTopicParams,
-    OnEntryRepublishErrorTopicParams
+    OnEntryRepublishErrorTopicParams,
+    CmsModel
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";

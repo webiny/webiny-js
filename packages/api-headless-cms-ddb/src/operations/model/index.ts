@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import {
     CmsModel,
     CmsModelStorageOperations,
@@ -8,7 +9,6 @@ import {
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
-import WebinyError from "@webiny/error";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";

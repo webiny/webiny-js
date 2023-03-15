@@ -43,7 +43,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     test("Dynamic Zone SDL", async () => {
         const sdl = createManageSDL({
-            model: pageModel as any,
+            model: pageModel as CmsModel,
             fieldTypePlugins,
             sorterPlugins: []
         });

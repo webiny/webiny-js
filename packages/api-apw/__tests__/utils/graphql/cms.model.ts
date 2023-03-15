@@ -3,6 +3,8 @@ const DATA_FIELD = /* GraphQL*/ `
         modelId
         name
         description
+        singularApiName
+        pluralApiName
         group {
             id
             name

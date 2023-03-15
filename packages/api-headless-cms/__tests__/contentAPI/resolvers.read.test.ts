@@ -102,6 +102,8 @@ describe("READ - Resolvers", () => {
             data: {
                 name: targetModel.name,
                 modelId: targetModel.modelId,
+                singularApiName: targetModel.singularApiName,
+                pluralApiName: targetModel.pluralApiName,
                 group: group.id
             }
         });

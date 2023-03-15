@@ -1,4 +1,4 @@
-import { CmsEntry, CmsGroup, CmsModel, CmsModelField } from "~/types";
+import { CmsEntry, CmsGroup, CmsModelField } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
@@ -38,6 +38,8 @@ describe("multiple values in field", () => {
                 name: model.name,
                 modelId: model.modelId,
                 group: contentModelGroup.id,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 fields: model.fields,
                 layout: model.layout
             }
@@ -62,6 +64,8 @@ describe("multiple values in field", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -142,6 +146,8 @@ describe("multiple values in field", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -202,11 +208,13 @@ describe("multiple values in field", () => {
             data: {
                 name: productModel.name,
                 modelId: productModel.modelId,
+                singularApiName: productModel.singularApiName,
+                pluralApiName: productModel.pluralApiName,
                 group: contentModelGroup.id
             }
         });
 
-        const contentModel = createResponse.data.createContentModel.data as CmsModel;
+        const contentModel = createResponse.data.createContentModel.data;
 
         await updateContentModelMutation({
             modelId: contentModel.modelId,

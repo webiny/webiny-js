@@ -1,9 +1,17 @@
 import { CmsModelPlugin, createCmsModel } from "@webiny/api-headless-cms";
-import { CmsModel, CmsGroup } from "@webiny/api-headless-cms/types";
+import { CmsModel as BaseCmsModel, CmsGroup } from "@webiny/api-headless-cms/types";
+
+interface CmsModel
+    extends Omit<
+        BaseCmsModel,
+        "locale" | "tenant" | "webinyVersion" | "group" | "singularApiName" | "pluralApiName"
+    > {
+    isPrivate: true;
+}
 
 interface Params {
     group: Pick<CmsGroup, "id" | "name">;
-    modelDefinition: Omit<CmsModel, "locale" | "tenant" | "webinyVersion" | "group">;
+    modelDefinition: CmsModel;
 }
 
 export const contentModelPluginFactory = (params: Params): CmsModelPlugin => {

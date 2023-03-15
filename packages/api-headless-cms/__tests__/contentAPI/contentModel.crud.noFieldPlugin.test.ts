@@ -55,6 +55,8 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Test Content model",
                 modelId: "testContentModel",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         }).then(async ([response]) => {
@@ -140,6 +142,8 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Event",
                 modelId: "event",
+                singularApiName: "Event",
+                pluralApiName: "Events",
                 group: contentModelGroup.id
             }
         });
@@ -198,6 +202,8 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Bug",
                 modelId: "bug",
+                singularApiName: "Bug",
+                pluralApiName: "Bugs",
                 group: contentModelGroup.id
             }
         });

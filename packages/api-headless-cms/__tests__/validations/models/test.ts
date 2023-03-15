@@ -4,6 +4,8 @@ export const createTestModel = (model: Partial<CmsModel> = {}): CmsModel => {
     return {
         modelId: "test",
         name: "Testing Model",
+        singularApiName: "Test",
+        pluralApiName: "Tests",
         description: "Testing model description",
         fields: [],
         layout: [],

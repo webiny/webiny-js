@@ -1,6 +1,8 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup } from "~/types";
 import camelCase from "lodash/camelCase";
+import upperFirst from "lodash/upperFirst";
+import pluralize from "pluralize";
 
 describe("ContentModel modelId variations", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
@@ -42,6 +44,8 @@ describe("ContentModel modelId variations", () => {
                 data: {
                     name,
                     modelId,
+                    singularApiName: upperFirst(camelCase(name)),
+                    pluralApiName: pluralize(upperFirst(camelCase(name))),
                     group: contentModelGroup.id
                 }
             });

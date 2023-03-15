@@ -37,6 +37,8 @@ describe("Content model locked fields", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -83,6 +85,8 @@ describe("Content model locked fields", () => {
             data: {
                 name: productModel.name,
                 modelId: productModel.modelId,
+                singularApiName: productModel.singularApiName,
+                pluralApiName: productModel.pluralApiName,
                 group: contentModelGroup.id
             }
         });

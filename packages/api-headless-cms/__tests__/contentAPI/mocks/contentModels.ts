@@ -98,6 +98,8 @@ const models: CmsModel[] = [
         name: "Category",
         description: "Product category",
         modelId: "category",
+        singularApiName: "Category",
+        pluralApiName: "Categories",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -172,6 +174,8 @@ const models: CmsModel[] = [
         lockedFields: [],
         name: "Product",
         modelId: "product",
+        singularApiName: "Product",
+        pluralApiName: "Products",
         description: "Products being sold in our webshop",
         group: {
             id: contentModelGroup.id,
@@ -782,6 +786,8 @@ const models: CmsModel[] = [
         name: "Review",
         description: "Product review",
         modelId: "review",
+        singularApiName: "Review",
+        pluralApiName: "Reviews",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -889,6 +895,8 @@ const models: CmsModel[] = [
         name: "Author",
         description: "Author",
         modelId: "author",
+        singularApiName: "Author",
+        pluralApiName: "Authors",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -933,6 +941,8 @@ const models: CmsModel[] = [
         name: "Fruit",
         description: "Fruit",
         modelId: "fruit",
+        singularApiName: "Fruit",
+        pluralApiName: "Fruits",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -1439,6 +1449,8 @@ const models: CmsModel[] = [
         name: "Bug",
         description: "Debuggable bugs",
         modelId: "bug",
+        singularApiName: "Bug",
+        pluralApiName: "Bugs",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -1576,6 +1588,8 @@ const models: CmsModel[] = [
         name: "Article",
         description: "Article with multiple categories",
         modelId: "article",
+        singularApiName: "Article",
+        pluralApiName: "Articles",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name

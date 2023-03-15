@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { CmsGroupPlugin } from "@webiny/api-headless-cms";
+import { CmsGroupPlugin, CmsModelPlugin } from "@webiny/api-headless-cms";
 import { contentModelPluginFactory } from "./contentModelPluginFactory";
 import { createWorkflowModelDefinition } from "./workflow.model";
 import { createContentReviewModelDefinition } from "./contentReview.model";
@@ -72,7 +72,7 @@ export const createApwModels = (context: CmsContext) => {
         commentModelDefinition
     ];
 
-    const cmsModelPlugins = [];
+    const cmsModelPlugins: CmsModelPlugin[] = [];
     for (const modelDefinition of modelDefinitions) {
         const cmsModelPlugin = contentModelPluginFactory({
             group: cmsGroupPlugin.contentModelGroup,

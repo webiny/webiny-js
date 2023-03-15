@@ -60,7 +60,11 @@ describe("READ - ContentModel to SDL", () => {
     });
 
     test("Dynamic Zone SDL", async () => {
-        const sdl = createReadSDL({ model: pageModel as any, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createReadSDL({
+            model: pageModel as CmsModel,
+            fieldTypePlugins,
+            sorterPlugins: []
+        });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(pageSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
