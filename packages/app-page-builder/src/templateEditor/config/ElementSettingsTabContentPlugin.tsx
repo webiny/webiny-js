@@ -4,7 +4,7 @@ import { ReactComponent as RefreshIcon } from "@material-design-icons/svg/round/
 import { plugins } from "@webiny/plugins";
 import { SidebarActions } from "~/editor";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { IconButton } from "@webiny/ui/Button";
+import Action from "~/editor/plugins/elementSettings/components/Action";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import ElementNotLinked from "~/blockEditor/components/elementSettingsTab/ElementNotLinked";
 import VariableSettings from "~/blockEditor/components/elementSettingsTab/VariableSettings";
@@ -46,7 +46,8 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                         </div>
                                     );
                                 })}
-                                <IconButton
+                                <Action
+                                    tooltip={"Edit block"}
                                     icon={<EditIcon />}
                                     onClick={() =>
                                         window.open(
@@ -56,7 +57,11 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                         )
                                     }
                                 />
-                                <IconButton icon={<RefreshIcon />} onClick={refreshBlock} />
+                                <Action
+                                    tooltip={"Refresh block"}
+                                    onClick={refreshBlock}
+                                    icon={<RefreshIcon />}
+                                />
                             </>
                         ) : (
                             children
