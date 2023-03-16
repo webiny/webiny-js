@@ -220,7 +220,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     );
 
     const handleExportClick = useCallback((id: string) => {
-        showExportBlockInitializeDialog({ where: { id } });
+        showExportBlockInitializeDialog({ ids: [id] });
     }, []);
 
     const isLoading = [deleteMutation, duplicateMutation].find(item => item.loading) || loading;

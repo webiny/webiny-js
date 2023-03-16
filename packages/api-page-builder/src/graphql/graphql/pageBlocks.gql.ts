@@ -30,7 +30,6 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
         }
 
         input PbListPageBlocksWhereInput {
-            id: String
             blockCategory: String
         }
 

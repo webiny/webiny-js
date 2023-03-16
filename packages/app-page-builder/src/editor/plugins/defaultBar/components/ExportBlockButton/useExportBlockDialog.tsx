@@ -42,6 +42,7 @@ const spinnerWrapper = css`
 `;
 
 interface ExportBlockLoadingDialogProps {
+    ids?: string[];
     where?: Record<string, any>;
 }
 

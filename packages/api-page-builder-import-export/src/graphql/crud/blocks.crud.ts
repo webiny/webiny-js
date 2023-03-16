@@ -68,10 +68,9 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 !initialBlockIds ||
                 (Array.isArray(initialBlockIds) && initialBlockIds.length === 0)
             ) {
-                blockIds = [];
                 const blocks = await context.pageBuilder.listPageBlocks({ where });
                 // Save block ids
-                blocks.forEach(block => blockIds.push(block.id));
+                blockIds = blocks.map(block => block.id);
             }
 
             if (blockIds.length === 0) {
