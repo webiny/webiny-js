@@ -9,7 +9,13 @@ describe(`Test "Tenancy" install`, () => {
     beforeEach(async () => {
         tenancy = await createTenancy({
             tenant: null,
-            storageOperations
+            storageOperations,
+            incrementWcpTenants: async () => {
+                return Promise.resolve()
+            },
+            decrementWcpTenants: async () => {
+                return Promise.resolve()
+            }
         });
     });
 
