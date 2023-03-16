@@ -11,10 +11,10 @@ describe(`Test "Tenancy" install`, () => {
             tenant: null,
             storageOperations,
             incrementWcpTenants: async () => {
-                return Promise.resolve()
+                return Promise.resolve();
             },
             decrementWcpTenants: async () => {
-                return Promise.resolve()
+                return Promise.resolve();
             }
         });
     });
