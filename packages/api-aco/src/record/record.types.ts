@@ -1,4 +1,4 @@
-import { AcoBaseFields, ListMeta } from "~/types";
+import { AcoBaseFields, ListMeta, ListSort } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export type GenericSearchData = {
@@ -11,7 +11,6 @@ export interface Location {
 
 export interface SearchRecord<TData extends GenericSearchData = GenericSearchData>
     extends AcoBaseFields {
-    originalId: string;
     type: string;
     title?: string;
     content?: string;
@@ -29,14 +28,14 @@ export interface ListSearchRecordsWhere {
 export interface ListSearchRecordsParams {
     where?: ListSearchRecordsWhere;
     search?: string;
-    sort?: string[];
+    sort?: ListSort;
     limit?: number;
     after?: string | null;
 }
 
 export type CreateSearchRecordParams<TData> = Pick<
     SearchRecord<TData>,
-    "originalId" | "title" | "content" | "type" | "location" | "data"
+    "id" | "title" | "content" | "type" | "location" | "data"
 >;
 
 export interface UpdateSearchRecordParams<TData extends GenericSearchData> {

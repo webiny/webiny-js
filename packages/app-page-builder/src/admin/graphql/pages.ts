@@ -68,9 +68,9 @@ export const CREATE_PAGE = gql`
 `;
 
 export const CREATE_PAGE_FROM_TEMPLATE = gql`
-    mutation PbCreatePageFromTemplate($templateId: ID, $category: String, $meta: JSON) {
+    mutation PbCreatePageFromTemplate($templateId: ID, $meta: JSON) {
         pageBuilder {
-            createPage: createPageFromTemplate(templateId: $templateId, category: $category, meta: $meta) {
+            createPage: createPageFromTemplate(templateId: $templateId, meta: $meta) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
                 }
@@ -86,17 +86,6 @@ export const DUPLICATE_PAGE = gql`
             duplicatePage(id: $id) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
-                    settings {
-                        general {
-                            snippet
-                            tags
-                            layout
-                            image {
-                                id
-                                src
-                            }
-                        }
-                    }
                 }
                 ${error}
             }

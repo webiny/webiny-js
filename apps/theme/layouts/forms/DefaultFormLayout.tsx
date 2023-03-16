@@ -79,7 +79,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
                     {termsOfServiceEnabled && <TermsOfServiceSection component={TermsOfService} />}
                     {reCaptchaEnabled && <ReCaptchaSection component={ReCaptcha} />}
 
-                    <SubmitButton onClick={submit} loading={loading}>
+                    <SubmitButton
+                        onClick={submit}
+                        loading={loading}
+                        fullWidth={formData.settings.fullWidthSubmitButton}
+                    >
                         {formData.settings.submitButtonLabel || "Submit"}
                     </SubmitButton>
                 </Wrapper>

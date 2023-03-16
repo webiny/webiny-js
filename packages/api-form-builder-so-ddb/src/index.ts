@@ -86,7 +86,6 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     };
 
     return {
-        upgrade: null,
         getTable: () => table,
         getEntities: () => entities,
         ...createSystemStorageOperations({

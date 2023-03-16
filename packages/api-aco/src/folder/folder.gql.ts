@@ -52,7 +52,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
                 where: FoldersListWhereInput!
                 limit: Int
                 after: String
-                sort: [AcoListSort]
+                sort: AcoSort
             ): FoldersListResponse
         }
 

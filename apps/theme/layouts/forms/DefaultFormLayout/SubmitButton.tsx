@@ -3,27 +3,28 @@ import { FormRenderPropParamsSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 import theme from "./../../../theme";
 
-export const Wrapper = styled.div([
-    theme.styles.elements["button"]["primary"],
-    {
-        ".button-body": {
-            width: "100%",
-            "&:disabled": {
-                opacity: 0.5
-            }
+export const Wrapper = styled.div<{ fullWidth: boolean }>`
+    ${theme.styles.elements.button.primary}
+    .button-body {
+        width: ${props => (props.fullWidth ? "100%" : "auto")};
+        margin-left: auto;
+        &:disabled {
+            opacity: 0.5;
         }
     }
 ]);
+`;
 
 interface Props {
+    fullWidth: boolean;
     onClick: FormRenderPropParamsSubmit;
     loading: boolean;
     children: React.ReactNode;
 }
 
-export const SubmitButton: React.FC<Props> = ({ onClick, loading, children }) => {
+export const SubmitButton: React.FC<Props> = ({ fullWidth, onClick, loading, children }) => {
     return (
-        <Wrapper>
+        <Wrapper fullWidth={fullWidth}>
             <button className={"button-body"} onClick={onClick} disabled={loading}>
                 {children}
             </button>

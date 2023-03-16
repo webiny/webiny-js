@@ -9,7 +9,6 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
         type SearchRecord {
             id: ID!
-            originalId: ID!
             type: String!
             location: SearchLocationType!
             title: String!
@@ -29,7 +28,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
 
         input SearchRecordCreateInput {
-            originalId: String!
+            id: String!
             type: String!
             title: String!
             content: String
@@ -67,7 +66,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
                 search: String
                 limit: Int
                 after: String
-                sort: [AcoListSort]
+                sort: AcoSort
             ): SearchRecordListResponse
         }
 

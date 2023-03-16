@@ -1,40 +1,24 @@
+// @ts-ignore
+import mdbid from "mdbid";
 import useGqlHandler from "./useGqlHandler";
 import { SecurityPermission, SecurityIdentity } from "@webiny/api-security/types";
 
 jest.setTimeout(10000);
 
-class Mock {
-    public readonly key: string;
-    public readonly type: string;
-    public readonly size: number;
-    public readonly name: string;
-    public readonly tags: string[];
+function createFileMock(prefix = "") {
+    const id = mdbid();
 
-    public constructor(prefix = "") {
-        this.key = `${prefix}key`;
-        this.type = `${prefix}type`;
-        this.size = 4096;
-        this.name = `${prefix}name`;
-        this.tags = [`${prefix}tag`];
-    }
-}
+    const keyPrefix = prefix ? `/${prefix}` : "";
 
-class MockResponse {
-    public readonly id: string;
-    public readonly key: string;
-    public readonly type: string;
-    public readonly size: number;
-    public readonly name: string;
-    public readonly tags: string[];
-
-    public constructor({ prefix, id }: { prefix: string; id: string }) {
-        this.id = id;
-        this.key = `${prefix}key`;
-        this.type = `${prefix}type`;
-        this.size = 4096;
-        this.name = `${prefix}name`;
-        this.tags = [`${prefix}tag`];
-    }
+    return {
+        id,
+        key: `${id}${keyPrefix}/filenameA.png`,
+        name: "filenameA.png",
+        size: 123456,
+        type: "image/png",
+        tags: ["sketch", "file-a", "webiny"],
+        aliases: []
+    };
 }
 
 const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
@@ -73,20 +57,19 @@ describe("Files Security Test", () => {
     });
 
     test(`"listFiles" only returns entries to which the identity has access to`, async () => {
-        const [createFilesResponse] = await createFiles({
-            data: [new Mock("list-files-1-"), new Mock("list-files-2-")]
-        });
+        const file1 = createFileMock("list-files-1-");
+        const file2 = createFileMock("list-files-2-");
+        const file3 = createFileMock("list-files-3-");
+        const file4 = createFileMock("list-files-4-");
 
-        const file1Id = createFilesResponse.data.fileManager.createFiles.data[0].id;
-        const file2Id = createFilesResponse.data.fileManager.createFiles.data[1].id;
+        await createFiles({
+            data: [file1, file2]
+        });
 
         const identityBHandler = useGqlHandler({ identity: identityB });
-        const [identityBHandlerCreateFilesResponse] = await identityBHandler.createFiles({
-            data: [new Mock("list-files-3-"), new Mock("list-files-4-")]
+        await identityBHandler.createFiles({
+            data: [file3, file4]
         });
-
-        const file3Id = identityBHandlerCreateFilesResponse.data.fileManager.createFiles.data[0].id;
-        const file4Id = identityBHandlerCreateFilesResponse.data.fileManager.createFiles.data[1].id;
 
         const insufficientPermissions: IdentityPermissions = [
             [[], null],
@@ -145,12 +128,7 @@ describe("Files Security Test", () => {
                 data: {
                     fileManager: {
                         listFiles: {
-                            data: [
-                                new MockResponse({ prefix: "list-files-4-", id: file4Id }),
-                                new MockResponse({ prefix: "list-files-3-", id: file3Id }),
-                                new MockResponse({ prefix: "list-files-2-", id: file2Id }),
-                                new MockResponse({ prefix: "list-files-1-", id: file1Id })
-                            ],
+                            data: [file4, file3, file2, file1],
                             meta: {
                                 cursor: expect.any(String),
                                 totalCount: expect.any(Number),
@@ -173,10 +151,7 @@ describe("Files Security Test", () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [
-                            new MockResponse({ prefix: "list-files-2-", id: file2Id }),
-                            new MockResponse({ prefix: "list-files-1-", id: file1Id })
-                        ],
+                        data: [file2, file1],
                         meta: {
                             cursor: expect.any(String),
                             totalCount: expect.any(Number),
@@ -198,10 +173,7 @@ describe("Files Security Test", () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [
-                            new MockResponse({ prefix: "list-files-4-", id: file4Id }),
-                            new MockResponse({ prefix: "list-files-3-", id: file3Id })
-                        ],
+                        data: [file4, file3],
                         meta: {
                             cursor: expect.any(String),
                             totalCount: expect.any(Number),
@@ -226,7 +198,7 @@ describe("Files Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { createFile } = useGqlHandler({ permissions, identity });
 
-            const [response] = await createFile({ data: new Mock("mock") });
+            const [response] = await createFile({ data: createFileMock("mock") });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("createFile"));
         }
 
@@ -242,7 +214,7 @@ describe("Files Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { createFile } = useGqlHandler({ permissions, identity });
 
-            const data = new Mock(`file-create-${i}-`);
+            const data = createFileMock(`file-create-${i}-`);
             const [response] = await createFile({ data });
             expect(response).toEqual({
                 data: {
@@ -268,13 +240,12 @@ describe("Files Security Test", () => {
     test.each(insufficientPermissions)(
         `forbid "updateFile" for permissions %j`,
         async (permissions, identity) => {
-            const mock = new Mock("update-file-");
+            const mock = createFileMock("update-file-");
+            const { id, ...data } = mock;
 
-            const [createFileResponse] = await createFile({ data: mock });
-            const fileId = createFileResponse.data.fileManager.createFile.data.id;
-
+            await createFile({ data: mock });
             const { updateFile } = useGqlHandler({ permissions, identity });
-            const [response] = await updateFile({ id: fileId, data: mock });
+            const [response] = await updateFile({ id, data });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateFile"));
         }
     );
@@ -289,13 +260,13 @@ describe("Files Security Test", () => {
     test.each(sufficientPermissions)(
         `allow "updateFile" for permissions %j`,
         async (permissions, identity) => {
-            const mock = new Mock("update-file-");
+            const mock = createFileMock("update-file-");
+            const { id, ...data } = mock;
 
-            const [createFileResponse] = await createFile({ data: mock });
-            const fileId = createFileResponse.data.fileManager.createFile.data.id;
+            await createFile({ data: mock });
 
             const { updateFile } = useGqlHandler({ permissions, identity });
-            const [response] = await updateFile({ id: fileId, data: mock });
+            const [response] = await updateFile({ id, data });
             expect(response).toEqual({
                 data: {
                     fileManager: {
@@ -310,10 +281,10 @@ describe("Files Security Test", () => {
     );
 
     test(`allow "updateFile" if identity has sufficient permissions`, async () => {
-        const mock = new Mock("update-file-");
+        const mock = createFileMock("update-file-");
+        const { id, ...data } = mock;
 
-        const [createFileResponse] = await createFile({ data: mock });
-        const fileId = createFileResponse.data.fileManager.createFile.data.id;
+        await createFile({ data: mock });
 
         const insufficientPermissions: IdentityPermissions = [
             [[], null],
@@ -326,7 +297,7 @@ describe("Files Security Test", () => {
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
             const { updateFile } = useGqlHandler({ permissions, identity });
-            const [response] = await updateFile({ id: fileId, data: mock });
+            const [response] = await updateFile({ id, data });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateFile"));
         }
 
@@ -341,7 +312,7 @@ describe("Files Security Test", () => {
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
             const { updateFile } = useGqlHandler({ permissions, identity });
-            const [response] = await updateFile({ id: fileId, data: mock });
+            const [response] = await updateFile({ id, data });
             expect(response).toEqual({
                 data: {
                     fileManager: {
@@ -356,7 +327,7 @@ describe("Files Security Test", () => {
     });
 
     test(`allow "getFile" if identity has sufficient permissions`, async () => {
-        const mock = new Mock("get-file-");
+        const mock = createFileMock("get-file-");
 
         const [createFileResponse] = await createFile({ data: mock });
         const fileId = createFileResponse.data.fileManager.createFile.data.id;

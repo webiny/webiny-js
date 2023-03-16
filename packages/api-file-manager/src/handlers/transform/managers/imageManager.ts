@@ -5,8 +5,7 @@ import {
     SUPPORTED_TRANSFORMABLE_IMAGES,
     OPTIMIZED_IMAGE_PREFIX,
     OPTIMIZED_TRANSFORMED_IMAGE_PREFIX,
-    getImageKey,
-    getOptimizedTransformedImageKeyPrefix
+    getImageKey
 } from "../utils";
 
 export interface ImageManagerCanProcessParams {
@@ -42,11 +41,12 @@ export default {
         if (SUPPORTED_TRANSFORMABLE_IMAGES.includes(extension) === false) {
             return;
         }
+        const [id] = key.split("/");
         const env = getEnvironment();
         const imagesList = await s3
             .listObjects({
                 Bucket: env.bucket,
-                Prefix: getOptimizedTransformedImageKeyPrefix(key)
+                Prefix: `${id}/`
             })
             .promise();
 

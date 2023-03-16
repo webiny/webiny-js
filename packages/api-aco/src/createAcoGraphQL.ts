@@ -50,15 +50,16 @@ const baseSchema = new GraphQLSchemaPlugin({
             error: AcoError
         }
 
-        enum AcoListSort {
-            id_ASC
-            id_DESC
-            savedOn_ASC
-            savedOn_DESC
-            createdOn_ASC
-            createdOn_DESC
-            title_ASC
-            title_DESC
+        enum AcoSortDirection {
+            ASC
+            DESC
+        }
+
+        input AcoSort {
+            id: AcoSortDirection
+            createdOn: AcoSortDirection
+            savedOn: AcoSortDirection
+            title: AcoSortDirection
         }
 
         extend type Query {

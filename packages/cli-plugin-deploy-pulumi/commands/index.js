@@ -1,5 +1,6 @@
 const destroy = require("./destroy");
 const deploy = require("./deploy");
+const build = require("./build");
 const watch = require("./watch");
 const output = require("./output");
 
@@ -9,6 +10,7 @@ module.exports = [
         name: "cli-command-deployment",
         create({ yargs, context }) {
             yargs.example("$0 deploy api --env=dev");
+            yargs.example("$0 build api --env=dev");
             yargs.example("$0 destroy api --env=dev");
             yargs.example("$0 output api --env=dev");
             yargs.example("$0 pulumi api --env dev -- config set foo bar --secret");
@@ -59,6 +61,41 @@ module.exports = [
                 },
                 async argv => {
                     await deploy(argv, context);
+                    process.exit(0);
+                }
+            );
+
+            yargs.command(
+                "build [folder]",
+                `Builds application code for given project application`,
+                yargs => {
+                    yargs.example("$0 build api --env=dev");
+                    yargs.example("$0 build --env=dev");
+                    yargs.positional("folder", {
+                        describe: `Project application folder`,
+                        type: "string"
+                    });
+                    yargs.option("env", {
+                        describe: `Environment`,
+                        type: "string"
+                    });
+                    // yargs.option("variant", {
+                    //     describe: `Variant (only for staged rollouts)`,
+                    //     type: "string"
+                    // });
+                    yargs.option("debug", {
+                        default: false,
+                        describe: `Turn on debug logs`,
+                        type: "boolean"
+                    });
+                    yargs.option("logs", {
+                        default: undefined,
+                        describe: `Enable base compilation-related logs`,
+                        type: "boolean"
+                    });
+                },
+                async argv => {
+                    await build(argv, context);
                     process.exit(0);
                 }
             );
@@ -217,6 +254,31 @@ module.exports = [
                 },
                 async argv => {
                     await require("./pulumiRun")(argv, context);
+                    process.exit(0);
+                }
+            );
+
+            yargs.command(
+                "execute-migrations [pattern]",
+                `Execute data migrations Lambda. If pattern is provided, only the matching migrations will be executed.`,
+                () => {
+                    yargs.example("$0 execute-migrations --env dev");
+                    yargs.example("$0 execute-migrations 5.35.0-001 --env dev");
+                    yargs.example(`$0 execute-migrations "5.35.*" --env dev`);
+
+                    yargs.positional("pattern", {
+                        describe: `Pattern to match against the migration ID.`,
+                        type: "string"
+                    });
+
+                    yargs.option("env", {
+                        describe: `Environment`,
+                        type: "string",
+                        required: true
+                    });
+                },
+                async argv => {
+                    await require("./executeMigrations")(argv, context);
                     process.exit(0);
                 }
             );

@@ -1,104 +1,99 @@
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import { attachCmsModelFieldConverters } from "@webiny/api-headless-cms/utils/converters/valueKeyStorageConverter";
+
 import WebinyError from "@webiny/error";
 
 import { SEARCH_RECORD_MODEL_ID } from "./record.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { createListSort } from "~/utils/createListSort";
+import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFieldValues } from "~/utils/getFieldValues";
 
-import { AcoSearchRecordStorageOperations as BaseAcoSearchRecordStorageOperations } from "./record.types";
-
-interface AcoSearchRecordStorageOperations extends BaseAcoSearchRecordStorageOperations {
-    getRecordModel(): Promise<CmsModel>;
-}
+import { AcoSearchRecordStorageOperations } from "./record.types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoSearchRecordStorageOperations => {
-    const { cms, security } = params;
-    const getRecordModel = async () => {
-        security.disableAuthorization();
-        const model = await cms.getModel(SEARCH_RECORD_MODEL_ID);
-        security.enableAuthorization();
-        if (!model) {
-            throw new WebinyError(
-                `Could not find "${SEARCH_RECORD_MODEL_ID}" model.`,
-                "MODEL_NOT_FOUND_ERROR"
-            );
-        }
-        return model;
-    };
+    const { cms, getCmsContext } = params;
 
-    const getRecord: AcoSearchRecordStorageOperations["getRecord"] = async ({ id }) => {
-        const model = await getRecordModel();
-        security.disableAuthorization();
+    const { withModel } = createOperationsWrapper({
+        ...params,
+        modelName: SEARCH_RECORD_MODEL_ID
+    });
+
+    const getRecord = async (initialModel: CmsModel, id: string) => {
+        const context = getCmsContext();
+
+        const model = attachCmsModelFieldConverters({
+            model: initialModel,
+            plugins: context.plugins
+        });
 
         /**
-         * The record "id" is generated on creation.
-         * Still, we need to get/update/delete records by the original entry id.
+         * The record "id" has been passed by the original entry.
+         * We need to retrieve it via `cms.storageOperations.entries.getLatestByIds()` method and return the first one.
          */
-        const entry = await cms.getEntry(model, { where: { originalId: id, latest: true } });
+        const revisions = await cms.storageOperations.entries.getLatestByIds(model, {
+            ids: [id]
+        });
 
-        if (!entry) {
-            throw new WebinyError("Could not load record.", "GET_ENTRY_ERROR", {
+        if (revisions.length === 0) {
+            throw new WebinyError("Record not found.", "NOT_FOUND", {
                 id
             });
         }
 
-        security.enableAuthorization();
-        return getFieldValues(entry, baseFields);
+        return revisions[0];
     };
 
     return {
-        getRecordModel,
-        getRecord,
-        async listRecords(params) {
-            const model = await getRecordModel();
-            security.disableAuthorization();
-
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...(params.where || {})
-                }
+        async getRecord({ id }) {
+            return withModel(async model => {
+                const record = await getRecord(model, id);
+                return getFieldValues(record, baseFields, true);
             });
-
-            security.enableAuthorization();
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
-        async createRecord({ data }) {
-            const model = await getRecordModel();
-            security.disableAuthorization();
+        listRecords(params) {
+            return withModel(async model => {
+                const { sort, where } = params;
 
-            const entry = await cms.createEntry(model, data);
+                const [entries, meta] = await cms.listLatestEntries(model, {
+                    ...params,
+                    sort: createListSort(sort),
+                    where: {
+                        ...(where || {})
+                    }
+                });
 
-            security.enableAuthorization();
-            return getFieldValues(entry, baseFields);
+                return [entries.map(entry => getFieldValues(entry, baseFields, true)), meta];
+            });
         },
-        async updateRecord({ id, data }) {
-            const model = await getRecordModel();
-            security.disableAuthorization();
+        createRecord({ data }) {
+            return withModel(async model => {
+                const entry = await cms.createEntry(model, data);
 
-            const original = await getRecord({ id });
-
-            const input = {
-                ...original,
-                ...data
-            };
-
-            const entry = await cms.updateEntry(model, original.id, input);
-            security.enableAuthorization();
-            return getFieldValues(entry, baseFields);
+                return getFieldValues(entry, baseFields, true);
+            });
         },
-        async deleteRecord({ id }) {
-            const model = await getRecordModel();
-            security.disableAuthorization();
+        updateRecord({ id, data }) {
+            return withModel(async model => {
+                const original = await getRecord(model, id);
 
-            const entry = await getRecord({ id });
+                const input = {
+                    ...original,
+                    ...data
+                };
 
-            await cms.deleteEntry(model, entry.id);
+                const entry = await cms.updateEntry(model, original.id, input);
 
-            security.enableAuthorization();
-            return true;
+                return getFieldValues(entry, baseFields, true);
+            });
+        },
+        deleteRecord({ id }) {
+            return withModel(async model => {
+                await cms.deleteEntry(model, id);
+                return true;
+            });
         }
     };
 };

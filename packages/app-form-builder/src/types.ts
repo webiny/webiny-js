@@ -388,6 +388,7 @@ export interface FbReCaptchaInput {
 export interface FbFormSettingsInput {
     layout: FbFormSettingsLayoutInput;
     submitButtonLabel: string;
+    fullWidthSubmitButton: boolean;
     successMessage: Record<string, string>;
     termsOfServiceMessage: FbTermsOfServiceMessageInput;
     reCaptcha: FbReCaptchaInput;
@@ -406,4 +407,33 @@ export interface FormBuilderSecurityPermission extends SecurityPermission {
     rwd?: string;
     pw?: string | boolean;
     submissions?: boolean;
+}
+
+export enum ImportExportTaskStatus {
+    PENDING = "pending",
+    PROCESSING = "processing",
+    COMPLETED = "completed",
+    FAILED = "failed"
+}
+export interface FormBuilderImportExportSubTask {
+    id: string;
+    createdOn: Date;
+    createdBy: {
+        id: string;
+        displayName: string;
+        type: string;
+    };
+    status: "pending" | "processing" | "completed" | "failed";
+    data: {
+        form: FbFormModel;
+        [key: string]: any;
+    };
+    stats: {
+        pending: number;
+        processing: number;
+        completed: number;
+        failed: number;
+        total: number;
+    };
+    error: Record<string, string>;
 }

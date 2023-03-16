@@ -1,23 +1,19 @@
-import { useApolloClient, useMutation } from "@apollo/react-hooks";
-import { useCallback, useEffect, useReducer } from "react";
+import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useCallback, useReducer } from "react";
+import debounce from "lodash/debounce";
+import get from "lodash/get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FetchPolicy } from "apollo-client";
-import { FbFormModel, FbFormSubmissionData } from "~/types";
+import { FbFormModel } from "~/types";
 import {
     ExportFormSubmissionsMutationResponse,
     ExportFormSubmissionsMutationVariables,
     EXPORT_FORM_SUBMISSIONS,
-    ListFormSubmissionsQueryResponse,
-    ListFormSubmissionsQueryVariables,
     LIST_FORM_SUBMISSIONS
 } from "~/admin/graphql";
 
 interface State {
     loading: boolean;
-    page: number;
-    cursors: Record<number, string | null>;
     exportInProgress: boolean;
-    submissions: FbFormSubmissionData[];
     sort: string[];
 }
 interface Reducer {
@@ -27,47 +23,46 @@ interface Reducer {
 export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         loading: false,
-        page: 0,
-        cursors: {
-            0: null
-        },
         exportInProgress: false,
-        submissions: [],
         sort: ["createdOn_DESC"]
     });
 
-    const client = useApolloClient();
-
     const { showSnackbar } = useSnackbar();
 
-    const loadSubmissions = async (fetchPolicy: FetchPolicy = "cache-first") => {
-        setState({ loading: true });
+    const listQuery = useQuery(LIST_FORM_SUBMISSIONS, {
+        variables: { form: form.id, sort: state.sort, limit: 20 }
+    });
 
-        const { data: res } = await client.query<
-            ListFormSubmissionsQueryResponse,
-            ListFormSubmissionsQueryVariables
-        >({
-            query: LIST_FORM_SUBMISSIONS,
-            variables: { form: form.id, sort: state.sort, after: state.cursors[state.page] },
-            fetchPolicy
-        });
+    const loadMoreOnScroll = useCallback(
+        debounce(scrollFrame => {
+            if (!state.loading && scrollFrame.top > 0.9) {
+                const meta = get(listQuery, "data.formBuilder.listFormSubmissions.meta", {});
+                if (meta.cursor) {
+                    setState({ loading: true });
+                    listQuery.fetchMore({
+                        variables: { after: meta.cursor, limit: 10 },
+                        updateQuery: (prev: any, { fetchMoreResult }: any) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
 
-        const { data, meta } = res.formBuilder.listFormSubmissions;
+                            const next = { ...fetchMoreResult };
 
-        setState({
-            loading: false,
-            submissions: data,
-            cursors: {
-                ...state.cursors,
-                // Store cursor to load next page
-                [state.page + 1]: meta.hasMoreItems ? meta.cursor : null
+                            next.formBuilder.listFormSubmissions.data = [
+                                ...prev.formBuilder.listFormSubmissions.data,
+                                ...fetchMoreResult.formBuilder.listFormSubmissions.data
+                            ];
+                            setState({
+                                loading: false
+                            });
+                            return next;
+                        }
+                    });
+                }
             }
-        });
-    };
-
-    useEffect((): void => {
-        loadSubmissions();
-    }, [form.id, state.page, state.sort]);
+        }, 500),
+        [listQuery]
+    );
 
     const [exportFormSubmission] = useMutation<
         ExportFormSubmissionsMutationResponse,
@@ -96,29 +91,19 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
         window.open(csvFile.src, "_blank");
     }, [form]);
 
-    const hasPreviousPage = state.page > 0;
-    const hasNextPage = typeof state.cursors[state.page + 1] === "string";
-
     return {
-        loading: state.loading,
-        refresh: () => loadSubmissions("network-only"),
-        submissions: state.submissions,
+        loading: [listQuery].some(item => item.loading),
+        fetchMoreLoading: state.loading,
+        refresh: () => {
+            if (!listQuery.refetch) {
+                return;
+            }
+            listQuery.refetch();
+        },
+        loadMoreOnScroll,
+        submissions: get(listQuery, "data.formBuilder.listFormSubmissions.data", []),
         setSorter: (sort: string[]) => {
             setState({ sort });
-        },
-        hasPreviousPage,
-        hasNextPage,
-        nextPage: () => {
-            if (!hasNextPage) {
-                return;
-            }
-            setState({ page: state.page + 1 });
-        },
-        previousPage: () => {
-            if (!hasPreviousPage) {
-                return;
-            }
-            setState({ page: state.page - 1 });
         },
         exportSubmissions,
         exportInProgress: state.exportInProgress

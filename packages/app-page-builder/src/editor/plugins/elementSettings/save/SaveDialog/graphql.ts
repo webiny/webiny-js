@@ -24,7 +24,7 @@ const ERROR_FIELDS = /* GraphQL */ `
 `;
 
 export const CREATE_FILE = gql`
-    mutation CreateFile($data: FileInput!) {
+    mutation CreateFile($data: CreateFileInput!) {
         fileManager {
             createFile(data: $data) {
                 error ${ERROR_FIELDS}

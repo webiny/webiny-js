@@ -1,7 +1,5 @@
 import { NotAuthorizedError } from "@webiny/api-security";
-import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { FileManagerContext, FileManagerSettings, FileManagerSystem } from "~/types";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { executeCallbacks } from "~/utils";
@@ -123,30 +121,6 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
                     context
                 }
             );
-
-            return true;
-        },
-        async upgrade(version) {
-            const identity = context.security.getIdentity();
-            if (!identity) {
-                throw new NotAuthorizedError();
-            }
-
-            const upgradePlugins = context.plugins
-                .byType<UpgradePlugin>("api-upgrade")
-                .filter(pl => pl.app === "file-manager");
-
-            const plugin = getApplicablePlugin({
-                deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await this.getVersion(),
-                upgradePlugins,
-                upgradeToVersion: version
-            });
-
-            await plugin.apply(context);
-
-            // Store new app version
-            await context.fileManager.system.setVersion(version);
 
             return true;
         }

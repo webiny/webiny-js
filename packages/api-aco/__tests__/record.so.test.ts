@@ -8,36 +8,38 @@ describe("`search` CRUD", () => {
         // Let's create some search records.
         const [responseA] = await search.createRecord({ data: recordMocks.recordA });
         const recordA = responseA.data.search.createRecord.data;
-        expect(recordA).toEqual({ id: recordA.id, ...recordMocks.recordA });
+        expect(recordA).toEqual({ ...recordMocks.recordA, id: recordA.id });
 
         const [responseB] = await search.createRecord({ data: recordMocks.recordB });
         const recordB = responseB.data.search.createRecord.data;
-        expect(recordB).toEqual({ id: recordB.id, ...recordMocks.recordB });
+        expect(recordB).toEqual({ ...recordMocks.recordB, id: recordB.id });
 
         const [responseC] = await search.createRecord({ data: recordMocks.recordC });
         const recordC = responseC.data.search.createRecord.data;
-        expect(recordC).toEqual({ id: recordC.id, ...recordMocks.recordC });
+        expect(recordC).toEqual({ ...recordMocks.recordC, id: recordC.id });
 
         const [responseD] = await search.createRecord({ data: recordMocks.recordD });
         const recordD = responseD.data.search.createRecord.data;
-        expect(recordD).toEqual({ id: recordD.id, ...recordMocks.recordD });
+        expect(recordD).toEqual({ ...recordMocks.recordD, id: recordD.id });
 
         const [responseE] = await search.createRecord({ data: recordMocks.recordE });
         const recordE = responseE.data.search.createRecord.data;
-        expect(recordE).toEqual({ id: recordE.id, ...recordMocks.recordE });
+        expect(recordE).toEqual({ ...recordMocks.recordE, id: recordE.id });
 
         // Let's check whether both of the record exists, listing them by `type` and `location`.
         // List records -> type: "page" / folderId: "folder-1"
         const [listResponsePageFolder1] = await search.listRecords({
             where: { type: "page", location: { folderId: "folder-1" } },
-            sort: ["createdOn_ASC"]
+            sort: {
+                createdOn: "ASC"
+            }
         });
 
         expect(listResponsePageFolder1.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
-                    expect.objectContaining(recordMocks.recordA),
-                    expect.objectContaining(recordMocks.recordB)
+                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
                 ]),
                 error: null
             })
@@ -46,12 +48,16 @@ describe("`search` CRUD", () => {
         // List records -> type: "page" / folderId: "folder-2"
         const [listResponsePageFolder2] = await search.listRecords({
             where: { type: "page", location: { folderId: "folder-2" } },
-            sort: ["createdOn_ASC"]
+            sort: {
+                createdOn: "ASC"
+            }
         });
 
         expect(listResponsePageFolder2.data.search.listRecords).toEqual(
             expect.objectContaining({
-                data: expect.arrayContaining([expect.objectContaining(recordMocks.recordC)]),
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
+                ]),
                 error: null
             })
         );
@@ -59,14 +65,16 @@ describe("`search` CRUD", () => {
         // List records -> type: "post" / folderId: "folder-1"
         const [listResponsePostFolder1] = await search.listRecords({
             where: { type: "post" },
-            sort: ["createdOn_ASC"]
+            sort: {
+                createdOn: "ASC"
+            }
         });
 
         expect(listResponsePostFolder1.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
-                    expect.objectContaining(recordMocks.recordD),
-                    expect.objectContaining(recordMocks.recordE)
+                    expect.objectContaining({ ...recordMocks.recordD, id: recordD.id }),
+                    expect.objectContaining({ ...recordMocks.recordE, id: recordE.id })
                 ]),
                 error: null
             })
@@ -75,7 +83,9 @@ describe("`search` CRUD", () => {
         // Let's check cursor based pagination meta.
         const [listResponsePageWithLimit] = await search.listRecords({
             where: { type: "page" },
-            sort: ["createdOn_ASC"],
+            sort: {
+                createdOn: "ASC"
+            },
             limit: 2
         });
 
@@ -83,8 +93,8 @@ describe("`search` CRUD", () => {
         expect(listResponsePageWithLimit.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
-                    expect.objectContaining(recordMocks.recordA),
-                    expect.objectContaining(recordMocks.recordB)
+                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
                 ]),
                 meta: expect.objectContaining({
                     cursor: expect.any(String),
@@ -100,7 +110,9 @@ describe("`search` CRUD", () => {
 
         const [listResponsePageWithLimitAfter] = await search.listRecords({
             where: { type: "page" },
-            sort: ["createdOn_ASC"],
+            sort: {
+                createdOn: "ASC"
+            },
             limit: 2,
             after: cursor
         });
@@ -108,7 +120,9 @@ describe("`search` CRUD", () => {
         expect(listResponsePageWithLimitAfter.data.search.listRecords.data.length).toEqual(1);
         expect(listResponsePageWithLimitAfter.data.search.listRecords).toEqual(
             expect.objectContaining({
-                data: expect.arrayContaining([expect.objectContaining(recordMocks.recordC)]),
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
+                ]),
                 meta: expect.objectContaining({
                     cursor: null,
                     totalCount: 3,
@@ -121,15 +135,17 @@ describe("`search` CRUD", () => {
         // Let's search for records.
         const [searchResponse] = await search.listRecords({
             where: { type: "page" },
-            sort: ["createdOn_ASC"],
+            sort: {
+                createdOn: "ASC"
+            },
             search: "Lorem"
         });
 
         expect(searchResponse.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
-                    expect.objectContaining(recordMocks.recordB),
-                    expect.objectContaining(recordMocks.recordC)
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id }),
+                    expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
                 ]),
                 error: null
             })
@@ -138,7 +154,7 @@ describe("`search` CRUD", () => {
         // Let's update the "page-b" title.
         const updatedTitle = "Title updated";
         const [updateB] = await search.updateRecord({
-            id: recordMocks.recordB.originalId,
+            id: recordMocks.recordB.id,
             data: {
                 title: updatedTitle
             }
@@ -150,6 +166,7 @@ describe("`search` CRUD", () => {
                     updateRecord: {
                         data: {
                             ...recordMocks.recordB,
+                            id: recordB.id,
                             title: updatedTitle
                         },
                         error: null
@@ -160,7 +177,7 @@ describe("`search` CRUD", () => {
 
         // Let's delete "page-b".
         const [deleteB] = await search.deleteRecord({
-            id: recordMocks.recordB.originalId
+            id: recordMocks.recordB.id
         });
 
         expect(deleteB).toEqual({
@@ -175,7 +192,7 @@ describe("`search` CRUD", () => {
         });
 
         // Should not find "page-b".
-        const [getB] = await search.getRecord({ id: recordMocks.recordB.originalId });
+        const [getB] = await search.getRecord({ id: recordMocks.recordB.id });
 
         expect(getB).toMatchObject({
             data: {
@@ -184,21 +201,23 @@ describe("`search` CRUD", () => {
                         data: null,
                         error: {
                             code: "NOT_FOUND",
-                            data: null
+                            data: {
+                                id: recordMocks.recordB.id
+                            }
                         }
                     }
                 }
             }
         });
 
-        // Should find "page-a" by originalId.
-        const [getA] = await search.getRecord({ id: recordMocks.recordA.originalId });
+        // Should find "page-a" by id.
+        const [getA] = await search.getRecord({ id: recordMocks.recordA.id });
 
         expect(getA).toEqual({
             data: {
                 search: {
                     getRecord: {
-                        data: recordMocks.recordA,
+                        data: { ...recordMocks.recordA, id: recordA.id },
                         error: null
                     }
                 }
@@ -206,33 +225,14 @@ describe("`search` CRUD", () => {
         });
     });
 
-    it("should not allow creating an `record` with same `slug`", async () => {
+    it("should allow creating an `record` with same `id`", async () => {
         // Creating a record
         await search.createRecord({ data: recordMocks.recordA });
 
-        // Creating a record with same "originalId" should not be allowed
+        // Creating a record with same "id"
         const [response] = await search.createRecord({ data: recordMocks.recordA });
-
-        expect(response).toEqual({
-            data: {
-                search: {
-                    createRecord: {
-                        data: null,
-                        error: {
-                            code: "VALIDATION_FAILED",
-                            message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value must be unique.",
-                                    fieldId: "originalId",
-                                    storageId: "originalId"
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        });
+        const record = response.data.search.createRecord.data;
+        expect(record).toEqual({ ...recordMocks.recordA, id: record.id });
     });
 
     it("should not allow updating a non-existing `record`", async () => {
@@ -248,8 +248,10 @@ describe("`search` CRUD", () => {
             data: null,
             error: {
                 code: "NOT_FOUND",
-                message: "Entry not found!",
-                data: null
+                message: "Record not found.",
+                data: {
+                    id
+                }
             }
         });
     });

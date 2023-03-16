@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import {
@@ -105,12 +100,14 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const identity = context.security.getIdentity();
             const tenant = context.tenancy.getCurrentTenant();
 
-            const id = mdbid();
+            // Extract ID from file key
+            const [id] = input.key.split("/");
 
             const file: File = {
                 ...input,
                 tags: Array.isArray(input.tags) ? input.tags : [],
-                id,
+                aliases: Array.isArray(input.aliases) ? input.aliases : [],
+                id: input.id || id,
                 meta: {
                     private: false,
                     ...(input.meta || {})
@@ -177,6 +174,11 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     ? input.tags
                     : Array.isArray(original.tags)
                     ? original.tags
+                    : [],
+                aliases: Array.isArray(input.aliases)
+                    ? input.aliases
+                    : Array.isArray(original.aliases)
+                    ? original.aliases
                     : [],
                 id: original.id,
                 webinyVersion: context.WEBINY_VERSION
@@ -290,11 +292,11 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 return {
                     ...input,
                     tags: Array.isArray(input.tags) ? input.tags : [],
+                    aliases: Array.isArray(input.aliases) ? input.aliases : [],
                     meta: {
                         private: false,
                         ...(input.meta || {})
                     },
-                    id: mdbid(),
                     tenant: tenant.id,
                     createdOn: new Date().toISOString(),
                     createdBy,
