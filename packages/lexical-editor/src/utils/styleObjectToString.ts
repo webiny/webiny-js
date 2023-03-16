@@ -1,4 +1,5 @@
-const reactToCSS = require("react-style-object-to-css");
+// @ts-ignore
+import reactToCSS from "react-style-object-to-css";
 
 /*
  * Converts CSS style objects to string
