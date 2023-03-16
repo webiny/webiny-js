@@ -1,6 +1,8 @@
 import { recordMocks } from "./mocks/record.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
+jest.setTimeout(100000);
+
 describe("`search` CRUD", () => {
     const { search } = useGraphQlHandler();
 

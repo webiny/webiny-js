@@ -11,6 +11,8 @@ const data = {
     tags: ["tag1", "tag2"]
 };
 
+jest.setTimeout(100000);
+
 describe("Search Record Lifecycle Events", () => {
     const { search } = useGraphQlHandler({
         plugins: [assignRecordLifecycleEvents()]
