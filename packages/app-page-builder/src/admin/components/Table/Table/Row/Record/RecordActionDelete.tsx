@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 
-import { ReactComponent as Delete } from "@material-design-icons/svg/filled/delete.svg";
+import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";

@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 
-import { ReactComponent as Edit } from "@material-design-icons/svg/filled/edit.svg";
+import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";

@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 
-import { ReactComponent as Move } from "@material-design-icons/svg/filled/drive_file_move.svg";
+import { ReactComponent as Move } from "@material-design-icons/svg/outlined/drive_file_move.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
