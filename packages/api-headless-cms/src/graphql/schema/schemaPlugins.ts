@@ -47,7 +47,16 @@ export const generateSchemaPlugins = async (
     });
 
     models
-        .filter(model => model.fields.length > 0)
+        .filter(model => {
+            /**
+             * TODO @bruno Remove before 5.35.0
+             * Temporary check for the development.
+             */
+            if (!model.singularApiName || !model.pluralApiName) {
+                return false;
+            }
+            return model.fields.length > 0;
+        })
         .forEach(model => {
             switch (type) {
                 case "manage":
