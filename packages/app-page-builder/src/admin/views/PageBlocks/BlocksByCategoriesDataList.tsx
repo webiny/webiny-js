@@ -290,8 +290,8 @@ const BlocksByCategoriesDataList = ({
         setIsDialogOpen(true);
     }, []);
 
-    const handleExportClick = useCallback(() => {
-        showExportBlockInitializeDialog();
+    const handleExportClick = useCallback((selectedBlocksCategory?: string | null) => {
+        showExportBlockInitializeDialog({ where: { blockCategory: selectedBlocksCategory } });
     }, []);
 
     const handleNewBlockClick = useCallback(() => {
@@ -337,9 +337,15 @@ const BlocksByCategoriesDataList = ({
                                     onClick: handleImportClick
                                 },
                                 {
-                                    label: "Export blocks",
+                                    label: "Export all blocks",
                                     icon: <DownloadFileIcon />,
-                                    onClick: handleExportClick
+                                    onClick: () => handleExportClick()
+                                },
+                                {
+                                    label: "Export blocks from current category",
+                                    icon: <DownloadFileIcon />,
+                                    onClick: () => handleExportClick(selectedBlocksCategory),
+                                    disabled: !selectedBlocksCategory
                                 }
                             ]}
                         />

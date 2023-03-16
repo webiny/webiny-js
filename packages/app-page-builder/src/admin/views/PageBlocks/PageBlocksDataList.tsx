@@ -7,12 +7,14 @@ import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as DuplicateIcon } from "~/editor/assets/icons/round-queue-24px.svg";
+import { ReactComponent as ExportIcon } from "@material-design-icons/svg/round/download.svg";
 import { CircularProgress } from "@webiny/ui/Progress";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
 
 import { PbPageBlock } from "~/types";
 import {
@@ -104,6 +106,16 @@ const DuplicateButton = styled(IconButton)({
     }
 });
 
+const ExportButton = styled(IconButton)({
+    position: "absolute",
+    top: "10px",
+    right: "160px",
+
+    "& svg": {
+        fill: "white"
+    }
+});
+
 const NoRecordsWrapper = styled("div")({
     textAlign: "center",
     padding: 100,
@@ -121,6 +133,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
+    const { showExportBlockInitializeDialog } = useExportBlockDialog();
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
 
@@ -206,6 +219,10 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
         [duplicateIt]
     );
 
+    const handleExportClick = useCallback((id: string) => {
+        showExportBlockInitializeDialog({ where: { id } });
+    }, []);
+
     const isLoading = [deleteMutation, duplicateMutation].find(item => item.loading) || loading;
 
     const showEmptyView = !isLoading && !selectedBlocksCategory;
@@ -241,6 +258,10 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                         />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
+                            <ExportButton
+                                icon={<ExportIcon />}
+                                onClick={() => handleExportClick(pageBlock.id)}
+                            />
                             {canEdit(pageBlock) && (
                                 <EditButton
                                     onClick={() =>

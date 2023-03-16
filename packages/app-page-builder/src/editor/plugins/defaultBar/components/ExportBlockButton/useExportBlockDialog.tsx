@@ -41,11 +41,15 @@ const spinnerWrapper = css`
     height: 180px;
 `;
 
-const ExportBlockLoadingDialogMessage: React.FC = () => {
+interface ExportBlockLoadingDialogProps {
+    where?: Record<string, any>;
+}
+
+const ExportBlockLoadingDialogMessage: React.FC<ExportBlockLoadingDialogProps> = props => {
     const { exportBlock } = useExportBlock();
 
     useEffect(() => {
-        exportBlock();
+        exportBlock({ variables: { ...props } });
     }, []);
 
     return (
@@ -108,7 +112,7 @@ const ExportBlockDialogMessage: React.FC<ExportBlockDialogProps> = ({ exportUrl 
 interface UseExportBlockDialog {
     showExportBlockContentDialog: (props: ExportBlockDialogProps) => void;
     showExportBlockLoadingDialog: (taskId: string) => void;
-    showExportBlockInitializeDialog: () => void;
+    showExportBlockInitializeDialog: (props: ExportBlockLoadingDialogProps) => void;
     hideDialog: () => void;
 }
 const useExportBlockDialog = (): UseExportBlockDialog => {
@@ -133,8 +137,8 @@ const useExportBlockDialog = (): UseExportBlockDialog => {
                 dataTestId: "export-blocks.loading-dialog"
             });
         },
-        showExportBlockInitializeDialog: () => {
-            showDialog(<ExportBlockLoadingDialogMessage />, {
+        showExportBlockInitializeDialog: props => {
+            showDialog(<ExportBlockLoadingDialogMessage {...props} />, {
                 title: t`Preparing your export...`,
                 actions: {
                     cancel: { label: t`Cancel` }
