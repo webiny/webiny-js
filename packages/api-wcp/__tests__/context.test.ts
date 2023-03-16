@@ -21,7 +21,9 @@ describe("context", () => {
             canUseFeature: expect.any(Function),
             ensureCanUseFeature: expect.any(Function),
             incrementSeats: expect.any(Function),
-            decrementSeats: expect.any(Function)
+            decrementSeats: expect.any(Function),
+            incrementTenants: expect.any(Function),
+            decrementTenants: expect.any(Function)
         });
     });
 });
