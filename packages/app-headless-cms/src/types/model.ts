@@ -73,6 +73,8 @@ export interface CmsModel {
     lockedFields: CmsModelField[];
     name: string;
     modelId: string;
+    singularApiName: string;
+    pluralApiName: string;
     titleFieldId: string;
     settings: {
         [key: string]: any;
