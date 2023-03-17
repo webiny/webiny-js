@@ -70,6 +70,7 @@ class ImageEditorDialog extends React.Component<ImageEditorDialogProps, ImageEdi
                                         </Tooltip>
                                     ) : (
                                         <ButtonPrimary
+                                            data-testid="dialog-accept"
                                             onClick={() => {
                                                 const url = this.imageEditor.current
                                                     ? this.imageEditor.current.getCanvasDataUrl()
