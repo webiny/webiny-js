@@ -22,20 +22,20 @@ export const getWhere = (scope: string | undefined) => {
     };
 };
 
-export interface FileManagerViewContext {
+export interface FileManagerViewContextData<TFileItem extends FileItem = FileItem> {
     state: State;
     dispatch: React.Dispatch<Action>;
-    createFile: (data: FileItem) => Promise<FileItem | undefined>;
-    updateFile: (id: string, data: Partial<FileItem>) => Promise<void>;
+    createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
+    updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
-    uploadFile: (file: File) => Promise<FileItem | undefined>;
-    files: FileItem[];
+    uploadFile: (file: File) => Promise<TFileItem | undefined>;
+    files: TFileItem[];
     loadingFiles: boolean;
     loadMore: () => void;
     tags: string[];
     settings: Settings | undefined;
-    selected: FileItem[];
-    toggleSelected: (file: FileItem) => void;
+    selected: TFileItem[];
+    toggleSelected: (file: TFileItem) => void;
     hasPreviouslyUploadedFiles: boolean | null;
     setHasPreviouslyUploadedFiles: (flag: boolean) => void;
     queryParams: StateQueryParams;
@@ -57,7 +57,7 @@ function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefin
     return fallback;
 }
 
-export const FileManagerViewContext = React.createContext<FileManagerViewContext | undefined>(
+export const FileManagerViewContext = React.createContext<FileManagerViewContextData | undefined>(
     undefined
 );
 
@@ -138,7 +138,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         listFiles();
     }, [JSON.stringify(state.queryParams)]);
 
-    const setHasPreviouslyUploadedFiles: FileManagerViewContext["setHasPreviouslyUploadedFiles"] =
+    const setHasPreviouslyUploadedFiles: FileManagerViewContextData["setHasPreviouslyUploadedFiles"] =
         state => {
             dispatch({ type: "hasPreviouslyUploadedFiles", state });
         };
@@ -276,7 +276,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             });
     };
 
-    const value: FileManagerViewContext = {
+    const value: FileManagerViewContextData = {
         state,
         dispatch,
         files,
