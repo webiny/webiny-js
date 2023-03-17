@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Image } from "@webiny/app/components/Image";
 import * as Ui from "@webiny/ui/ImageUpload";
-import { FileManager, FileManagerFileItem } from "./FileManager";
+import { FileManager, FileManagerFileItem } from "~/index";
 import { FormComponentProps } from "@webiny/ui/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import styled from "@emotion/styled";
