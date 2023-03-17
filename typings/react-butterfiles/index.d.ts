@@ -23,6 +23,8 @@ declare module "react-butterfiles" {
             | "multipleMaxCountExceeded"
             | "multipleNotAllowed";
         file?: SelectedFile | File;
+        multipleMaxCount: number;
+        multipleMaxSize: number;
     };
 
     export type BrowseFilesParams = {
