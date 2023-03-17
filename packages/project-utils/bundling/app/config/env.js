@@ -67,8 +67,6 @@ function getClientEnvironment({ publicUrl, projectApplication }) {
         stringified[`process.env.${key}`] = JSON.stringify(raw[key]);
     }
 
-    console.log(JSON.stringify(raw, null, 2));
-    process.exit();
     return { raw, stringified };
 }
 
