@@ -25,23 +25,23 @@ import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types
 import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
 
-export interface FileManagerApiContext {
+export interface FileManagerApiContextData<TFileItem extends FileItem = FileItem> {
     canRead: boolean;
     canCreate: boolean;
-    canEdit: (file: FileItem) => boolean;
-    canDelete: (file: FileItem) => boolean;
-    createFile: (data: FileItem) => Promise<FileItem | undefined>;
-    updateFile: (id: string, data: Partial<FileItem>) => Promise<void>;
+    canEdit: (file: TFileItem) => boolean;
+    canDelete: (file: TFileItem) => boolean;
+    createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
+    updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
-    uploadFile: (file: File, options?: UploadFileOptions) => Promise<FileItem | undefined>;
+    uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
     listFiles: (
         params?: ListFilesQueryVariables
-    ) => Promise<{ files: FileItem[]; meta: ListFilesListFilesResponse["meta"] }>;
+    ) => Promise<{ files: TFileItem[]; meta: ListFilesListFilesResponse["meta"] }>;
     listTags: (params?: ListTagsOptions) => Promise<string[]>;
     getSettings(): Promise<Settings>;
 }
 
-export const FileManagerApiContext = React.createContext<FileManagerApiContext | undefined>(
+export const FileManagerApiContext = React.createContext<FileManagerApiContextData | undefined>(
     undefined
 );
 
@@ -164,7 +164,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         });
     };
 
-    const listFiles: FileManagerApiContext["listFiles"] = async (params = {}) => {
+    const listFiles: FileManagerApiContextData["listFiles"] = async (params = {}) => {
         const { data } = await client.query<ListFilesQueryResponse>({
             query: LIST_FILES,
             variables: params,
@@ -174,7 +174,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         return { files, meta };
     };
 
-    const listTags: FileManagerApiContext["listTags"] = async (params = {}) => {
+    const listTags: FileManagerApiContextData["listTags"] = async (params = {}) => {
         const { data } = await client.query<ListFileTagsQueryResponse>({
             query: LIST_TAGS,
             variables: params
@@ -203,7 +203,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         return settingsQuery.data.fileManager.getSettings.data || {};
     };
 
-    const value: FileManagerApiContext = {
+    const value: FileManagerApiContextData = {
         canRead,
         canCreate,
         canEdit,
