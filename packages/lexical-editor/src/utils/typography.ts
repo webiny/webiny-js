@@ -1,28 +1,29 @@
-import { TypographyHTMLTag } from "~/types";
+import { TypographyValue } from "~/types";
 
-type ThemeTypographyMetaData = {
-    // Name to be displayed on UI
-    displayName: string;
-    htmlTag: TypographyHTMLTag;
+export const hasTypographyStyles = (theme: Record<string, any>): boolean => {
+    return !!theme?.styles?.typographyStyles;
 };
 
-const TYPOGRAPHY_META_DATA: Record<string, ThemeTypographyMetaData> = {
-    normal: { displayName: "Normal", htmlTag: "p" },
-    heading1: { displayName: "Heading 1", htmlTag: "h1" },
-    heading2: { displayName: "Heading 2", htmlTag: "h2" },
-    heading3: { displayName: "Heading 3", htmlTag: "h3" },
-    heading4: { displayName: "Heading 4", htmlTag: "h4" },
-    heading5: { displayName: "Heading 5", htmlTag: "h5" },
-    heading6: { displayName: "Heading 6", htmlTag: "h6" },
-    paragraph1: { displayName: "Paragraph 1", htmlTag: "p" },
-    paragraph2: { displayName: "Paragraph 2", htmlTag: "p" }
+export const getTypography = (
+    typographyStyles: Record<string, TypographyValue[]>,
+    typographyStyleType: string
+): TypographyValue[] | null => {
+    return typographyStyles[typographyStyleType] ?? null;
 };
 
-/*
- * @description Return metadata for the specific typography set in the theme.
- * Note: As default will return metadata for 'normal' typography style.
- */
-export const getTypographyMetaByName = (themeTypographyName: string): ThemeTypographyMetaData => {
-    const data = TYPOGRAPHY_META_DATA[themeTypographyName];
-    return data ?? TYPOGRAPHY_META_DATA["normal"];
+export const findTypographyStyleById = (
+    theme: Record<string, any>,
+    styleId: string
+): TypographyValue | undefined => {
+    if (!hasTypographyStyles(theme)) {
+        return undefined;
+    }
+    const typographyStyles = theme?.styles?.typographyStyles;
+    for (const key in typographyStyles) {
+        const typographyTypeData = getTypography(typographyStyles, key);
+        if (typographyTypeData) {
+            return typographyTypeData.find(item => item.id === styleId);
+        }
+    }
+    return undefined;
 };

@@ -11,9 +11,27 @@ export interface StylesObject {
 
 export type ThemeBreakpoints = Record<string, string>;
 
+export type HeadingHtmlTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+export type ParagraphHtmlTag = "p";
+export type ListHtmlTag = "ul" | "ol";
+export type QuoteHtmlTag = "div";
+export type ThemeTypographyHTMLTag = HeadingHtmlTag | ParagraphHtmlTag | ListHtmlTag | QuoteHtmlTag;
+export type TypographyType = "headings" | "paragraphs" | "quotes" | "lists";
+export type TypographyStyle<T extends ThemeTypographyHTMLTag> = {
+    id: string;
+    name: string;
+    tag: T;
+    css: Record<string, any>;
+};
+
+type Typography = {
+    [typeName in TypographyType]: TypographyStyle<ThemeTypographyHTMLTag>[];
+};
+
 export interface ThemeStyles {
     colors: Record<string, any>;
     borderRadius?: number;
+    typographyStyles: Typography;
     typography: Record<string, StylesObject>;
     elements: Record<string, Record<string, any> | StylesObject>;
 

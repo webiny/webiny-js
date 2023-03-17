@@ -45,7 +45,6 @@ export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeTyp
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
-export { getTypographyMetaByName } from "~/utils/typography";
 // types
 export * as types from "./types";
 // config

@@ -1,8 +1,11 @@
 import React, { createContext, useState } from "react";
+import { ToolbarType } from "~/types";
 
 export interface RichTextEditorContext {
     nodeIsText: boolean;
     setNodeIsText: (nodeIsText: boolean) => void;
+    toolbarType?: ToolbarType;
+    setToolbarType: (type: ToolbarType) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -13,6 +16,7 @@ interface RichTextEditorProviderProps {
 
 export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ children }) => {
     const [nodeIsText, setIsText] = useState<boolean>(false);
+    const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const setNodeIsText = (nodeIsText: boolean) => {
         setIsText(nodeIsText);
     };
@@ -21,7 +25,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
         <RichTextEditorContext.Provider
             value={{
                 nodeIsText,
-                setNodeIsText
+                setNodeIsText,
+                toolbarType,
+                setToolbarType
             }}
         >
             {children}

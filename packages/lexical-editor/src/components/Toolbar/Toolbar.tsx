@@ -27,8 +27,15 @@ interface FloatingToolbarProps {
     editor: LexicalEditor;
 }
 
-const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, editor }) => {
+const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem, editor }) => {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
+    const { toolbarType, setToolbarType } = useRichTextEditor();
+
+    useEffect(() => {
+        if (toolbarType !== type) {
+            setToolbarType(type);
+        }
+    }, [type]);
 
     const updateTextFormatFloatingToolbar = useCallback(() => {
         const selection = $getSelection();
