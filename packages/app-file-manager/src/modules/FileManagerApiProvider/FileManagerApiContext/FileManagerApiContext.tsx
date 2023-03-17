@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from "react";
-import { MutationUpdaterFn } from "apollo-client";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSecurity } from "@webiny/app-security";
 import {
@@ -31,9 +30,9 @@ export interface FileManagerApiContext {
     canCreate: boolean;
     canEdit: (file: FileItem) => boolean;
     canDelete: (file: FileItem) => boolean;
-    createFile: (data: FileItem, options?: CreateFileOptions) => Promise<FileItem | undefined>;
-    updateFile: (id: string, data: Partial<FileItem>, options?: UpdateFileOptions) => Promise<void>;
-    deleteFile: (id: string, options?: DeleteFileOptions) => Promise<void>;
+    createFile: (data: FileItem) => Promise<FileItem | undefined>;
+    updateFile: (id: string, data: Partial<FileItem>) => Promise<void>;
+    deleteFile: (id: string) => Promise<void>;
     uploadFile: (file: File, options?: UploadFileOptions) => Promise<FileItem | undefined>;
     listFiles: (
         params?: ListFilesQueryVariables
@@ -48,18 +47,6 @@ export const FileManagerApiContext = React.createContext<FileManagerApiContext |
 
 export interface FileManagerApiProviderProps {
     children: React.ReactNode;
-}
-
-interface CreateFileOptions {
-    updateCache?: MutationUpdaterFn<CreateFileMutationResponse>;
-}
-
-interface UpdateFileOptions {
-    updateCache?: MutationUpdaterFn<UpdateFileMutationResponse>;
-}
-
-interface DeleteFileOptions {
-    updateCache?: MutationUpdaterFn<DeleteFileMutationResponse>;
 }
 
 interface UploadFileOptions {
@@ -144,7 +131,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         [fmFilePermission]
     );
 
-    const createFile = async (data: FileItem, options: CreateFileOptions = {}) => {
+    const createFile = async (data: FileItem) => {
         const response = await client.mutate<
             CreateFileMutationResponse,
             CreateFileMutationVariables
@@ -152,46 +139,27 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             mutation: CREATE_FILE,
             variables: {
                 data
-            },
-            update(cache, result) {
-                if (options.updateCache) {
-                    options.updateCache(cache, result);
-                }
             }
         });
 
         return response.data?.fileManager.createFile.data;
     };
 
-    const updateFile = async (
-        id: string,
-        data: Partial<FileItem>,
-        options: UpdateFileOptions = {}
-    ) => {
+    const updateFile = async (id: string, data: Partial<FileItem>) => {
         await client.mutate<UpdateFileMutationResponse, UpdateFileMutationVariables>({
             mutation: UPDATE_FILE,
             variables: {
                 id,
                 data
-            },
-            update(cache, result) {
-                if (options.updateCache) {
-                    options.updateCache(cache, result);
-                }
             }
         });
     };
 
-    const deleteFile = async (id: string, options: DeleteFileOptions = {}) => {
+    const deleteFile = async (id: string) => {
         await client.mutate<DeleteFileMutationResponse, DeleteFileMutationVariables>({
             mutation: DELETE_FILE,
             variables: {
                 id
-            },
-            update(cache, result) {
-                if (options.updateCache) {
-                    options.updateCache(cache, result);
-                }
             }
         });
     };
