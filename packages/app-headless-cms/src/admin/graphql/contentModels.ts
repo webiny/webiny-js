@@ -48,6 +48,8 @@ export const MODEL_FIELDS = `
     }
     description
     modelId
+    singularApiName
+    pluralApiName
     savedOn
     titleFieldId
     lockedFields

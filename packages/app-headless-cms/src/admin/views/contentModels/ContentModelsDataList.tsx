@@ -5,12 +5,11 @@ import React, { useCallback, useMemo, useState } from "react";
 // @ts-ignore
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
-import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { ReactComponent as ViewListIcon } from "../../icons/view_list.svg";
 import { ReactComponent as CloneIcon } from "../../icons/clone.svg";
-import { useApolloClient, useQuery } from "../../hooks";
+import { useApolloClient, useContentModels } from "../../hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as UIL from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
@@ -29,8 +28,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { CmsEditorContentModel, CmsModel } from "~/types";
 import {
     DeleteCmsModelMutationResponse,
-    DeleteCmsModelMutationVariables,
-    ListCmsModelsQueryResponse
+    DeleteCmsModelMutationVariables
 } from "../../viewsGraphql";
 import usePermission from "~/admin/hooks/usePermission";
 
@@ -40,6 +38,7 @@ interface Sorter {
     label: string;
     sorters: string;
 }
+
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
@@ -73,6 +72,7 @@ interface ContentModelsDataListProps {
     onCreate: () => void;
     onClone: (contentModel: CmsEditorContentModel) => void;
 }
+
 const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     canCreate,
     onCreate,
@@ -86,7 +86,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "cms-delete-content-model-dialog"
     });
-    const { data, loading } = useQuery<ListCmsModelsQueryResponse>(GQL.LIST_CONTENT_MODELS);
+    const { models, loading } = useContentModels();
     const { canDelete, canEdit } = usePermission();
 
     const filterData = useCallback(
@@ -106,8 +106,6 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
         },
         [sort]
     );
-
-    const models: CmsModel[] = loading ? [] : get(data, "listContentModels.data", []);
 
     const deleteRecord = async (item: CmsModel): Promise<void> => {
         showConfirmation(async () => {

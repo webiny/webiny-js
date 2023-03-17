@@ -10,6 +10,8 @@ const ERROR_FIELDS = `
 const BASE_CONTENT_MODEL_FIELDS = `
     description
     modelId
+    singularApiName
+    pluralApiName
     name
     savedOn
     plugin
@@ -50,6 +52,8 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                 contentModels {
                     name
                     modelId
+                    singularApiName
+                    pluralApiName
                     plugin
                     createdBy {
                         id
