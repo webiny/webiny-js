@@ -59,7 +59,7 @@ export const buildPackages = async () => {
                     const packages = allPackages.filter(pkg => packageNames.includes(pkg.name));
 
                     const batchTasks = task.newListr([], {
-                        concurrent: true,
+                        concurrent: !process.env.CI,
                         exitOnError: true
                     });
 
