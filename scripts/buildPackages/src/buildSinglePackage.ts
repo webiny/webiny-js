@@ -16,3 +16,21 @@ export const buildPackageInNewProcess = async (pkg: Package, buildOverrides = "{
     const buildFolder = getBuildOutputFolder(pkg);
     fs.copySync(buildFolder, cacheFolderPath);
 };
+
+export const buildPackageInSameProcess = async (pkg: Package, buildOverrides = "{}") => {
+    const configPath = path.join(pkg.packageFolder, "webiny.config").replace(/\\/g, "/");
+
+    const config = require(configPath);
+    await config.commands.build({
+        // We don't want debug nor regular logs logged within the build command.
+        logs: false,
+        debug: false,
+        overrides: buildOverrides
+    });
+
+    // Copy and paste built code into the cache folder.
+    const cacheFolderPath = path.join(CACHE_FOLDER_PATH, pkg.packageJson.name);
+
+    const buildFolder = getBuildOutputFolder(pkg);
+    fs.copySync(buildFolder, cacheFolderPath);
+};
