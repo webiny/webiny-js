@@ -6,8 +6,9 @@ import { getBatches } from "./getBatches";
 import { META_FILE_PATH } from "./constants";
 import { getPackageSourceHash } from "./getPackageSourceHash";
 import { getBuildMeta } from "./getBuildMeta";
-import { buildPackageInNewProcess } from "./buildSinglePackage";
+import { buildPackageInNewProcess, buildPackageInSameProcess } from "./buildSinglePackage";
 import { MetaJSON, Package } from "./types";
+import { getHardwareInfo } from "./getHardwareInfo";
 
 interface BuildOptions {
     debug?: boolean;
@@ -21,6 +22,8 @@ interface BuildContext {
 
 export const buildPackages = async () => {
     const options = yargs.argv as BuildOptions;
+
+    printHardwareReport();
 
     const { batches, packagesNoCache, allPackages } = await getBatches({
         cache: options.cache ?? true
@@ -87,7 +90,11 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
         title: `${pkg.name}`,
         task: async () => {
             try {
-                await buildPackageInNewProcess(pkg, options.buildOverrides);
+                if (process.env.CI) {
+                    await buildPackageInSameProcess(pkg, options.buildOverrides);
+                } else {
+                    await buildPackageInNewProcess(pkg, options.buildOverrides);
+                }
 
                 // Store package hash
                 const sourceHash = await getPackageSourceHash(pkg);
@@ -99,4 +106,19 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
             }
         }
     };
+};
+
+const toMB = (bytes: number) => {
+    const formatter = new Intl.NumberFormat("en", { style: "unit", unit: "megabyte" });
+
+    return formatter.format(Math.round(bytes / 1024 / 1024));
+};
+
+const printHardwareReport = () => {
+    const { cpuCount, cpuName, freeMemory, totalMemory } = getHardwareInfo();
+    console.log(
+        `Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
+            toMB(totalMemory)
+        )}; Free Memory: ${green(toMB(freeMemory))}.`
+    );
 };
