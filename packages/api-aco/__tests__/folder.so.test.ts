@@ -1,8 +1,6 @@
 import { folderMocks } from "./mocks/folder.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
-jest.setTimeout(100000);
-
 describe("`folder` CRUD", () => {
     const { aco } = useGraphQlHandler();
 

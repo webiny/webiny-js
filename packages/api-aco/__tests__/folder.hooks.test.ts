@@ -7,8 +7,6 @@ const slug = "folder-lifecycle-events";
 const type = "demo-lifecycle-events";
 const parentId = "folderId-lifecycle-events";
 
-jest.setTimeout(100000);
-
 describe("Folder Lifecycle Events", () => {
     const { aco } = useGraphQlHandler({
         plugins: [assignFolderLifecycleEvents()]
