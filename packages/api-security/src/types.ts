@@ -18,6 +18,10 @@ export interface SecurityAuthorizationPlugin extends Plugin {
 }
 // Backwards compatibility - END
 
+export type GetPermission = <T extends SecurityPermission = SecurityPermission>(
+    name: string
+) => Promise<T | null>;
+
 export interface Authorizer {
     (): Promise<SecurityPermission[] | null>;
 }
@@ -71,9 +75,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     disableAuthorization(): void;
     addAuthorizer(authorizer: Authorizer): void;
     getAuthorizers(): Authorizer[];
-    getPermission<TPermission extends SecurityPermission = SecurityPermission>(
-        permission: string
-    ): Promise<TPermission | null>;
+    getPermission: GetPermission;
     getPermissions(): Promise<SecurityPermission[]>;
     hasFullAccess(): Promise<boolean>;
     // API Keys

@@ -1,8 +1,6 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 export interface SettingsEntityParams {
-    context: FileManagerContext;
     table: Table;
 }
 export default (params: SettingsEntityParams): Entity<any> => {

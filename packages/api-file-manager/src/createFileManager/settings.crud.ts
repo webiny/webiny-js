@@ -4,13 +4,8 @@
 // @ts-ignore
 import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import { FileManagerContext, FileManagerSettings } from "~/types";
-import { SettingsStorageOperationsProviderPlugin } from "~/plugins/definitions/SettingsStorageOperationsProviderPlugin";
-import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/api";
-
-// TODO @ts-refactor verify that this is not used and remove it
-export const SETTINGS_KEY = "file-manager";
+import { FileManagerSettings, SettingsCRUD } from "~/types";
+import { FileManagerConfig } from "~/createFileManager/index";
 
 const CreateDataModel = withFields({
     uploadMinFileSize: number({ value: 0, validation: validation.create("gte:0") }),
@@ -38,30 +33,13 @@ const UpdateDataModel = withFields({
     })(string())
 })();
 
-const settingsCrudContextPlugin = new ContextPlugin<FileManagerContext>(async context => {
-    const pluginType = SettingsStorageOperationsProviderPlugin.type;
-
-    const providerPlugin = context.plugins
-        .byType<SettingsStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
-
-    if (!context.fileManager) {
-        context.fileManager = {} as any;
-    }
-
-    context.fileManager.settings = {
+export const createSettingsCrud = ({
+    storageOperations,
+    getTenantId
+}: FileManagerConfig): SettingsCRUD => {
+    return {
         async getSettings() {
-            return storageOperations.get();
+            return storageOperations.settings.get({ tenant: getTenantId() });
         },
         async createSettings(data) {
             const settings = new CreateDataModel().populate(data);
@@ -69,36 +47,35 @@ const settingsCrudContextPlugin = new ContextPlugin<FileManagerContext>(async co
 
             const settingsData: FileManagerSettings = await settings.toJSON();
 
-            return storageOperations.create({
-                data: settingsData
+            return storageOperations.settings.create({
+                data: { ...settingsData, tenant: getTenantId() }
             });
         },
         async updateSettings(data) {
             const updatedValue = new UpdateDataModel().populate(data);
             await updatedValue.validate();
 
-            const existingSettings = (await storageOperations.get()) as FileManagerSettings;
+            const existingSettings = (await storageOperations.settings.get({
+                tenant: getTenantId()
+            })) as FileManagerSettings;
 
             const updatedSettings: Partial<FileManagerSettings> = await updatedValue.toJSON({
                 onlyDirty: true
             });
 
-            return storageOperations.update({
+            return storageOperations.settings.update({
                 original: existingSettings,
                 data: {
                     ...existingSettings,
-                    ...updatedSettings
+                    ...updatedSettings,
+                    tenant: getTenantId()
                 }
             });
         },
         async deleteSettings() {
-            await storageOperations.delete();
+            await storageOperations.settings.delete({ tenant: getTenantId() });
 
             return true;
         }
     };
-});
-
-settingsCrudContextPlugin.name = "FileMangerSettingsCrud";
-
-export default settingsCrudContextPlugin;
+};

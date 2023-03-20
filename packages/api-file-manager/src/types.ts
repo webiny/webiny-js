@@ -1,58 +1,26 @@
 import { I18NContext } from "@webiny/api-i18n/types";
-import { FileStorage } from "./plugins/storage/FileStorage";
+import { FileStorage } from "./storage/FileStorage";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { Context } from "@webiny/api/types";
+import { FileLifecycleEvents } from "./types/file.lifecycle";
+import { File } from "./types/file";
+import { Topic } from "@webiny/pubsub/types";
+export * from "./types/file.lifecycle";
+export * from "./types/file";
+
+export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD, SystemCRUD {
+    storage: FileStorage;
+}
 
 export interface FileManagerContext extends Context, SecurityContext, TenancyContext, I18NContext {
-    fileManager: {
-        files: FilesCRUD;
-        settings: SettingsCRUD;
-        storage: FileStorage;
-        system: SystemCRUD;
-    };
+    fileManager: FileManagerContextObject;
 }
 
 export interface FilePermission extends SecurityPermission {
     name: "fm.file";
     rwd?: string;
     own?: boolean;
-}
-
-export interface File {
-    id: string;
-    key: string;
-    size: number;
-    type: string;
-    name: string;
-    meta: Record<string, any>;
-    tags: string[];
-    aliases: string[];
-    createdOn: string;
-    createdBy: CreatedBy;
-    /**
-     * Added with new storage operations refactoring.
-     */
-    tenant: string;
-    locale: string;
-    webinyVersion: string;
-    /**
-     * User can add new fields to the File object so we must allow it in the types.
-     */
-    [key: string]: any;
-}
-
-export interface FileAlias {
-    tenant: string;
-    locale: string;
-    fileId: string;
-    alias: string;
-}
-
-export interface CreatedBy {
-    id: string;
-    displayName: string | null;
-    type: string;
 }
 
 export interface FileInput {
@@ -106,7 +74,7 @@ interface FilesCrudListTagsParams {
     after?: string;
 }
 
-export interface FilesCRUD {
+export interface FilesCRUD extends FileLifecycleEvents {
     getFile(id: string): Promise<File>;
     listFiles(opts?: FilesListOpts): Promise<[File[], FileListMeta]>;
     listTags(params: FilesCrudListTagsParams): Promise<string[]>;
@@ -117,12 +85,15 @@ export interface FilesCRUD {
 }
 
 export interface SystemCRUD {
+    onSystemBeforeInstall: Topic;
+    onSystemAfterInstall: Topic;
     getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<void>;
     install(args: { srcPrefix: string }): Promise<boolean>;
 }
 
 export interface FileManagerSettings {
+    tenant: string;
     key: string;
     uploadMinFileSize: number;
     uploadMaxFileSize: number;
@@ -171,6 +142,10 @@ export interface FileManagerSystemStorageOperationsCreateParams {
     data: FileManagerSystem;
 }
 
+export interface FileManagerSystemStorageOperationsGetParams {
+    tenant: string;
+}
+
 /**
  * @category StorageOperations
  * @category SystemStorageOperations
@@ -179,7 +154,7 @@ export interface FileManagerSystemStorageOperations {
     /**
      * Get the FileManager system data.
      */
-    get: () => Promise<FileManagerSystem | null>;
+    get: (params: FileManagerSystemStorageOperationsGetParams) => Promise<FileManagerSystem | null>;
     /**
      * Update the FileManager system data..
      */
@@ -217,6 +192,14 @@ export interface FileManagerSettingsStorageOperationsCreateParams {
     data: FileManagerSettings;
 }
 
+export interface FileManagerStorageOperationsGetSettingsParams {
+    tenant: string;
+}
+
+export interface FileManagerStorageOperationsDeleteSettings {
+    tenant: string;
+}
+
 /**
  * @category StorageOperations
  * @category SettingsStorageOperations
@@ -225,7 +208,9 @@ export interface FileManagerSettingsStorageOperations {
     /**
      * Get the FileManager system data.
      */
-    get: () => Promise<FileManagerSettings | null>;
+    get: (
+        params: FileManagerStorageOperationsGetSettingsParams
+    ) => Promise<FileManagerSettings | null>;
     /**
      * Create the FileManagerSettingsData
      */
@@ -241,7 +226,7 @@ export interface FileManagerSettingsStorageOperations {
     /**
      * Delete the existing settings.
      */
-    delete: () => Promise<void>;
+    delete: (params: FileManagerStorageOperationsDeleteSettings) => Promise<void>;
 }
 
 /**
@@ -394,4 +379,11 @@ export interface FileManagerFilesStorageOperations {
     tags: (
         params: FileManagerFilesStorageOperationsTagsParams
     ) => Promise<FileManagerFilesStorageOperationsTagsResponse>;
+}
+
+export interface FileManagerStorageOperations<TContext = FileManagerContext> {
+    beforeInit?: (context: TContext) => Promise<void>;
+    files: FileManagerFilesStorageOperations;
+    settings: FileManagerSettingsStorageOperations;
+    system: FileManagerSystemStorageOperations;
 }

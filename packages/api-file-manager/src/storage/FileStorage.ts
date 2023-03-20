@@ -1,6 +1,6 @@
 import { FileManagerContext } from "~/types";
 import WebinyError from "@webiny/error";
-import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
+import { FilePhysicalStoragePlugin } from "~/plugins/FilePhysicalStoragePlugin";
 
 export type Result = Record<string, any>;
 
@@ -35,6 +35,7 @@ export class FileStorage {
         const storagePlugin = context.plugins
             .byType<FilePhysicalStoragePlugin>(storagePluginType)
             .pop();
+
         if (!storagePlugin) {
             throw new WebinyError(
                 `Missing plugin of type "${storagePluginType}".`,
@@ -46,7 +47,7 @@ export class FileStorage {
     }
 
     async upload(params: FileStorageUploadParams): Promise<Result> {
-        const settings = await this.context.fileManager.settings.getSettings();
+        const settings = await this.context.fileManager.getSettings();
         if (!settings) {
             throw new WebinyError("Missing File Manager Settings.", "FILE_MANAGER_ERROR");
         }
@@ -59,7 +60,7 @@ export class FileStorage {
         const { fileManager } = this.context;
 
         // Save file in DB.
-        return await fileManager.files.createFile({
+        return await fileManager.createFile({
             ...(fileData as any),
             meta: {
                 private: Boolean(params.hideInFileManager)
@@ -69,7 +70,7 @@ export class FileStorage {
     }
 
     async uploadFiles(params: FileStorageUploadMultipleParams) {
-        const settings = await this.context.fileManager.settings.getSettings();
+        const settings = await this.context.fileManager.getSettings();
         if (!settings) {
             throw new WebinyError("Missing File Manager Settings.", "FILE_MANAGER_ERROR");
         }
@@ -90,7 +91,7 @@ export class FileStorage {
 
         const { fileManager } = this.context;
         // Save files in DB.
-        return fileManager.files.createFilesInBatch(filesData);
+        return fileManager.createFilesInBatch(filesData);
     }
 
     async delete(params: FileStorageDeleteParams) {
@@ -100,7 +101,8 @@ export class FileStorage {
         await this.storagePlugin.delete({
             key
         });
+
         // Delete file from the DB.
-        return await fileManager.files.deleteFile(id);
+        return await fileManager.deleteFile(id);
     }
 }

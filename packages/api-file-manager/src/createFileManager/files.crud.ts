@@ -1,89 +1,60 @@
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { createTopic } from "@webiny/pubsub";
+import WebinyError from "@webiny/error";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CreatedBy,
     File,
-    FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
     FilePermission,
+    FilesCRUD,
     FilesListOpts
 } from "~/types";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import { ContextPlugin } from "@webiny/api";
-import { FilePlugin } from "~/plugins/definitions/FilePlugin";
-import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions/FilesStorageOperationsProviderPlugin";
-import WebinyError from "@webiny/error";
-import { runLifecycleEvent } from "~/plugins/crud/utils/lifecycleEvents";
+import { checkBasePermissions } from "./checkBasePermissions";
+import { FileManagerConfig } from "~/createFileManager/index";
 
 const BATCH_CREATE_MAX_FILES = 20;
 
 /**
  * If permission is limited to "own" files only, check that current identity owns the file.
  */
-const checkOwnership = (file: File, permission: FilePermission, context: FileManagerContext) => {
+const checkOwnership = (file: File, permission: FilePermission, identity: SecurityIdentity) => {
     if (permission?.own === true) {
-        const identity = context.security.getIdentity();
         if (file.createdBy.id !== identity.id) {
             throw new NotAuthorizedError();
         }
     }
 };
 
-const getLocaleCode = (context: FileManagerContext): string => {
-    if (!context.i18n) {
-        throw new WebinyError("Missing i18n on the FileManagerContext.", "MISSING_I18N");
-    }
+export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
+    const {
+        storageOperations,
+        getLocaleCode,
+        getTenantId,
+        getIdentity,
+        getPermission,
+        WEBINY_VERSION
+    } = config;
 
-    const locale = context.i18n.getContentLocale();
-    if (!locale) {
-        throw new WebinyError(
-            "Missing content locale on the FileManagerContext.",
-            "MISSING_I18N_CONTENT_LOCALE"
-        );
-    }
-
-    if (!locale.code) {
-        throw new WebinyError(
-            "Missing content locale code on the FileManagerContext.",
-            "MISSING_I18N_CONTENT_LOCALE_CODE"
-        );
-    }
-    return locale.code;
-};
-
-const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async context => {
-    const pluginType = FilesStorageOperationsProviderPlugin.type;
-
-    const providerPlugin = context.plugins
-        .byType<FilesStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
-
-    if (!context.fileManager) {
-        context.fileManager = {} as any;
-    }
-
-    const filePlugins = context.plugins.byType<FilePlugin>(FilePlugin.type);
-
-    context.fileManager.files = {
+    return {
+        onFileBeforeCreate: createTopic("fileManager.onFileBeforeCreate"),
+        onFileAfterCreate: createTopic("fileManager.onFileAfterCreate"),
+        onFileBeforeBatchCreate: createTopic("fileManager.onFileBeforeBatchCreate"),
+        onFileAfterBatchCreate: createTopic("fileManager.onFileAfterBatchCreate"),
+        onFileBeforeUpdate: createTopic("fileManager.onFileBeforeUpdate"),
+        onFileAfterUpdate: createTopic("fileManager.onFileAfterUpdate"),
+        onFileBeforeDelete: createTopic("fileManager.onFileBeforeDelete"),
+        onFileAfterDelete: createTopic("fileManager.onFileAfterDelete"),
         async getFile(id: string) {
-            const permission = await checkBasePermissions(context, { rwd: "r" });
+            const permission = await checkBasePermissions(getPermission, { rwd: "r" });
 
-            const file = await storageOperations.get({
+            const file = await storageOperations.files.get({
                 where: {
                     id,
-                    tenant: context.tenancy.getCurrentTenant().id,
-                    locale: getLocaleCode(context)
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
 
@@ -91,14 +62,13 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(file, permission, context);
+            checkOwnership(file, permission, getIdentity());
 
             return file;
         },
         async createFile(input) {
-            await checkBasePermissions(context, { rwd: "w" });
-            const identity = context.security.getIdentity();
-            const tenant = context.tenancy.getCurrentTenant();
+            await checkBasePermissions(getPermission, { rwd: "w" });
+            const identity = getIdentity();
 
             // Extract ID from file key
             const [id] = input.key.split("/");
@@ -112,32 +82,23 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     private: false,
                     ...(input.meta || {})
                 },
-                tenant: tenant.id,
+                tenant: getTenantId(),
                 createdOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                locale: getLocaleCode(context),
-                webinyVersion: context.WEBINY_VERSION
+                locale: getLocaleCode(),
+                webinyVersion: WEBINY_VERSION
             };
 
             try {
-                await runLifecycleEvent("beforeCreate", {
-                    context,
-                    plugins: filePlugins,
-                    data: file
-                });
-                const result = await storageOperations.create({
-                    file
-                });
-                await runLifecycleEvent("afterCreate", {
-                    context,
-                    plugins: filePlugins,
-                    data: file,
-                    file: result
-                });
+                await this.onFileBeforeCreate.publish({ file });
+
+                const result = await storageOperations.files.create({ file });
+
+                await this.onFileAfterCreate.publish({ file });
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -151,13 +112,13 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             }
         },
         async updateFile(id, input) {
-            const permission = await checkBasePermissions(context, { rwd: "w" });
+            const permission = await checkBasePermissions(getPermission, { rwd: "w" });
 
-            const original = await storageOperations.get({
+            const original = await storageOperations.files.get({
                 where: {
                     id,
-                    tenant: context.tenancy.getCurrentTenant().id,
-                    locale: getLocaleCode(context)
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
 
@@ -165,7 +126,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(original, permission, context);
+            checkOwnership(original, permission, getIdentity());
 
             const file: File = {
                 ...original,
@@ -181,26 +142,25 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     ? original.aliases
                     : [],
                 id: original.id,
-                webinyVersion: context.WEBINY_VERSION
+                webinyVersion: WEBINY_VERSION
             };
 
             try {
-                await runLifecycleEvent("beforeUpdate", {
-                    context,
-                    plugins: filePlugins,
+                await this.onFileBeforeUpdate.publish({
                     original,
-                    data: file
+                    file,
+                    input
                 });
-                const result = await storageOperations.update({
+
+                const result = await storageOperations.files.update({
                     original,
                     file
                 });
-                await runLifecycleEvent("afterUpdate", {
-                    context,
-                    plugins: filePlugins,
+
+                await this.onFileAfterUpdate.publish({
                     original,
-                    data: file,
-                    file: result
+                    file,
+                    input
                 });
                 return result;
             } catch (ex) {
@@ -216,35 +176,30 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             }
         },
         async deleteFile(id) {
-            const permission = await checkBasePermissions(context, { rwd: "d" });
+            const permission = await checkBasePermissions(getPermission, { rwd: "d" });
 
-            const file = await storageOperations.get({
+            const file = await storageOperations.files.get({
                 where: {
                     id,
-                    tenant: context.tenancy.getCurrentTenant().id,
-                    locale: getLocaleCode(context)
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
+
             if (!file) {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(file, permission, context);
+            checkOwnership(file, permission, getIdentity());
 
             try {
-                await runLifecycleEvent("beforeDelete", {
-                    context,
-                    plugins: filePlugins,
+                await this.onFileBeforeDelete.publish({ file });
+
+                await storageOperations.files.delete({
                     file
                 });
-                await storageOperations.delete({
-                    file
-                });
-                await runLifecycleEvent("afterDelete", {
-                    context,
-                    plugins: filePlugins,
-                    file
-                });
+
+                await this.onFileAfterDelete.publish({ file });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete a file.",
@@ -278,10 +233,12 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 );
             }
 
-            await checkBasePermissions(context, { rwd: "w" });
+            await checkBasePermissions(getPermission, { rwd: "w" });
 
-            const identity = context.security.getIdentity();
-            const tenant = context.tenancy.getCurrentTenant();
+            const identity = getIdentity();
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
+
             const createdBy: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
@@ -297,29 +254,20 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                         private: false,
                         ...(input.meta || {})
                     },
-                    tenant: tenant.id,
+                    tenant,
                     createdOn: new Date().toISOString(),
                     createdBy,
-                    locale: getLocaleCode(context),
-                    webinyVersion: context.WEBINY_VERSION
+                    locale,
+                    webinyVersion: WEBINY_VERSION
                 };
             });
 
             try {
-                await runLifecycleEvent("beforeBatchCreate", {
-                    context,
-                    plugins: filePlugins,
-                    data: files
-                });
-                const results = await storageOperations.createBatch({
+                await this.onFileBeforeBatchCreate.publish({ files });
+                const results = await storageOperations.files.createBatch({
                     files
                 });
-                await runLifecycleEvent("afterBatchCreate", {
-                    context,
-                    plugins: filePlugins,
-                    data: files,
-                    files: results
-                });
+                await this.onFileAfterBatchCreate.publish({ files });
                 return results;
             } catch (ex) {
                 throw new WebinyError(
@@ -333,7 +281,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             }
         },
         async listFiles(params: FilesListOpts = {}) {
-            const permission = await checkBasePermissions(context, { rwd: "r" });
+            const permission = await checkBasePermissions(getPermission, { rwd: "r" });
 
             const {
                 limit = 40,
@@ -349,14 +297,14 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...initialWhere,
                 private: false,
-                locale: getLocaleCode(context),
-                tenant: context.tenancy.getCurrentTenant().id
+                locale: getLocaleCode(),
+                tenant: getTenantId()
             };
             /**
              * Always override the createdBy received from the user, if any.
              */
             if (permission.own === true) {
-                const identity = context.security.getIdentity();
+                const identity = getIdentity();
                 where.createdBy = identity.id;
             }
             /**
@@ -392,7 +340,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const sort =
                 Array.isArray(initialSort) && initialSort.length > 0 ? initialSort : ["id_DESC"];
             try {
-                return await storageOperations.list({
+                return await storageOperations.files.list({
                     where,
                     after,
                     limit,
@@ -413,12 +361,12 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             }
         },
         async listTags({ where: initialWhere, after, limit }) {
-            await checkBasePermissions(context);
+            await checkBasePermissions(getPermission);
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 ...initialWhere,
-                tenant: context.tenancy.getCurrentTenant().id,
-                locale: getLocaleCode(context)
+                tenant: getTenantId(),
+                locale: getLocaleCode()
             };
 
             const params = {
@@ -428,7 +376,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             };
 
             try {
-                const [tags] = await storageOperations.tags(params);
+                const [tags] = await storageOperations.files.tags(params);
                 if (Array.isArray(tags) === false) {
                     return [];
                 }
@@ -448,8 +396,4 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             }
         }
     };
-});
-
-filesContextCrudPlugin.name = "FileManagerFilesCrud";
-
-export default filesContextCrudPlugin;
+};

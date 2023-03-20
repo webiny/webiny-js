@@ -18,16 +18,12 @@ const {
 /**
  * For this to work it must load plugins that have already been built
  */
-const plugins = require("../../dist/index").default;
 const { configurations } = require("../../dist/configurations");
 const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 const {
     createHandler: createDynamoDBToElasticsearchHandler
 } = require("@webiny/handler-aws/dynamodb");
-
-if (typeof plugins !== "function") {
-    throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
-}
+const { createFileManagerStorageOperations } = require("../../dist/index");
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-file-manager-env-`;
@@ -64,21 +60,44 @@ class FileManagerTestEnvironment extends NodeEnvironment {
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
+        // this.global.__getStorageOperationsPlugins = () => {
+        //     return () => {
+        //         const pluginsValue = plugins();
+        //         const dbPluginsValue = dbPlugins({
+        //             table: process.env.DB_TABLE,
+        //             driver: new DynamoDbDriver({
+        //                 documentClient
+        //             })
+        //         });
+        //         return [
+        //             createGzipCompression(),
+        //             ...pluginsValue,
+        //             ...dbPluginsValue,
+        //             elasticsearchClientContext
+        //         ];
+        //     };
+        // };
+
         this.global.__getStorageOperationsPlugins = () => {
-            return () => {
-                const pluginsValue = plugins();
-                const dbPluginsValue = dbPlugins({
-                    table: process.env.DB_TABLE,
-                    driver: new DynamoDbDriver({
-                        documentClient
-                    })
-                });
-                return [
-                    createGzipCompression(),
-                    ...pluginsValue,
-                    ...dbPluginsValue,
-                    elasticsearchClientContext
-                ];
+            return {
+                createStorageOperations: params => {
+                    const { plugins: testPlugins = [] } = params;
+                    return createFileManagerStorageOperations({
+                        documentClient,
+                        elasticsearchClient,
+                        plugins: testPlugins
+                    });
+                },
+                getPlugins: () => {
+                    return [
+                        ...dbPlugins({
+                            table: process.env.DB_TABLE,
+                            driver: new DynamoDbDriver({
+                                documentClient
+                            })
+                        })
+                    ];
+                }
             };
         };
 

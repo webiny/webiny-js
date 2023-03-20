@@ -65,6 +65,7 @@
     "@webiny/api-wcp": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "aws-sdk": "^2.971.0",
     "jest": "^28.1.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

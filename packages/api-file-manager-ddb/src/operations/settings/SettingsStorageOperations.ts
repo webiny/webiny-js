@@ -1,52 +1,39 @@
 import {
-    FileManagerContext,
     FileManagerSettings,
     FileManagerSettingsStorageOperations,
     FileManagerSettingsStorageOperationsCreateParams,
-    FileManagerSettingsStorageOperationsUpdateParams
+    FileManagerSettingsStorageOperationsUpdateParams,
+    FileManagerStorageOperationsDeleteSettings,
+    FileManagerStorageOperationsGetSettingsParams
 } from "@webiny/api-file-manager/types";
 import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
-import defineTable from "~/definitions/table";
 import defineSettingsEntity from "~/definitions/settingsEntity";
 import { get } from "@webiny/db-dynamodb/utils/get";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createTable } from "~/definitions/table";
 
-interface SettingsStorageOperationsConstructorParams {
-    context: FileManagerContext;
+interface SettingsStorageOperationsConfig {
+    documentClient: DocumentClient;
 }
 
 const SORT_KEY = "A";
 
 export class SettingsStorageOperations implements FileManagerSettingsStorageOperations {
-    private readonly _context: FileManagerContext;
     private readonly _entity: Entity<any>;
 
-    private get partitionKey(): string {
-        const tenant = this._context.tenancy.getCurrentTenant();
-        if (!tenant) {
-            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-        }
-        return `T#${tenant.id}#FM#SETTINGS`;
+    public constructor({ documentClient }: SettingsStorageOperationsConfig) {
+        this._entity = defineSettingsEntity({ table: createTable({ documentClient }) });
     }
 
-    public constructor({ context }: SettingsStorageOperationsConstructorParams) {
-        this._context = context;
-        const table = defineTable({
-            context
-        });
-
-        this._entity = defineSettingsEntity({
-            context,
-            table
-        });
-    }
-
-    public async get(): Promise<FileManagerSettings | null> {
+    public async get({
+        tenant
+    }: FileManagerStorageOperationsGetSettingsParams): Promise<FileManagerSettings | null> {
         try {
             const settings = await get<{ data: FileManagerSettings }>({
                 entity: this._entity,
                 keys: {
-                    PK: this.partitionKey,
+                    PK: `T#${tenant}#FM#SETTINGS`,
                     SK: "A"
                 }
             });
@@ -63,7 +50,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
     public async create({
         data
     }: FileManagerSettingsStorageOperationsCreateParams): Promise<FileManagerSettings> {
-        const original = await this.get();
+        const original = await this.get({ tenant: data.tenant });
 
         if (original) {
             return await this.update({ original, data });
@@ -71,7 +58,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
 
         try {
             await this._entity.put({
-                PK: this.partitionKey,
+                PK: `T#${data.tenant}#FM#SETTINGS`,
                 SK: SORT_KEY,
                 TYPE: "fm.settings",
                 data
@@ -93,7 +80,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
     }: FileManagerSettingsStorageOperationsUpdateParams): Promise<FileManagerSettings> {
         try {
             await this._entity.update({
-                PK: this.partitionKey,
+                PK: `T#${data.tenant}#FM#SETTINGS`,
                 SK: SORT_KEY,
                 TYPE: "fm.settings",
                 data
@@ -110,9 +97,9 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
         }
     }
 
-    public async delete(): Promise<void> {
+    public async delete({ tenant }: FileManagerStorageOperationsDeleteSettings): Promise<void> {
         return this._entity.delete({
-            PK: this.partitionKey,
+            PK: `T#${tenant}#FM#SETTINGS`,
             SK: SORT_KEY
         });
     }
