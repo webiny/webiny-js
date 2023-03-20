@@ -6,6 +6,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateReadSDLParams {
+    models: CmsModel[];
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
@@ -15,6 +16,7 @@ interface CreateReadSDL {
 }
 
 export const createReadSDL: CreateReadSDL = ({
+    models,
     model,
     fieldTypePlugins,
     sorterPlugins
@@ -37,6 +39,7 @@ export const createReadSDL: CreateReadSDL = ({
         fieldTypePlugins
     });
     const fieldsRender = renderFields({
+        models,
         model,
         type,
         fieldTypePlugins
@@ -48,9 +51,11 @@ export const createReadSDL: CreateReadSDL = ({
 
     const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");
 
+    const { singularApiName: singularName, pluralApiName: pluralName } = model;
+
     return `
-        """${model.description || ""}"""
-        type ${model.singularApiName} {
+        """${model.description || singularName}"""
+        type ${singularName} {
             id: ID!
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
@@ -68,7 +73,7 @@ export const createReadSDL: CreateReadSDL = ({
         
         ${
             getFilterFieldsRender &&
-            `input ${model.singularApiName}GetWhereInput {
+            `input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
         }`
         }
@@ -76,43 +81,41 @@ export const createReadSDL: CreateReadSDL = ({
         
         ${
             listFilterFieldsRender &&
-            `input ${model.singularApiName}ListWhereInput {
+            `input ${singularName}ListWhereInput {
                 ${listFilterFieldsRender}
-                AND: [${model.singularApiName}ListWhereInput!]
-                OR: [${model.singularApiName}ListWhereInput!]
+                AND: [${singularName}ListWhereInput!]
+                OR: [${singularName}ListWhereInput!]
         }`
         }
         
         
         ${
             sortEnumRender &&
-            `enum ${model.singularApiName}ListSorter {
+            `enum ${singularName}ListSorter {
             ${sortEnumRender}
         }`
         }
         
-        type ${model.singularApiName}Response {
-            data: ${model.singularApiName}
+        type ${singularName}Response {
+            data: ${singularName}
             error: CmsError
         }
         
-        type ${model.singularApiName}ListResponse {
-            data: [${model.singularApiName}]
+        type ${singularName}ListResponse {
+            data: [${singularName}]
             meta: CmsListMeta
             error: CmsError
         }
         
         extend type Query {
-            get${model.singularApiName}(where: ${model.singularApiName}GetWhereInput!): ${
-        model.singularApiName
-    }Response
+            get${singularName}(where: ${singularName}GetWhereInput!): ${singularName}Response
 
-            list${model.pluralApiName}(
-                where: ${model.singularApiName}ListWhereInput
-                sort: [${model.singularApiName}ListSorter]
+            list${pluralName}(
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
                 limit: Int
                 after: String
-            ): ${model.singularApiName}ListResponse
+            ): ${singularName}ListResponse
         }
     `;
 };

@@ -2,6 +2,15 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
 const pageModelPlugin = new CmsModelPlugin({
+    locale: "en-US",
+    lockedFields: [],
+    modelId: "page",
+    name: "Page",
+    description: "",
+    tenant: "root",
+    titleFieldId: "title",
+    singularApiName: "PageModelApiNameRef",
+    pluralApiName: "PagesModelApiNameRefs",
     fields: [
         {
             fieldId: "title",
@@ -70,19 +79,18 @@ const pageModelPlugin = new CmsModelPlugin({
         id: "62f39c13ebe1d800091bf33c",
         name: "Ungrouped"
     },
-    layout: [["jf7h0jsc"], ["0kbfq0j6"]],
-    locale: "en-US",
-    lockedFields: [],
-    modelId: "page",
-    name: "Page",
-    description: "",
-    tenant: "root",
-    titleFieldId: "title"
+    layout: [["jf7h0jsc"], ["0kbfq0j6"]]
 });
 
 const faqModelPlugin = new CmsModelPlugin({
+    lockedFields: [],
+    modelId: "faq",
+    name: "FAQ",
+    titleFieldId: "id",
     locale: "en-US",
     description: "",
+    singularApiName: "FaqModelApiNameRef",
+    pluralApiName: "FaqsModelApiNameRefs",
     fields: [
         {
             fieldId: "question",
@@ -148,15 +156,19 @@ const faqModelPlugin = new CmsModelPlugin({
         id: "62f39c13ebe1d800091bf33c",
         name: "Ungrouped"
     },
-    layout: [["c8pphxf2"], ["477qeutg"], ["7jubpw3w"]],
-    lockedFields: [],
-    modelId: "faq",
-    name: "FAQ",
-    titleFieldId: "id"
+    layout: [["c8pphxf2"], ["477qeutg"], ["7jubpw3w"]]
 });
 
 const faqGroupBannerModelPlugin = new CmsModelPlugin({
+    locale: "en-US",
+    lockedFields: [],
+    modelId: "faqGroupBanner",
+    name: "FAQ Group Banner",
+    tenant: "root",
+    titleFieldId: "id",
     description: "",
+    singularApiName: "FaqGroupBannerModelApiNameRef",
+    pluralApiName: "FaqsGroupBannersModelApiNameRefs",
     fields: [
         {
             fieldId: "eyebrowText",
@@ -314,13 +326,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         ["g4ei6uhp"],
         ["g98nz2mr"],
         ["t03jq8ke"]
-    ],
-    locale: "en-US",
-    lockedFields: [],
-    modelId: "faqGroupBanner",
-    name: "FAQ Group Banner",
-    tenant: "root",
-    titleFieldId: "id"
+    ]
 });
 
 describe("content model plugins - nested `ref` field union types", () => {

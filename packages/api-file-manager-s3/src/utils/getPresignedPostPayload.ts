@@ -5,6 +5,7 @@ import S3 from "aws-sdk/clients/s3";
 import { validation } from "@webiny/validation";
 import { PresignedPostPayloadData, PresignedPostPayloadDataResponse } from "~/types";
 import { FileManagerSettings } from "@webiny/api-file-manager/types";
+import { mimeTypes } from "./mimeTypes";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 26214400; // 25MB
@@ -46,6 +47,12 @@ export default async (
 
     // Replace all whitespace.
     key = key.replace(/\s/g, "");
+
+    // Make sure file key contains a file extension
+    const extensions = mimeTypes[contentType];
+    if (!extensions.some(ext => key.endsWith(`.${ext}`))) {
+        key = key + `.${extensions[0]}`;
+    }
 
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(

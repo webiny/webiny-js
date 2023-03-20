@@ -11924,6 +11924,7 @@ __metadata:
     "@webiny/validation": 0.0.0
     form-data: ^4.0.0
     mdbid: ^1.0.0
+    mime: ^3.0.0
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
     sanitize-filename: ^1.6.3
@@ -13166,7 +13167,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
-    "@apollo/react-common": ^3.1.4
     "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.19.3
@@ -13205,27 +13205,18 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    bytes: ^3.1.0
     classnames: ^2.2.6
-    dataurl-to-blob: ^0.0.1
-    dayjs: ^1.10.4
     dot-prop-immutable: ^2.1.0
     downshift: ^3.1.2
     emotion: ^10.0.17
     graphlib: ^2.1.7
     graphql: ^15.7.2
-    graphql-tag: ^2.12.6
-    invariant: ^2.2.4
     lodash: ^4.17.11
-    mime: ^2.4.2
-    minimatch: ^5.1.0
     nanoid: ^3.1.23
     prop-types: ^15.7.2
     react: 17.0.2
-    react-butterfiles: ^1.3.1
     react-dom: 17.0.2
     react-hotkeyz: ^1.0.4
-    react-lazy-load: ^3.1.14
     react-transition-group: ^4.3.0
     rimraf: ^3.0.2
     store: ^2.0.12
@@ -13341,6 +13332,7 @@ __metadata:
     "@babel/runtime": ^7.19.0
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
+    "@material-design-icons/svg": ^0.14.3
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@webiny/app": 0.0.0
@@ -13356,12 +13348,23 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
+    bytes: ^3.1.0
+    classnames: ^2.2.6
+    dataurl-to-blob: ^0.0.1
+    dayjs: ^1.10.4
+    emotion: ^10.0.17
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
-    lodash.get: ^4.4.2
+    invariant: ^2.2.4
+    lodash: ^4.17.11
+    mime: ^2.4.2
+    minimatch: ^5.1.0
     prop-types: ^15.7.2
     react: 17.0.2
+    react-butterfiles: ^1.3.1
     react-dom: 17.0.2
+    react-hotkeyz: ^1.0.4
+    react-lazy-load: ^3.1.14
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -31495,6 +31498,15 @@ __metadata:
   bin:
     mime: cli.js
   checksum: 1497ba7b9f6960694268a557eae24b743fd2923da46ec392b042469f4b901721ba0adcf8b0d3c2677839d0e243b209d76e5edcbd09cfdeffa2dfb6bb4df4b862
+  languageName: node
+  linkType: hard
+
+"mime@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "mime@npm:3.0.0"
+  bin:
+    mime: cli.js
+  checksum: f43f9b7bfa64534e6b05bd6062961681aeb406a5b53673b53b683f27fcc4e739989941836a355eef831f4478923651ecc739f4a5f6e20a76487b432bfd4db928
   languageName: node
   linkType: hard
 

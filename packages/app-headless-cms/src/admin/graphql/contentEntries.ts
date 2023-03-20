@@ -1,6 +1,4 @@
-import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
-import pluralize from "pluralize";
 import {
     CmsContentEntryRevision,
     CmsEditorContentEntry,
@@ -26,6 +24,7 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
     locked
     status
 `;
+
 /**
  * ############################################
  * Get CMS Entry Query
@@ -43,29 +42,29 @@ export interface CmsEntryGetQueryVariables {
 }
 
 export const createReadQuery = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
     /**
      * This query now accepts both revision or entryId as we can load exact revision or latest (if entryId was sent).
      */
     return gql`
-        query CmsEntriesGet${ucFirstModelId}($revision: ID, $entryId: ID) {
-            content: get${ucFirstModelId}(revision: $revision, entryId: $entryId) {
-                data {
+        query CmsEntriesGet${model.singularApiName}($revision: ID, $entryId: ID) {
+            content: get${model.singularApiName}(revision: $revision, entryId: $entryId) {
+            data {
+                id
+                createdBy {
                     id
-                    createdBy {
-                        id
-                    }
-                    ${createFieldsList({ model, fields: model.fields })}
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
                 }
-                error ${ERROR_FIELD}
+                ${createFieldsList({ model, fields: model.fields })}
+                savedOn
+                meta {
+                    ${CONTENT_META_FIELDS}
+                }
             }
+            error ${ERROR_FIELD}
+        }
         }
     `;
 };
+
 /**
  * ############################################
  * List CMS Entry Revisions Query
@@ -77,24 +76,24 @@ export interface CmsEntriesListRevisionsQueryResponse {
         meta: CmsMetaResponse;
     };
 }
+
 export interface CmsEntriesListRevisionsQueryVariables {
     id: string;
 }
-export const createRevisionsQuery = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createRevisionsQuery = (model: CmsEditorContentModel) => {
     return gql`
-        query CmsEntriesGet${ucFirstModelId}Revisions($id: ID!) {
-            revisions: get${ucFirstModelId}Revisions(id: $id) {
-                data {
-                    id
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
-                }
-                error ${ERROR_FIELD}
-            }
+        query CmsEntriesGet${model.singularApiName}Revisions($id: ID!) {
+        revisions: get${model.singularApiName}Revisions(id: $id) {
+        data {
+        id
+        savedOn
+        meta {
+        ${CONTENT_META_FIELDS}
+        }
+        }
+        error ${ERROR_FIELD}
+        }
         }
     `;
 };
@@ -110,6 +109,7 @@ export interface CmsEntriesListQueryResponse {
         meta: CmsMetaResponse;
     };
 }
+
 export interface CmsEntriesListQueryVariables {
     // TODO @ts-refactor better list types
     where?: {
@@ -119,36 +119,37 @@ export interface CmsEntriesListQueryVariables {
     limit?: number;
     after?: string;
 }
-export const createListQuery = (model: CmsEditorContentModel) => {
-    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createListQuery = (model: CmsEditorContentModel) => {
     return gql`
-        query CmsEntriesList${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String) {
-            content: list${ucFirstPluralizedModelId}(
-                where: $where
-                sort: $sort
-                limit: $limit
-                after: $after
+        query CmsEntriesList${model.pluralApiName}($where: ${
+        model.singularApiName
+    }ListWhereInput, $sort: [${model.singularApiName}ListSorter], $limit: Int, $after: String) {
+            content: list${model.pluralApiName}(
+            where: $where
+            sort: $sort
+            limit: $limit
+            after: $after
             ) {
-                data {
-                    id
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
-                    ${getModelTitleFieldId(model)}
-                }
+            data {
+                id
+                savedOn
                 meta {
-                    cursor
-                    hasMoreItems
-                    totalCount
+                    ${CONTENT_META_FIELDS}
                 }
-                error ${ERROR_FIELD}
+                ${getModelTitleFieldId(model)}
             }
+            meta {
+                cursor
+                hasMoreItems
+                totalCount
+            }
+            error ${ERROR_FIELD}
+        }
         }
     `;
 };
+
 /**
  * ############################################
  * Delete Mutation
@@ -159,21 +160,22 @@ export interface CmsEntryDeleteMutationResponse {
         error: CmsErrorResponse | null;
     };
 }
+
 export interface CmsEntryDeleteMutationVariables {
     revision: string;
 }
-export const createDeleteMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createDeleteMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsEntriesDelete${ucFirstModelId}($revision: ID!) {
-            content: delete${ucFirstModelId}(revision: $revision) {
-                data
-                error ${ERROR_FIELD}
-            }
+        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!) {
+            content: delete${model.singularApiName}(revision: $revision) {
+            data
+            error ${ERROR_FIELD}
+        }
         }
     `;
 };
+
 /**
  * ############################################
  * Create Mutation
@@ -184,31 +186,32 @@ export interface CmsEntryCreateMutationResponse {
         error: CmsErrorResponse | null;
     };
 }
+
 export interface CmsEntryCreateMutationVariables {
     /**
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
 }
-export const createCreateMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createCreateMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsEntriesCreate${ucFirstModelId}($data: ${ucFirstModelId}Input!) {
-            content: create${ucFirstModelId}(data: $data) {
-                data {
-                    id
-                    savedOn
-                    ${createFieldsList({ model, fields: model.fields })}
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+        mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!) {
+            content: create${model.singularApiName}(data: $data) {
+            data {
+                id
+                savedOn
+                ${createFieldsList({ model, fields: model.fields })}
+                meta {
+                    ${CONTENT_META_FIELDS}
                 }
-                error ${ERROR_FIELD}
             }
+            error ${ERROR_FIELD}
+        }
         }
     `;
 };
+
 /**
  * ############################################
  * Create From Mutation
@@ -219,6 +222,7 @@ export interface CmsEntryCreateFromMutationResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export interface CmsEntryCreateFromMutationVariables {
     revision: string;
     /**
@@ -226,24 +230,26 @@ export interface CmsEntryCreateFromMutationVariables {
      */
     data?: Record<string, any>;
 }
-export const createCreateFromMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsCreate${ucFirstModelId}From($revision: ID!, $data: ${ucFirstModelId}Input) {
-            content: create${ucFirstModelId}From(revision: $revision, data: $data) {
-                data {
-                    id
-                    savedOn
-                    ${createFieldsList({ model, fields: model.fields })}
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
-                }
-                error ${ERROR_FIELD}
-            }
+        mutation CmsCreate${model.singularApiName}From($revision: ID!, $data: ${
+        model.singularApiName
+    }Input) {
+        content: create${model.singularApiName}From(revision: $revision, data: $data) {
+        data {
+        id
+        savedOn
+        ${createFieldsList({ model, fields: model.fields })}
+        meta {
+        ${CONTENT_META_FIELDS}
+        }
+        }
+        error ${ERROR_FIELD}
+        }
         }`;
 };
+
 /**
  * ############################################
  * Update Mutation
@@ -254,6 +260,7 @@ export interface CmsEntryUpdateMutationResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export interface CmsEntryUpdateMutationVariables {
     revision: string;
     /**
@@ -261,25 +268,27 @@ export interface CmsEntryUpdateMutationVariables {
      */
     data: Record<string, any>;
 }
-export const createUpdateMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createUpdateMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsUpdate${ucFirstModelId}($revision: ID!, $data: ${ucFirstModelId}Input!) {
-            content: update${ucFirstModelId}(revision: $revision, data: $data) {
-                data {
-                    id
-                    ${createFieldsList({ model, fields: model.fields })}
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+        mutation CmsUpdate${model.singularApiName}($revision: ID!, $data: ${
+        model.singularApiName
+    }Input!) {
+            content: update${model.singularApiName}(revision: $revision, data: $data) {
+            data {
+                id
+                ${createFieldsList({ model, fields: model.fields })}
+                savedOn
+                meta {
+                    ${CONTENT_META_FIELDS}
                 }
-                error ${ERROR_FIELD}
             }
+            error ${ERROR_FIELD}
+        }
         }
     `;
 };
+
 /**
  * ############################################
  * Publish Mutation
@@ -290,25 +299,26 @@ export interface CmsEntryPublishMutationResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export interface CmsEntryPublishMutationVariables {
     revision: string;
 }
-export const createPublishMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createPublishMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsPublish${ucFirstModelId}($revision: ID!) {
-            content: publish${ucFirstModelId}(revision: $revision) {
-                data {
-                    id
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+        mutation CmsPublish${model.singularApiName}($revision: ID!) {
+            content: publish${model.singularApiName}(revision: $revision) {
+            data {
+                id
+                meta {
+                    ${CONTENT_META_FIELDS}
                 }
-                error ${ERROR_FIELD}
             }
+            error ${ERROR_FIELD}
+        }
         }`;
 };
+
 /**
  * ############################################
  * Unpublish Mutation
@@ -319,22 +329,22 @@ export interface CmsEntryUnpublishMutationResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export interface CmsEntryUnpublishMutationVariables {
     revision: string;
 }
-export const createUnpublishMutation = (model: CmsEditorContentModel) => {
-    const ucFirstModelId = upperFirst(model.modelId);
 
+export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsUnpublish${ucFirstModelId}($revision: ID!) {
-            content: unpublish${ucFirstModelId}(revision: $revision) {
-                data {
-                    id
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+        mutation CmsUnpublish${model.singularApiName}($revision: ID!) {
+            content: unpublish${model.singularApiName}(revision: $revision) {
+            data {
+                id
+                meta {
+                    ${CONTENT_META_FIELDS}
                 }
-                error ${ERROR_FIELD}
             }
+            error ${ERROR_FIELD}
+        }
         }`;
 };

@@ -320,13 +320,14 @@ const extractErrorObject = (error: any) => {
 };
 
 interface ValidateModelFieldsParams {
+    models: CmsModel[];
     model: CmsModel;
     original?: CmsModel;
     context: CmsContext;
 }
 
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
-    const { model, original, context } = params;
+    const { models, model, original, context } = params;
     const { titleFieldId } = model;
     const { plugins } = context;
 
@@ -358,6 +359,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
          * Make sure that this model can be safely converted to a GraphQL SDL
          */
         const schema = createManageSDL({
+            models,
             model,
             fieldTypePlugins: fieldTypePlugins.reduce(
                 (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),

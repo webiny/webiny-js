@@ -198,10 +198,14 @@ export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) =
             model,
             input
         });
+        context.security.disableAuthorization();
+        const models = await context.cms.listModels();
+        context.security.enableAuthorization();
         /**
          * and then we move onto model and fields...
          */
         await validateModel({
+            models,
             model,
             context
         });

@@ -98,8 +98,8 @@ const models: CmsModel[] = [
         name: "Category",
         description: "Product category",
         modelId: "category",
-        singularApiName: "Category",
-        pluralApiName: "Categories",
+        singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelId",
+        pluralApiName: "CategoriesApiModel",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -174,8 +174,8 @@ const models: CmsModel[] = [
         lockedFields: [],
         name: "Product",
         modelId: "product",
-        singularApiName: "Product",
-        pluralApiName: "Products",
+        singularApiName: "ProductApiSingular",
+        pluralApiName: "ProductPluralApiName",
         description: "Products being sold in our webshop",
         group: {
             id: contentModelGroup.id,
@@ -786,8 +786,8 @@ const models: CmsModel[] = [
         name: "Review",
         description: "Product review",
         modelId: "review",
-        singularApiName: "Review",
-        pluralApiName: "Reviews",
+        singularApiName: "ReviewApiModel",
+        pluralApiName: "ReviewsApiModel",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -895,8 +895,8 @@ const models: CmsModel[] = [
         name: "Author",
         description: "Author",
         modelId: "author",
-        singularApiName: "Author",
-        pluralApiName: "Authors",
+        singularApiName: "AuthorApiModel",
+        pluralApiName: "AuthorsApiModel",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -941,8 +941,8 @@ const models: CmsModel[] = [
         name: "Fruit",
         description: "Fruit",
         modelId: "fruit",
-        singularApiName: "Fruit",
-        pluralApiName: "Fruits",
+        singularApiName: "FruitApiModel",
+        pluralApiName: "FruitsApiModel",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -1449,8 +1449,8 @@ const models: CmsModel[] = [
         name: "Bug",
         description: "Debuggable bugs",
         modelId: "bug",
-        singularApiName: "Bug",
-        pluralApiName: "Bugs",
+        singularApiName: "BugApiModel",
+        pluralApiName: "BugsApiModel",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -1588,8 +1588,8 @@ const models: CmsModel[] = [
         name: "Article",
         description: "Article with multiple categories",
         modelId: "article",
-        singularApiName: "Article",
-        pluralApiName: "Articles",
+        singularApiName: "ArticleApiModel",
+        pluralApiName: "ArticlesApiModel",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name
@@ -1685,3 +1685,13 @@ const models: CmsModel[] = [
 ];
 
 export default models;
+
+export const getCmsModel = (modelId: string) => {
+    const model = models.find(m => m.modelId === modelId);
+    if (!model) {
+        const message = `Model with modelId "${modelId}" not found.`;
+        console.log(message);
+        throw new Error(message);
+    }
+    return model;
+};
