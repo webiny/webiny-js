@@ -2,31 +2,44 @@ import React from "react";
 import {
     DropDown,
     DropDownItem,
-    useRichTextEditor,
+    getTypographyMetaByName,
     useTypographyAction
 } from "@webiny/lexical-editor";
 import { usePageElements } from "@webiny/app-page-builder-elements";
-import { ThemeTypographyHTMLTag, TypographyStyle } from "@webiny/theme/types";
+import { TypographyHTMLTag } from "@webiny/lexical-editor/types";
+
+type TypographyDropDownItem = {
+    styleObject: Record<string, any>;
+    themeTypographyName: string;
+    htmlTag: TypographyHTMLTag;
+    displayName: string;
+};
 
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
     const typographyStyles = theme.styles?.typography;
-    const { toolbarType } = useRichTextEditor();
 
     const hasTypographyStyles = (): boolean => {
         return !!typographyStyles;
     };
 
-    const getTypographyStyles = (): TypographyStyle<ThemeTypographyHTMLTag>[] => {
-        if (toolbarType === "heading") {
-            return theme.styles?.typographyStyles?.headings || [];
+    const typographyList = (): TypographyDropDownItem[] => {
+        const list: TypographyDropDownItem[] = [];
+        for (const key in typographyStyles) {
+            const styleObject = typographyStyles[key];
+            const metadata = getTypographyMetaByName(key);
+            // filter only headings and paragraphs
+            if (key.includes("heading") || key.includes("paragraph")) {
+                list.push({
+                    styleObject,
+                    themeTypographyName: key,
+                    htmlTag: metadata.htmlTag,
+                    displayName: metadata.displayName
+                });
+            }
         }
-
-        if (toolbarType === "paragraph") {
-            return theme.styles?.typographyStyles?.paragraphs || [];
-        }
-        return [];
+        return list;
     };
 
     return (
@@ -35,20 +48,30 @@ export const TypographyDropDown = () => {
                 <DropDown
                     buttonClassName="toolbar-item typography-dropdown"
                     buttonAriaLabel={"Formatting options for font size"}
-                    buttonLabel={value?.name || "Normal"}
+                    buttonLabel={
+                        getTypographyMetaByName(value?.themeTypographyName || "normal").displayName
+                    }
                     stopCloseOnClickSelf={true}
                     disabled={false}
                     showScroll={false}
                 >
-                    {getTypographyStyles()?.map(option => (
+                    {typographyList().map(option => (
                         <DropDownItem
                             className={`item typography-item ${
-                                value?.id === option.id ? "active dropdown-item-active" : ""
+                                value?.themeTypographyName === option.themeTypographyName
+                                    ? "active dropdown-item-active"
+                                    : ""
                             }`}
-                            onClick={() => applyTypography(option)}
-                            key={option.id}
+                            onClick={() =>
+                                applyTypography({
+                                    styleObject: option.styleObject,
+                                    themeTypographyName: option.themeTypographyName,
+                                    htmlTag: option.htmlTag
+                                })
+                            }
+                            key={option.themeTypographyName}
                         >
-                            <span className="text">{option.name}</span>
+                            <span className="text">{option.displayName}</span>
                         </DropDownItem>
                     ))}
                 </DropDown>

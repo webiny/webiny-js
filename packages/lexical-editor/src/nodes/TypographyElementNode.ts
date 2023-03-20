@@ -12,7 +12,6 @@ import {
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { styleObjectToString } from "~/utils/styleObjectToString";
 import { TypographyHTMLTag, TypographyValue } from "~/types";
-import { findTypographyStyleById } from "~/utils/typography";
 
 // Command and payload
 export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(
@@ -27,11 +26,11 @@ export interface TypographyPayload {
 }
 
 // Node
+type ThemeTypographyName = "normal" | string;
 export type SerializedTypographyNode = Spread<
     {
         tag: TypographyHTMLTag;
-        styleId: string;
-        name: string;
+        themeTypographyName: ThemeTypographyName;
         typographyStyles: Record<string, any>;
         type: "typography-el-node";
         version: 1;
@@ -44,17 +43,20 @@ export type SerializedTypographyNode = Spread<
  * Extends the original ElementNode node to add additional transformation and support for webiny theme typography.
  */
 export class TypographyElementNode extends ElementNode {
-    __styleId: string;
     __tag: TypographyHTMLTag;
-    __name: string;
+    __themeTypographyName: ThemeTypographyName;
     __typographyStyles: Record<string, any>;
 
-    constructor(value: TypographyValue, key?: NodeKey) {
+    constructor(
+        tag: TypographyHTMLTag,
+        typographyStyles: Record<string, any>,
+        themeTypographyName?: ThemeTypographyName,
+        key?: NodeKey
+    ) {
         super(key);
-        this.__tag = value.tag;
-        this.__styleId = value.id;
-        this.__name = value.name;
-        this.__typographyStyles = value.css;
+        this.__tag = tag;
+        this.__themeTypographyName = themeTypographyName || "default";
+        this.__typographyStyles = typographyStyles;
     }
 
     static override getType(): string {
@@ -63,31 +65,28 @@ export class TypographyElementNode extends ElementNode {
 
     static override clone(node: TypographyElementNode): TypographyElementNode {
         return new TypographyElementNode(
-            {
-                css: node.__typographyStyles,
-                id: node.__styleId,
-                name: node.__name,
-                tag: node.__tag
-            },
+            node.__tag,
+            node.__typographyStyles,
+            node.__themeTypographyName,
             node.__key
         );
     }
 
     getTypographyValue(): TypographyValue {
         return {
-            tag: this.__tag,
-            css: this.__typographyStyles,
-            id: this.__styleId,
-            name: this.__name
+            htmlTag: this.__tag,
+            styleObject: this.__typographyStyles,
+            themeTypographyName: this.__themeTypographyName
         };
     }
 
     addStylesHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
-        const typographyStyleValue = findTypographyStyleById(theme, this.__styleId);
-        if (typographyStyleValue) {
-            this.__typographyStyles = typographyStyleValue.css;
+        // if theme is available get the latest typography value
+        if (theme?.styles?.typography) {
+            this.__typographyStyles = theme.styles.typography[this.__themeTypographyName];
         }
-        element.setAttribute(TypographyNodeAttrName, this.__styleId);
+
+        element.setAttribute(TypographyNodeAttrName, this.__themeTypographyName);
         element.style.cssText = styleObjectToString(this.__typographyStyles);
         return element;
     }
@@ -96,21 +95,19 @@ export class TypographyElementNode extends ElementNode {
         return {
             ...super.exportJSON(),
             tag: this.__tag,
+            themeTypographyName: this.__themeTypographyName,
             typographyStyles: this.__typographyStyles,
-            name: this.__name,
-            styleId: this.__styleId,
             type: "typography-el-node",
             version: 1
         };
     }
 
     static override importJSON(serializedNode: SerializedTypographyNode): TypographyElementNode {
-        const node = new TypographyElementNode({
-            id: serializedNode.styleId,
-            css: serializedNode.typographyStyles,
-            tag: serializedNode.tag,
-            name: serializedNode.name
-        });
+        const node = new TypographyElementNode(
+            serializedNode.tag,
+            serializedNode.typographyStyles,
+            serializedNode.themeTypographyName
+        );
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
         node.setDirection(serializedNode.direction);
@@ -132,7 +129,12 @@ export const $createTypographyNode = (
     value: TypographyValue,
     key?: NodeKey
 ): TypographyElementNode => {
-    return new TypographyElementNode(value, key);
+    return new TypographyElementNode(
+        value.htmlTag,
+        value.styleObject,
+        value.themeTypographyName,
+        key
+    );
 };
 
 export const $isTypographyElementNode = (node: ElementNode | LexicalNode | null): boolean => {
