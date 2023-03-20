@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
@@ -96,6 +96,7 @@ export default (params: UseGqlHandlerParams = {}) => {
                     documentClient
                 })
             }),
+            createFileManagerGraphQL(),
             /**
              * We need to create the form builder API app.
              * It requires storage operations and plugins from the storage operations.
