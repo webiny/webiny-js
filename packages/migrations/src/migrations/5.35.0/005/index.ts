@@ -1,13 +1,24 @@
 import { Table } from "dynamodb-toolbox";
 import { makeInjectable, inject } from "@webiny/ioc";
 import { DataMigrationContext, PrimaryDynamoTableSymbol } from "@webiny/data-migration";
-import { queryOne, queryAll } from "~/utils";
+import { queryAll, batchWriteAll } from "~/utils";
 import { createModelEntity } from "./createModelEntity";
 import { createTenantEntity } from "./createTenantEntity";
 import { createLocaleEntity } from "./createLocaleEntity";
 import { Tenant, I18NLocale, CmsModel } from "./types";
 import { createModelPartitionKey } from "~/migrations/5.35.0/005/createModelPartitionKey";
 import { createLocalePartitionKey } from "~/migrations/5.35.0/005/createLocalePartitionKey";
+import pluralize from "pluralize";
+import upperFirst from "lodash/upperFirst";
+import camelCase from "lodash/camelCase";
+
+const createSingularApiName = (model: CmsModel) => {
+    return upperFirst(camelCase(model.modelId));
+};
+
+const createPluralApiName = (model: CmsModel) => {
+    return pluralize(createSingularApiName(model));
+};
 
 interface ListLocalesParams {
     tenant: Tenant;
@@ -22,6 +33,8 @@ export class CmsModels_5_35_0_005 {
     private readonly modelEntity: ReturnType<typeof createModelEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
+
+    private models?: CmsModel[];
 
     public constructor(table: Table) {
         this.modelEntity = createModelEntity(table);
@@ -38,84 +51,38 @@ export class CmsModels_5_35_0_005 {
     }
 
     public async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const tenants = await this.listTenants();
-        if (tenants.length === 0) {
-            logger.info(`No tenants were found; skipping migration.`);
+        const models = await this.listTenantAndLocaleModels();
+        if (models.length === 0) {
+            logger.info(`No models found in any tenant and locale; skipping migration.`);
             return false;
         }
-
-        for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
-            if (locales.length === 0) {
-                logger.info(`No locales found in tenant "${tenant.name || tenant.id}".`);
-                continue;
-            }
-            for (const locale of locales) {
-                const models = await this.listModels({
-                    tenant,
-                    locale
-                });
-                if (models.length === 0) {
-                    logger.info(
-                        `No models found for tenant "${tenant.name || tenant.id}" and locale "${
-                            locale.code
-                        }".`
-                    );
-                    continue;
-                }
-            }
-        }
-
-        const models = await queryAll<CmsModel>({
-            entity: this.modelEntity,
-            partitionKey: "T"
-        });
-
-        const tenant = await queryOne<{ data: any }>({
-            entity: this.modelEntity,
-            partitionKey: `TENANTS`,
-            options: {
-                index: "GSI1",
-                gt: " "
-            }
-        });
-
-        if (!tenant) {
-            logger.info(`No tenants were found; skipping migration.`);
-            return false;
-        }
-
-        if (tenant.data) {
-            logger.info(`Tenant records seems to be in order; skipping migration.`);
-            return false;
-        }
-
         return true;
     }
 
     public async execute({ logger }: DataMigrationContext): Promise<void> {
-        const tenants = await queryAll<{ id: string; name: string }>({
-            entity: this.modelEntity,
-            partitionKey: "TENANTS",
-            options: {
-                index: "GSI1",
-                gt: " "
-            }
-        });
-
-        for (const tenant of tenants) {
-            logger.info(`Updating tenant ${tenant.name} (${tenant.id}).`);
-            await this.newTenantEntity.put({
-                PK: `T#${tenant.id}`,
-                SK: "A",
-                GSI1_PK: tenant.GSI1_PK,
-                GSI1_SK: tenant.GSI1_SK,
-                TYPE: tenant.TYPE,
-                ...getTenantData(tenant),
-                // Move all data to a `data` envelope
-                data: getTenantData(tenant)
-            });
+        const models = await this.listTenantAndLocaleModels();
+        if (models.length === 0) {
+            logger.info(`No models to updated; skipping migration.`);
+            return;
         }
+
+        const items = models.map(model => {
+            return this.modelEntity.putBatch({
+                ...model,
+                /**
+                 * Add singular and plural API names.
+                 */
+                singularApiName: createSingularApiName(model),
+                pluralApiName: createPluralApiName(model)
+            });
+        });
+        logger.info(`Updating total of ${items.length} models.`);
+
+        await batchWriteAll({
+            table: this.modelEntity.table,
+            items
+        });
+        logger.info("Updated all the models.");
     }
 
     private async listTenants(): Promise<Tenant[]> {
@@ -150,6 +117,45 @@ export class CmsModels_5_35_0_005 {
                 gte: " "
             }
         });
+    }
+
+    private async listTenantAndLocaleModels(): Promise<CmsModel[]> {
+        if (this.hasModels()) {
+            return this.getModels();
+        }
+        const items: CmsModel[] = [];
+        const tenants = await this.listTenants();
+        for (const tenant of tenants) {
+            const locales = await this.listLocales({ tenant });
+            for (const locale of locales) {
+                const models = await this.listModels({ tenant, locale });
+                for (const model of models) {
+                    /**
+                     * Only add models which need to be updated.
+                     */
+                    if (!model.singularApiName || !model.pluralApiName) {
+                        items.push(model);
+                    }
+                }
+            }
+        }
+        this.setModels(items);
+        return items;
+    }
+
+    private getModels(): CmsModel[] {
+        if (!this.models) {
+            throw new Error("Method should never be called without listing models first.");
+        }
+        return this.models;
+    }
+
+    private setModels(models: CmsModel[]): void {
+        this.models = models;
+    }
+
+    private hasModels(): boolean {
+        return !!this.models;
     }
 }
 
