@@ -17,9 +17,11 @@ describe("MANAGE - ContentModel to SDL", () => {
         return acc;
     }, {});
 
+    const models = [...contentModels];
+
     test("Category SDL", async () => {
         const model = contentModels.find(c => c.modelId === "category") as CmsModel;
-        const sdl = createManageSDL({ model, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(categoryManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -27,7 +29,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     test("Product SDL", async () => {
         const model = contentModels.find(c => c.modelId === "product") as CmsModel;
-        const sdl = createManageSDL({ model, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(productManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -35,7 +37,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     test("Review SDL", async () => {
         const model = contentModels.find(c => c.modelId === "review") as CmsModel;
-        const sdl = createManageSDL({ model, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(reviewManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -43,6 +45,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     test("Dynamic Zone SDL", async () => {
         const sdl = createManageSDL({
+            models,
             model: pageModel as CmsModel,
             fieldTypePlugins,
             sorterPlugins: []

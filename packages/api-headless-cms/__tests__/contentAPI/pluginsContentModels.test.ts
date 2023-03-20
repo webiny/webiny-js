@@ -41,17 +41,19 @@ const contentModelPlugin = new CmsModelPlugin({
     description: ""
 });
 
-const FIELDS_FRAGMENT = /* GraphQL */ `
-    fragment ProductFields on Product {
-        id
-        name
-        sku
-        price
-        meta {
-            status
+const FIELDS_FRAGMENT = (model: Pick<CmsModel, "singularApiName">) => {
+    return /* GraphQL */ `
+        fragment ${model.singularApiName}Fields on ${model.singularApiName} {
+            id
+            name
+            sku
+            price
+            meta {
+                status
+            }
         }
-    }
-`;
+    `;
+};
 
 const ERROR_FRAGMENT = /* GraphQL */ `
     fragment ErrorFields on CmsError {
@@ -61,65 +63,73 @@ const ERROR_FRAGMENT = /* GraphQL */ `
     }
 `;
 
-const CREATE_PRODUCT = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    mutation CreateProduct($data: ProductInput!) {
-        createProduct(data: $data) {
-            data {
-                ...ProductFields
-            }
-            error {
-                ...ErrorFields
+const CREATE_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        mutation CreateProduct($data: ${model.singularApiName}Input!) {
+            createProduct: create${model.singularApiName}(data: $data) {
+                data {
+                    ...${model.singularApiName}Fields
+                }
+                error {
+                    ...ErrorFields
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-const PUBLISH_PRODUCT = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    mutation PublishProduct($revision: ID!) {
-        publishProduct(revision: $revision) {
-            data {
-                ...ProductFields
-            }
-            error {
-                ...ErrorFields
+const PUBLISH_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        mutation PublishProduct($revision: ID!) {
+                publishProduct: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ...${model.singularApiName}Fields
+                }
+                error {
+                    ...ErrorFields
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-const LIST_PRODUCTS = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    query ListProducts {
-        listProducts {
+const LIST_PRODUCTS = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        query ListProducts {
+            listProducts: list${model.pluralApiName} {
             data {
-                ...ProductFields
+                ...${model.singularApiName}Fields
             }
             error {
                 ...ErrorFields
             }
         }
-    }
-`;
+        }
+    `;
+};
 
-const GET_PRODUCT = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    query GetProduct($revision: ID!) {
-        getProduct(revision: $revision) {
+const GET_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        query GetProduct($revision: ID!) {
+            getProduct: get${model.singularApiName}(revision: $revision) {
             data {
-                ...ProductFields
+                ...${model.singularApiName}Fields
             }
             error {
                 ...ErrorFields
             }
         }
-    }
-`;
+        }
+    `;
+};
 
 describe("content model plugins", () => {
     const { storageOperations } = useGraphQLHandler({
@@ -417,7 +427,7 @@ describe("content model plugins", () => {
         for (let i = 0; i < 3; i++) {
             const [createResponse] = await invoke({
                 body: {
-                    query: CREATE_PRODUCT,
+                    query: CREATE_PRODUCT(contentModelPlugin.contentModel),
                     variables: {
                         data: {
                             name: `product-${i}`,
@@ -445,7 +455,7 @@ describe("content model plugins", () => {
         for (const product of products) {
             const [getProductResponse] = await invoke({
                 body: {
-                    query: GET_PRODUCT,
+                    query: GET_PRODUCT(contentModelPlugin.contentModel),
                     variables: {
                         revision: product.id
                     }
@@ -463,7 +473,9 @@ describe("content model plugins", () => {
             });
         }
 
-        const [listProductsResponse] = await invoke({ body: { query: LIST_PRODUCTS } });
+        const [listProductsResponse] = await invoke({
+            body: { query: LIST_PRODUCTS(contentModelPlugin.contentModel) }
+        });
 
         expect(listProductsResponse).toEqual({
             data: {
@@ -508,7 +520,7 @@ describe("content model plugins", () => {
         for (const id of productsIds) {
             const [publishResponse] = await invoke({
                 body: {
-                    query: PUBLISH_PRODUCT,
+                    query: PUBLISH_PRODUCT(contentModelPlugin.contentModel),
                     variables: {
                         revision: id
                     }
@@ -529,7 +541,7 @@ describe("content model plugins", () => {
         // The list should contain three products, all published.
         const [listProductsAfterPublishResponse] = await invoke({
             body: {
-                query: LIST_PRODUCTS
+                query: LIST_PRODUCTS(contentModelPlugin.contentModel)
             }
         });
         expect(listProductsAfterPublishResponse).toEqual({

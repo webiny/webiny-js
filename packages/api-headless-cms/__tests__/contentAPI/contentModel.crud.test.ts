@@ -879,15 +879,16 @@ describe("content model test", () => {
             },
             sort: ["createdOn_DESC"]
         });
+
         // should not be able to query bugType or bugValue fields (they are defined in the graphql query)
         expect(listResponse).toEqual({
             errors: [
                 {
-                    message: `Cannot query field "bugValue" on type "Bug". Did you mean "bugType"?`,
+                    message: `Cannot query field "bugValue" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 },
                 {
-                    message: `Cannot query field "bugFixed" on type "Bug". Did you mean "bugType"?`,
+                    message: `Cannot query field "bugFixed" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 }
             ]

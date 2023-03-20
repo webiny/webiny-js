@@ -2,20 +2,20 @@ export default /* GraphQL */ `
     """
     Page
     """
-    type Page {
+    type PageModelApiName {
         id: ID!
         entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
         ownedBy: CmsOwnedBy!
-        meta: PageMeta
-        content: [Page_Content!]
-        header: Page_Header
-        objective: Page_Objective
+        meta: PageModelApiNameMeta
+        content: [PageModelApiName_Content!]
+        header: PageModelApiName_Header
+        objective: PageModelApiName_Objective
     }
 
-    type PageMeta {
+    type PageModelApiNameMeta {
         modelId: String
         version: Int
         locked: Boolean
@@ -25,7 +25,7 @@ export default /* GraphQL */ `
         CAUTION: this field is resolved by making an extra query to DB.
         RECOMMENDATION: Use it only with "get" queries (avoid in "list")
         """
-        revisions: [Page]
+        revisions: [PageModelApiName]
         title: String
         """
         Custom meta data stored in the root of the entry object.
@@ -33,20 +33,23 @@ export default /* GraphQL */ `
         data: JSON
     }
 
-    union Page_Content = Page_Content_Hero | Page_Content_SimpleText | Page_Content_Objecting
+    union PageModelApiName_Content =
+          PageModelApiName_Content_Hero
+        | PageModelApiName_Content_SimpleText
+        | PageModelApiName_Content_Objecting
 
-    type Page_Content_Hero {
+    type PageModelApiName_Content_Hero {
         title: String
     }
 
-    type Page_Content_SimpleText {
+    type PageModelApiName_Content_SimpleText {
         text: String
     }
 
-    type Page_Content_Objecting_NestedObject_ObjectNestedObject {
+    type PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-    input Page_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput {
+    input PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
         nestedObjectNestedTitle_in: [String]
@@ -55,11 +58,11 @@ export default /* GraphQL */ `
         nestedObjectNestedTitle_not_contains: String
     }
 
-    type Page_Content_Objecting_NestedObject {
+    type PageModelApiName_Content_Objecting_NestedObject {
         objectTitle: String
-        objectNestedObject: [Page_Content_Objecting_NestedObject_ObjectNestedObject!]
+        objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
     }
-    input Page_Content_Objecting_NestedObjectWhereInput {
+    input PageModelApiName_Content_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
         objectTitle_in: [String]
@@ -67,50 +70,52 @@ export default /* GraphQL */ `
         objectTitle_contains: String
         objectTitle_not_contains: String
 
-        objectNestedObject: Page_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
+        objectNestedObject: PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
 
-    type Page_Content_Objecting {
-        nestedObject: Page_Content_Objecting_NestedObject
+    type PageModelApiName_Content_Objecting {
+        nestedObject: PageModelApiName_Content_Objecting_NestedObject
     }
 
-    extend type Page_Content_Hero {
+    extend type PageModelApiName_Content_Hero {
         _templateId: ID!
     }
 
-    extend type Page_Content_SimpleText {
+    extend type PageModelApiName_Content_SimpleText {
         _templateId: ID!
     }
 
-    extend type Page_Content_Objecting {
+    extend type PageModelApiName_Content_Objecting {
         _templateId: ID!
     }
 
-    union Page_Header = Page_Header_TextHeader | Page_Header_ImageHeader
+    union PageModelApiName_Header =
+          PageModelApiName_Header_TextHeader
+        | PageModelApiName_Header_ImageHeader
 
-    type Page_Header_TextHeader {
+    type PageModelApiName_Header_TextHeader {
         title: String
     }
 
-    type Page_Header_ImageHeader {
+    type PageModelApiName_Header_ImageHeader {
         title: String
         image: String
     }
 
-    extend type Page_Header_TextHeader {
+    extend type PageModelApiName_Header_TextHeader {
         _templateId: ID!
     }
 
-    extend type Page_Header_ImageHeader {
+    extend type PageModelApiName_Header_ImageHeader {
         _templateId: ID!
     }
 
-    union Page_Objective = Page_Objective_Objecting
+    union PageModelApiName_Objective = PageModelApiName_Objective_Objecting
 
-    type Page_Objective_Objecting_NestedObject_ObjectNestedObject {
+    type PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-    input Page_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput {
+    input PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
         nestedObjectNestedTitle_in: [String]
@@ -119,12 +124,12 @@ export default /* GraphQL */ `
         nestedObjectNestedTitle_not_contains: String
     }
 
-    type Page_Objective_Objecting_NestedObject {
+    type PageModelApiName_Objective_Objecting_NestedObject {
         objectTitle: String
         objectBody: JSON
-        objectNestedObject: [Page_Objective_Objecting_NestedObject_ObjectNestedObject!]
+        objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
-    input Page_Objective_Objecting_NestedObjectWhereInput {
+    input PageModelApiName_Objective_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
         objectTitle_in: [String]
@@ -132,89 +137,89 @@ export default /* GraphQL */ `
         objectTitle_contains: String
         objectTitle_not_contains: String
 
-        objectNestedObject: Page_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
+        objectNestedObject: PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
 
-    type Page_Objective_Objecting {
-        nestedObject: Page_Objective_Objecting_NestedObject
+    type PageModelApiName_Objective_Objecting {
+        nestedObject: PageModelApiName_Objective_Objecting_NestedObject
     }
 
-    extend type Page_Objective_Objecting {
+    extend type PageModelApiName_Objective_Objecting {
         _templateId: ID!
     }
 
-    input Page_Content_HeroInput {
+    input PageModelApiName_Content_HeroInput {
         title: String!
     }
 
-    input Page_Content_SimpleTextInput {
+    input PageModelApiName_Content_SimpleTextInput {
         text: String
     }
 
-    input Page_Content_Objecting_NestedObject_ObjectNestedObjectInput {
+    input PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectInput {
         nestedObjectNestedTitle: String
     }
 
-    input Page_Content_Objecting_NestedObjectInput {
+    input PageModelApiName_Content_Objecting_NestedObjectInput {
         objectTitle: String
-        objectNestedObject: [Page_Content_Objecting_NestedObject_ObjectNestedObjectInput!]
+        objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectInput!]
     }
 
-    input Page_Content_ObjectingInput {
-        nestedObject: Page_Content_Objecting_NestedObjectInput
+    input PageModelApiName_Content_ObjectingInput {
+        nestedObject: PageModelApiName_Content_Objecting_NestedObjectInput
     }
 
-    input Page_ContentInput {
-        Hero: Page_Content_HeroInput
-        SimpleText: Page_Content_SimpleTextInput
-        Objecting: Page_Content_ObjectingInput
+    input PageModelApiName_ContentInput {
+        Hero: PageModelApiName_Content_HeroInput
+        SimpleText: PageModelApiName_Content_SimpleTextInput
+        Objecting: PageModelApiName_Content_ObjectingInput
     }
 
-    input Page_Header_TextHeaderInput {
+    input PageModelApiName_Header_TextHeaderInput {
         title: String
     }
 
-    input Page_Header_ImageHeaderInput {
+    input PageModelApiName_Header_ImageHeaderInput {
         title: String
         image: String
     }
 
-    input Page_HeaderInput {
-        TextHeader: Page_Header_TextHeaderInput
-        ImageHeader: Page_Header_ImageHeaderInput
+    input PageModelApiName_HeaderInput {
+        TextHeader: PageModelApiName_Header_TextHeaderInput
+        ImageHeader: PageModelApiName_Header_ImageHeaderInput
     }
 
-    input Page_Objective_Objecting_NestedObject_ObjectNestedObjectInput {
+    input PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectInput {
         nestedObjectNestedTitle: String
     }
 
-    input Page_Objective_Objecting_NestedObjectInput {
+    input PageModelApiName_Objective_Objecting_NestedObjectInput {
         objectTitle: String
         objectBody: JSON
-        objectNestedObject: [Page_Objective_Objecting_NestedObject_ObjectNestedObjectInput!]
+        objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectInput!]
     }
 
-    input Page_Objective_ObjectingInput {
-        nestedObject: Page_Objective_Objecting_NestedObjectInput
+    input PageModelApiName_Objective_ObjectingInput {
+        nestedObject: PageModelApiName_Objective_Objecting_NestedObjectInput
     }
 
-    input Page_ObjectiveInput {
-        Objecting: Page_Objective_ObjectingInput
+    input PageModelApiName_ObjectiveInput {
+        Objecting: PageModelApiName_Objective_ObjectingInput
     }
 
-    input PageInput {
+    input PageModelApiNameInput {
         id: ID
-        content: [Page_ContentInput]
-        header: Page_HeaderInput
-        objective: Page_ObjectiveInput
+        content: [PageModelApiName_ContentInput]
+        header: PageModelApiName_HeaderInput
+        objective: PageModelApiName_ObjectiveInput
     }
 
-    input PageGetWhereInput {
+    input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String
     }
 
-    input PageListWhereInput {
+    input PageModelApiNameListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -249,27 +254,27 @@ export default /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
-        AND: [PageListWhereInput!]
-        OR: [PageListWhereInput!]
+        AND: [PageModelApiNameListWhereInput!]
+        OR: [PageModelApiNameListWhereInput!]
     }
 
-    type PageResponse {
-        data: Page
+    type PageModelApiNameResponse {
+        data: PageModelApiName
         error: CmsError
     }
 
-    type PageArrayResponse {
-        data: [Page]
+    type PageModelApiNameArrayResponse {
+        data: [PageModelApiName]
         error: CmsError
     }
 
-    type PageListResponse {
-        data: [Page]
+    type PageModelApiNameListResponse {
+        data: [PageModelApiName]
         meta: CmsListMeta
         error: CmsError
     }
 
-    enum PageListSorter {
+    enum PageModelApiNameListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -279,33 +284,43 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getPage(revision: ID, entryId: ID, status: CmsEntryStatusType): PageResponse
+        getPageModelApiName(
+            revision: ID
+            entryId: ID
+            status: CmsEntryStatusType
+        ): PageModelApiNameResponse
 
-        getPageRevisions(id: ID!): PageArrayResponse
+        getPageModelApiNameRevisions(id: ID!): PageModelApiNameArrayResponse
 
-        getPagesByIds(revisions: [ID!]!): PageArrayResponse
+        getPagesModelApiNameByIds(revisions: [ID!]!): PageModelApiNameArrayResponse
 
-        listPages(
-            where: PageListWhereInput
-            sort: [PageListSorter]
+        listPagesModelApiName(
+            where: PageModelApiNameListWhereInput
+            sort: [PageModelApiNameListSorter]
             limit: Int
             after: String
-        ): PageListResponse
+        ): PageModelApiNameListResponse
     }
 
     extend type Mutation {
-        createPage(data: PageInput!): PageResponse
+        createPageModelApiName(data: PageModelApiNameInput!): PageModelApiNameResponse
 
-        createPageFrom(revision: ID!, data: PageInput): PageResponse
+        createPageModelApiNameFrom(
+            revision: ID!
+            data: PageModelApiNameInput
+        ): PageModelApiNameResponse
 
-        updatePage(revision: ID!, data: PageInput!): PageResponse
+        updatePageModelApiName(
+            revision: ID!
+            data: PageModelApiNameInput!
+        ): PageModelApiNameResponse
 
-        deletePage(revision: ID!): CmsDeleteResponse
+        deletePageModelApiName(revision: ID!): CmsDeleteResponse
 
-        publishPage(revision: ID!): PageResponse
+        publishPageModelApiName(revision: ID!): PageModelApiNameResponse
 
-        republishPage(revision: ID!): PageResponse
+        republishPageModelApiName(revision: ID!): PageModelApiNameResponse
 
-        unpublishPage(revision: ID!): PageResponse
+        unpublishPageModelApiName(revision: ID!): PageModelApiNameResponse
     }
 `;
