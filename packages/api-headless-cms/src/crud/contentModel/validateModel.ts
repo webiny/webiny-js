@@ -4,6 +4,7 @@ import { CmsContext, CmsModel } from "~/types";
 import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 
 interface ValidateModelParams {
+    models: CmsModel[];
     model: CmsModel;
     original?: CmsModel;
     context: CmsContext;

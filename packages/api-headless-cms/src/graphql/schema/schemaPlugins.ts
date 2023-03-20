@@ -62,7 +62,12 @@ export const generateSchemaPlugins = async (
                 case "manage":
                     {
                         const plugin = new CmsGraphQLSchemaPlugin({
-                            typeDefs: createManageSDL({ model, fieldTypePlugins, sorterPlugins }),
+                            typeDefs: createManageSDL({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                sorterPlugins
+                            }),
                             resolvers: createManageResolvers({
                                 models,
                                 model,
@@ -79,7 +84,12 @@ export const generateSchemaPlugins = async (
                 case "read":
                     {
                         const plugin = new CmsGraphQLSchemaPlugin({
-                            typeDefs: createReadSDL({ model, fieldTypePlugins, sorterPlugins }),
+                            typeDefs: createReadSDL({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                sorterPlugins
+                            }),
                             resolvers: cms.READ
                                 ? createReadResolvers({
                                       models,

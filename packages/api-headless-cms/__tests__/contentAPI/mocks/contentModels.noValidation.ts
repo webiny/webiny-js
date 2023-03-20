@@ -20,8 +20,8 @@ const models: CmsModel[] = [
         name: "Category",
         description: "Product category",
         modelId: "category",
-        singularApiName: "Category",
-        pluralApiName: "Categories",
+        singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelId",
+        pluralApiName: "CategoriesApiModel",
         group: {
             id: contentModelGroup.id,
             name: contentModelGroup.name

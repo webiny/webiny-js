@@ -1,4 +1,6 @@
 import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
+import { CmsModel } from "~/types";
+import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 
 const productFields = `
     id
@@ -45,51 +47,57 @@ const errorFields = `
     }
 `;
 
-const getProductQuery = /* GraphQL */ `
-    query GetProduct($where: ProductGetWhereInput!) {
-        getProduct(where: $where) {
-            data {
-                ${productFields}
+const getProductQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetProduct($where: ${model.singularApiName}GetWhereInput!) {
+            getProduct: get${model.singularApiName}(where: $where) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
-const listProductsQuery = /* GraphQL */ `
-    query ListProducts(
-        $where: ProductListWhereInput
-        $sort: [ProductListSorter]
-        $limit: Int
-        $after: String
-    ) {
-        listProducts(where: $where, sort: $sort, limit: $limit, after: $after) {
-            data {
-                ${productFields}
+    `;
+};
+const listProductsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query ListProducts(
+            $where: ${model.singularApiName}ListWhereInput
+            $sort: [${model.singularApiName}ListSorter]
+            $limit: Int
+            $after: String
+        ) {
+            listProducts: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+                data {
+                    ${productFields}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                ${errorFields}
             }
-            meta {
-                cursor
-                hasMoreItems
-                totalCount
-            }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
 export const useProductReadHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
+
+    const model = getCmsModel("product");
 
     return {
         ...contentHandler,
         async getProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getProductQuery, variables },
+                body: { query: getProductQuery(model), variables },
                 headers
             });
         },
         async listProducts(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: listProductsQuery, variables },
+                body: { query: listProductsQuery(model), variables },
                 headers
             });
         }

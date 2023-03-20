@@ -11,11 +11,8 @@ describe("refField", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const { createContentModelMutation, createContentModelGroupMutation } =
+        useGraphQLHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
@@ -43,26 +40,36 @@ describe("refField", () => {
                 modelId: model.modelId,
                 singularApiName: model.singularApiName,
                 pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.id,
+                fields: model.fields,
+                layout: model.layout
             }
         });
 
         if (create.errors) {
             console.error(`[beforeEach] ${create.errors[0].message}`);
             process.exit(1);
-        } else if (create.data.createContentModel.data.error) {
-            console.error(`[beforeEach] ${create.data.createContentModel.data.error.message}`);
+        } else if (create.data.createContentModel.error) {
+            console.error(`[beforeEach] ${create.data.createContentModel.error.message}`);
             process.exit(1);
         }
 
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return update.data.updateContentModel.data;
+        return create.data.createContentModel.data;
+
+        // const [update] = await updateContentModelMutation({
+        //     modelId: create.data.createContentModel.data.modelId,
+        //     data: {
+        //
+        //     }
+        // });
+        // if (update.errors) {
+        //     console.error(`[beforeEach] ${update.errors[0].message}`);
+        //     process.exit(1);
+        // } else if (update.data.updateContentModel.error) {
+        //     console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
+        //     process.exit(1);
+        // }
+        // return update.data.updateContentModel.data;
     };
     const setupContentModels = async (contentModelGroup: CmsGroup) => {
         const models: Record<string, any> = {
@@ -106,6 +113,17 @@ describe("refField", () => {
                 category: {
                     modelId: "category",
                     id: category.id
+                }
+            }
+        });
+
+        expect(createProductResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
                 }
             }
         });

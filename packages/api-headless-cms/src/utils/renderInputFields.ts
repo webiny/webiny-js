@@ -8,6 +8,7 @@ import {
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderInputFieldsParams {
+    models: CmsModel[];
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
 }
@@ -19,15 +20,17 @@ interface RenderInputFields {
 }
 
 export const renderInputFields: RenderInputFields = ({
+    models,
     model,
     fieldTypePlugins
 }): CmsModelFieldDefinition[] => {
     return model.fields
-        .map(field => renderInputField({ model, field, fieldTypePlugins }))
+        .map(field => renderInputField({ models, model, field, fieldTypePlugins }))
         .filter(Boolean) as CmsModelFieldDefinition[];
 };
 
 export const renderInputField = ({
+    models,
     model,
     field,
     fieldTypePlugins
@@ -45,6 +48,7 @@ export const renderInputField = ({
     }
 
     const def = plugin.manage.createInputField({
+        models,
         model,
         field,
         fieldTypePlugins

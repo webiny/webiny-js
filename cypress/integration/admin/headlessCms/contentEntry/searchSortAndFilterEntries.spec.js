@@ -48,6 +48,8 @@ const deleteContentEntry = () => {
 
 context("Search, Sort and Filter Content Entries", () => {
     const newModel = uniqid("Book-");
+    const singularApiName = upperFirst(camelCase(uniqid("Book")));
+    const pluralApiName = upperFirst(camelCase(uniqid("Books")));
     const totalEntries = 3;
     const entries = [];
     let createdModel;
@@ -62,6 +64,8 @@ context("Search, Sort and Filter Content Entries", () => {
                 data: {
                     name: newModel,
                     modelId: kebabCase(newModel.toLowerCase()),
+                    singularApiName,
+                    pluralApiName,
                     group: group.id,
                     description: "Testing 123"
                 }

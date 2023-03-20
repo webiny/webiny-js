@@ -691,6 +691,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createTypeField(params: {
+            models: CmsModel[];
             model: CmsModel;
             field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
@@ -787,6 +788,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createTypeField: (params: {
+            models: CmsModel[];
             model: CmsModel;
             field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
@@ -807,6 +809,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createInputField: (params: {
+            models: CmsModel[];
             model: CmsModel;
             field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;

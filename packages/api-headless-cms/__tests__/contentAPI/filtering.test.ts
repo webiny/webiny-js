@@ -1173,12 +1173,32 @@ describe("filtering", () => {
                 categories: []
             }
         });
+        expect(createFruitResponse).toMatchObject({
+            data: {
+                createArticle: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
 
         const [createAnimalResponse] = await articleManager.createArticle({
             data: {
                 title: "Animal 123",
                 body: null,
                 categories: []
+            }
+        });
+        expect(createAnimalResponse).toMatchObject({
+            data: {
+                createArticle: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
             }
         });
 
