@@ -21,6 +21,7 @@ import {
     PageTemplateStorageOperationsListParams,
     PageBlockVariable,
     PbContext,
+    PbPageElement,
     Page,
     PageContentWithTemplate
 } from "~/types";
@@ -90,10 +91,8 @@ export const createPageTemplatesCrud = (
         onPageTemplateBeforeDelete,
         onPageTemplateAfterDelete,
 
-        async getPageTemplate({ where }) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+        async getPageTemplate({ where }, options = { auth: true }) {
+            const { auth } = options;
 
             const params = {
                 where: {
@@ -102,6 +101,14 @@ export const createPageTemplatesCrud = (
                     locale: getLocaleCode()
                 }
             };
+
+            if (!auth) {
+                return await storageOperations.pageTemplates.get(params);
+            }
+
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "r"
+            });
 
             let pageTemplate: PageTemplate | null = null;
             try {
@@ -164,6 +171,16 @@ export const createPageTemplatesCrud = (
 
         async createPageTemplate(this: PageBuilderContextObject, input: PageTemplateInput) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+
+            const existingPageTemplate = await this.getPageTemplate(
+                { where: { slug: input.slug } },
+                {
+                    auth: false
+                }
+            );
+            if (existingPageTemplate) {
+                throw new NotFoundError(`Page Template with slug "${input.slug}" already exists.`);
+            }
 
             const identity = context.security.getIdentity();
 
@@ -377,6 +394,51 @@ export const createPageTemplatesCrud = (
             });
 
             return page;
+        },
+        async createTemplateFromPage(pageId, data) {
+            const page = await context.pageBuilder.getPage(pageId);
+            if (!page) {
+                throw new NotFoundError(`Page "${pageId}" was not found!`);
+            }
+
+            const templateVariables: Array<{ blockId: string; variables?: PageBlockVariable[] }> =
+                [];
+
+            const templateElements = page.content?.elements?.map((block: PbPageElement) => {
+                templateVariables.push({
+                    blockId: block.id,
+                    variables: block.data.variables
+                });
+
+                return {
+                    ...block,
+                    data: {
+                        ...block.data,
+                        templateBlockId: block.id
+                    }
+                };
+            });
+
+            const template = await this.createPageTemplate({
+                title: data.title,
+                slug: data.slug,
+                description: data.description,
+                tags: page.settings.general?.tags || [],
+                layout: page.settings.general?.layout || "static",
+                pageCategory: page.category,
+                content: {
+                    ...page.content,
+                    data: {
+                        ...(page.content?.data || {}),
+                        template: {
+                            variables: templateVariables
+                        }
+                    },
+                    elements: templateElements
+                }
+            });
+
+            return template;
         },
         copyTemplateDataToPage(template: PageTemplate, page: Page) {
             const content = {

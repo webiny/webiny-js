@@ -899,10 +899,19 @@ export interface PageContentWithTemplate extends PbPageElement {
  * @category PageTemplates
  */
 export interface PageTemplatesCrud {
-    getPageTemplate(params: GetPageTemplateParams): Promise<PageTemplate | null>;
+    getPageTemplate(
+        params: GetPageTemplateParams,
+        options?: {
+            auth: boolean;
+        }
+    ): Promise<PageTemplate | null>;
     listPageTemplates(params?: ListPageTemplatesParams): Promise<PageTemplate[]>;
     createPageTemplate(data: PageTemplateInput): Promise<PageTemplate>;
     createPageFromTemplate(data: CreatePageFromTemplateParams): Promise<Page>;
+    createTemplateFromPage(
+        pageId: string,
+        data: Pick<PageTemplate, "title" | "description" | "slug">
+    ): Promise<PageTemplate>;
     // Copy relevant data from page template to page instance, by reference.
     copyTemplateDataToPage(template: PageTemplate, page: Page): void;
     updatePageTemplate(id: string, data: Record<string, any>): Promise<PageTemplate>;

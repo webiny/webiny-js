@@ -857,6 +857,7 @@ export interface PbPageBlock {
 
 export interface PbPageTemplate {
     id: string;
+    slug: string;
     title: string;
     description: string;
     layout: string;
