@@ -23,7 +23,7 @@ export interface FileManagerStorageOperationsConfig {
 export const createFileManagerStorageOperations = (
     config: FileManagerStorageOperationsConfig
 ): FileManagerStorageOperations => {
-    const plugins = new PluginsContainer([
+    const storagePlugins = new PluginsContainer([
         dynamoDbValueFilters(),
         getElasticsearchOperators(),
         elasticsearchIndexPlugins(),
@@ -52,7 +52,7 @@ export const createFileManagerStorageOperations = (
     const storageOperationsConfig = {
         documentClient: config.documentClient,
         elasticsearchClient: config.elasticsearchClient,
-        plugins,
+        plugins: storagePlugins,
         getTenantId,
         getLocaleCode
     };
@@ -60,7 +60,10 @@ export const createFileManagerStorageOperations = (
     return {
         async beforeInit(context) {
             storageContext = context;
-            attachCreateIndexOnI18NCreate(context as FileManagerContextWithElasticsearch);
+            attachCreateIndexOnI18NCreate(
+                context as FileManagerContextWithElasticsearch,
+                storagePlugins
+            );
         },
         files: new FilesStorageOperations(storageOperationsConfig),
         settings: new SettingsStorageOperations(storageOperationsConfig),
