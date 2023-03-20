@@ -78,7 +78,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         loading,
         meta,
         async listRecords(params) {
-            const { type, folderId, after, limit, sort: sorting } = params;
+            const { type, folderId, after, limit = 5, sort: sorting } = params;
 
             /**
              * Both folderId and type are optional to init `useRecords` but required to list records:

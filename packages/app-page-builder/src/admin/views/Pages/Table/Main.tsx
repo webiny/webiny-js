@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import debounce from "lodash/debounce";
-import useDeepCompareEffect from "use-deep-compare-effect";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate, useFolders, useRecords } from "@webiny/app-aco";
+import { FolderDialogCreate, useListAco } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -21,11 +20,11 @@ import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 
-import { FOLDER_ID_DEFAULT, FOLDER_TYPE } from "~/admin/constants/folders";
+import { FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { MainContainer, Wrapper } from "./styled";
 
-import { FolderItem, ListMeta, ListSort, SearchRecordItem } from "@webiny/app-aco/types";
+import { ListMeta, ListSort, SearchRecordItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 
@@ -36,34 +35,19 @@ interface Props {
     defaultFolderName: string;
 }
 
-const getCurrentFolderList = (
-    folders: FolderItem[],
-    currentFolderId?: string
-): FolderItem[] | [] => {
-    if (!folders) {
-        return [];
-    }
-    if (currentFolderId) {
-        return folders.filter(folder => folder.parentId === currentFolderId);
-    } else {
-        return folders.filter(folder => !folder.parentId);
-    }
-};
-
 export const Main = ({ folderId, defaultFolderName }: Props) => {
     const location = useLocation();
     const history = useHistory();
 
-    const { folders = [], loading: foldersLoading } = useFolders(FOLDER_TYPE);
     const {
         records,
-        loading: recordsLoading,
+        folders,
+        listTitle = defaultFolderName,
         meta,
-        listRecords
-    } = useRecords(FOLDER_TYPE, folderId || FOLDER_ID_DEFAULT);
-
-    const [subFolders, setSubFolders] = useState<FolderItem[]>([]);
-    const [folderName, setFolderName] = useState<string>();
+        isListLoading,
+        isListLoadingMore,
+        listItems
+    } = useListAco(FOLDER_TYPE, folderId);
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -99,14 +83,6 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         };
     });
 
-    useDeepCompareEffect(() => {
-        const subFolders = getCurrentFolderList(folders, folderId);
-        const currentFolder = folders.find(folder => folder.id === folderId);
-
-        setSubFolders(subFolders);
-        setFolderName(currentFolder?.title || defaultFolderName);
-    }, [{ ...folders }, folderId]);
-
     const { showDialog } = useImportPage({
         setLoading: () => setIsCreateLoading(true),
         clearLoading: () => setIsCreateLoading(false),
@@ -131,7 +107,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     useEffect(() => {
         const listSortedRecords = async () => {
-            await listRecords({ sort });
+            await listItems({ sort });
         };
 
         listSortedRecords();
@@ -139,7 +115,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
-            await listRecords({ after: cursor, sort });
+            await listItems({ after: cursor, sort });
         }
     };
 
@@ -156,16 +132,6 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         await loadMoreRecords(meta);
     }, [meta]);
 
-    const isListLoading = useMemo(() => {
-        return (
-            recordsLoading.INIT || foldersLoading.INIT || recordsLoading.LIST || foldersLoading.LIST
-        );
-    }, [foldersLoading, recordsLoading]);
-
-    const isListLoadingMore = useMemo(() => {
-        return recordsLoading.LIST_MORE;
-    }, [recordsLoading]);
-
     useEffect(() => {
         if (!showPreviewDrawer) {
             const queryParams = new URLSearchParams(location.search);
@@ -180,7 +146,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         <>
             <MainContainer>
                 <Header
-                    title={!isListLoading ? folderName : undefined}
+                    title={!isListLoading ? listTitle : undefined}
                     canCreate={canCreate}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
@@ -188,7 +154,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                     selected={selected}
                 />
                 <Wrapper>
-                    {records.length === 0 && subFolders.length === 0 && !isListLoading ? (
+                    {records.length === 0 && folders.length === 0 && !isListLoading ? (
                         <Empty
                             canCreate={canCreate}
                             onCreatePage={openTemplatesDialog}
@@ -208,7 +174,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                             >
                                 <Table
                                     ref={tableRef}
-                                    folders={subFolders}
+                                    folders={folders}
                                     records={records as SearchRecordItem<PbPageDataItem>[]}
                                     loading={isListLoading}
                                     openPreviewDrawer={openPreviewDrawer}
