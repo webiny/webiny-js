@@ -60,24 +60,6 @@ class FileManagerTestEnvironment extends NodeEnvironment {
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
-        // this.global.__getStorageOperationsPlugins = () => {
-        //     return () => {
-        //         const pluginsValue = plugins();
-        //         const dbPluginsValue = dbPlugins({
-        //             table: process.env.DB_TABLE,
-        //             driver: new DynamoDbDriver({
-        //                 documentClient
-        //             })
-        //         });
-        //         return [
-        //             createGzipCompression(),
-        //             ...pluginsValue,
-        //             ...dbPluginsValue,
-        //             elasticsearchClientContext
-        //         ];
-        //     };
-        // };
-
         this.global.__getStorageOperationsPlugins = () => {
             return {
                 createStorageOperations: params => {
