@@ -6,7 +6,7 @@ import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { IconButton } from "@webiny/ui/Button";
 import noop from "lodash/noop";
 
-import { ReactComponent as CloseIcon } from "./icons/close.svg";
+import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 import { OverlayView } from "~/ui/views/OverlayView";
 import { ExitHandler } from "react-transition-group/Transition";
 
