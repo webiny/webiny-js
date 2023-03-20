@@ -1,6 +1,10 @@
-import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
+import {
+    Response,
+    ErrorResponse,
+    ListResponse,
+    GraphQLSchemaPlugin
+} from "@webiny/handler-graphql";
 import { FileManagerContext, FilesListOpts } from "~/types";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
 
@@ -20,9 +24,8 @@ const resolve = async (fn: ResolveCallable) => {
     }
 };
 
-const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
-    type: "graphql-schema",
-    schema: {
+export const createGraphQLSchemaPlugin = () => {
+    const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
         typeDefs: /* GraphQL */ `
             type FmCreatedBy {
                 id: ID
@@ -198,7 +201,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
         resolvers: {
             File: {
                 async src(file, _, context: FileManagerContext) {
-                    const settings = await context.fileManager.settings.getSettings();
+                    const settings = await context.fileManager.getSettings();
                     return (settings?.srcPrefix || "") + file.key;
                 }
             },
@@ -210,11 +213,11 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             },
             FmQuery: {
                 getFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.files.getFile(args.id));
+                    return resolve(() => context.fileManager.getFile(args.id));
                 },
                 async listFiles(_, args: FilesListOpts, context) {
                     try {
-                        const [data, meta] = await context.fileManager.files.listFiles(args);
+                        const [data, meta] = await context.fileManager.listFiles(args);
                         return new ListResponse(data, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -222,7 +225,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 },
                 async listTags(_, args: any, context) {
                     try {
-                        return await context.fileManager.files.listTags(args || {});
+                        return await context.fileManager.listTags(args || {});
                     } catch (error) {
                         return new ErrorResponse(error);
                     }
@@ -233,25 +236,26 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         return null;
                     }
 
-                    return await fileManager.system.getVersion();
+                    return await fileManager.getVersion();
                 },
                 async getSettings(_, __, context) {
-                    return resolve(() => context.fileManager.settings.getSettings());
+                    return resolve(() => context.fileManager.getSettings());
                 }
             },
             FmMutation: {
                 async createFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.files.createFile(args.data));
+                    return resolve(() => context.fileManager.createFile(args.data));
                 },
                 async updateFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.files.updateFile(args.id, args.data));
+                    return resolve(() => context.fileManager.updateFile(args.id, args.data));
                 },
                 async createFiles(_, args: any, context) {
-                    return resolve(() => context.fileManager.files.createFilesInBatch(args.data));
+                    return resolve(() => context.fileManager.createFilesInBatch(args.data));
                 },
                 async deleteFile(_, args: any, context) {
                     return resolve(async () => {
-                        const file = await context.fileManager.files.getFile(args.id);
+                        // TODO: Ideally, this should work via a lifecycle hook; first we delete a record from DB, then from cloud storage.
+                        const file = await context.fileManager.getFile(args.id);
                         return await context.fileManager.storage.delete({
                             id: file.id,
                             key: file.key
@@ -260,15 +264,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 },
                 async install(_, args: any, context) {
                     return resolve(() =>
-                        context.fileManager.system.install({ srcPrefix: args.srcPrefix })
+                        context.fileManager.install({ srcPrefix: args.srcPrefix })
                     );
                 },
                 async updateSettings(_, args: any, context) {
-                    return resolve(() => context.fileManager.settings.updateSettings(args.data));
+                    return resolve(() => context.fileManager.updateSettings(args.data));
                 }
             }
         }
-    }
-};
+    });
+    fileManagerGraphQL.name = "fm.graphql.schema";
 
-export default plugin;
+    return fileManagerGraphQL;
+};

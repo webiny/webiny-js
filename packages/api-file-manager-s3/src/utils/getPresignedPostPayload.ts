@@ -20,7 +20,7 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
     }
 };
 
-export default async (
+export const getPresignedPostPayload = async (
     data: PresignedPostPayloadData,
     settings: FileManagerSettings
 ): Promise<PresignedPostPayloadDataResponse> => {

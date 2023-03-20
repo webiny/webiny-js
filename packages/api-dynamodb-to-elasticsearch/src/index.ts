@@ -59,11 +59,11 @@ const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => 
             continue;
         } else if (err === "index") {
             if (process.env.DEBUG === "true") {
-                console.log("Bulk response", JSON.stringify(result, null, 2));
+                console.error("Bulk response", JSON.stringify(result, null, 2));
             }
             continue;
         }
-        console.log(item.error);
+        console.error(item.error);
         throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
     }
 };
@@ -83,7 +83,7 @@ export const createEventHandler = () => {
     return createDynamoDBEventHandler(async ({ event, context: ctx }) => {
         const context = ctx as unknown as ElasticsearchContext;
         if (!context.elasticsearch) {
-            console.log("Missing elasticsearch definition on context.");
+            console.error("Missing elasticsearch definition on context.");
             return null;
         }
 
@@ -127,7 +127,7 @@ export const createEventHandler = () => {
                      * If it is - it is a bug.
                      */
                     if (data === undefined || data === null) {
-                        console.log(
+                        console.error(
                             `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
                         );
                         continue;
@@ -160,7 +160,7 @@ export const createEventHandler = () => {
                 if (process.env.DEBUG === "true") {
                     const meta = error?.meta || {};
                     delete meta["meta"];
-                    console.log("Bulk error", JSON.stringify(meta, null, 2));
+                    console.error("Bulk error", JSON.stringify(error, null, 2));
                 }
                 throw error;
             }
@@ -192,8 +192,8 @@ export const createEventHandler = () => {
                 if (error.attemptNumber < retries * 0.75) {
                     return;
                 }
-                console.log(`Attempt #${error.attemptNumber} failed.`);
-                console.log(error.message);
+                console.error(`Attempt #${error.attemptNumber} failed.`);
+                console.error(error.message);
             }
         });
 

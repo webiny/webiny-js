@@ -11,11 +11,13 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { FileAttributePlugin } from "~/plugins/FileAttributePlugin";
 import WebinyError from "@webiny/error";
-import { FilePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePlugin";
-import { FileStorageTransformPlugin } from "@webiny/api-file-manager/plugins/definitions/FileStorageTransformPlugin";
+import { FileStorageTransformPlugin } from "@webiny/api-file-manager/plugins/FileStorageTransformPlugin";
 import * as jsonpack from "jsonpack";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPlugin";
+import { ContextPlugin } from "@webiny/api";
+import { File } from "@webiny/api-file-manager/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 const fieldName = "richText";
 
@@ -55,7 +57,7 @@ const validateRichTextField = (file: File & Record<string, any>): void => {
     }
 };
 
-export default () => [
+export const richTextFieldStoragePlugins = () => [
     /**
      * Must add new field to attributes of the object being stored and to the Entity definition.
      */
@@ -74,61 +76,6 @@ export default () => [
         keyword: true,
         searchable: false,
         unmappedType: undefined
-    }),
-    new GraphQLSchemaPlugin({
-        typeDefs: `
-            input FileRichTextInput {
-                editor: String!
-                data: JSON!
-            }
-            extend input CreateFileInput {
-                richText: FileRichTextInput
-            }
-             extend input UpdateFileInput {
-                richText: FileRichTextInput
-            }
-            type FileRichText {
-                editor: String
-                data: JSON
-            }
-            input FileWhereInputRichText {
-                editor: String
-                data: JSON
-            }
-            extend type File {
-                richText: FileRichText
-            }
-            extend input FileWhereInput {
-                richText: FileWhereInputRichText
-            }
-        `
-    }),
-    /**
-     * We want to validate file data so we need to add the lifecycle events.
-     */
-    new FilePlugin({
-        beforeCreate: async params => {
-            const file = params.data as any;
-            if (!file.richText) {
-                return;
-            }
-            validateRichTextField(file);
-        },
-        beforeUpdate: async params => {
-            const file = params.data as any;
-            if (!file.richText) {
-                return;
-            }
-            validateRichTextField(file);
-        },
-        beforeBatchCreate: async params => {
-            for (const file of params.data) {
-                if (!file.richText) {
-                    continue;
-                }
-                validateRichTextField(file as any);
-            }
-        }
     }),
     new FileStorageTransformPlugin({
         toStorage: async ({ file }) => {
@@ -174,3 +121,63 @@ export default () => [
         }
     })
 ];
+
+export const richTextSchemaPlugins = () => {
+    return [
+        new GraphQLSchemaPlugin({
+            typeDefs: `
+            input FileRichTextInput {
+                editor: String!
+                data: JSON!
+            }
+            extend input CreateFileInput {
+                richText: FileRichTextInput
+            }
+             extend input UpdateFileInput {
+                richText: FileRichTextInput
+            }
+            type FileRichText {
+                editor: String
+                data: JSON
+            }
+            input FileWhereInputRichText {
+                editor: String
+                data: JSON
+            }
+            extend type File {
+                richText: FileRichText
+            }
+            extend input FileWhereInput {
+                richText: FileWhereInputRichText
+            }
+        `
+        }),
+        /**
+         * We want to validate file data so we need to add the lifecycle events.
+         */
+        new ContextPlugin<FileManagerContext>(context => {
+            context.fileManager.onFileBeforeCreate.subscribe(({ file }) => {
+                if (!file.richText) {
+                    return;
+                }
+                validateRichTextField(file);
+            });
+
+            context.fileManager.onFileBeforeUpdate.subscribe(({ file }) => {
+                if (!file.richText) {
+                    return;
+                }
+                validateRichTextField(file);
+            });
+
+            context.fileManager.onFileBeforeBatchCreate.subscribe(({ files }) => {
+                for (const file of files) {
+                    if (!file.richText) {
+                        continue;
+                    }
+                    validateRichTextField(file as any);
+                }
+            });
+        })
+    ];
+};

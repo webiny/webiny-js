@@ -1,12 +1,14 @@
-import { FileManagerContext, FilePermission } from "~/types";
+import { FileManagerContext, FilePermission } from "@webiny/api-file-manager/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 
-export default async (
+export const checkPermission = async (
     context: FileManagerContext,
     check: { rwd?: string } = {}
-): Promise<FilePermission> => {
+) => {
     await context.i18n.checkI18NContentPermission();
+
     const filePermission = await context.security.getPermission<FilePermission>("fm.file");
+
     if (!filePermission) {
         throw new NotAuthorizedError();
     }

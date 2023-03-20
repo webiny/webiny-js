@@ -109,7 +109,10 @@ describe("Files CRUD ddb/es", () => {
          * Wait until the data is available.
          */
         await until(
-            () => listFiles({}).then(([data]: any) => data),
+            () =>
+                listFiles({}).then(res => {
+                    return res[0];
+                }),
             ({ data }: any) => {
                 return (
                     data.fileManager.listFiles.data.length === 1 &&

@@ -16,8 +16,6 @@ import {
 import { Client } from "@elastic/elasticsearch";
 import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
-import defineTable from "~/definitions/table";
-import defineEsTable from "~/definitions/tableElasticsearch";
 import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import { configurations } from "~/configurations";
 import { encodeCursor, compress } from "@webiny/api-elasticsearch";
@@ -31,8 +29,10 @@ import {
     ElasticsearchSearchResponse,
     SearchBody as ElasticsearchSearchBody
 } from "@webiny/api-elasticsearch/types";
-import { FileManagerContext } from "~/types";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createTable } from "~/definitions/table";
+import { PluginsContainer } from "@webiny/plugins";
 
 type FileItem = DbItem<File>;
 type FileAliasItem = DbItem<FileAlias>;
@@ -45,7 +45,11 @@ interface EsFileItem {
 }
 
 interface ConstructorParams {
-    context: FileManagerContext;
+    documentClient: DocumentClient;
+    elasticsearchClient: Client;
+    plugins: PluginsContainer;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
 
 interface CreatePartitionKeyParams {
@@ -57,39 +61,32 @@ interface CreatePartitionKeyParams {
 type CreateGSI1PartitionKeyParams = Pick<CreatePartitionKeyParams, "tenant" | "locale">;
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly context: FileManagerContext;
+    private readonly getTenantId: () => string;
+    private readonly getLocaleCode: () => string;
+    private readonly plugins: PluginsContainer;
+    private readonly esClient: Client;
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly fileEntity: Entity<any>;
     private readonly esFileEntity: Entity<any>;
     private readonly aliasEntity: Entity<any>;
 
-    private get esClient() {
-        const ctx = this.context;
-        if (!ctx.elasticsearch) {
-            throw new WebinyError(
-                "Missing Elasticsearch client on the context.",
-                "ELASTICSEARCH_CLIENT_ERROR"
-            );
-        }
-        return ctx.elasticsearch as Client;
-    }
-
-    public constructor({ context }: ConstructorParams) {
-        this.context = context;
-        this.table = defineTable({
-            context
-        });
-
+    public constructor({
+        documentClient,
+        elasticsearchClient,
+        plugins,
+        getTenantId,
+        getLocaleCode
+    }: ConstructorParams) {
+        this.getTenantId = getTenantId;
+        this.getLocaleCode = getLocaleCode;
+        this.plugins = plugins;
+        this.esClient = elasticsearchClient;
+        this.table = createTable({ documentClient, table: process.env.DB_TABLE });
+        this.esTable = createTable({ documentClient, table: process.env.DB_TABLE_ELASTICSEARCH });
         this.fileEntity = createStandardEntity(this.table, "FM.File");
         this.aliasEntity = createStandardEntity(this.table, "FM.FileAlias");
-
-        this.esTable = defineEsTable({
-            context
-        });
-
         this.esFileEntity = defineFilesEsEntity({
-            context,
             table: this.esTable
         });
     }
@@ -158,7 +155,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
-        const esCompressedData = await compress(this.context.plugins, esData);
+        const esCompressedData = await compress(this.plugins, esData);
         const esItem: EsFileItem = {
             PK: this.createPartitionKey(file),
             SK: "A",
@@ -246,7 +243,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
-        const esCompressedData = await compress(this.context.plugins, esData);
+        const esCompressedData = await compress(this.plugins, esData);
         const esItem: EsFileItem = {
             PK: this.createPartitionKey(file),
             SK: "A",
@@ -347,7 +344,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 items.push(this.aliasEntity.putBatch(alias));
             });
 
-            const esCompressedData = await compress(this.context.plugins, file);
+            const esCompressedData = await compress(this.plugins, file);
 
             esItems.push(
                 this.esFileEntity.putBatch({
@@ -399,11 +396,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { where, limit, after, sort } = params;
 
         const body = createElasticsearchBody({
-            context: this.context,
+            plugins: this.plugins,
             where,
             limit,
             sort,
-            after
+            after,
+            getTenantId: this.getTenantId
         });
 
         let response: ElasticsearchSearchResponse<File>;
@@ -454,11 +452,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { where, limit } = params;
 
         const initialBody = createElasticsearchBody({
-            context: this.context,
+            plugins: this.plugins,
             where,
             limit,
             sort: [],
-            after: undefined
+            after: undefined,
+            getTenantId: this.getTenantId
         });
 
         const body: ElasticsearchSearchBody = {
@@ -519,20 +518,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private getFileIndexTransformPlugins(): FileIndexTransformPlugin[] {
-        return this.context.plugins.byType<FileIndexTransformPlugin>(FileIndexTransformPlugin.type);
+        return this.plugins.byType<FileIndexTransformPlugin>(FileIndexTransformPlugin.type);
     }
 
     private getElasticsearchIndex(): string {
-        const locale = this.context.i18n.getContentLocale();
-        if (!locale) {
-            throw new WebinyError(
-                "Missing content locale in FilesStorageOperations.",
-                "LOCALE_ERROR"
-            );
-        }
         const { index } = configurations.es({
-            tenant: this.context.tenancy.getCurrentTenant().id,
-            locale: locale.code
+            tenant: this.getTenantId(),
+            locale: this.getLocaleCode()
         });
         return index;
     }

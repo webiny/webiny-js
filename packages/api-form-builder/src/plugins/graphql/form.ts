@@ -598,7 +598,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             hideInFileManager: true
                         });
 
-                        const settings = await fileManager.settings.getSettings();
+                        const settings = await fileManager.getSettings();
 
                         const result = {
                             key,
