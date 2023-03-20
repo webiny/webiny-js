@@ -69,7 +69,7 @@ export async function importBlock({
             JSON.stringify(Object.fromEntries(fileIdToNewFileMap))
         );
 
-        const settings = await context.fileManager.settings.getSettings();
+        const settings = await context.fileManager.getSettings();
 
         const { srcPrefix = "" } = settings || {};
         updateFilesInData({
