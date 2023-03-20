@@ -15,6 +15,12 @@ module.exports = async options => {
     rimraf.sync(join(cwd, "*.tsbuildinfo"));
 
     options.logs !== false && console.log("Building...");
+
+    // Make sure `overrides` is an object.
+    if (options.overrides && typeof options.overrides === "string") {
+        options.overrides = JSON.parse(options.overrides);
+    }
+
     await Promise.all([tsCompile(options), babelCompile(options)]);
 
     options.logs !== false && console.log("Copying meta files...");
