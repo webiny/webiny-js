@@ -180,8 +180,15 @@ const createExecuteActionLambda = (params: Configuration) => {
 
                 // TODO: Maybe update the status like error in original item in DB.
             }
-        } catch (e) {
-            log("[HANDLER_EXECUTE_ACTION] Error => ", e);
+        } catch (ex) {
+            console.error(
+                "[HANDLER_EXECUTE_ACTION] => ",
+                JSON.stringify({
+                    message: ex.message,
+                    code: ex.code,
+                    data: ex.data
+                })
+            );
             // TODO: Maybe update the status like error in original item in DB.
         }
     });
