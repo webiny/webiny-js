@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate, useListAco } from "@webiny/app-aco";
+import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -24,7 +24,7 @@ import { FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { MainContainer, Wrapper } from "./styled";
 
-import { ListMeta, ListSort, SearchRecordItem } from "@webiny/app-aco/types";
+import { ListMeta, ListDbSort, SearchRecordItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 
@@ -47,7 +47,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useListAco(FOLDER_TYPE, folderId);
+    } = useAcoList(FOLDER_TYPE, folderId);
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -73,7 +73,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const [selected, setSelected] = useState<string[]>([]);
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [sort, setSort] = useState<ListSort>();
+    const [sort, setSort] = useState<ListDbSort>();
 
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);

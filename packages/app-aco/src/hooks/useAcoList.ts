@@ -1,32 +1,25 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import orderBy from "lodash/orderBy";
-import unionBy from "lodash/unionBy";
+
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
-import { FolderItem, ListSort, SearchRecordItem } from "~/types";
+import { handleDbSorting, handleTableSorting } from "~/sorting";
 
-interface TableSort {
-    fields: string[];
-    orders: Array<"asc" | "desc">;
-}
+import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
 
-export const useListAco = (type: string, originalFolderId?: string) => {
+export const useAcoList = (type: string, originalFolderId?: string) => {
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
 
     if (!folderContext || !searchContext) {
-        throw new Error("useListAco must be used within a ACOProvider");
+        throw new Error("useAcoList must be used within a ACOProvider");
     }
 
     const [folders, setFolders] = useState<FolderItem[]>([]);
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
-    const [dbSort, setDbSort] = useState<ListSort>(Object.create(null));
-    const [tableSort, setTableSort] = useState<TableSort>(
-        Object.create({ fields: [], orders: [] })
-    );
+    const [sort, setSort] = useState<ListDbSort>();
 
     const { folders: originalFolders, loading: foldersLoading, listFolders } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
@@ -47,54 +40,53 @@ export const useListAco = (type: string, originalFolderId?: string) => {
         }
     };
 
-    const handleSorting = (sort: ListSort) => {
-        const sorting =
-            sort && Object.keys(sort).length > 0
-                ? sort
-                : ({ savedOn: "DESC" } as unknown as ListSort);
-
-        console.log("handleSorting", sorting);
-        setDbSort(sorting);
-
-        const fields = [] as TableSort["fields"];
-        const orders = [] as TableSort["orders"];
-        for (const [field, order] of Object.entries(sorting)) {
-            fields.push(field);
-            orders.push(order.toLowerCase() as "asc" | "desc");
-        }
-
-        setTableSort({ fields, orders });
-    };
-
-    // Initial List both records and folders
+    /**
+     * On first mount, call `listFolders` and `listRecords`, which will either issue a network request, or load folders and records from cache.
+     * We don't need to store the result of it to any local state; that is managed by the context provider.
+     *
+     * IMPORTANT: we check if the folders[type] array exists: the hook can be used from multiple components and
+     * fetch the outdated list from Apollo Cache. Since the state is managed locally, we fetch the folders only
+     * at the first mount.
+     *
+     * We also pass the current `sort` state to `listRecords` so we are able to fetch records according to the previous `sort` value set by the user.
+     */
     useEffect(() => {
         if (!originalFolders[type]) {
             listFolders(type);
         }
-        if (type && folderId) {
-            listRecords({ type, folderId, sort: dbSort });
-        }
+
+        listRecords({ type, folderId, sort });
     }, [type, folderId]);
 
-    // Sync folders
+    /**
+     * Any time we receive a `folders` list update:
+     * - we return the list filtered by the current `type` and parent `folderId`, sorted according to the current `sort` value;
+     * - we return the current folder name.
+     */
     useDeepCompareEffect(() => {
         const subFolders = getCurrentFolderList(originalFolders[type], originalFolderId);
-        setFolders(subFolders);
+        setFolders(handleTableSorting(subFolders, sort));
 
         const currentFolder = originalFolders[type]?.find(folder => folder.id === originalFolderId);
         setListTitle(currentFolder?.title || undefined);
     }, [{ ...originalFolders[type] }, folderId]);
 
-    // Sorting
-    useEffect(() => {
-        setFolders(folders => orderBy(folders, tableSort.fields, tableSort.orders));
-    }, [tableSort]);
-
-    // Sync records
+    /**
+     * Any time we receive a `records` list or `folderId` update:
+     * - we return the `records` list filtered by the current `folderId`.
+     */
     useDeepCompareEffect(() => {
         const subRecords = originalRecords.filter(record => record.location.folderId === folderId);
         setRecords(subRecords);
     }, [{ ...originalRecords }, folderId]);
+
+    /**
+     * Any time we receive a new `sort` value:
+     * - we sort the current `folders` list according to `sort` value;
+     */
+    useEffect(() => {
+        setFolders(folders => handleTableSorting(folders, sort));
+    }, [sort]);
 
     return useMemo(
         () => ({
@@ -107,22 +99,14 @@ export const useListAco = (type: string, originalFolderId?: string) => {
                 recordsLoading.LIST ||
                 foldersLoading.LIST,
             isListLoadingMore: recordsLoading.LIST_MORE,
-            meta: meta[folderId!] || {},
-            async listItems(params: { after?: string; limit?: number; sort?: ListSort }) {
-                // Store `sort` param for further list records
-                if (params.sort) {
-                    console.log("qui");
-                    handleSorting(params.sort);
+            meta: meta[folderId] || {},
+            listItems(params: { after?: string; limit?: number; sort?: ListDbSort }) {
+                // We store `sort` param to local state to handle `folders` and future `records` sorting.
+                if (params.sort && Object.values(params.sort).length > 0) {
+                    setSort(handleDbSorting(params.sort));
                 }
 
-                const data = await listRecords({ ...params, type, folderId, sort: dbSort });
-
-                console.log("dbSort", dbSort);
-                console.log("tableSort", tableSort);
-
-                setRecords(records =>
-                    orderBy(unionBy(data, records, "id"), tableSort.fields, tableSort.orders)
-                );
+                return listRecords({ ...params, type, folderId });
             }
         }),
         [folders, records, foldersLoading, recordsLoading, meta]
