@@ -60,7 +60,7 @@ const FieldTypeName = styled("div")({
     flex: "1",
     textAlign: "right",
     fontSize: "14px",
-    paddingRight: "10px",
+    paddingRight: "10px"
 });
 
 const menuStyles = css({
