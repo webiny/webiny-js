@@ -352,11 +352,7 @@ const SearchBar = () => {
                                 title={categoryPlugin.title}
                                 icon={<IconWrapper>{categoryPlugin.icon}</IconWrapper>}
                             >
-                                <IconButton
-                                    icon={<RefreshIcon />}
-                                    onClick={refetchBlocks}
-                                    data-testid={"pb-page-details-header-edit-revision"}
-                                />
+                                <IconButton icon={<RefreshIcon />} onClick={refetchBlocks} />
                             </SimpleFormHeader>
                             <SimpleFormContent>
                                 <Styled.BlockList>
