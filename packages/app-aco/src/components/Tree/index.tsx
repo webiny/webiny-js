@@ -23,14 +23,14 @@ type Props = {
     enableActions?: boolean;
     onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
     focusedFolderId?: string;
-    hiddenFolderId?: string;
+    hiddenFolderIds?: string[];
 };
 
 export const FolderTree: React.FC<Props> = ({
     type,
     title,
     focusedFolderId,
-    hiddenFolderId,
+    hiddenFolderIds,
     enableActions,
     enableCreate,
     onFolderClick,
@@ -56,7 +56,7 @@ export const FolderTree: React.FC<Props> = ({
                         folders={folders}
                         onFolderClick={onFolderClick}
                         focusedFolderId={focusedFolderId}
-                        hiddenFolderId={hiddenFolderId}
+                        hiddenFolderIds={hiddenFolderIds}
                         enableActions={enableActions}
                         onDragStart={() => setIsDragging(true)}
                         onDragEnd={() => setIsDragging(false)}

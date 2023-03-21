@@ -108,7 +108,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                                     title={t`Root folder`}
                                                     type={folder.type}
                                                     focusedFolderId={parentId || undefined}
-                                                    hiddenFolderId={folder.id}
+                                                    hiddenFolderIds={[folder.id]}
                                                     onFolderClick={data =>
                                                         setParentId(data?.id || null)
                                                     }

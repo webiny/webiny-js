@@ -13,7 +13,7 @@ import { ROOT_ID } from "./constants";
 export const createTreeData = (
     folders: FolderItem[] = [],
     focusedNodeId?: string,
-    hiddenFolderId?: string
+    hiddenFolderIds?: string[]
 ): NodeModel<DndItemData>[] => {
     return folders
         .map(item => {
@@ -37,7 +37,7 @@ export const createTreeData = (
                 }
             };
         })
-        .filter(item => item.id !== hiddenFolderId);
+        .filter(item => hiddenFolderIds && !hiddenFolderIds.includes(item.id));
 };
 
 /**
