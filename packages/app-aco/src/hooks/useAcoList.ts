@@ -4,7 +4,7 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
-import { handleDbSorting, handleTableSorting } from "~/sorting";
+import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
 
@@ -65,7 +65,7 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
      */
     useDeepCompareEffect(() => {
         const subFolders = getCurrentFolderList(originalFolders[type], originalFolderId);
-        setFolders(handleTableSorting(subFolders, sort));
+        setFolders(sortTableItems(subFolders, sort));
 
         const currentFolder = originalFolders[type]?.find(folder => folder.id === originalFolderId);
         setListTitle(currentFolder?.title || undefined);
@@ -85,7 +85,7 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
      * - we sort the current `folders` list according to `sort` value;
      */
     useEffect(() => {
-        setFolders(folders => handleTableSorting(folders, sort));
+        setFolders(folders => sortTableItems(folders, sort));
     }, [sort]);
 
     return useMemo(
@@ -103,7 +103,7 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
             listItems(params: { after?: string; limit?: number; sort?: ListDbSort }) {
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (params.sort && Object.values(params.sort).length > 0) {
-                    setSort(handleDbSorting(params.sort));
+                    setSort(validateOrGetDefaultDbSort(params.sort));
                 }
 
                 return listRecords({ ...params, type, folderId });

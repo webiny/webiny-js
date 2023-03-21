@@ -30,7 +30,7 @@ import {
     UpdateSearchRecordVariables,
     ListDbSort
 } from "~/types";
-import { handleDbSorting, handleTableSorting } from "~/sorting";
+import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 interface SearchRecordsContext {
     records: SearchRecordItem[];
@@ -78,7 +78,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         loading,
         meta,
         async listRecords(params) {
-            const { type, folderId, after, limit, sort: initialSorting } = params;
+            const { type, folderId, after, limit, sort: sorting } = params;
 
             /**
              * Both folderId and type are optional to init `useRecords` but required to list records:
@@ -102,12 +102,12 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             // Remove records in case of sorting change and not a paginated request.
-            if (initialSorting && !after) {
+            if (sorting && !after) {
                 setRecords([]);
             }
 
             const action = after ? "LIST_MORE" : "LIST";
-            const sort = handleDbSorting(initialSorting);
+            const sort = validateOrGetDefaultDbSort(sorting);
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
@@ -126,7 +126,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             // Adjusting sorting while merging records with data received from the server.
-            setRecords(records => handleTableSorting(unionBy(data, records, "id"), sort));
+            setRecords(records => sortTableItems(unionBy(data, records, "id"), sort));
 
             setMeta(meta => ({
                 ...meta,
