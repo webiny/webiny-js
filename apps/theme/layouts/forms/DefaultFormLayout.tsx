@@ -12,6 +12,8 @@ import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
 
 import theme from "../../theme";
 
+declare let gtag: any | undefined;
+
 const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
@@ -52,6 +54,17 @@ const DefaultFormLayout: FormLayoutComponent = ({
         const result = await submit(data);
         setLoading(false);
         if (result.error === null) {
+            const googleAnalyticsEvent = formData.triggers?.["google-analytics-event"];
+            if (typeof gtag === "function" && googleAnalyticsEvent.eventName) {
+                const eventParams = (
+                    (googleAnalyticsEvent.eventParams as Array<{
+                        name: string;
+                        content: string;
+                    }>) || []
+                ).reduce((obj, item) => Object.assign(obj, { [item.name]: item.content }), {});
+
+                gtag("event", googleAnalyticsEvent.eventName, eventParams);
+            }
             setFormSuccess(true);
         }
     };
