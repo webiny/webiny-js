@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from "react";
 
-import slugify from "slugify";
-import { AutoComplete } from "@webiny/ui/AutoComplete";
-import { ButtonPrimary } from "@webiny/ui/Button";
-import {
-    DialogTitle,
-    DialogActions,
-    DialogContent,
-    DialogOnClose,
-    DialogCancel
-} from "@webiny/ui/Dialog";
+import { i18n } from "@webiny/app/i18n";
+import { useSnackbar } from "@webiny/app-admin";
+import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
+import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
+import { DialogTitle, DialogActions, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
+import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-import { i18n } from "@webiny/app/i18n";
-import { useSnackbar } from "@webiny/app-admin";
+import slugify from "slugify";
 
+import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
 
-import { DialogContainer } from "./styled";
+import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
 
@@ -28,16 +23,17 @@ type Props = {
     type: string;
     open: boolean;
     onClose: DialogOnClose;
-    parentId?: string | null;
+    currentParentId?: string | null;
 };
 
 const t = i18n.ns("app-aco/components/tree/dialog-create");
 
 type SubmitData = Omit<FolderItem, "id">;
 
-export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, parentId }) => {
-    const { folders, loading, createFolder } = useFolders(type);
+export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, currentParentId }) => {
+    const { loading, createFolder } = useFolders(type);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = async data => {
@@ -45,7 +41,7 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
             await createFolder({
                 ...data,
                 type,
-                ...(typeof parentId !== "undefined" && { parentId })
+                parentId: parentId || null
             });
             setDialogOpen(false);
             showSnackbar(t`Folder created successfully!`);
@@ -56,6 +52,10 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
 
     const generateSlug = (form: FormAPI) => () => {
         if (form.data.slug) {
+            return;
+        }
+
+        if (!form.data.title) {
             return;
         }
 
@@ -72,13 +72,17 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
     };
 
     useEffect(() => {
+        setParentId(currentParentId);
+    }, [currentParentId]);
+
+    useEffect(() => {
         setDialogOpen(open);
     }, [open]);
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
             {dialogOpen && (
-                <Form onSubmit={onSubmit}>
+                <Form<SubmitData> onSubmit={onSubmit}>
                     {({ form, Bind, submit }) => (
                         <>
                             {loading.CREATE && <CircularProgress label={t`Creating folder...`} />}
@@ -103,29 +107,30 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, paren
                                             <Input label={t`Slug`} />
                                         </Bind>
                                     </Cell>
-                                    {typeof parentId === "undefined" && (
-                                        <Cell span={12}>
-                                            <Bind name="parentId">
-                                                <AutoComplete
-                                                    options={folders.map(({ id, title }) => ({
-                                                        id,
-                                                        name: title
-                                                    }))}
-                                                    label={t`Parent`}
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                    )}
+                                    <Cell span={12}>
+                                        <Typography use="body1">{t`Parent folder`}</Typography>
+                                        <DialogFoldersContainer>
+                                            <FolderTree
+                                                title={t`Root folder`}
+                                                type={type}
+                                                focusedFolderId={parentId || undefined}
+                                                onFolderClick={data =>
+                                                    setParentId(data?.id || null)
+                                                }
+                                                onTitleClick={() => setParentId(null)}
+                                            />
+                                        </DialogFoldersContainer>
+                                    </Cell>
                                 </Grid>
                             </DialogContent>
                             <DialogActions>
-                                <DialogCancel
+                                <ButtonDefault
                                     onClick={() => {
                                         setDialogOpen(false);
                                     }}
                                 >
                                     {t`Cancel`}
-                                </DialogCancel>
+                                </ButtonDefault>
                                 <ButtonPrimary onClick={submit}>{t`Create Folder`}</ButtonPrimary>
                             </DialogActions>
                         </>

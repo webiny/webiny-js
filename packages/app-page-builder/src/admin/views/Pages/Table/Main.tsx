@@ -237,7 +237,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                 type={FOLDER_TYPE}
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
-                parentId={folderId || null}
+                currentParentId={folderId || null}
             />
             <CategoriesDialog
                 open={showCategoriesDialog}

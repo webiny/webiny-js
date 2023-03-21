@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
+import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
-import { AutoComplete } from "@webiny/ui/AutoComplete";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import {
     DialogTitle,
@@ -13,13 +14,13 @@ import {
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Form, FormOnSubmit } from "@webiny/form";
+import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-import { i18n } from "@webiny/app/i18n";
 
+import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
 
-import { DialogContainer } from "./styled";
+import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
 
@@ -29,18 +30,14 @@ type Props = {
     onClose: DialogOnClose;
 };
 
-interface SubmitData extends Omit<FolderItem, "id" | "parentId"> {
-    parent: {
-        id: string | null;
-        name?: string;
-    };
-}
+type SubmitData = Pick<FolderItem, "title" | "slug">;
 
 const t = i18n.ns("app-aco/components/tree/dialog-update");
 
 export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) => {
-    const { folders, loading, updateFolder } = useFolders(folder.type);
+    const { loading, updateFolder } = useFolders(folder.type);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = async data => {
@@ -48,7 +45,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
             await updateFolder({
                 ...folder,
                 ...data,
-                parentId: data.parent?.id || null
+                parentId: parentId || null
             });
             setDialogOpen(false);
             showSnackbar(t`Folder updated successfully!`);
@@ -58,10 +55,12 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
     };
 
     useEffect(() => {
+        setParentId(folder.parentId);
+    }, [folder.parentId]);
+
+    useEffect(() => {
         setDialogOpen(open);
     }, [open]);
-
-    const parentFolder = useMemo(() => folders.find(el => el.id == folder.parentId), [folder]);
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
@@ -71,11 +70,7 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                         onSubmit={onSubmit}
                         data={{
                             title: folder.title,
-                            slug: folder.slug,
-                            parent: parentFolder && {
-                                id: parentFolder.id,
-                                name: parentFolder.title
-                            }
+                            slug: folder.slug
                         }}
                     >
                         {({ Bind, submit }) => (
@@ -107,28 +102,19 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                             </Bind>
                                         </Cell>
                                         <Cell span={12}>
-                                            <Bind name={"parent"}>
-                                                {({ value, onChange: onBindChange }) => {
-                                                    return (
-                                                        <AutoComplete
-                                                            value={value}
-                                                            options={folders
-                                                                .filter(el => el.id !== folder.id)
-                                                                .map(({ id, title }) => ({
-                                                                    id,
-                                                                    name: title
-                                                                }))}
-                                                            label={t`Parent`}
-                                                            onChange={(value, selection) => {
-                                                                onBindChange({
-                                                                    id: value,
-                                                                    name: selection?.name
-                                                                });
-                                                            }}
-                                                        />
-                                                    );
-                                                }}
-                                            </Bind>
+                                            <Typography use="body1">{t`Parent folder`}</Typography>
+                                            <DialogFoldersContainer>
+                                                <FolderTree
+                                                    title={t`Root folder`}
+                                                    type={folder.type}
+                                                    focusedFolderId={parentId || undefined}
+                                                    hiddenFolderIds={[folder.id]}
+                                                    onFolderClick={data =>
+                                                        setParentId(data?.id || null)
+                                                    }
+                                                    onTitleClick={() => setParentId(null)}
+                                                />
+                                            </DialogFoldersContainer>
                                         </Cell>
                                     </Grid>
                                 </DialogContent>
