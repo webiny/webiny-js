@@ -83,7 +83,7 @@ const parentIdField = () =>
         parent: "folder"
     });
 
-export const FOLDER_MODEL_ID = "acoFolderModelDefinition";
+export const FOLDER_MODEL_ID = "acoFolder";
 
 export const createFolderModelDefinition = (): FolderModelDefinition => {
     return {
