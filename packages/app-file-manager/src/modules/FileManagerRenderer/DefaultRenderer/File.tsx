@@ -1,0 +1,158 @@
+import React from "react";
+/**
+ * Package react-lazy-load has no types.
+ */
+// @ts-ignore
+import LazyLoad from "react-lazy-load";
+import classNames from "classnames";
+import { css, keyframes } from "emotion";
+import { Ripple } from "@webiny/ui/Ripple";
+import { IconButton } from "@webiny/ui/Button";
+import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
+import { FileItem } from "@webiny/app-admin/types";
+
+const COMPONENT_WIDTH = 200;
+const COMPONENT_HEIGHT = 200;
+
+const grow = keyframes`
+  0% {
+    transform: scale(1)
+  }
+  50% {
+    transform: scale(1.2)
+  }
+  100% {
+    transform: scale(1)
+  }
+`;
+const styles = css({
+    display: "inline-block",
+    float: "left",
+    position: "relative",
+    zIndex: 1,
+    margin: 10,
+    cursor: "pointer",
+    width: "100%",
+    maxWidth: COMPONENT_WIDTH,
+    border: "1px solid var(--mdc-theme-on-background)",
+    borderRadius: 2,
+    "> .body": {
+        transition: "200ms ease-in opacity",
+        width: COMPONENT_WIDTH,
+        height: COMPONENT_HEIGHT,
+        overflow: "hidden",
+        ".infoIcon": {
+            opacity: 0,
+            position: "absolute",
+            top: 0,
+            right: 0,
+            zIndex: 10,
+            transition: "all 150ms ease-in",
+            "& .mdc-icon-button svg": {
+                color: "var(--mdc-theme-secondary)"
+            },
+            "&:hover": {
+                animationName: grow,
+                animationDuration: ".4s",
+                animationTimingFunction: "ease-in",
+                animationDelay: ".2s"
+            }
+        },
+        ".filePreview": {
+            textAlign: "center",
+            position: "relative",
+            backgroundColor: "#fff",
+            width: "100%",
+            height: "100%",
+            ".clickableArea": {
+                position: "absolute",
+                top: 30,
+                left: 0,
+                width: "100%",
+                height: 170,
+                zIndex: 2
+            }
+        },
+        "&:hover .infoIcon": {
+            opacity: 1
+        }
+    },
+    "> .label": {
+        padding: "15px 10px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        fontSize: "0.8rem",
+        color: "var(--mdc-theme-on-surface)",
+        backgroundColor: "var(--mdc-theme-on-background)"
+    },
+    "&.disable-select": {
+        cursor: "auto"
+    }
+});
+
+const highlight = css`
+    box-shadow: 0px 0px 0px 2px var(--mdc-theme-primary);
+    > .label {
+        color: var(--mdc-theme-primary);
+    }
+`;
+
+export interface FileProps {
+    file: FileItem;
+    selected: boolean;
+    onSelect: (event?: React.MouseEvent) => void;
+    onClick?: (event?: React.MouseEvent) => void;
+    options?: Array<{ label: string; onClick: (file: Object) => void }>;
+    children: React.ReactNode;
+    showFileDetails: (event?: React.MouseEvent) => void;
+}
+
+const File: React.FC<FileProps> = props => {
+    const { file, selected, onSelect, children, showFileDetails } = props;
+
+    return (
+        <div
+            className={classNames(
+                styles,
+                { "disable-select": !onSelect },
+                selected ? highlight : undefined
+            )}
+            data-testid={"fm-list-wrapper-file"}
+        >
+            <div className={"body"}>
+                <div className={"infoIcon"}>
+                    <IconButton
+                        icon={<SettingsIcon />}
+                        onClick={showFileDetails}
+                        data-testid={"fm-file-wrapper-file-info-icon"}
+                    />
+                </div>
+                <LazyLoad height={200} offsetVertical={300}>
+                    <Ripple>
+                        <div className={"filePreview"}>
+                            <div className="clickableArea" onClick={onSelect} />
+                            {children}
+                        </div>
+                    </Ripple>
+                </LazyLoad>
+            </div>
+            <div className={"label"} onClick={onSelect}>
+                {file.name}
+            </div>
+        </div>
+    );
+};
+
+const MemoizedFile = React.memo(File, (prev, next) => {
+    if (prev.selected !== next.selected) {
+        return false;
+    } else if (prev.file.name !== next.file.name) {
+        return false;
+    }
+
+    return true;
+});
+
+MemoizedFile.displayName = "MemoizedFile";
+export default MemoizedFile;

@@ -16,6 +16,7 @@
     "@webiny/validation": "0.0.0",
     "form-data": "^4.0.0",
     "mdbid": "^1.0.0",
+    "mime": "^3.0.0",
     "node-fetch": "^2.6.1",
     "sanitize-filename": "^1.6.3"
   },

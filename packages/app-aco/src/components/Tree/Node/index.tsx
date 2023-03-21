@@ -14,6 +14,7 @@ type Props = {
     node: NodeModel<DndItemData>;
     depth: number;
     isOpen: boolean;
+    enableActions?: boolean;
     onToggle: (id: NodeModel<DndItemData>["id"]) => void;
     onClick: (data: NodeModel<DndItemData>["data"]) => void;
     onUpdateFolder: (data: NodeModel<DndItemData>["data"]) => void;
@@ -38,6 +39,7 @@ export const Node = ({
     node,
     depth,
     isOpen,
+    enableActions,
     onToggle,
     onClick,
     onUpdateFolder,
@@ -71,7 +73,7 @@ export const Node = ({
             <Content onClick={handleClick}>
                 <FolderNode text={node.text} isOpen={isOpen} />
             </Content>
-            {node.data && (
+            {node.data && enableActions && (
                 <MenuActions
                     folder={node.data}
                     onUpdateFolder={onUpdateFolder}

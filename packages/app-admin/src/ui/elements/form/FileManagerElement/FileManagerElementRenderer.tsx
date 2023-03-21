@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FileManagerElement } from "~/ui/elements/form/FileManagerElement";
-import { FileManager, FileManagerFileItem } from "~/components/FileManager";
+import { FileManager, FileManagerFileItem } from "~/base/ui/FileManager";
 import { FormFieldElementRenderProps } from "~/ui/elements/form/FormFieldElement";
 
 const ImageUploadWrapper = styled("div")({

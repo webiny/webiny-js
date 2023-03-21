@@ -1,8 +1,8 @@
 import React from "react";
 import { FileManager } from "@webiny/app-admin/components";
-import { FileManagerProps } from "@webiny/app-admin/components/FileManager";
 
-interface WrapperWithFileUploadProps extends Pick<FileManagerProps, "children"> {
+interface WrapperWithFileUploadProps
+    extends Pick<React.ComponentProps<typeof FileManager>, "children"> {
     onSelect: (file: string) => void;
 }
 export const WrapperWithFileUpload: React.FC<WrapperWithFileUploadProps> = ({
