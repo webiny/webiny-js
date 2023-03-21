@@ -44,6 +44,7 @@ const Actions = styled("div")({
     display: "flex",
     flexDirection: "row",
     alignItems: "right",
+    position: "relative",
     "> *": {
         flex: "1 100%"
     }
@@ -64,9 +65,7 @@ const FieldTypeName = styled("div")({
 });
 
 const menuStyles = css({
-    width: 220,
-    right: -105,
-    left: "auto !important",
+    width: "220px",
     ".disabled": {
         opacity: 0.5,
         pointerEvents: "none"
