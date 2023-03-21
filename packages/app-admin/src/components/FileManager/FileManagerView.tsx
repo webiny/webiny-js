@@ -189,16 +189,7 @@ interface GetFileDetailsFileParams {
 }
 
 const FileManagerView: React.FC<FileManagerViewProps> = props => {
-    const {
-        onClose,
-        onChange,
-        accept,
-        multiple = false,
-        maxSize,
-        multipleMaxCount,
-        multipleMaxSize,
-        onUploadCompletion
-    } = props;
+    const { onClose, onChange, accept, multiple = false, onUploadCompletion } = props;
 
     const {
         selected,
@@ -473,9 +464,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     return (
         <Files
             multiple
-            maxSize={settings.uploadMaxFileSize ? settings.uploadMaxFileSize + "b" : maxSize}
-            multipleMaxSize={multipleMaxSize}
-            multipleMaxCount={multipleMaxCount}
+            maxSize={settings.uploadMaxFileSize ? settings.uploadMaxFileSize + "b" : undefined}
             accept={accept}
             onSuccess={files => {
                 uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
@@ -611,10 +600,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
 };
 
 FileManagerView.defaultProps = {
-    multiple: false,
-    maxSize: "1000mb",
-    multipleMaxSize: "1000mb",
-    multipleMaxCount: 100
+    multiple: false
 };
 
 export default FileManagerView;

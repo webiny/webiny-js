@@ -49,10 +49,11 @@ export default (): RenderHookPlugin => {
                     })
                     .promise();
             } catch (e) {
-                console.log(
+                console.error(
                     `Failed to issue a cache invalidation request to CloudFront distribution "${distributionId}".`,
                     e.stack
                 );
+                return;
             }
 
             console.log(`Cache invalidation request (path "${path}") successfully issued.`);

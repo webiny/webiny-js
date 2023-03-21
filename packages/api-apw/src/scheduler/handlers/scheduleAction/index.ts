@@ -146,7 +146,14 @@ const createScheduleActionLambda = (params: Configuration) => {
                  */
                 await storageOperations.updateCurrentTask({ item: nextItem });
             } catch (ex) {
-                log("[HANDLER_CREATE_RULE] Error => ", ex);
+                console.error(
+                    "[HANDLER_CREATE_RULE] => ",
+                    JSON.stringify({
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.data
+                    })
+                );
                 // TODO: Handler error. Maybe save it into DB.
             }
         }
