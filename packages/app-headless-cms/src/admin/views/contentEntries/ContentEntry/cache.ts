@@ -58,10 +58,13 @@ export const addEntryToListCache = (
                     [
                         pick(entry, [
                             "id",
+                            "entryId",
                             getModelTitleFieldId(model),
+                            "createdOn",
                             "savedOn",
                             "modelId",
                             "createdBy",
+                            "ownedBy",
                             "meta",
                             "__typename"
                         ]) as CmsEditorContentEntry,
