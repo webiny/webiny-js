@@ -10,7 +10,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: ID
             savedOn: DateTime
             createdOn: DateTime
-            createdBy: ApwCreatedBy
+            createdBy: ApwIdentity
             # Reviewer specific fields
             identityId: ID
             displayName: String
@@ -29,7 +29,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: ID
             savedOn: DateTime
             createdOn: DateTime
-            createdBy: ApwCreatedBy
+            createdBy: ApwIdentity
             # Reviewer specific fields
             identityId: ID
             displayName: String

@@ -116,6 +116,10 @@ export interface CmsModelFieldSettings {
      */
     fields?: CmsModelField[];
     /**
+     * Is the file field images only one?
+     */
+    imagesOnly?: boolean;
+    /**
      * Object field has child fields - so it needs to have a layout.
      */
     layout?: string[][];
@@ -442,7 +446,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description: string;
+    description: string | null;
     /**
      * Date created
      */
@@ -454,7 +458,7 @@ export interface CmsModel {
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */
-    createdBy?: CreatedBy;
+    createdBy?: CmsIdentity;
     /**
      * List of fields defining entry values.
      */
@@ -483,6 +487,16 @@ export interface CmsModel {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId: string;
+    /**
+     * The field which is displayed as the description one.
+     * Only way this is null or undefined is that there are no long-text fields to be set as description.
+     */
+    descriptionFieldId?: string | null;
+    /**
+     * The field which is displayed as the image.
+     * Only way this is null or undefined is that there are no file fields, with images only set, to be set as image.
+     */
+    imageFieldId?: string | null;
     /**
      * The version of Webiny which this record was stored with.
      */
@@ -841,7 +855,7 @@ export interface CmsFieldTypePlugins {
  *
  * @category General
  */
-export interface CreatedBy {
+export interface CmsIdentity {
     /**
      * ID if the user.
      */
@@ -999,7 +1013,7 @@ export interface CmsGroup {
     /**
      * CreatedBy reference object.
      */
-    createdBy?: CreatedBy;
+    createdBy?: CmsIdentity;
     /**
      * Date group was created on.
      */
@@ -1243,10 +1257,11 @@ export interface CmsModelCreateInput {
      */
     tags?: string[];
     /**
-     * The field that is being displayed as entry title.
-     * It is picked as first available text field. Or user can select own field.
+     * Fields fieldId which are picked to represent the CMS entry.
      */
-    titleFieldId?: string;
+    titleFieldId?: string | null;
+    descriptionFieldId?: string | null;
+    imageFieldId?: string | null;
 }
 
 /**
@@ -1362,10 +1377,11 @@ export interface CmsModelUpdateInput {
      */
     layout: string[][];
     /**
-     * The field that is being displayed as entry title.
-     * It is picked as first available text field. Or user can select own field.
+     * Fields fieldId which are picked to represent the CMS entry.
      */
-    titleFieldId?: string;
+    titleFieldId?: string | null;
+    descriptionFieldId?: string | null;
+    imageFieldId?: string | null;
 }
 
 /**
@@ -1430,11 +1446,15 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * CreatedBy object reference.
      */
-    createdBy: CreatedBy;
+    createdBy: CmsIdentity;
     /**
      * OwnedBy object reference. Can be different from CreatedBy.
      */
-    ownedBy: CreatedBy;
+    ownedBy: CmsIdentity;
+    /**
+     * ModifiedBy object reference. Last person who modified the entry.
+     */
+    modifiedBy?: CmsIdentity | null;
     /**
      * A string of Date.toISOString() type.
      * Populated on creation.

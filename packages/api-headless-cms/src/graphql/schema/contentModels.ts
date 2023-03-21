@@ -165,7 +165,10 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
                 layout: [[ID!]!]
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]
+                defaultFields: Boolean
             }
 
             input CmsContentModelCreateFromInput {
@@ -183,6 +186,8 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]
             }
 
@@ -261,11 +266,13 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
                 group: CmsContentModelGroup!
                 createdOn: DateTime
                 savedOn: DateTime
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
                 lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!

@@ -3,7 +3,7 @@ import uniqid from "uniqid";
 context("Headless CMS - Content Models CRUD", () => {
     beforeEach(() => cy.login());
 
-    it("should create, edit, and delete content model", () => {
+    it("should create, edit, and delete content model - no default fields", () => {
         // 1. Visit /cms/content-models
         cy.visit("/cms/content-models");
         // 2. Create a new content model
@@ -24,6 +24,7 @@ context("Headless CMS - Content Models CRUD", () => {
                 .type(`Book - ${uniqueId}`)
                 .wait(500);
             cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
+            cy.findByTestId("cms.newcontentmodeldialog.defaultfields").uncheck();
             cy.findByRole("button", { name: "+ Create Model" }).click();
         });
         // 3. Editor
@@ -127,6 +128,71 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.findByTestId("fr.input.text.Title").focus();
         cy.findByTestId("fr.input.number.Edition").type("2");
         cy.findByText("Title is required.").should("exist");
+        // Get back to the list view
+        cy.findByTestId("cms-editor-back-button").click();
+        cy.wait(1000);
+
+        // Delete new model
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("li")
+                .first()
+                .within(() => {
+                    cy.findByText(`Book - ${uniqueId}`).should("exist");
+                    // a. Click on delete button
+                    cy.findByTestId("cms-delete-content-model-button").click({
+                        force: true
+                    });
+                    cy.wait(1000);
+                });
+        });
+        // b. Confirm delete model
+        cy.findByTestId("cms-delete-content-model-dialog").within(() => {
+            cy.findAllByTestId("dialog-accept").next().click();
+        });
+        // c. Check success message
+        cy.findByText(`Content model ${`Book - ${uniqueId}`} deleted successfully!.`);
+    });
+
+    it("should create, edit, and delete content model - with fields", () => {
+        // 1. Visit /cms/content-models
+        cy.visit("/cms/content-models");
+        // 2. Create a new content model
+        const uniqueId = uniqid();
+        const newModelDescription = `Creating a new model for testing.`;
+
+        // 2.1 Add name
+        // 2.2 Description
+        // 2.3 Click save button
+        cy.findByTestId("new-record-button").click();
+        cy.findByTestId("cms-new-content-model-modal").within(() => {
+            cy.findByText("New Content Model").should("exist");
+
+            cy.findByTestId("cms.newcontentmodeldialog.name")
+                .focus()
+                // waiting seems to improve flakyness of this test
+                .wait(500)
+                .type(`Book - ${uniqueId}`)
+                .wait(500);
+            cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
+            /**
+             * checkbox is checked by default, but lets set it to true just in case someone changes that
+             */
+            cy.findByTestId("cms.newcontentmodeldialog.defaultfields").check();
+            cy.findByRole("button", { name: "+ Create Model" }).click();
+        });
+        // 3. Editor
+        cy.wait(1000);
+        // 3.1 Editor -> Preview tab -> check message
+        cy.findByTestId("cms.editor.tab.preview").click();
+
+        // 3.2 Verify that title, description and image fields exist
+        cy.findByTestId("fr.input.text.Title").should("exist");
+        cy.findByTestId("fr.input.longtext.Description").should("exist");
+        /**
+         * TODO figure out how to test for the image field
+         */
+        //cy.findByTestId("fr.input.file.Image").should("exist");
+
         // Get back to the list view
         cy.findByTestId("cms-editor-back-button").click();
         cy.wait(1000);

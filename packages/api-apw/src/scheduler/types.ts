@@ -3,6 +3,7 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { I18NLocale, I18NContext } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { ApwIdentity } from "~/types";
 
 export interface ListWhere {
     /**
@@ -32,26 +33,6 @@ export interface ListParams {
     after?: string;
 }
 
-/**
- * A interface describing the reference to a user that created some data in the database.
- *
- * @category General
- */
-export interface CreatedBy {
-    /**
-     * ID if the user.
-     */
-    id: string;
-    /**
-     * Full name of the user.
-     */
-    displayName: string | null;
-    /**
-     * Type of the user (admin, user)
-     */
-    type: string;
-}
-
 export interface ListMeta {
     /**
      * A cursor for pagination.
@@ -76,7 +57,7 @@ export interface BaseFields {
     id: string;
     createdOn: string;
     savedOn?: string;
-    createdBy: CreatedBy;
+    createdBy: ApwIdentity;
     tenant: string;
     locale: string;
 }

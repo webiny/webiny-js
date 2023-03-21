@@ -32,7 +32,6 @@ import {
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
     CmsModelField,
-    CreatedBy,
     StorageOperationsCmsModel,
     HeadlessCms,
     CmsEntryStatus,
@@ -217,7 +216,7 @@ const createEntryId = (input: CreateCmsEntryInput): EntryIdResult => {
     }
     const version = 1;
     return {
-        entryId: entryId,
+        entryId,
         version,
         id: createIdentifier({
             id: entryId,
@@ -264,6 +263,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const { storageOperations, context, getIdentity, getTenant } = params;
 
     const { plugins } = context;
+
+    const getCreatedBy = () => {
+        const identity = getIdentity();
+        return {
+            id: identity.id,
+            displayName: identity.displayName,
+            type: identity.type
+        };
+    };
 
     /**
      * Create
@@ -760,20 +768,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 validateEntries: true
             });
 
-            const identity = context.security.getIdentity();
             const locale = this.getLocale();
 
-            const owner: CreatedBy = {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            };
+            const owner = getCreatedBy();
+
+            const { id, entryId, version } = createEntryId(inputData);
             /**
              * There is a possibility that user sends an ID in the input, so we will use that one.
              * There is no check if the ID is unique or not, that is up to the user.
              */
-            const { id, entryId, version } = createEntryId(inputData);
-
             const entry: CmsEntry = {
                 webinyVersion: context.WEBINY_VERSION,
                 tenant: getTenant().id,
@@ -785,6 +788,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 savedOn: new Date().toISOString(),
                 createdBy: owner,
                 ownedBy: owner,
+                modifiedBy: null,
                 version,
                 locked: false,
                 status: STATUS_DRAFT,
@@ -897,7 +901,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             checkOwnership(context, permission, originalEntry);
 
-            const identity = context.security.getIdentity();
+            const identity = getIdentity();
 
             const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
             const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
@@ -913,6 +917,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     displayName: identity.displayName,
                     type: identity.type
                 },
+                modifiedBy: null,
                 locked: false,
                 publishedOn: undefined,
                 status: STATUS_DRAFT,
@@ -1039,6 +1044,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const entry: CmsEntry = {
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
+                modifiedBy: getCreatedBy(),
                 values,
                 meta,
                 status: transformEntryStatus(originalEntry.status)

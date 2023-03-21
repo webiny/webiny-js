@@ -128,7 +128,7 @@ export enum ApwWorkflowApplications {
  *
  * @category General
  */
-export interface CreatedBy {
+export interface ApwIdentity {
     /**
      * ID if the user.
      */
@@ -148,7 +148,7 @@ export interface ApwBaseFields {
     entryId: string;
     createdOn: string;
     savedOn: string;
-    createdBy: CreatedBy;
+    createdBy: ApwIdentity;
 }
 
 export interface ApwReviewer extends ApwBaseFields {
@@ -185,7 +185,7 @@ export interface ApwContentReviewStep {
     pendingChangeRequests: number;
     totalComments: number;
     signOffProvidedOn: string | null;
-    signOffProvidedBy: CreatedBy | null;
+    signOffProvidedBy: ApwIdentity | null;
 }
 
 export interface ApwContentReview extends ApwBaseFields {

@@ -1,6 +1,6 @@
 import { CmsModelFieldValidator } from "~/types/validation";
 import { CmsDynamicZoneTemplate, CmsEditorFieldPredefinedValues } from "~/types/index";
-import { CmsCreatedBy } from "~/types/shared";
+import { CmsIdentity } from "~/types/shared";
 
 /**
  * @deprecated Use `CmsModelField` instead.
@@ -25,7 +25,7 @@ export type CmsModelField<T = unknown> = T & {
         type?: string;
         fields?: CmsModelField<any>[];
         layout?: string[][];
-        models?: Pick<CmsModel, "modelId" | "name">[];
+        models?: Pick<CmsModel, "modelId">[];
         templates?: CmsDynamicZoneTemplate[];
         imagesOnly?: boolean;
         [key: string]: any;
@@ -56,7 +56,7 @@ export interface CmsGroup {
     icon?: string;
     description?: string;
     contentModels: CmsModel[];
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     /**
      * Tells if this group is a plugin one (cannot be changed/deleted)
      */
@@ -73,14 +73,16 @@ export interface CmsModel {
     lockedFields: CmsModelField[];
     name: string;
     modelId: string;
-    titleFieldId: string;
+    titleFieldId: string | null;
+    descriptionFieldId: string | null;
+    imageFieldId: string | null;
     settings: {
         [key: string]: any;
     };
     status: string;
     savedOn: string;
     meta: any;
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     tags: string[];
     /**
      * If model is a plugin one (it cannot be changed/deleted)

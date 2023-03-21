@@ -1,4 +1,4 @@
-import { CmsContentEntryStatusType, CmsModel } from "~/types";
+import { CmsContentEntryStatusType, CmsIdentity, CmsModel } from "~/types";
 
 export interface OptionItem {
     id: string;
@@ -19,11 +19,22 @@ export interface CmsReferenceContentEntry {
     id: string;
     entryId: string;
     title: string;
+    description?: string | null;
+    image?: string | null;
     status: CmsContentEntryStatusType;
     model: Pick<CmsModel, "modelId" | "name">;
+    createdBy: CmsIdentity;
+    modifiedBy?: CmsIdentity | null;
     published?: {
         id: string;
         entryId: string;
         title: string;
     };
+    createdOn: Date;
+    savedOn: Date;
+}
+
+export interface CmsReferenceValue {
+    id: string;
+    modelId: string;
 }

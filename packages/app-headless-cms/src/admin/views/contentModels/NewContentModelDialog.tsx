@@ -25,6 +25,7 @@ import { CmsGroupOption } from "./types";
 import lodashUpperFirst from "lodash/upperFirst";
 import lodashCamelCase from "lodash/camelCase";
 import { Dialog } from "~/admin/components/Dialog";
+import { Checkbox } from "@webiny/ui/Checkbox";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -212,6 +213,15 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                     data-testid="cms.newcontentmodeldialog.description"
                                                 />
                                             )}
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind name={"defaultFields"} defaultValue={true}>
+                                            <Checkbox
+                                                description={t`Create model with default title (text), description (long text) and image (file) fields`}
+                                                label={t`Create model with default fields`}
+                                                data-testid="cms.newcontentmodeldialog.defaultfields"
+                                            />
                                         </Bind>
                                     </Cell>
                                 </Grid>

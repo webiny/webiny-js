@@ -34,6 +34,13 @@ export interface HeadlessCMSProps {
     createApolloClient: CreateApolloClient;
 }
 
+/**
+ * If there is a problem with some state being reset, it's probably because of this plugin.
+ * Check that __typename from the API and the __typename in the state are the same.
+ * If not, add it into the attachTypeName array.
+ */
+const attachTypeName = ["CmsContentEntry", "RefField"];
+
 const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
     plugins.register(apiInformation);
     plugins.register(allPlugins);
@@ -42,6 +49,8 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
         new ApolloCacheObjectIdPlugin(obj => {
             if (obj.__typename === "CmsContentModelField") {
                 return null;
+            } else if (obj.__typename && attachTypeName.includes(obj.__typename)) {
+                return `${obj.__typename}_${obj.id}`;
             }
 
             return undefined;

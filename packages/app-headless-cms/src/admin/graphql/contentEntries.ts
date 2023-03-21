@@ -11,20 +11,42 @@ import {
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
 
+const CONTENT_META_FIELDS = /* GraphQL */ `
+    meta {
+        title
+        description
+        image
+        publishedOn
+        version
+        locked
+        status
+    }
+`;
+
+const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
+    id
+    entryId
+    savedOn
+    createdOn
+    createdBy {
+        id
+        type
+        displayName
+    }
+    ownedBy {
+        id
+        type
+        displayName
+    }
+    ${CONTENT_META_FIELDS}
+`;
+
 const ERROR_FIELD = /* GraphQL */ `
     {
         message
         code
         data
     }
-`;
-
-const CONTENT_META_FIELDS = /* GraphQL */ `
-    title
-    publishedOn
-    version
-    locked
-    status
 `;
 /**
  * ############################################
@@ -51,15 +73,8 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
         query CmsEntriesGet${ucFirstModelId}($revision: ID, $entryId: ID) {
             content: get${ucFirstModelId}(revision: $revision, entryId: $entryId) {
                 data {
-                    id
-                    createdBy {
-                        id
-                    }
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
                 }
                 error ${ERROR_FIELD}
             }
@@ -87,11 +102,7 @@ export const createRevisionsQuery = (model: CmsEditorContentModel) => {
         query CmsEntriesGet${ucFirstModelId}Revisions($id: ID!) {
             revisions: get${ucFirstModelId}Revisions(id: $id) {
                 data {
-                    id
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
                 }
                 error ${ERROR_FIELD}
             }
@@ -132,11 +143,7 @@ export const createListQuery = (model: CmsEditorContentModel) => {
                 after: $after
             ) {
                 data {
-                    id
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${getModelTitleFieldId(model)}
                 }
                 meta {
@@ -197,12 +204,8 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
         mutation CmsEntriesCreate${ucFirstModelId}($data: ${ucFirstModelId}Input!) {
             content: create${ucFirstModelId}(data: $data) {
                 data {
-                    id
-                    savedOn
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
                 }
                 error ${ERROR_FIELD}
             }
@@ -233,12 +236,8 @@ export const createCreateFromMutation = (model: CmsEditorContentModel) => {
         mutation CmsCreate${ucFirstModelId}From($revision: ID!, $data: ${ucFirstModelId}Input) {
             content: create${ucFirstModelId}From(revision: $revision, data: $data) {
                 data {
-                    id
-                    savedOn
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
                 }
                 error ${ERROR_FIELD}
             }
@@ -268,12 +267,8 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
         mutation CmsUpdate${ucFirstModelId}($revision: ID!, $data: ${ucFirstModelId}Input!) {
             content: update${ucFirstModelId}(revision: $revision, data: $data) {
                 data {
-                    id
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}
-                    savedOn
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
                 }
                 error ${ERROR_FIELD}
             }
@@ -301,9 +296,7 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
             content: publish${ucFirstModelId}(revision: $revision) {
                 data {
                     id
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+                    ${CONTENT_META_FIELDS}
                 }
                 error ${ERROR_FIELD}
             }
@@ -330,9 +323,7 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
             content: unpublish${ucFirstModelId}(revision: $revision) {
                 data {
                     id
-                    meta {
-                        ${CONTENT_META_FIELDS}
-                    }
+                    ${CONTENT_META_FIELDS}
                 }
                 error ${ERROR_FIELD}
             }

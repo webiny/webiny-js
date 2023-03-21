@@ -27,7 +27,8 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
     /**
      * If is a test environment, always have this turned on.
      */
-    if (process.env.NODE_ENV === "test" || isBetaOrNext(model) === true) {
+    const nodeEnv = process.env.NODE_ENV as string;
+    if (nodeEnv === "test" || nodeEnv === "disable" || isBetaOrNext(model)) {
         return true;
     }
     /**
