@@ -1,11 +1,12 @@
 import got from "got";
+import { format } from "date-fns";
 import { FbFormTriggerHandlerPlugin } from "~/types";
 
 const plugin: FbFormTriggerHandlerPlugin = {
     type: "form-trigger-handler",
     name: "form-trigger-handler-webhook",
     trigger: "webhook",
-    async handle({ trigger, data, addLog }) {
+    async handle({ trigger, data, meta, addLog }) {
         const urls = trigger && trigger.urls;
         if (!urls || Array.isArray(urls) === false) {
             return;
@@ -20,7 +21,16 @@ const plugin: FbFormTriggerHandlerPlugin = {
                 const response = await got(url, {
                     method: "post",
                     json: true,
-                    body: data
+                    body: {
+                        ...data,
+                        _meta: {
+                            dateSubmitted: format(
+                                new Date(meta.dateSubmitted),
+                                "yyyy-MM-dd HH:mm:ss"
+                            ),
+                            url: meta.url
+                        }
+                    }
                 });
 
                 addLog({

@@ -54,6 +54,7 @@ export interface FbFormTriggerHandlerParams {
     addLog: (log: Record<string, any>) => void;
     trigger: FbFormTriggerData;
     data: FbSubmissionData;
+    meta: Record<string, any>;
     form: FbForm;
 }
 
