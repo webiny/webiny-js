@@ -7,13 +7,13 @@ import { ROOT_ID } from "./constants";
  *
  * @param folders list of folders returned by useFolders hook.
  * @param focusedNodeId id of the current folder selected/focused.
- * @param hiddenFolderId id of the folder you don't want to show within the list.
+ * @param hiddenFolderIds list ids of the folder you don't want to show within the list.
  * @return array of elements to render the tree component.
  */
 export const createTreeData = (
     folders: FolderItem[] = [],
     focusedNodeId?: string,
-    hiddenFolderIds?: string[]
+    hiddenFolderIds: string[] = []
 ): NodeModel<DndItemData>[] => {
     return folders
         .map(item => {
@@ -37,7 +37,7 @@ export const createTreeData = (
                 }
             };
         })
-        .filter(item => hiddenFolderIds && !hiddenFolderIds.includes(item.id));
+        .filter(item => !hiddenFolderIds.includes(item.id));
 };
 
 /**
