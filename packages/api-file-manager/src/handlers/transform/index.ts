@@ -68,10 +68,17 @@ export const createTransformFilePlugins = () => {
                     error: false,
                     message: ""
                 };
-            } catch (e) {
+            } catch (ex) {
+                console.error(
+                    JSON.stringify({
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.data
+                    })
+                );
                 return {
                     error: true,
-                    message: e.message
+                    message: ex.message
                 };
             }
         })
