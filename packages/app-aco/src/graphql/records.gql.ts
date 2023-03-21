@@ -11,7 +11,6 @@ const ERROR_FIELD = /* GraphQL */ `
 const DATA_FIELD = /* GraphQL */ `
     {
         id
-        originalId
         type
         location {
             folderId
@@ -19,6 +18,7 @@ const DATA_FIELD = /* GraphQL */ `
         title
         content
         data
+        savedOn
     }
 `;
 
@@ -42,9 +42,9 @@ export const CREATE_RECORD = gql`
 `;
 
 export const LIST_RECORDS = gql`
-    query ListRecords ($type: String!, $location: SearchLocationInput!, $limit: Int, $after: String) {
+    query ListRecords ($type: String!, $location: SearchLocationInput!, $limit: Int, $after: String, $sort: AcoSort!) {
         search {
-            listRecords(where: { type: $type, location: $location }, limit: $limit, after: $after) {
+            listRecords(where: { type: $type, location: $location }, limit: $limit, after: $after, sort: $sort) {
                 data ${DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}

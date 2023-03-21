@@ -1,4 +1,4 @@
-import { AcoBaseFields, ListMeta } from "~/types";
+import { AcoBaseFields, ListMeta, ListSort } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export interface Folder extends AcoBaseFields {
@@ -15,7 +15,7 @@ export interface ListFoldersWhere {
 
 export interface ListFoldersParams {
     where: ListFoldersWhere;
-    sort?: string[];
+    sort?: ListSort;
     limit?: number;
     after?: string | null;
 }

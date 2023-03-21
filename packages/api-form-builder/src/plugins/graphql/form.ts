@@ -7,7 +7,8 @@ import {
     Response
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { FormBuilderContext } from "~/types";
+import { sanitizeFormSubmissionData } from "~/plugins/crud/utils";
+import { FormBuilderContext, FbFormField } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
     type: "graphql-schema",
@@ -532,6 +533,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                         const rows: Record<string, string>[] = [];
                         const fields: Record<string, string> = {};
+                        const fieldsData: FbFormField[] = [];
 
                         /**
                          * First extract all distinct fields across all form submissions.
@@ -541,7 +543,12 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             for (let j = 0; j < revision.fields.length; j++) {
                                 const field = revision.fields[j];
                                 if (!fields[field.fieldId]) {
+                                    fieldsData.push(field);
                                     fields[field.fieldId] = field.label;
+
+                                    if (field?.options && field?.options?.length > 0) {
+                                        fields[`${field.fieldId}_label`] = `${field.label} (Label)`;
+                                    }
                                 }
                             }
                         }
@@ -550,7 +557,10 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                          * Build rows.
                          */
                         for (let i = 0; i < submissions.length; i++) {
-                            const submissionData = submissions[i].data;
+                            const submissionData = sanitizeFormSubmissionData(
+                                fieldsData,
+                                submissions[i].data
+                            );
                             const row: Record<string, string> = {};
 
                             row["Date submitted (UTC)"] = format(
@@ -560,7 +570,11 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                             Object.keys(fields).map(fieldId => {
                                 if (fieldId in submissionData) {
-                                    row[fields[fieldId]] = submissionData[fieldId];
+                                    const value = submissionData[fieldId];
+                                    // Remove brackets from arrays;
+                                    row[fields[fieldId]] = Array.isArray(value)
+                                        ? value.map(item => `"${item}"`).join(", ")
+                                        : value;
                                 } else {
                                     row[fields[fieldId]] = "N/A";
                                 }

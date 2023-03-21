@@ -30,7 +30,9 @@ describe("`search` CRUD", () => {
         // List records -> type: "page" / folderId: "folder-1"
         const [listResponsePageFolder1] = await search.listRecords({
             where: { type: "page", location: { folderId: "folder-1" } },
-            sort: ["createdOn_ASC"]
+            sort: {
+                createdOn: "ASC"
+            }
         });
 
         expect(listResponsePageFolder1.data.search.listRecords).toEqual(
@@ -46,7 +48,9 @@ describe("`search` CRUD", () => {
         // List records -> type: "page" / folderId: "folder-2"
         const [listResponsePageFolder2] = await search.listRecords({
             where: { type: "page", location: { folderId: "folder-2" } },
-            sort: ["createdOn_ASC"]
+            sort: {
+                createdOn: "ASC"
+            }
         });
 
         expect(listResponsePageFolder2.data.search.listRecords).toEqual(
@@ -61,7 +65,9 @@ describe("`search` CRUD", () => {
         // List records -> type: "post" / folderId: "folder-1"
         const [listResponsePostFolder1] = await search.listRecords({
             where: { type: "post" },
-            sort: ["createdOn_ASC"]
+            sort: {
+                createdOn: "ASC"
+            }
         });
 
         expect(listResponsePostFolder1.data.search.listRecords).toEqual(
@@ -77,7 +83,9 @@ describe("`search` CRUD", () => {
         // Let's check cursor based pagination meta.
         const [listResponsePageWithLimit] = await search.listRecords({
             where: { type: "page" },
-            sort: ["createdOn_ASC"],
+            sort: {
+                createdOn: "ASC"
+            },
             limit: 2
         });
 
@@ -102,7 +110,9 @@ describe("`search` CRUD", () => {
 
         const [listResponsePageWithLimitAfter] = await search.listRecords({
             where: { type: "page" },
-            sort: ["createdOn_ASC"],
+            sort: {
+                createdOn: "ASC"
+            },
             limit: 2,
             after: cursor
         });
@@ -125,7 +135,9 @@ describe("`search` CRUD", () => {
         // Let's search for records.
         const [searchResponse] = await search.listRecords({
             where: { type: "page" },
-            sort: ["createdOn_ASC"],
+            sort: {
+                createdOn: "ASC"
+            },
             search: "Lorem"
         });
 

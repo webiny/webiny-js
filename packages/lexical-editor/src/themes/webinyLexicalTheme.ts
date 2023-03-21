@@ -1,16 +1,15 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type { EditorThemeClasses } from "lexical";
 
 import "./webinyLexicalTheme.css";
 
-export const theme: EditorThemeClasses = {
+export type WebinyTheme = {
+    styles?: Record<string, any>;
+};
+
+export type WebinyEditorTheme = WebinyTheme & EditorThemeClasses;
+
+export const webinyEditorTheme: WebinyEditorTheme = {
+    styles: undefined,
     characterLimit: "WebinyLexical__characterLimit",
     code: "WebinyLexical__code",
     codeHighlight: {
@@ -58,7 +57,6 @@ export const theme: EditorThemeClasses = {
         h5: "WebinyLexical__h5",
         h6: "WebinyLexical__h6"
     },
-    image: "editor-image",
     link: "WebinyLexical__link",
     list: {
         listitem: "WebinyLexical__listItem",
@@ -82,20 +80,6 @@ export const theme: EditorThemeClasses = {
     paragraph: "WebinyLexical__paragraph",
     quote: "WebinyLexical__quote",
     rtl: "WebinyLexical__rtl",
-    table: "WebinyLexical__table",
-    tableAddColumns: "WebinyLexical__tableAddColumns",
-    tableAddRows: "WebinyLexical__tableAddRows",
-    tableCell: "WebinyLexical__tableCell",
-    tableCellActionButton: "WebinyLexical__tableCellActionButton",
-    tableCellActionButtonContainer: "WebinyLexical__tableCellActionButtonContainer",
-    tableCellEditing: "WebinyLexical__tableCellEditing",
-    tableCellHeader: "WebinyLexical__tableCellHeader",
-    tableCellPrimarySelected: "WebinyLexical__tableCellPrimarySelected",
-    tableCellResizer: "WebinyLexical__tableCellResizer",
-    tableCellSelected: "WebinyLexical__tableCellSelected",
-    tableCellSortedIndicator: "WebinyLexical__tableCellSortedIndicator",
-    tableResizeRuler: "WebinyLexical__tableCellResizeRuler",
-    tableSelected: "WebinyLexical__tableSelected",
     text: {
         bold: "WebinyLexical__textBold",
         code: "WebinyLexical__textCode",
@@ -105,5 +89,6 @@ export const theme: EditorThemeClasses = {
         superscript: "WebinyLexical__textSuperscript",
         underline: "WebinyLexical__textUnderline",
         underlineStrikethrough: "WebinyLexical__textUnderlineStrikethrough"
-    }
+    },
+    fontColorText: "WebinyLexical__fontColorText"
 };

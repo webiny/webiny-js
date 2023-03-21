@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-aws/gateway";
-import { createDownloadFilePlugins } from "~/handlers/download";
+import { createDownloadFileByExactKeyPlugins } from "~/handlers/download";
 import { APIGatewayEvent } from "aws-lambda";
 
 const binaryMimeTypes: string[] = [];
@@ -74,7 +74,7 @@ const createFileDownloadEvent = (file: string): APIGatewayEvent => {
 describe("download handler", () => {
     it("should trigger s3 file download - stream", async () => {
         const handler = createHandler({
-            plugins: [createDownloadFilePlugins()]
+            plugins: [createDownloadFileByExactKeyPlugins()]
         });
 
         const result = await handler(createFileDownloadEvent(Files.smallFile), {} as any);
@@ -99,7 +99,7 @@ describe("download handler", () => {
 
     it("should trigger s3 file download - redirect", async () => {
         const handler = createHandler({
-            plugins: [createDownloadFilePlugins()]
+            plugins: [createDownloadFileByExactKeyPlugins()]
         });
 
         const result = await handler(createFileDownloadEvent(Files.largeFile), {} as any);

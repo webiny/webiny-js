@@ -85,6 +85,7 @@ interface Props {
     onMoveUp?: never;
     onMoveDown?: never;
     onRemove?: never;
+    placement?: string;
 }
 
 interface PropsWithRemove {

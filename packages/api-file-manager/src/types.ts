@@ -27,6 +27,7 @@ export interface File {
     name: string;
     meta: Record<string, any>;
     tags: string[];
+    aliases: string[];
     createdOn: string;
     createdBy: CreatedBy;
     /**
@@ -41,6 +42,13 @@ export interface File {
     [key: string]: any;
 }
 
+export interface FileAlias {
+    tenant: string;
+    locale: string;
+    fileId: string;
+    alias: string;
+}
+
 export interface CreatedBy {
     id: string;
     displayName: string | null;
@@ -48,12 +56,14 @@ export interface CreatedBy {
 }
 
 export interface FileInput {
+    id: string;
     key: string;
     name: string;
     size: number;
     type: string;
     meta: Record<string, any>;
     tags: string[];
+    aliases: string[];
 }
 
 export interface FileListWhereParams {

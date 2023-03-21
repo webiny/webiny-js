@@ -9,7 +9,6 @@ import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/fo
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
-import { SearchRecordItem } from "@webiny/app-aco/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
 
@@ -363,9 +362,10 @@ export interface PbPageRevision {
     savedOn: string;
 }
 
-export interface PbPageDataLink extends PbPageData {
-    link: SearchRecordItem;
-}
+export type PbPageDataItem = Pick<
+    PbPageData,
+    "id" | "pid" | "title" | "createdBy" | "savedOn" | "status" | "version" | "locked" | "path"
+>;
 
 export interface PbRenderElementPluginRenderParams {
     theme: PbTheme;
@@ -969,8 +969,6 @@ export interface PageBuilderSecurityPermission extends SecurityPermission {
 }
 
 export type Loading<T extends string> = { [P in T]?: boolean };
-
-export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
 
 // TODO: move to a declaration file
 declare global {

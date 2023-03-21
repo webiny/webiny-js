@@ -52,10 +52,12 @@ export function DropDownItem({
 function DropDownItems({
     children,
     dropDownRef,
+    showScroll = true,
     onClose
 }: {
     children: React.ReactNode;
     dropDownRef?: React.Ref<HTMLDivElement>;
+    showScroll?: boolean;
     onClose: () => void;
 }) {
     const [items, setItems] = useState<React.RefObject<HTMLButtonElement>[]>();
@@ -118,7 +120,11 @@ function DropDownItems({
 
     return (
         <DropDownContext.Provider value={contextValue}>
-            <div className="lexical-dropdown" ref={dropDownRef ?? null} onKeyDown={handleKeyDown}>
+            <div
+                className={`lexical-dropdown ${showScroll ? "" : "no-scroll"}`}
+                ref={dropDownRef ?? null}
+                onKeyDown={handleKeyDown}
+            >
                 {children}
             </div>
         </DropDownContext.Provider>
@@ -132,7 +138,8 @@ export function DropDown({
     buttonClassName,
     buttonIconClassName,
     children,
-    stopCloseOnClickSelf
+    stopCloseOnClickSelf,
+    showScroll = true
 }: {
     disabled?: boolean;
     buttonAriaLabel?: string;
@@ -141,6 +148,7 @@ export function DropDown({
     buttonLabel?: string;
     children: ReactNode;
     stopCloseOnClickSelf?: boolean;
+    showScroll?: boolean;
 }): JSX.Element {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [showDropDown, setShowDropDown] = useState(false);
@@ -185,7 +193,9 @@ export function DropDown({
             <i className="chevron-down" />
             {showDropDown && (
                 <div className={"lexical-dropdown-container"}>
-                    <DropDownItems onClose={handleClose}>{children}</DropDownItems>
+                    <DropDownItems showScroll={showScroll} onClose={handleClose}>
+                        {children}
+                    </DropDownItems>
                 </div>
             )}
         </button>

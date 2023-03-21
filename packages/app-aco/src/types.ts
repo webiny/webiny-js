@@ -12,18 +12,21 @@ export interface FolderItem {
     savedOn: string;
 }
 
+export type GenericSearchData = {
+    [key: string]: any;
+};
+
 export interface Location {
     folderId: string;
 }
 
-export interface SearchRecordItem {
+export interface SearchRecordItem<TData extends GenericSearchData = GenericSearchData> {
     id: string;
-    originalId: string;
     type: string;
-    title?: string;
-    content?: string;
+    title: string;
+    content: string;
     location: Location;
-    data?: Record<string, any>;
+    data: TData;
 }
 
 export type Loading<T extends string> = { [P in T]?: boolean };
@@ -37,6 +40,13 @@ export interface Error {
 }
 
 export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
+
+export enum ListSortDirection {
+    ASC = "ASC",
+    DESC = "DESC"
+}
+
+export type ListSort = Record<string, ListSortDirection>;
 
 export interface ListMeta {
     cursor: string | null;
@@ -125,6 +135,7 @@ export interface ListSearchRecordsQueryVariables {
     location: Location;
     limit?: number;
     after?: string | null;
+    sort?: ListSort;
 }
 
 export interface GetSearchRecordResponse {

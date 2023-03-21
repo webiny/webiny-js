@@ -8,6 +8,7 @@ const GET_PRE_SIGNED_POST_PAYLOAD = gql`
                 data {
                     data
                     file {
+                        id
                         type
                         name
                         size

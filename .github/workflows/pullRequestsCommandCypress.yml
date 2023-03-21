@@ -3,7 +3,6 @@ on: issue_comment
 env:
   NODE_OPTIONS: --max_old_space_size=4096
   AWS_REGION: eu-central-1
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 name: Pull Requests Command - Cypress
 
@@ -111,7 +110,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -270,7 +269,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: dev
@@ -374,7 +373,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -536,7 +535,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: dev

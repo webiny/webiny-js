@@ -6,11 +6,10 @@ const PAGE_BUILDER_LIST_LINK = "/page-builder/pages";
 const LOCAL_STORAGE_LATEST_VISITED_FOLDER = "webiny_pb_page_latest_visited_folder";
 
 export const usePageViewNavigation = () => {
-    const [currentFolderId, setCurrentFolderId] = useState<string>();
-    const { history, location } = useRouter();
-
+    const { history } = useRouter();
     const query = new URLSearchParams(location.search);
     const folderId = query.get("folderId") || undefined;
+    const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderId);
 
     useEffect(() => {
         setCurrentFolderId(folderId);
@@ -28,14 +27,8 @@ export const usePageViewNavigation = () => {
     /**
      * Navigate to page-builder home list.
      */
-    const navigateToPageHome = (id?: string) => {
-        // TODO: @leopuleo remove the reference to id after the rollout of the new ACO
-        const searchParams = new URLSearchParams({ ...(id && { id }) }).toString();
-
-        return history.push({
-            pathname: PAGE_BUILDER_LIST_LINK,
-            search: searchParams
-        });
+    const navigateToPageHome = () => {
+        return history.push(PAGE_BUILDER_LIST_LINK);
     };
 
     /**

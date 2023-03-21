@@ -27,6 +27,7 @@ import {
 } from "~/types";
 import { SecureView } from "@webiny/app-security";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
+import { useRecords } from "@webiny/app-aco";
 
 const menuStyles = css({
     width: 250,
@@ -47,6 +48,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
         usePageBuilderSettings();
     const client = useApolloClient();
     const { history } = useRouter();
+    const { getRecord } = useRecords();
 
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
@@ -71,7 +73,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
-    const url = getPageUrl(page, !page.locked);
+    const url = getPageUrl(page);
 
     const handlePreviewClick = useCallback(() => {
         if (isSiteRunning) {
@@ -86,7 +88,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
             await client.mutate({
                 mutation: DUPLICATE_PAGE,
                 variables: { id: page.id },
-                update(cache, { data }) {
+                async update(cache, { data }) {
                     if (data.pageBuilder.duplicatePage.error) {
                         return;
                     }
@@ -98,6 +100,8 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
                             data.pageBuilder.duplicatePage.data.id
                         )}`
                     );
+                    // Sync ACO record - retrieve the most updated record from network
+                    await getRecord(data.pageBuilder.duplicatePage.data.pid);
                 }
             });
         } catch (error) {
@@ -120,7 +124,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
         return permission.rwd.includes("w");
     }, [identity]);
 
-    const previewButtonLabel = page.locked ? "View" : "Preview";
+    const previewButtonLabel = page.status === "published" ? "View" : "Preview";
     return (
         <Menu
             className={menuStyles}

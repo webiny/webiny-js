@@ -1,4 +1,4 @@
-import { AcoBaseFields, ListMeta } from "~/types";
+import { AcoBaseFields, ListMeta, ListSort } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export type GenericSearchData = {
@@ -28,7 +28,7 @@ export interface ListSearchRecordsWhere {
 export interface ListSearchRecordsParams {
     where?: ListSearchRecordsWhere;
     search?: string;
-    sort?: string[];
+    sort?: ListSort;
     limit?: number;
     after?: string | null;
 }

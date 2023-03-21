@@ -10,6 +10,7 @@ export interface PresignedPostPayloadData {
 export interface PresignedPostPayloadDataResponse {
     data: S3.PresignedPost;
     file: {
+        id: string;
         name: string;
         key: string;
         type: string;

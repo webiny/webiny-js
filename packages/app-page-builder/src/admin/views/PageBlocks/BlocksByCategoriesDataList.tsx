@@ -102,7 +102,7 @@ const BlocksByCategoriesDataList = ({
     canCreate
 }: PageBuilderBlocksByCategoriesDataListProps) => {
     const [operation, setOperation] = useState<string>(Operation.CREATE);
-    const [sort, setSort] = useState<string>(SORTERS[0].sort);
+    const [sort, setSort] = useState<string>(SORTERS[2].sort);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const { history } = useRouter();
     const client = useApolloClient();

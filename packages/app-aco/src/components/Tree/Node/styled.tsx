@@ -13,7 +13,7 @@ export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
     padding: 4px 32px 4px 0;
-    background: ${props => props.isFocused && "var(--mdc-theme-background)"};
+    background: ${props => props.isFocused && "var(--mdc-theme-on-background)"};
     color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;
     position: relative;

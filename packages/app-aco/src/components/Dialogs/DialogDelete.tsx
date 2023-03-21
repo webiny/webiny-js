@@ -2,13 +2,19 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
-import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { DialogContent, DialogOnClose, DialogTitle } from "@webiny/ui/Dialog";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import {
+    DialogActions,
+    DialogCancel,
+    DialogContent,
+    DialogOnClose,
+    DialogTitle
+} from "@webiny/ui/Dialog";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 import { useFolders } from "~/hooks";
 
-import { DialogContainer, DialogActions } from "./styled";
+import { DialogContainer } from "./styled";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
 
@@ -70,13 +76,13 @@ export const FolderDialogDelete = ({ folder, open, onClose }: Props) => {
                 )}
             </DialogContent>
             <DialogActions>
-                <ButtonDefault
+                <DialogCancel
                     onClick={() => {
                         setDialogOpen(false);
                     }}
                 >
                     {t`Cancel`}
-                </ButtonDefault>
+                </DialogCancel>
                 <ButtonPrimary
                     onClick={() => {
                         onSubmit();

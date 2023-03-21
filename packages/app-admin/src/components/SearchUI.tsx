@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import InputField from "./SimpleUI/InputField";
-import { ReactComponent as SearchIcon } from "../assets/icons/search-24px.svg";
+import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 
 const SearchWrapper = styled("div")({
     width: "100%",

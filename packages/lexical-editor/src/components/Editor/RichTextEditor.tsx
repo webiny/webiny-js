@@ -2,8 +2,6 @@ import React, { useRef, useState } from "react";
 import { LexicalValue } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
-import { WebinyNodes } from "~/nodes/webinyNodes";
-import { theme } from "~/themes/webinyLexicalTheme";
 import { EditorState } from "lexical/LexicalEditorState";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -18,6 +16,9 @@ import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
+import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
+import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
+import { WebinyNodes } from "~/nodes/webinyNodes";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -34,6 +35,10 @@ export interface RichTextEditorProps {
     onBlur?: (editorState: LexicalValue) => void;
     height?: number | string;
     width?: number | string;
+    /*
+     * @description Theme to be injected into lexical editor
+     */
+    theme: WebinyTheme;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -46,7 +51,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     onBlur,
     focus,
     width,
-    height
+    height,
+    theme
 }: RichTextEditorProps) => {
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
@@ -72,13 +78,14 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             throw error;
         },
         nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: theme
+        theme: { ...webinyEditorTheme, styles: theme?.styles }
     };
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
+                //TODO: send plain JSON object
                 onChange(JSON.stringify(editorState.toJSON()));
             }
         });
@@ -91,6 +98,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
                 <ClearEditorPlugin />
+                <FontColorPlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}

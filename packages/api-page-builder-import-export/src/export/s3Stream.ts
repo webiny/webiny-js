@@ -1,4 +1,4 @@
-import { Stream, PassThrough, Readable } from "stream";
+import { Stream, Readable } from "stream";
 import S3 from "aws-sdk/clients/s3";
 
 const ARCHIVE_CONTENT_TYPE = "application/zip";
@@ -46,13 +46,7 @@ class S3Stream {
         return this.s3.getObject({ Bucket: this.bucket, Key }).createReadStream();
     }
 
-    writeStream(
-        Key: string,
-        contentType: string = ARCHIVE_CONTENT_TYPE
-    ): {
-        streamPassThrough: PassThrough;
-        streamPassThroughUploadPromise: Promise<S3.ManagedUpload.SendData>;
-    } {
+    writeStream(Key: string, contentType: string = ARCHIVE_CONTENT_TYPE) {
         const streamPassThrough = new Stream.PassThrough();
 
         const params: S3.PutObjectRequest = {

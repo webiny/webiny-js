@@ -1,5 +1,7 @@
 import React, { ReactNode, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import orderBy from "lodash/orderBy";
+import unionBy from "lodash/unionBy";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
 
@@ -26,23 +28,25 @@ import {
     LoadingActions,
     Meta,
     UpdateSearchRecordResponse,
-    UpdateSearchRecordVariables
+    UpdateSearchRecordVariables,
+    ListSort
 } from "~/types";
 
 interface SearchRecordsContext {
     records: SearchRecordItem[];
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
-    listRecords: (
-        type: string,
-        folderId: string,
-        limit?: number,
-        after?: string
-    ) => Promise<SearchRecordItem[]>;
-    getRecord: (id: string, folderId: string) => Promise<SearchRecordItem>;
-    createRecord: (link: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
-    updateRecord: (link: SearchRecordItem, contextFolderId: string) => Promise<SearchRecordItem>;
-    deleteRecord(link: SearchRecordItem): Promise<true>;
+    listRecords: (params: {
+        type?: string;
+        folderId?: string;
+        limit?: number;
+        after?: string;
+        sort?: ListSort;
+    }) => Promise<SearchRecordItem[]>;
+    getRecord: (id: string) => Promise<SearchRecordItem>;
+    createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
+    updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
+    deleteRecord(record: SearchRecordItem): Promise<true>;
 }
 
 export const SearchRecordsContext = React.createContext<SearchRecordsContext | undefined>(
@@ -73,19 +77,48 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         records,
         loading,
         meta,
-        async listRecords(type: string, folderId: string, limit = 10, after?: string) {
-            if (!folderId) {
-                throw new Error("`folderId` is mandatory");
+        async listRecords(params) {
+            const { type, folderId, after, limit, sort: sorting } = params;
+
+            /**
+             * Both folderId and type are optional to init `useRecords` but required to list records:
+             * this allows us to use `useRecords` methods like `getRecord` without passing useless params.
+             * But still, we need these params to list records.
+             */
+            if (!folderId || !type) {
+                throw new Error("`folderId` and `type` are mandatory");
+            }
+
+            /**
+             * Avoiding to fetch records in case they have already been fetched.
+             * This happens when visiting a list with all records loaded and receives "after" param.
+             */
+            const recordsCount = records.filter(
+                record => record.location.folderId === folderId
+            ).length;
+            const totalCount = meta[folderId]?.totalCount || 0;
+            if (after && recordsCount === totalCount) {
+                return;
+            }
+
+            // Remove records in case of sorting change and not a paginated request.
+            if (sorting && !after) {
+                setRecords([]);
             }
 
             const action = after ? "LIST_MORE" : "LIST";
+            const sort =
+                sorting && Object.keys(sorting).length > 0
+                    ? sorting
+                    : ({ savedOn: "DESC" } as unknown as ListSort);
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { type, location: { folderId }, limit, after }
+                        variables: { type, location: { folderId }, limit, after, sort },
+                        fetchPolicy: "network-only"
                     })
             );
 
@@ -95,7 +128,14 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not fetch records");
             }
 
-            setRecords(records => [...new Set([...records, ...data])]);
+            // Adjusting sorting while merging records with data received from the server.
+            const fields = [] as string[];
+            const orders = [] as Array<"asc" | "desc">;
+            for (const [field, order] of Object.entries(sort)) {
+                fields.push(field);
+                orders.push(order.toLowerCase() as "asc" | "desc");
+            }
+            setRecords(records => orderBy(unionBy(data, records, "id"), fields, orders));
 
             setMeta(meta => ({
                 ...meta,
@@ -122,14 +162,41 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
                         query: GET_RECORD,
-                        variables: { id }
+                        variables: { id },
+                        fetchPolicy: "network-only"
                     })
             );
 
             const { data, error } = response.search.getRecord;
 
+            if (error && error.code !== "NOT_FOUND") {
+                throw new Error("Network error while syncing record");
+            }
+
             if (!data) {
-                throw new Error(error?.message || `Could not fetch record with id: ${id}`);
+                // No record found - must be deleted by previous operation
+                setRecords(records => records.filter(record => record.id !== id));
+            } else {
+                setRecords(prevRecords => {
+                    const recordIndex = prevRecords.findIndex(record => record.id === id);
+
+                    // No record found in the list - must be added by previous operation
+                    if (recordIndex === -1) {
+                        return [...prevRecords, data];
+                    }
+
+                    // Updating record found in the list
+                    const result = [
+                        ...prevRecords.slice(0, recordIndex),
+                        {
+                            ...prevRecords[recordIndex],
+                            ...data
+                        },
+                        ...prevRecords.slice(recordIndex + 1)
+                    ];
+
+                    return result;
+                });
             }
 
             return data;
@@ -172,14 +239,18 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         },
 
         async updateRecord(record, contextFolderId) {
-            const { id, location } = record;
+            if (!contextFolderId) {
+                throw new Error("`folderId` is mandatory");
+            }
+
+            const { id, location, data, title, content } = record;
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler("UPDATE", setLoading),
                 () =>
                     client.mutate<UpdateSearchRecordResponse, UpdateSearchRecordVariables>({
                         mutation: UPDATE_RECORD,
-                        variables: { id, data: { location } }
+                        variables: { id, data: { title, content, location, data } }
                     })
             );
 
@@ -187,19 +258,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("Network error while updating record");
             }
 
-            const { data, error } = response.search.updateRecord;
+            const { result, error } = response.search.updateRecord;
 
-            if (!data) {
+            if (!result) {
                 throw new Error(error?.message || "Could not update record");
             }
 
             setRecords(records =>
                 records
-                    .map(record => (record.id === id ? data : record))
+                    .map(record => (record.id === id ? result : record))
                     .filter(record => record.location.folderId === contextFolderId)
             );
 
-            return data;
+            return result;
         },
 
         async deleteRecord(record) {

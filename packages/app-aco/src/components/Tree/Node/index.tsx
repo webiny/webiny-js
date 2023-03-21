@@ -1,7 +1,7 @@
 import React from "react";
-import { ReactComponent as ArrowRight } from "@material-symbols/svg-400/outlined/arrow_right.svg";
-import { ReactComponent as Folder } from "@material-symbols/svg-400/outlined/folder-fill.svg";
-import { ReactComponent as FolderOpen } from "@material-symbols/svg-400/outlined/folder_open-fill.svg";
+import { ReactComponent as ArrowRight } from "@material-symbols/svg-400/rounded/arrow_right.svg";
+import { ReactComponent as Folder } from "@material-symbols/svg-400/rounded/folder-fill.svg";
+import { ReactComponent as FolderOpen } from "@material-symbols/svg-400/rounded/folder_open-fill.svg";
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 
 import { MenuActions } from "~/components/Tree/MenuActions";

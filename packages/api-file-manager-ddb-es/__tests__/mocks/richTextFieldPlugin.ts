@@ -81,7 +81,10 @@ export default () => [
                 editor: String!
                 data: JSON!
             }
-            extend input FileInput {
+            extend input CreateFileInput {
+                richText: FileRichTextInput
+            }
+             extend input UpdateFileInput {
                 richText: FileRichTextInput
             }
             type FileRichText {

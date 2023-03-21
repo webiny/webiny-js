@@ -1,10 +1,10 @@
 import { PbImportExportContext } from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createRawEventHandler } from "@webiny/handler-aws";
-import { blocksHandler } from "~/import/process/blocksHandler";
-import { formsHandler } from "~/import/process/formsHandler";
-import { pagesHandler } from "~/import/process/pagesHandler";
-import { templatesHandler } from "~/import/process/templatesHandler";
+import { blocksHandler } from "~/import/process/blocks/blocksHandler";
+import { formsHandler } from "~/import/process/forms/formsHandler";
+import { pagesHandler } from "~/import/process/pages/pagesHandler";
+import { templatesHandler } from "~/import/process/templates/templatesHandler";
 
 export interface Configuration {
     handlers: {

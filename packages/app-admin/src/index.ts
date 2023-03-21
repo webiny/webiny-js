@@ -27,7 +27,6 @@ export type { ViewCompositionContext, ViewElement } from "./base/providers/ViewC
 
 // Plugins
 export * from "./base/plugins/AddGraphQLQuerySelection";
-export * from "./plugins/FileManagerFileTypePlugin";
 export * from "./plugins/PermissionRendererPlugin";
 
 // Components
@@ -38,12 +37,13 @@ export {
     SingleImageUploadProps
 } from "./components/SingleImageUpload";
 
-export { FileManager, FileManagerRenderer } from "./components/FileManager";
+export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
 export type {
     FileManagerProps,
     FileManagerRendererProps,
-    FileManagerFileItem
-} from "./components/FileManager";
+    FileManagerFileItem,
+    FileManagerOnChange
+} from "./base/ui/FileManager";
 
 // Hooks
 export * from "./hooks/useSnackbar";

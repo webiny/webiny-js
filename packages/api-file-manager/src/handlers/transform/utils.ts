@@ -7,11 +7,16 @@ const OPTIMIZED_TRANSFORMED_IMAGE_PREFIX = "img-o-t-";
 const OPTIMIZED_IMAGE_PREFIX = "img-o-";
 
 const getOptimizedImageKeyPrefix = (key: string): string => {
-    return `${OPTIMIZED_IMAGE_PREFIX}${objectHash(key)}-`;
+    const [id, name] = key.split("/");
+    return `${id}/${OPTIMIZED_IMAGE_PREFIX}${name}`;
 };
 
-const getOptimizedTransformedImageKeyPrefix = (key: string): string => {
-    return `${OPTIMIZED_TRANSFORMED_IMAGE_PREFIX}${objectHash(key)}-`;
+const getOptimizedTransformedImageKeyPrefix = (
+    key: string,
+    transformationsHash: string
+): string => {
+    const [id, name] = key.split("/");
+    return `${id}/${OPTIMIZED_TRANSFORMED_IMAGE_PREFIX}${transformationsHash}-${name}`;
 };
 
 interface GetImageKeyParams {
@@ -21,12 +26,10 @@ interface GetImageKeyParams {
 
 const getImageKey = ({ key, transformations }: GetImageKeyParams): string => {
     if (!transformations) {
-        const prefix = getOptimizedImageKeyPrefix(key);
-        return prefix + key;
+        return getOptimizedImageKeyPrefix(key);
     }
 
-    const prefix = getOptimizedTransformedImageKeyPrefix(key);
-    return `${prefix}${objectHash(transformations)}-${key}`;
+    return getOptimizedTransformedImageKeyPrefix(key, objectHash(transformations));
 };
 
 export {

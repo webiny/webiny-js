@@ -5,25 +5,19 @@ import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/com
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { positionValues as PositionValues } from "react-custom-scrollbars";
 
-interface ContainerProps {
-    height?: `${number}px` | `${number}%` | `${number}vh`;
-}
-
-const Container = styled("div")(({ height }: ContainerProps) => {
-    return {
-        minWidth: "100%",
-        height: height || "460px",
-        maxHeight: 460,
-        backgroundColor: "var(--mdc-theme-background)",
-        boxSizing: "border-box",
-        display: "flex",
-        ">div>div": {
-            overflowX: "hidden !important",
-            overflowY: "scroll",
-            paddingRight: 20
-        }
-    };
-});
+const Container = styled("div")(() => ({
+    minWidth: "100%",
+    height: "460px",
+    maxHeight: 460,
+    backgroundColor: "var(--mdc-theme-background)",
+    boxSizing: "border-box",
+    display: "flex",
+    ">div>div": {
+        overflowX: "hidden !important" as any,
+        overflowY: "scroll",
+        paddingRight: 20
+    }
+}));
 const ContainerChild = styled("div")({
     boxSizing: "border-box",
     width: "100%",

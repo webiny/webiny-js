@@ -11,7 +11,7 @@ export interface TitleProps {
 export const Title = ({ title }: TitleProps): ReactElement => {
     return (
         <Name use={"headline6"} tag={"h1"}>
-            {title || <Skeleton />}
+            {title || <Skeleton theme={"dark"} />}
         </Name>
     );
 };

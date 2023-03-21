@@ -1,16 +1,3 @@
-const DATA_FIELD = (fields: string[] = []) => {
-    return /* GraphQL */ `
-        {
-            key
-            name
-            size
-            type
-            tags
-            ${fields.join("\n")}
-        }
-    `;
-};
-
 const DATA_FIELD_WITH_ID = (fields: string[] = []) => {
     return /* GraphQL */ `
         {
@@ -20,6 +7,7 @@ const DATA_FIELD_WITH_ID = (fields: string[] = []) => {
             size
             type
             tags
+            aliases
             ${fields.join("\n")}
         }
     `;
@@ -35,7 +23,7 @@ const ERROR_FIELD = /* GraphQL */ `
 
 export const CREATE_FILE = (fields: string[] = []) => {
     return /* GraphQL */ `
-        mutation CreateFile($data: FileInput!) {
+        mutation CreateFile($data: CreateFileInput!) {
             fileManager {
                 createFile(data: $data) {
                     data ${DATA_FIELD_WITH_ID(fields)}
@@ -48,7 +36,7 @@ export const CREATE_FILE = (fields: string[] = []) => {
 
 export const CREATE_FILES = (fields: string[] = []) => {
     return /* GraphQL */ `
-        mutation CreateFiles($data: [FileInput]!) {
+        mutation CreateFiles($data: [CreateFileInput]!) {
             fileManager {
                 createFiles(data: $data) {
                     data ${DATA_FIELD_WITH_ID(fields)}
@@ -61,10 +49,10 @@ export const CREATE_FILES = (fields: string[] = []) => {
 
 export const UPDATE_FILE = (fields: string[] = []) => {
     return /* GraphQL */ `
-        mutation UpdateFile($id: ID!, $data: FileInput!) {
+        mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
             fileManager {
                 updateFile(id: $id, data: $data) {
-                    data ${DATA_FIELD(fields)}
+                    data ${DATA_FIELD_WITH_ID(fields)}
                     error ${ERROR_FIELD}
                 }
             }
@@ -88,7 +76,7 @@ export const GET_FILE = (fields: string[] = []) => {
         query GetFile($id: ID!, $where: JSON, $sort: String) {
             fileManager {
                 getFile(id: $id, where: $where, sort: $sort) {
-                    data ${DATA_FIELD(fields)}
+                    data ${DATA_FIELD_WITH_ID(fields)}
                     error ${ERROR_FIELD}
                 }
             }

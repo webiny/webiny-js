@@ -1,10 +1,11 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
-import { initialStats, readExtractAndUploadZipFileContents } from "~/import/utils";
+import { initialStats } from "~/import/utils";
 import { invokeHandlerClient } from "~/client";
 import { Payload as ProcessPayload } from "../process";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/import/create";
+import { extractAndUploadZipFileContents } from "~/import/utils/extractAndUploadZipFileContents";
 
 export const pagesHandler = async (
     configuration: Configuration,
@@ -27,12 +28,12 @@ export const pagesHandler = async (
         }
         mockSecurity(identity, context);
         // Step 1: Read the zip file
-        const pageImportDataList = await readExtractAndUploadZipFileContents(zipFileUrl);
+        const pageImportDataList = await extractAndUploadZipFileContents(zipFileUrl);
 
         // For each page create a subtask and invoke the process handler
         for (let i = 0; i < pageImportDataList.length; i++) {
             const pagesDirMap = pageImportDataList[i];
-            // Create sub task
+            // Create sub-task
             const subtask = await pageBuilder.importExportTask.createSubTask(
                 task.id,
                 zeroPad(i + 1, 5),

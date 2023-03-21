@@ -12,7 +12,7 @@ import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, Original => {
     return function SetAsHomepageButton({ items, ...props }) {
         const [page] = usePage();
-        const { navigateToPageHome } = usePageViewNavigation();
+        const { navigateToLatestFolder } = usePageViewNavigation();
         const { showSnackbar } = useSnackbar();
         const pageBuilder = useAdminPageBuilder();
         const { showConfirmation } = useConfirmationDialog({
@@ -61,8 +61,7 @@ export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, 
                 return showSnackbar(error.message);
             }
 
-            // TODO: @leopuleo use navigateToLatestFolder() for the rollout of the new ACO
-            navigateToPageHome(page.id);
+            navigateToLatestFolder();
 
             // Let's wait a bit, because we are also redirecting the user.
             setTimeout(() => showSnackbar("New homepage set successfully!"), 500);
