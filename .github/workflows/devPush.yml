@@ -7,7 +7,6 @@ on:
 env:
   NODE_OPTIONS: --max_old_space_size=4096
   AWS_REGION: eu-central-1
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   init:
@@ -64,7 +63,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -127,7 +126,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages (full)
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   jest-tests:
     name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
@@ -166,7 +165,7 @@ jobs:
           key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Run tests
         run: yarn test ${{ matrix.package }}
@@ -245,7 +244,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -354,8 +353,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
+        os: [ubuntu-latest]
+        node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
@@ -389,7 +388,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: dev
@@ -477,7 +476,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -586,8 +585,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
+        os: [ubuntu-latest]
+        node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
@@ -624,7 +623,7 @@ jobs:
 
       - name: Build packages
         working-directory: dev
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: dev

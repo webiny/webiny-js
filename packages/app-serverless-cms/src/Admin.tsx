@@ -14,11 +14,10 @@ import { PageBuilder } from "@webiny/app-page-builder";
 import { FormBuilder } from "@webiny/app-form-builder";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
 import { RMWC } from "@webiny/app-admin-rmwc";
-import { FileManager } from "@webiny/app-file-manager";
+import { FileManager } from "@webiny/app-file-manager/app";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { AccessManagement } from "@webiny/app-security-access-management";
 import { imagePlugin } from "@webiny/app/plugins";
-import fileManagerPlugins from "@webiny/app-file-manager/admin/plugins";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory";
 import apolloLinks from "./apolloLinks";
@@ -26,6 +25,7 @@ import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/
 import { AdvancedPublishingWorkflow } from "@webiny/app-apw";
 import { TenantManager } from "@webiny/app-tenant-manager";
 import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
+import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { ACOProvider } from "@webiny/app-aco";
 
@@ -37,7 +37,7 @@ const App = (props: AdminProps) => {
     const createApolloClient = props.createApolloClient || defaultApolloClientFactory;
     const ViewCompositionProvider = createViewCompositionProvider();
 
-    plugins.register(imagePlugin(), fileManagerPlugins(), fileStorageS3Plugin(), apolloLinks);
+    plugins.register(imagePlugin(), fileStorageS3Plugin(), apolloLinks);
 
     return (
         <BaseAdmin createApolloClient={createApolloClient}>
@@ -53,6 +53,7 @@ const App = (props: AdminProps) => {
             <Provider hoc={ViewCompositionProvider} />
             <PageBuilder />
             <LexicalEditorPlugin />
+            <LexicalEditorActions />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AdvancedPublishingWorkflow />

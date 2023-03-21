@@ -2,21 +2,29 @@ import React from "react";
 import { LexicalValue } from "~/types";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
-import { WebinyNodes } from "~/nodes/webinyNodes";
-import { theme } from "~/themes/webinyLexicalTheme";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
+import { WebinyNodes } from "~/nodes/webinyNodes";
+import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
     value: LexicalValue | null;
+    /*
+     * @description Theme to be injected into lexical editor
+     */
+    theme: WebinyTheme;
 }
 
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ nodes, value }) => {
+export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
+    nodes,
+    value,
+    theme
+}) => {
     const initialConfig = {
         editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",
@@ -25,7 +33,7 @@ export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({ nodes,
         },
         editable: false,
         nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: theme
+        theme: { ...webinyEditorTheme, styles: theme.styles }
     };
 
     return (

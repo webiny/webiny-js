@@ -7,6 +7,7 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { MarkNode } from "@lexical/mark";
 import { OverflowNode } from "@lexical/overflow";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { FontColorNode } from "~/nodes/FontColorNode";
 
 export const WebinyNodes: Array<Klass<LexicalNode>> = [
     HeadingNode,
@@ -19,5 +20,6 @@ export const WebinyNodes: Array<Klass<LexicalNode>> = [
     AutoLinkNode,
     LinkNode,
     OverflowNode,
-    MarkNode
+    MarkNode,
+    FontColorNode
 ];

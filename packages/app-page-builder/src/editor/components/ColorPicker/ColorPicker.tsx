@@ -15,6 +15,7 @@ import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";
 import { isLegacyRenderingEngine } from "~/utils";
+
 import { PbTheme } from "~/types";
 
 const ColorPickerStyle = styled("div")({
