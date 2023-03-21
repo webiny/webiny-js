@@ -30,7 +30,7 @@ export const Remove: React.VFC<Props> = ({ entry, onRemove }) => {
         showConfirmation(() => {
             onRemove(entry.entryId);
         });
-    }, [entry]);
+    }, [entry, onRemove]);
 
     return (
         <ButtonLink onClick={onRemoveClick} maxWidth={"100px"}>

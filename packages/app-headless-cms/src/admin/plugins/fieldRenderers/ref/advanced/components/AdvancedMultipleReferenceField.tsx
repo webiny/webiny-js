@@ -74,6 +74,17 @@ const RecordCount = styled("span")({
     alignSelf: "center"
 });
 
+const getRecordCountMessage = (count: number) => {
+    switch (count) {
+        case 0:
+            return "no records selected";
+        case 1:
+            return "1 record selected";
+        default:
+            return `${count} records selected`;
+    }
+};
+
 interface Props extends CmsEditorFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
 }
@@ -246,13 +257,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const loading = loadingEntries || loadingModels;
 
-    let message = "no records selected";
-    if (values.length > 0) {
-        message = "1 record selected";
-        if (values.length > 1) {
-            message = values.length + " records selected";
-        }
-    }
+    const message = getRecordCountMessage(values.length);
 
     return (
         <>
