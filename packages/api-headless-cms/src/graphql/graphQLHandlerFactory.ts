@@ -154,8 +154,8 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
                 type: context.cms.type as ApiEndpoint
             });
         } catch (ex) {
-            console.log(`Error while generating the schema.`);
-            console.log(formatErrorPayload(ex));
+            console.error(`Error while generating the schema.`);
+            console.error(formatErrorPayload(ex));
             throw ex;
         }
 
@@ -163,8 +163,8 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
         try {
             body = createRequestBody(request.body);
         } catch (ex) {
-            console.log(`Error while creating the body request.`);
-            console.log(formatErrorPayload(ex));
+            console.error(`Error while creating the body request.`);
+            console.error(formatErrorPayload(ex));
             throw ex;
         }
 
@@ -172,8 +172,8 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             const result = await processRequestBody(body, schema, context);
             return reply.code(200).send(result);
         } catch (ex) {
-            console.log(`Error while processing the body request.`);
-            console.log(formatErrorPayload(ex));
+            console.error(`Error while processing the body request.`);
+            console.error(formatErrorPayload(ex));
             throw ex;
         }
     });
