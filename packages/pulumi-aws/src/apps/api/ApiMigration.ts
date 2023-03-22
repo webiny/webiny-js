@@ -26,7 +26,7 @@ export const ApiMigration = createAppModule({
                 handler: "handler.handler",
                 timeout: 900,
                 runtime: "nodejs14.x",
-                memorySize: 1600,
+                memorySize: 3072,
                 role: role.output.arn,
                 description: "Performs data migrations.",
                 code: new pulumi.asset.AssetArchive({
@@ -43,6 +43,7 @@ export const ApiMigration = createAppModule({
                         DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
                         ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
                         ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+                        ELASTICSEARCH_SHARED_INDEXES: process.env.ELASTICSEARCH_SHARED_INDEXES,
                         S3_BUCKET: core.fileManagerBucketId
                     })) as Record<string, any>
                 },
