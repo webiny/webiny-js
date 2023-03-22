@@ -23,11 +23,8 @@ const plugin: FbFormTriggerHandlerPlugin = {
                     json: true,
                     body: {
                         ...data,
-                        _meta: {
-                            dateSubmitted: format(
-                                new Date(meta.dateSubmitted),
-                                "yyyy-MM-dd HH:mm:ss"
-                            ),
+                        meta: {
+                            submittedOn: format(new Date(meta.submittedOn), "yyyy-MM-dd HH:mm:ss"),
                             url: meta.url
                         }
                     }

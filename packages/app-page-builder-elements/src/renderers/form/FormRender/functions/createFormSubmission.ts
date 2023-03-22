@@ -69,7 +69,7 @@ export default async ({
         data: formSubmissionData,
         meta: {
             ip: await getClientIp(),
-            dateSubmitted: new Date().toISOString(),
+            submittedOn: new Date().toISOString(),
             url: {
                 location: location.href,
                 utm: {
