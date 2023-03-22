@@ -75,6 +75,12 @@ const attributes: Parameters<typeof createLegacyEntity>[2] = {
     titleFieldId: {
         type: "string"
     },
+    descriptionFieldId: {
+        type: "string"
+    },
+    imageFieldId: {
+        type: "string"
+    },
     tenant: {
         type: "string",
         required: true

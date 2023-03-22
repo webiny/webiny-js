@@ -49,6 +49,10 @@ import {
 import { createZodError } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
 import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
+import {
+    ensurePluralApiName,
+    ensureSingularApiName
+} from "./contentModel/compatibility/modelApiName";
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
@@ -89,7 +93,13 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                         ...model,
                         tags: ensureTypeTag(model),
                         tenant: model.tenant || getTenant().id,
-                        locale: model.locale || getLocale().code
+                        locale: model.locale || getLocale().code,
+                        /**
+                         * TODO: remove in v5.36.0
+                         * This is for backward compatibility while migrations are not yet executed.
+                         */
+                        singularApiName: ensureSingularApiName(model),
+                        pluralApiName: ensurePluralApiName(model)
                     };
                 })
             ];
