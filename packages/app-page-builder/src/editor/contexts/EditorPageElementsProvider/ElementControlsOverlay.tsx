@@ -1,12 +1,13 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Element, RendererMeta } from "@webiny/app-page-builder-elements/types";
 import styled from "@emotion/styled";
 import { CSSObject } from "@emotion/core";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
+import { plugins } from "@webiny/plugins";
 import { useUI } from "~/editor/hooks/useUI";
 import { useElementById } from "~/editor/hooks/useElementById";
-import { PbEditorElement } from "~/types";
+import { PbEditorElement, PbEditorBlockPlugin } from "~/types";
 import { SetterOrUpdater } from "recoil";
 import Draggable from "~/editor/components/Draggable";
 import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
@@ -67,6 +68,17 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 
     const isDraggable = !NON_DRAGGABLE_ELEMENTS.includes(element.type);
 
+    const blockTitle = useMemo(() => {
+        if (element.data.blockId) {
+            return plugins
+                .byType<PbEditorBlockPlugin>("pb-editor-block")
+                .find(block => block.id === element.data.blockId)
+                ?.title?.toLowerCase();
+        }
+
+        return null;
+    }, [element.data.blockId]);
+
     return (
         <Draggable
             enabled={isDraggable}
@@ -81,6 +93,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                     isHighlighted={isHighlighted}
                     element={element}
                     elementRendererMeta={meta}
+                    blockTitle={blockTitle}
                     onClick={() => {
                         updateEditorElement(element => ({ ...element, isHighlighted: false }));
                         setActiveElementId(element.id);
@@ -165,10 +178,11 @@ const PbElementControlsOverlay = styled(
 )<{
     element: Element;
     elementRendererMeta: RendererMeta;
+    blockTitle: string;
     isActive: boolean;
     isHighlighted: boolean;
     isDragging: boolean;
-}>(({ element, elementRendererMeta, isActive, isHighlighted, isDragging }) => {
+}>(({ element, elementRendererMeta, blockTitle, isActive, isHighlighted, isDragging }) => {
     // By default, the element controls overlay takes the size of the actual element.
     // But, if margins were set, they won't be taken into consideration. The shown
     // overlay is smaller than the actual space the page element takes. That's why,
@@ -213,7 +227,8 @@ const PbElementControlsOverlay = styled(
             "&::after": {
                 backgroundColor: HOVER_COLOR,
                 color: "#fff",
-                content: `"${element.type}"`,
+                content: `"${blockTitle ? `block | ${blockTitle}` : element.type}"`,
+                textTransform: "lowercase",
                 position: "absolute",
                 top: "-16px",
                 right: "0",
@@ -232,7 +247,8 @@ const PbElementControlsOverlay = styled(
             "&::after": {
                 backgroundColor: ACTIVE_COLOR,
                 color: "#fff",
-                content: `"${element.type}"`,
+                content: `"${blockTitle ? `block | ${blockTitle}` : element.type}"`,
+                textTransform: "lowercase",
                 position: "absolute",
                 top: "-16px",
                 right: "0",
