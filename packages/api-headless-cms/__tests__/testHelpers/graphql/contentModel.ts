@@ -91,9 +91,10 @@ export interface CreateContentModelMutationVariables {
         singularApiName: string;
         pluralApiName: string;
         description?: string;
-        fields?: CmsModelField[];
+        fields?: Omit<CmsModelField, "storageId">[];
         layout?: string[][];
         titleFieldId?: string;
+        defaultFields?: boolean;
     };
 }
 export interface CreateContentModelFromMutationVariables {
@@ -105,7 +106,7 @@ export interface CreateContentModelFromMutationVariables {
         singularApiName: string;
         pluralApiName: string;
         description?: string;
-        fields?: CmsModelField[];
+        fields?: Omit<CmsModelField, "storageId">[];
         layout?: string[][];
         titleFieldId?: string;
         locale?: `${Lowercase<string>}-${Uppercase<string>}`;

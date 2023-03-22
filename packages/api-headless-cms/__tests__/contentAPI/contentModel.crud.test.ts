@@ -1154,6 +1154,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: `TestContentModel`,
+                pluralApiName: `TestContentModels`,
                 group: contentModelGroup.id,
                 fields: [field],
                 layout: [["testId"]]
@@ -1193,6 +1195,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model-2",
+                singularApiName: `TestContentModel2`,
+                pluralApiName: `TestContentModels2`,
                 group: contentModelGroup.id,
                 fields: [],
                 layout: []
@@ -1265,6 +1269,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model",
+                singularApiName: `TestContentModel`,
+                pluralApiName: `TestContentModels`,
                 group: contentModelGroup.id,
                 fields: [field],
                 layout: [["testId"]]
@@ -1304,6 +1310,8 @@ describe("content model test", () => {
             data: {
                 name: "Test Content model",
                 modelId: "test-content-model-2",
+                singularApiName: `TestContentModel2`,
+                pluralApiName: `TestContentModels2`,
                 group: contentModelGroup.id,
                 fields: [],
                 layout: []

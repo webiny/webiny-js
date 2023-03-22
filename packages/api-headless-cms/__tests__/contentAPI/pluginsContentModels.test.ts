@@ -345,7 +345,7 @@ describe("content model plugins", () => {
                             slug: "e-commerce",
                             name: "E-Commerce"
                         },
-                        layout: [["name"], ["sku", "price"]],
+                        layout: [["name"], ["sku", "price"], ["descr"]],
                         modelId: "product",
                         name: "Product",
                         singularApiName: "Product",
@@ -438,7 +438,7 @@ describe("content model plugins", () => {
                                 slug: "e-commerce",
                                 name: "E-Commerce"
                             },
-                            layout: [["name"], ["sku", "price"]],
+                            layout: [["name"], ["sku", "price"], ["descr"]],
                             modelId: "product",
                             name: "Product",
                             singularApiName: "Product",
