@@ -1,45 +1,52 @@
-import { FileManager_5_35_0_001 } from "~/migrations/5.35.0/001";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { FileManager_5_35_0_001, File } from "~/migrations/5.35.0/001/ddb-es";
 import {
     assertNotError,
-    createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
-    insertTestData,
+    insertDynamoDbTestData,
     scanTable,
-    logTestNameBeforeEachTest
+    logTestNameBeforeEachTest,
+    createDdbEsMigrationHandler,
+    createId,
+    delay
 } from "~tests/utils";
 import { testData } from "./001.data";
 import {
     createLegacySettingsEntity,
     createSettingsEntity
-} from "~/migrations/5.35.0/001/createSettingsEntity";
+} from "~/migrations/5.35.0/001/entities/createSettingsEntity";
+import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
+import { getIndexName } from "~/utils";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 100;
+const NUMBER_OF_FILES = 5000;
 
 describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();
+    const elasticsearchClient = createElasticsearchClient();
+
+    beforeAll(() => {
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX =
+            new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+    });
 
     const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES) => {
+        const allFiles = [];
         let batch = [];
         for (let index = 0; index < numberOfFiles; index++) {
             if (index % 25 === 0) {
-                await insertTestData(table, batch);
+                await insertDynamoDbTestData(table, batch);
                 batch = [];
             }
 
-            batch.push({
-                PK: "T#root#L#en-US#FM#F",
-                SK: "63d0f8a1ce8f180008bb6054" + index,
-                createdBy: {
-                    displayName: "Pavel Denisjuk",
-                    id: "e6ea2871-ba36-4494-87ac-afb73d4e7eb2",
-                    type: "admin"
-                },
+            const id = createId();
+
+            const file = {
+                id,
                 createdOn: "2023-01-25T09:38:41.943Z",
-                id: "63d0f8a1ce8f180008bb6054" + index,
-                key: index + "welcome-to-webiny-page-8ldbh4sq4-hero-block-bg.svg",
+                key: id + "welcome-to-webiny-page-8ldbh4sq4-hero-block-bg.svg",
                 locale: "en-US",
                 meta: {
                     private: true
@@ -48,21 +55,42 @@ describe("5.35.0-001", () => {
                 size: 1864,
                 tags: [],
                 tenant: "root",
-                TYPE: "fm.file",
+                createdBy: {
+                    displayName: "Pavel Denisjuk",
+                    id: "e6ea2871-ba36-4494-87ac-afb73d4e7eb2",
+                    type: "admin"
+                },
                 type: "image/svg+xml",
-                webinyVersion: "0.0.0",
+                webinyVersion: "0.0.0"
+            };
+
+            batch.push({
+                PK: "T#root#L#en-US#FM#F" + id,
+                SK: "A",
+                TYPE: "fm.file",
                 _ct: "2023-01-25T09:38:41.961Z",
                 _et: "Files",
-                _md: "2023-01-25T09:38:41.961Z"
+                _md: "2023-01-25T09:38:41.961Z",
+                ...file
             });
+
+            allFiles.push(file);
         }
-        await insertTestData(table, batch);
+        await insertDynamoDbTestData(table, batch);
+        await insertElasticsearchTestData<File>(elasticsearchClient, allFiles, item => {
+            return getIndexName(item.tenant, item.locale);
+        });
     };
 
     logTestNameBeforeEachTest();
 
     it("should not run if system is not installed", async () => {
-        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [FileManager_5_35_0_001]
+        });
 
         const { data, error } = await handler();
 
@@ -75,11 +103,17 @@ describe("5.35.0-001", () => {
 
     it("should execute migration", async () => {
         process.stdout.write("Inserting test data...\n");
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         await insertTestFiles();
+        await delay(1000);
 
         process.stdout.write("Running migration...\n");
-        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [FileManager_5_35_0_001]
+        });
         const { data, error } = await handler();
 
         assertNotError(error);
@@ -88,35 +122,23 @@ describe("5.35.0-001", () => {
         expect(data.skipped.length).toBe(0);
         expect(data.notApplicable.length).toBe(0);
 
-        // ASSERT FILE CHANGES
+        // ASSERT FILE MANAGER FILE CHANGES
+        const allFiles = await scanTable(table, {
+            entity: "File",
+            filters: [
+                { attr: "TYPE", eq: "fm.file" },
+                { attr: "data", exists: true }
+            ]
+        });
 
-        // Let's make sure that the number of migrated records corresponds to the number of the original records.
-        const allNewFiles = (
-            await scanTable(table, {
-                entity: "File",
-                filters: [
-                    { attr: "TYPE", eq: "fm.file" },
-                    { attr: "data", exists: true }
-                ]
-            })
-        ).sort((a, b) => (a.GSI1_SK > b.GSI1_SK ? 1 : -1));
-
-        const allOldFiles = (
-            await scanTable(table, {
-                entity: "Files",
-                filters: [
-                    { attr: "TYPE", eq: "fm.file" },
-                    { attr: "GSI1_PK", exists: false },
-                    { attr: "GSI1_SK", exists: false }
-                ]
-            })
-        ).sort((a, b) => (a.id > b.id ? 1 : -1));
-
-        expect(allNewFiles.length).toEqual(NUMBER_OF_FILES);
-        expect(allOldFiles.length).toEqual(NUMBER_OF_FILES);
-
-        expect(allNewFiles[0].GSI1_PK.endsWith("#FM#FILES")).toBe(true);
-        expect(allNewFiles[0].data.id).toEqual(allOldFiles[0].id);
+        expect(allFiles.length).toEqual(NUMBER_OF_FILES);
+        for (const file of allFiles) {
+            expect(file.GSI1_PK.endsWith("#FM#FILES")).toBe(true);
+            // We still have the original `id` attribute, so compare with that.
+            expect(file.data.id).toEqual(file.id);
+            expect(file.TYPE).toEqual("fm.file");
+            expect(file.entity).toEqual("File");
+        }
 
         // ASSERT FILE MANAGER SETTINGS CHANGES
         const legacySettings = createLegacySettingsEntity(table);
@@ -143,9 +165,14 @@ describe("5.35.0-001", () => {
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         await insertTestFiles(25);
-        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [FileManager_5_35_0_001]
+        });
 
         // Should run the migration
         process.stdout.write("[First run]\n");

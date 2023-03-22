@@ -7,9 +7,13 @@ import {
     queryAllWithCallback,
     batchWriteAll
 } from "~/utils";
-import { createFileEntity, getFileData, createLegacyFileEntity } from "./createFileEntity";
-import { createLocaleEntity } from "./createLocaleEntity";
-import { createTenantEntity } from "./createTenantEntity";
+import {
+    createFileEntity,
+    getFileData,
+    createLegacyFileEntity
+} from "../entities/createFileEntity";
+import { createLocaleEntity } from "../entities/createLocaleEntity";
+import { createTenantEntity } from "../entities/createTenantEntity";
 
 export class FileManager_5_35_0_001_FileData {
     private readonly newFileEntity: ReturnType<typeof createFileEntity>;

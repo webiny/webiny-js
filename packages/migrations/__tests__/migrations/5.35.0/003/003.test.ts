@@ -3,7 +3,7 @@ import {
     assertNotError,
     createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
-    insertTestData,
+    insertDynamoDbTestData,
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
@@ -29,7 +29,7 @@ describe("5.35.0-003", () => {
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         const handler = createDdbMigrationHandler({ table, migrations: [AdminUsers_5_35_0_003] });
         const { data, error } = await handler();
 
@@ -54,7 +54,7 @@ describe("5.35.0-003", () => {
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         const handler = createDdbMigrationHandler({ table, migrations: [AdminUsers_5_35_0_003] });
 
         // Should run the migration
