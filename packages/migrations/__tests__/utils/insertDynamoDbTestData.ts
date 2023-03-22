@@ -1,5 +1,5 @@
 import { Table } from "dynamodb-toolbox";
-import chunk from "lodash.chunk";
+import chunk from "lodash/chunk";
 
 export const insertDynamoDbTestData = async (table: Table, data: Record<string, any>[]) => {
     const documentClient = table.DocumentClient;

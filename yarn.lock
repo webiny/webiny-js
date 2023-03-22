@@ -14710,8 +14710,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/migrations@workspace:packages/migrations"
   dependencies:
+    "@elastic/elasticsearch": 7.12.0
     "@types/lodash.chunk": ^4.2.7
     "@types/lodash.pick": ^4.4.7
+    "@webiny/api-elasticsearch": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/data-migration": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
@@ -14721,8 +14723,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.2.0
-    lodash.chunk: ^4.2.0
-    lodash.pick: ^4.4.0
+    lodash: ^4.17.21
     mdbid: ^1.0.0
     p-retry: ^4.6.2
   languageName: unknown
@@ -29959,13 +29960,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.chunk@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "lodash.chunk@npm:4.2.0"
-  checksum: 6286c6d06814fbeda502164015c42ef53a9194e6ebaac52ec2b41e83344aefe7bc3d94fdfec525adcd2c66cefdf05dc333b6a1128e4de739797342315c17cbc7
-  languageName: node
-  linkType: hard
-
 "lodash.clonedeep@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.clonedeep@npm:4.5.0"
@@ -30110,13 +30104,6 @@ __metadata:
   version: 4.2.1
   resolution: "lodash.partialright@npm:4.2.1"
   checksum: cfae6034743d50280483eb62a76d263ec70ed5d9da3e4a8236ddb2c964280119cf54768bd6550e50e68169340c0aa7ce2e60bd9a0c9d065f8602e92c4b85ae74
-  languageName: node
-  linkType: hard
-
-"lodash.pick@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "lodash.pick@npm:4.4.0"
-  checksum: 2c36cab7da6b999a20bd3373b40e31a3ef81fa264f34a6979c852c5bc8ac039379686b27380f0cb8e3781610844fafec6949c6fbbebc059c98f8fa8570e3675f
   languageName: node
   linkType: hard
 
