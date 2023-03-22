@@ -10,10 +10,16 @@
   },
   "references": [
     {
+      "path": "../api-elasticsearch/tsconfig.build.json"
+    },
+    {
       "path": "../data-migration/tsconfig.build.json"
     },
     {
       "path": "../db-dynamodb/tsconfig.build.json"
+    },
+    {
+      "path": "../error/tsconfig.build.json"
     },
     {
       "path": "../handler-aws/tsconfig.build.json"

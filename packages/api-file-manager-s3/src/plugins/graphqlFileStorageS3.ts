@@ -1,9 +1,9 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import checkBasePermissions from "@webiny/api-file-manager/plugins/crud/utils/checkBasePermissions";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import getPresignedPostPayload from "../utils/getPresignedPostPayload";
+import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload";
 import WebinyError from "@webiny/error";
+import { checkPermission } from "~/plugins/checkPermission";
 
 const BATCH_UPLOAD_MAX_FILES = 20;
 
@@ -55,10 +55,10 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             FmQuery: {
                 getPreSignedPostPayload: async (_, args: any, context) => {
                     try {
-                        await checkBasePermissions(context, { rwd: "w" });
+                        await checkPermission(context, { rwd: "w" });
 
                         const { data } = args;
-                        const settings = await context.fileManager.settings.getSettings();
+                        const settings = await context.fileManager.getSettings();
                         if (!settings) {
                             throw new WebinyError(
                                 "Missing File Manager Settings.",
@@ -80,7 +80,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 getPreSignedPostPayloads: async (_, args: any, context) => {
-                    await checkBasePermissions(context, { rwd: "w" });
+                    await checkPermission(context, { rwd: "w" });
 
                     const { data: files } = args;
                     if (!Array.isArray(files)) {
@@ -105,7 +105,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
 
                     try {
-                        const settings = await context.fileManager.settings.getSettings();
+                        const settings = await context.fileManager.getSettings();
                         if (!settings) {
                             throw new WebinyError(
                                 "Missing File Manager Settings.",

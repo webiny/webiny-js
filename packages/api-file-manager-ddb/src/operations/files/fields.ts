@@ -1,6 +1,6 @@
 import { FileDynamoDbFieldPlugin } from "~/plugins/FileDynamoDbFieldPlugin";
 
-export default () => [
+export const createFileFieldsPlugins = () => [
     new FileDynamoDbFieldPlugin({
         field: "id"
     }),
