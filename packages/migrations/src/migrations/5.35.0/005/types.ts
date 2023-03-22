@@ -1,6 +1,8 @@
 export interface Tenant {
-    id: string;
-    name: string;
+    data: {
+        id: string;
+        name: string;
+    };
 }
 
 export interface CmsModel {

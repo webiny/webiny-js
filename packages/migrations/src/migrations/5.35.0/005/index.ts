@@ -6,8 +6,6 @@ import { createModelEntity } from "./createModelEntity";
 import { createTenantEntity } from "./createTenantEntity";
 import { createLocaleEntity } from "./createLocaleEntity";
 import { Tenant, I18NLocale, CmsModel } from "./types";
-import { createModelPartitionKey } from "~/migrations/5.35.0/005/createModelPartitionKey";
-import { createLocalePartitionKey } from "~/migrations/5.35.0/005/createLocalePartitionKey";
 import pluralize from "pluralize";
 import upperFirst from "lodash/upperFirst";
 import camelCase from "lodash/camelCase";
@@ -34,8 +32,6 @@ export class CmsModels_5_35_0_005 {
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
 
-    private models?: CmsModel[];
-
     public constructor(table: Table) {
         this.modelEntity = createModelEntity(table);
         this.tenantEntity = createTenantEntity(table);
@@ -51,18 +47,47 @@ export class CmsModels_5_35_0_005 {
     }
 
     public async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const models = await this.listTenantAndLocaleModels();
-        if (models.length === 0) {
-            logger.info(`No models found in any tenant and locale; skipping migration.`);
+        const tenants = await this.listTenants();
+        if (tenants.length === 0) {
+            logger.info(`No tenants found in the system; skipping migration.`);
             return false;
         }
-        return true;
+        for (const tenant of tenants) {
+            const locales = await this.listLocales({ tenant });
+            if (locales.length === 0) {
+                logger.info(`No locales found in tenant "${tenant.data.id}".`);
+                continue;
+            }
+            for (const locale of locales) {
+                const models = (await this.listModels({ tenant, locale })).filter(model => {
+                    return !model.singularApiName || !model.pluralApiName;
+                });
+                if (models.length === 0) {
+                    logger.info(
+                        `No models, to be updated, found in tenant "${tenant.data.id}" and locale "${locale.code}".`
+                    );
+                    continue;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     public async execute({ logger }: DataMigrationContext): Promise<void> {
-        const models = await this.listTenantAndLocaleModels();
+        const models: CmsModel[] = [];
+        const tenants = await this.listTenants();
+        for (const tenant of tenants) {
+            const locales = await this.listLocales({ tenant });
+            for (const locale of locales) {
+                const items = (await this.listModels({ tenant, locale })).filter(model => {
+                    return !model.singularApiName || !model.pluralApiName;
+                });
+                models.push(...items);
+            }
+        }
         if (models.length === 0) {
-            logger.info(`No models to updated; skipping migration.`);
+            logger.info(`No models to be updated; skipping migration.`);
             return;
         }
 
@@ -99,7 +124,7 @@ export class CmsModels_5_35_0_005 {
     private async listLocales({ tenant }: ListLocalesParams): Promise<I18NLocale[]> {
         return await queryAll<I18NLocale>({
             entity: this.localeEntity,
-            partitionKey: createLocalePartitionKey({ tenant }),
+            partitionKey: `T#${tenant.data.id}#I18N#L`,
             options: {
                 gte: " "
             }
@@ -109,53 +134,11 @@ export class CmsModels_5_35_0_005 {
     private async listModels({ tenant, locale }: ListModelsParams): Promise<CmsModel[]> {
         return await queryAll<CmsModel>({
             entity: this.modelEntity,
-            partitionKey: createModelPartitionKey({
-                tenant,
-                locale
-            }),
+            partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CM`,
             options: {
                 gte: " "
             }
         });
-    }
-
-    private async listTenantAndLocaleModels(): Promise<CmsModel[]> {
-        if (this.hasModels()) {
-            return this.getModels();
-        }
-        const items: CmsModel[] = [];
-        const tenants = await this.listTenants();
-        for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
-            for (const locale of locales) {
-                const models = await this.listModels({ tenant, locale });
-                for (const model of models) {
-                    /**
-                     * Only add models which need to be updated.
-                     */
-                    if (!model.singularApiName || !model.pluralApiName) {
-                        items.push(model);
-                    }
-                }
-            }
-        }
-        this.setModels(items);
-        return items;
-    }
-
-    private getModels(): CmsModel[] {
-        if (!this.models) {
-            throw new Error("Method should never be called without listing models first.");
-        }
-        return this.models;
-    }
-
-    private setModels(models: CmsModel[]): void {
-        this.models = models;
-    }
-
-    private hasModels(): boolean {
-        return !!this.models;
     }
 }
 
