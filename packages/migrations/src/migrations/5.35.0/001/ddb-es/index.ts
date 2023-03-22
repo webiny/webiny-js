@@ -1,20 +1,23 @@
 import { Table } from "dynamodb-toolbox";
+import { Client } from "@elastic/elasticsearch";
 import {
     DataMigration,
     DataMigrationContext,
+    ElasticsearchClientSymbol,
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { makeInjectable, inject } from "@webiny/ioc";
 import { FileManager_5_35_0_001_FileData } from "./FileDataMigration";
-import { FileManager_5_35_0_001_FileManagerSettings } from "./FileSettingsMigration";
+import { FileManager_5_35_0_001_FileManagerSettings } from "../FileSettingsMigration";
+export * from "./types";
 
 export class FileManager_5_35_0_001 implements DataMigration {
     private migrations: DataMigration[];
 
-    constructor(table: Table) {
+    constructor(table: Table, elasticsearchClient: Client) {
         this.migrations = [
-            new FileManager_5_35_0_001_FileData(table),
+            new FileManager_5_35_0_001_FileData(table, elasticsearchClient),
             new FileManager_5_35_0_001_FileManagerSettings(table)
         ];
     }
@@ -49,4 +52,7 @@ export class FileManager_5_35_0_001 implements DataMigration {
     }
 }
 
-makeInjectable(FileManager_5_35_0_001, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(FileManager_5_35_0_001, [
+    inject(PrimaryDynamoTableSymbol),
+    inject(ElasticsearchClientSymbol)
+]);
