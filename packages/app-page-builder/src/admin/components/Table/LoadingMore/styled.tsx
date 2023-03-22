@@ -11,3 +11,12 @@ export const Container = styled("div")`
     height: 40px;
     background-color: var(--mdc-theme-background);
 `;
+
+export const LoaderContainer = styled("div")`
+    display: flex;
+    position: relative;
+    width: 50px;
+    >div{
+        background-color: var(--mdc-theme-background);
+    }
+`;
