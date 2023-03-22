@@ -4,7 +4,7 @@ import {
     createStandardEntity,
     queryOne,
     queryAll,
-    queryAllWithCallback,
+    ddbQueryAllWithCallback,
     batchWriteAll
 } from "~/utils";
 import {
@@ -104,7 +104,7 @@ export class FileManager_5_35_0_001_FileData {
 
             for (const locale of locales) {
                 let batch = 0;
-                await queryAllWithCallback<{ id: string }>(
+                await ddbQueryAllWithCallback<{ id: string }>(
                     {
                         entity: this.legacyFileEntity,
                         partitionKey: `T#${tenant.id}#L#${locale.code}#FM#F`,
