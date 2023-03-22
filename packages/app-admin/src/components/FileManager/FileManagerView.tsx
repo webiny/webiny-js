@@ -464,13 +464,14 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     return (
         <Files
             multiple
-            maxSize={settings.uploadMaxFileSize ? settings.uploadMaxFileSize + "b" : undefined}
+            maxSize={settings.uploadMaxFileSize ? settings.uploadMaxFileSize + "b" : "1TB"}
+            multipleMaxSize={"1TB"}
             accept={accept}
             onSuccess={files => {
                 uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
             }}
             onError={errors => {
-                console.log("onError", errors);
+                console.error("File selection error", errors);
                 /**
                  * TODO @ts-refactor
                  * Figure out if incoming errors var is wrong or the one in the outputFileSelectionError
