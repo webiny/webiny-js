@@ -31,8 +31,8 @@ export const Wrapper = styled("div")`
 `;
 
 export const SidebarContainer = styled("div")`
-    height: calc(100vh - 67px);
+    height: calc(100vh - 91px);
     overflow-y: scroll;
     background: var(--mdc-theme-background);
-    padding-top: 12px;
+    padding: 12px 0;
 `;

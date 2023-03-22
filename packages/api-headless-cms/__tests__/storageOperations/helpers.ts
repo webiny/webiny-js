@@ -6,7 +6,7 @@ import mdbid from "mdbid";
 import {
     CmsEntry,
     CmsModelField,
-    CreatedBy,
+    CmsIdentity,
     HeadlessCmsStorageOperations,
     StorageOperationsCmsModel
 } from "~/types";
@@ -105,12 +105,12 @@ export const createPersonModel = (plugins: PluginsContainer): StorageOperationsC
     });
 };
 
-const createdBy: CreatedBy = {
+const createdBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"
 };
-const ownedBy: CreatedBy = {
+const ownedBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"

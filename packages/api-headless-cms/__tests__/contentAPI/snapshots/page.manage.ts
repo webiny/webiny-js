@@ -1,3 +1,5 @@
+import { metaDataComment, revisionsComment } from "./snippets";
+
 export default /* GraphQL */ `
     """
     Page
@@ -7,8 +9,9 @@ export default /* GraphQL */ `
         entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
+        modifiedBy: CmsIdentity
         meta: PageModelApiNameMeta
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header
@@ -21,15 +24,12 @@ export default /* GraphQL */ `
         locked: Boolean
         publishedOn: DateTime
         status: String
-        """
-        CAUTION: this field is resolved by making an extra query to DB.
-        RECOMMENDATION: Use it only with "get" queries (avoid in "list")
-        """
-        revisions: [PageModelApiName]
+        ${revisionsComment}
+        revisions: [PageModelApiName!]
         title: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
+        description: String
+        image: String
+        ${metaDataComment}
         data: JSON
     }
 

@@ -18,7 +18,7 @@ import {
 } from "./validation";
 
 import { CmsModelField, CmsModel } from "./model";
-import { CmsCreatedBy } from "~/types/shared";
+import { CmsIdentity } from "~/types/shared";
 
 export * from "./validation";
 export * from "./model";
@@ -196,6 +196,10 @@ export interface CmsModelFieldTypePlugin extends Plugin {
         };
         render?(params: any): React.ReactElement;
         tags?: string[];
+        /**
+         * Render additional information in the Admin UI Model edit view
+         */
+        renderInfo?: (params: { field: CmsModelField; model: CmsModel }) => React.ReactElement;
     };
 }
 
@@ -302,7 +306,7 @@ export interface CmsEditorContentEntry {
     id: string;
     savedOn: string;
     modelId: string;
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     meta: {
         title: string;
         publishedOn: string;
@@ -317,7 +321,7 @@ export interface CmsContentEntryRevision {
     id: string;
     savedOn: string;
     modelId: string;
-    createdBy: CmsCreatedBy;
+    createdBy: CmsIdentity;
     meta: {
         title: string;
         publishedOn: string;
@@ -469,7 +473,8 @@ export interface CmsMetaResponse {
 /***
  * ###### FORM ########
  */
-export interface BindComponentRenderProp extends BaseBindComponentRenderProp {
+export interface BindComponentRenderProp<T = any, F = Record<string, any>>
+    extends BaseBindComponentRenderProp<T, F> {
     parentName: string;
     appendValue: (value: any, index?: number) => void;
     prependValue: (value: any) => void;

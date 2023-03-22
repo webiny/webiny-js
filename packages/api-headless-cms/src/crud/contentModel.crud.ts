@@ -47,6 +47,7 @@ import {
     createModelUpdateValidation
 } from "~/crud/contentModel/validation";
 import { createZodError } from "@webiny/utils";
+import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
 import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
 
 /**
@@ -327,8 +328,13 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             if (!result.success) {
                 throw createZodError(result.error);
             }
-
-            const data = removeUndefinedValues(result.data);
+            /**
+             * We need to extract the defaultFields because it is not for the CmsModel object.
+             */
+            const { defaultFields, ...data } = removeUndefinedValues(result.data);
+            if (defaultFields) {
+                assignModelDefaultFields(data);
+            }
 
             context.security.disableAuthorization();
             const group = await context.cms.getGroup(data.group);
@@ -339,12 +345,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             const identity = getIdentity();
             const model: CmsModel = {
-                name: data.name,
-                description: data.description || "",
+                ...data,
                 modelId: data.modelId || "",
                 singularApiName: data.singularApiName,
                 pluralApiName: data.pluralApiName,
                 titleFieldId: "id",
+                descriptionFieldId: null,
+                imageFieldId: null,
+                description: data.description || "",
                 locale: getLocale().code,
                 tenant: getTenant().id,
                 group: {
@@ -358,10 +366,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 },
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
-                fields: data.fields,
                 lockedFields: [],
-                layout: data.layout || [],
-                tags: [...(data.tags || [])],
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -569,6 +574,16 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model: CmsModel = {
                 ...original,
                 ...data,
+                titleFieldId:
+                    data.titleFieldId === undefined
+                        ? original.titleFieldId
+                        : (data.titleFieldId as string),
+                descriptionFieldId:
+                    data.descriptionFieldId === undefined
+                        ? original.descriptionFieldId
+                        : data.descriptionFieldId,
+                imageFieldId:
+                    data.imageFieldId === undefined ? original.imageFieldId : data.imageFieldId,
                 group,
                 description: data.description || original.description,
                 tenant: original.tenant || getTenant().id,

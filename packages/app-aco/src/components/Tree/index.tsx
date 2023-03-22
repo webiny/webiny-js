@@ -19,14 +19,20 @@ type Props = {
     type: string;
     title: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
+    enableCreate?: boolean;
+    enableActions?: boolean;
     onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
     focusedFolderId?: string;
+    hiddenFolderIds?: string[];
 };
 
 export const FolderTree: React.FC<Props> = ({
     type,
     title,
     focusedFolderId,
+    hiddenFolderIds,
+    enableActions,
+    enableCreate,
     onFolderClick,
     onTitleClick
 }) => {
@@ -50,10 +56,12 @@ export const FolderTree: React.FC<Props> = ({
                         folders={folders}
                         onFolderClick={onFolderClick}
                         focusedFolderId={focusedFolderId}
+                        hiddenFolderIds={hiddenFolderIds}
+                        enableActions={enableActions}
                         onDragStart={() => setIsDragging(true)}
                         onDragEnd={() => setIsDragging(false)}
                     />
-                    <CreateButton onClick={() => setCreateDialogOpen(true)} />
+                    {enableCreate && <CreateButton onClick={() => setCreateDialogOpen(true)} />}
                 </>
             );
         }
@@ -70,12 +78,14 @@ export const FolderTree: React.FC<Props> = ({
         <Container>
             <Title title={title} onClick={onTitleClick} isDragging={isDragging} />
             {renderList()}
-            <FolderDialogCreate
-                type={type}
-                open={createDialogOpen}
-                onClose={() => setCreateDialogOpen(false)}
-                parentId={undefined}
-            />
+            {enableCreate && (
+                <FolderDialogCreate
+                    type={type}
+                    open={createDialogOpen}
+                    onClose={() => setCreateDialogOpen(false)}
+                    currentParentId={undefined}
+                />
+            )}
         </Container>
     );
 };

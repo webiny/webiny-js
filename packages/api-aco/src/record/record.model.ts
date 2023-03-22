@@ -63,7 +63,7 @@ const dataField = () =>
         parent: "searchRecord"
     });
 
-export const SEARCH_RECORD_MODEL_ID = "acoSearchRecordModelDefinition";
+export const SEARCH_RECORD_MODEL_ID = "acoSearchRecord";
 
 export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
     return {

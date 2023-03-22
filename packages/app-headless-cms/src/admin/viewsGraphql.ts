@@ -18,6 +18,8 @@ const BASE_CONTENT_MODEL_FIELDS = `
     tags
     fields {
         id
+        type
+        fieldId
     }
     group {
         id
@@ -41,6 +43,7 @@ export interface ListMenuCmsGroupsQueryResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
     query CmsListMenuContentGroupsModels {
         listContentModelGroups {
@@ -68,6 +71,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
         }
     }
 `;
+
 /**
  * ############################
  * List Query
@@ -78,6 +82,7 @@ export interface ListCmsModelsQueryResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export const LIST_CONTENT_MODELS = gql`
     query CmsListContentModels {
         listContentModels {
@@ -90,6 +95,7 @@ export const LIST_CONTENT_MODELS = gql`
         }
     }
 `;
+
 /**
  * ############################
  * Create Mutation
@@ -100,10 +106,12 @@ export interface CreateCmsModelMutationResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export interface CreateCmsModelMutationVariables {
     // @ts-refactor write the types.
     data: Record<string, any>;
 }
+
 export const CREATE_CONTENT_MODEL = gql`
     mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
@@ -116,6 +124,7 @@ export const CREATE_CONTENT_MODEL = gql`
         }
     }
 `;
+
 /**
  * ############################
  * Create From Mutation
@@ -126,10 +135,12 @@ export interface CreateCmsModelFromMutationResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export interface CreateCmsModelFromMutationVariables {
     modelId: string;
     data: CmsModel;
 }
+
 export const CREATE_CONTENT_MODEL_FROM = gql`
     mutation CmsCreateContentModelFrom($modelId: ID!, $data: CmsContentModelCreateFromInput!) {
         createContentModelFrom(modelId: $modelId, data: $data) {
@@ -153,9 +164,11 @@ export interface DeleteCmsModelMutationResponse {
         error?: CmsErrorResponse;
     };
 }
+
 export interface DeleteCmsModelMutationVariables {
     modelId: string;
 }
+
 export const DELETE_CONTENT_MODEL = gql`
     mutation CmsDeleteContentModel($modelId: ID!) {
         deleteContentModel(modelId: $modelId) {

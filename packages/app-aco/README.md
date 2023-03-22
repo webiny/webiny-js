@@ -12,14 +12,15 @@ A set of frontend aco-related utilities.
 - [Overview](#overview)
 - [Reference](#reference)
     - [Components](#components)
-        - [`FoldersProvider`](#FoldersProvider)
+        - [`ACOProvider`](#ACOProvider)
         - [`FolderTree`](#FolderTree)
+        - [`EntryDialogMove`](#EntryDialogMove)
         - [`FolderDialogCreate`](#FolderDialogCreate)
-        - [`FolderDialogUpdate`](#FolderDialogUpdate)
         - [`FolderDialogDelete`](#FolderDialogDelete)
+        - [`FolderDialogUpdate`](#FolderDialogUpdate)
     - [Hooks](#hooks)
         - [`useFolder`](#useFolders)
-        - [`useLinks`](#useLinks)
+        - [`useRecords`](#useRecords)
 
 ## Installation
 ```
@@ -32,40 +33,40 @@ yarn add @webiny/app-aco
 ```
 
 ## Overview
-The `@webiny/app-aco` package contains essential aco-related utilities (Advanced Content Organisation), that can be used within a React app. These include the `FoldersProvider` provider component, the `useFolders` and `useLinks` hooks, which can be used to retrieve the current folder and link information and interact with them.
+The `@webiny/app-aco` package contains essential aco-related utilities (Advanced Content Organisation), that can be used within a React app. These include the `FoldersProvider` provider component, the `useFolders` and `useRecords` hooks, which can be used to retrieve the current folder and search record information and interact with them.
 
 > ℹ️ **INFO**
 >
-> Internally, the [`FoldersProvider`](#FoldersProvider) provider retrieves information from the Webiny's default GraphQL API. Because of this, note that this project relies on [`@webiny/api-aco`](./../api-aco) when it comes to retrieving folders and links information (via GraphQL).
+> Internally, the [`FoldersProvider`](#FoldersProvider) provider retrieves information from the Webiny's default GraphQL API. Because of this, note that this project relies on [`@webiny/api-aco`](./../api-aco) when it comes to retrieving folders and records information (via GraphQL).
 
 ## Reference
 
 ### Components
 
-#### `FoldersProvider`
+#### `ACOProvider`
 
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```tsx
-export declare const FoldersProvider: React.FC;
+export declare const ACOProvider: React.FC;
 ```
 
 </p>
 </details>
 
-The [`FoldersProvider`](#FoldersProvider) is a provider component, which retrieves the folders and links information. The component also makes it possible to use the [`useFolders`](#useFolders) and [`useLinks`](#useLinks) hook, which can be used to list, create, update or delete folders and links within the React app.
+The [`ACOProvider`](#ACOProvider) is a provider component, which retrieves the folders and records information. The component also makes it possible to use the [`useFolders`](#useFolders) and [`useRecords`](#useRecords) hook, which can be used to list, create, update or delete folders and records within the React app.
 
 ```tsx
 import React from "react";
-import { FoldersProvider } from "@webiny/app-aco";
+import { ACOProvider } from "@webiny/app-aco";
 
 export const App = () => {
   return (
-    <FoldersProvider>
+    <ACOProvider>
       <MyApp />
-    </FoldersProvider>
+    </ACOProvider>
   );
 };
 ```
@@ -82,9 +83,12 @@ import { DndItemData } from "~/types";
 interface Props {
     type: string;
     title: string;
+    enableCreate?: boolean;
+    enableActions?: boolean;
+    focusedFolderId?: string;
+    hiddenFolderId?: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
-    focusedFolderId?: string;
 }
 
 declare function FolderTree(props: Props): React.FC;
@@ -103,9 +107,12 @@ export const MyComponent = () => {
         <FolderTree
             type={"page"}
             title={"All pages"}
+            enableCreate={true}
+            enableActions={true}
+            focusedFolderId={"anyExistingId"}
+            hiddenFolderId={"folderIdToHide"}
             onFolderClick={item => console.log(item)}
             onTitleClick={() => console.log("Do whatever you like on title click")}
-            focusedFolderId={"anyExistingId"}
         />
     );
 };
@@ -113,6 +120,54 @@ export const MyComponent = () => {
 > ℹ️ **INFO**
 >
 > Internally, the `FolderTree` uses [react-dnd-treeview](https://www.npmjs.com/package/@minoru/react-dnd-treeview) to render and manage the folder list: DO NOT rely on any of this package features, we might change it in the future.
+
+#### `EntryDialogMove`
+<details>
+<summary>Type Declaration</summary>
+<p>
+
+```tsx
+import { DialogOnClose } from "@webiny/ui/Dialog";
+import { SearchRecordItem } from "@webiny/app-aco";
+
+interface Props {
+    type: string;
+    searchRecord: SearchRecordItem;
+    open: boolean;
+    onClose: DialogOnClose;
+}
+
+declare function EntryDialogMove(props: Props): React.FC;
+```
+</p>
+</details>
+
+`EntryDialogMove` component shows a dialog to allow users to move a search record into a folder.
+
+```tsx
+import React, { useState } from "react";
+import { EntryDialogMove } from "@webiny/app-aco";
+
+type Props = {
+    searchRecord: SearchRecordItem;
+}
+
+export const MyComponent = ({ searchRecord }: Props) => {
+    const [dialogOpen, setDialogOpen] = useState(false);
+    
+    return (
+        <>
+            <button onClick={() => setDialogOpen(true)}>Edit folder</button>
+            <EntryDialogMove
+                type={"anyType"}
+                searchRecord={searchRecord}
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+            />
+        </>
+    );
+};
+```
 
 #### `FolderDialogCreate`
 <details>
@@ -126,7 +181,7 @@ interface Props {
     type: string;
     open: boolean;
     onClose: DialogOnClose;
-    parentId?: string | null;
+    currentParentId?: string | null;
 }
 
 declare function FolderDialogCreate(props: Props): React.FC;
@@ -150,7 +205,51 @@ export const MyComponent = () => {
                 type={"page"}
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
-                parentId={"anyParentId"}
+                currentParentId={"anyParentId"}
+            />
+        </>
+    );
+};
+```
+#### `FolderDialogDelete`
+<details>
+<summary>Type Declaration</summary>
+<p>
+
+```tsx
+import { DialogOnClose } from "@webiny/ui/Dialog";
+
+interface Props {
+    folder: FolderItem;
+    open: boolean;
+    onClose: DialogOnClose;
+}
+
+declare function FolderDialogDelete(props: Props): React.FC;
+```
+</p>
+</details>
+
+`FolderDialogDelete` component shows a dialog to allow users to delete an existing folder.
+
+```tsx
+import React, { useState } from "react";
+import { FolderDialogDelete } from "@webiny/app-aco";
+
+type Props = {
+    folder: FolderItem;
+}
+
+export const MyComponent = ({ folder }: Props) => {
+    const [dialogOpen, setDialogOpen] = useState(false);
+    
+    return (
+        <>
+            <button onClick={() => setDialogOpen(true)}>Delete folder</button>
+            <FolderDialogDelete
+                folder={folder}
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
             />
         </>
     );
@@ -193,51 +292,6 @@ export const MyComponent = ({ folder }: Props) => {
         <>
             <button onClick={() => setDialogOpen(true)}>Edit folder</button>
             <FolderDialogUpdate
-                folder={folder}
-                open={dialogOpen}
-                onClose={() => setDialogOpen(false)}
-            />
-        </>
-    );
-};
-```
-
-#### `FolderDialogDelete`
-<details>
-<summary>Type Declaration</summary>
-<p>
-
-```tsx
-import { DialogOnClose } from "@webiny/ui/Dialog";
-
-interface Props {
-    folder: FolderItem;
-    open: boolean;
-    onClose: DialogOnClose;
-}
-
-declare function FolderDialogDelete(props: Props): React.FC;
-```
-</p>
-</details>
-
-`FolderDialogDelete` component shows a dialog to allow users to delete an existing folder.
-
-```tsx
-import React, { useState } from "react";
-import { FolderDialogDelete } from "@webiny/app-aco";
-
-type Props = {
-    folder: FolderItem;
-}
-
-export const MyComponent = ({ folder }: Props) => {
-    const [dialogOpen, setDialogOpen] = useState(false);
-    
-    return (
-        <>
-            <button onClick={() => setDialogOpen(true)}>Delete folder</button>
-            <FolderDialogDelete
                 folder={folder}
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
@@ -294,56 +348,62 @@ As you might notice, there is not `listFolders` method available from `useFolder
 
 You don't need to store the result of it to any local state; that is managed by the context provider.
 
-#### `useLinks`
+#### `useRecords`
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```tsx
-import { LinkItem, LinksActions } from "./types";
+import { SearchRecordItem, Loading, LoadingActions, ListMeta } from "./types";
 
-interface UseLinksHook {
-    links: LinkItem[];
-    loading: Record<LinksActions, boolean>;
-    getLink: (id: string, folderId: string) => Promise<LinkItem>;
-    createLink: (link: Omit<LinkItem, "linkId">) => Promise<LinkItem>;
-    updateLink: (link: LinkItem, contextFolderId: string) => Promise<LinkItem>;
-    deleteLink(link: LinkItem): Promise<true>;
+interface UseRecordsHook {
+    records: SearchRecordItem[];
+    loading: Loading<LoadingActions>;
+    meta: Meta<ListMeta>;
+    listRecords: (params: {
+        type?: string;
+        folderId?: string;
+        limit?: number;
+        after?: string;
+        sort?: ListSort;
+    }) => Promise<SearchRecordItem[]>;
+    getRecord: (id: string) => Promise<SearchRecordItem>;
+    createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
+    updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
+    deleteRecord(record: SearchRecordItem): Promise<true>;
 }
 
-export declare function useLinks(folderId: string): UseLinksHook;
+export declare function useRecords(type: string, folderId: string): UseRecordsHook;
 ```
 </p>
 </details>
 
 
-`useLinks()` hook allows you to interact with folders links state and related APIs while building your custom component.
+`useRecords()` hook allows you to interact with search records state and related APIs while building your custom component.
 
 ```tsx
 import React, { useEffect, useState } from "react";
-import { useLinks } from "@webiny/app-aco";
+import { useRecords } from "@webiny/app-aco";
 
 import { getEntryDetails } from "./any-custom-hook"
 
 export const MyComponent = () => {
-    const { links } = useLinks("anyFolderId");
+    const { records } = useRecords("anyType", "anyFolderId");
     const [entries, setEntries] = useState([]);
     
     useEffect(() => {
-        const details = getEntryDetails(links);
+        const details = getEntryDetails(records);
         setEntries(details)
-    }, [links])
+    }, [records])
     
     if (entries) {
         return entries.map(entry => {
-            return <span key={entry.id}>{entry.name}</span>;
+            return <span key={entry.id}>{entry.title}</span>;
         });
     }
     
     return <span>No entries to show</span>;
 };
 ```
-
-As you might notice, there is not `listLinks` method available from `useLinks()` hook: this is because on first mount, `listLinks` is called internally, which will either issue a network request, or load links from cache.
 
 You don't need to store the result of it to any local state; that is managed by the context provider.

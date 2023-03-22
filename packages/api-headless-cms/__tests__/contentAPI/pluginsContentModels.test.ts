@@ -34,10 +34,17 @@ const contentModelPlugin = new CmsModelPlugin({
             fieldId: "price",
             type: "number",
             label: "Price"
+        },
+        {
+            id: "descr",
+            fieldId: "descr",
+            label: "Description",
+            type: "long-text"
         }
     ],
-    layout: [["name"], ["sku", "price"]],
+    layout: [["name"], ["sku", "price"], ["descr"]],
     titleFieldId: "name",
+    descriptionFieldId: "descr",
     description: ""
 });
 
@@ -264,7 +271,6 @@ describe("content model plugins", () => {
         });
 
         const [getContentModelResponse] = await getContentModelQuery({ modelId: "product" });
-
         expect(getContentModelResponse).toEqual({
             data: {
                 getContentModel: {
@@ -317,6 +323,21 @@ describe("content model plugins", () => {
                                 settings: null,
                                 type: "number",
                                 validation: null
+                            },
+                            {
+                                storageId: "long-text@descr",
+                                fieldId: "descr",
+                                helpText: null,
+                                id: "descr",
+                                label: "Description",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "long-text",
+                                validation: null
                             }
                         ],
                         group: {
@@ -331,7 +352,9 @@ describe("content model plugins", () => {
                         pluralApiName: "Products",
                         plugin: true,
                         savedOn: null,
-                        titleFieldId: "name"
+                        titleFieldId: "name",
+                        descriptionFieldId: "descr",
+                        imageFieldId: null
                     },
                     error: null
                 }
@@ -393,6 +416,21 @@ describe("content model plugins", () => {
                                     settings: null,
                                     type: "number",
                                     validation: null
+                                },
+                                {
+                                    storageId: "long-text@descr",
+                                    fieldId: "descr",
+                                    helpText: null,
+                                    id: "descr",
+                                    label: "Description",
+                                    listValidation: null,
+                                    multipleValues: null,
+                                    placeholderText: null,
+                                    predefinedValues: null,
+                                    renderer: null,
+                                    settings: null,
+                                    type: "long-text",
+                                    validation: null
                                 }
                             ],
                             group: {
@@ -407,7 +445,9 @@ describe("content model plugins", () => {
                             pluralApiName: "Products",
                             plugin: true,
                             savedOn: null,
-                            titleFieldId: "name"
+                            titleFieldId: "name",
+                            descriptionFieldId: "descr",
+                            imageFieldId: null
                         }
                     ],
                     error: null

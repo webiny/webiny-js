@@ -8,8 +8,8 @@ export default `
         modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective

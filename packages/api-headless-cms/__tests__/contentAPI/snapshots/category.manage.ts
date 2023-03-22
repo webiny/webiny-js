@@ -9,8 +9,9 @@ export default /* GraphQL */ `
         entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
+        modifiedBy: CmsIdentity!
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         title: String
         slug: String
@@ -23,8 +24,10 @@ export default /* GraphQL */ `
         publishedOn: DateTime
         status: String
         ${revisionsComment}
-        revisions: [CategoryApiNameWhichIsABitDifferentThanModelId]
+        revisions: [CategoryApiNameWhichIsABitDifferentThanModelId!]
         title: String
+        description: String
+        image: String
         ${metaDataComment}
         data: JSON
     }

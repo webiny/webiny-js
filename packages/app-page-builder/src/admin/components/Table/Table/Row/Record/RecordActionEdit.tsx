@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useState } from "react";
 
 import { useMutation } from "@apollo/react-hooks";
-import { ReactComponent as Edit } from "@material-design-icons/svg/filled/edit.svg";
+import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";

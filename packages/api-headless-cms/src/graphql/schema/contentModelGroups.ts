@@ -145,7 +145,7 @@ export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
                 slug: String!
                 description: String
                 icon: String
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
 
                 # Returns true if the content model group is registered via a plugin.
                 plugin: Boolean!

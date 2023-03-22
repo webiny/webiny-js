@@ -73,7 +73,7 @@ describe("Headless CMS - Content Entries", () => {
             // Create an entry
             const newEntryTitle = `Atomic Habits`;
             const newEntryEdition = "4";
-            const newEntryTitle2 = newEntryTitle + "- 2nd";
+            const newEntryTitle2 = newEntryTitle + " - 2nd";
 
             // a) Click on "New Entry" button
             cy.findAllByTestId("new-record-button").first().click();

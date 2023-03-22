@@ -9,8 +9,9 @@ export default /* GraphQL */ `
         entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
+        modifiedBy: CmsIdentity!
         meta: ReviewApiModelMeta
         text: String
         product: RefField
@@ -25,8 +26,10 @@ export default /* GraphQL */ `
         publishedOn: DateTime
         status: String
         ${revisionsComment}
-        revisions: [ReviewApiModel]
+        revisions: [ReviewApiModel!]
         title: String
+        description: String
+        image: String
         ${metaDataComment}
         data: JSON
     }

@@ -9,20 +9,42 @@ import {
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
 
+const CONTENT_META_FIELDS = /* GraphQL */ `
+    meta {
+        title
+        description
+        image
+        publishedOn
+        version
+        locked
+        status
+    }
+`;
+
+const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
+    id
+    entryId
+    savedOn
+    createdOn
+    createdBy {
+        id
+        type
+        displayName
+    }
+    ownedBy {
+        id
+        type
+        displayName
+    }
+    ${CONTENT_META_FIELDS}
+`;
+
 const ERROR_FIELD = /* GraphQL */ `
     {
         message
         code
         data
     }
-`;
-
-const CONTENT_META_FIELDS = /* GraphQL */ `
-    title
-    publishedOn
-    version
-    locked
-    status
 `;
 
 /**
@@ -49,15 +71,8 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
         query CmsEntriesGet${model.singularApiName}($revision: ID, $entryId: ID) {
             content: get${model.singularApiName}(revision: $revision, entryId: $entryId) {
             data {
-                id
-                createdBy {
-                    id
-                }
+                ${CONTENT_ENTRY_SYSTEM_FIELDS}
                 ${createFieldsList({ model, fields: model.fields })}
-                savedOn
-                meta {
-                    ${CONTENT_META_FIELDS}
-                }
             }
             error ${ERROR_FIELD}
         }
@@ -84,16 +99,12 @@ export interface CmsEntriesListRevisionsQueryVariables {
 export const createRevisionsQuery = (model: CmsEditorContentModel) => {
     return gql`
         query CmsEntriesGet${model.singularApiName}Revisions($id: ID!) {
-        revisions: get${model.singularApiName}Revisions(id: $id) {
-        data {
-        id
-        savedOn
-        meta {
-        ${CONTENT_META_FIELDS}
-        }
-        }
-        error ${ERROR_FIELD}
-        }
+            revisions: get${model.singularApiName}Revisions(id: $id) {
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                }
+                error ${ERROR_FIELD}
+            }
         }
     `;
 };
@@ -132,11 +143,7 @@ export const createListQuery = (model: CmsEditorContentModel) => {
             after: $after
             ) {
             data {
-                id
-                savedOn
-                meta {
-                    ${CONTENT_META_FIELDS}
-                }
+                ${CONTENT_ENTRY_SYSTEM_FIELDS}
                 ${getModelTitleFieldId(model)}
             }
             meta {
@@ -169,9 +176,9 @@ export const createDeleteMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsEntriesDelete${model.singularApiName}($revision: ID!) {
             content: delete${model.singularApiName}(revision: $revision) {
-            data
-            error ${ERROR_FIELD}
-        }
+                data
+                error ${ERROR_FIELD}
+            }
         }
     `;
 };
@@ -198,16 +205,12 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!) {
             content: create${model.singularApiName}(data: $data) {
-            data {
-                id
-                savedOn
-                ${createFieldsList({ model, fields: model.fields })}
-                meta {
-                    ${CONTENT_META_FIELDS}
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
                 }
+                error ${ERROR_FIELD}
             }
-            error ${ERROR_FIELD}
-        }
         }
     `;
 };
@@ -237,16 +240,12 @@ export const createCreateFromMutation = (model: CmsEditorContentModel) => {
         model.singularApiName
     }Input) {
         content: create${model.singularApiName}From(revision: $revision, data: $data) {
-        data {
-        id
-        savedOn
-        ${createFieldsList({ model, fields: model.fields })}
-        meta {
-        ${CONTENT_META_FIELDS}
-        }
-        }
-        error ${ERROR_FIELD}
-        }
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
+                }
+                error ${ERROR_FIELD}
+            }
         }`;
 };
 
@@ -275,16 +274,12 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
         model.singularApiName
     }Input!) {
             content: update${model.singularApiName}(revision: $revision, data: $data) {
-            data {
-                id
-                ${createFieldsList({ model, fields: model.fields })}
-                savedOn
-                meta {
-                    ${CONTENT_META_FIELDS}
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
                 }
+                error ${ERROR_FIELD}
             }
-            error ${ERROR_FIELD}
-        }
         }
     `;
 };
@@ -308,14 +303,12 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsPublish${model.singularApiName}($revision: ID!) {
             content: publish${model.singularApiName}(revision: $revision) {
-            data {
-                id
-                meta {
+                data {
+                    id
                     ${CONTENT_META_FIELDS}
                 }
+                error ${ERROR_FIELD}
             }
-            error ${ERROR_FIELD}
-        }
         }`;
 };
 
@@ -338,13 +331,11 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsUnpublish${model.singularApiName}($revision: ID!) {
             content: unpublish${model.singularApiName}(revision: $revision) {
-            data {
-                id
-                meta {
+                data {
+                    id
                     ${CONTENT_META_FIELDS}
                 }
+                error ${ERROR_FIELD}
             }
-            error ${ERROR_FIELD}
-        }
         }`;
 };

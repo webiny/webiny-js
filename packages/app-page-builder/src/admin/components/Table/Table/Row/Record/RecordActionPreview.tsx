@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback } from "react";
 
-import { ReactComponent as Visibility } from "@material-design-icons/svg/filled/visibility.svg";
+import { ReactComponent as Visibility } from "@material-design-icons/svg/outlined/visibility.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";

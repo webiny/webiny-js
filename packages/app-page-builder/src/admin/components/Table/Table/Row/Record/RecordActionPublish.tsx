@@ -1,7 +1,7 @@
 import React, { ReactElement, useMemo } from "react";
 
-import { ReactComponent as Publish } from "@material-design-icons/svg/filled/publish.svg";
-import { ReactComponent as Restore } from "@material-design-icons/svg/filled/settings_backup_restore.svg";
+import { ReactComponent as Publish } from "@material-design-icons/svg/outlined/publish.svg";
+import { ReactComponent as Restore } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { SecurityPermission } from "@webiny/app-security/types";

@@ -52,6 +52,8 @@ export const MODEL_FIELDS = `
     pluralApiName
     savedOn
     titleFieldId
+    descriptionFieldId
+    imageFieldId
     lockedFields
     layout
     tags

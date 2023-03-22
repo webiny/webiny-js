@@ -47,8 +47,9 @@ export const createManageSDL: CreateManageSDL = ({
             entryId: String!
             createdOn: DateTime!
             savedOn: DateTime!
-            createdBy: CmsCreatedBy!
-            ownedBy: CmsOwnedBy!
+            createdBy: CmsIdentity!
+            ownedBy: CmsIdentity!
+            modifiedBy: CmsIdentity!
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
         }
@@ -63,8 +64,10 @@ export const createManageSDL: CreateManageSDL = ({
             CAUTION: this field is resolved by making an extra query to DB.
             RECOMMENDATION: Use it only with "get" queries (avoid in "list")
             """
-            revisions: [${singularName}]
+            revisions: [${singularName}!]
             title: String
+            description: String
+            image: String
             """
             Custom meta data stored in the root of the entry object.
             """
