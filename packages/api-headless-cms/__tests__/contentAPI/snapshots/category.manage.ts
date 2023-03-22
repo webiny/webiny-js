@@ -11,7 +11,7 @@ export default /* GraphQL */ `
         savedOn: DateTime!
         createdBy: CmsIdentity!
         ownedBy: CmsIdentity!
-        modifiedBy: CmsIdentity!
+        modifiedBy: CmsIdentity
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         title: String
         slug: String

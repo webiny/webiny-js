@@ -11,7 +11,7 @@ export default /* GraphQL */ `
         savedOn: DateTime!
         createdBy: CmsIdentity!
         ownedBy: CmsIdentity!
-        modifiedBy: CmsIdentity!
+        modifiedBy: CmsIdentity
         meta: ProductApiSingularMeta
         title: String
         category: RefField
