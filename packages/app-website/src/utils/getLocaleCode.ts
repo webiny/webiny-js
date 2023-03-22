@@ -12,7 +12,7 @@ export const getLocaleCode = () => {
     }
 
     // 2. Get locale via `window.__PS_RENDER_LOCALE__`. Used with prerendered pages.
-    locale = window.__PS_RENDER_LOCALE__
+    locale = window.__PS_RENDER_LOCALE__;
     if (locale) {
         return locale;
     }
@@ -23,11 +23,11 @@ export const getLocaleCode = () => {
         // The `localesByContext` is a string that contains locales for all available
         // "locale contexts", for example: `default:en-US;content:en-US;`. Here, we
         // want to extract the locale for the "content" locale context.
-        const [,matchedLocale] = localesByContext.match(/content:(.*?);/)
+        const [, matchedLocale] = localesByContext.match(/content:(.*?);/);
         return matchedLocale;
     }
 
     // 4. Finally, for development purposes, we also want to take the
     // `REACT_APP_WEBSITE_LOCALE` environment variable into consideration.
-    return process.env.REACT_APP_WEBSITE_LOCALE || null;
+    return process.env.WEBINY_WEBSITE_LOCALE_CODE || null;
 };

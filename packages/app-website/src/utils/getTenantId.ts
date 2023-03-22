@@ -25,5 +25,5 @@ export const getTenantId = () => {
 
     // 4. Finally, for development purposes, we also want to take the
     // `REACT_APP_WEBSITE_TENANT` environment variable into consideration.
-    return process.env.REACT_APP_WEBSITE_TENANT || null;
+    return process.env.WEBINY_WEBSITE_TENANT || null;
 };
