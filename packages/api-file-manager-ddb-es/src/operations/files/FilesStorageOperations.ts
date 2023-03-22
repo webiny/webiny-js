@@ -510,7 +510,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     private createPartitionKey(params: CreatePartitionKeyParams): string {
         const { tenant, locale, id } = params;
-        return `T#${tenant}#L#${locale}#FM#FILE#${id}`;
+        return `T#${tenant}#L#${locale}#FM#F${id}`;
     }
     private createGSI1PartitionKey(params: CreateGSI1PartitionKeyParams): string {
         const { tenant, locale } = params;
