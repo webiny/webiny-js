@@ -1,3 +1,4 @@
+import { Client } from "@elastic/elasticsearch";
 import { Constructor } from "@webiny/ioc";
 import { createDdbEsProjectMigration, DataMigration } from "@webiny/data-migration";
 import { getPrimaryDynamoDbTable } from "~tests/utils/getPrimaryDynamoDbTable";
@@ -7,6 +8,7 @@ import { useHandler } from "./useHandler";
 interface DdbEsMigrationHandlerConfig {
     primaryTable: ReturnType<typeof getPrimaryDynamoDbTable>;
     dynamoToEsTable: ReturnType<typeof getPrimaryDynamoDbTable>;
+    elasticsearchClient?: Client;
     migrations: Constructor<DataMigration>[];
 }
 
@@ -21,7 +23,7 @@ export function createDdbEsMigrationHandler(config: DdbEsMigrationHandlerConfig)
             primaryTable: config.primaryTable,
             dynamoToEsTable: config.dynamoToEsTable,
             migrations: config.migrations,
-            elasticsearchClient: createElasticsearchClient(),
+            elasticsearchClient: config.elasticsearchClient || createElasticsearchClient(),
             isMigrationApplicable: () => true
         })
     );

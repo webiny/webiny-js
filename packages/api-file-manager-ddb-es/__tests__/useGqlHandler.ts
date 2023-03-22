@@ -1,7 +1,7 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import richTextFieldPlugin from "./mocks/richTextFieldPlugin";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDdbEsPlugins from "~/index";
+import { richTextFieldStoragePlugins, richTextSchemaPlugins } from "./mocks/richTextFieldPlugin";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "~/index";
 import { createEventHandler as createDynamoDBToElasticsearchHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -12,7 +12,7 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
  */
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
-import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin, { createGzipCompression } from "@webiny/api-elasticsearch";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
@@ -39,7 +39,7 @@ import {
 } from "../../api-file-manager/__tests__/graphql/fileManagerSettings";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
-import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePhysicalStoragePlugin";
+import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/FilePhysicalStoragePlugin";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
@@ -108,11 +108,18 @@ export default (params?: UseGqlHandlerParams) => {
             body: getBaseConfiguration()
         });
     };
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+    /**
+     *
+     * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+     */
     simulateStream(
         documentClient,
         createDynamoDBHandler({
-            plugins: [elasticsearchClientContext, createDynamoDBToElasticsearchHandler()]
+            plugins: [
+                elasticsearchClientContext,
+                createDynamoDBToElasticsearchHandler(),
+                createGzipCompression()
+            ]
         })
     );
 
@@ -129,15 +136,21 @@ export default (params?: UseGqlHandlerParams) => {
                 })
             }),
             dynamoDbPlugins(),
+            createGzipCompression(),
             ...createTenancyAndSecurity({ permissions, identity }),
             graphqlHandlerPlugins(),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             elasticsearchClientContext,
-            richTextFieldPlugin(),
-            fileManagerPlugins(),
-            fileManagerDdbEsPlugins(),
+            createFileManagerContext({
+                storageOperations: createFileManagerStorageOperations({
+                    documentClient,
+                    elasticsearchClient,
+                    plugins: richTextFieldStoragePlugins()
+                })
+            }),
+            createFileManagerGraphQL(),
             /**
              * Mock physical file storage plugin.
              */
@@ -146,7 +159,8 @@ export default (params?: UseGqlHandlerParams) => {
                 upload: async () => {},
                 // eslint-disable-next-line
                 delete: async () => {}
-            })
+            }),
+            richTextSchemaPlugins()
         ]
     });
 

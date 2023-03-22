@@ -1,12 +1,12 @@
 import { Table } from "dynamodb-toolbox";
 import { DataMigrationContext } from "@webiny/data-migration";
 import { createStandardEntity, queryOne, queryAll } from "~/utils";
-import { createTenantEntity } from "./createTenantEntity";
+import { createTenantEntity } from "./entities/createTenantEntity";
 import {
     createLegacySettingsEntity,
     createSettingsEntity,
     getSettingsData
-} from "./createSettingsEntity";
+} from "./entities/createSettingsEntity";
 
 export class FileManager_5_35_0_001_FileManagerSettings {
     private readonly newSettingsEntity: ReturnType<typeof createSettingsEntity>;

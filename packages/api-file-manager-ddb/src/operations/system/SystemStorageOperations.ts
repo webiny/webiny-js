@@ -1,49 +1,35 @@
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Entity } from "dynamodb-toolbox";
 import {
-    FileManagerContext,
     FileManagerSystem,
     FileManagerSystemStorageOperations,
     FileManagerSystemStorageOperationsCreateParams,
+    FileManagerSystemStorageOperationsGetParams,
     FileManagerSystemStorageOperationsUpdateParams
 } from "@webiny/api-file-manager/types";
-import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineSystemEntity from "~/definitions/systemEntity";
-import defineTable from "~/definitions/table";
+import { createTable } from "~/definitions/table";
 
 interface SystemStorageOperationsConstructorParams {
-    context: FileManagerContext;
+    documentClient: DocumentClient;
 }
 
 const SORT_KEY = "FM";
 
 export class SystemStorageOperations implements FileManagerSystemStorageOperations {
-    private readonly _context: FileManagerContext;
     private readonly _entity: Entity<any>;
 
-    private get partitionKey(): string {
-        const tenant = this._context.tenancy.getCurrentTenant();
-        if (!tenant) {
-            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-        }
-        return `T#${tenant.id}#SYSTEM`;
+    public constructor({ documentClient }: SystemStorageOperationsConstructorParams) {
+        this._entity = defineSystemEntity({ table: createTable({ documentClient }) });
     }
 
-    public constructor({ context }: SystemStorageOperationsConstructorParams) {
-        this._context = context;
-        const table = defineTable({
-            context
-        });
-
-        this._entity = defineSystemEntity({
-            context,
-            table
-        });
-    }
-
-    public async get(): Promise<FileManagerSystem | null> {
+    public async get({
+        tenant
+    }: FileManagerSystemStorageOperationsGetParams): Promise<FileManagerSystem | null> {
         try {
             const system = await this._entity.get({
-                PK: this.partitionKey,
+                PK: `T#${tenant}#SYSTEM`,
                 SK: SORT_KEY
             });
             if (!system || !system.Item) {
@@ -64,7 +50,7 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
         const { data } = params;
         try {
             await this._entity.put({
-                PK: this.partitionKey,
+                PK: `T#${data.tenant}#SYSTEM`,
                 SK: SORT_KEY,
                 ...data
             });
@@ -87,7 +73,7 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
 
         try {
             await this._entity.update({
-                PK: this.partitionKey,
+                PK: `T#${data.tenant}#SYSTEM`,
                 SK: SORT_KEY,
                 ...data
             });

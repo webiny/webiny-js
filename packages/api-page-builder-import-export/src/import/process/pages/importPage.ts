@@ -56,7 +56,7 @@ export async function importPage({
             fileUploadsData
         });
 
-        const settings = await context.fileManager.settings.getSettings();
+        const settings = await context.fileManager.getSettings();
 
         const { srcPrefix = "" } = settings || {};
         updateFilesInData({

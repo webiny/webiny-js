@@ -50,7 +50,7 @@ export const uploadAssets = async (params: UploadAssetsParams) => {
     // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
     const createFilesInputChunks = chunk(createFilesInput, FILES_COUNT_IN_EACH_BATCH);
     for (const inputChunk of createFilesInputChunks) {
-        await context.fileManager.files.createFilesInBatch(inputChunk);
+        await context.fileManager.createFilesInBatch(inputChunk);
     }
 
     return oldIdToNewFileMap;

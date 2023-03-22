@@ -3,8 +3,8 @@ import path from "path";
 import fs from "fs";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbPlugins from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
@@ -41,6 +41,7 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { PluginCollection } from "@webiny/plugins/types";
+import { documentClient } from "./documentClient";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -90,8 +91,12 @@ export default (params: UseGqlHandlerParams = {}) => {
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
-            fileManagerPlugins(),
-            fileManagerDynamoDbPlugins(),
+            createFileManagerContext({
+                storageOperations: createFileManagerStorageOperations({
+                    documentClient
+                })
+            }),
+            createFileManagerGraphQL(),
             /**
              * We need to create the form builder API app.
              * It requires storage operations and plugins from the storage operations.

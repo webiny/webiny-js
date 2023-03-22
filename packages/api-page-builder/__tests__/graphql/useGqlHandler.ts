@@ -5,8 +5,8 @@ import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDdbPlugins from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
 import prerenderingHookPlugins from "~/prerendering/hooks";
@@ -73,6 +73,7 @@ import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "../tenancySecurity";
 import { getStorageOperations } from "../storageOperations";
+import { documentClient } from "~tests/documentClient";
 
 interface Params {
     permissions?: any;
@@ -92,12 +93,15 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
             // TODO figure out a way to load these automatically
             createWcpContext(),
             createWcpGraphQL(),
-            fileManagerDdbPlugins(),
+            createFileManagerContext({
+                storageOperations: createFileManagerStorageOperations({
+                    documentClient
+                })
+            }),
             graphqlHandler(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
-            fileManagerPlugins(),
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
             createPageBuilderContext({

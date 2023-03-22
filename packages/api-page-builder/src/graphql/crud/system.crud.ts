@@ -156,7 +156,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                 }
 
                 // 5. Create sample pages.
-                const fmSettings = await fileManager.settings.getSettings();
+                const fmSettings = await fileManager.getSettings();
 
                 let welcomeToWebinyPageContent, notFoundPageContent;
                 if (featureFlags.pbLegacyRenderingEngine === true) {
