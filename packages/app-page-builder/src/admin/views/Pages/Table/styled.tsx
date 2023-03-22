@@ -4,7 +4,6 @@ export const MainContainer = styled("div")`
     overflow: hidden;
     position: relative;
     height: 100%;
-    margin-right: 8px;
 `;
 
 export const Wrapper = styled("div")`

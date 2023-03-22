@@ -9,7 +9,7 @@ import { getClasses } from "@webiny/ui/Helpers";
 const grid = css({
     "&.mdc-layout-grid": {
         padding: 0,
-        margin: '-3px auto 0 auto',
+        margin: "-3px auto 0 auto",
         backgroundColor: "var(--mdc-theme-background)",
         ">.mdc-layout-grid__inner": {
             gridGap: 0
