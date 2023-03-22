@@ -75,16 +75,14 @@ class CmsTestEnvironment extends NodeEnvironment {
             });
         };
         /**
-         * We need to create model index before entry create because of the direct storage operations tests.
-         * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
+         * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
          */
-        const onEntryBeforeCreate = new ContextPlugin(async context => {
+        const refreshIndexSubscription = new ContextPlugin(async context => {
             context.waitFor(["cms"], async () => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
                     const index = createIndexName(model);
                     const response = await elasticsearchClient.indices.exists({
-                        index,
-                        ignore_unavailable: true
+                        index
                     });
                     if (response.body) {
                         return;
@@ -102,13 +100,6 @@ class CmsTestEnvironment extends NodeEnvironment {
                         console.log(JSON.stringify(ex));
                     }
                 });
-            });
-        });
-        /**
-         * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
-         */
-        const refreshIndexSubscription = new ContextPlugin(async context => {
-            context.waitFor(["cms"], async () => {
                 context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
@@ -163,7 +154,6 @@ class CmsTestEnvironment extends NodeEnvironment {
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
                         plugins: testPlugins.concat([
                             createGzipCompression(),
-                            onEntryBeforeCreate,
                             createCmsEntryElasticsearchBodyModifierPlugin({
                                 modifyBody: ({ body }) => {
                                     if (!body.sort.customSorter) {
