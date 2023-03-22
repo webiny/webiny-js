@@ -195,6 +195,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                 />
                             </Scrollbar>
                             {isListLoadingMore && <LoadingMore />}
+                            <LoadingMore />
                         </>
                     )}
                 </Wrapper>

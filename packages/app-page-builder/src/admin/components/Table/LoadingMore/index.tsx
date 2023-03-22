@@ -10,11 +10,9 @@ export const LoadingMore = () => {
     return (
         <Container>
             <LoaderContainer>
-                <CircularProgress size={20}/>
+                <CircularProgress size={20} />
             </LoaderContainer>
-            <Typography use={"body2"}>
-                {t`Loading more pages...`}
-            </Typography>
+            <Typography use={"body2"}>{t`Loading more pages...`}</Typography>
         </Container>
     );
 };
