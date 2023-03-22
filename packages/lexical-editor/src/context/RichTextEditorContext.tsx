@@ -1,13 +1,13 @@
 import React, { createContext, useState } from "react";
-import { TextBlockSelection, ToolbarType } from "~/types";
+import { LexicalTextSelection, ToolbarType } from "~/types";
 
 export interface RichTextEditorContext {
     nodeIsText: boolean;
     setNodeIsText: (nodeIsText: boolean) => void;
     toolbarType?: ToolbarType;
     setToolbarType: (type: ToolbarType) => void;
-    textBlockSelection: TextBlockSelection | null;
-    setTextBlockSelection: (textBlockSelection: TextBlockSelection) => void;
+    textBlockSelection: LexicalTextSelection | null;
+    setTextBlockSelection: (textBlockSelection: LexicalTextSelection) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -22,7 +22,7 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
-    const [textBlockSelection, setTextBlockSelection] = useState<TextBlockSelection | null>(null);
+    const [textBlockSelection, setTextBlockSelection] = useState<LexicalTextSelection | null>(null);
 
     const setNodeIsText = (nodeIsText: boolean) => {
         setIsText(nodeIsText);

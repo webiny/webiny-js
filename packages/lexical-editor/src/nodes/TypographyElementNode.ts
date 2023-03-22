@@ -74,7 +74,6 @@ export class TypographyElementNode extends ElementNode {
             node.__key
         );
     }
-
     getTypographyValue(): TypographyValue {
         return {
             tag: this.__tag,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     DropDown,
     DropDownItem,
@@ -12,23 +12,33 @@ import { TypographyValue } from "@webiny/lexical-editor/types";
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
+    const [styles, setStyles] = useState<TypographyStyle<ThemeTypographyHTMLTag>[]>([])
     const typographyStyles = theme.styles?.typographyStyles;
-    const { toolbarType } = useRichTextEditor();
+    const { textBlockSelection } = useRichTextEditor();
+    const textBLockType = textBlockSelection?.state?.textBlockType;
 
     const hasTypographyStyles = (): boolean => {
         return !!typographyStyles;
     };
 
-    const getTypographyStyles = (): TypographyStyle<ThemeTypographyHTMLTag>[] => {
-        if (toolbarType === "heading") {
-            return theme.styles?.typographyStyles?.headings || [];
+    useEffect(() => {
+        if(textBLockType) {
+            switch (textBLockType) {
+                case "heading":
+                    setStyles(theme.styles?.typographyStyles?.headings || []);
+                    break;
+                case "paragraph":
+                    setStyles(theme.styles?.typographyStyles?.paragraphs || []);
+                    break;
+                case "bullet":
+                case "number":
+                    setStyles(theme.styles?.typographyStyles?.lists || []);
+                    break;
+                default:
+                    setStyles([]);
+            }
         }
-
-        if (toolbarType === "paragraph") {
-            return theme.styles?.typographyStyles?.paragraphs || [];
-        }
-        return [];
-    };
+    },  [textBLockType])
 
     return (
         <>
@@ -41,7 +51,7 @@ export const TypographyDropDown = () => {
                     disabled={false}
                     showScroll={false}
                 >
-                    {getTypographyStyles()?.map(option => (
+                    {styles?.map(option => (
                         <DropDownItem
                             className={`item typography-item ${
                                 value?.id === option.id ? "active dropdown-item-active" : ""

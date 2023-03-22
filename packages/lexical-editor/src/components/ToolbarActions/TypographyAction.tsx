@@ -20,6 +20,7 @@ import {
 } from "~/nodes/TypographyElementNode";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
+import {useRichTextEditor} from "~/hooks/useRichTextEditor";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -51,9 +52,11 @@ export interface TypographyAction extends React.FC<unknown> {
 
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();
-    const [activeEditor, setActiveEditor] = useState(editor);
+    // const [activeEditor, setActiveEditor] = useState(editor);
     const [typography, setTypography] = useState<TypographyValue>();
-
+    const { textBlockSelection } = useRichTextEditor();
+    const isTypographySelected = textBlockSelection?.state?.typography.isSelected;
+    const textBLockType = textBlockSelection?.state?.textBlockType;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -68,54 +71,13 @@ export const TypographyAction: TypographyAction = () => {
         });
     }, []);
 
-    const updateToolbar = useCallback(() => {
-        const selection = $getSelection();
-
-        if ($isRangeSelection(selection)) {
-            const anchorNode = selection.anchor.getNode();
-            let element =
-                anchorNode.getKey() === "root"
-                    ? anchorNode
-                    : $findMatchingParent(anchorNode, e => {
-                          const parent = e.getParent();
-                          return parent !== null && $isRootOrShadowRoot(parent);
-                      });
-
-            if (element === null) {
-                element = anchorNode.getTopLevelElementOrThrow();
-            }
-
-            const node = getSelectedNode(selection);
-            const parent = node.getParent();
-
-            if ($isTypographyElementNode(parent)) {
-                const el = element as TypographyElementNode;
-                setTypography(el.getTypographyValue());
-            }
-        }
-    }, [activeEditor]);
-
     useEffect(() => {
-        return mergeRegister(
-            activeEditor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    updateToolbar();
-                });
-            })
-        );
-    }, [activeEditor, editor, updateToolbar]);
-
-    useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
-        );
-    }, [editor, updateToolbar]);
+       /* if ($isTypographyElementNode(parent)) {
+            const el = element as TypographyElementNode;
+            setTypography(el.getTypographyValue());
+        }*/
+        console.log("selected text block", textBlockSelection);
+    }, [isTypographySelected, textBLockType])
 
     return (
         <TypographyActionContext.Provider

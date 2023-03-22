@@ -135,9 +135,6 @@ export class WebinyListNode extends ElementNode {
     }
 
     static importDomConversionMap(domNode: HTMLElement): DOMConversion<HTMLElement> | null {
-        if (!domNode.hasAttribute(TypographyStyleAttrName)) {
-            return null;
-        }
         return {
             conversion: convertWebinyListNode,
             priority: 0
