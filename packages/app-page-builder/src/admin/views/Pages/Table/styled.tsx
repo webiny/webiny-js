@@ -33,6 +33,7 @@ export const Wrapper = styled("div")`
 export const SidebarContainer = styled("div")`
     height: calc(100vh - 91px);
     overflow-y: scroll;
-    background: var(--mdc-theme-background);
+    background: var(--mdc-theme-surface);
+    border-right: 1px solid var(--mdc-theme-on-background);
     padding: 12px 0;
 `;
