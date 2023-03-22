@@ -4,7 +4,12 @@ export const hasTypographyStyles = (theme: Record<string, any>): boolean => {
     return !!theme?.styles?.typographyStyles;
 };
 
-export const getTypography = (
+/**
+ * @desc Take all styles from provided type, like headings, list, quotes...
+ * @param typographyStyles
+ * @param typographyStyleType
+ */
+export const getTypographyStylesByType = (
     typographyStyles: Record<string, TypographyValue[]>,
     typographyStyleType: string
 ): TypographyValue[] | null => {
@@ -20,9 +25,12 @@ export const findTypographyStyleById = (
     }
     const typographyStyles = theme?.styles?.typographyStyles;
     for (const key in typographyStyles) {
-        const typographyTypeData = getTypography(typographyStyles, key);
+        const typographyTypeData = getTypographyStylesByType(typographyStyles, key);
         if (typographyTypeData) {
-            return typographyTypeData.find(item => item.id === styleId);
+            const style = typographyTypeData.find(item => item.id === styleId);
+            if (style) {
+                return style;
+            }
         }
     }
     return undefined;

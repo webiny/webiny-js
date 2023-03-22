@@ -7,11 +7,12 @@ import {
 } from "@webiny/lexical-editor";
 import { usePageElements } from "@webiny/app-page-builder-elements";
 import { ThemeTypographyHTMLTag, TypographyStyle } from "@webiny/theme/types";
+import { TypographyValue } from "@webiny/lexical-editor/types";
 
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
-    const typographyStyles = theme.styles?.typography;
+    const typographyStyles = theme.styles?.typographyStyles;
     const { toolbarType } = useRichTextEditor();
 
     const hasTypographyStyles = (): boolean => {
@@ -45,7 +46,7 @@ export const TypographyDropDown = () => {
                             className={`item typography-item ${
                                 value?.id === option.id ? "active dropdown-item-active" : ""
                             }`}
-                            onClick={() => applyTypography(option)}
+                            onClick={() => applyTypography(option as TypographyValue)}
                             key={option.id}
                         >
                             <span className="text">{option.name}</span>

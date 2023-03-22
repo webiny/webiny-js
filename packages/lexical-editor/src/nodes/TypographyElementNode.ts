@@ -1,4 +1,5 @@
 import {
+    $createParagraphNode,
     createCommand,
     EditorConfig,
     ElementNode,
@@ -6,6 +7,7 @@ import {
     LexicalEditor,
     LexicalNode,
     NodeKey,
+    ParagraphNode,
     SerializedElementNode,
     Spread
 } from "lexical";
@@ -18,7 +20,7 @@ import { findTypographyStyleById } from "~/utils/typography";
 export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(
     "ADD_TYPOGRAPHY_ELEMENT_COMMAND"
 );
-const TypographyNodeAttrName = "typography-el-theme";
+const TypographyNodeAttrName = "data-typography-style-id";
 
 export interface TypographyPayload {
     value: TypographyValue;
@@ -47,14 +49,14 @@ export class TypographyElementNode extends ElementNode {
     __styleId: string;
     __tag: TypographyHTMLTag;
     __name: string;
-    __typographyStyles: Record<string, any>;
+    __css: Record<string, any>;
 
     constructor(value: TypographyValue, key?: NodeKey) {
         super(key);
         this.__tag = value.tag;
         this.__styleId = value.id;
         this.__name = value.name;
-        this.__typographyStyles = value.css;
+        this.__css = value.css;
     }
 
     static override getType(): string {
@@ -64,7 +66,7 @@ export class TypographyElementNode extends ElementNode {
     static override clone(node: TypographyElementNode): TypographyElementNode {
         return new TypographyElementNode(
             {
-                css: node.__typographyStyles,
+                css: node.__css,
                 id: node.__styleId,
                 name: node.__name,
                 tag: node.__tag
@@ -76,7 +78,7 @@ export class TypographyElementNode extends ElementNode {
     getTypographyValue(): TypographyValue {
         return {
             tag: this.__tag,
-            css: this.__typographyStyles,
+            css: this.__css,
             id: this.__styleId,
             name: this.__name
         };
@@ -85,10 +87,10 @@ export class TypographyElementNode extends ElementNode {
     addStylesHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
         const typographyStyleValue = findTypographyStyleById(theme, this.__styleId);
         if (typographyStyleValue) {
-            this.__typographyStyles = typographyStyleValue.css;
+            this.__css = typographyStyleValue.css;
         }
         element.setAttribute(TypographyNodeAttrName, this.__styleId);
-        element.style.cssText = styleObjectToString(this.__typographyStyles);
+        element.style.cssText = styleObjectToString(this.__css);
         return element;
     }
 
@@ -96,7 +98,7 @@ export class TypographyElementNode extends ElementNode {
         return {
             ...super.exportJSON(),
             tag: this.__tag,
-            typographyStyles: this.__typographyStyles,
+            typographyStyles: this.__css,
             name: this.__name,
             styleId: this.__styleId,
             type: "typography-el-node",
@@ -125,6 +127,22 @@ export class TypographyElementNode extends ElementNode {
 
     override updateDOM(): boolean {
         return false;
+    }
+
+    override insertNewAfter(): ParagraphNode {
+        const newElement = $createParagraphNode();
+        const direction = this.getDirection();
+        newElement.setDirection(direction);
+        this.insertAfter(newElement);
+        return newElement;
+    }
+
+    override collapseAtStart(): true {
+        const paragraph = $createParagraphNode();
+        const children = this.getChildren();
+        children.forEach(child => paragraph.append(child));
+        this.replace(paragraph);
+        return true;
     }
 }
 

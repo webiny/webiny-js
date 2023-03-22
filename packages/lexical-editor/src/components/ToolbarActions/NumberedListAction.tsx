@@ -1,12 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
-    $isListNode,
-    INSERT_ORDERED_LIST_COMMAND,
-    ListNode,
-    REMOVE_LIST_COMMAND
-} from "@lexical/list";
-import {
     $getSelection,
     $isRangeSelection,
     $isRootOrShadowRoot,
@@ -14,6 +8,11 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
+import {
+    INSERT_ORDERED_WEBINY_LIST_COMMAND,
+    REMOVE_WEBINY_LIST_COMMAND
+} from "~/nodes/list-node/commands";
+import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
 
 /**
  * Toolbar button action. On click will wrap the content in numbered list style.
@@ -39,8 +38,11 @@ export const NumberedListAction = () => {
                 element = anchorNode.getTopLevelElementOrThrow();
             }
 
-            if ($isListNode(element)) {
-                const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+            if ($isWebinyListNode(element)) {
+                const parentList = $getNearestNodeOfType<WebinyListNode>(
+                    anchorNode,
+                    WebinyListNode
+                );
                 // get the type of the list that is selected with the cursor
                 const type = parentList ? parentList.getListType() : element.getListType();
                 // set the button as active for numbered list
@@ -78,9 +80,9 @@ export const NumberedListAction = () => {
     const formatNumberedList = () => {
         if (!isActive) {
             // will update the active state in the useEffect
-            editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+            editor.dispatchCommand(INSERT_ORDERED_WEBINY_LIST_COMMAND, { themeStyleId: "list" });
         } else {
-            editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+            editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
             // removing will not update correctly the active state, so we need to set to false manually.
             setIsActive(false);
         }

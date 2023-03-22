@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-    $isListNode,
-    INSERT_UNORDERED_LIST_COMMAND,
-    ListNode,
-    REMOVE_LIST_COMMAND
-} from "@lexical/list";
+import { $isListNode, ListNode } from "@lexical/list";
 import {
     $getSelection,
     $isRangeSelection,
@@ -14,6 +9,10 @@ import {
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
+import {
+    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+    REMOVE_WEBINY_LIST_COMMAND
+} from "~/nodes/list-node/commands";
 
 /**
  * Toolbar button action. On click will wrap the content in bullet list style.
@@ -78,9 +77,9 @@ export const BulletListAction = () => {
     const formatBulletList = () => {
         if (!isActive) {
             // will update the active state in the useEffect
-            editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+            editor.dispatchCommand(INSERT_UNORDERED_WEBINY_LIST_COMMAND, { themeStyleId: "list1" });
         } else {
-            editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+            editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
             // removing will not update correctly the active state, so we need to set to false manually.
             setIsActive(false);
         }

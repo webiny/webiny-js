@@ -156,13 +156,20 @@ const theme = createTheme({
                 }
             ],
             lists: [
-                { id: "list1", name: "List 1", tag: "ul", css: { ...paragraphs, fontSize: 16.5 } }
+                {
+                    id: "list",
+                    name: "Default list",
+                    tag: "ul",
+                    css: { ...paragraphs, fontSize: 16.5 }
+                },
+                { id: "list1", name: "List 1", tag: "ul", css: { ...paragraphs, fontSize: 18.5 } },
+                { id: "list2", name: "List 2", tag: "ul", css: { ...paragraphs, fontSize: 21.5 } }
             ],
             quotes: [
                 {
-                    id: "quote1",
+                    id: "quote",
                     name: "Quote1 1",
-                    tag: "div",
+                    tag: "quoteblock",
                     css: {
                         ...paragraphs,
                         fontWeight: "bold",
