@@ -75,9 +75,12 @@ class CmsTestEnvironment extends NodeEnvironment {
             });
         };
         /**
+         * We need to create model index before entry create because of the direct storage operations tests.
+         * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
+         *
          * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
          */
-        const refreshIndexSubscription = new ContextPlugin(async context => {
+        const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
             context.waitFor(["cms"], async () => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
                     const index = createIndexName(model);
@@ -138,7 +141,7 @@ class CmsTestEnvironment extends NodeEnvironment {
                     documentClient
                 })
             }),
-            refreshIndexSubscription
+            createOrRefreshIndexSubscription
         ];
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
