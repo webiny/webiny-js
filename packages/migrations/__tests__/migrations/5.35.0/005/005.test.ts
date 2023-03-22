@@ -2,7 +2,7 @@ import {
     assertNotError,
     createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
-    insertTestData,
+    insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
