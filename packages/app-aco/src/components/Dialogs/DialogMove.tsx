@@ -29,7 +29,7 @@ type Props = {
 
 const t = i18n.ns("app-aco/components/tree/dialog-move");
 
-export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, open }) => {
+export const EntryDialogMove: React.VFC<Props> = ({ type, searchRecord, onClose, open }) => {
     const { updateRecord, loading } = useRecords(type, searchRecord.location.folderId || "ROOT");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [folderId, setFolderId] = useState<string>();

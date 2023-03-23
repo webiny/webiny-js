@@ -30,7 +30,7 @@ const t = i18n.ns("app-aco/components/tree/dialog-create");
 
 type SubmitData = Omit<FolderItem, "id">;
 
-export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, currentParentId }) => {
+export const FolderDialogCreate: React.VFC<Props> = ({ type, onClose, open, currentParentId }) => {
     const { loading, createFolder } = useFolders(type);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();

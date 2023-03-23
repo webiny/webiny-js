@@ -67,7 +67,7 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
-export const SearchRecordsProvider = ({ children }: Props) => {
+export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
     const client = useApolloClient();
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);

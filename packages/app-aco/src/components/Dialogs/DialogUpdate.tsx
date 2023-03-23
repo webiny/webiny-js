@@ -34,7 +34,7 @@ type SubmitData = Pick<FolderItem, "title" | "slug">;
 
 const t = i18n.ns("app-aco/components/tree/dialog-update");
 
-export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) => {
+export const FolderDialogUpdate: React.VFC<Props> = ({ folder, onClose, open }) => {
     const { loading, updateFolder } = useFolders(folder.type);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();

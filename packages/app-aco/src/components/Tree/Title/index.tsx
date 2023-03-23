@@ -11,7 +11,7 @@ type Props = {
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-export const Title: React.FC<Props> = ({ title, onClick, isDragging }) => {
+export const Title: React.VFC<Props> = ({ title, onClick, isDragging }) => {
     return (
         <Container onClick={onClick} hasClickAction={Boolean(onClick)} isDragging={isDragging}>
             <IconContainer>

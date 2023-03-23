@@ -53,7 +53,7 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
-export const FoldersProvider = ({ children }: Props) => {
+export const FoldersProvider: React.VFC<Props> = ({ children }) => {
     const client = useApolloClient();
     const [folders, setFolders] = useState<Record<string, FolderItem[]>>(Object.create(null));
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);

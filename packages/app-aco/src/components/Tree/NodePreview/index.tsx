@@ -10,7 +10,7 @@ type Props = {
     monitorProps: DragLayerMonitorProps<DndItemData>;
 };
 
-export const NodePreview: React.FC<Props> = props => {
+export const NodePreview: React.VFC<Props> = props => {
     const item = props.monitorProps.item;
 
     return (

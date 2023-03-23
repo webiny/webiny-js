@@ -11,7 +11,7 @@ type Props = {
 
 const t = i18n.ns("app-aco/components/tree/button-create");
 
-export const CreateButton: React.FC<Props> = ({ onClick }) => {
+export const CreateButton: React.VFC<Props> = ({ onClick }) => {
     return (
         <Button onClick={onClick}>
             <IconContainer>

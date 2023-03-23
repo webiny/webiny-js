@@ -26,7 +26,7 @@ type Props = {
     hiddenFolderIds?: string[];
 };
 
-export const FolderTree: React.FC<Props> = ({
+export const FolderTree: React.VFC<Props> = ({
     type,
     title,
     focusedFolderId,
