@@ -20,7 +20,7 @@ const PageBuilderProviderHOC: HigherOrderComponent = PreviousProvider => {
     };
 };
 
-export const Website: React.FC<WebsiteProps> = ({
+export const Website: React.VFC<WebsiteProps> = ({
     children,
     routes = [],
     providers = [],
