@@ -37,23 +37,81 @@ export const executeDataMigrations = {
 
             if (error) {
                 context.error(error.message);
-            } else {
-                const logItems = [
-                    data.executed.length ? ["Executed:"] : undefined,
-                    ...data.executed.map(mig => {
-                        return [`- %s: ${mig.description} (%sms)`, mig.id, mig.result.duration];
-                    }),
-                    data.skipped.length ? ["Skipped:"] : undefined,
-                    ...data.skipped.map(mig => {
-                        return [`- %s: ${mig.description} (reason: %s)`, mig.id, mig.reason];
-                    })
-                ].filter(Boolean);
-                context.success("Data migration Lambda executed successfully!");
-                if (logItems.length) {
-                    logItems.forEach(line => context.info(...(line as string[])));
-                } else {
-                    context.info("No applicable migrations were found.");
+                return;
+            } else if (!data) {
+                context.error(`Missing data response from the migrations Lambda function!`);
+                return;
+            }
+
+            context.success(
+                `Data migration Lambda "${apiOutput["migrationLambdaArn"]}" executed successfully!`
+            );
+
+            const executedList = data.executed || [];
+            const skippedList = data.skipped || [];
+            if (executedList.length === 0 && skippedList.length === 0) {
+                context.info("No applicable migrations were found.");
+                return;
+            }
+
+            if (executedList.length > 0) {
+                context.info("Executed:");
+                for (const executed of executedList) {
+                    /**
+                     * When having an error in the result, let's output it to the console.
+                     *
+                     */
+                    if (executed.result.error) {
+                        context.error(
+                            ...[
+                                `- %s: ${executed.description} (%sms)`,
+                                executed.id,
+                                executed.result.duration
+                            ]
+                        );
+                        context.error(
+                            ...[
+                                executed.result.error.name,
+                                executed.result.error.message,
+                                executed.result.error.code,
+                                executed.result.error.data
+                            ].filter(Boolean)
+                        );
+                        context.error("Check CloudWatch logs for more details.");
+                        continue;
+                    }
+                    // In case we have no error but success is still false, let's output whole result object.
+                    else if (!executed.result.success) {
+                        context.error(
+                            ` - %s: ${executed.description} - Missing error object on the result! (%sms)`,
+                            executed.id,
+                            executed.result.duration
+                        );
+                        context.error(JSON.stringify(executed.result, null, 2));
+                        context.error("Check CloudWatch logs for more details.");
+                        continue;
+                    }
+                    /**
+                     * Everything is fine, output the migration ID, description and duration.
+                     */
+                    context.info(
+                        ...[
+                            `- %s: ${executed.description} (%sms)`,
+                            executed.id,
+                            executed.result.duration
+                        ]
+                    );
                 }
+            }
+
+            if (skippedList.length === 0) {
+                return;
+            }
+            context.info("Skipped:");
+            for (const skipped of skippedList) {
+                context.info(
+                    ...[`- %s: ${skipped.description} (reason: %s)`, skipped.id, skipped.reason]
+                );
             }
         } catch (e) {
             context.error(`An error occurred while executing data migrations Lambda function!`);

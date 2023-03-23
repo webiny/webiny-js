@@ -74,6 +74,7 @@ const menuStyles = css({
 
 const FieldExtra = styled.div`
     padding: 10px 0 10px;
+
     :empty {
         display: none;
     }
@@ -142,6 +143,7 @@ export interface FieldProps {
     onEdit: (field: CmsModelField) => void;
     parent?: CmsModelField;
 }
+
 const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
@@ -272,8 +274,8 @@ const Field: React.FC<FieldProps> = props => {
                 <Info>
                     <Typography use={"subtitle1"}>{field.label}</Typography>
                     <Typography use={"caption"}>
-                        {fieldPlugin.field.label} {field.multipleValues && <></>}
-                        <LowerCase>({info})</LowerCase>
+                        {fieldPlugin.field.label}
+                        {info && <LowerCase> ({info})</LowerCase>}
                     </Typography>
                 </Info>
                 {fieldInformationRenderer

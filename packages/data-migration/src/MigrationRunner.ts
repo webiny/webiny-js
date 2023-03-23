@@ -158,6 +158,7 @@ export class MigrationRunner {
             const result: MigrationResult = {
                 duration: 0,
                 logs: [],
+                error: null,
                 success: true
             };
 
@@ -176,6 +177,13 @@ export class MigrationRunner {
                 }
 
                 result.success = false;
+                result.error = {
+                    name: err.name || "Migration error",
+                    message: err.message,
+                    stack: err.stack,
+                    data: err.data,
+                    code: err.code
+                };
                 this.logger.error(err, err.message);
             } finally {
                 result.duration = Date.now() - start;
@@ -191,8 +199,10 @@ export class MigrationRunner {
                 description: migration.getDescription(),
                 result
             });
-
-            if (result.success) {
+            /**
+             * If the migration was successful, we'll log it in the database.
+             */
+            if (result.success && !result.error) {
                 await this.repository.logMigration({
                     id: migration.getId(),
                     description: migration.getDescription(),

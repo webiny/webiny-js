@@ -10,7 +10,7 @@ interface GeneralSettingsProps {
     Bind: BindComponent;
 }
 
-const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
+const GeneralSettings: React.VFC<GeneralSettingsProps> = ({ Bind }) => {
     return (
         <React.Fragment>
             <Grid>
@@ -22,6 +22,16 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                 <Cell span={12}>
                     <Bind name={"modelId"}>
                         <Input disabled={true} label={"Content model ID"} />
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name={"singularApiName"}>
+                        <Input disabled={true} label={"Singular API Name"} />
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name={"pluralApiName"}>
+                        <Input disabled={true} label={"Plural API Name"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>

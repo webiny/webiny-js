@@ -68,6 +68,8 @@ describe("Content Entry Meta Field", () => {
             data: {
                 name: targetModel.name,
                 modelId: targetModel.modelId,
+                singularApiName: targetModel.singularApiName,
+                pluralApiName: targetModel.pluralApiName,
                 group: group.id
             }
         });

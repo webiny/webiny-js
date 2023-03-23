@@ -5,7 +5,7 @@ import { createModelField } from "~/utils/createModelField";
 export type SearchRecordModelDefinition = Pick<
     CmsModel,
     "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
->;
+> & { isPrivate: true };
 
 const typeField = () =>
     createModelField({

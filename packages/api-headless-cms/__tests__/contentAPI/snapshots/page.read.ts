@@ -2,7 +2,7 @@ export default `
     """
     Page
     """
-    type Page {
+    type PageModelApiName {
         id: ID!
         entryId: String!
         modelId: String!
@@ -10,25 +10,25 @@ export default `
         savedOn: DateTime!
         createdBy: CmsIdentity!
         ownedBy: CmsIdentity!
-        content: [Page_Content!]
-        header: Page_Header
-        objective: Page_Objective
+        content: [PageModelApiName_Content!]
+        header: PageModelApiName_Header
+        objective: PageModelApiName_Objective
     }
 
-    union Page_Content = Page_Content_Hero | Page_Content_SimpleText | Page_Content_Objecting
+    union PageModelApiName_Content = PageModelApiName_Content_Hero | PageModelApiName_Content_SimpleText | PageModelApiName_Content_Objecting
 
-    type Page_Content_Hero {
+    type PageModelApiName_Content_Hero {
         title: String
     }
 
-    type Page_Content_SimpleText {
+    type PageModelApiName_Content_SimpleText {
         text: String
     }
     
-    type Page_Content_Objecting_NestedObject_ObjectNestedObject {
+    type PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-    input Page_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput {
+    input PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
         nestedObjectNestedTitle_in: [String]
@@ -37,11 +37,11 @@ export default `
         nestedObjectNestedTitle_not_contains: String
     }
     
-    type Page_Content_Objecting_NestedObject {
+    type PageModelApiName_Content_Objecting_NestedObject {
         objectTitle: String
-        objectNestedObject: [Page_Content_Objecting_NestedObject_ObjectNestedObject!]
+        objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
     }
-    input Page_Content_Objecting_NestedObjectWhereInput {
+    input PageModelApiName_Content_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
         objectTitle_in: [String]
@@ -49,30 +49,30 @@ export default `
         objectTitle_contains: String
         objectTitle_not_contains: String
     
-        objectNestedObject: Page_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
+        objectNestedObject: PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
     
-    type Page_Content_Objecting {
-        nestedObject: Page_Content_Objecting_NestedObject
+    type PageModelApiName_Content_Objecting {
+        nestedObject: PageModelApiName_Content_Objecting_NestedObject
     }
 
-    union Page_Header = Page_Header_TextHeader | Page_Header_ImageHeader
+    union PageModelApiName_Header = PageModelApiName_Header_TextHeader | PageModelApiName_Header_ImageHeader
 
-    type Page_Header_TextHeader {
+    type PageModelApiName_Header_TextHeader {
         title: String
     }
 
-    type Page_Header_ImageHeader {
+    type PageModelApiName_Header_ImageHeader {
         title: String
         image: String
     }
     
-    union Page_Objective = Page_Objective_Objecting
+    union PageModelApiName_Objective = PageModelApiName_Objective_Objecting
     
-    type Page_Objective_Objecting_NestedObject_ObjectNestedObject {
+    type PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-    input Page_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput {
+    input PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
         nestedObjectNestedTitle_in: [String]
@@ -81,12 +81,12 @@ export default `
         nestedObjectNestedTitle_not_contains: String
     }
     
-    type Page_Objective_Objecting_NestedObject {
+    type PageModelApiName_Objective_Objecting_NestedObject {
         objectTitle: String
         objectBody: JSON
-        objectNestedObject: [Page_Objective_Objecting_NestedObject_ObjectNestedObject!]
+        objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
-    input Page_Objective_Objecting_NestedObjectWhereInput {
+    input PageModelApiName_Objective_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
         objectTitle_in: [String]
@@ -94,19 +94,19 @@ export default `
         objectTitle_contains: String
         objectTitle_not_contains: String
     
-        objectNestedObject: Page_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
+        objectNestedObject: PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
     
-    type Page_Objective_Objecting {
-        nestedObject: Page_Objective_Objecting_NestedObject
+    type PageModelApiName_Objective_Objecting {
+        nestedObject: PageModelApiName_Objective_Objecting_NestedObject
     }
     
-    input PageGetWhereInput {
+    input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String
     }
 
-    input PageListWhereInput {
+    input PageModelApiNameListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -137,11 +137,11 @@ export default `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
-        AND: [PageListWhereInput!]
-        OR: [PageListWhereInput!]
+        AND: [PageModelApiNameListWhereInput!]
+        OR: [PageModelApiNameListWhereInput!]
     }
 
-    enum PageListSorter {
+    enum PageModelApiNameListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -150,25 +150,25 @@ export default `
         createdOn_DESC
     }
 
-    type PageResponse {
-        data: Page
+    type PageModelApiNameResponse {
+        data: PageModelApiName
         error: CmsError
     }
 
-    type PageListResponse {
-        data: [Page]
+    type PageModelApiNameListResponse {
+        data: [PageModelApiName]
         meta: CmsListMeta
         error: CmsError
     }
 
     extend type Query {
-        getPage(where: PageGetWhereInput!): PageResponse
+        getPageModelApiName(where: PageModelApiNameGetWhereInput!): PageModelApiNameResponse
 
-        listPages(
-            where: PageListWhereInput
-            sort: [PageListSorter]
+        listPagesModelApiName(
+            where: PageModelApiNameListWhereInput
+            sort: [PageModelApiNameListSorter]
             limit: Int
             after: String
-        ): PageListResponse
+        ): PageModelApiNameListResponse
     }
 `;

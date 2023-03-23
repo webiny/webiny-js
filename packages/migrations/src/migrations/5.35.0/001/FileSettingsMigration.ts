@@ -82,7 +82,7 @@ export class FileManager_5_35_0_001_FileManagerSettings {
                 logger.info(
                     `Tenant ${tenant.name} (${tenant.id}) is not installed. Skipping migration of settings.`
                 );
-                return;
+                continue;
             }
 
             logger.info(`Updating FM settings for tenant ${tenant.name} (${tenant.id}).`);

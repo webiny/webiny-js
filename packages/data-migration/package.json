@@ -15,6 +15,7 @@
     "@elastic/elasticsearch": "7.12.0",
     "@types/pino": "^7.0.5",
     "@webiny/db-dynamodb": "0.0.0",
+    "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/ioc": "0.0.0",
     "chalk": "^4.1.2",

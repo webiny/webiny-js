@@ -48,6 +48,11 @@ import {
 } from "~/crud/contentModel/validation";
 import { createZodError } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
+import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
+import {
+    ensurePluralApiName,
+    ensureSingularApiName
+} from "./contentModel/compatibility/modelApiName";
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
@@ -88,7 +93,13 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                         ...model,
                         tags: ensureTypeTag(model),
                         tenant: model.tenant || getTenant().id,
-                        locale: model.locale || getLocale().code
+                        locale: model.locale || getLocale().code,
+                        /**
+                         * TODO: remove in v5.36.0
+                         * This is for backward compatibility while migrations are not yet executed.
+                         */
+                        singularApiName: ensureSingularApiName(model),
+                        pluralApiName: ensurePluralApiName(model)
                     };
                 })
             ];
@@ -135,7 +146,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     }
                     return true;
                 })
-                .map<CmsModel>(plugin => {
+                .map(plugin => {
                     return {
                         ...plugin.contentModel,
                         tags: ensureTypeTag(plugin.contentModel),
@@ -147,7 +158,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         );
     };
 
-    const modelsGet = async (modelId: string): Promise<CmsModel> => {
+    const modelsGet = async (modelId: string) => {
         const pluginModel = getModelsAsPlugins().find(model => model.modelId === modelId);
 
         if (pluginModel) {
@@ -330,8 +341,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             /**
              * We need to extract the defaultFields because it is not for the CmsModel object.
              */
-            const { defaultFields, ...data } = result.data;
-
+            const { defaultFields, ...data } = removeUndefinedValues(result.data);
             if (defaultFields) {
                 assignModelDefaultFields(data);
             }
@@ -347,6 +357,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model: CmsModel = {
                 ...data,
                 modelId: data.modelId || "",
+                singularApiName: data.singularApiName,
+                pluralApiName: data.pluralApiName,
                 titleFieldId: "id",
                 descriptionFieldId: null,
                 imageFieldId: null,
@@ -453,17 +465,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const original = await getModel(modelId);
 
             const result = await createModelCreateFromValidation().safeParseAsync({
-                name: userInput.name,
-                modelId: userInput.modelId,
-                description: userInput.description || original.description,
-                group: userInput.group,
-                locale: userInput.locale
+                ...userInput,
+                description: userInput.description || original.description
             });
             if (!result.success) {
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             const locale = await context.i18n.getLocale(data.locale || original.locale);
             if (!locale) {
@@ -484,6 +493,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const identity = getIdentity();
             const model: CmsModel = {
                 ...original,
+                singularApiName: data.singularApiName,
+                pluralApiName: data.pluralApiName,
                 locale: locale.code,
                 group: {
                     id: group.id,
@@ -546,7 +557,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw createZodError(result.error);
             }
 
-            const data = result.data;
+            const data = removeUndefinedValues(result.data);
 
             if (Object.keys(data).length === 0) {
                 /**

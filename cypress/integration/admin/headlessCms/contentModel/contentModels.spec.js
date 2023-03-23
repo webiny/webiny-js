@@ -1,4 +1,6 @@
 import uniqid from "uniqid";
+import lodashUpperFirst from "lodash/upperFirst";
+import lodashCamelCase from "lodash/camelCase";
 
 context("Headless CMS - Content Models CRUD", () => {
     beforeEach(() => cy.login());
@@ -23,6 +25,18 @@ context("Headless CMS - Content Models CRUD", () => {
                 .wait(500)
                 .type(`Book - ${uniqueId}`)
                 .wait(500);
+            // add api singular and plural names
+            cy.findByTestId("cms.newcontentmodeldialog.singularApiName")
+                .focus()
+                .wait(500)
+                .type(lodashUpperFirst(lodashCamelCase(`Book${uniqueId}`)))
+                .wait(500);
+            cy.findByTestId("cms.newcontentmodeldialog.pluralApiName")
+                .focus()
+                .wait(500)
+                .type(lodashUpperFirst(lodashCamelCase(`Books${uniqueId}`)))
+                .wait(500);
+
             cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
             cy.findByTestId("cms.newcontentmodeldialog.defaultfields").uncheck();
             cy.findByRole("button", { name: "+ Create Model" }).click();
@@ -172,6 +186,17 @@ context("Headless CMS - Content Models CRUD", () => {
                 // waiting seems to improve flakyness of this test
                 .wait(500)
                 .type(`Book - ${uniqueId}`)
+                .wait(500);
+            // add api singular and plural names
+            cy.findByTestId("cms.newcontentmodeldialog.singularApiName")
+                .focus()
+                .wait(500)
+                .type(lodashUpperFirst(lodashCamelCase(`Book${uniqueId}`)))
+                .wait(500);
+            cy.findByTestId("cms.newcontentmodeldialog.pluralApiName")
+                .focus()
+                .wait(500)
+                .type(lodashUpperFirst(lodashCamelCase(`Books${uniqueId}`)))
                 .wait(500);
             cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
             /**

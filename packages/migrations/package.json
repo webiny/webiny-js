@@ -8,8 +8,6 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.12.0",
-    "@types/lodash.chunk": "^4.2.7",
-    "@types/lodash.pick": "^4.4.7",
     "@webiny/api-elasticsearch": "0.0.0",
     "@webiny/data-migration": "0.0.0",
     "@webiny/db-dynamodb": "0.0.0",
@@ -18,7 +16,8 @@
     "dynamodb-toolbox": "^0.3.5",
     "lodash": "^4.17.21",
     "mdbid": "^1.0.0",
-    "p-retry": "^4.6.2"
+    "p-retry": "^4.6.2",
+    "pluralize": "^8.0.0"
   },
   "publishConfig": {
     "access": "public",
@@ -29,13 +28,5 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.2.0"
-  },
-  "adio": {
-    "ignore": {
-      "dependencies": [
-        "@types/lodash.pick",
-        "@types/lodash.chunk"
-      ]
-    }
   }
 }

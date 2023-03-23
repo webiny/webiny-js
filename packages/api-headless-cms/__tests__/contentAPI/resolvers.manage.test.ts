@@ -49,11 +49,8 @@ describe("MANAGE - Resolvers", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const { createContentModelMutation, createContentModelGroupMutation } =
+        useGraphQLHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
@@ -85,7 +82,11 @@ describe("MANAGE - Resolvers", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
-                group: contentModelGroup.id
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
+                group: contentModelGroup.id,
+                fields: model.fields,
+                layout: model.layout
             }
         });
 
@@ -97,22 +98,7 @@ describe("MANAGE - Resolvers", () => {
             process.exit(1);
         }
 
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
-        } else if (update.data.updateContentModel.error) {
-            console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
-            process.exit(1);
-        }
-        return update.data.updateContentModel.data;
+        return create.data.createContentModel.data;
     };
 
     const createCategories = async (): Promise<CreateCategoriesResult> => {

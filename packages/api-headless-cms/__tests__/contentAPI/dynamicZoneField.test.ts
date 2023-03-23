@@ -3,22 +3,24 @@ import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 
+const singularPageApiName = pageModel.singularApiName;
+
 const contentEntryQueryData = {
     content: [
         {
             text: "Simple Text #1",
-            __typename: "Page_Content_SimpleText"
+            __typename: `${singularPageApiName}_Content_SimpleText`
         },
         {
             title: "Hero Title #1",
-            __typename: "Page_Content_Hero"
+            __typename: `${singularPageApiName}_Content_Hero`
         },
         {
             title: "Hero Title #2",
-            __typename: "Page_Content_Hero"
+            __typename: `${singularPageApiName}_Content_Hero`
         },
         {
-            __typename: "Page_Content_Objecting",
+            __typename: `${singularPageApiName}_Content_Objecting`,
             nestedObject: {
                 objectNestedObject: [
                     {
@@ -35,7 +37,7 @@ const contentEntryQueryData = {
     header: {
         title: "Header #1",
         image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
-        __typename: "Page_Header_ImageHeader"
+        __typename: `${singularPageApiName}_Header_ImageHeader`
     },
     objective: {
         nestedObject: {
@@ -64,7 +66,7 @@ const contentEntryQueryData = {
                 }
             ]
         },
-        __typename: "Page_Objective_Objecting"
+        __typename: `${singularPageApiName}_Objective_Objecting`
     }
 };
 

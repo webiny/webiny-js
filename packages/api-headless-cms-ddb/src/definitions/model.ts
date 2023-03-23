@@ -35,6 +35,14 @@ export const createModelEntity = (params: Params): Entity<any> => {
                 type: "string",
                 required: true
             },
+            singularApiName: {
+                type: "string",
+                required: true
+            },
+            pluralApiName: {
+                type: "string",
+                required: true
+            },
             locale: {
                 type: "string",
                 required: true

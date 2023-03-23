@@ -422,7 +422,7 @@ describe("Content entry with user defined ID", () => {
                                 id
                             },
                             message:
-                                "The provided ID is not valid. It must be a string which can A-Z, a-z, 0-9, - and it cannot start or end with a -."
+                                "The provided ID is not valid. It must be a string which can be A-Z, a-z, 0-9, - and it cannot start or end with a -."
                         }
                     }
                 }

@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import { Logger, LogEvent } from "pino";
 
 export { Logger };
@@ -38,6 +39,7 @@ export interface DataMigration<TCheckpoint = any> {
 
 export interface MigrationResult {
     success: boolean;
+    error?: WebinyError | null;
     logs: LogEvent[];
     duration: number;
 }
@@ -64,6 +66,16 @@ export interface MigrationEventPayload {
     pattern?: string;
 }
 
+export interface MigrationEventHandlerResponseData {
+    // Executed migrations
+    executed: ExecutedMigrationResponse[];
+    // Applicable, but the migration itself decided it should not be executed.
+    skipped: SkippedMigrationResponse[];
+    // Not applicable; either out of version range, or already applied.
+    notApplicable: SkippedMigrationResponse[];
+    // If this attribute is set, we need to resume the migration.
+    resume?: boolean;
+}
 export type MigrationEventHandlerResponse =
     // We can either have a `data`, or `error`, but never both.
     | {
@@ -73,15 +85,6 @@ export type MigrationEventHandlerResponse =
           data?: never;
       }
     | {
-          data: {
-              // Executed migrations
-              executed: ExecutedMigrationResponse[];
-              // Applicable, but the migration itself decided it should not be executed.
-              skipped: SkippedMigrationResponse[];
-              // Not applicable; either out of version range, or already applied.
-              notApplicable: SkippedMigrationResponse[];
-              // If this attribute is set, we need to resume the migration.
-              resume?: boolean;
-          };
+          data: MigrationEventHandlerResponseData;
           error?: never;
       };

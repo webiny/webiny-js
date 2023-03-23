@@ -3,6 +3,8 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 const name = "Model with default fields";
 const modelId = "modelWithDefaultFields";
+const singularApiName = "ModelWithDefaultFields";
+const pluralApiName = "ModelWithDefaultFieldsPlural";
 
 describe("content model default fields", () => {
     const { createContentModelGroupMutation, createContentModelMutation, getContentModelQuery } =
@@ -29,6 +31,8 @@ describe("content model default fields", () => {
             data: {
                 name,
                 modelId,
+                singularApiName,
+                pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -54,6 +58,8 @@ describe("content model default fields", () => {
             data: {
                 name,
                 modelId,
+                singularApiName,
+                pluralApiName,
                 group: contentModelGroup.id,
                 defaultFields: false
             }
@@ -80,6 +86,8 @@ describe("content model default fields", () => {
             data: {
                 name,
                 modelId,
+                singularApiName,
+                pluralApiName,
                 group: contentModelGroup.id,
                 defaultFields: true
             }

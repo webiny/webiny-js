@@ -1,4 +1,6 @@
+import { CmsModel } from "~/types";
 import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
+import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 
 const reviewFields = `
     id
@@ -45,152 +47,172 @@ const errorFields = `
     }
 `;
 
-const getReviewQuery = /* GraphQL */ `
-    query GetReview($revision: ID!) {
-        getReview(revision: $revision) {
-            data {
-                ${reviewFields}
+const getReviewQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetReview($revision: ID!) {
+            getReview: get${model.singularApiName}(revision: $revision) {
+                data {
+                    ${reviewFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const getReviewsByIdsQuery = /* GraphQL */ `
-    query GetReviews($revisions: [ID!]!) {
-        getReviewsByIds(revisions: $revisions) {
-            data {
-                ${reviewFields}
+const getReviewsByIdsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetReviews($revisions: [ID!]!) {
+            getReviewsByIds: get${model.pluralApiName}ByIds(revisions: $revisions) {
+                data {
+                    ${reviewFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const listReviewsQuery = /* GraphQL */ `
-    query ListReviews(
-        $where: ReviewListWhereInput
-        $sort: [ReviewListSorter]
-        $limit: Int
-        $after: String
-    ) {
-        listReviews(where: $where, sort: $sort, limit: $limit, after: $after) {
-            data {
-                ${reviewFields}
+const listReviewsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query ListReviews(
+            $where: ${model.singularApiName}ListWhereInput
+            $sort: [${model.singularApiName}ListSorter]
+            $limit: Int
+            $after: String
+        ) {
+            listReviews: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+                data {
+                    ${reviewFields}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                ${errorFields}
             }
-            meta {
-                cursor
-                hasMoreItems
-                totalCount
-            }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createReviewMutation = /* GraphQL */ `
-    mutation CreateReview($data: ReviewInput!) {
-        createReview(data: $data) {
-            data {
-                ${reviewFields}
+const createReviewMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateReview($data: ${model.singularApiName}Input!) {
+            createReview: create${model.singularApiName}(data: $data) {
+                data {
+                    ${reviewFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createReviewFromMutation = /* GraphQL */ `
-    mutation CreateReviewFrom($revision: ID!) {
-        createReviewFrom(revision: $revision) {
-            data {
-                ${reviewFields}
+const createReviewFromMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateReviewFrom($revision: ID!) {
+            createReviewFrom: create${model.singularApiName}From(revision: $revision) {
+                data {
+                    ${reviewFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const updateReviewMutation = /* GraphQL */ `
-    mutation UpdateReview($revision: ID!, $data: ReviewInput!) {
-        updateReview(revision: $revision, data: $data) {
-            data {
-                ${reviewFields}
+const updateReviewMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdateReview($revision: ID!, $data: ${model.singularApiName}Input!) {
+            updateReview: update${model.singularApiName}(revision: $revision, data: $data) {
+                data {
+                    ${reviewFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const deleteReviewMutation = /* GraphQL */ `
-    mutation DeleteReview($revision: ID!) {
-        deleteReview(revision: $revision) {
-            data
-            ${errorFields}
-        }
-    }
-`;
-
-const publishReviewMutation = /* GraphQL */ `
-    mutation PublishReview($revision: ID!) {
-        publishReview(revision: $revision) {
-            data {
-                ${reviewFields}
+const deleteReviewMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DeleteReview($revision: ID!) {
+            deleteReview: delete${model.singularApiName}(revision: $revision) {
+                data
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const unpublishReviewMutation = /* GraphQL */ `
-    mutation UnpublishReview($revision: ID!) {
-        unpublishReview(revision: $revision) {
-            data {
-                ${reviewFields}
+const publishReviewMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation PublishReview($revision: ID!) {
+            publishReview: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${reviewFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
+
+const unpublishReviewMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UnpublishReview($revision: ID!) {
+            unpublishReview: unpublish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${reviewFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
 
 export const useReviewManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
+
+    const model = getCmsModel("review");
 
     return {
         ...contentHandler,
         async getReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getReviewQuery, variables },
+                body: { query: getReviewQuery(model), variables },
                 headers
             });
         },
         async getReviewsByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getReviewsByIdsQuery, variables },
+                body: { query: getReviewsByIdsQuery(model), variables },
                 headers
             });
         },
         async listReviews(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: listReviewsQuery, variables },
+                body: { query: listReviewsQuery(model), variables },
                 headers
             });
         },
         async createReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createReviewMutation, variables },
+                body: { query: createReviewMutation(model), variables },
                 headers
             });
         },
         async createReviewFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createReviewFromMutation, variables },
+                body: { query: createReviewFromMutation(model), variables },
                 headers
             });
         },
         async updateReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: updateReviewMutation,
+                    query: updateReviewMutation(model),
                     variables
                 },
                 headers
@@ -199,7 +221,7 @@ export const useReviewManageHandler = (params: GraphQLHandlerParams) => {
         async deleteReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: deleteReviewMutation,
+                    query: deleteReviewMutation(model),
                     variables
                 },
                 headers
@@ -208,7 +230,7 @@ export const useReviewManageHandler = (params: GraphQLHandlerParams) => {
         async publishReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: publishReviewMutation,
+                    query: publishReviewMutation(model),
                     variables
                 },
                 headers
@@ -217,7 +239,7 @@ export const useReviewManageHandler = (params: GraphQLHandlerParams) => {
         async unpublishReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: unpublishReviewMutation,
+                    query: unpublishReviewMutation(model),
                     variables
                 },
                 headers

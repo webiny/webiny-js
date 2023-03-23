@@ -30,7 +30,9 @@ describe("Model - nested field", () => {
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Model",
-                group: contentModelGroup.id
+                group: contentModelGroup.id,
+                singularApiName: "TestModel",
+                pluralApiName: "TestModels"
             }
         });
 
