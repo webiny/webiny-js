@@ -57,18 +57,22 @@ export type LexicalTextSelection = {
     state: ToolbarState | undefined;
 };
 
-// Typography
-export type TypographyHTMLTag =
-    | "h1"
+// Supported HTML tags by webiny lexical implementation
+export type ListHtmlTag = "ol" | "ul";
+export type HeadingHtmlTag = "h1"
     | "h2"
     | "h3"
     | "h4"
     | "h5"
-    | "h6"
-    | "p"
-    | "ol"
-    | "ul"
-    | "quoteblock";
+    | "h6";
+export type ParagraphHtmlTag = "p";
+export type QuoteBlockHtmlTag = "quoteblock";
+
+// Typography
+export type TypographyHTMLTag = HeadingHtmlTag
+    | ParagraphHtmlTag
+    | ListHtmlTag
+    | QuoteBlockHtmlTag;
 
 export type TypographyValue = {
     // CSSObject type
@@ -78,3 +82,11 @@ export type TypographyValue = {
     // Display name
     name: string;
 };
+
+/* Nodes */
+export interface WebinyThemeNode {
+    /*
+    * @desc Get theme style id
+    * */
+    getThemeStyleId: () => string;
+}

@@ -12,7 +12,7 @@ import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexi
 import {
     INSERT_UNORDERED_WEBINY_LIST_COMMAND,
     REMOVE_WEBINY_LIST_COMMAND
-} from "~/nodes/list-node/commands";
+} from "~/commands/webiny-list";
 
 /**
  * Toolbar button action. On click will wrap the content in bullet list style.

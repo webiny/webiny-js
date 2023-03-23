@@ -11,7 +11,7 @@ import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexi
 import {
     INSERT_ORDERED_WEBINY_LIST_COMMAND,
     REMOVE_WEBINY_LIST_COMMAND
-} from "~/nodes/list-node/commands";
+} from "~/commands/webiny-list";
 import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
 
 /**

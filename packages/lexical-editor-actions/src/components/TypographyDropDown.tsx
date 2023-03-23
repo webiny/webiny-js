@@ -40,6 +40,11 @@ export const TypographyDropDown = () => {
                         theme.styles?.typographyStyles?.lists?.filter(x => x.tag === "ol") || []
                     );
                     break;
+                case "quoteblock":
+                    setStyles(
+                        theme.styles?.typographyStyles?.quotes || []
+                    );
+                    break;
                 default:
                     setStyles([]);
             }

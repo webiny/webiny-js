@@ -20,6 +20,7 @@ import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
+import { WebinyQuotePlugin} from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -101,6 +102,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <ClearEditorPlugin />
                 <FontColorPlugin />
                 <TypographyPlugin />
+                <WebinyQuotePlugin />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}

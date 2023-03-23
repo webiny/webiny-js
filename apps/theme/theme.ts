@@ -196,12 +196,34 @@ const theme = createTheme({
             quotes: [
                 {
                     id: "quote",
-                    name: "Quote1 1",
+                    name: "Quote 1",
                     tag: "quoteblock",
                     css: {
                         ...paragraphs,
                         fontWeight: "bold",
                         fontSize: 22
+                    }
+                },
+                {
+                    id: "quote1",
+                    name: "Quote 2",
+                    tag: "quoteblock",
+                    css: {
+                        ...paragraphs,
+                        fontWeight: "bold",
+                        fontSize: 26,
+                        color: "#2a9d8f"
+                    }
+                },
+                {
+                    id: "quote2",
+                    name: "Quote 3",
+                    tag: "quoteblock",
+                    css: {
+                        ...paragraphs,
+                        fontWeight: "bold",
+                        fontSize: 31,
+                        color: "#023e8a"
                     }
                 }
             ]

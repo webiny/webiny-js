@@ -8,8 +8,6 @@ export const INSERT_UNORDERED_WEBINY_LIST_COMMAND: LexicalCommand<WebinyListComm
     createCommand("INSERT_UNORDERED_WEBINY_LIST_COMMAND");
 export const INSERT_ORDERED_WEBINY_LIST_COMMAND: LexicalCommand<WebinyListCommandPayload> =
     createCommand("INSERT_ORDERED_WEBINY_LIST_COMMAND");
-export const INSERT_WEBINY_CHECK_LIST_COMMAND: LexicalCommand<WebinyListCommandPayload> =
-    createCommand("INSERT_WEBINY_CHECK_LIST_COMMAND");
-export const REMOVE_WEBINY_LIST_COMMAND: LexicalCommand<void> = createCommand(
-    "REMOVE_WEBINY_LIST_COMMAND"
-);
+
+export const REMOVE_WEBINY_LIST_COMMAND: LexicalCommand<void> =
+    createCommand("REMOVE_WEBINY_LIST_COMMAND");

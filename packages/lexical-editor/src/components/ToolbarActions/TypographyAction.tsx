@@ -11,7 +11,8 @@ import {
     INSERT_ORDERED_WEBINY_LIST_COMMAND,
     INSERT_UNORDERED_WEBINY_LIST_COMMAND,
     WebinyListCommandPayload
-} from "~/nodes/list-node/commands";
+} from "~/commands/webiny-list";
+import {INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload} from "~/commands/webiny-quote";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -43,7 +44,6 @@ export interface TypographyAction extends React.FC<unknown> {
 
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();
-    // const [activeEditor, setActiveEditor] = useState(editor);
     const [typography, setTypography] = useState<TypographyValue>();
     const { textBlockSelection } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected;
@@ -84,6 +84,16 @@ export const TypographyAction: TypographyAction = () => {
                 }
             );
         }
+debugger;
+        if(value.tag === "quoteblock") {
+            editor.dispatchCommand<LexicalCommand<WebinyQuoteCommandPayload>>(
+                INSERT_WEBINY_QUOTE_COMMAND,
+                {
+                    themeStyleId: value.id
+                }
+            );
+        }
+
     }, []);
 
     useEffect(() => {

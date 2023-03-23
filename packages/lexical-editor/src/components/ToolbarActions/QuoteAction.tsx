@@ -1,50 +1,27 @@
-import React, { useState } from "react";
-import { $wrapNodes } from "@lexical/selection";
-import {
-    $createParagraphNode,
-    $getSelection,
-    $isRangeSelection,
-    DEPRECATED_$isGridSelection
-} from "lexical";
+import React, {useEffect, useState} from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { QuoteNode } from "@lexical/rich-text";
-
-export function $createQuoteNode(): QuoteNode {
-    return new QuoteNode();
-}
-
+import {formatToQuote} from "~/utils/nodes/formatToQuote";
+import {formatToParagraph} from "~/utils/nodes/formatToParagraph";
+import {useRichTextEditor} from "~/hooks/useRichTextEditor";
 export const QuoteAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isActive, setIsActive] = useState<boolean>(false);
-
-    const formatToParagraph = () => {
-        editor.update(() => {
-            const selection = $getSelection();
-
-            if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
-                $wrapNodes(selection, () => $createParagraphNode());
-            }
-        });
-    };
-
-    const formatToQuote = () => {
-        editor.update(() => {
-            const selection = $getSelection();
-            if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
-                $wrapNodes(selection, () => $createQuoteNode());
-            }
-        });
-    };
+    const { textBlockSelection } = useRichTextEditor();
+    const isQuoteSelected = !!textBlockSelection?.state?.quote.isSelected;
 
     const formatText = () => {
         if (!isActive) {
-            formatToQuote();
+            formatToQuote(editor);
             setIsActive(true);
             return;
         }
-        formatToParagraph();
+        formatToParagraph(editor);
         setIsActive(false);
     };
+
+    useEffect(() => {
+        setIsActive(isQuoteSelected);
+    }, [isQuoteSelected])
 
     return (
         <button
