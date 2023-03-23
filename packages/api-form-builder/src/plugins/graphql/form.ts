@@ -7,7 +7,7 @@ import {
     Response
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { sanitizeFormSubmissionData } from "~/plugins/crud/utils";
+import { sanitizeFormSubmissionData, flattenObj } from "~/plugins/crud/utils";
 import { FormBuilderContext, FbFormField } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
@@ -214,6 +214,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             type FbSubmissionMeta {
                 ip: String
                 submittedOn: DateTime
+                url: JSON
             }
 
             type FbListSubmissionsMeta {
@@ -554,6 +555,22 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         }
 
                         /**
+                         * Add meta fields.
+                         */
+                        for (let i = 0; i < submissions.length; i++) {
+                            const flattenExportMeta = flattenObj(
+                                submissions[i].meta.url || {},
+                                "meta_url"
+                            );
+
+                            for (const metaKey in flattenExportMeta) {
+                                if (!fields[metaKey]) {
+                                    fields[metaKey] = metaKey;
+                                }
+                            }
+                        }
+
+                        /**
                          * Build rows.
                          */
                         for (let i = 0; i < submissions.length; i++) {
@@ -561,6 +578,15 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                                 fieldsData,
                                 submissions[i].data
                             );
+
+                            const flattenExportMeta = flattenObj(
+                                submissions[i].meta.url || {},
+                                "meta_url"
+                            );
+                            for (const metaKey in flattenExportMeta) {
+                                submissionData[metaKey] = flattenExportMeta[metaKey];
+                            }
+
                             const row: Record<string, string> = {};
 
                             row["Date submitted (UTC)"] = format(

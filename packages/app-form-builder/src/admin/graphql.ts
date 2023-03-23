@@ -194,6 +194,7 @@ export const LIST_FORM_SUBMISSIONS = gql`
                     meta {
                         ip
                         submittedOn
+                        url
                     }
                     form {
                         id

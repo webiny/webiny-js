@@ -125,3 +125,19 @@ export const sanitizeFormSubmissionData = (fields: FbFormField[], data: { [key: 
 
     return data;
 };
+
+export const flattenObj = (
+    obj: Record<string, any>,
+    parent: string,
+    res: Record<string, string> = {}
+) => {
+    for (const key in obj) {
+        const propName = parent ? parent + "_" + key : key;
+        if (typeof obj[key] == "object") {
+            flattenObj(obj[key], propName, res);
+        } else {
+            res[propName] = obj[key];
+        }
+    }
+    return res;
+};
