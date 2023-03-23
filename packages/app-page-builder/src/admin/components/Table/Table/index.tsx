@@ -27,7 +27,7 @@ import { FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { PbPageDataItem } from "~/types";
 import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
-import {menuStyles}  from './styled';
+import { menuStyles } from "./styled";
 
 interface Props {
     records: SearchRecordItem<PbPageDataItem>[];

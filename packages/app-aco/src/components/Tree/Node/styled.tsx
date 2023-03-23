@@ -9,6 +9,10 @@ type ArrowIconContainerProps = {
     isOpen: boolean;
 };
 
+type TextProps = {
+    isFocused: boolean;
+};
+
 export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
@@ -17,7 +21,6 @@ export const Container = styled("div")<ContainerProps>`
     color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;
     position: relative;
-
     &:hover .folder-tree-menu-action {
         visibility: visible;
     }
@@ -30,6 +33,7 @@ export const Icon = styled("div")`
     height: 24px;
     width: 24px;
     cursor: pointer;
+    fill: rgba(0, 0, 0, 0.54);
 `;
 
 export const ArrowIcon = styled(Icon)<ArrowIconContainerProps>`
@@ -39,6 +43,7 @@ export const ArrowIcon = styled(Icon)<ArrowIconContainerProps>`
 
 export const FolderIcon = styled(Icon)`
     margin-right: 4px;
+    fill: rgba(0, 0, 0, 0.54);
 `;
 
 export const Content = styled("div")`
@@ -47,11 +52,13 @@ export const Content = styled("div")`
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
+    width: 100%;
 `;
 
-export const Text = styled(Typography)`
+export const Text = styled(Typography)<TextProps>`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 24px;
+    font-weight: ${props => props.isFocused ? "600" : "normal"};
 `;
