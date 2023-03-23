@@ -51,7 +51,7 @@ const BrandImpl: HigherOrderComponent = Brand => {
     };
 };
 
-const NavigationProvider = (Component: React.FC): React.FC => {
+const NavigationProvider = (Component: React.VFC): React.VFC => {
     return function NavigationProvider(props) {
         const [visible, setVisible] = useState(false);
 
@@ -65,7 +65,7 @@ const NavigationProvider = (Component: React.FC): React.FC => {
     };
 };
 
-export const NavigationImpl = (): React.FC => {
+export const NavigationImpl = (): React.VFC => {
     return function Navigation() {
         const { menuItems } = useAdminNavigation();
         const { visible, setVisible } = useNavigation();
@@ -131,7 +131,7 @@ const SortedMenuItems: HigherOrderComponent<MenuItemsProps> = MenuItems => {
     };
 };
 
-export const Navigation: React.FC = () => {
+export const Navigation: React.VFC = () => {
     return (
         <Fragment>
             <Provider hoc={NavigationProvider} />

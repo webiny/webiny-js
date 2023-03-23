@@ -115,7 +115,7 @@ const elevation = css`
     flex-direction: column;
 `;
 
-const Welcome: React.FC = () => {
+const Welcome: React.VFC = () => {
     const { identity, getPermission } = useSecurity();
 
     if (!identity) {

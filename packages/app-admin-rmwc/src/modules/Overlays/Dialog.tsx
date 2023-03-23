@@ -4,7 +4,7 @@ import { useUi } from "@webiny/app/hooks/useUi";
 import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
 
-export const DialogContainer: React.FC = () => {
+export const DialogContainer: React.VFC = () => {
     const ui = useUi();
     const message: React.ReactNode = get(ui, "dialog.message");
     const {

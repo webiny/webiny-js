@@ -19,7 +19,7 @@ import { Avatar } from "@webiny/ui/Avatar";
 import { Image } from "@webiny/app/components";
 import { TopAppBarActionItem } from "@webiny/ui/TopAppBar";
 
-const UserMenuRendererImpl = (): React.FC => {
+const UserMenuRendererImpl = (): React.VFC => {
     return function UserMenu() {
         const security = useSecurity();
         const { menuItems } = useUserMenu();
@@ -38,7 +38,7 @@ const UserMenuRendererImpl = (): React.FC => {
     };
 };
 
-const UserMenuHandleRendererImpl = (): React.FC => {
+const UserMenuHandleRendererImpl = (): React.VFC => {
     return function UserMenuHandle() {
         const { identity } = useSecurity();
 
@@ -67,7 +67,7 @@ const linkStyles = css({
     }
 });
 
-const UserMenuItemRendererImpl = (): React.FC => {
+const UserMenuItemRendererImpl = (): React.VFC => {
     return function UserMenuItemRenderer() {
         const { label, path, icon, onClick, element } = useUserMenuItem();
 
@@ -95,7 +95,7 @@ const UserMenuItemRendererImpl = (): React.FC => {
     };
 };
 
-export const UserMenu: React.FC = () => {
+export const UserMenu: React.VFC = () => {
     return (
         <Fragment>
             <Compose component={UserMenuHandleRendererSpec} with={UserMenuHandleRendererImpl} />

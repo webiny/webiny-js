@@ -13,7 +13,7 @@ import {
 } from "@webiny/app-admin";
 import { TopAppBarPrimary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 
-const RMWCLayout = (): React.FC<LayoutProps> => {
+const RMWCLayout = (): React.VFC<LayoutProps> => {
     return function RMWCLayout({ title, children }) {
         return (
             <Fragment>
@@ -39,7 +39,7 @@ const RMWCLayout = (): React.FC<LayoutProps> => {
     };
 };
 
-export const Layout: React.FC = () => {
+export const Layout: React.VFC = () => {
     /**
      * TODO @ts-refactor @pavel
      */

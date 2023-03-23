@@ -21,7 +21,7 @@ const RMWCProviderPlugin = createProviderPlugin(Component => {
     };
 });
 
-export const RMWC: React.FC = () => {
+export const RMWC: React.VFC = () => {
     return (
         <Fragment>
             <RMWCProviderPlugin />

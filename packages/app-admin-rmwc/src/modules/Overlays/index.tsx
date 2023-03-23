@@ -9,7 +9,15 @@ import { Portal } from "@rmwc/base";
  * any other views that are constructed by developers. We need these 2 containers to always be
  * present, even if there is no <Layout> mounted.
  */
-const OverlaysHOC = (Component: React.FC): React.FC => {
+
+interface OverlaysHocProps {
+    children: React.ReactNode;
+}
+interface OverlaysProps {
+    children: React.ReactNode;
+}
+
+const OverlaysHOC = (Component: React.VFC<OverlaysHocProps>): React.VFC<OverlaysProps> => {
     return function Overlays({ children }) {
         return (
             <Component>
@@ -24,7 +32,7 @@ const OverlaysHOC = (Component: React.FC): React.FC => {
     };
 };
 
-export const Overlays: React.FC = () => {
+export const Overlays: React.VFC = () => {
     /**
      * TODO @ts-refactor @pavel
      */
