@@ -160,6 +160,10 @@ export class WebinyListNode extends ElementNode {
         this.addStylesHTMLElement(dom, config.theme);
         return false;
     }
+
+    override extractWithChild(child: LexicalNode): boolean {
+        return $isWebinyListItemNode(child);
+    }
 }
 
 function setListThemeClassNames(
@@ -217,6 +221,7 @@ function setListThemeClassNames(
         addClassNamesToElement(dom, ...classesToAdd);
     }
 }
+
 /*
  * This function normalizes the children of a ListNode after the conversion from HTML,
  * ensuring that they are all ListItemNodes and contain either a single nested ListNode

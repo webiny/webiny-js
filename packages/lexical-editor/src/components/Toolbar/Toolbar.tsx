@@ -109,7 +109,6 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
                     updateTextFormatFloatingToolbar();
                 });
             }),
-
             editor.registerCommand(
                 SELECTION_CHANGE_COMMAND,
                 (_payload, newEditor) => {

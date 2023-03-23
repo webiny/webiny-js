@@ -12,7 +12,7 @@ export function $getListDepth(listNode: WebinyListNode): number {
     let parent = listNode.getParent();
 
     while (parent !== null) {
-        if ($isWebinyListNode(parent)) {
+        if ($isWebinyListItemNode(parent)) {
             const parentList = parent.getParent();
 
             if ($isWebinyListNode(parentList)) {
@@ -20,7 +20,7 @@ export function $getListDepth(listNode: WebinyListNode): number {
                 parent = parentList?.getParent() || null;
                 continue;
             }
-            //  invariant(false, 'A ListItemNode must have a ListNode for a parent.');
+            console.log("A WebinyListItemNode must have a WebinyListNode for a parent.");
         }
 
         return depth;
@@ -34,6 +34,7 @@ export function $getTopListNode(listItem: LexicalNode): WebinyListNode {
 
     if (!$isWebinyListNode(list)) {
         console.log("A WebinyListItemNode must have a ListNode for a parent.");
+        debugger;
         return listItem as WebinyListNode;
     }
 
@@ -48,28 +49,6 @@ export function $getTopListNode(listItem: LexicalNode): WebinyListNode {
     }
 
     return list;
-}
-
-export function $isLastItemInList(listItem: WebinyListItemNode): boolean {
-    let isLast = true;
-    const firstChild = listItem.getFirstChild() ?? undefined;
-
-    if ($isWebinyListNode(firstChild)) {
-        return false;
-    }
-    let parent: WebinyListItemNode | null = listItem;
-
-    while (parent !== null) {
-        if ($isWebinyListItemNode(parent)) {
-            if (parent.getNextSiblings().length > 0) {
-                isLast = false;
-            }
-        }
-
-        parent = parent.getParent();
-    }
-
-    return isLast;
 }
 
 // This should probably be $getAllChildrenOfType

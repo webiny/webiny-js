@@ -408,7 +408,7 @@ function maybeIndentOrOutdent(direction: "indent" | "outdent"): void {
         return;
     }
     const selectedNodes = selection.getNodes();
-    let WebinyListItemNodes: Array<WebinyListItemNode> = [];
+    let webinyListItemNodes: Array<WebinyListItemNode> = [];
 
     if (selectedNodes.length === 0) {
         selectedNodes.push(selection.anchor.getNode());
@@ -420,17 +420,17 @@ function maybeIndentOrOutdent(direction: "indent" | "outdent"): void {
         const nearestWebinyListItemNode = findNearestWebinyListItemNode(selectedNodes[0]);
 
         if (nearestWebinyListItemNode !== null) {
-            WebinyListItemNodes = [nearestWebinyListItemNode];
+            webinyListItemNodes = [nearestWebinyListItemNode];
         }
     } else {
-        WebinyListItemNodes = getUniqueWebinyListItemNodes(selectedNodes);
+        webinyListItemNodes = getUniqueWebinyListItemNodes(selectedNodes);
     }
 
-    if (WebinyListItemNodes.length > 0) {
+    if (webinyListItemNodes.length > 0) {
         if (direction === "indent") {
-            $handleIndent(WebinyListItemNodes);
+            $handleIndent(webinyListItemNodes);
         } else {
-            $handleOutdent(WebinyListItemNodes);
+            $handleOutdent(webinyListItemNodes);
         }
     }
 }
@@ -449,6 +449,7 @@ export function $handleListInsertParagraph(): boolean {
     if (!$isRangeSelection(selection) || !selection.isCollapsed()) {
         return false;
     }
+
     // Only run this code on empty list items
     const anchor = selection.anchor.getNode();
 
@@ -458,7 +459,7 @@ export function $handleListInsertParagraph(): boolean {
     const topListNode = $getTopListNode(anchor);
     const parent = anchor.getParent();
 
-    if ($isWebinyListNode(parent)) {
+    if (!$isWebinyListNode(parent)) {
         console.log("A WebinyListItemNode must have a WebinyListNode for a parent.");
         return false;
     }
