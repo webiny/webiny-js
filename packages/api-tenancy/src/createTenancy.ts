@@ -6,6 +6,8 @@ export interface TenancyConfig {
     tenant: string | null;
     storageOperations: TenancyStorageOperations;
     multiTenancy?: boolean;
+    incrementWcpTenants: () => Promise<void>;
+    decrementWcpTenants: () => Promise<void>;
 }
 
 const withToString = (tenant: Tenant) => {
@@ -20,7 +22,9 @@ const withToString = (tenant: Tenant) => {
 export async function createTenancy({
     tenant,
     storageOperations,
-    multiTenancy = false
+    multiTenancy = false,
+    incrementWcpTenants,
+    decrementWcpTenants
 }: TenancyConfig): Promise<Tenancy> {
     let currentTenant: Tenant | null = null;
 
@@ -37,8 +41,8 @@ export async function createTenancy({
         setCurrentTenant(tenant: Tenant) {
             currentTenant = withToString(tenant);
         },
-        ...createSystemMethods(storageOperations),
-        ...createTenantsMethods(storageOperations)
+        ...createSystemMethods({ storageOperations }),
+        ...createTenantsMethods({ storageOperations, incrementWcpTenants, decrementWcpTenants })
     };
 
     if (tenant) {
