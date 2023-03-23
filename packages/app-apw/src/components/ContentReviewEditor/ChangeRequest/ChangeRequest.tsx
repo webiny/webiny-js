@@ -76,7 +76,7 @@ interface ChangeRequestProps {
     id: string;
 }
 
-export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
+export const ChangeRequest: React.VFC<ChangeRequestProps> = props => {
     const { id } = props;
     const { deleteChangeRequest, changeRequest, markResolved, loading } = useChangeRequest({ id });
     const { setOpen, setChangeRequestId } = useChangeRequestDialog();

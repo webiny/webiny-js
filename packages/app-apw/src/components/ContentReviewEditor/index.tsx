@@ -21,7 +21,7 @@ const EditorColumns = styled(Columns)`
     padding: 65px 0 0;
 `;
 
-export const ContentReviewEditor: React.FC = () => {
+export const ContentReviewEditor: React.VFC = () => {
     const { loading, contentReview } = useCurrentContentReview();
 
     if (loading) {

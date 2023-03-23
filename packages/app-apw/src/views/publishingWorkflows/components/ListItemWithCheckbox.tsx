@@ -18,7 +18,7 @@ const CheckboxWrapper = styled.div`
     justify-content: flex-end;
 `;
 
-export const ListItemWithCheckbox: React.FC<ListItemWithCheckboxProps> = ({
+export const ListItemWithCheckbox: React.VFC<ListItemWithCheckboxProps> = ({
     label,
     value,
     onChange

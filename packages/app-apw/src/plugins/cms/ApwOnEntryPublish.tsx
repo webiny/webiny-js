@@ -18,7 +18,7 @@ const t = i18n.ns("app-apw/cms/dialog");
 
 type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
-export const ApwOnEntryPublish: React.FC = () => {
+export const ApwOnEntryPublish: React.VFC = () => {
     const { onEntryRevisionPublish } = useCms();
     const client = useApolloClient();
     const [input, setInput] = useState<CreateContentReviewInput | null>(null);

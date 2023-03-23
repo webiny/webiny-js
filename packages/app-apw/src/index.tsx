@@ -40,7 +40,7 @@ import { DefaultBar } from "~/plugins/editor/defaultBar";
 import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
 import { ApwPermissions } from "~/plugins/permissionRenderer";
 
-export const AdvancedPublishingWorkflow: React.FC = () => {
+export const AdvancedPublishingWorkflow: React.VFC = () => {
     const { canUseFeature } = useWcp();
     if (!canUseFeature("advancedPublishingWorkflow")) {
         return null;

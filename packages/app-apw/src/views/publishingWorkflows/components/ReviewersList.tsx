@@ -31,7 +31,7 @@ interface ListItemTitleProps {
     index: number;
 }
 
-const ListItemTitle: React.FC<ListItemTitleProps> = ({ index, label }) => {
+const ListItemTitle: React.VFC<ListItemTitleProps> = ({ index, label }) => {
     return (
         <Columns space={3} alignItems={"center"}>
             <Box>
@@ -44,7 +44,7 @@ const ListItemTitle: React.FC<ListItemTitleProps> = ({ index, label }) => {
     );
 };
 
-export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue }) => {
+export const ReviewersList: React.VFC<ChildrenRenderProp> = ({ onChange, getValue }) => {
     const { reviewers, loading } = useReviewers();
 
     if (loading || !reviewers || reviewers.length === 0) {

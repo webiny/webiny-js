@@ -36,7 +36,7 @@ interface LeftPanelProps {
     status: ApwContentReviewStatus;
 }
 
-export const LeftPanel: React.FC<LeftPanelProps> = ({
+export const LeftPanel: React.VFC<LeftPanelProps> = ({
     steps,
     reviewRequestedBy,
     reviewRequestedOn

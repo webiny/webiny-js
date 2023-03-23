@@ -41,7 +41,7 @@ interface CreateChangeRequestProps {
     disabled: boolean;
 }
 
-const CreateChangeRequest: React.FC<CreateChangeRequestProps> = ({ create, disabled }) => {
+const CreateChangeRequest: React.VFC<CreateChangeRequestProps> = ({ create, disabled }) => {
     if (disabled) {
         return (
             <CreateChangeRequestBox paddingX={5} paddingY={5}>

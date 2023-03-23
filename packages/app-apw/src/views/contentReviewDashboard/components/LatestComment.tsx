@@ -18,7 +18,7 @@ export interface LatestCommentProps {
     id: string;
 }
 
-export const LatestComment: React.FC<LatestCommentProps> = ({ id, ...boxProps }) => {
+export const LatestComment: React.VFC<LatestCommentProps> = ({ id, ...boxProps }) => {
     const { comment, loading } = useComment(id);
 
     if (loading) {

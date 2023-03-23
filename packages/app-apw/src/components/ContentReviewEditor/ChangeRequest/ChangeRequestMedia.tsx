@@ -51,9 +51,14 @@ export const Media = styled.div<{ fullWidth?: boolean }>`
 interface FileWithOverlayProps {
     media: ApwMediaFile;
     fullWidth: boolean;
+    children: React.ReactNode;
 }
 
-export const FileWithOverlay: React.FC<FileWithOverlayProps> = ({ media, children, fullWidth }) => {
+export const FileWithOverlay: React.VFC<FileWithOverlayProps> = ({
+    media,
+    children,
+    fullWidth
+}) => {
     return (
         <Media fullWidth={fullWidth}>
             {children}

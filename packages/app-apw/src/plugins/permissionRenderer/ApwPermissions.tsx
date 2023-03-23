@@ -18,7 +18,7 @@ export interface ApwPermissionsProps {
     value: ApwSecurityPermission[];
     onChange: (value: ApwSecurityPermission[]) => void;
 }
-export const ApwPermissions: React.FC<ApwPermissionsProps> = ({ value, onChange }) => {
+export const ApwPermissions: React.VFC<ApwPermissionsProps> = ({ value, onChange }) => {
     const onFormChange = useCallback(
         (data: ApwSecurityPermission) => {
             const initialPermissions = value.filter(

@@ -51,7 +51,7 @@ const InlineLoaderWrapper = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)"
 });
 
-export const ContentReviewDataList: React.FC = () => {
+export const ContentReviewDataList: React.VFC = () => {
     const {
         contentReviews,
         loading,

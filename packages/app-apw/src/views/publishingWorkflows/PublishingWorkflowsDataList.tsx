@@ -46,7 +46,7 @@ interface ListHeaderProps {
     app: ApwWorkflowApplications;
 }
 
-const ListHeader: React.FC<ListHeaderProps> = ({ title, onClick, app }) => {
+const ListHeader: React.VFC<ListHeaderProps> = ({ title, onClick, app }) => {
     return (
         <ListSubHeader space={4} paddingX={5} paddingY={6}>
             <Box>
@@ -80,7 +80,7 @@ const scopes: Record<ApwWorkflowApplications, string> = {
     [ApwWorkflowApplications.CMS]: "Headless CMS"
 };
 
-const PublishingWorkflowsDataList: React.FC = () => {
+const PublishingWorkflowsDataList: React.VFC = () => {
     const {
         workflows,
         loading,

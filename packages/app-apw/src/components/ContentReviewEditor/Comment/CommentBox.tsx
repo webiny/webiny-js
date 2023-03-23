@@ -80,7 +80,7 @@ interface CommentBoxProps {
     scrollToLatestComment: Function;
 }
 
-export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment }) => {
+export const CommentBox: React.VFC<CommentBoxProps> = ({ scrollToLatestComment }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { createComment } = useComment();
     const changeRequestId = useCurrentChangeRequestId();

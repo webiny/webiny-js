@@ -26,7 +26,7 @@ interface ProvideSignOffProps {
     changeRequestsPending: boolean;
 }
 
-export const ProvideSignOff: React.FC<ProvideSignOffProps> = ({
+export const ProvideSignOff: React.VFC<ProvideSignOffProps> = ({
     currentStep,
     changeRequestsPending
 }) => {

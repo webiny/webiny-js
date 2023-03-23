@@ -31,7 +31,7 @@ interface CommentProps {
     width?: string;
 }
 
-const Comment: React.FC<CommentProps> = props => {
+const Comment: React.VFC<CommentProps> = props => {
     const { comment, ...restProps } = props;
     return (
         <Stack marginBottom={6} space={2} {...restProps}>

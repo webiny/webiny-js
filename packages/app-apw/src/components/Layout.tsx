@@ -139,7 +139,7 @@ interface ColumnsProps extends StyledBoxProps {
     className?: string;
 }
 
-export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) => {
+export const Columns: React.VFC<ColumnsProps> = ({ children, space, ...props }) => {
     return (
         <Box display="flex" {...props}>
             {React.Children.map(children, (child, index) => {
@@ -167,7 +167,7 @@ interface StackProps extends StyledBoxProps {
     className?: string;
 }
 
-export const Stack: React.FC<StackProps> = ({ children, space, ...props }) => {
+export const Stack: React.VFC<StackProps> = ({ children, space, ...props }) => {
     return (
         <Box {...props}>
             {React.Children.map(children, (child, index) => {

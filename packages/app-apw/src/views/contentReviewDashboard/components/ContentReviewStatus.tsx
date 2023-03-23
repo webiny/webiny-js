@@ -17,7 +17,7 @@ export const statusToLevel = {
     [ApwContentReviewStatus.PUBLISHED]: 2
 };
 
-const CommentBadge: React.FC<{ comments: number }> = ({ comments, ...props }) => {
+const CommentBadge: React.VFC<{ comments: number }> = ({ comments, ...props }) => {
     return (
         <CommentCountBox {...props} width={"fit-content"}>
             <CommentsCount>{comments}</CommentsCount>
@@ -39,7 +39,7 @@ export interface ContentReviewStatusProps {
     content: ApwContentReviewContent;
 }
 
-export const ContentReviewStatus: React.FC<ContentReviewStatusProps> = ({
+export const ContentReviewStatus: React.VFC<ContentReviewStatusProps> = ({
     status,
     comments,
     reviewers,

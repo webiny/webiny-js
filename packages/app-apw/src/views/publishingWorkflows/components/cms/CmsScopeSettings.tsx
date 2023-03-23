@@ -48,7 +48,7 @@ interface CmsModelsListProps extends CmsScopeSettingsProps {
     loading: boolean;
 }
 
-const CmsModelsList: React.FC<CmsModelsListProps> = ({ Bind, runValidation, models, loading }) => {
+const CmsModelsList: React.VFC<CmsModelsListProps> = ({ Bind, runValidation, models, loading }) => {
     return (
         <Stack space={3} padding={6}>
             <Box>
@@ -92,7 +92,7 @@ interface CmsEntriesListProps {
     models: CmsModel[];
 }
 
-const CmsEntriesList: React.FC<CmsEntriesListProps> = ({ bind, models }) => {
+const CmsEntriesList: React.VFC<CmsEntriesListProps> = ({ bind, models }) => {
     const { loading, setQuery, options, value } = useCmsEntries({
         bind,
         models
@@ -148,7 +148,7 @@ interface CmsScopeSettingsProps {
     runValidation: boolean;
 }
 
-export const CmsScopeSettings: React.FC<CmsScopeSettingsProps> = ({ Bind, runValidation }) => {
+export const CmsScopeSettings: React.VFC<CmsScopeSettingsProps> = ({ Bind, runValidation }) => {
     const { models = [], loading } = useCmsModels();
     return (
         <Elevation z={1}>
