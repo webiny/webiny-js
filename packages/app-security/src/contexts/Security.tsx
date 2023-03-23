@@ -18,7 +18,10 @@ export const SecurityContext = React.createContext<SecurityContext>({
     }
 });
 
-export const SecurityProvider: React.FC = props => {
+interface SecurityProviderProps {
+    children: React.ReactNode;
+}
+export const SecurityProvider: React.VFC<SecurityProviderProps> = props => {
     const [identity, setIdentity] = useState<SecurityIdentity | null>(null);
 
     const getPermission = useCallback(

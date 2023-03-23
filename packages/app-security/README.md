@@ -68,7 +68,7 @@ Auth.configure({
 });
 
 // The `Authenticator` component.
-const Authenticator: React.FC = props => {
+const Authenticator: React.VFC = props => {
     const { setIdentity } = useSecurity();
 
     useEffect(() => {
@@ -101,7 +101,7 @@ Finally, use the `useSecurity` React hook in any of your components:
 import React from "react";
 import { useSecurity } from "@webiny/app-security";
 
-const MyComponent: React.FC = () => {
+const MyComponent: React.VFC = () => {
   const { identity } = useSecurity();
 
   if (identity) {
