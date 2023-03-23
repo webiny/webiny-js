@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useRef, useState} from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
     $getSelection,
     $isRangeSelection,
@@ -19,7 +19,7 @@ import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import {getLexicalTextSelectionState} from "~/utils/getLexicalTextSelectionState";
+import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 
 interface FloatingToolbarProps {
     type: ToolbarType;
@@ -51,7 +51,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
         let isLink = false;
         if ($isRangeSelection(selection)) {
             const selectionState = getLexicalTextSelectionState(activeEditor, selection);
-            if(selectionState) {
+            if (selectionState) {
                 setTextBlockSelection(selectionState);
             }
             const node = getSelectedNode(selection);

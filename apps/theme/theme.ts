@@ -158,12 +158,40 @@ const theme = createTheme({
             lists: [
                 {
                     id: "list",
-                    name: "Default list",
+                    name: "Default",
                     tag: "ul",
                     css: { ...paragraphs, fontSize: 16.5 }
                 },
-                { id: "list1", name: "List 1", tag: "ul", css: { ...paragraphs, fontSize: 18.5 , color: "#fa5723" } },
-                { id: "list2", name: "List 2", tag: "ul", css: { ...paragraphs, fontSize: 21.5 } }
+                {
+                    id: "list1",
+                    name: "Bullet List 1",
+                    tag: "ul",
+                    css: { ...paragraphs, fontSize: 18.5, color: "#fa5723" }
+                },
+                {
+                    id: "list2",
+                    name: "Bullet List 2",
+                    tag: "ul",
+                    css: { ...paragraphs, fontSize: 21.5 }
+                },
+                {
+                    id: "number-list",
+                    name: "Default",
+                    tag: "ol",
+                    css: { ...paragraphs, fontSize: 16.5 }
+                },
+                {
+                    id: "number-list1",
+                    name: "Numbered List 1",
+                    tag: "ol",
+                    css: { ...paragraphs, fontSize: 18.5, color: "#fa5723" }
+                },
+                {
+                    id: "number-list2",
+                    name: "Numbered List 2",
+                    tag: "ol",
+                    css: { ...paragraphs, fontSize: 21.5 }
+                }
             ],
             quotes: [
                 {

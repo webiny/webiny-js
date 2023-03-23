@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";

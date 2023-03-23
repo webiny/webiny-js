@@ -1,26 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-    $getSelection,
-    $isRangeSelection,
-    $isRootOrShadowRoot,
-    COMMAND_PRIORITY_CRITICAL,
-    LexicalCommand,
-    SELECTION_CHANGE_COMMAND
-} from "lexical";
+import { LexicalCommand } from "lexical";
 import { Compose, makeComposable } from "@webiny/react-composition";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
 
 import { TypographyValue } from "~/types";
+import { ADD_TYPOGRAPHY_ELEMENT_COMMAND, TypographyPayload } from "~/nodes/TypographyElementNode";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import {
-    $isTypographyElementNode,
-    ADD_TYPOGRAPHY_ELEMENT_COMMAND,
-    TypographyElementNode,
-    TypographyPayload
-} from "~/nodes/TypographyElementNode";
-import { $findMatchingParent, mergeRegister } from "@lexical/utils";
-import { getSelectedNode } from "~/utils/getSelectedNode";
-import {useRichTextEditor} from "~/hooks/useRichTextEditor";
+    INSERT_ORDERED_WEBINY_LIST_COMMAND,
+    INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+    WebinyListCommandPayload
+} from "~/nodes/list-node/commands";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -66,18 +57,42 @@ export const TypographyAction: TypographyAction = () => {
 
     const onTypographySelect = useCallback((value: TypographyValue) => {
         setTypographySelect(value);
-        editor.dispatchCommand<LexicalCommand<TypographyPayload>>(ADD_TYPOGRAPHY_ELEMENT_COMMAND, {
-            value
-        });
+
+        if (value.tag.includes("h") || value.tag.includes("p")) {
+            editor.dispatchCommand<LexicalCommand<TypographyPayload>>(
+                ADD_TYPOGRAPHY_ELEMENT_COMMAND,
+                {
+                    value
+                }
+            );
+        }
+
+        if (value.tag === "ol") {
+            editor.dispatchCommand<LexicalCommand<WebinyListCommandPayload>>(
+                INSERT_ORDERED_WEBINY_LIST_COMMAND,
+                {
+                    themeStyleId: value.id
+                }
+            );
+        }
+
+        if (value.tag === "ul") {
+            editor.dispatchCommand<LexicalCommand<WebinyListCommandPayload>>(
+                INSERT_UNORDERED_WEBINY_LIST_COMMAND,
+                {
+                    themeStyleId: value.id
+                }
+            );
+        }
     }, []);
 
     useEffect(() => {
-       /* if ($isTypographyElementNode(parent)) {
+        /* if ($isTypographyElementNode(parent)) {
             const el = element as TypographyElementNode;
             setTypography(el.getTypographyValue());
         }*/
         console.log("selected text block", textBlockSelection);
-    }, [isTypographySelected, textBLockType])
+    }, [isTypographySelected, textBLockType]);
 
     return (
         <TypographyActionContext.Provider

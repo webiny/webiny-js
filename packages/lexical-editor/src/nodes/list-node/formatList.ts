@@ -50,7 +50,9 @@ function $getListItemValue(listItem: WebinyListItemNode): number {
 
     if (list !== null) {
         if (!$isWebinyListNode(list)) {
-            console.log("$getListItemValue: webiny list node is not parent of webiny list item node");
+            console.log(
+                "$getListItemValue: webiny list node is not parent of webiny list item node"
+            );
             return DEFAULT_LIST_START_NUMBER;
         } else {
             value = list.getStart();
@@ -456,10 +458,10 @@ export function $handleListInsertParagraph(): boolean {
     const topListNode = $getTopListNode(anchor);
     const parent = anchor.getParent();
 
-   if($isWebinyListNode(parent)){
-     console.log("A WebinyListItemNode must have a WebinyListNode for a parent.")
-     return false;
-   }
+    if ($isWebinyListNode(parent)) {
+        console.log("A WebinyListItemNode must have a WebinyListNode for a parent.");
+        return false;
+    }
 
     const grandparent = parent?.getParent() || null;
 

@@ -11,11 +11,10 @@ import {
     Spread
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
-import { findTypographyStyleById } from "~/utils/typography";
+import { findTypographyStyleById } from "~/utils/theme/typography";
 import { styleObjectToString } from "~/utils/styleObjectToString";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
-
 import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
 import { ListType } from "@lexical/list";
 import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
@@ -134,21 +133,21 @@ export class WebinyListNode extends ElementNode {
         };
     }
 
-    static importDomConversionMap(domNode: HTMLElement): DOMConversion<HTMLElement> | null {
+    static importDomConversionMap(): DOMConversion<HTMLElement> | null {
         return {
             conversion: convertWebinyListNode,
             priority: 0
-        }
+        };
     }
 
     static importDOM(): DOMConversionMap | null {
         return {
-            ol: (domNode: HTMLElement) => {
-                return this.importDomConversionMap(domNode);
+            ol: () => {
+                return this.importDomConversionMap();
             },
-            ul: (domNode: HTMLElement) => {
-                return this.importDomConversionMap(domNode)
-            },
+            ul: () => {
+                return this.importDomConversionMap();
+            }
         };
     }
 

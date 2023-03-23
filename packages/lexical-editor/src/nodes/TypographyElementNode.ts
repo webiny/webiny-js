@@ -14,7 +14,7 @@ import {
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { styleObjectToString } from "~/utils/styleObjectToString";
 import { TypographyHTMLTag, TypographyValue } from "~/types";
-import { findTypographyStyleById } from "~/utils/typography";
+import { findTypographyStyleById } from "~/utils/theme/typography";
 
 // Command and payload
 export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(

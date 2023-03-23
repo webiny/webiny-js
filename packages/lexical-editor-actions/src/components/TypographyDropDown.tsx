@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     DropDown,
     DropDownItem,
@@ -12,7 +12,7 @@ import { TypographyValue } from "@webiny/lexical-editor/types";
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
-    const [styles, setStyles] = useState<TypographyStyle<ThemeTypographyHTMLTag>[]>([])
+    const [styles, setStyles] = useState<TypographyStyle<ThemeTypographyHTMLTag>[]>([]);
     const typographyStyles = theme.styles?.typographyStyles;
     const { textBlockSelection } = useRichTextEditor();
     const textBLockType = textBlockSelection?.state?.textBlockType;
@@ -22,7 +22,7 @@ export const TypographyDropDown = () => {
     };
 
     useEffect(() => {
-        if(textBLockType) {
+        if (textBLockType) {
             switch (textBLockType) {
                 case "heading":
                     setStyles(theme.styles?.typographyStyles?.headings || []);
@@ -31,14 +31,20 @@ export const TypographyDropDown = () => {
                     setStyles(theme.styles?.typographyStyles?.paragraphs || []);
                     break;
                 case "bullet":
+                    setStyles(
+                        theme.styles?.typographyStyles?.lists?.filter(x => x.tag === "ul") || []
+                    );
+                    break;
                 case "number":
-                    setStyles(theme.styles?.typographyStyles?.lists || []);
+                    setStyles(
+                        theme.styles?.typographyStyles?.lists?.filter(x => x.tag === "ol") || []
+                    );
                     break;
                 default:
                     setStyles([]);
             }
         }
-    },  [textBLockType])
+    }, [textBLockType]);
 
     return (
         <>
