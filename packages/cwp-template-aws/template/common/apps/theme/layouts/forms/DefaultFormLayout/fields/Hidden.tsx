@@ -7,7 +7,7 @@ interface InputProps {
     type?: string;
 }
 
-export const HiddenField: React.FC<InputProps> = ({ field }) => {
+export const HiddenField: React.VFC<InputProps> = ({ field }) => {
     const { value } = useBind({
         name: field.fieldId,
         validators: field.validators

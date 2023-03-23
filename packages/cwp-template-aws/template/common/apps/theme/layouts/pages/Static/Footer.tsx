@@ -7,7 +7,7 @@ import styled from "@emotion/styled";
 import { breakpoints, colors, typography } from "../../../theme";
 import { usePage } from "@webiny/app-page-builder-elements";
 
-export const Footer: React.FC = () => {
+export const Footer: React.VFC = () => {
     const { layoutProps } = usePage();
     const { name, logo, social } = layoutProps["settings"];
 

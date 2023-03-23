@@ -19,7 +19,7 @@ declare module "*.jpg" {
 declare module "*.svg" {
     import React from "react";
 
-    export const ReactComponent: React.FC<
+    export const ReactComponent: React.VFC<
         React.SVGProps<SVGSVGElement> & {
             alt?: string;
         }

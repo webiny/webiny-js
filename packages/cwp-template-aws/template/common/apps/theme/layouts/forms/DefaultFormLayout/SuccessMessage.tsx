@@ -40,7 +40,7 @@ interface Props {
     formData: FbFormModel;
 }
 
-export const SuccessMessage: React.FC<Props> = ({ formData }) => {
+export const SuccessMessage: React.VFC<Props> = ({ formData }) => {
     const heading = "Success!";
 
     let message;
