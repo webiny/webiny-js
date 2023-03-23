@@ -9,10 +9,10 @@ import { useThemeManager } from "~/hooks/useThemeManager";
 const WideOptions = styled.div(`
   .mdc-form-field {
     width: 100%
-  }  
+  }
 `);
 
-export const ThemeCheckboxGroup: React.FC = () => {
+export const ThemeCheckboxGroup: React.VFC = () => {
     const { themes } = useThemeManager();
 
     return (

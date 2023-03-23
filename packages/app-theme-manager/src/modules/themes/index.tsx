@@ -48,7 +48,7 @@ const TenantThemes = () => {
 interface ThemeSelectProps {
     themes: ThemeSource[];
 }
-const ThemeSelect: React.FC<ThemeSelectProps> = ({ themes }) => {
+const ThemeSelect: React.VFC<ThemeSelectProps> = ({ themes }) => {
     const bind = useBind({
         name: "theme",
         defaultValue: "",
@@ -76,7 +76,7 @@ const WebsiteSettingsSelection = gql`
         theme
     }
 `;
-const WebsiteSettings: React.FC = () => {
+const WebsiteSettings: React.VFC = () => {
     return (
         <Fragment>
             <Group name={"theme"} label={"Theme"} querySelection={WebsiteSettingsSelection}>
@@ -93,7 +93,7 @@ const WebsiteSettings: React.FC = () => {
     );
 };
 
-const AppReloader: React.FC = () => {
+const AppReloader: React.VFC = () => {
     const theme = useCurrentTheme();
     const themeRef = useRef<string | null>(null);
 
@@ -126,7 +126,7 @@ interface ThemesModuleProps {
     themes?: ThemeSource[];
 }
 
-export const ThemesModule: React.FC<ThemesModuleProps> = ({ themes = [] }) => {
+export const ThemesModule: React.VFC<ThemesModuleProps> = ({ themes = [] }) => {
     return (
         <Fragment>
             <Provider hoc={ThemeManagerProviderHOC} />
