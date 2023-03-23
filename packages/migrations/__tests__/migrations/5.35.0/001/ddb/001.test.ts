@@ -16,7 +16,7 @@ import {
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 100;
+const NUMBER_OF_FILES = 10000;
 
 describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();

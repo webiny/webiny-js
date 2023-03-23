@@ -1,6 +1,9 @@
 import { Client } from "@elastic/elasticsearch";
-import { SearchBody, ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
-import WebinyError from "@webiny/error";
+import {
+    SearchBody,
+    ElasticsearchSearchResponse,
+    PrimitiveValue
+} from "@webiny/api-elasticsearch/types";
 
 export interface EsQueryAllParams<TItem> {
     elasticsearchClient: Client;
@@ -15,31 +18,22 @@ export const esQueryAllWithCallback = async <TItem>({
     index,
     callback
 }: EsQueryAllParams<TItem>) => {
-    try {
-        let cursor: string[] | undefined = undefined;
-        while (true) {
-            const bodyWithCursor = { ...body, search_after: cursor };
-            const response: ElasticsearchSearchResponse<TItem> = await elasticsearchClient.search({
-                index,
-                body: bodyWithCursor
-            });
-            const hits = response.body.hits;
-            if (hits.hits.length > 0) {
-                cursor = hits.hits[hits.hits.length - 1].sort as unknown as string[];
-                await callback(
-                    hits.hits.map(item => item._source),
-                    cursor
-                );
-
-                continue;
-            }
+    let cursor: PrimitiveValue[] | undefined = body.search_after;
+    while (true) {
+        const bodyWithCursor = { ...body, search_after: cursor };
+        const response: ElasticsearchSearchResponse<TItem> = await elasticsearchClient.search({
+            index,
+            body: bodyWithCursor
+        });
+        const hits = response.body.hits;
+        if (hits.hits.length <= 0) {
             break;
         }
-    } catch (ex) {
-        throw new WebinyError(
-            ex.message || "Error in the Elasticsearch query.",
-            ex.code || "ELASTICSEARCH_ERROR",
-            { body }
+
+        cursor = hits.hits[hits.hits.length - 1].sort as unknown as string[];
+        await callback(
+            hits.hits.map(item => item._source),
+            cursor as string[]
         );
     }
 };
