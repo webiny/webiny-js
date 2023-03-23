@@ -35,11 +35,17 @@ interface WithGetIdentityDataProps {
     children: React.ReactNode;
 }
 
+export interface AuthenticationComponent {
+    children: React.ReactNode;
+}
+
 export const createAuthentication = ({
     auth0,
     ...config
-}: CreateAuthenticationConfig): React.FC => {
-    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
+}: CreateAuthenticationConfig): React.VFC<AuthenticationComponent> => {
+    const withGetIdentityData = (
+        Component: React.VFC<WithGetIdentityDataProps>
+    ): React.VFC<AuthenticationComponent> => {
         return function WithGetIdentityData({ children }) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
@@ -49,7 +55,7 @@ export const createAuthentication = ({
         };
     };
 
-    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+    const Authentication: React.VFC<AuthenticationProps> = ({ getIdentityData, children }) => {
         const { isAuthenticated, isLoading, getIdTokenClaims, getAccessTokenSilently, logout } =
             useAuth0();
 

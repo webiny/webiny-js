@@ -1,7 +1,11 @@
 import React, { FC, Fragment, useEffect, useRef, useState } from "react";
 import get from "lodash/get";
 import { LoginScreenRenderer, useTenancy, createComponentPlugin } from "@webiny/app-serverless-cms";
-import { createAuthentication, Auth0Options } from "./createAuthentication";
+import {
+    createAuthentication,
+    Auth0Options,
+    AuthenticationComponent
+} from "./createAuthentication";
 import { UserMenuModule } from "~/modules/userMenu";
 import { AppClientModule } from "~/modules/appClient";
 import { useApolloClient } from "@apollo/react-hooks";
@@ -22,7 +26,7 @@ const GET_CLIENT_ID = gql`
 
 const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({ auth0, rootAppClientId, children }) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef<React.FC | null>(null);
+    const authRef = useRef<React.VFC<AuthenticationComponent> | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
@@ -64,7 +68,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({ auth0, rootAppClientId,
         });
     }, []);
 
-    return loaded ? React.createElement(authRef.current as React.FC, {}, children) : null;
+    return loaded ? React.createElement(authRef.current as React.VFC, {}, children) : null;
 };
 
 const createLoginScreenPlugin = (params: Auth0Props) => {
@@ -85,7 +89,7 @@ export interface Auth0Props {
     children?: React.ReactNode;
 }
 
-export const Auth0: React.FC<Auth0Props> = props => {
+export const Auth0: React.VFC<Auth0Props> = props => {
     const LoginScreenPlugin = createLoginScreenPlugin(props);
     return (
         <Fragment>

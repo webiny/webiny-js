@@ -4,7 +4,7 @@ import { Bind } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
 
-export const AppClientInput = () => {
+export const AppClientInput: React.VFC = () => {
     return (
         <Grid>
             <Cell span={12}>

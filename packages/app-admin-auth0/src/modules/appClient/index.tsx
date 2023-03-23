@@ -16,7 +16,7 @@ const TenantFormFields = memo(function TenantFormFields() {
     return <AddTenantFormField querySelection={selection} element={<AppClientInput />} />;
 });
 
-export const AppClientModule = () => {
+export const AppClientModule: React.VFC = () => {
     return (
         <Plugins>
             <TenantFormFields />
