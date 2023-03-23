@@ -7,7 +7,7 @@ export interface ApiKeysProps {
     listProps?: ApiKeysDataListProps;
     formProps?: ApiKeyFormProps;
 }
-export const ApiKeys: React.FC<ApiKeysProps> = ({ formProps = {}, listProps = {} }) => {
+export const ApiKeys: React.VFC<ApiKeysProps> = ({ formProps = {}, listProps = {} }) => {
     return (
         <SplitView>
             <LeftPanel>

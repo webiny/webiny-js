@@ -38,7 +38,7 @@ export interface ApiKeyFormProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
-export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
+export const ApiKeyForm: React.VFC<ApiKeyFormProps> = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const newEntry = new URLSearchParams(location.search).get("new") === "true";

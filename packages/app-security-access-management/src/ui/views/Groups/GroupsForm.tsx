@@ -38,7 +38,7 @@ export interface GroupsFormProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
-export const GroupsForm: React.FC<GroupsFormProps> = () => {
+export const GroupsForm: React.VFC<GroupsFormProps> = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const newGroup = new URLSearchParams(location.search).get("new") === "true";

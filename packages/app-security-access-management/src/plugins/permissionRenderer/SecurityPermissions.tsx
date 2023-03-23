@@ -22,7 +22,7 @@ interface SecurityPermissionsProps {
     value: SecurityPermission[];
     onChange: (value: SecurityPermission[]) => void;
 }
-export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value, onChange }) => {
+export const SecurityPermissions: React.VFC<SecurityPermissionsProps> = ({ value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue: SecurityPermission[] = [];
