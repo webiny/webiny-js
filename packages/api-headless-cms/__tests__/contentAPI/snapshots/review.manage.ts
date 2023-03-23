@@ -4,7 +4,7 @@ export default /* GraphQL */ `
     """
     Product review
     """
-    type Review {
+    type ReviewApiModel {
         id: ID!
         entryId: String!
         createdOn: DateTime!
@@ -12,21 +12,21 @@ export default /* GraphQL */ `
         createdBy: CmsIdentity!
         ownedBy: CmsIdentity!
         modifiedBy: CmsIdentity
-        meta: ReviewMeta
+        meta: ReviewApiModelMeta
         text: String
         product: RefField
         rating: Number
         author: RefField
     }
 
-    type ReviewMeta {
+    type ReviewApiModelMeta {
         modelId: String
         version: Int
         locked: Boolean
         publishedOn: DateTime
         status: String
         ${revisionsComment}
-        revisions: [Review!]
+        revisions: [ReviewApiModel!]
         title: String
         description: String
         image: String
@@ -34,7 +34,7 @@ export default /* GraphQL */ `
         data: JSON
     }
 
-    input ReviewInput {
+    input ReviewApiModelInput {
         id: ID
         text: String!
         product: RefFieldInput
@@ -42,14 +42,14 @@ export default /* GraphQL */ `
         author: RefFieldInput
     }
 
-    input ReviewGetWhereInput {
+    input ReviewApiModelGetWhereInput {
         id: ID
         entryId: String
         text: String
         rating: Number
     }
 
-    input ReviewListWhereInput {
+    input ReviewApiModelListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -109,27 +109,27 @@ export default /* GraphQL */ `
         
         author: RefFieldWhereInput
 
-        AND: [ReviewListWhereInput!]
-        OR: [ReviewListWhereInput!]
+        AND: [ReviewApiModelListWhereInput!]
+        OR: [ReviewApiModelListWhereInput!]
     }
 
-    type ReviewResponse {
-        data: Review
+    type ReviewApiModelResponse {
+        data: ReviewApiModel
         error: CmsError
     }
     
-    type ReviewArrayResponse {
-        data: [Review]
+    type ReviewApiModelArrayResponse {
+        data: [ReviewApiModel]
         error: CmsError
     }
 
-    type ReviewListResponse {
-        data: [Review]
+    type ReviewApiModelListResponse {
+        data: [ReviewApiModel]
         meta: CmsListMeta
         error: CmsError
     }
 
-    enum ReviewListSorter {
+    enum ReviewApiModelListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -143,33 +143,33 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getReview(revision: ID, entryId: ID, status: CmsEntryStatusType): ReviewResponse
+        getReviewApiModel(revision: ID, entryId: ID, status: CmsEntryStatusType): ReviewApiModelResponse
         
-        getReviewRevisions(id: ID!): ReviewArrayResponse
+        getReviewApiModelRevisions(id: ID!): ReviewApiModelArrayResponse
         
-        getReviewsByIds(revisions: [ID!]!): ReviewArrayResponse
+        getReviewsApiModelByIds(revisions: [ID!]!): ReviewApiModelArrayResponse
 
-        listReviews(
-            where: ReviewListWhereInput
-            sort: [ReviewListSorter]
+        listReviewsApiModel(
+            where: ReviewApiModelListWhereInput
+            sort: [ReviewApiModelListSorter]
             limit: Int
             after: String
-        ): ReviewListResponse
+        ): ReviewApiModelListResponse
     }
 
     extend type Mutation {
-        createReview(data: ReviewInput!): ReviewResponse
+        createReviewApiModel(data: ReviewApiModelInput!): ReviewApiModelResponse
 
-        createReviewFrom(revision: ID!, data: ReviewInput): ReviewResponse
+        createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput): ReviewApiModelResponse
 
-        updateReview(revision: ID!, data: ReviewInput!): ReviewResponse
+        updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!): ReviewApiModelResponse
 
-        deleteReview(revision: ID!): CmsDeleteResponse
+        deleteReviewApiModel(revision: ID!): CmsDeleteResponse
 
-        publishReview(revision: ID!): ReviewResponse
+        publishReviewApiModel(revision: ID!): ReviewApiModelResponse
     
-        republishReview(revision: ID!): ReviewResponse
+        republishReviewApiModel(revision: ID!): ReviewApiModelResponse
 
-        unpublishReview(revision: ID!): ReviewResponse
+        unpublishReviewApiModel(revision: ID!): ReviewApiModelResponse
     }
 `;

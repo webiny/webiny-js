@@ -1,12 +1,23 @@
+import WebinyError from "@webiny/error";
+import lodashCamelCase from "lodash/camelCase";
+import camelCase from "lodash/camelCase";
+import upperFirst from "lodash/upperFirst";
+import pluralize from "pluralize";
 import { Plugin } from "@webiny/plugins";
 import {
     CmsModel as CmsModelBase,
     CmsModelField as CmsModelFieldBase,
     CmsModelFieldSettings as BaseCmsModelFieldSettings
 } from "~/types";
-import WebinyError from "@webiny/error";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
-import lodashCamelCase from "lodash/camelCase";
+
+const transformNameToSingularApiName = (name: string) => {
+    return upperFirst(camelCase(name));
+};
+
+const transformNameToPluralApiName = (name: string) => {
+    return pluralize(transformNameToSingularApiName(name));
+};
 
 interface CmsModelFieldSettings extends Omit<BaseCmsModelFieldSettings, "fields"> {
     /**
@@ -30,12 +41,35 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
     settings?: CmsModelFieldSettings;
 }
 
-interface CmsModelInput
-    extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion" | "fields"> {
+interface CmsApiModel
+    extends Omit<CmsModelBase, "isPrivate" | "locale" | "tenant" | "webinyVersion" | "fields"> {
+    isPrivate?: never;
     fields: CmsModelFieldInput[];
     locale?: string;
     tenant?: string;
 }
+
+interface CmsPrivateModel
+    extends Omit<
+        CmsModelBase,
+        | "isPrivate"
+        | "singularApiName"
+        | "pluralApiName"
+        | "locale"
+        | "tenant"
+        | "webinyVersion"
+        | "fields"
+    > {
+    singularApiName?: never;
+    pluralApiName?: never;
+    isPrivate: true;
+    fields: CmsModelFieldInput[];
+    locale?: string;
+    tenant?: string;
+}
+
+type CmsModelInput = CmsApiModel | CmsPrivateModel;
+
 interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
     locale?: string;
     tenant?: string;
@@ -60,6 +94,9 @@ export class CmsModelPlugin extends Plugin {
     private buildModel(input: CmsModelInput): CmsModel {
         const model: CmsModel = {
             ...input,
+            isPrivate: input.isPrivate || false,
+            singularApiName: input.singularApiName || transformNameToSingularApiName(input.name),
+            pluralApiName: input.pluralApiName || transformNameToPluralApiName(input.name),
             fields: this.buildFields(input, input.fields)
         };
         this.validateLayout(model);

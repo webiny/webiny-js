@@ -5,6 +5,7 @@ import { ApiEndpoint, CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/typ
 
 interface TypeFromFieldParams {
     typeOfType: "type" | "input";
+    models: CmsModel[];
     model: CmsModel;
     type: ApiEndpoint;
     typeNamePrefix: string;
@@ -18,9 +19,9 @@ interface TypeFromFieldResponse {
 }
 
 export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
-    const { typeOfType, model, type, typeNamePrefix, fields, fieldTypePlugins } = params;
+    const { typeOfType, model, models, type, typeNamePrefix, fields, fieldTypePlugins } = params;
     const typeSuffix = typeOfType === "input" ? "Input" : "";
-    const mTypeName = createTypeName(model.modelId);
+    const mTypeName = createTypeName(model.singularApiName);
 
     const typeFields = [];
     const nestedTypes = [];
@@ -32,11 +33,11 @@ export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromField
     // with the actual prefix which includes parent field name type.
     const replace = new RegExp(`${mTypeName}_`, "g");
 
-    for (const f of fields) {
+    for (const field of fields) {
         const result =
             typeOfType === "type"
-                ? renderField({ field: f, type, model, fieldTypePlugins })
-                : renderInputField({ field: f, model, fieldTypePlugins });
+                ? renderField({ field, type, models, model, fieldTypePlugins })
+                : renderInputField({ field, models, model, fieldTypePlugins });
 
         if (!result) {
             continue;

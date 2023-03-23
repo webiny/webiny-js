@@ -1,6 +1,4 @@
-const fs = require("fs-extra");
 const glob = require("glob");
-const path = require("path");
 const loadJsonFile = require("load-json-file");
 
 const target = "./packages/*/package.json";

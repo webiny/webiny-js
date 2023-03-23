@@ -16,10 +16,15 @@ export const assignModelBeforeUpdate = (params: AssignBeforeModelUpdateParams) =
          * First we go through the layout...
          */
         validateLayout(model.layout, model.fields);
+
+        context.security.disableAuthorization();
+        const models = await context.cms.listModels();
+        context.security.enableAuthorization();
         /**
          * then the model and fields...
          */
         await validateModel({
+            models,
             model,
             original,
             context

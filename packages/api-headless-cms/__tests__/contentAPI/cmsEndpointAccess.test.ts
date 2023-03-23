@@ -61,6 +61,8 @@ describe("Endpoint access", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });

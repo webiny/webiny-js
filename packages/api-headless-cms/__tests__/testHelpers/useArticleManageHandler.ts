@@ -1,4 +1,6 @@
 import { useGraphQLHandler, GraphQLHandlerParams } from "./useGraphQLHandler";
+import { CmsModel } from "~/types";
+import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 
 const fields = `
     id
@@ -50,154 +52,174 @@ const errorFields = `
     }
 `;
 
-const getArticleQuery = /* GraphQL */ `
-    query GetArticle($revision: ID!) {
-        getArticle(revision: $revision) {
-            data {
-                ${fields}
+const getArticleQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetArticle($revision: ID!) {
+            getArticle: get${model.singularApiName}(revision: $revision) {
+                data {
+                    ${fields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const getArticlesByIdsQuery = /* GraphQL */ `
-    query GetArticles($revisions: [ID!]!) {
-        getArticlesByIds(revisions: $revisions) {
-            data {
-                ${fields}
+const getArticlesByIdsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetArticles($revisions: [ID!]!) {
+            getArticlesByIds: get${model.pluralApiName}ByIds(revisions: $revisions) {
+                data {
+                    ${fields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const listArticlesQuery = /* GraphQL */ `
-    query ListArticles(
-        $where: ArticleListWhereInput
-        $sort: [ArticleListSorter]
-        $limit: Int
-        $after: String
-    ) {
-        listArticles(where: $where, sort: $sort, limit: $limit, after: $after) {
-            data {
-                ${fields}
+const listArticlesQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query ListArticles(
+            $where: ${model.singularApiName}ListWhereInput
+            $sort: [${model.singularApiName}ListSorter]
+            $limit: Int
+            $after: String
+        ) {
+            listArticles: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+                data {
+                    ${fields}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                ${errorFields}
             }
-            meta {
-                cursor
-                hasMoreItems
-                totalCount
-            }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createArticleMutation = /* GraphQL */ `
-    mutation CreateArticle($data: ArticleInput!) {
-        createArticle(data: $data) {
-            data {
-                ${fields}
+const createArticleMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateArticle($data: ${model.singularApiName}Input!) {
+            createArticle: create${model.singularApiName}(data: $data) {
+                data {
+                    ${fields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createArticleFromMutation = /* GraphQL */ `
-    mutation CreateArticleFrom($revision: ID!) {
-        createArticleFrom(revision: $revision) {
-            data {
-                ${fields}
+const createArticleFromMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateArticleFrom($revision: ID!) {
+            createArticleFrom: create${model.singularApiName}From(revision: $revision) {
+                data {
+                    ${fields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const updateArticleMutation = /* GraphQL */ `
-    mutation UpdateArticle($revision: ID!, $data: ArticleInput!) {
-        updateArticle(revision: $revision, data: $data) {
-            data {
-                ${fields}
+const updateArticleMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdateArticle($revision: ID!, $data: ArticleInput!) {
+            updateArticle: update${model.singularApiName}(revision: $revision, data: $data) {
+                data {
+                    ${fields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const deleteArticleMutation = /* GraphQL */ `
-    mutation DeleteArticle($revision: ID!) {
-        deleteArticle(revision: $revision) {
-            data
-            ${errorFields}
-        }
-    }
-`;
-
-const publishArticleMutation = /* GraphQL */ `
-    mutation PublishArticle($revision: ID!) {
-        publishArticle(revision: $revision) {
-            data {
-                ${fields}
+const deleteArticleMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DeleteArticle($revision: ID!) {
+            deleteArticle: delete${model.singularApiName}(revision: $revision) {
+                data
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const unpublishArticleMutation = /* GraphQL */ `
-    mutation UnpublishArticle($revision: ID!) {
-        unpublishArticle(revision: $revision) {
-            data {
-                ${fields}
+const publishArticleMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation PublishArticle($revision: ID!) {
+            publishArticle: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${fields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
+
+const unpublishArticleMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UnpublishArticle($revision: ID!) {
+            unpublishArticle: unpublish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${fields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
 
 export const useArticleManageHandler = (
     params: Omit<GraphQLHandlerParams, "createHeadlessCmsApp">
 ) => {
     const contentHandler = useGraphQLHandler(params);
 
+    const model = getCmsModel("article");
+
     return {
         ...contentHandler,
         async getArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getArticleQuery, variables },
+                body: { query: getArticleQuery(model), variables },
                 headers
             });
         },
         async getArticlesByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getArticlesByIdsQuery, variables },
+                body: { query: getArticlesByIdsQuery(model), variables },
                 headers
             });
         },
         async listArticles(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: listArticlesQuery, variables },
+                body: { query: listArticlesQuery(model), variables },
                 headers
             });
         },
         async createArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createArticleMutation, variables },
+                body: { query: createArticleMutation(model), variables },
                 headers
             });
         },
         async createArticleFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createArticleFromMutation, variables },
+                body: { query: createArticleFromMutation(model), variables },
                 headers
             });
         },
         async updateArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: updateArticleMutation,
+                    query: updateArticleMutation(model),
                     variables
                 },
                 headers
@@ -206,7 +228,7 @@ export const useArticleManageHandler = (
         async deleteArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: deleteArticleMutation,
+                    query: deleteArticleMutation(model),
                     variables
                 },
                 headers
@@ -215,7 +237,7 @@ export const useArticleManageHandler = (
         async publishArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: publishArticleMutation,
+                    query: publishArticleMutation(model),
                     variables
                 },
                 headers
@@ -224,7 +246,7 @@ export const useArticleManageHandler = (
         async unpublishArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: unpublishArticleMutation,
+                    query: unpublishArticleMutation(model),
                     variables
                 },
                 headers

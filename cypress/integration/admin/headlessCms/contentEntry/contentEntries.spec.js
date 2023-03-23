@@ -1,10 +1,15 @@
 import uniqid from "uniqid";
 import kebabCase from "lodash/kebabCase";
+import upperFirst from "lodash/upperFirst";
+import camelCase from "lodash/camelCase";
 import { CONTENT_MODEL_DATA } from "../mocks";
 
 describe("Headless CMS - Content Entries", () => {
     context("CRUD", () => {
         const newModel = uniqid("Book-");
+        const singularApiName = upperFirst(camelCase(uniqid("Book")));
+        const pluralApiName = upperFirst(camelCase(uniqid("Books")));
+
         let model;
         let group;
         // Runs once before all tests in the block
@@ -17,6 +22,8 @@ describe("Headless CMS - Content Entries", () => {
                     data: {
                         name: newModel,
                         modelId: kebabCase(newModel.toLowerCase()),
+                        singularApiName,
+                        pluralApiName,
                         group: group.id,
                         description: "Testing 123"
                     }

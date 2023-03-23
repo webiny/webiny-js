@@ -8,7 +8,6 @@ import {
     CmsEntryContext,
     CmsEntryPermission,
     CmsEntry,
-    CmsModel,
     CmsContext,
     CmsStorageEntry,
     HeadlessCmsStorageOperations,
@@ -44,7 +43,8 @@ import {
     OnEntryRevisionDeleteErrorTopicParams,
     OnEntryBeforeRepublishTopicParams,
     OnEntryAfterRepublishTopicParams,
-    OnEntryRepublishErrorTopicParams
+    OnEntryRepublishErrorTopicParams,
+    CmsModel
 } from "~/types";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
@@ -63,6 +63,8 @@ import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 import { getSearchableFields } from "./contentEntry/searchableFields";
+import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
+import { removeNullValues } from "~/utils/removeNullValues";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -113,11 +115,8 @@ const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) 
 /**
  * Cleans and adds default values to create input data.
  */
-const mapAndCleanCreateInputData = (
-    model: CmsModel,
-    input: CreateCmsEntryInput
-): CreateCmsEntryInput => {
-    return model.fields.reduce((acc, field) => {
+const mapAndCleanCreateInputData = (model: CmsModel, input: CreateCmsEntryInput) => {
+    return model.fields.reduce<CreateCmsEntryInput>((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
          * The fix would be for the user to add the fieldId on the field definition.
@@ -133,16 +132,13 @@ const mapAndCleanCreateInputData = (
          */
         acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
         return acc;
-    }, {} as CreateCmsEntryInput);
+    }, {});
 };
 /**
  * Cleans the update input entry data.
  */
-const mapAndCleanUpdatedInputData = (
-    model: CmsModel,
-    input: UpdateCmsEntryInput
-): UpdateCmsEntryInput => {
-    return model.fields.reduce((acc, field) => {
+const mapAndCleanUpdatedInputData = (model: CmsModel, input: UpdateCmsEntryInput) => {
+    return model.fields.reduce<UpdateCmsEntryInput>((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
          * The fix would be for the user to add the fieldId on the field definition.
@@ -161,7 +157,7 @@ const mapAndCleanUpdatedInputData = (
         }
         acc[field.fieldId] = value;
         return acc;
-    }, {} as CreateCmsEntryInput);
+    }, {});
 };
 /**
  * This method takes original entry meta and new input.
@@ -169,15 +165,7 @@ const mapAndCleanUpdatedInputData = (
  */
 const createEntryMeta = (input?: Record<string, any>, original?: Record<string, any>) => {
     const meta = lodashMerge(original || {}, input || {});
-
-    for (const key in meta) {
-        if (meta[key] !== undefined || meta[key] !== null) {
-            continue;
-        }
-        delete meta[key];
-    }
-
-    return meta;
+    return removeUndefinedValues(removeNullValues(meta));
 };
 
 interface DeleteEntryParams {
@@ -185,27 +173,12 @@ interface DeleteEntryParams {
     entry: CmsEntry;
 }
 
-interface EntryIdResult {
-    /**
-     * A generated id that will connect all the entry records.
-     */
-    entryId: string;
-    /**
-     * Version of the entry.
-     */
-    version: number;
-    /**
-     * Combination of entryId and version.
-     */
-    id: string;
-}
-
-const createEntryId = (input: CreateCmsEntryInput): EntryIdResult => {
+const createEntryId = (input: CreateCmsEntryInput) => {
     let entryId = mdbid();
     if (input.id) {
         if (input.id.match(/^([a-zA-Z0-9])([a-zA-Z0-9\-]+)([a-zA-Z0-9])$/) === null) {
             throw new WebinyError(
-                "The provided ID is not valid. It must be a string which can A-Z, a-z, 0-9, - and it cannot start or end with a -.",
+                "The provided ID is not valid. It must be a string which can be A-Z, a-z, 0-9, - and it cannot start or end with a -.",
                 "INVALID_ID",
                 {
                     id: input.id
@@ -225,7 +198,7 @@ const createEntryId = (input: CreateCmsEntryInput): EntryIdResult => {
     };
 };
 
-const increaseEntryIdVersion = (id: string): EntryIdResult => {
+const increaseEntryIdVersion = (id: string) => {
     const { id: entryId, version } = parseIdentifier(id);
     if (!version) {
         throw new WebinyError(
@@ -252,7 +225,7 @@ const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus =
     return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
 };
 
-export interface CreateContentEntryCrudParams {
+interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
@@ -261,7 +234,6 @@ export interface CreateContentEntryCrudParams {
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { storageOperations, context, getIdentity, getTenant } = params;
-
     const { plugins } = context;
 
     const getCreatedBy = () => {
@@ -349,7 +321,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryAfterDelete = createTopic<OnEntryAfterDeleteTopicParams>("cms.onEntryAfterDelete");
     const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
 
-    // delete revision
+    /**
+     * Delete revision
+     */
     const onEntryRevisionBeforeDelete = createTopic<OnEntryRevisionBeforeDeleteTopicParams>(
         "cms.onEntryRevisionBeforeDelete"
     );
@@ -360,10 +334,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         "cms.onEntryRevisionDeleteError"
     );
 
-    // get
+    /**
+     * Get entry
+     */
     const onEntryBeforeGet = createTopic<OnEntryBeforeGetTopicParams>("cms.onEntryBeforeGet");
 
-    // list
+    /**
+     * List entries
+     */
     const onEntryBeforeList = createTopic<EntryBeforeListTopicParams>("cms.onEntryBeforeList");
 
     /**

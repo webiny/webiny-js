@@ -5,7 +5,9 @@ const floats = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20];
 
 export const createNumbersModel = (group: CmsGroup): CmsModel => {
     const model: CmsModel = {
-        modelId: "numbers",
+        modelId: "numberModel",
+        singularApiName: "NumberModel",
+        pluralApiName: "NumberModels",
         group: {
             id: group.id,
             name: group.name
@@ -64,8 +66,8 @@ interface Data {
 export const createNumbersEntryMutation = (data: Data) => {
     return {
         body: {
-            query: `mutation CreateNumbersEntry($data: NumbersInput!) {
-                    createNumbers(data: $data) {
+            query: `mutation CreateNumberModelEntry($data: NumberModelInput!) {
+                    createNumberModel(data: $data) {
                         data {
                             id
                             integer
@@ -90,8 +92,8 @@ export const createNumbersEntryMutation = (data: Data) => {
 export const listNumbersEntryQuery = () => {
     return {
         body: {
-            query: `query ListNumbersEntry {
-                listNumbers {
+            query: `query ListNumberModelEntry {
+                listNumberModels {
                     data {
                         id
                         integer
@@ -113,8 +115,8 @@ export const listNumbersEntryQuery = () => {
 export const getNumbersEntryQuery = (revision: string) => {
     return {
         body: {
-            query: `query GetNumbersEntry($revision: ID!) {
-                    getNumbers(revision: $revision) {
+            query: `query GetNumberModelEntry($revision: ID!) {
+                    getNumberModel(revision: $revision) {
                         data {
                             id
                             integer

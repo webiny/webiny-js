@@ -1,4 +1,6 @@
 import zod from "zod";
+import upperFirst from "lodash/upperFirst";
+import camelCase from "lodash/camelCase";
 
 const fieldSystemFields: string[] = [
     "id",
@@ -129,10 +131,33 @@ const fieldSchema = zod.object({
         .default({})
 });
 
+const refinementValidation = (value: string): boolean => {
+    return value === upperFirst(camelCase(value));
+};
+const refinementSingularValidationMessage = (value?: string) => {
+    return {
+        message: `The Singular API Name value "${
+            value || "undefined"
+        }" is not valid. It must in Upper First + Camel Cased form. For example: "ArticleCategory" or "CarMake".`
+    };
+};
+const refinementPluralValidationMessage = (value?: string) => {
+    return {
+        message: `The Plural API Name value "${
+            value || "undefined"
+        }" is not valid. It must in Upper First + Camel Cased form. For example: "ArticleCategories" or "CarMakes".`
+    };
+};
+
 export const createModelCreateValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString,
+        singularApiName: shortString.refine(
+            refinementValidation,
+            refinementSingularValidationMessage
+        ),
+        pluralApiName: shortString.refine(refinementValidation, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: shortString,
         fields: zod.array(fieldSchema).default([]),
@@ -149,6 +174,11 @@ export const createModelCreateFromValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString,
+        singularApiName: shortString.refine(
+            refinementValidation,
+            refinementSingularValidationMessage
+        ),
+        pluralApiName: shortString.refine(refinementValidation, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: shortString,
         locale: optionalShortString
@@ -158,6 +188,18 @@ export const createModelCreateFromValidation = () => {
 export const createModelUpdateValidation = () => {
     return zod.object({
         name: optionalShortString,
+        singularApiName: optionalShortString.refine(value => {
+            if (!value) {
+                return true;
+            }
+            return refinementValidation(value);
+        }, refinementSingularValidationMessage),
+        pluralApiName: optionalShortString.refine(value => {
+            if (!value) {
+                return true;
+            }
+            return refinementValidation(value);
+        }, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: optionalShortString,
         fields: zod.array(fieldSchema),

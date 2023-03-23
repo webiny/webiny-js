@@ -1,5 +1,5 @@
 import { GraphQLSchema } from "graphql";
-import { ApiEndpoint, CmsContext } from "~/types";
+import { ApiEndpoint, CmsModel, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -16,6 +16,7 @@ interface SchemaCache {
     key: string;
     schema: GraphQLSchema;
 }
+
 interface GetSchemaParams {
     context: CmsContext;
     type: ApiEndpoint;
@@ -52,9 +53,14 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     if (cachedSchema?.key === cacheKey) {
         return cachedSchema.schema;
     }
-    // Load model data
+    /**
+     * We need all the API models.
+     * Private models are hidden in the GraphQL, so filter them out.
+     */
     context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter(model => model.isPrivate !== true);
+    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
+        return model.isPrivate !== true;
+    });
     context.security.enableAuthorization();
     try {
         const schema = await generateSchema({

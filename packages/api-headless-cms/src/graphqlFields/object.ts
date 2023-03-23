@@ -62,7 +62,7 @@ interface CreateTypeNameParams {
 }
 const createTypeName = (params: CreateTypeNameParams): string => {
     const { model, parents = [], field } = params;
-    return [model.modelId]
+    return [model.singularApiName]
         .concat(parents)
         .concat([field.fieldId])
         .filter(Boolean)
@@ -102,8 +102,9 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
             });
         },
         read: {
-            createTypeField({ field, model, fieldTypePlugins }) {
+            createTypeField({ field, models, model, fieldTypePlugins }) {
                 const result = createTypeFromFields({
+                    models,
                     typeOfType: "type",
                     model,
                     type: "read",
@@ -154,9 +155,10 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
             createListFilters
         },
         manage: {
-            createTypeField({ model, field, fieldTypePlugins }) {
+            createTypeField({ models, model, field, fieldTypePlugins }) {
                 const result = createTypeFromFields({
                     typeOfType: "type",
+                    models,
                     model,
                     type: "manage",
                     typeNamePrefix: createTypeName({
@@ -187,9 +189,10 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     typeDefs: `${typeDefs}${childTypeDefs}`
                 };
             },
-            createInputField({ model, field, fieldTypePlugins }) {
+            createInputField({ models, model, field, fieldTypePlugins }) {
                 const result = createTypeFromFields({
                     typeOfType: "input",
+                    models,
                     model,
                     type: "manage",
                     typeNamePrefix: createTypeName({
