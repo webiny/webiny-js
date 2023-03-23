@@ -28,7 +28,7 @@ interface WithTenantProps {
     getIdentityData: (params: GetIdentityWithTenantParams) => Promise<Record<string, string>>;
     children: React.ReactNode;
 }
-export const withTenant = (Component: React.FC<WithTenantProps>): React.FC<WithTenantProps> => {
+export const withTenant = (Component: React.VFC<WithTenantProps>): React.VFC<WithTenantProps> => {
     return function WithTenant({ getIdentityData, children }) {
         const { tenant, setTenant, isMultiTenant } = useTenancy();
 

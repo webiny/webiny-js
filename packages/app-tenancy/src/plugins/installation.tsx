@@ -37,7 +37,7 @@ const INSTALL = gql`
 interface TenancyInstallerProps {
     onInstalled: () => Promise<void>;
 }
-const TenancyInstaller: React.FC<TenancyInstallerProps> = ({ onInstalled }) => {
+const TenancyInstaller: React.VFC<TenancyInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [error, setError] = useState(null);
 

@@ -46,7 +46,10 @@ const getInitialTenant = (): string | null => {
     return currentTenant;
 };
 
-export const TenancyProvider: React.FC = props => {
+interface TenancyProviderProps {
+    children: React.ReactNode;
+}
+export const TenancyProvider: React.VFC<TenancyProviderProps> = props => {
     const [currentTenant, setTenant] = useState(getInitialTenant);
     const { canUseFeature } = useWcp();
 
