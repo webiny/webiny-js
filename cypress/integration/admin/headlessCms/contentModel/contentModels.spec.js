@@ -187,6 +187,17 @@ context("Headless CMS - Content Models CRUD", () => {
                 .wait(500)
                 .type(`Book - ${uniqueId}`)
                 .wait(500);
+            // add api singular and plural names
+            cy.findByTestId("cms.newcontentmodeldialog.singularApiName")
+                .focus()
+                .wait(500)
+                .type(lodashUpperFirst(lodashCamelCase(`Book${uniqueId}`)))
+                .wait(500);
+            cy.findByTestId("cms.newcontentmodeldialog.pluralApiName")
+                .focus()
+                .wait(500)
+                .type(lodashUpperFirst(lodashCamelCase(`Books${uniqueId}`)))
+                .wait(500);
             cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
             /**
              * checkbox is checked by default, but lets set it to true just in case someone changes that

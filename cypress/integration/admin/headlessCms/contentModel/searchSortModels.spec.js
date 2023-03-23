@@ -1,4 +1,6 @@
 import uniqid from "uniqid";
+import upperFirst from "lodash/upperFirst";
+import camelCase from "lodash/camelCase";
 
 context("Headless CMS - Search and Sort Content Models", () => {
     const totalModels = 2;
@@ -18,6 +20,8 @@ context("Headless CMS - Search and Sort Content Models", () => {
                 data: {
                     name: `${newModel} 1`,
                     modelId: `${newModel}-1`,
+                    singularApiName: upperFirst(camelCase(`${newModel}-1`)),
+                    pluralApiName: upperFirst(camelCase(`${newModel}-1S`)),
                     group: contentModelGroup.id
                 }
             }).then(data => {
@@ -27,6 +31,8 @@ context("Headless CMS - Search and Sort Content Models", () => {
                     data: {
                         name: `${newModel} 2`,
                         modelId: `${newModel}-2`,
+                        singularApiName: upperFirst(camelCase(`${newModel}-2`)),
+                        pluralApiName: upperFirst(camelCase(`${newModel}-2S`)),
                         group: contentModelGroup.id
                     }
                 }).then(data => {
