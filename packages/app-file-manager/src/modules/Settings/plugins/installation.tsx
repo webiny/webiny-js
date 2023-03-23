@@ -41,7 +41,7 @@ const INSTALL = gql`
 interface FileManagerInstallerProps {
     onInstalled: () => Promise<void>;
 }
-const FMInstaller: React.FC<FileManagerInstallerProps> = ({ onInstalled }) => {
+const FMInstaller: React.VFC<FileManagerInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [error, setError] = useState(null);
 

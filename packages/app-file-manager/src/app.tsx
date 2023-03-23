@@ -4,7 +4,7 @@ import { FileManagerApiProviderModule } from "~/modules/FileManagerApiProvider";
 import { FileTypesModule } from "~/modules/FileTypes";
 import { FileManagerRendererModule } from "~/modules/FileManagerRenderer";
 
-export const FileManager: React.FC = () => {
+export const FileManager: React.VFC = () => {
     return (
         <>
             <SettingsModule />

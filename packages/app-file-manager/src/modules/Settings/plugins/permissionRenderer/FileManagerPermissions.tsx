@@ -35,7 +35,7 @@ interface FileManagerPermissionsProps {
     onChange: (value: FileManagerPermissionItem[]) => void;
 }
 
-export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
+export const FileManagerPermissions: React.VFC<FileManagerPermissionsProps> = ({
     value,
     onChange
 }) => {

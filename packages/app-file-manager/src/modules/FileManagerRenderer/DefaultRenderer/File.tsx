@@ -108,7 +108,7 @@ export interface FileProps {
     showFileDetails: (event?: React.MouseEvent) => void;
 }
 
-const File: React.FC<FileProps> = props => {
+const File: React.VFC<FileProps> = props => {
     const { file, selected, onSelect, children, showFileDetails } = props;
 
     return (

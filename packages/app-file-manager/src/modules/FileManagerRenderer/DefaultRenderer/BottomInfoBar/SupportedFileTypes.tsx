@@ -22,7 +22,7 @@ export interface SupportedFileTypesProps {
     accept: string[];
 }
 
-const SupportedFileTypes: React.FC<SupportedFileTypesProps> = ({ accept }) => {
+const SupportedFileTypes: React.VFC<SupportedFileTypesProps> = ({ accept }) => {
     if (!accept) {
         return null;
     }

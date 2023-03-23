@@ -51,7 +51,7 @@ export interface DropFilesHereProps {
     className?: string;
 }
 
-const DropFilesHere: React.FC<DropFilesHereProps> = ({ onDrop, onDragLeave, empty, onClick }) => {
+const DropFilesHere: React.VFC<DropFilesHereProps> = ({ onDrop, onDragLeave, empty, onClick }) => {
     return (
         <div
             className={classNames(styles, { empty })}

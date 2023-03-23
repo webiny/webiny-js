@@ -28,7 +28,7 @@ const BottomInfoBarWrapper = styled("div")({
     }
 });
 
-const BottomInfoBar: React.FC<SupportedFileTypesProps & UploadStatusProps> = props => {
+const BottomInfoBar: React.VFC<SupportedFileTypesProps & UploadStatusProps> = props => {
     return (
         <BottomInfoBarWrapper>
             <div>

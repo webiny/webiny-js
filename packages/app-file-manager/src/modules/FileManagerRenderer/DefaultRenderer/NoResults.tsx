@@ -8,7 +8,7 @@ const styles = css({
     width: "100%"
 });
 
-const DropFilesHere: React.FC = () => {
+const DropFilesHere: React.VFC = () => {
     return (
         <div className={styles}>
             <div>No results found.</div>

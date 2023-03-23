@@ -57,7 +57,7 @@ interface ListTagsOptions {
     where?: ListFileTagsQueryVariables["where"];
 }
 
-const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
+const FileManagerApiProvider: React.VFC<FileManagerApiProviderProps> = ({ children }) => {
     const { identity, getPermission } = useSecurity();
     const client = useApolloClient();
 

@@ -151,7 +151,7 @@ export interface FileDetailsProps {
     onClose: () => void;
 }
 
-export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
+export const FileDetails: React.VFC<FileDetailsProps> = ({ file, onClose }) => {
     const filePlugin = getFileTypePlugin(file);
 
     const [darkImageBackground, setDarkImageBackground] = useState(false);
@@ -165,7 +165,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
         }
     });
 
-    const actions: React.FC[] =
+    const actions: React.VFC[] =
         get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
 
     const fileTypeIcon = useMemo(() => {
@@ -212,7 +212,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
                                 </Tooltip>
 
                                 {actions.map(
-                                    (Component: React.FC<{ file: FileItem }>, index: number) => (
+                                    (Component: React.VFC<{ file: FileItem }>, index: number) => (
                                         <Component key={index} file={file} />
                                     )
                                 )}
