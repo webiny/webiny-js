@@ -13,7 +13,7 @@ interface GraphQLPlaygroundProps {
     createApolloClient(params: CreateApolloClientParams): ApolloClient<any>;
 }
 
-const GraphQLPlaygroundExtension: React.FC<GraphQLPlaygroundProps> = ({ createApolloClient }) => {
+const GraphQLPlaygroundExtension: React.VFC<GraphQLPlaygroundProps> = ({ createApolloClient }) => {
     plugins.register(playgroundPlugins);
 
     return (

@@ -52,7 +52,7 @@ interface CreateApolloClientParams {
 interface PlaygroundProps {
     createApolloClient: (params: CreateApolloClientParams) => ApolloClient<any>;
 }
-const Playground: React.FC<PlaygroundProps> = ({ createApolloClient }) => {
+const Playground: React.VFC<PlaygroundProps> = ({ createApolloClient }) => {
     const [loading, setLoading] = useState(true);
     const { getCurrentLocale } = useI18N();
     const { identity } = useSecurity();
