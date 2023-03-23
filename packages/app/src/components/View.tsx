@@ -8,7 +8,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export const View = ({ name, children, props = {} }: Props) => {
+export const View: React.VFC<Props> = ({ name, children, props = {} }) => {
     const viewPlugins = plugins.byType<ViewPlugin>(ViewPlugin.type).filter(pl => pl.key === name);
 
     if (viewPlugins.length) {

@@ -8,7 +8,7 @@ export interface ProviderProps {
 /**
  * Register a new React context provider.
  */
-export const Provider: React.FC<ProviderProps> = ({ hoc }) => {
+export const Provider: React.VFC<ProviderProps> = ({ hoc }) => {
     const { addProvider } = useApp();
 
     useEffect(() => {

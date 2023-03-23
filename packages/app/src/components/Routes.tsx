@@ -5,7 +5,7 @@ import { plugins } from "@webiny/plugins";
 import { Routes as ReactRouterRoutes } from "@webiny/react-router";
 import { RoutePlugin } from "../types";
 
-export const Routes = () => {
+export const Routes: React.VFC = () => {
     // We cannot call `sort` on the array returned by the `plugins.byType` call - it is read-only.
     const routes = [...plugins.byType<RoutePlugin>("route")].sort((a, b) => {
         const pathA = a.route.props.path || "*";
