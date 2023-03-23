@@ -4,7 +4,7 @@ import { UsersFormView } from "~/ui/views/Users/UsersFormView";
 import UsersDataList from "~/ui/views/Users/UsersDataList";
 import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
 
-export const UsersView: React.FC = () => {
+export const UsersView: React.VFC = () => {
     return (
         <SplitView>
             <LeftPanel>

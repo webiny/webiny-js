@@ -21,7 +21,7 @@ export interface AdminUsersPermissionsProps {
     value: SecurityPermission[];
     onChange: (value: SecurityPermission[]) => void;
 }
-export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
+export const AdminUsersPermissions: React.VFC<AdminUsersPermissionsProps> = ({
     value,
     onChange
 }) => {

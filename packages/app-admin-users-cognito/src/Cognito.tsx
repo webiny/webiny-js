@@ -28,14 +28,14 @@ import cognito from "./plugins/cognito";
  * TODO @ts-refactor figure out correct LoginScreenTypes.
  */
 // @ts-ignore
-const LoginScreen: React.FC = createAuthentication();
+const LoginScreen: React.VFC = createAuthentication();
 
 const CognitoLoginScreen: HigherOrderComponent = () => LoginScreen;
 /**
  * TODO @ts-refactor @pavel
  * Compose.component
  */
-const CognitoIdP: React.FC = () => {
+const CognitoIdP: React.VFC = () => {
     plugins.register([globalSearchUsers, installation, permissionRenderer, cognito()]);
 
     return (

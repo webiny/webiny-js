@@ -31,7 +31,7 @@ const styles = {
     })
 };
 
-export const NotAuthorizedError: React.FC = () => {
+export const NotAuthorizedError: React.VFC = () => {
     const { setTenant } = useTenancy();
 
     const resetTenant = (): void => {
