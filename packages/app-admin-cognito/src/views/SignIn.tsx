@@ -16,7 +16,7 @@ import {
 import StateContainer from "./StateContainer";
 import { alignRight, alignCenter, InnerContent, Title, errorMessage } from "./StyledComponents";
 
-const SignIn: React.FC = () => {
+const SignIn: React.VFC = () => {
     const { message, changeState } = useAuthenticator();
     const { signIn, loading, error, shouldRender } = useSignIn();
 

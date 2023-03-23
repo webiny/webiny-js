@@ -13,7 +13,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
 import { useForgotPassword } from "@webiny/app-cognito-authenticator/hooks/useForgotPassword";
 
-const ForgotPassword: React.FC = () => {
+const ForgotPassword: React.VFC = () => {
     const { authData, changeState } = useAuthenticator();
     const { loading, codeSent, shouldRender, setPassword, requestCode, error } =
         useForgotPassword();
