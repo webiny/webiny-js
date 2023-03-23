@@ -31,7 +31,9 @@ export const FolderNode = ({ isOpen, isFocused, text }: FolderProps) => {
     return (
         <>
             <FolderIcon>{isOpen ? <FolderOpen /> : <Folder />}</FolderIcon>
-            <Text isFocused={isFocused} use={"body2"}>{text}</Text>
+            <Text className={isFocused ? 'focused' : ''} use={"body2"}>
+                {text}
+            </Text>
         </>
     );
 };

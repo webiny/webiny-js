@@ -9,10 +9,6 @@ type ArrowIconContainerProps = {
     isOpen: boolean;
 };
 
-type TextProps = {
-    isFocused: boolean;
-};
-
 export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
@@ -55,10 +51,12 @@ export const Content = styled("div")`
     width: 100%;
 `;
 
-export const Text = styled(Typography)<TextProps>`
+export const Text = styled(Typography)`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 24px;
-    font-weight: ${props => props.isFocused ? "600" : "normal"};
+    &.focused{
+        font-weight: 600;
+    }
 `;
