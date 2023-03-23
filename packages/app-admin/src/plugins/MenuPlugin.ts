@@ -20,6 +20,7 @@ export interface ItemProps {
     path: string;
     style?: React.CSSProperties;
     onClick?: () => any;
+    children?: React.ReactNode;
 }
 
 interface Props {

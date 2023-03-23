@@ -27,7 +27,13 @@ export function useSearch() {
     return React.useContext(SearchContext);
 }
 
-export const SearchProvider = (Component: React.FC): React.FC => {
+export interface SearchProviderProps {
+    children: React.ReactNode;
+}
+
+export const SearchProvider = (
+    Component: React.VFC<SearchProviderProps>
+): React.VFC<SearchProviderProps> => {
     return function SearchProvider({ children, ...props }) {
         const [options, setOptions] = useState<SearchOptionData[]>([]);
 
@@ -57,7 +63,7 @@ export const SearchRenderer = makeComposable("SearchRenderer");
 
 export type SearchOptionProps = SearchOptionData;
 
-export const SearchOption: React.FC<SearchOptionProps> = props => {
+export const SearchOption: React.VFC<SearchOptionProps> = props => {
     const { addOption } = useSearch();
 
     useEffect(() => {

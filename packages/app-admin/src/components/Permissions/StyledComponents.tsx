@@ -15,7 +15,7 @@ export const gridNoPaddingClass = css({
 interface PermissionInfoProps {
     title: string;
 }
-export const PermissionInfo: React.FC<PermissionInfoProps> = ({ title }) => (
+export const PermissionInfo: React.VFC<PermissionInfoProps> = ({ title }) => (
     <div className={flexClass}>
         <Typography use={"body2"}>{title}</Typography>
     </div>

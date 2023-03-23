@@ -44,7 +44,7 @@ export interface SearchProps {
     onEnter?: () => any;
     inputPlaceholder?: string;
 }
-const Search: React.FC<SearchProps> = ({
+const Search: React.VFC<SearchProps> = ({
     value,
     onChange,
     onEnter,

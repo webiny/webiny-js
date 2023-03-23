@@ -15,7 +15,7 @@ interface PermissionPlugins {
     permissionPlugins: (AdminAppPermissionRendererPlugin | PermissionRendererPlugin)[];
 }
 
-export const Permissions: React.FC<PermissionsProps> = ({ id, value, onChange, ...props }) => {
+export const Permissions: React.VFC<PermissionsProps> = ({ id, value, onChange, ...props }) => {
     const { systemPlugins, permissionPlugins } = useMemo<PermissionPlugins>(() => {
         if (props.plugins) {
             return { permissionPlugins: props.plugins, systemPlugins: [] };

@@ -10,7 +10,7 @@ interface Props {
     addSelection: DocumentNode;
 }
 
-export const AddGraphQLQuerySelection: React.FC<Props> = props => {
+export const AddGraphQLQuerySelection: React.VFC<Props> = props => {
     useEffect(() => {
         const plugin = new AddQuerySelectionPlugin(props);
 

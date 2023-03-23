@@ -12,7 +12,7 @@ interface MultiImageUploadProps {
     };
     [key: string]: any;
 }
-const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
+const MultiImageUpload: React.VFC<MultiImageUploadProps> = ({
     imagePreviewProps,
     ...multiImageUploadProps
 }) => {

@@ -10,9 +10,15 @@ export interface ApolloClientFactory {
     (options: Options): ApolloClient<any>;
 }
 
-export const createApolloProvider = (clientFactory: ApolloClientFactory) => {
+export interface ApolloProviderProps {
+    children: React.ReactNode;
+}
+
+export const createApolloProvider = (
+    clientFactory: ApolloClientFactory
+): React.VFC<ApolloProviderProps> => {
     return function ApolloProvider({ children }) {
         const uri = process.env.REACT_APP_GRAPHQL_API_URL as string;
         return <Apollo client={clientFactory({ uri })}>{children}</Apollo>;
-    } as React.FC;
+    };
 };

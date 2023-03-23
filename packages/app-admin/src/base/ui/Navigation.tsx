@@ -38,7 +38,7 @@ export function useNavigation() {
 // IMPORTANT! The following component is for BACKWARDS COMPATIBILITY purposes only!
 // It is not a public component, and is not even exported from this file. We need it to take care of
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
-const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
+const LegacyMenu: React.VFC<MenuProps | SectionProps | ItemProps> = props => {
     return (
         <Menu {...props} name={(props as MenuProps).name || nanoid()} label={props.label as string}>
             {props.children}
@@ -46,7 +46,7 @@ const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
     );
 };
 
-const LegacyMenuPlugins: React.FC = () => {
+const LegacyMenuPlugins: React.VFC = () => {
     // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
     const [menus, setMenus] = useState<JSX.Element | null>(null);
 
@@ -57,13 +57,13 @@ const LegacyMenuPlugins: React.FC = () => {
         }
 
         const menuElements = menuPlugins.map(plugin => {
-            // TODO @ts-refactor figure out correct types or write a comment to leave as React.FC
+            // TODO @ts-refactor figure out correct types or write a comment to leave as React.VFC
             return (
                 <Plugins key={plugin.name}>
                     {plugin.render({
-                        Menu: LegacyMenu as React.FC,
-                        Item: LegacyMenu as React.FC,
-                        Section: LegacyMenu as React.FC
+                        Menu: LegacyMenu as React.VFC,
+                        Item: LegacyMenu as React.VFC,
+                        Section: LegacyMenu as React.VFC
                     })}
                 </Plugins>
             );
@@ -75,7 +75,13 @@ const LegacyMenuPlugins: React.FC = () => {
     return menus;
 };
 
-export const NavigationProvider = (Component: React.ComponentType<unknown>): React.FC => {
+interface NavigationProviderProps {
+    children: React.ReactNode;
+}
+
+export const NavigationProvider = (
+    Component: React.ComponentType<unknown>
+): React.VFC<NavigationProviderProps> => {
     return function NavigationProvider({ children }) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 
@@ -129,7 +135,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>): Rea
     };
 };
 
-export const Navigation: React.FC = () => {
+export const Navigation: React.VFC = () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
@@ -177,7 +183,7 @@ export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItem
     );
 });
 
-export const MenuItem: React.FC = () => {
+export const MenuItem: React.VFC = () => {
     return <MenuItemRenderer />;
 };
 

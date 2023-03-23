@@ -52,7 +52,7 @@ interface SimpleFormProps {
     noElevation?: boolean;
     className?: string;
 }
-export const SimpleForm: React.FC<SimpleFormProps> = props => {
+export const SimpleForm: React.VFC<SimpleFormProps> = props => {
     return (
         <SimpleFormContainer
             className={classNames("webiny-data-list", props.className)}
@@ -68,7 +68,7 @@ interface SimpleFormHeaderProps {
     icon?: React.ReactElement<any>;
     children?: React.ReactNode;
 }
-export const SimpleFormHeader: React.FC<SimpleFormHeaderProps> = props => {
+export const SimpleFormHeader: React.VFC<SimpleFormHeaderProps> = props => {
     return (
         <Grid className={header}>
             <Cell span={props.children ? 6 : 12} className={title}>
@@ -90,10 +90,13 @@ interface SimpleFormFooterProps {
     children: React.ReactNode;
     className?: string;
 }
-export const SimpleFormFooter: React.FC<SimpleFormFooterProps> = props => {
+export const SimpleFormFooter: React.VFC<SimpleFormFooterProps> = props => {
     return <div className={classNames(footer, props.className)}>{props.children}</div>;
 };
 
-export const SimpleFormContent: React.FC = props => {
+interface SimpleFormContentProps {
+    children: React.ReactNode;
+}
+export const SimpleFormContent: React.VFC<SimpleFormContentProps> = props => {
     return props.children as unknown as React.ReactElement;
 };

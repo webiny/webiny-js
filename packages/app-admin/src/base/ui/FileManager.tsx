@@ -93,7 +93,7 @@ export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "rende
 
 export const FileManagerRenderer = makeComposable<FileManagerRendererProps>("FileManagerRenderer");
 
-export const FileManager: React.FC<FileManagerProps> = ({
+export const FileManager: React.VFC<FileManagerProps> = ({
     children,
     render,
     onChange,

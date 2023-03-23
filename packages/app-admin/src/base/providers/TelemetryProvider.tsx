@@ -7,9 +7,13 @@ import { sendEvent } from "@webiny/telemetry/react";
 
 let eventSent = false;
 
+interface TelemetryProviderProps {
+    children: React.ReactNode;
+}
+
 export const createTelemetryProvider =
     () =>
-    (Component: React.FC): React.FC => {
+    (Component: React.VFC<TelemetryProviderProps>): React.VFC<TelemetryProviderProps> => {
         return function TelemetryProvider({ children }) {
             useEffect(() => {
                 if (eventSent) {
