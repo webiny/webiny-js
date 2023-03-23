@@ -6,14 +6,15 @@ export interface WcpContextValue {
 }
 
 export interface WcpProviderProps {
-    project: any;
+    project: WcpProject | null;
+    children: React.ReactNode;
 }
 
 export const WcpContext = React.createContext<WcpContextValue>({
     project: null
 });
 
-export const WcpProviderComponent: React.FC<WcpProviderProps> = props => {
+export const WcpProviderComponent: React.VFC<WcpProviderProps> = props => {
     const { children, project } = props;
     const value: WcpContextValue = { project };
     return <WcpContext.Provider value={value}>{children}</WcpContext.Provider>;
