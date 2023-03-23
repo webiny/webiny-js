@@ -4,9 +4,10 @@ import { Tenant } from "@webiny/app-tenancy";
 
 interface IsTenantProps {
     condition(tenant: Tenant): boolean;
+    children: React.ReactNode;
 }
 
-export const IsTenant: React.FC<IsTenantProps> = ({ condition, children }) => {
+export const IsTenant: React.VFC<IsTenantProps> = ({ condition, children }) => {
     const security = useSecurity();
 
     if (!security || !security.identity) {
@@ -22,10 +23,16 @@ export const IsTenant: React.FC<IsTenantProps> = ({ condition, children }) => {
     return <Fragment>{children}</Fragment>;
 };
 
-export const IsRootTenant: React.FC = ({ children }) => {
+interface IsRootTenantProps {
+    children: React.ReactNode;
+}
+export const IsRootTenant: React.VFC<IsRootTenantProps> = ({ children }) => {
     return <IsTenant condition={tenant => tenant.id === "root"}>{children}</IsTenant>;
 };
 
-export const IsNotRootTenant: React.FC = ({ children }) => {
+interface IsNotRootTenant {
+    children: React.ReactNode;
+}
+export const IsNotRootTenant: React.VFC<IsNotRootTenant> = ({ children }) => {
     return <IsTenant condition={tenant => tenant.id !== "root"}>{children}</IsTenant>;
 };

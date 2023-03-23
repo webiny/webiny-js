@@ -9,7 +9,7 @@ interface AddTenantSettingsFieldProps {
 }
 
 const createFieldsHOC = (element: JSX.Element) => {
-    return (Component: React.FC): React.FC => {
+    return (Component: React.VFC): React.VFC => {
         return function FieldHOC() {
             return (
                 <Fragment>
@@ -21,7 +21,7 @@ const createFieldsHOC = (element: JSX.Element) => {
     };
 };
 
-export const AddTenantFormField: React.FC<AddTenantSettingsFieldProps> = memo(
+export const AddTenantFormField: React.VFC<AddTenantSettingsFieldProps> = memo(
     function AddTenantFormField({ querySelection, element }) {
         const FieldHOC = useMemo(() => createFieldsHOC(element), []);
 

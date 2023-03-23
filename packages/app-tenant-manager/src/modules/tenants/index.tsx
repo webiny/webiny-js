@@ -7,7 +7,7 @@ import TenantForm from "./TenantForm";
 import { Plugins } from "@webiny/app-admin";
 import { IsRootTenant } from "~/components/IsRootTenant";
 
-export const TenantsView: React.FC = () => {
+export const TenantsView: React.VFC = () => {
     return (
         <SplitView>
             <LeftPanel>
@@ -20,7 +20,7 @@ export const TenantsView: React.FC = () => {
     );
 };
 
-export const TenantsModule: React.FC = () => {
+export const TenantsModule: React.VFC = () => {
     return (
         <Plugins>
             <IsRootTenant>

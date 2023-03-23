@@ -25,7 +25,7 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-const TenantForm: React.FC = () => {
+const TenantForm: React.VFC = () => {
     const { loading, showEmptyView, createTenant, cancelEditing, tenant, onSubmit } =
         useTenantForm();
 
