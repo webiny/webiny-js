@@ -3,7 +3,7 @@ import { OktaAuth } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import get from "lodash.get";
 import { Compose, LoginScreenRenderer, useTenancy } from "@webiny/app-serverless-cms";
-import { createAuthentication } from "./createAuthentication";
+import { AuthenticationComponentProps, createAuthentication } from "./createAuthentication";
 import { UserMenuModule } from "~/modules/userMenu";
 import { AppClientModule } from "~/modules/appClient";
 import { useApolloClient } from "@apollo/react-hooks";
@@ -28,7 +28,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
     children
 }) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef<React.FC | null>(null);
+    const authRef = useRef<React.VFC<AuthenticationComponentProps> | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
@@ -63,11 +63,15 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
         });
     }, []);
 
-    return loaded ? React.createElement(authRef.current as React.FC, {}, children) : null;
+    return loaded ? React.createElement(authRef.current as React.VFC, {}, children) : null;
 };
 
+interface OktaLoginScreenProps {
+    children?: React.ReactNode;
+}
+
 const createLoginScreen = (params: OktaProps) => {
-    return function OktaLoginScreenHOC(): React.FC {
+    return function OktaLoginScreenHOC(): React.VFC<OktaLoginScreenProps> {
         return function OktaLoginScreen({ children }) {
             return (
                 <AppClientIdLoader
@@ -100,7 +104,7 @@ export interface OktaProps {
     children?: React.ReactNode;
 }
 
-export const Okta: React.FC<OktaProps> = props => {
+export const Okta: React.VFC<OktaProps> = props => {
     /**
      * TODO @ts-refactor
      * Figure correct type for Compose.component
