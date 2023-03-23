@@ -61,7 +61,7 @@ interface QueryData {
     [key: string]: string | undefined;
 }
 
-export const Authenticator: React.FC<AuthenticatorProps> = ({ onToken, children }) => {
+export const Authenticator: React.VFC<AuthenticatorProps> = ({ onToken, children }) => {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
         authData: null,
