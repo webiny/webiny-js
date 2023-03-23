@@ -38,7 +38,7 @@ interface DefaultValueSwitchProps {
     onChange: (value: string[] | string) => void;
 }
 
-const DefaultValueSwitch: React.FC<DefaultValueSwitchProps> = ({
+const DefaultValueSwitch: React.VFC<DefaultValueSwitchProps> = ({
     multiple,
     option,
     value: currentDefaultValue,

@@ -67,7 +67,10 @@ const renderFieldValueLabel = (field: FbFormModelField, value: string): string =
     return getFieldValueLabel(field, value);
 };
 
-const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmission, onClose }) => {
+const FormSubmissionDialog: React.VFC<FormSubmissionDialogProps> = ({
+    formSubmission,
+    onClose
+}) => {
     const { showSnackbar } = useSnackbar();
 
     return (

@@ -29,7 +29,7 @@ export interface FormElementPropsType {
     isActive: boolean;
 }
 
-const FormElement: React.FC<FormElementPropsType> = ({ element, isActive }) => {
+const FormElement: React.VFC<FormElementPropsType> = ({ element, isActive }) => {
     const { form = {} } = element.data?.settings || {};
 
     const renderEmpty = useRenderEmptyEmbed(element);

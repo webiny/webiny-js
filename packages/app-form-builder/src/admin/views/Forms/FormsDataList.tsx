@@ -98,7 +98,7 @@ interface HandlerCallable {
     (): Promise<void>;
 }
 
-const FormsDataList: React.FC<FormsDataListProps> = props => {
+const FormsDataList: React.VFC<FormsDataListProps> = props => {
     const editHandlers = useRef<Record<string, HandlerCallable>>({});
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);

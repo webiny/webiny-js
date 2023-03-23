@@ -39,7 +39,7 @@ interface RevisionsOutput {
     options: RevisionsOutputOption[];
     value: RevisionsOutputOption | null;
 }
-const FormElementAdvancedSettings: React.FC<FormElementAdvancedSettingsProps> = ({
+const FormElementAdvancedSettings: React.VFC<FormElementAdvancedSettingsProps> = ({
     Bind,
     submit,
     data

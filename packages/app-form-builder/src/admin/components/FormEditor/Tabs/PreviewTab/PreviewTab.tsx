@@ -11,7 +11,7 @@ const formPreviewWrapper = css({
     boxSizing: "border-box"
 });
 
-export const PreviewTab: React.FC = () => {
+export const PreviewTab: React.VFC = () => {
     const { data } = useFormEditor();
 
     return (

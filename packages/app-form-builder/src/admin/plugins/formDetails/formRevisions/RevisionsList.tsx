@@ -25,7 +25,7 @@ interface RevisionsListProps {
     revisions: FbRevisionModel[];
     loading: boolean;
 }
-export const RevisionsList: React.FC<RevisionsListProps> = ({ form, revisions, loading }) => {
+export const RevisionsList: React.VFC<RevisionsListProps> = ({ form, revisions, loading }) => {
     if (!form) {
         return null;
     }

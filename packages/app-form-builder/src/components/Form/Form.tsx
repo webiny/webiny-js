@@ -3,7 +3,7 @@ import FormLoad from "./FormLoad";
 import FormRender from "./FormRender";
 import { FormComponentPropsType } from "~/types";
 
-const Form: React.FC<FormComponentPropsType> = props => {
+const Form: React.VFC<FormComponentPropsType> = props => {
     if (props.data) {
         return <FormRender {...props} />;
     }

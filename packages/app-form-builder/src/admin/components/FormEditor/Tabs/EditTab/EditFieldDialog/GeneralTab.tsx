@@ -13,7 +13,7 @@ interface GeneralTabProps {
     form: FormRenderPropParams;
 }
 
-const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
+const GeneralTab: React.VFC<GeneralTabProps> = ({ field, form }) => {
     const { Bind, setValue } = form;
     const { getField, getFieldPlugin } = useFormEditor();
 

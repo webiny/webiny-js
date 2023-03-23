@@ -60,7 +60,7 @@ export interface VerticalProps {
     isVisible?: IsVisibleCallable;
 }
 
-export const Vertical: React.FC<VerticalProps> = ({ last, onDrop, isVisible }) => {
+export const Vertical: React.VFC<VerticalProps> = ({ last, onDrop, isVisible }) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (

@@ -11,7 +11,7 @@ interface EditRevisionProps {
     revision: FbRevisionModel;
     form: FbRevisionModel;
 }
-const EditRevision: React.FC<EditRevisionProps> = ({ revision, form }) => {
+const EditRevision: React.VFC<EditRevisionProps> = ({ revision, form }) => {
     const { createRevision } = useRevision({ revision, form });
     const { history } = useRouter();
     const { canEdit } = usePermission();

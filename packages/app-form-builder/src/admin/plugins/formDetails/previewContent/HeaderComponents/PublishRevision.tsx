@@ -21,7 +21,7 @@ interface PublishRevisionProps {
     revision: FbRevisionModel;
 }
 
-const PublishRevision: React.FC<PublishRevisionProps> = ({ revision }) => {
+const PublishRevision: React.VFC<PublishRevisionProps> = ({ revision }) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { canPublish, canUnpublish } = usePermission();

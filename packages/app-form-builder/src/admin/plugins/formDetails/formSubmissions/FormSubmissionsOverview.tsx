@@ -24,7 +24,7 @@ const ContentWrapper = styled("div")({
     boxSizing: "border-box"
 });
 
-export const FormSubmissionsOverview: React.FC<FormSubmissionsOverviewProps> = ({ form }) => {
+export const FormSubmissionsOverview: React.VFC<FormSubmissionsOverviewProps> = ({ form }) => {
     return (
         <Block title="Overview">
             <ContentWrapper>

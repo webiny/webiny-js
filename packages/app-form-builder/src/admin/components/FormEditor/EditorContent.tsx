@@ -43,7 +43,7 @@ const formTabs = css({
         }
     }
 });
-const EditorContent: React.FC = () => {
+const EditorContent: React.VFC = () => {
     const tabsRef = useRef<TabsImperativeApi>();
 
     const onFieldDragStart = useCallback(() => {

@@ -8,7 +8,7 @@ interface FieldProps {
     label: string;
     name: string;
 }
-const Field: React.FC<FieldProps> = ({ label, name }) => {
+const Field: React.VFC<FieldProps> = ({ label, name }) => {
     return (
         <Draggable beginDrag={{ name }}>
             {({ drag }) => (

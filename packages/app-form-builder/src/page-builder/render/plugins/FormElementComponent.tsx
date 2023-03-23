@@ -9,7 +9,7 @@ interface FormProps {
     element: PbEditorElement;
 }
 
-const FormElementComponent: React.FC<FormProps> = props => {
+const FormElementComponent: React.VFC<FormProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbForm {...props} />;
     }

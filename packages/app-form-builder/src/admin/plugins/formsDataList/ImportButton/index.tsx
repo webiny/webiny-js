@@ -5,7 +5,7 @@ interface WrapperWithFileUploadProps
     extends Pick<React.ComponentProps<typeof FileManager>, "children"> {
     onSelect: (file: string) => void;
 }
-export const WrapperWithFileUpload: React.FC<WrapperWithFileUploadProps> = ({
+export const WrapperWithFileUpload: React.VFC<WrapperWithFileUploadProps> = ({
     children,
     onSelect
 }) => {

@@ -31,7 +31,7 @@ const MESSAGES: Record<string, string> = {
 interface ImportFormLoadingDialogContentProps {
     taskId: string;
 }
-const ImportFormLoadingDialogContent: React.FC<ImportFormLoadingDialogContentProps> = ({
+const ImportFormLoadingDialogContent: React.VFC<ImportFormLoadingDialogContentProps> = ({
     taskId
 }) => {
     const { showSnackbar } = useSnackbar();

@@ -8,7 +8,7 @@ export interface FormElementPropsType {
     element: PbEditorElement;
 }
 
-const FormElement: React.FC<FormElementPropsType> = ({ element }) => {
+const FormElement: React.VFC<FormElementPropsType> = ({ element }) => {
     let render = <span>Cannot render form, ID missing.</span>;
 
     const form = get(element, "data.settings.form") || {

@@ -4,7 +4,7 @@ import { useRouter } from "@webiny/react-router";
 import { FormEditorProvider } from "./Context";
 import FormEditor from "./FormEditor";
 
-const FormEditorApp: React.FC = () => {
+const FormEditorApp: React.VFC = () => {
     const { params } = useRouter();
     const client = useApolloClient();
 

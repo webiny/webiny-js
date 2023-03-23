@@ -47,7 +47,7 @@ interface FormPreviewProps {
     form: FbFormModel;
 }
 
-const FormPreview: React.FC<FormPreviewProps> = ({ revision }) => {
+const FormPreview: React.VFC<FormPreviewProps> = ({ revision }) => {
     const { data, error, loading } = useQuery<GetFormQueryResponse, GetFormQueryVariables>(
         GET_FORM,
         {

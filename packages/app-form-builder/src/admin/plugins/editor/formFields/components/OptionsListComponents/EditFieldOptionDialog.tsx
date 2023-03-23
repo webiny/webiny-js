@@ -30,7 +30,7 @@ interface EditFieldOptionDialogProps<T = any> {
     options: any[];
 }
 
-const EditFieldOptionDialog: React.FC<EditFieldOptionDialogProps> = (
+const EditFieldOptionDialog: React.VFC<EditFieldOptionDialogProps> = (
     props: EditFieldOptionDialogProps
 ) => {
     const { onClose, options, open, onSubmit, option, optionIndex } = props;

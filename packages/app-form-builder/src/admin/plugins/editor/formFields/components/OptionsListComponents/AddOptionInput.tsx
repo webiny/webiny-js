@@ -14,7 +14,7 @@ interface AddOptionInputProps {
     options: FieldOption[];
     validation: BindComponentRenderPropValidation;
 }
-const AddOptionInput: React.FC<AddOptionInputProps> = ({
+const AddOptionInput: React.VFC<AddOptionInputProps> = ({
     options,
     onAdd,
     validation: optionsValidation

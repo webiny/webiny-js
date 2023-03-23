@@ -21,7 +21,7 @@ interface ReCapchaSettingsDialogProps {
     reCaptchaSettings: any;
 }
 
-const ReCaptchaSettingsDialog: React.FC<ReCapchaSettingsDialogProps> = ({
+const ReCaptchaSettingsDialog: React.VFC<ReCapchaSettingsDialogProps> = ({
     open,
     onClose,
     reCaptchaSettings,

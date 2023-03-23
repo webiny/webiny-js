@@ -13,7 +13,7 @@ interface ReCaptchaSettingsProps {
     Bind: BindComponent;
     formData: FbSettings;
 }
-const ReCaptchaSettings: React.FC<ReCaptchaSettingsProps> = ({ Bind, formData }) => {
+const ReCaptchaSettings: React.VFC<ReCaptchaSettingsProps> = ({ Bind, formData }) => {
     const [dialogOpened, setDialogOpened] = useState(false);
     const openDialog = useCallback(() => setDialogOpened(true), []);
     const closeDialog = useCallback(() => setDialogOpened(false), []);

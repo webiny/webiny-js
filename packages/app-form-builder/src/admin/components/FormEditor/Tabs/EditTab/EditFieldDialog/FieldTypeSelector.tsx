@@ -34,7 +34,7 @@ interface FbFormModelFieldSelectorProps {
     fieldType: FbBuilderFieldPlugin["field"];
     onClick: (event: React.MouseEvent) => void;
 }
-const FbFormModelFieldSelector: React.FC<FbFormModelFieldSelectorProps> = ({
+const FbFormModelFieldSelector: React.VFC<FbFormModelFieldSelectorProps> = ({
     fieldType,
     onClick
 }) => {

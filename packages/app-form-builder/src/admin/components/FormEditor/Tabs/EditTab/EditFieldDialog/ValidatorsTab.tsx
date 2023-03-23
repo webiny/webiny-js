@@ -71,7 +71,7 @@ interface ValidatorsTabProps {
         Bind: BindComponent;
     };
 }
-const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
+const ValidatorsTab: React.VFC<ValidatorsTabProps> = props => {
     const { getFieldPlugin } = useFormEditor();
     const {
         field,

@@ -58,7 +58,7 @@ export interface HorizontalProps {
     isVisible?: IsVisibleCallable;
 }
 
-export const Horizontal: React.FC<HorizontalProps> = ({ last, onDrop, isVisible }) => {
+export const Horizontal: React.VFC<HorizontalProps> = ({ last, onDrop, isVisible }) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (

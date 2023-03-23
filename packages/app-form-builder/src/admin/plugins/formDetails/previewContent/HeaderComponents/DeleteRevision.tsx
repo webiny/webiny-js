@@ -21,7 +21,7 @@ interface DeleteRevisionProps {
     revision: FbRevisionModel;
     selectRevision: (revision: FbRevisionModel) => void;
 }
-const DeleteRevision: React.FC<DeleteRevisionProps> = ({
+const DeleteRevision: React.VFC<DeleteRevisionProps> = ({
     revisions,
     form,
     revision,

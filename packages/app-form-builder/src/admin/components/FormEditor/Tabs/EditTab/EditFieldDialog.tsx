@@ -43,7 +43,7 @@ interface EditFieldDialogProps {
     onSubmit: FormOnSubmit;
 }
 
-const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
+const EditFieldDialog: React.VFC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
     const [current, setCurrent] = useState<FbFormModelField | null>(null);
     const [isNewField, setIsNewField] = useState<boolean>(false);
     const [screen, setScreen] = useState<string>();

@@ -41,7 +41,7 @@ interface FormBuilderPermissionsProps {
     value: string;
     onChange: (value: SecurityPermission[]) => void;
 }
-export const FormBuilderPermissions: React.FC<FormBuilderPermissionsProps> = ({
+export const FormBuilderPermissions: React.VFC<FormBuilderPermissionsProps> = ({
     value,
     onChange
 }) => {

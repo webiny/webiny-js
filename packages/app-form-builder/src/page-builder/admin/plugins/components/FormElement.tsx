@@ -11,7 +11,7 @@ interface FormProps {
     isActive: boolean;
 }
 
-const Form: React.FC<FormProps> = props => {
+const Form: React.VFC<FormProps> = props => {
     const { tenant } = useTenancy();
     if (isLegacyRenderingEngine) {
         return <PbForm {...props} />;

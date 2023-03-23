@@ -64,7 +64,7 @@ interface RevisionProps {
     revision: FbRevisionModel;
 }
 
-const Revision: React.FC<RevisionProps> = props => {
+const Revision: React.VFC<RevisionProps> = props => {
     const { revision, form } = props;
     const { icon, text: tooltipText } = getIcon(revision);
     const { publishRevision, createRevision, deleteRevision, editRevision, unpublishRevision } =

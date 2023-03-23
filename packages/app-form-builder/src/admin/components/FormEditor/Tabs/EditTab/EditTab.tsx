@@ -33,7 +33,7 @@ interface FieldErrorsProps {
 interface FieldErrorProps {
     error: FormEditorFieldError;
 }
-const FieldError: React.FC<FieldErrorProps> = ({ error }) => {
+const FieldError: React.VFC<FieldErrorProps> = ({ error }) => {
     return (
         <>
             <Block>
@@ -49,7 +49,7 @@ const FieldError: React.FC<FieldErrorProps> = ({ error }) => {
         </>
     );
 };
-const FieldErrors: React.FC<FieldErrorsProps> = ({ errors }) => {
+const FieldErrors: React.VFC<FieldErrorsProps> = ({ errors }) => {
     if (!errors) {
         return null;
     }
@@ -62,7 +62,7 @@ const FieldErrors: React.FC<FieldErrorsProps> = ({ errors }) => {
     );
 };
 
-export const EditTab: React.FC = () => {
+export const EditTab: React.VFC = () => {
     const {
         getLayoutFields,
         insertField,

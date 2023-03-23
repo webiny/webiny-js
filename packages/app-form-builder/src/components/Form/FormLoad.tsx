@@ -8,7 +8,7 @@ import { useQuery } from "@apollo/react-hooks";
 import FormRender from "./FormRender";
 import { FormLoadComponentPropsType } from "~/types";
 
-const FormLoad: React.FC<FormLoadComponentPropsType> = props => {
+const FormLoad: React.VFC<FormLoadComponentPropsType> = props => {
     const variables: GetPublishedFormQueryVariables = {};
 
     if (props.parentId) {

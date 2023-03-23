@@ -41,7 +41,7 @@ export interface DroppableProps {
     onDrop?: OnDropCallable;
 }
 
-const DroppableComponent: React.FC<DroppableProps> = props => {
+const DroppableComponent: React.VFC<DroppableProps> = props => {
     const { children, onDrop, isVisible = () => true } = props;
 
     const [{ item, isOver }, drop] = useDrop<
@@ -69,4 +69,4 @@ const DroppableComponent: React.FC<DroppableProps> = props => {
     return children({ isDragging: Boolean(item), isOver, item, drop });
 };
 
-export const Droppable: React.FC<DroppableProps> = React.memo(DroppableComponent);
+export const Droppable: React.VFC<DroppableProps> = React.memo(DroppableComponent);

@@ -29,7 +29,7 @@ export interface DraggableProps extends BeginDragProps {
     target?: string[];
 }
 
-const Draggable: React.FC<DraggableProps> = props => {
+const Draggable: React.VFC<DraggableProps> = props => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({

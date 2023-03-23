@@ -10,14 +10,15 @@ const Forms = lazy(() => import("./admin/views/Forms/Forms"));
 
 interface LoaderProps {
     label: string;
+    children: React.ReactNode;
 }
-const Loader: React.FC<LoaderProps> = ({ children, label, ...props }) => (
+const Loader: React.VFC<LoaderProps> = ({ children, label, ...props }) => (
     <Suspense fallback={<CircularProgress label={label} />}>
         {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>
 );
 
-export const FormBuilder: React.FC = () => {
+export const FormBuilder: React.VFC = () => {
     return (
         <Plugin>
             <HasPermission name={"fb.form"}>

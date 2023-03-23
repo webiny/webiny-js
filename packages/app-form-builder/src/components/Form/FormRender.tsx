@@ -40,7 +40,7 @@ interface FieldValidator {
     (value: string): Promise<boolean>;
 }
 
-const FormRender: React.FC<FbFormRenderComponentProps> = props => {
+const FormRender: React.VFC<FbFormRenderComponentProps> = props => {
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
 

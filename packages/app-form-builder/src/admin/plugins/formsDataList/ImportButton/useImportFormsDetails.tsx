@@ -15,7 +15,7 @@ interface ImportFormsDetailsProps {
     result: ListFormImportExportSubTasksResponse;
 }
 
-const ImportFormsDetails: React.FC<ImportFormsDetailsProps> = ({ loading, result }) => {
+const ImportFormsDetails: React.VFC<ImportFormsDetailsProps> = ({ loading, result }) => {
     if (loading || !result) {
         return <Typography use={"caption"}> {t`Loading details...`} </Typography>;
     }

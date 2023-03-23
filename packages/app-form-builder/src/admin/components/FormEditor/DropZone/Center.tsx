@@ -39,7 +39,7 @@ export interface CenterProps {
     highlight?: boolean;
 }
 
-export const Center: React.FC<CenterProps> = ({ onDrop, children }) => {
+export const Center: React.VFC<CenterProps> = ({ onDrop, children }) => {
     return (
         <Droppable onDrop={onDrop}>
             {({ isOver, drop }) => (
