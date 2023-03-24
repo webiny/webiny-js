@@ -6,7 +6,7 @@ import {
     queryAll,
     ddbQueryAllWithCallback,
     batchWriteAll,
-    executeWithRetries
+    executeWithRetry
 } from "~/utils";
 import {
     createFileEntity,
@@ -154,7 +154,7 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
                             return batchWriteAll({ table: this.newFileEntity.table, items });
                         };
 
-                        await executeWithRetries(execute, {
+                        await executeWithRetry(execute, {
                             onFailedAttempt: error => {
                                 logger.error(
                                     `"batchWriteAll" attempt #${error.attemptNumber} failed.`

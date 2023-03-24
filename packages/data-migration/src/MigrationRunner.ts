@@ -17,6 +17,7 @@ import {
     DataMigrationContext,
     ExecutionTimeLimiter
 } from "~/types";
+import { executeWithRetry } from "./executeWithRetry";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
 
@@ -241,7 +242,8 @@ export class MigrationRunner {
 
     private async createCheckpoint(migration: DataMigration, checkpoint: unknown) {
         this.logger.info(checkpoint, `Saving checkpoint ${migration.getId()}`);
-        await this.repository.createCheckpoint(migration.getId(), checkpoint);
+        const execute = () => this.repository.createCheckpoint(migration.getId(), checkpoint);
+        await executeWithRetry(execute);
     }
 }
 

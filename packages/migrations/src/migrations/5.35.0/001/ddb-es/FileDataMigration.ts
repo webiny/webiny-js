@@ -4,7 +4,7 @@ import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import {
     createStandardEntity,
-    executeWithRetries,
+    executeWithRetry,
     queryOne,
     queryAll,
     batchWriteAll,
@@ -157,7 +157,7 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
                             return batchWriteAll({ table: this.newFileEntity.table, items });
                         };
 
-                        await executeWithRetries(execute, {
+                        await executeWithRetry(execute, {
                             onFailedAttempt: error => {
                                 logger.error(
                                     `"batchWriteAll" attempt #${error.attemptNumber} failed.`
