@@ -14,20 +14,27 @@ export interface MigrationItem {
 export interface MigrationRepository {
     listMigrations(params?: { limit: number }): Promise<MigrationItem[]>;
     logMigration(migration: MigrationItem): Promise<void>;
+    createCheckpoint(id: string, data: unknown): Promise<void>;
+    getCheckpoint(id: string): Promise<unknown>;
+    deleteCheckpoint(id: string): Promise<void>;
 }
 
-export interface DataMigrationContext {
+export interface DataMigrationContext<TCheckpoint = any> {
     projectVersion: string;
     logger: Logger;
+    checkpoint?: TCheckpoint;
+    runningOutOfTime: () => boolean;
+    createCheckpoint: (data: TCheckpoint) => void;
+    createCheckpointAndExit: (data: TCheckpoint) => void;
 }
 
-export interface DataMigration {
+export interface DataMigration<TCheckpoint = any> {
     getId(): string;
     getDescription(): string;
     // This function should check of the migration needs to apply some changes to the system.
     // Returning `false` means "everything is ok, mark this migration as executed".
-    shouldExecute(context: DataMigrationContext): Promise<boolean>;
-    execute(context: DataMigrationContext): Promise<void>;
+    shouldExecute(context: DataMigrationContext<TCheckpoint>): Promise<boolean>;
+    execute(context: DataMigrationContext<TCheckpoint>): Promise<void>;
 }
 
 export interface MigrationResult {
@@ -36,6 +43,11 @@ export interface MigrationResult {
     logs: LogEvent[];
     duration: number;
 }
+
+/**
+ * Migration execution time limiter (in milliseconds).
+ */
+export type ExecutionTimeLimiter = () => number;
 
 export interface ExecutedMigrationResponse {
     id: string;
@@ -61,6 +73,8 @@ export interface MigrationEventHandlerResponseData {
     skipped: SkippedMigrationResponse[];
     // Not applicable; either out of version range, or already applied.
     notApplicable: SkippedMigrationResponse[];
+    // If this attribute is set, we need to resume the migration.
+    resume?: boolean;
 }
 export type MigrationEventHandlerResponse =
     // We can either have a `data`, or `error`, but never both.

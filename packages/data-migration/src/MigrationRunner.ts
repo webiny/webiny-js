@@ -1,7 +1,12 @@
 import { Logger } from "pino";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { coerce } from "semver";
-import { MigrationRepositorySymbol, LoggerSymbol, MigrationSymbol } from "./symbols";
+import {
+    MigrationRepositorySymbol,
+    LoggerSymbol,
+    MigrationSymbol,
+    ExecutionTimeLimiterSymbol
+} from "./symbols";
 import { createPinoLogger, getChildLogger } from "./createPinoLogger";
 import {
     MigrationResult,
@@ -9,22 +14,29 @@ import {
     SkippedMigrationResponse,
     MigrationRepository,
     DataMigration,
-    DataMigrationContext
+    DataMigrationContext,
+    ExecutionTimeLimiter
 } from "~/types";
+import { executeWithRetry } from "./executeWithRetry";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
+
+class MigrationNotFinished extends Error {}
 
 export class MigrationRunner {
     private readonly logger: Logger;
     private readonly migrations: DataMigration[];
     private readonly repository: MigrationRepository;
+    private readonly timeLimiter: ExecutionTimeLimiter;
 
     constructor(
         repository: MigrationRepository,
+        timeLimiter: ExecutionTimeLimiter,
         migrations: DataMigration[],
         logger: Logger | undefined
     ) {
         this.repository = repository;
+        this.timeLimiter = timeLimiter;
         this.migrations = migrations || [];
 
         if (!logger) {
@@ -95,11 +107,35 @@ export class MigrationRunner {
 
         this.logger.info(`Found %s applicable migration(s).`, executableMigrations.length);
 
-        for (const migration of executableMigrations) {
-            const logger = getChildLogger(this.logger, migration);
-            const context: DataMigrationContext = { projectVersion, logger };
+        // Are we're within the last 2 minutes of the execution time limit?
+        const shouldCreateCheckpoint = () => {
+            return this.timeLimiter() < 120000;
+        };
 
-            const shouldExecute = await migration.shouldExecute(context);
+        for (const migration of executableMigrations) {
+            const checkpoint = await this.repository.getCheckpoint(migration.getId());
+            const logger = getChildLogger(this.logger, migration);
+
+            if (checkpoint) {
+                this.logger.info(checkpoint, `Found checkpoint ${migration.getId()}.`);
+            }
+
+            const context: DataMigrationContext = {
+                projectVersion,
+                logger,
+                checkpoint,
+                runningOutOfTime: shouldCreateCheckpoint,
+                createCheckpoint: async (data: unknown) => {
+                    await this.createCheckpoint(migration, data);
+                },
+                createCheckpointAndExit: async (data: unknown) => {
+                    await this.createCheckpoint(migration, data);
+                    // We throw an error to break out of the migration execution completely.
+                    throw new MigrationNotFinished();
+                }
+            };
+
+            const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
 
             if (!shouldExecute) {
                 this.logger.info(`Skipping migration %s.`, migration.getId());
@@ -130,12 +166,17 @@ export class MigrationRunner {
             const start = Date.now();
             try {
                 this.logger.info(
-                    `Executing migration %s: %s.`,
+                    `Executing migration %s: %s`,
                     migration.getId(),
                     migration.getDescription()
                 );
                 await migration.execute(context);
             } catch (err) {
+                // If `MigrationNotFinished` was thrown, we will need to resume the migration.
+                if (err instanceof MigrationNotFinished) {
+                    return { executed, skipped, notApplicable, resume: true };
+                }
+
                 result.success = false;
                 result.error = {
                     name: err.name || "Migration error",
@@ -171,8 +212,10 @@ export class MigrationRunner {
                     reason: "executed"
                 });
             }
-        }
 
+            this.logger.info(`Deleting checkpoint ${migration.getId()}.`);
+            await this.repository.deleteCheckpoint(migration.getId());
+        }
         this.logger.info(`Finished processing applicable migrations.`);
 
         return { executed, skipped, notApplicable };
@@ -196,10 +239,17 @@ export class MigrationRunner {
             ids.add(id);
         }
     }
+
+    private async createCheckpoint(migration: DataMigration, checkpoint: unknown) {
+        this.logger.info(checkpoint, `Saving checkpoint ${migration.getId()}`);
+        const execute = () => this.repository.createCheckpoint(migration.getId(), checkpoint);
+        await executeWithRetry(execute);
+    }
 }
 
 makeInjectable(MigrationRunner, [
     inject(MigrationRepositorySymbol),
+    inject(ExecutionTimeLimiterSymbol),
     inject(MigrationSymbol, { multi: true, optional: true }),
     inject(LoggerSymbol, { optional: true })
 ]);
