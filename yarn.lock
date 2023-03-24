@@ -14766,6 +14766,7 @@ __metadata:
     get-yarn-workspaces: 1.0.2
     glob: ^7.1.2
     html-webpack-plugin: 5.5.0
+    listr2: ^5.0.8
     lodash: ^4.6.2
     mini-css-extract-plugin: 2.4.5
     path-browserify: ^1.0.1
