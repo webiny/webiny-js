@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Element, RendererMeta } from "@webiny/app-page-builder-elements/types";
 import styled from "@emotion/styled";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
 import { plugins } from "@webiny/plugins";
