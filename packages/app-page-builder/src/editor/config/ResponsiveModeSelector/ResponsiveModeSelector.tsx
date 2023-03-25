@@ -12,7 +12,7 @@ import { isPerBreakpointStylesObject } from "@webiny/app-page-builder-elements/u
 import { useUI } from "~/editor/hooks/useUI";
 import { setDisplayModeMutation } from "~/editor/recoil/modules";
 import { isLegacyRenderingEngine } from "~/utils";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 
 const classes = {
     wrapper: css({

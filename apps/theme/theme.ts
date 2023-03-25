@@ -1,5 +1,5 @@
 import { createTheme } from "@webiny/app-theme";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 
 // Breakpoints (desktop, tablet, mobile).
 export const breakpoints = {

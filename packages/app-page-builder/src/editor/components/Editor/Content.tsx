@@ -22,7 +22,7 @@ import { Element as ElementType } from "@webiny/app-page-builder-elements/types"
 const BREADCRUMB_HEIGHT = 33;
 
 interface ContentContainerParams {
-    theme: PbTheme | null;
+    theme?: PbTheme | null;
 }
 
 const LegacyContentContainer = styled.div(({ theme }: ContentContainerParams) => {

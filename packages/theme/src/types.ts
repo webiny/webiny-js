@@ -1,4 +1,4 @@
-import { type CSSObject } from "@emotion/core";
+import { type CSSObject } from "@emotion/react";
 
 export type Content = Element;
 

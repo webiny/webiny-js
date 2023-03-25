@@ -138,44 +138,44 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     );
 };
 
-const PbElementControlsOverlay = styled(
-    ({
-        className,
-        onClick,
-        onMouseEnter,
-        onMouseLeave,
-        onDragEnter,
-        onDragLeave,
-        onDrop,
-        dropRef,
-        dragRef,
-        children
-    }) => {
-        return (
-            <pb-element-controls-overlay
-                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
-                class={className}
-                onClick={onClick}
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
-                onDragEnter={onDragEnter}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                ref={element => {
-                    if (dropRef) {
-                        dropRef(element);
-                    }
+const PbElementControlsOverlayBaseComponent = ({
+    className,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+    onDragEnter,
+    onDragLeave,
+    onDrop,
+    dropRef,
+    dragRef,
+    children
+}: any) => {
+    return (
+        <pb-element-controls-overlay
+            // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+            class={className}
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+            ref={element => {
+                if (dropRef) {
+                    dropRef(element);
+                }
 
-                    if (dragRef) {
-                        dragRef(element);
-                    }
-                }}
-            >
-                {children}
-            </pb-element-controls-overlay>
-        );
-    }
-)<{
+                if (dragRef) {
+                    dragRef(element);
+                }
+            }}
+        >
+            {children}
+        </pb-element-controls-overlay>
+    );
+};
+
+const PbElementControlsOverlay = styled(PbElementControlsOverlayBaseComponent)<{
     element: Element;
     elementRendererMeta: RendererMeta;
     blockTitle: string;
