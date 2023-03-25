@@ -59,20 +59,12 @@ export type LexicalTextSelection = {
 
 // Supported HTML tags by webiny lexical implementation
 export type ListHtmlTag = "ol" | "ul";
-export type HeadingHtmlTag = "h1"
-    | "h2"
-    | "h3"
-    | "h4"
-    | "h5"
-    | "h6";
+export type HeadingHtmlTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type ParagraphHtmlTag = "p";
 export type QuoteBlockHtmlTag = "quoteblock";
 
 // Typography
-export type TypographyHTMLTag = HeadingHtmlTag
-    | ParagraphHtmlTag
-    | ListHtmlTag
-    | QuoteBlockHtmlTag;
+export type TypographyHTMLTag = HeadingHtmlTag | ParagraphHtmlTag | ListHtmlTag | QuoteBlockHtmlTag;
 
 export type TypographyValue = {
     // CSSObject type
@@ -86,7 +78,7 @@ export type TypographyValue = {
 /* Nodes */
 export interface WebinyThemeNode {
     /*
-    * @desc Get theme style id
-    * */
+     * @desc Get theme style id
+     * */
     getThemeStyleId: () => string;
 }

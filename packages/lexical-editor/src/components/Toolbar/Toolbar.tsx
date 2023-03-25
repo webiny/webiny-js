@@ -32,6 +32,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
     const { toolbarType, setToolbarType, setTextBlockSelection } = useRichTextEditor();
     const [activeEditor, setActiveEditor] = useState(editor);
+
     useEffect(() => {
         if (toolbarType !== type) {
             setToolbarType(type);
@@ -168,7 +169,6 @@ const useToolbar: FC<useToolbarProps> = ({
             }
 
             const node = getSelectedNode(selection);
-
             if (
                 !$isCodeHighlightNode(selection.anchor.getNode()) &&
                 selection.getTextContent() !== ""

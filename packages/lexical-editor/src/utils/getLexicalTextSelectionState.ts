@@ -18,10 +18,10 @@ import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isLinkNode } from "@lexical/link";
 import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
-import { $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
+import { $isHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";
-import {$isWebinyQuoteNode} from "~/nodes/WebinyQuoteNode";
+import { $isWebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
 
 export const getSelectionTextFormat = (
     selection: RangeSelection | undefined
@@ -115,7 +115,7 @@ export const getToolbarState = (
 };
 
 /*
- * @desc Extract all data from the selection and provide
+ * @desc Get selection data and provide processed toolbar state and data about the text, element and parent nodes.
  */
 export const getLexicalTextSelectionState = (
     activeEditor: LexicalEditor,

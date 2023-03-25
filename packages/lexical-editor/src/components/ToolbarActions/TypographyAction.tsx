@@ -12,7 +12,7 @@ import {
     INSERT_UNORDERED_WEBINY_LIST_COMMAND,
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
-import {INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload} from "~/commands/webiny-quote";
+import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -84,8 +84,8 @@ export const TypographyAction: TypographyAction = () => {
                 }
             );
         }
-debugger;
-        if(value.tag === "quoteblock") {
+
+        if (value.tag === "quoteblock") {
             editor.dispatchCommand<LexicalCommand<WebinyQuoteCommandPayload>>(
                 INSERT_WEBINY_QUOTE_COMMAND,
                 {
@@ -93,7 +93,6 @@ debugger;
                 }
             );
         }
-
     }, []);
 
     useEffect(() => {

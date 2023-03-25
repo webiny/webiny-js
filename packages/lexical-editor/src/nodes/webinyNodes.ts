@@ -10,7 +10,7 @@ import { FontColorNode } from "~/nodes/FontColorNode";
 import { TypographyElementNode } from "~/nodes/TypographyElementNode";
 import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
 import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
-import {WebinyQuoteNode} from "~/nodes/WebinyQuoteNode";
+import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
 
 export const WebinyNodes: ReadonlyArray<
     | Klass<LexicalNode>

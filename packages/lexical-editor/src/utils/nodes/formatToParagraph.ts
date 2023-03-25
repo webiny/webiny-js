@@ -5,7 +5,7 @@ import {
     DEPRECATED_$isGridSelection,
     LexicalEditor
 } from "lexical";
-import {$wrapNodes} from "@lexical/selection";
+import { $wrapNodes } from "@lexical/selection";
 
 export const formatToParagraph = (editor: LexicalEditor) => {
     editor.update(() => {

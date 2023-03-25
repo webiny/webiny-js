@@ -20,7 +20,9 @@ import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
-import { WebinyQuotePlugin} from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
+import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -56,6 +58,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     height,
     theme
 }: RichTextEditorProps) => {
+    const { historyState } = useSharedHistoryContext();
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
@@ -103,6 +106,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <FontColorPlugin />
                 <TypographyPlugin />
                 <WebinyQuotePlugin />
+                <HistoryPlugin externalHistoryState={historyState} />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}
@@ -132,7 +136,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEditor", props => {
     return (
         <RichTextEditorProvider>
-            <BaseRichTextEditor {...props} />
+            <SharedHistoryContext>
+                <BaseRichTextEditor {...props} />
+            </SharedHistoryContext>
         </RichTextEditorProvider>
     );
 });

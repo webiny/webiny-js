@@ -41,9 +41,7 @@ export const TypographyDropDown = () => {
                     );
                     break;
                 case "quoteblock":
-                    setStyles(
-                        theme.styles?.typographyStyles?.quotes || []
-                    );
+                    setStyles(theme.styles?.typographyStyles?.quotes || []);
                     break;
                 default:
                     setStyles([]);

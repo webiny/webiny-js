@@ -4,26 +4,16 @@ import {
     EditorConfig,
     ElementNode,
     LexicalNode,
-    NodeKey, ParagraphNode,
+    NodeKey,
+    ParagraphNode,
     SerializedElementNode,
     Spread
 } from "lexical";
-import {WebinyEditorTheme} from "~/themes/webinyLexicalTheme";
-import {findTypographyStyleById} from "~/utils/theme/typography";
-import {styleObjectToString} from "~/utils/styleObjectToString";
-import {QuoteBlockHtmlTag, WebinyThemeNode} from "~/types";
-
-export function addClassNamesToElement(
-    element: HTMLElement,
-    ...classNames: Array<typeof undefined | boolean | null | string>
-): void {
-    classNames.forEach((className) => {
-        if (typeof className === 'string') {
-            const classesToAdd = className.split(' ').filter((n) => n !== '');
-            element.classList.add(...classesToAdd);
-        }
-    });
-}
+import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
+import { findTypographyStyleById } from "~/utils/theme/typography";
+import { styleObjectToString } from "~/utils/styleObjectToString";
+import { QuoteBlockHtmlTag, WebinyThemeNode } from "~/types";
+import { addClassNamesToElement } from "@lexical/utils";
 
 function convertBlockquoteElement() {
     const node = $createWebinyQuoteNode();
@@ -45,7 +35,6 @@ export type SerializedWebinyQuoteNode = Spread<
 >;
 
 export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
-
     __themeStyleId: string;
 
     constructor(themeStyleId?: string, key?: NodeKey) {
@@ -55,10 +44,10 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
 
     getThemeStyleId = (): string => {
         return this.__themeStyleId;
-    }
+    };
 
     static override getType(): string {
-        return 'webiny-quote';
+        return "webiny-quote";
     }
 
     getTag(): QuoteBlockHtmlTag {
@@ -71,7 +60,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
 
     addThemeStylesToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
         let css: Record<string, any> = {};
-        if(this.__themeStyleId) {
+        if (this.__themeStyleId) {
             const typographyStyleValue = findTypographyStyleById(theme, this.__themeStyleId);
             if (typographyStyleValue) {
                 css = typographyStyleValue.css;
@@ -85,12 +74,12 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     // View
 
     override createDOM(config: EditorConfig): HTMLElement {
-        const element = document.createElement('blockquote');
+        const element = document.createElement("blockquote");
         addClassNamesToElement(element, config.theme.quote);
         this.addThemeStylesToHTMLElement(element, config.theme);
         return element;
     }
-    override updateDOM(prevNode: WebinyQuoteNode, dom: HTMLElement): boolean {
+    override updateDOM(): boolean {
         return false;
     }
 
@@ -98,8 +87,8 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
         return {
             blockquote: () => ({
                 conversion: convertBlockquoteElement,
-                priority: 0,
-            }),
+                priority: 0
+            })
         };
     }
 
@@ -117,8 +106,8 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
             tag: "quoteblock",
             type: "webiny-quote",
             styleId: this.__themeStyleId,
-            version: 1,
-        }
+            version: 1
+        };
     }
 
     // Mutation
@@ -134,18 +123,16 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     override collapseAtStart(): true {
         const paragraph = $createParagraphNode();
         const children = this.getChildren();
-        children.forEach((child) => paragraph.append(child));
+        children.forEach(child => paragraph.append(child));
         this.replace(paragraph);
         return true;
     }
 }
 
-export function $createWebinyQuoteNode(themeStyleId?: string, key?:NodeKey): WebinyQuoteNode {
+export function $createWebinyQuoteNode(themeStyleId?: string, key?: NodeKey): WebinyQuoteNode {
     return new WebinyQuoteNode(themeStyleId, key);
 }
 
-export function $isWebinyQuoteNode(
-    node: LexicalNode | null | undefined,
-): node is WebinyQuoteNode {
+export function $isWebinyQuoteNode(node: LexicalNode | null | undefined): node is WebinyQuoteNode {
     return node instanceof WebinyQuoteNode;
 }

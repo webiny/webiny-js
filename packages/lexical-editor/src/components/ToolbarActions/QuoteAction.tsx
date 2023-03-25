@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {formatToQuote} from "~/utils/nodes/formatToQuote";
-import {formatToParagraph} from "~/utils/nodes/formatToParagraph";
-import {useRichTextEditor} from "~/hooks/useRichTextEditor";
+import { formatToQuote } from "~/utils/nodes/formatToQuote";
+import { formatToParagraph } from "~/utils/nodes/formatToParagraph";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 export const QuoteAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isActive, setIsActive] = useState<boolean>(false);
@@ -21,7 +21,7 @@ export const QuoteAction = () => {
 
     useEffect(() => {
         setIsActive(isQuoteSelected);
-    }, [isQuoteSelected])
+    }, [isQuoteSelected]);
 
     return (
         <button
