@@ -9,7 +9,21 @@ export interface StylesObject {
     [key: string]: CSSObject | string | number | undefined;
 }
 
-export type ThemeBreakpoints = Record<string, string>;
+export enum DefaultThemeBreakpoints {
+    DESKTOP = "desktop",
+    TABLET = "tablet",
+    MOBILE_LANDSCAPE = "mobile-landscape",
+    MOBILE_PORTRAIT = "mobile-portrait"
+}
+
+export type ThemeBreakpoints = {
+    [DefaultThemeBreakpoints.DESKTOP]: string;
+    [DefaultThemeBreakpoints.TABLET]: string;
+    [DefaultThemeBreakpoints.MOBILE_LANDSCAPE]: string;
+    [DefaultThemeBreakpoints.MOBILE_PORTRAIT]: string;
+
+    [key: string]: string;
+};
 
 export interface ThemeStyles {
     colors: Record<string, any>;
