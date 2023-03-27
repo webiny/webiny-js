@@ -1,7 +1,5 @@
 import StaticLayout from "./layouts/pages/Static";
 import theme from "./theme";
-
-// TODO CLEAN!
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder";
 import { FbFormLayoutPlugin } from "@webiny/app-form-builder";
 import { ThemePlugin } from "@webiny/app-website";
@@ -17,7 +15,6 @@ export default () => [
     new FbFormLayoutPlugin({
         name: "default",
         title: "Default layout",
-
         component: DefaultFormLayout
     })
 ];
