@@ -32,6 +32,11 @@ const pageInnerWrapper = css`
     }
 `;
 
+const containerClassName = css`
+  container-type: inline-size;
+  container-name: body;
+`;
+
 const PagePreviewToolbar = styled("div")`
     position: absolute;
     bottom: 0;
@@ -111,7 +116,7 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
         <Zoom>
             {({ zoom, setZoom }) => (
                 <div
-                    className={pageInnerWrapper}
+                    className={classNames(pageInnerWrapper, containerClassName)}
                     style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
                 >
                     <Page page={page as PbPageData} />
