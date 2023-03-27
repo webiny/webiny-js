@@ -31,10 +31,10 @@ const NewRecordButton = styled("button")({
     cursor: "pointer",
     alignItems: "center",
     display: "flex",
-    svg: {
+    "> svg": {
         color: "var(--mdc-theme-primary)",
-        width: "24px",
-        height: "24px",
+        width: "16px",
+        height: "16px",
         marginRight: 10
     }
 });
@@ -48,12 +48,6 @@ const LinkExistingRecord = styled("div")({
     },
     ":hover > div": {
         display: "block"
-    },
-    svg: {
-        color: "var(--mdc-theme-primary)",
-        width: "24px",
-        height: "24px",
-        marginRight: 10
     }
 });
 const LinkExistingRecordButton = styled("button")({
@@ -63,7 +57,13 @@ const LinkExistingRecordButton = styled("button")({
     padding: "2px 5px",
     cursor: "pointer",
     alignItems: "center",
-    display: "flex"
+    display: "flex",
+    "> svg": {
+        color: "var(--mdc-theme-primary)",
+        width: "16px",
+        height: "16px",
+        marginRight: 10
+    }
 });
 
 interface Props {
