@@ -8,12 +8,12 @@ import {
     CmsFieldTypePlugins,
     CmsModelFieldToGraphQLCreateResolver
 } from "~/types";
-import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
+import { createTypeName } from "~/utils/createTypeName";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 import { createGraphQLInputField } from "../helpers";
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${model.singularApiName}_${createReadTypeName(field.fieldId)}`;
+    return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 };
 
 const getFieldTemplates = (field: CmsModelDynamicZoneField): CmsDynamicZoneTemplate[] => {
@@ -89,6 +89,8 @@ const createResolver: CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneFi
             return value;
         }
 
+        // TODO dynamic zone in object problem
+        // dynamic zone field does not know about the parents, so we need to pass them somehow
         const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
         if (field.multipleValues && Array.isArray(value)) {
@@ -107,6 +109,22 @@ export const createDynamicZoneField =
             fieldType: "dynamicZone",
             isSortable: false,
             isSearchable: false,
+            getEntryValue: value => {
+                /**
+                 * No need to continue if not an object or if it's a correct structure.
+                 */
+                if (!value || typeof value !== "object" || value._templateId) {
+                    return value;
+                }
+                const values = Object.values(value);
+                /**
+                 * Should never be more than one value.
+                 */
+                if (values.length !== 1) {
+                    return value;
+                }
+                return values[0];
+            },
             validateChildFields: params => {
                 const { validate, originalField, field } = params;
 

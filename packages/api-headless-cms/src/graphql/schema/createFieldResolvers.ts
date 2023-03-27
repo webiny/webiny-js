@@ -52,7 +52,8 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
         const typeResolvers = {};
 
         for (const field of fields) {
-            if (!fieldTypePlugins[getBaseFieldType(field)]) {
+            const fieldTypePlugin = fieldTypePlugins[getBaseFieldType(field)];
+            if (!fieldTypePlugin) {
                 continue;
             }
             /**
@@ -96,10 +97,14 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                  * This is required because due to ref field can be requested without the populated data.
                  * At that point there is no .values  no fieldId property on the parent
                  */
-                const value =
+                const initialValue =
                     parent?.values?.[fieldId] === undefined
                         ? parent?.[fieldId]
                         : parent?.values?.[fieldId];
+
+                const value = fieldTypePlugin.getEntryValue
+                    ? fieldTypePlugin.getEntryValue(initialValue)
+                    : initialValue;
                 if (value === undefined) {
                     return undefined;
                 }
@@ -108,13 +113,23 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     context,
                     model,
                     field,
-                    value: isRoot ? parent.values?.[fieldId] : parent[fieldId]
+                    value
                 });
 
                 set(isRoot ? parent.values : parent, fieldId, transformedValue);
 
+                const x = {
+                    parent,
+                    fieldId,
+                    field,
+                    fieldResolvers,
+                    fieldResolver,
+                    resolver,
+                    createResolver
+                };
+                const y = x;
                 if (!resolver) {
-                    return isRoot ? parent.values[fieldId] : parent[fieldId];
+                    return transformedValue;
                 }
 
                 return await resolver(isRoot ? parent.values : parent, args, context, info);

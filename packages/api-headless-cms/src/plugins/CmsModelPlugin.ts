@@ -1,7 +1,5 @@
 import WebinyError from "@webiny/error";
 import lodashCamelCase from "lodash/camelCase";
-import camelCase from "lodash/camelCase";
-import upperFirst from "lodash/upperFirst";
 import pluralize from "pluralize";
 import { Plugin } from "@webiny/plugins";
 import {
@@ -10,9 +8,10 @@ import {
     CmsModelFieldSettings as BaseCmsModelFieldSettings
 } from "~/types";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
+import { createTypeName } from "~/utils/createTypeName";
 
 const transformNameToSingularApiName = (name: string) => {
-    return upperFirst(camelCase(name));
+    return createTypeName(name);
 };
 
 const transformNameToPluralApiName = (name: string) => {

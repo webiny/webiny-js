@@ -74,6 +74,10 @@ export class ConverterCollection {
         return converter;
     }
 
+    public hasConverter(type: string): boolean {
+        return this.converters.has(type);
+    }
+
     public convertToStorage(params: ConverterCollectionConvertParams): CmsEntryValues | undefined {
         const { fields, values: inputValues } = params;
         if (inputValues === undefined) {

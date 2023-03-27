@@ -12,6 +12,8 @@ const featureVersion = semver.coerce("5.33.0") as SemVer;
 const isBetaOrNext = (model: CmsModel): boolean => {
     if (!model.webinyVersion) {
         return false;
+    } else if (model.webinyVersion === "0.0.0") {
+        return true;
     }
     return model.webinyVersion.match(/next|beta/) !== null;
 };
@@ -28,7 +30,8 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
      * If is a test environment, always have this turned on.
      */
     const nodeEnv = process.env.NODE_ENV as string;
-    if (nodeEnv === "test" || nodeEnv === "disable" || isBetaOrNext(model)) {
+    const betaOrNext = isBetaOrNext(model);
+    if (nodeEnv === "test" || nodeEnv === "disable" || betaOrNext) {
         return true;
     }
     /**
@@ -44,7 +47,6 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
      */
     const modelVersion = semver.coerce(model.webinyVersion);
     if (!modelVersion) {
-        console.log(`Warning: Model "${model.modelId}" does not have valid Webiny version set.`);
         return true;
     } else if (semver.compare(modelVersion, featureVersion) === -1) {
         return false;
@@ -116,6 +118,7 @@ interface AttachConvertersParams {
     plugins: PluginsContainer;
     model: CmsModel;
 }
+
 export const attachCmsModelFieldConverters = (
     params: AttachConvertersParams
 ): StorageOperationsCmsModel => {

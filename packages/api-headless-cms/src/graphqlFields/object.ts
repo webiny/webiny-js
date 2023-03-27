@@ -6,7 +6,6 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import { attachRequiredFieldValue } from "./helpers";
-import lodashUpperFirst from "lodash/upperFirst";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 
 interface AttachTypeDefinitionsParams {
@@ -67,7 +66,7 @@ const createTypeName = (params: CreateTypeNameParams): string => {
         .concat([field.fieldId])
         .filter(Boolean)
         .map(id => {
-            return lodashUpperFirst(id);
+            return upperFirst(id);
         })
         .join("_");
 };

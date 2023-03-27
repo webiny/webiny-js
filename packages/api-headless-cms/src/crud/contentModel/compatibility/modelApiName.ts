@@ -1,11 +1,10 @@
-import camelCase from "lodash/camelCase";
-import upperFirst from "lodash/upperFirst";
 import pluralize from "pluralize";
 import { CmsModel } from "~/types";
+import { createTypeName } from "~/utils/createTypeName";
 
 export const ensureSingularApiName = (model: CmsModel): string => {
     if (!model.singularApiName) {
-        return upperFirst(camelCase(model.modelId));
+        return createTypeName(model.modelId);
     }
     return model.singularApiName;
 };

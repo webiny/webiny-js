@@ -653,6 +653,14 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      */
     createStorageId?: (params: { model: CmsModel; field: TField }) => string | null | undefined;
     /**
+     * Get the value from the CMS Entry values.
+     * This is to make sure resolver gets the value it really needs.
+     * No need to implement if it's not something really specific.
+     *
+     * ATM, we use it for the dynamic zone field
+     */
+    getEntryValue?: (value: any) => any;
+    /**
      * Read API methods.
      */
     read: {

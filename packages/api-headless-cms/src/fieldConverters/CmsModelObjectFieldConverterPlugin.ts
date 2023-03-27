@@ -139,6 +139,17 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                 };
             }
 
+            if (converterCollection.hasConverter(field.type)) {
+                const converted = converterCollection.convertToStorage({
+                    fields: [field],
+                    values: value
+                });
+                return {
+                    ...output,
+                    ...converted
+                };
+            }
+
             if (value[field.fieldId] === undefined) {
                 return output;
             }
@@ -262,6 +273,17 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                 return {
                     ...output,
                     [field.fieldId]: values
+                };
+            }
+
+            if (converterCollection.hasConverter(field.type)) {
+                const converted = converterCollection.convertFromStorage({
+                    fields: [field],
+                    values: value
+                });
+                return {
+                    ...output,
+                    ...converted
                 };
             }
 
