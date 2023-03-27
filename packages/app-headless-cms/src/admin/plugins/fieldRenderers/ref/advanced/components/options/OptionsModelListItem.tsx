@@ -6,7 +6,11 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const Title = styled("div")({
     width: "100%",
-    boxSizing: "border-box"
+    boxSizing: "border-box",
+    paddingTop: 5,
+    '&.hasDescription':{
+        paddingTop: 0,
+    }
 });
 
 const Content = styled("div")({
@@ -42,11 +46,14 @@ const Description = styled("p")({
 const Icon = styled("div")({
     width: "24px",
     height: "24px",
-    marginRight: "10px",
+    marginRight: "15px",
+    flex: '0 0 24px',
     svg: {
-        color: "var(--mdc-theme-on-surface)",
+        color: "var(--mdc-theme-text-icon-on-light)",
         width: "100%",
-        height: "auto"
+        height: "auto",
+        maxWidth: 24,
+        maxHeight: 24
     }
 });
 
@@ -76,7 +83,7 @@ export const OptionsModelListItem: React.VFC<Props> = ({ model, onClick: origina
                 <DisplayIcon model={model} />
             </Icon>
             <Content>
-                <Title>{model.name}</Title>
+                <Title className={model.description && 'hasDescription'}>{model.name}</Title>
                 {model.description && <Description>{model.description}</Description>}
             </Content>
         </Container>

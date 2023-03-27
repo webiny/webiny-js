@@ -20,7 +20,7 @@ import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/adv
 
 const Container = styled("div")({
     borderLeft: "3px solid var(--mdc-theme-background)",
-    paddingLeft: "10px"
+    //paddingLeft: "10px"
 });
 
 const FieldLabel = styled("h3")({
