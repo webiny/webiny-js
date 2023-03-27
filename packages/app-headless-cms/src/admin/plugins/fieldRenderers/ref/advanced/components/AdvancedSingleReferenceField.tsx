@@ -154,16 +154,35 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
         [storeValues]
     );
 
+    const initialValue = useMemo(() => {
+        if (entries.length === 0 || loadedModels.length === 0) {
+            return null;
+        }
+        const entry = entries[0];
+        if (!entry) {
+            return null;
+        }
+        const model = loadedModels.find(model => model.modelId === entry.model.modelId);
+        if (!model) {
+            return null;
+        }
+        return {
+            entry,
+            model
+        };
+    }, [entries, loadedModels]);
+
     return (
         <>
             <FieldLabel>{field.label}</FieldLabel>
             <Container>
                 {loading && <Loader />}
-                {!loadingEntries && !!entries[0] && (
+                {initialValue && (
                     <Entry
+                        model={initialValue.model}
                         placement="singleRefField"
                         index={0}
-                        entry={entries[0]}
+                        entry={initialValue.entry}
                         onRemove={onRemove}
                     />
                 )}
