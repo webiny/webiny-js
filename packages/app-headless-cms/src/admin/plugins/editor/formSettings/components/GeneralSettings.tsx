@@ -26,12 +26,12 @@ const GeneralSettings: React.VFC<GeneralSettingsProps> = ({ Bind }) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"singularApiName"}>
-                        <Input disabled={true} label={"Singular API Name"} />
+                        <Input label={"Singular API Name"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"pluralApiName"}>
-                        <Input disabled={true} label={"Plural API Name"} />
+                        <Input label={"Plural API Name"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
