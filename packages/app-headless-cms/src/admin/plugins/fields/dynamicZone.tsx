@@ -58,13 +58,13 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
         },
         graphql: {
             queryField({ model, field }) {
-                const prefix = `${createTypeName(model.modelId)}_${createTypeName(field.fieldId)}`;
+                const prefix = `${createTypeName(model.modelId)}_${buildTypeTree(model.fields, field.id)}`;
                 const templates = field.settings?.templates || [];
 
                 const fragments = templates.map(template => {
                     return `...on ${prefix}_${template.gqlTypeName} {
                         ${createFieldsList({ model, fields: template.fields || [] })}
-                        _templateId 
+                        _templateId
                         __typename
                     }`;
                 });
@@ -73,3 +73,43 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
         }
     }
 };
+
+function buildTypeTree(fields, id: string): string| void{
+  const filter = fields.filter(field => field.id==id)
+  if(filter.length>0){
+     return createTypeName(filter[0].fieldId);
+  }
+  const result = parseObjects(fields, id) ?? parseDynamicZones(fields,id);
+  if(result){
+    return result
+  }
+}
+
+function parseObjects(fields, id: string): string | void{
+  const objects =  fields.filter(field => ["object"].includes(field.type));
+  for(const object of objects){
+     const result = buildTypeTree(object.settings.fields, id);
+     if(result){
+       return `${createTypeName(object.fieldId)}_${result}`
+     }
+  }
+}
+
+function parseDynamicZones(fields, id: string): string| void{
+  const zones =  fields.filter(field => ["dynamicZone"].includes(field.type));
+  for(const zone in zones){
+     const result = parseTemplates(zone.settings.templates, id);
+     if(result){
+       return `${createTypeName(zone.fieldId)}_${result}`
+     }
+  }
+}
+
+function parseTemplates(templates, id: any): string| void{
+  for(const template of templates){
+     const result = buildTypeTree(template.fields, id);
+     if(result){
+       return `${template.gqlTypeName}_${result}`
+     }
+  }
+}
