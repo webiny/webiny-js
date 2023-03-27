@@ -5,6 +5,7 @@ import { Tags } from "@webiny/ui/Tags";
 import { validation } from "@webiny/validation";
 import { BindComponent } from "@webiny/form";
 import GroupSelect from "./GroupSelect";
+import { IconPicker } from "~/admin/components/IconPicker";
 
 interface GeneralSettingsProps {
     Bind: BindComponent;
@@ -42,6 +43,14 @@ const GeneralSettings: React.VFC<GeneralSettingsProps> = ({ Bind }) => {
                 <Cell span={12}>
                     <Bind name={"group"} validators={validation.create("required")}>
                         <GroupSelect />
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name="icon">
+                        <IconPicker
+                            label={`Icon`}
+                            description={`Choose an icon to represent the model.`}
+                        />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
