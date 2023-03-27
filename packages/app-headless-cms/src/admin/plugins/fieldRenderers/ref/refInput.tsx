@@ -11,7 +11,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-ref",
     renderer: {
         rendererName: "ref-input",
-        name: t`Reference Input`,
+        name: t`Autocomplete Input`,
         description: t`Renders an auto-complete input, allowing selection of a single value.`,
         canUse({ field }) {
             return field.type === "ref" && !field.multipleValues;

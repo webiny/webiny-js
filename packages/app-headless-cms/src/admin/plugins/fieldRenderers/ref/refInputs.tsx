@@ -20,7 +20,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-ref-inputs",
     renderer: {
         rendererName: "ref-inputs",
-        name: t`Reference Inputs`,
+        name: t`Autocomplete Inputs`,
         description: t`Renders an auto-complete input, allowing selection of multiple values.`,
         canUse({ field }) {
             return field.type === "ref" && !!field.multipleValues;
