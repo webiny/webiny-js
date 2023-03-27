@@ -77,11 +77,11 @@ const LegacyBaseContainer = styled.div`
 `;
 
 const BaseContainer = styled(LegacyBaseContainer)`
-  /* The usage of containers (the "@container" CSS at-rule) enables us to have responsive */
-  /* design not only on the actual website, but also within the Page Builder's page editor. */
-  /* Note that on the actual website, regular media queries are being used. */
-  container-type: inline-size;
-  container-name: body;
+    /* The usage of containers (the "@container" CSS at-rule) enables us to have responsive */
+    /* design not only on the actual website, but also within the Page Builder's page editor. */
+    /* Note that on the actual website, regular media queries are being used. */
+    container-type: inline-size;
+    container-name: body;
 `;
 
 const Content: React.FC = () => {
