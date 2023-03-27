@@ -70,7 +70,18 @@ const contentEntryQueryData = {
     }
 };
 
+const contentEntryMutationDataObjectWithDynamicZone = {
+    content: [],
+    bottomObj: {
+        footer: {
+            FooterDynamicZone: {
+                footerText: "Footer text #1"
+            }
+        }
+    }
+};
 const contentEntryMutationData = {
+    ...contentEntryMutationDataObjectWithDynamicZone,
     content: [
         {
             SimpleText: { text: "Simple Text #1" }
@@ -156,7 +167,10 @@ describe("dynamicZone field", () => {
                         id: expect.any(String),
                         content: contentEntryQueryData.content,
                         header: contentEntryQueryData.header,
-                        objective: contentEntryQueryData.objective
+                        objective: contentEntryQueryData.objective,
+                        bottomObj: {
+                            footer: null
+                        }
                     },
                     error: null
                 }
@@ -175,7 +189,10 @@ describe("dynamicZone field", () => {
                             id: page.id,
                             content: contentEntryQueryData.content,
                             header: contentEntryQueryData.header,
-                            objective: contentEntryQueryData.objective
+                            objective: contentEntryQueryData.objective,
+                            bottomObj: {
+                                footer: null
+                            }
                         }
                     ],
                     meta: {
@@ -200,7 +217,10 @@ describe("dynamicZone field", () => {
                         id: page.id,
                         content: contentEntryQueryData.content,
                         header: contentEntryQueryData.header,
-                        objective: contentEntryQueryData.objective
+                        objective: contentEntryQueryData.objective,
+                        bottomObj: {
+                            footer: null
+                        }
                     },
                     error: null
                 }
@@ -223,7 +243,37 @@ describe("dynamicZone field", () => {
                         id: page.id,
                         content: contentEntryQueryData.content,
                         header: contentEntryQueryData.header,
-                        objective: contentEntryQueryData.objective
+                        objective: contentEntryQueryData.objective,
+                        bottomObj: {
+                            footer: null
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should create a page with object containing a dynamic zone field", async () => {
+        await setupGroupAndModels({ manager: manage, models: [pageModel as any] });
+
+        const [createPageResponse] = await manage.createPage({
+            data: contentEntryMutationDataObjectWithDynamicZone
+        });
+
+        expect(createPageResponse).toEqual({
+            data: {
+                createPage: {
+                    data: {
+                        id: expect.any(String),
+                        content: [],
+                        header: null,
+                        objective: null,
+                        bottomObj: {
+                            footer: {
+                                footerText: "Footer text #1"
+                            }
+                        }
                     },
                     error: null
                 }

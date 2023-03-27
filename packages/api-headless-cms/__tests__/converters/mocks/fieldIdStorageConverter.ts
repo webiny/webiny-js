@@ -1,589 +1,90 @@
-import { CmsEntry, CmsModel, CmsModelDynamicZoneField, CmsModelField } from "~/types";
-import lodashCamelCase from "lodash/camelCase";
-
-type BaseCmsModelField =
-    | (Partial<CmsModelDynamicZoneField> & Pick<CmsModelDynamicZoneField, "fieldId" | "type">)
-    | (Partial<CmsModelField> & Pick<CmsModelField, "fieldId" | "type">);
-
-const createModelField = (base: BaseCmsModelField): CmsModelField => {
-    const { fieldId, type } = base;
-    const id = base.id || `${fieldId}Id`;
-    return {
-        settings: {},
-        ...base,
-        id,
-        fieldId,
-        type,
-        label: lodashCamelCase(fieldId),
-        storageId: `${type}@${id}`
-    };
-};
+import { CmsEntry, CmsModel, CmsModelField } from "~/types";
+import {
+    createTextField,
+    createTextFieldEmpty,
+    createTextFieldUndefined,
+    createNumberField,
+    createNumberFieldUndefined,
+    createNumberFieldEmpty,
+    createBooleanField,
+    createBooleanFieldEmpty,
+    createBooleanFieldUndefined,
+    createDateField,
+    createDateFieldEmpty,
+    createTimeField,
+    createDateFieldUndefined,
+    createTimeFieldUndefined,
+    createFileField,
+    createFieldFieldMultipleUndefined,
+    createFileFieldMultiple,
+    createFileFieldUndefined,
+    createLongTextField,
+    createLongTextFieldUndefined,
+    createRichTextField,
+    createRichTextFieldUndefined,
+    createRefField,
+    createRefFieldUndefined,
+    createObjectField,
+    createObjectFieldMultiple,
+    createObjectFieldUndefined,
+    createDynamicZoneField,
+    createDynamicZoneFieldMultiple
+} from "./fields";
 
 const createModelFields = (): CmsModelField[] => {
     return [
-        createModelField({
-            fieldId: "name",
-            type: "text"
-        }),
-        createModelField({
-            fieldId: "nameUndefined",
-            type: "text"
-        }),
-        createModelField({
-            fieldId: "nameEmpty",
-            type: "text"
-        }),
-        createModelField({
-            fieldId: "age",
-            type: "number"
-        }),
-        createModelField({
-            fieldId: "ageEmpty",
-            type: "number"
-        }),
-        createModelField({
-            fieldId: "ageUndefined",
-            type: "number"
-        }),
-        createModelField({
-            fieldId: "isImportant",
-            type: "boolean"
-        }),
-        createModelField({
-            fieldId: "isImportantEmpty",
-            type: "boolean"
-        }),
-        createModelField({
-            fieldId: "isImportantUndefined",
-            type: "boolean"
-        }),
-        createModelField({
-            fieldId: "dateOfBirth",
-            type: "datetime",
-            settings: {
-                type: "date"
-            }
-        }),
-        createModelField({
-            fieldId: "dateOfBirthEmpty",
-            type: "datetime",
-            settings: {
-                type: "date"
-            }
-        }),
-        createModelField({
-            fieldId: "dateOfBirthUndefined",
-            type: "datetime",
-            settings: {
-                type: "date"
-            }
-        }),
-        createModelField({
-            fieldId: "timeOfSleep",
-            type: "datetime",
-            settings: {
-                type: "time"
-            }
-        }),
-        createModelField({
-            fieldId: "timeOfSleepUndefined",
-            type: "datetime",
-            settings: {
-                type: "time"
-            }
-        }),
-        createModelField({
-            fieldId: "image",
-            type: "file"
-        }),
-        createModelField({
-            fieldId: "imageUndefined",
-            type: "file"
-        }),
-        createModelField({
-            fieldId: "images",
-            type: "file",
-            multipleValues: true
-        }),
-        createModelField({
-            fieldId: "imagesUndefined",
-            type: "file",
-            multipleValues: true
-        }),
-        createModelField({
-            fieldId: "description",
-            type: "long-text"
-        }),
-        createModelField({
-            fieldId: "descriptionUndefined",
-            type: "long-text"
-        }),
-        createModelField({
-            fieldId: "body",
-            type: "rich-text"
-        }),
-        createModelField({
-            fieldId: "bodyUndefined",
-            type: "rich-text"
-        }),
-        createModelField({
-            fieldId: "category",
-            type: "ref"
-        }),
-        createModelField({
-            fieldId: "categoryUndefined",
-            type: "ref"
-        }),
-        createModelField({
-            fieldId: "myObject",
-            type: "object",
-            settings: {
-                fields: [
-                    createModelField({
-                        type: "text",
-                        fieldId: "title"
-                    }),
-                    createModelField({
-                        type: "text",
-                        fieldId: "titleEmpty"
-                    }),
-                    createModelField({
-                        type: "long-text",
-                        fieldId: "description"
-                    }),
-                    createModelField({
-                        type: "rich-text",
-                        fieldId: "body"
-                    }),
-                    createModelField({
-                        type: "number",
-                        fieldId: "age"
-                    }),
-                    createModelField({
-                        type: "boolean",
-                        fieldId: "isImportant"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "date"
-                        },
-                        fieldId: "dateOfBirth"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "time"
-                        },
-                        fieldId: "timeWakingUp"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "dateTimeWithTimezone"
-                        },
-                        fieldId: "dateTimeZ"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "dateTimeWithoutTimezone"
-                        },
-                        fieldId: "dateTime"
-                    }),
-                    createModelField({
-                        type: "file",
-                        fieldId: "image",
-                        settings: {
-                            imageOnly: true
-                        }
-                    }),
-                    createModelField({
-                        type: "file",
-                        fieldId: "documents"
-                    }),
-                    createModelField({
-                        type: "ref",
-                        fieldId: "category"
-                    }),
-                    createModelField({
-                        type: "ref",
-                        fieldId: "categories"
-                    }),
-                    createModelField({
-                        type: "object",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    fieldId: "title"
-                                }),
-                                createModelField({
-                                    type: "text",
-                                    fieldId: "titleEmpty"
-                                })
-                            ]
-                        },
-                        fieldId: "myChildObject"
-                    }),
-                    createModelField({
-                        type: "object",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    fieldId: "title"
-                                })
-                            ]
-                        },
-                        fieldId: "myChildObjectEmpty"
-                    }),
-                    createModelField({
-                        type: "object",
-                        multipleValues: true,
-                        fieldId: "myObjectOptions",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    multipleValues: false,
-                                    fieldId: "titleInMyObjectOptions"
-                                }),
-                                createModelField({
-                                    type: "text",
-                                    multipleValues: false,
-                                    fieldId: "titleEmptyInMyObjectOptions"
-                                }),
-                                createModelField({
-                                    type: "number",
-                                    multipleValues: true,
-                                    fieldId: "valuesInMyObjectOptions"
-                                }),
-                                createModelField({
-                                    type: "object",
-                                    multipleValues: true,
-                                    fieldId: "objectInMyObjectOptions",
-                                    settings: {
-                                        /**
-                                         * TODO THIS!
-                                         * myObject.myObjectOptions.objectInMyObjectOptions
-                                         */
-                                        fields: [
-                                            createModelField({
-                                                type: "text",
-                                                multipleValues: true,
-                                                fieldId: "textInObjectInMyObjectOptions"
-                                            }),
-                                            createModelField({
-                                                type: "number",
-                                                multipleValues: true,
-                                                fieldId: "numberInObjectInMyObjectOptions"
-                                            }),
-                                            createModelField({
-                                                type: "object",
-                                                multipleValues: false,
-                                                fieldId: "objectInObjectInMyObjectOptions",
-                                                settings: {
-                                                    fields: [
-                                                        createModelField({
-                                                            type: "datetime",
-                                                            settings: {
-                                                                type: "dateOnly"
-                                                            },
-                                                            fieldId:
-                                                                "datetimeInObjectInObjectInMyObjectOptions"
-                                                        })
-                                                    ]
-                                                }
-                                            })
-                                        ]
-                                    }
-                                })
-                            ]
-                        }
-                    }),
-                    createModelField({
-                        type: "object",
-                        multipleValues: true,
-                        fieldId: "myObjectOptionsEmpty",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    multipleValues: false,
-                                    fieldId: "titleInMyObjectOptions"
-                                }),
-                                createModelField({
-                                    type: "number",
-                                    multipleValues: true,
-                                    fieldId: "valuesInMyObjectOptions"
-                                })
-                            ]
-                        }
-                    })
-                ]
-            }
-        }),
-        createModelField({
-            fieldId: "myObjectUndefined",
-            type: "object",
-            settings: {
-                fields: [
-                    createModelField({
-                        type: "text",
-                        fieldId: "title"
-                    }),
-                    createModelField({
-                        type: "long-text",
-                        fieldId: "description"
-                    }),
-                    createModelField({
-                        type: "rich-text",
-                        fieldId: "body"
-                    }),
-                    createModelField({
-                        type: "number",
-                        fieldId: "age"
-                    }),
-                    createModelField({
-                        type: "boolean",
-                        fieldId: "isImportant"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "date"
-                        },
-                        fieldId: "dateOfBirth"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "time"
-                        },
-                        fieldId: "timeWakingUp"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "dateTimeWithTimezone"
-                        },
-                        fieldId: "dateTimeZ"
-                    }),
-                    createModelField({
-                        type: "datetime",
-                        settings: {
-                            type: "dateTimeWithoutTimezone"
-                        },
-                        fieldId: "dateTime"
-                    }),
-                    createModelField({
-                        type: "file",
-                        fieldId: "image",
-                        settings: {
-                            imageOnly: true
-                        }
-                    }),
-                    createModelField({
-                        type: "file",
-                        fieldId: "documents"
-                    }),
-                    createModelField({
-                        type: "ref",
-                        fieldId: "category"
-                    }),
-                    createModelField({
-                        type: "ref",
-                        fieldId: "categories"
-                    }),
-                    createModelField({
-                        type: "object",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    fieldId: "title"
-                                })
-                            ]
-                        },
-                        fieldId: "myChildObject"
-                    }),
-                    createModelField({
-                        type: "object",
-                        multipleValues: true,
-                        fieldId: "myObjectOptions",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    multipleValues: false,
-                                    fieldId: "titleInMyObjectOptions"
-                                }),
-                                createModelField({
-                                    type: "number",
-                                    multipleValues: true,
-                                    fieldId: "valuesInMyObjectOptions"
-                                })
-                            ]
-                        }
-                    })
-                ]
-            }
-        }),
-        createModelField({
-            fieldId: "myObjectList",
-            type: "object",
-            multipleValues: true,
-            settings: {
-                fields: [
-                    createModelField({
-                        type: "text",
-                        fieldId: "title"
-                    }),
-                    createModelField({
-                        type: "object",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    fieldId: "titleInRepeatableObjectsObject"
-                                })
-                            ]
-                        },
-                        fieldId: "myChildObjectInRepeatable"
-                    }),
-                    createModelField({
-                        type: "object",
-                        multipleValues: true,
-                        fieldId: "myObjectListOptions",
-                        settings: {
-                            fields: [
-                                createModelField({
-                                    type: "text",
-                                    multipleValues: false,
-                                    fieldId: "titleInMyObjectListOptions"
-                                }),
-                                createModelField({
-                                    type: "number",
-                                    multipleValues: true,
-                                    fieldId: "valuesInMyObjectListOptions"
-                                })
-                            ]
-                        }
-                    })
-                ]
-            }
-        }),
-        createModelField({
-            type: "dynamicZone",
-            fieldId: "dynamicZoneArray",
-            multipleValues: true,
-            settings: {
-                templates: [
-                    {
-                        layout: [["dzText", "dzObject", "dzObjectArray"]],
-                        name: "DZ Text",
-                        gqlTypeName: "DzTextObjectArray",
-                        icon: "fas/flag",
-                        description: "",
-                        id: "dzTemplateArray1",
-                        fields: [
-                            createModelField({
-                                fieldId: "dzText",
-                                type: "text"
-                            }),
-                            createModelField({
-                                type: "object",
-                                multipleValues: true,
-                                fieldId: "dzObjectArray",
-                                settings: {
-                                    fields: [
-                                        createModelField({
-                                            type: "text",
-                                            multipleValues: false,
-                                            fieldId: "titleInDzObjectArray"
-                                        })
-                                    ]
-                                }
-                            }),
-                            createModelField({
-                                type: "object",
-                                multipleValues: false,
-                                fieldId: "dzObject",
-                                settings: {
-                                    fields: [
-                                        createModelField({
-                                            type: "text",
-                                            multipleValues: false,
-                                            fieldId: "titleInDzObject"
-                                        })
-                                    ]
-                                }
-                            })
-                        ]
-                    }
-                ]
-            }
-        }),
-        createModelField({
-            type: "dynamicZone",
-            fieldId: "dynamicZoneObject",
-            multipleValues: false,
-            settings: {
-                templates: [
-                    {
-                        layout: [["dzText", "dzObject", "dzObjectArray"]],
-                        name: "DZ Text",
-                        gqlTypeName: "DzTextObject",
-                        icon: "fas/flag",
-                        description: "",
-                        id: "dzTemplateObject1",
-                        fields: [
-                            createModelField({
-                                fieldId: "dzText",
-                                type: "text"
-                            }),
-                            createModelField({
-                                type: "object",
-                                multipleValues: true,
-                                fieldId: "dzObjectArray",
-                                settings: {
-                                    fields: [
-                                        createModelField({
-                                            type: "text",
-                                            multipleValues: false,
-                                            fieldId: "titleInDzObjectArray"
-                                        })
-                                    ]
-                                }
-                            }),
-                            createModelField({
-                                type: "object",
-                                multipleValues: false,
-                                fieldId: "dzObject",
-                                settings: {
-                                    fields: [
-                                        createModelField({
-                                            type: "text",
-                                            multipleValues: false,
-                                            fieldId: "titleInDzObject"
-                                        })
-                                    ]
-                                }
-                            })
-                        ]
-                    }
-                ]
-            }
-        })
+        // text
+        createTextField(),
+        createTextFieldUndefined(),
+        createTextFieldEmpty(),
+        // number
+        createNumberField(),
+        createNumberFieldUndefined(),
+        createNumberFieldEmpty(),
+        // boolean
+        createBooleanField(),
+        createBooleanFieldEmpty(),
+        createBooleanFieldUndefined(),
+        // datetime
+        createDateField(),
+        createDateFieldUndefined(),
+        createDateFieldEmpty(),
+        createTimeField(),
+        createTimeFieldUndefined(),
+        // file
+        createFileField(),
+        createFileFieldUndefined(),
+        createFileFieldMultiple(),
+        createFieldFieldMultipleUndefined(),
+        // long-text
+        createLongTextField(),
+        createLongTextFieldUndefined(),
+        // rich-text
+        createRichTextField(),
+        createRichTextFieldUndefined(),
+        // ref
+        createRefField(),
+        createRefFieldUndefined(),
+        // object
+        createObjectField(),
+        createObjectFieldUndefined(),
+        createObjectFieldMultiple(),
+        // dynamicZone
+        createDynamicZoneField(),
+        createDynamicZoneFieldMultiple()
     ];
 };
 
-export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>): CmsModel => {
-    const fields = createModelFields();
+export const createModel = (base?: Partial<Omit<CmsModel, "layout">>): CmsModel => {
+    const fields = base?.fields || createModelFields();
+    const titleFieldId = fields.find(field => {
+        return field.type === "text";
+    });
     return {
         name: "Test model",
-        titleFieldId: fields[0].fieldId,
+        titleFieldId: titleFieldId?.fieldId || "id",
+        singularApiName: "Test",
+        pluralApiName: "Tests",
         group: {
             id: "group-id",
             name: "Group name"
@@ -600,7 +101,7 @@ export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>)
         fields
     };
 };
-
+// TODO extract each field value to a file withing the fields directory
 const createRawValues = () => {
     return {
         name: "John Doe",
@@ -740,7 +241,7 @@ const createRawValues = () => {
         }
     };
 };
-
+// TODO extract each field value to a file withing the fields directory
 const createStoredValues = () => {
     return {
         "text@nameId": "John Doe",
@@ -887,12 +388,12 @@ const createStoredValues = () => {
     };
 };
 
-export const createStoredEntry = (): CmsEntry => {
-    return createBaseEntry(createStoredValues());
+export const createStoredEntry = (values?: Record<string, any>): CmsEntry => {
+    return createBaseEntry(values || createStoredValues());
 };
 
-export const createRawEntry = (): CmsEntry => {
-    return createBaseEntry(createRawValues());
+export const createRawEntry = (values?: Record<string, any>): CmsEntry => {
+    return createBaseEntry(values || createRawValues());
 };
 
 const createBaseEntry = (values: Record<string, any>): CmsEntry => {

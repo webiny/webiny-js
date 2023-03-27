@@ -16,6 +16,7 @@ export default /* GraphQL */ `
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective
+        bottomObj: PageModelApiName_BottomObj
     }
 
     type PageModelApiNameMeta {
@@ -147,6 +148,23 @@ export default /* GraphQL */ `
     extend type PageModelApiName_Objective_Objecting {
         _templateId: ID!
     }
+    
+    union PageModelApiName_BottomObj_Footer = PageModelApiName_BottomObj_Footer_FooterDynamicZone
+
+    type PageModelApiName_BottomObj_Footer_FooterDynamicZone {
+        footerText: String
+    }
+
+    extend type PageModelApiName_BottomObj_Footer_FooterDynamicZone {
+        _templateId: ID!
+    }
+
+    type PageModelApiName_BottomObj {
+        footer: PageModelApiName_BottomObj_Footer
+    }
+    input PageModelApiName_BottomObjWhereInput {
+        _empty: String
+    }
 
     input PageModelApiName_Content_HeroInput {
         title: String!
@@ -207,11 +225,24 @@ export default /* GraphQL */ `
         Objecting: PageModelApiName_Objective_ObjectingInput
     }
 
+    input PageModelApiName_BottomObj_Footer_FooterDynamicZoneInput {
+        footerText: String
+    }
+    
+    input PageModelApiName_BottomObj_FooterInput {
+        FooterDynamicZone: PageModelApiName_BottomObj_Footer_FooterDynamicZoneInput
+    }
+    
+    input PageModelApiName_BottomObjInput {
+        footer: PageModelApiName_BottomObj_FooterInput
+    }
+
     input PageModelApiNameInput {
         id: ID
         content: [PageModelApiName_ContentInput]
         header: PageModelApiName_HeaderInput
         objective: PageModelApiName_ObjectiveInput
+        footer: PageModelApiName_BottomObjInput
     }
 
     input PageModelApiNameGetWhereInput {
@@ -254,6 +285,7 @@ export default /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
+        bottomObj: PageModelApiName_BottomObjWhereInput
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }

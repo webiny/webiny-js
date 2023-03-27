@@ -13,6 +13,7 @@ export default `
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective
+        bottomObj: PageModelApiName_BottomObj
     }
 
     union PageModelApiName_Content = PageModelApiName_Content_Hero | PageModelApiName_Content_SimpleText | PageModelApiName_Content_Objecting
@@ -101,6 +102,19 @@ export default `
         nestedObject: PageModelApiName_Objective_Objecting_NestedObject
     }
     
+    union PageModelApiName_BottomObj_Footer = PageModelApiName_BottomObj_Footer_FooterDynamicZone
+    
+    type PageModelApiName_BottomObj_Footer_FooterDynamicZone {
+        footerText: String
+    }
+    
+    type PageModelApiName_BottomObj {
+        footer: PageModelApiName_BottomObj_Footer
+    }
+    input PageModelApiName_BottomObjWhereInput {
+        _empty: String
+    }
+
     input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String
@@ -137,6 +151,7 @@ export default `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        footer: PageModelApiName_BottomObjWhereInput
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }

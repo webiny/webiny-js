@@ -1,10 +1,66 @@
 const { version: webinyVersion } = require("@webiny/cli/package.json");
-import { CmsModel as BaseCmsModel, CmsModelField as BaseCmsModelField } from "~/types";
+import {
+    CmsDynamicZoneTemplate as BaseCmsDynamicZoneTemplate,
+    CmsModel as BaseCmsModel,
+    CmsModelDynamicZoneField as BaseCmsModelDynamicZoneField,
+    CmsModelField as BaseCmsModelField,
+    CmsModelFieldSettings as BaseCmsModelFieldSettings
+} from "~/types";
 
-type CmsModelField = Omit<BaseCmsModelField, "storageId">;
+interface CmsModelFieldSettings extends Omit<BaseCmsModelFieldSettings, "fields"> {
+    fields?: CmsModelField[];
+}
+
+interface CmsModelField extends Omit<BaseCmsModelField, "storageId" | "settings"> {
+    settings?: CmsModelFieldSettings;
+}
 interface CmsModel extends Omit<BaseCmsModel, "fields"> {
     fields: CmsModelField[];
 }
+
+interface CmsDynamicZoneTemplate extends Omit<BaseCmsDynamicZoneTemplate, "fields"> {
+    fields: CmsModelField[];
+}
+
+interface CmsModelDynamicZoneField
+    extends Omit<BaseCmsModelDynamicZoneField, "settings" | "storageId"> {
+    settings: {
+        templates: CmsDynamicZoneTemplate[];
+    };
+}
+
+const createFooterDynamicZoneField = (): CmsModelDynamicZoneField => {
+    return {
+        id: "gijbds29d",
+        fieldId: "footer",
+        label: "Footer dynamic zone",
+        type: "dynamicZone",
+        settings: {
+            templates: [
+                {
+                    id: "ugtjbrnegbsdaugb23",
+                    name: "Footer Dynamic Zone",
+                    gqlTypeName: "FooterDynamicZone",
+                    icon: "fas/file-text",
+                    layout: [["t9bgu4bigjasf"]],
+                    description: "Footer dynamic zone.",
+                    fields: [
+                        {
+                            id: "t9bgu4bigjasf",
+                            fieldId: "footerText",
+                            label: "Footer text",
+                            type: "text",
+                            renderer: {
+                                name: "text-input"
+                            }
+                        }
+                    ],
+                    validation: []
+                }
+            ]
+        }
+    };
+};
 
 export const pageModel: CmsModel = {
     tenant: "root",
@@ -22,7 +78,7 @@ export const pageModel: CmsModel = {
     savedOn: "2022-12-19T19:10:02.731Z",
     titleFieldId: "id",
     lockedFields: [],
-    layout: [["kcq9kt40"], ["peeeyhtc"], ["t4pfesadsa"]],
+    layout: [["kcq9kt40"], ["peeeyhtc"], ["t4pfesadsa"], ["fdmis0f23n"]],
     tags: ["type:model"],
     fields: [
         {
@@ -312,6 +368,16 @@ export const pageModel: CmsModel = {
                         ]
                     }
                 ]
+            }
+        },
+        {
+            id: "fdmis0f23n",
+            fieldId: "bottomObj",
+            type: "object",
+            label: "Bottom Object",
+            settings: {
+                fields: [createFooterDynamicZoneField()],
+                layout: [["gijbds29d"]]
             }
         }
     ]

@@ -48,6 +48,14 @@ const pageFields = `
             __typename
         }
     }
+    bottomObj {
+        footer {
+            ...on ${singularPageApiName}_BottomObj_Footer_FooterDynamicZone {
+                footerText
+                __typename
+            }
+        }
+    }
 `;
 
 const errorFields = `
