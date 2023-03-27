@@ -22,7 +22,7 @@ import { Element as ElementType } from "@webiny/app-page-builder-elements/types"
 const BREADCRUMB_HEIGHT = 33;
 
 interface ContentContainerParams {
-    theme: PbTheme | null;
+    theme?: PbTheme | null;
 }
 
 const LegacyContentContainer = styled.div(({ theme }: ContentContainerParams) => {
@@ -70,11 +70,20 @@ const contentContainerWrapper = css({
     zIndex: 1
 });
 
-const BaseContainer = styled("div")({
-    width: "100%",
-    left: 52,
-    margin: "0 auto"
-});
+const LegacyBaseContainer = styled.div`
+    width: 100%;
+    left: 52px;
+    margin: 0 auto;
+`;
+
+const BaseContainer = styled(LegacyBaseContainer)`
+  /* The usage of containers (the "@container" CSS at-rule) enables us to have responsive */
+  /* design not only on the actual website, but also within the Page Builder's page editor. */
+  /* Note that on the website, the container is assigned to the page body, unlike here where */
+  /* it's assigned to a DOM element (page canvas). See packages/app-website/src/Website.tsx */
+  container-type: inline-size;
+  container-name: body;
+`;
 
 const Content: React.FC = () => {
     const rootElementId = useRecoilValue(rootElementAtom);
@@ -122,12 +131,12 @@ const Content: React.FC = () => {
                     )} webiny-pb-media-query--${kebabCase(displayMode)}`}
                 >
                     <EditorContent />
-                    <BaseContainer
+                    <LegacyBaseContainer
                         ref={pagePreviewRef}
                         className={"webiny-pb-editor-content-preview"}
                     >
                         <Element id={rootElement.id} />
-                    </BaseContainer>
+                    </LegacyBaseContainer>
                 </LegacyContentContainer>
             </Elevation>
         );

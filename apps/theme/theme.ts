@@ -1,12 +1,12 @@
 import { createTheme } from "@webiny/app-theme";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 
 // Breakpoints (desktop, tablet, mobile).
 export const breakpoints = {
-    desktop: "@media (max-width: 4000px)",
-    tablet: "@media (max-width: 991px)",
-    "mobile-landscape": "@media (max-width: 767px)",
-    "mobile-portrait": "@media (max-width: 478px)"
+    desktop: "@container body (max-width: 4000px)",
+    tablet: "@container body (max-width: 991px)",
+    "mobile-landscape": "@container body (max-width: 767px)",
+    "mobile-portrait": "@container body (max-width: 478px)"
 };
 
 // Colors.

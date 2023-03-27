@@ -6,7 +6,7 @@ import { setContext } from "apollo-link-context";
  */
 // @ts-ignore
 import loadScript from "load-script";
-import { Global } from "@emotion/core";
+import { Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useSecurity } from "@webiny/app-security";

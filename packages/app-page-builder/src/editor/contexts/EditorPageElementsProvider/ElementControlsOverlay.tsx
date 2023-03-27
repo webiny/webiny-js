@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Element, RendererMeta } from "@webiny/app-page-builder-elements/types";
 import styled from "@emotion/styled";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
 import { plugins } from "@webiny/plugins";
@@ -138,44 +138,44 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     );
 };
 
-const PbElementControlsOverlay = styled(
-    ({
-        className,
-        onClick,
-        onMouseEnter,
-        onMouseLeave,
-        onDragEnter,
-        onDragLeave,
-        onDrop,
-        dropRef,
-        dragRef,
-        children
-    }) => {
-        return (
-            <pb-element-controls-overlay
-                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
-                class={className}
-                onClick={onClick}
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
-                onDragEnter={onDragEnter}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                ref={element => {
-                    if (dropRef) {
-                        dropRef(element);
-                    }
+const PbElementControlsOverlayBaseComponent = ({
+    className,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+    onDragEnter,
+    onDragLeave,
+    onDrop,
+    dropRef,
+    dragRef,
+    children
+}: any) => {
+    return (
+        <pb-element-controls-overlay
+            // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+            class={className}
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+            ref={element => {
+                if (dropRef) {
+                    dropRef(element);
+                }
 
-                    if (dragRef) {
-                        dragRef(element);
-                    }
-                }}
-            >
-                {children}
-            </pb-element-controls-overlay>
-        );
-    }
-)<{
+                if (dragRef) {
+                    dragRef(element);
+                }
+            }}
+        >
+            {children}
+        </pb-element-controls-overlay>
+    );
+};
+
+const PbElementControlsOverlay = styled(PbElementControlsOverlayBaseComponent)<{
     element: Element;
     elementRendererMeta: RendererMeta;
     blockTitle: string;

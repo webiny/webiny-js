@@ -6,7 +6,7 @@ import theme from "./../../../theme";
 
 const DEFAULT_MESSAGE = "Thank you for your submission!";
 
-const CheckmarkIcon = styled(({ className }) => (
+const CheckmarkIcon = styled(({ className }: { className?: string }) => (
     <svg
         aria-hidden="true"
         focusable="false"
