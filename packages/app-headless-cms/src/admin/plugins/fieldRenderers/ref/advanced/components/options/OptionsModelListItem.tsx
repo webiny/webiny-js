@@ -8,8 +8,8 @@ const Title = styled("div")({
     width: "100%",
     boxSizing: "border-box",
     paddingTop: 5,
-    '&.hasDescription':{
-        paddingTop: 0,
+    "&.hasDescription": {
+        paddingTop: 0
     }
 });
 
@@ -47,7 +47,7 @@ const Icon = styled("div")({
     width: "24px",
     height: "24px",
     marginRight: "15px",
-    flex: '0 0 24px',
+    flex: "0 0 24px",
     svg: {
         color: "var(--mdc-theme-text-icon-on-light)",
         width: "100%",
@@ -83,7 +83,7 @@ export const OptionsModelListItem: React.VFC<Props> = ({ model, onClick: origina
                 <DisplayIcon model={model} />
             </Icon>
             <Content>
-                <Title className={model.description && 'hasDescription'}>{model.name}</Title>
+                <Title className={model.description && "hasDescription"}>{model.name}</Title>
                 {model.description && <Description>{model.description}</Description>}
             </Content>
         </Container>
