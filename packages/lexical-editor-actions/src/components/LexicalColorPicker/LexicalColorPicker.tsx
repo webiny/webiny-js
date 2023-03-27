@@ -10,6 +10,7 @@ import { ChromePicker } from "react-color";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
+import * as url from "url";
 
 const ColorPickerStyle = styled("div")({
     position: "relative",
@@ -50,6 +51,16 @@ const Color = styled("button")({
         "&::after": {
             opacity: 1
         }
+    }
+});
+
+const ClearColor = styled("div")({
+    display: "flex",
+    width: "100%",
+    height: 14,
+    alignItems: "center",
+    ".icon": {
+        marginRight: 0
     }
 });
 
@@ -174,6 +185,9 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
 
     return (
         <ColorPickerStyle>
+            <ClearColor>
+                <i className={"icon x"} /><a href="javascript:void(0)">Clear</a>
+            </ClearColor>
             {Object.keys(themeColors).map((key, index) => {
                 const color = themeColors[key];
 

@@ -178,6 +178,15 @@ i.chevron-down {
   background-image: url("../../images/icons/chevron-down.svg");
 }
 
+.icon.x, i.x {
+  background-color: transparent;
+  background-size: contain;
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  background-image: url("../../images/icons/x.svg");
+}
+
 
 .icon.bullet-list,
 .icon.bullet {
