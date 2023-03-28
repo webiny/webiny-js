@@ -18,6 +18,7 @@ import {
     MigrationRunItem
 } from "~/types";
 import { executeWithRetry } from "./executeWithRetry";
+import { createId } from "~/createId";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
 
@@ -34,6 +35,7 @@ const getRunItemDuration = (runItem: MigrationRunItem) => {
 };
 
 class MigrationNotFinished extends Error {}
+class MigrationInProgress extends Error {}
 
 export class MigrationRunner {
     private readonly logger: Logger;
@@ -59,11 +61,6 @@ export class MigrationRunner {
 
     async execute(projectVersion: string, isApplicable?: IsMigrationApplicable) {
         const lastRun = await this.getOrCreateRun();
-
-        // We don't want to run multiple migration processes at the same time.
-        if (["init", "running"].includes(lastRun.status)) {
-            return;
-        }
 
         try {
             this.validateIds(this.migrations);
@@ -239,7 +236,6 @@ export class MigrationRunner {
             await this.repository.deleteCheckpoint(migration.getId());
         }
 
-        await new Promise(resolve => setTimeout(resolve, 10000));
         lastRun.status = "done";
         lastRun.finishedOn = getCurrentISOTime();
         await this.repository.saveRun(lastRun);
@@ -291,20 +287,28 @@ export class MigrationRunner {
     }
 
     private async getOrCreateRun() {
-        const completedStatus = ["done", "error"];
-        let currentRun = await this.repository.getLastRun();
-        if (!currentRun || completedStatus.includes(currentRun.status)) {
-            currentRun = {
+        const resolvedStatus: Array<MigrationRun["status"]> = ["done", "error"];
+        const unresolvedStatus: Array<MigrationRun["status"]> = ["init", "running"];
+
+        let lastRun = await this.repository.getLastRun();
+
+        if (lastRun && unresolvedStatus.includes(lastRun.status)) {
+            throw new MigrationInProgress(`Migration is already in progress (ID: ${lastRun.id})!`);
+        }
+
+        if (!lastRun || resolvedStatus.includes(lastRun.status)) {
+            lastRun = {
+                id: createId(),
                 status: "init",
                 startedOn: getCurrentISOTime(),
                 finishedOn: "",
                 migrations: []
             };
 
-            await this.repository.saveRun(currentRun);
+            await this.repository.saveRun(lastRun);
         }
 
-        return currentRun;
+        return lastRun;
     }
 
     private getOrCreateRunItem(run: MigrationRun, migration: DataMigration): MigrationRunItem {

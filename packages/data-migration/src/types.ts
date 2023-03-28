@@ -11,6 +11,7 @@ export interface MigrationItem {
 }
 
 export interface MigrationRun {
+    id: string;
     startedOn: string;
     finishedOn: string;
     status: "init" | "running" | "pending" | "done" | "error";
