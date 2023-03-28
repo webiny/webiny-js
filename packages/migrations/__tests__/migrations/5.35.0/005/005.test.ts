@@ -1,7 +1,7 @@
 import {
     assertNotError,
     createDdbMigrationHandler,
-    getPrimaryDynamoDbTable,
+    getPrimaryDynamoDbTable, groupMigrations,
     insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest,
     scanTable
@@ -25,10 +25,11 @@ describe("5.35.0-005", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(0);
-        expect(data.skipped.length).toBe(1);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
     });
 
     it("should execute migration", async () => {
@@ -42,10 +43,11 @@ describe("5.35.0-005", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(1);
-        expect(data.skipped.length).toBe(0);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
+        expect(grouped.notApplicable.length).toBe(0);
 
         const models = await scanTable(table, {
             filters: [
