@@ -1,7 +1,7 @@
 import LambdaClient from "aws-sdk/clients/lambda";
 import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { printReport, runMigration } from "@webiny/data-migration/cli";
+import { printReport, runMigration, getDuration } from "@webiny/data-migration/cli";
 
 const clearLine = () => {
     process.stdout.clearLine(0);
@@ -37,8 +37,9 @@ export const executeDataMigrations = {
                     if (status === "running") {
                         const currentMigration = migrations.find(mig => mig.status === "running");
                         if (currentMigration) {
+                            const duration = getDuration(currentMigration.startedOn as string);
                             process.stdout.write(
-                                `Running data migration ${currentMigration.id}...`
+                                `Running data migration ${currentMigration.id} (${duration})...`
                             );
                         }
                         return;

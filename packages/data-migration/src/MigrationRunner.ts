@@ -21,6 +21,18 @@ import { executeWithRetry } from "./executeWithRetry";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
 
+const getCurrentISOTime = () => {
+    return new Date().toISOString();
+};
+
+const getRunItemDuration = (runItem: MigrationRunItem) => {
+    if (!runItem.startedOn || !runItem.finishedOn) {
+        return "N/A";
+    }
+
+    return new Date(runItem.finishedOn).getTime() - new Date(runItem.startedOn).getTime();
+};
+
 class MigrationNotFinished extends Error {}
 
 export class MigrationRunner {
@@ -83,7 +95,8 @@ export class MigrationRunner {
             await this.repository.logMigration({
                 id: startingId,
                 description: "starting point for applicable migrations detection",
-                createdOn: new Date().toISOString(),
+                startedOn: getCurrentISOTime(),
+                finishedOn: getCurrentISOTime(),
                 reason: "initial migration"
             });
         } else {
@@ -105,7 +118,7 @@ export class MigrationRunner {
         const executableMigrations = this.migrations
             .filter(mig => {
                 if (!isMigrationApplicable(mig)) {
-                    lastRun.migrations.push({
+                    this.setRunItem(lastRun, {
                         id: mig.getId(),
                         status: "not-applicable"
                     });
@@ -159,25 +172,22 @@ export class MigrationRunner {
 
             if (!shouldExecute) {
                 this.logger.info(`Skipping migration %s.`, migration.getId());
-                this.setRunItem(lastRun, {
-                    ...runItem,
-                    status: "skipped"
-                });
+                runItem.status = "skipped";
+
+                await this.setRunItemAndSave(lastRun, runItem);
 
                 await this.repository.logMigration({
                     id: migration.getId(),
                     description: migration.getDescription(),
-                    createdOn: new Date().toISOString(),
-                    duration: 0,
                     reason: "skipped"
                 });
 
                 continue;
             }
 
-            const start = Date.now();
             try {
-                this.setRunItem(lastRun, runItem);
+                runItem.startedOn = getCurrentISOTime();
+                await this.setRunItemAndSave(lastRun, runItem);
                 this.logger.info(
                     `Executing migration %s: %s`,
                     migration.getId(),
@@ -205,26 +215,24 @@ export class MigrationRunner {
                 this.logger.error(err, err.message);
                 return;
             } finally {
-                const duration = Date.now() - start;
                 // We sum duration from the previous run with the current run.
-                runItem.duration = duration + (runItem.duration || 0);
+                runItem.finishedOn = getCurrentISOTime();
 
                 // Update run stats.
-                this.setRunItem(lastRun, runItem);
-                await this.repository.saveRun(lastRun);
+                await this.setRunItemAndSave(lastRun, runItem);
 
                 this.logger.info(
                     `Finished executing migration %s in %sms.`,
                     migration.getId(),
-                    duration
+                    getRunItemDuration(runItem)
                 );
             }
 
             await this.repository.logMigration({
                 id: migration.getId(),
                 description: migration.getDescription(),
-                createdOn: new Date().toISOString(),
-                duration: runItem.duration,
+                startedOn: runItem.startedOn,
+                finishedOn: runItem.finishedOn,
                 reason: "executed"
             });
 
@@ -234,6 +242,7 @@ export class MigrationRunner {
 
         await new Promise(resolve => setTimeout(resolve, 10000));
         lastRun.status = "done";
+        lastRun.finishedOn = getCurrentISOTime();
         await this.repository.saveRun(lastRun);
 
         this.logger.info(`Finished processing applicable migrations.`);
@@ -288,7 +297,8 @@ export class MigrationRunner {
         if (!currentRun || completedStatus.includes(currentRun.status)) {
             currentRun = {
                 status: "init",
-                createdOn: new Date().toISOString(),
+                startedOn: getCurrentISOTime(),
+                finishedOn: "",
                 migrations: []
             };
 
@@ -298,11 +308,10 @@ export class MigrationRunner {
         return currentRun;
     }
 
-    private getOrCreateRunItem(run: MigrationRun, migration: DataMigration) {
+    private getOrCreateRunItem(run: MigrationRun, migration: DataMigration): MigrationRunItem {
         return (
             run.migrations.find(item => item.id === migration.getId()) || {
                 id: migration.getId(),
-                duration: 0,
                 status: "running"
             }
         );
@@ -319,6 +328,13 @@ export class MigrationRunner {
                 ...run.migrations.slice(index + 1)
             ];
         }
+
+        run.migrations = run.migrations.sort((a, b) => (a.id > b.id ? -1 : 1));
+    }
+
+    private async setRunItemAndSave(run: MigrationRun, item: MigrationRunItem) {
+        this.setRunItem(run, item);
+        await this.repository.saveRun(run);
     }
 }
 

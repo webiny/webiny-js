@@ -5,17 +5,14 @@ export { Logger };
 export interface MigrationItem {
     id: string;
     description: string;
-    createdOn: string;
     reason: string;
-    duration?: number;
-}
-
-export interface MigrationRunItem extends Pick<MigrationItem, "id" | "duration"> {
-    status: "done" | "running" | "skipped" | "pending" | "not-applicable" | "error";
+    startedOn?: string;
+    finishedOn?: string;
 }
 
 export interface MigrationRun {
-    createdOn: string;
+    startedOn: string;
+    finishedOn: string;
     status: "init" | "running" | "pending" | "done" | "error";
     migrations: MigrationRunItem[];
     error?: {
@@ -25,6 +22,13 @@ export interface MigrationRun {
         data?: Record<string, any>;
         stack?: string;
     };
+}
+
+export interface MigrationRunItem {
+    id: string;
+    status: "done" | "running" | "skipped" | "pending" | "not-applicable" | "error";
+    startedOn?: string;
+    finishedOn?: string;
 }
 
 export interface MigrationRepository {

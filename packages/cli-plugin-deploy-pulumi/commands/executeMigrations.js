@@ -1,6 +1,6 @@
 const LambdaClient = require("aws-sdk/clients/lambda");
 const { getStackOutput } = require("../utils");
-const { runMigration, printReport } = require("@webiny/data-migration/cli");
+const { runMigration, printReport, getDuration } = require("@webiny/data-migration/cli");
 
 const clearLine = () => {
     process.stdout.clearLine(0);
@@ -31,7 +31,10 @@ module.exports = async (params, context) => {
                 if (status === "running") {
                     const currentMigration = migrations.find(mig => mig.status === "running");
                     if (currentMigration) {
-                        process.stdout.write(`Running data migration ${currentMigration.id}...`);
+                        const duration = getDuration(currentMigration.startedOn);
+                        process.stdout.write(
+                            `Running data migration ${currentMigration.id} (${duration})...`
+                        );
                     }
                     return;
                 }
