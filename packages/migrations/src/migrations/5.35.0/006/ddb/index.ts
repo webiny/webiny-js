@@ -86,12 +86,11 @@ export class AcoRecords_5_35_0_006 {
         for (const tenant of tenants) {
             const locales = await this.listLocales({ tenant });
             for (const locale of locales) {
-                const pages = await this.listPages({ tenant, locale });
+                logger.info(
+                    `Creating search records for tenant "${tenant.data.id}" and locale "${locale.code}`
+                );
 
-                if (pages.length === 0) {
-                    logger.info(`No pages to be updated; skipping migration.`);
-                    continue;
-                }
+                const pages = await this.listPages({ tenant, locale });
 
                 for (const page of pages) {
                     await this.createSearchRecord({ page });
@@ -202,9 +201,6 @@ export class AcoRecords_5_35_0_006 {
             },
             version: 1,
             webinyVersion
-            // _ct: "2023-03-28T07:33:51.459Z",
-            // _et: "CmsEntries",
-            // _md: "2023-03-28T07:33:51.459Z"
         };
 
         const revisionEntry = {
@@ -248,9 +244,6 @@ export class AcoRecords_5_35_0_006 {
             },
             version: 1,
             webinyVersion
-            // _ct: "2023-03-28T07:33:51.441Z",
-            // _et: "CmsEntries",
-            // _md: "2023-03-28T07:33:51.441Z"
         };
 
         const items = [

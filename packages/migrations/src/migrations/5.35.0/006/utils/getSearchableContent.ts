@@ -1,6 +1,7 @@
 import jsonpack from "jsonpack";
 
 import { processors } from "~/migrations/5.35.0/006/utils/processors";
+
 import { Page } from "~/migrations/5.35.0/006/ddb/types";
 
 export interface CompressedValue {
@@ -27,7 +28,7 @@ export async function getSearchablePageContent(page: Page): Promise<string> {
 
     if (content) {
         for (const block of content.elements) {
-            await traverse(block, async (element: any) => {
+            await traverse(block, async (element: Record<string, any>) => {
                 for (const processor of processors) {
                     const processed = processor(element);
                     result.push(processed);
@@ -39,7 +40,7 @@ export async function getSearchablePageContent(page: Page): Promise<string> {
     return result.filter(Boolean).join(" ").trim();
 }
 
-async function traverse(element: any, callback: any) {
+async function traverse(element: Record<string, any>, callback: any) {
     if (element.type !== "block") {
         await callback(element);
     }

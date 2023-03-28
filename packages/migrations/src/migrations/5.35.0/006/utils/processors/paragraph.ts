@@ -4,7 +4,7 @@ import { getLexicalContentText } from "../getLexicalContentText";
 
 const supportedTypes = ["paragraph", "heading", "quote", "list"];
 
-export const paragraphProcessor = (element: any) => {
+export const paragraphProcessor = (element: Record<string, any>) => {
     if (!supportedTypes.includes(element.type)) {
         return "";
     }

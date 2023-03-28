@@ -6,7 +6,7 @@ interface Image {
     name: string;
 }
 
-export const imagesProcessor = (element: any) => {
+export const imagesProcessor = (element: Record<string, any>) => {
     if (element.type !== "images-list") {
         return "";
     }
