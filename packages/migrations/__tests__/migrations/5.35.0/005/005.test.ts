@@ -1,7 +1,8 @@
 import {
     assertNotError,
     createDdbMigrationHandler,
-    getPrimaryDynamoDbTable, groupMigrations,
+    getPrimaryDynamoDbTable,
+    groupMigrations,
     insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest,
     scanTable
