@@ -13,7 +13,9 @@ export const mediaToContainer = (mediaQuery: string): string => {
     const widthRules = [
         minWidth && `(min-width: ${minWidth})`,
         maxWidth && `(max-width: ${maxWidth})`
-    ].filter(Boolean).join(" and ");
+    ]
+        .filter(Boolean)
+        .join(" and ");
 
     return `@container page-editor-canvas ${widthRules}`;
 };
