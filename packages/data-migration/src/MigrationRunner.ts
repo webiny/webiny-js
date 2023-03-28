@@ -9,13 +9,13 @@ import {
 } from "./symbols";
 import { createPinoLogger, getChildLogger } from "./createPinoLogger";
 import {
-    MigrationResult,
-    ExecutedMigrationResponse,
-    SkippedMigrationResponse,
     MigrationRepository,
     DataMigration,
     DataMigrationContext,
-    ExecutionTimeLimiter
+    ExecutionTimeLimiter,
+    MigrationRun,
+    MigrationStatus,
+    MigrationRunItem
 } from "~/types";
 import { executeWithRetry } from "./executeWithRetry";
 
@@ -46,7 +46,24 @@ export class MigrationRunner {
     }
 
     async execute(projectVersion: string, isApplicable?: IsMigrationApplicable) {
-        this.validateIds(this.migrations);
+        const lastRun = await this.getOrCreateRun();
+
+        // We don't want to run multiple migration processes at the same time.
+        if (lastRun.status === "running") {
+            return;
+        }
+
+        try {
+            this.validateIds(this.migrations);
+        } catch (err) {
+            lastRun.status = "error";
+            lastRun.error = {
+                message: err.message
+            };
+            await this.repository.saveRun(lastRun);
+            return;
+        }
+
         const [latestMigration] = await this.repository.listMigrations({ limit: 1 });
 
         this.logger.info(`Project version is %s.`, projectVersion);
@@ -67,7 +84,6 @@ export class MigrationRunner {
                 id: startingId,
                 description: "starting point for applicable migrations detection",
                 createdOn: new Date().toISOString(),
-                duration: 0,
                 reason: "initial migration"
             });
         } else {
@@ -80,10 +96,6 @@ export class MigrationRunner {
             this.logger.info(`Using migrations in the range of %s to %s.`, startingId, lastId);
         }
 
-        const executed: ExecutedMigrationResponse[] = [];
-        const skipped: SkippedMigrationResponse[] = [];
-        const notApplicable: SkippedMigrationResponse[] = [];
-
         const defaultIsApplicable: IsMigrationApplicable = mig => {
             return mig.getId() > startingId && mig.getId() <= lastId;
         };
@@ -93,10 +105,9 @@ export class MigrationRunner {
         const executableMigrations = this.migrations
             .filter(mig => {
                 if (!isMigrationApplicable(mig)) {
-                    notApplicable.push({
+                    lastRun.migrations.push({
                         id: mig.getId(),
-                        description: mig.getDescription(),
-                        reason: "not applicable"
+                        status: "not-applicable"
                     });
 
                     return false;
@@ -105,14 +116,24 @@ export class MigrationRunner {
             })
             .sort((a, b) => (a.getId() > b.getId() ? 1 : -1));
 
-        this.logger.info(`Found %s applicable migration(s).`, executableMigrations.length);
+        this.logger.info(
+            `Found %s applicable out of %s available migration(s).`,
+            executableMigrations.length,
+            this.migrations.length
+        );
 
         // Are we're within the last 2 minutes of the execution time limit?
         const shouldCreateCheckpoint = () => {
             return this.timeLimiter() < 120000;
         };
 
+        if (executableMigrations.length) {
+            lastRun.status = "running";
+            await this.repository.saveRun(lastRun);
+        }
+
         for (const migration of executableMigrations) {
+            const runItem = this.getOrCreateRunItem(lastRun, migration);
             const checkpoint = await this.repository.getCheckpoint(migration.getId());
             const logger = getChildLogger(this.logger, migration);
 
@@ -134,15 +155,13 @@ export class MigrationRunner {
                     throw new MigrationNotFinished();
                 }
             };
-
             const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
 
             if (!shouldExecute) {
                 this.logger.info(`Skipping migration %s.`, migration.getId());
-                skipped.push({
-                    id: migration.getId(),
-                    description: migration.getDescription(),
-                    reason: "migration already applied"
+                this.setRunItem(lastRun, {
+                    ...runItem,
+                    status: "skipped"
                 });
 
                 await this.repository.logMigration({
@@ -156,29 +175,27 @@ export class MigrationRunner {
                 continue;
             }
 
-            const result: MigrationResult = {
-                duration: 0,
-                logs: [],
-                error: null,
-                success: true
-            };
-
             const start = Date.now();
             try {
+                this.setRunItem(lastRun, runItem);
                 this.logger.info(
                     `Executing migration %s: %s`,
                     migration.getId(),
                     migration.getDescription()
                 );
                 await migration.execute(context);
+                runItem.status = "done";
             } catch (err) {
                 // If `MigrationNotFinished` was thrown, we will need to resume the migration.
                 if (err instanceof MigrationNotFinished) {
-                    return { executed, skipped, notApplicable, resume: true };
+                    lastRun.status = "pending";
+                    runItem.status = "pending";
+                    return;
                 }
 
-                result.success = false;
-                result.error = {
+                runItem.status = "error";
+                lastRun.status = "error";
+                lastRun.error = {
                     name: err.name || "Migration error",
                     message: err.message,
                     stack: err.stack,
@@ -186,39 +203,58 @@ export class MigrationRunner {
                     code: err.code
                 };
                 this.logger.error(err, err.message);
+                return;
             } finally {
-                result.duration = Date.now() - start;
+                const duration = Date.now() - start;
+                // We sum duration from the previous run with the current run.
+                runItem.duration = duration + (runItem.duration || 0);
+
+                // Update run stats.
+                this.setRunItem(lastRun, runItem);
+                await this.repository.saveRun(lastRun);
+
                 this.logger.info(
                     `Finished executing migration %s in %sms.`,
                     migration.getId(),
-                    result.duration
+                    duration
                 );
             }
 
-            executed.push({
+            await this.repository.logMigration({
                 id: migration.getId(),
                 description: migration.getDescription(),
-                result
+                createdOn: new Date().toISOString(),
+                duration: runItem.duration,
+                reason: "executed"
             });
-            /**
-             * If the migration was successful, we'll log it in the database.
-             */
-            if (result.success && !result.error) {
-                await this.repository.logMigration({
-                    id: migration.getId(),
-                    description: migration.getDescription(),
-                    createdOn: new Date().toISOString(),
-                    duration: result.duration,
-                    reason: "executed"
-                });
-            }
 
             this.logger.info(`Deleting checkpoint ${migration.getId()}.`);
             await this.repository.deleteCheckpoint(migration.getId());
         }
-        this.logger.info(`Finished processing applicable migrations.`);
 
-        return { executed, skipped, notApplicable };
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        lastRun.status = "done";
+        await this.repository.saveRun(lastRun);
+
+        this.logger.info(`Finished processing applicable migrations.`);
+    }
+
+    async getStatus(): Promise<MigrationStatus> {
+        const lastRun = await this.repository.getLastRun();
+        if (!lastRun) {
+            throw new Error(`No migrations were ever executed!`);
+        }
+
+        // Since we don't store migration descriptions to DB, we need to fetch them from actual migration objects.
+        const withDescriptions = lastRun.migrations.map(mig => {
+            const dataMigration = this.migrations.find(dm => dm.getId() === mig.id);
+            return {
+                ...mig,
+                description: dataMigration ? dataMigration.getDescription() : "N/A"
+            };
+        });
+
+        return { ...lastRun, migrations: withDescriptions };
     }
 
     private validateIds(migrations: DataMigration[]) {
@@ -244,6 +280,45 @@ export class MigrationRunner {
         this.logger.info(checkpoint, `Saving checkpoint ${migration.getId()}`);
         const execute = () => this.repository.createCheckpoint(migration.getId(), checkpoint);
         await executeWithRetry(execute);
+    }
+
+    private async getOrCreateRun() {
+        const completedStatus = ["done", "error"];
+        let currentRun = await this.repository.getLastRun();
+        if (!currentRun || completedStatus.includes(currentRun.status)) {
+            currentRun = {
+                status: "init",
+                createdOn: new Date().toISOString(),
+                migrations: []
+            };
+
+            await this.repository.saveRun(currentRun);
+        }
+
+        return currentRun;
+    }
+
+    private getOrCreateRunItem(run: MigrationRun, migration: DataMigration) {
+        return (
+            run.migrations.find(item => item.id === migration.getId()) || {
+                id: migration.getId(),
+                duration: 0,
+                status: "running"
+            }
+        );
+    }
+
+    private setRunItem(run: MigrationRun, item: MigrationRunItem) {
+        const index = run.migrations.findIndex(runItem => runItem.id === item.id);
+        if (index < 0) {
+            run.migrations.push(item);
+        } else {
+            run.migrations = [
+                ...run.migrations.slice(0, index),
+                item,
+                ...run.migrations.slice(index + 1)
+            ];
+        }
     }
 }
 

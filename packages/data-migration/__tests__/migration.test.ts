@@ -2,17 +2,36 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { useHandler } from "~tests/useHandler";
 import { createTable } from "~/createTable";
 import { createDdbMigration } from "~tests/createDdbMigration";
-import { MigrationEventHandlerResponse, MigrationRepository } from "~/types";
+import { MigrationInvocationErrorResponse, MigrationRepository, MigrationRunItem } from "~/types";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
 import { createDdbProjectMigration } from "~/handlers/createDdbProjectMigration";
 
 jest.retryTimes(0);
 
-function assertNotError(error: MigrationEventHandlerResponse["error"]): asserts error is undefined {
-    if (error) {
+function assertNotError(
+    error: MigrationInvocationErrorResponse["error"] | undefined
+): asserts error is undefined {
+    if (error !== undefined) {
         throw Error(`Migration handler returned an error: ${error.message}`);
     }
 }
+
+function assertIsError(
+    error: MigrationInvocationErrorResponse["error"] | undefined
+): asserts error is MigrationInvocationErrorResponse["error"] {
+    if (!error) {
+        throw Error(`Migration handler did not return an error!`);
+    }
+}
+
+const groupMigrations = (migrations: MigrationRunItem[]) => {
+    return {
+        executed: migrations.filter(mig => mig.status === "done"),
+        skipped: migrations.filter(mig => mig.status === "skipped"),
+        errored: migrations.filter(mig => mig.status === "error"),
+        notApplicable: migrations.filter(mig => mig.status === "not-applicable")
+    };
+};
 
 describe("Migration Lambda Handler", () => {
     const documentClient = new DocumentClient({
@@ -45,8 +64,14 @@ describe("Migration Lambda Handler", () => {
 
         // Doing this assertion using native table.scan, to verify the DynamoDB item structure.
         const { Items, Count } = await table.scan();
-        expect(Count).toEqual(1);
-        expect(Items[0]).toMatchObject({
+        expect(Count).toEqual(2);
+
+        const migrationRecord = Items.find((item: { TYPE: string }) => item.TYPE === "migration");
+        const migrationRunRecord = Items.find(
+            (item: { TYPE: string }) => item.TYPE === "migration.run"
+        );
+
+        expect(migrationRecord).toMatchObject({
             PK: "MIGRATION#0.1.0-000",
             SK: "A",
             TYPE: "migration",
@@ -56,6 +81,16 @@ describe("Migration Lambda Handler", () => {
                 id: "0.1.0-000",
                 description: "starting point for applicable migrations detection",
                 createdOn: expect.stringMatching(/^20/)
+            }
+        });
+        expect(migrationRunRecord).toMatchObject({
+            PK: expect.stringMatching("MIGRATION_RUN#"),
+            SK: "A",
+            TYPE: "migration.run",
+            GSI1_PK: "MIGRATION_RUNS",
+            GSI1_SK: expect.any(String),
+            data: {
+                status: "done"
             }
         });
     });
@@ -76,7 +111,8 @@ describe("Migration Lambda Handler", () => {
 
         assertNotError(error);
 
-        expect(data.executed.length).toEqual(3);
+        expect(data.status).toEqual("done");
+        expect(data.migrations.length).toEqual(3);
 
         const migrations = await repository.listMigrations();
         expect(migrations.length).toEqual(4);
@@ -85,6 +121,9 @@ describe("Migration Lambda Handler", () => {
         expect(migrations[1].id).toEqual("0.1.0-002");
         expect(migrations[2].id).toEqual("0.1.0-001");
         expect(migrations[3].id).toEqual("0.1.0-000");
+
+        const grouped = groupMigrations(data.migrations);
+        expect(grouped.executed.length).toEqual(3);
     });
 
     it("should return migration results after an error", async () => {
@@ -100,14 +139,13 @@ describe("Migration Lambda Handler", () => {
         );
 
         const { data, error } = await handler({ version: "0.1.0" });
-
         assertNotError(error);
 
-        expect(data.executed.length).toBe(3);
-        expect(data.executed[0].id).toBe("0.1.0-001");
-        expect(data.executed[0].result.success).toBe(true);
-        expect(data.executed[1].id).toBe("0.1.0-002");
-        expect(data.executed[1].result.success).toBe(false);
+        const grouped = groupMigrations(data.migrations);
+        expect(data.migrations.length).toEqual(2);
+        expect(data.status).toEqual("error");
+        expect(grouped.executed[0].id).toBe("0.1.0-001");
+        expect(grouped.errored[0].id).toBe("0.1.0-002");
     });
 
     it("should execute migrations that were not yet applied", async () => {
@@ -116,6 +154,8 @@ describe("Migration Lambda Handler", () => {
             createDdbMigration("0.1.0-002"),
             createDdbMigration("0.1.0-003")
         ];
+
+        const spy = jest.spyOn(allMigrations[0].prototype, "execute");
 
         const handler = useHandler(
             createDdbProjectMigration({
@@ -141,9 +181,13 @@ describe("Migration Lambda Handler", () => {
         const migrations = await repository.listMigrations();
         // This time, we expect 3 migrations, because initial migration record will not be inserted.
         expect(migrations.length).toEqual(3);
-        expect(data.executed.length).toEqual(2);
-        expect(data.skipped.length).toEqual(0);
-        expect(data.notApplicable.length).toEqual(1);
+
+        const grouped = groupMigrations(data.migrations);
+        expect(data.migrations.length).toEqual(3);
+        expect(grouped.executed.length).toEqual(2);
+        expect(grouped.skipped.length).toEqual(0);
+        expect(grouped.notApplicable.length).toEqual(1);
+        expect(spy).toHaveBeenCalledTimes(0);
     });
 
     it("should skip and log migrations, if `shouldExecute` returns `false`", async () => {
@@ -165,11 +209,14 @@ describe("Migration Lambda Handler", () => {
         assertNotError(error);
 
         const migrations = await repository.listMigrations();
+        const grouped = groupMigrations(data.migrations);
+
         // We also expect the initial migration to be logged.
         expect(migrations.length).toEqual(4);
-        expect(data.executed.length).toEqual(1);
-        expect(data.skipped.length).toEqual(2);
-        expect(data.notApplicable.length).toEqual(0);
+        expect(data.migrations.length).toEqual(3);
+        expect(grouped.executed.length).toEqual(1);
+        expect(grouped.skipped.length).toEqual(2);
+        expect(grouped.notApplicable.length).toEqual(0);
     });
 
     it("should not execute older or newer migrations", async () => {
@@ -182,6 +229,8 @@ describe("Migration Lambda Handler", () => {
             createDdbMigration("3.0.0-001"),
             createDdbMigration("3.0.0-002")
         ];
+
+        const spies = allMigrations.map(klass => jest.spyOn(klass.prototype, "execute"));
 
         const handler = useHandler(
             createDdbProjectMigration({
@@ -205,24 +254,31 @@ describe("Migration Lambda Handler", () => {
 
         // Should run several migrations
         {
+            expect(spies[2]).toHaveBeenCalledTimes(1);
+            expect(spies[3]).toHaveBeenCalledTimes(1);
+            expect(spies[4]).toHaveBeenCalledTimes(1);
             const migrations = await repository.listMigrations();
+            const grouped = groupMigrations(data.migrations);
             expect(migrations.length).toEqual(4);
-            expect(data.executed.length).toEqual(3);
-            expect(data.skipped.length).toEqual(0);
-            expect(data.notApplicable.length).toEqual(4);
+            expect(grouped.executed.length).toEqual(3);
+            expect(grouped.skipped.length).toEqual(0);
+            expect(grouped.notApplicable.length).toEqual(4);
         }
 
         // Should NOT run any migrations.
         {
+            jest.clearAllMocks();
             const { data, error } = await handler({ version: "0.1.0" });
-
             assertNotError(error);
 
             const migrations = await repository.listMigrations();
             expect(migrations.length).toEqual(4);
-            expect(data.executed.length).toEqual(0);
-            expect(data.skipped.length).toEqual(0);
-            expect(data.notApplicable.length).toEqual(7);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toEqual(0);
+            expect(grouped.notApplicable.length).toEqual(7);
+            for (const spy of spies) {
+                expect(spy).toHaveBeenCalledTimes(0);
+            }
         }
     });
 
@@ -249,12 +305,13 @@ describe("Migration Lambda Handler", () => {
 
         // Run assertions
         const { data, error } = await handler({ version: "0.1.0" });
-
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toEqual(1);
-        expect(data.skipped.length).toEqual(0);
-        expect(data.notApplicable.length).toEqual(6);
+        expect(data.migrations.length).toEqual(7);
+        expect(grouped.executed.length).toEqual(1);
+        expect(grouped.skipped.length).toEqual(0);
+        expect(grouped.notApplicable.length).toEqual(6);
     });
 
     it("should throw error on duplicate migration IDs", async () => {
@@ -273,9 +330,12 @@ describe("Migration Lambda Handler", () => {
             })
         );
 
-        const { error } = await handler({ version: "0.1.0" });
-
-        expect(error?.message).toMatch("Duplicate migration ID found");
+        const { data, error } = await handler({ version: "0.1.0" });
+        // We don't expect an error because Lambda invocation to get "status" should go without errors.
+        assertNotError(error);
+        // We DO, however, expect an error in the status response.
+        expect(data.status).toEqual("error");
+        expect(data.error?.message).toEqual("Duplicate migration ID found: 2.1.0-001");
     });
 
     it("should throw error on migration ID ending with 000", async () => {
@@ -288,9 +348,11 @@ describe("Migration Lambda Handler", () => {
             })
         );
 
-        const { error } = await handler({ version: "0.1.0" });
-
-        expect(error?.message).toMatch(`Migration ID must not end with "000": 1.0.0-000`);
+        const { data, error } = await handler({ version: "0.1.0" });
+        assertNotError(error);
+        expect(data.status).toEqual("error");
+        expect(data.migrations.length).toEqual(0);
+        expect(data.error?.message).toEqual('Migration ID must not end with "000": 1.0.0-000');
     });
 
     it("should throw error when project ID is 0.0.0", async () => {
@@ -304,8 +366,8 @@ describe("Migration Lambda Handler", () => {
         );
 
         const { error } = await handler({ version: "0.0.0" });
-
-        expect(error?.message).toMatch(`This project is using a development version 0.0.0`);
+        assertIsError(error);
+        expect(error.message).toMatch(`This project is using a development version 0.0.0`);
     });
 
     it("should run migrations in preid releases", async () => {
@@ -325,10 +387,11 @@ describe("Migration Lambda Handler", () => {
         );
 
         const { data, error } = await handler({ version: "2.1.0-beta.1" });
-
         assertNotError(error);
-
-        expect(data.executed.length).toBe(2);
+        const grouped = groupMigrations(data.migrations);
+        expect(data.migrations.length).toEqual(5);
+        expect(grouped.executed.length).toBe(2);
+        expect(grouped.notApplicable.length).toBe(3);
     });
 
     it("should run migrations that match a given pattern", async () => {
@@ -349,13 +412,17 @@ describe("Migration Lambda Handler", () => {
 
         const exactMatch = await handler({ version: "1.1.0", pattern: "2.1.0-001" });
         assertNotError(exactMatch.error);
-        expect(exactMatch.data.executed.length).toBe(1);
-        expect(exactMatch.data.executed[0].id).toBe("2.1.0-001");
+        const data1 = groupMigrations(exactMatch.data.migrations);
+        expect(data1.notApplicable.length).toBe(4);
+        expect(data1.executed.length).toBe(1);
+        expect(data1.executed[0].id).toBe("2.1.0-001");
 
         const wildcardMatch = await handler({ version: "1.1.0", pattern: "2.1.0*" });
         assertNotError(wildcardMatch.error);
-        expect(wildcardMatch.data.executed.length).toBe(2);
-        expect(wildcardMatch.data.executed[0].id).toBe("2.1.0-001");
-        expect(wildcardMatch.data.executed[1].id).toBe("2.1.0-002");
+        const data2 = groupMigrations(wildcardMatch.data.migrations);
+        expect(data2.notApplicable.length).toBe(3);
+        expect(data2.executed.length).toBe(2);
+        expect(data2.executed[0].id).toBe("2.1.0-001");
+        expect(data2.executed[1].id).toBe("2.1.0-002");
     });
 });

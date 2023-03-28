@@ -78,11 +78,14 @@ export const createDdbEsProjectMigration = ({
 
             // Inject dependencies and execute.
             try {
-                const data = await container
-                    .resolve(MigrationRunner)
-                    .execute(projectVersion, patternMatcher || isMigrationApplicable);
+                const runner = await container.resolve(MigrationRunner);
 
-                return { data };
+                if (payload.command === "execute") {
+                    await runner.execute(projectVersion, patternMatcher || isMigrationApplicable);
+                    return;
+                }
+
+                return { data: await runner.getStatus() };
             } catch (err) {
                 return { error: { message: err.message } };
             }

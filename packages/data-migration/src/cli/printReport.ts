@@ -1,5 +1,6 @@
 import { CliContext } from "@webiny/cli/types";
-import { MigrationEventHandlerResponse } from "~/types";
+import { MigrationEventHandlerResponse, MigrationInvocationErrorResponse } from "~/types";
+import center from "center-align";
 
 interface ReportParams {
     response: MigrationEventHandlerResponse;
@@ -7,77 +8,50 @@ interface ReportParams {
     context: CliContext;
 }
 
-export const printReport = ({ response, migrationLambdaArn, context }: ReportParams) => {
-    const { data, error } = response;
+const isError = (
+    response: MigrationEventHandlerResponse
+): response is MigrationInvocationErrorResponse => {
+    if (!response) {
+        return false;
+    }
 
-    if (error) {
-        context.error(error.message);
+    return "error" in response;
+};
+
+const makeEven = (str: string) => {
+    if (str.length % 2 > 0) {
+        return str + " ";
+    }
+    return str;
+};
+
+export const printReport = ({ response, migrationLambdaArn, context }: ReportParams) => {
+    if (!response) {
         return;
-    } else if (!data) {
-        context.error(`Missing data response from the migrations Lambda function!`);
+    }
+
+    if (isError(response)) {
+        context.error(response.error.message);
         return;
     }
 
     context.success(`Data migration Lambda %s executed successfully!`, migrationLambdaArn);
 
-    const executedList = data.executed || [];
-    const skippedList = data.skipped || [];
-    if (executedList.length === 0 && skippedList.length === 0) {
-        context.info("No applicable migrations were found.");
+    const { migrations } = response.data;
+    if (!migrations.length) {
+        context.info(`No applicable migrations were found!`);
         return;
     }
 
-    if (executedList.length > 0) {
-        context.info("Executed:");
-        for (const executed of executedList) {
-            /**
-             * When having an error in the result, let's output it to the console.
-             *
-             */
-            if (executed.result.error) {
-                context.error(
-                    ...[
-                        `- %s: ${executed.description} (%sms)`,
-                        executed.id,
-                        executed.result.duration
-                    ]
-                );
-                context.error(
-                    ...[
-                        executed.result.error.name,
-                        executed.result.error.message,
-                        executed.result.error.code,
-                        executed.result.error.data
-                    ].filter(Boolean)
-                );
-                context.error("Check AWS CloudWatch logs for more details.");
-                continue;
-            }
-            // In case we have no error, but success is still false, let's output whole result object.
-            else if (!executed.result.success) {
-                context.error(
-                    ` - %s: ${executed.description} - Missing error object on the result! (%sms)`,
-                    executed.id,
-                    executed.result.duration
-                );
-                context.error(JSON.stringify(executed.result, null, 2));
-                context.error("Check CloudWatch logs for more details.");
-                continue;
-            }
-            /**
-             * Everything is fine, output the migration ID, description, and duration.
-             */
-            context.info(
-                ...[`- %s: ${executed.description} (%sms)`, executed.id, executed.result.duration]
-            );
-        }
-    }
+    const maxLength = Math.max(...migrations.map(mig => mig.status.length)) + 4;
 
-    if (skippedList.length === 0) {
-        return;
-    }
-    context.info("Skipped:");
-    for (const skipped of skippedList) {
-        context.info(...[`- %s: ${skipped.description} (reason: %s)`, skipped.id, skipped.reason]);
+    for (const migration of migrations) {
+        context.info(
+            ...[
+                `[%s] %s: ${migration.description}`,
+                center(makeEven(migration.status), maxLength),
+                migration.id
+            ]
+        );
     }
 };

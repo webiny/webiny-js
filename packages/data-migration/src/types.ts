@@ -1,5 +1,4 @@
-import WebinyError from "@webiny/error";
-import { Logger, LogEvent } from "pino";
+import { Logger } from "pino";
 
 export { Logger };
 
@@ -7,11 +6,30 @@ export interface MigrationItem {
     id: string;
     description: string;
     createdOn: string;
-    duration: number;
     reason: string;
+    duration?: number;
+}
+
+export interface MigrationRunItem extends Pick<MigrationItem, "id" | "duration"> {
+    status: "done" | "running" | "skipped" | "pending" | "not-applicable" | "error";
+}
+
+export interface MigrationRun {
+    createdOn: string;
+    status: "init" | "running" | "pending" | "done" | "error";
+    migrations: MigrationRunItem[];
+    error?: {
+        message: string;
+        name?: string;
+        code?: string;
+        data?: Record<string, any>;
+        stack?: string;
+    };
 }
 
 export interface MigrationRepository {
+    getLastRun(): Promise<MigrationRun | null>;
+    saveRun(run: MigrationRun): Promise<void>;
     listMigrations(params?: { limit: number }): Promise<MigrationItem[]>;
     logMigration(migration: MigrationItem): Promise<void>;
     createCheckpoint(id: string, data: unknown): Promise<void>;
@@ -37,54 +55,39 @@ export interface DataMigration<TCheckpoint = any> {
     execute(context: DataMigrationContext<TCheckpoint>): Promise<void>;
 }
 
-export interface MigrationResult {
-    success: boolean;
-    error?: WebinyError | null;
-    logs: LogEvent[];
-    duration: number;
-}
-
 /**
  * Migration execution time limiter (in milliseconds).
  */
 export type ExecutionTimeLimiter = () => number;
 
-export interface ExecutedMigrationResponse {
-    id: string;
-    description: string;
-    result: MigrationResult;
-}
-
-export interface SkippedMigrationResponse {
-    id: string;
-    description: string;
-    reason: string;
-}
-
 export interface MigrationEventPayload {
+    command: "status" | "execute";
     version?: string;
     pattern?: string;
 }
 
-export interface MigrationEventHandlerResponseData {
-    // Executed migrations
-    executed: ExecutedMigrationResponse[];
-    // Applicable, but the migration itself decided it should not be executed.
-    skipped: SkippedMigrationResponse[];
-    // Not applicable; either out of version range, or already applied.
-    notApplicable: SkippedMigrationResponse[];
-    // If this attribute is set, we need to resume the migration.
-    resume?: boolean;
-}
 export type MigrationEventHandlerResponse =
-    // We can either have a `data`, or `error`, but never both.
-    | {
-          error: {
-              message: string;
-          };
-          data?: never;
-      }
-    | {
-          data: MigrationEventHandlerResponseData;
-          error?: never;
-      };
+    // When migration is triggered (via `Event` invocation type), it simply gets invoked, and returns nothing.
+    | undefined
+    // Last migration run state.
+    | MigrationStatusResponse
+    // If an unhandled error is thrown, return the error object.
+    | MigrationInvocationErrorResponse;
+
+export interface MigrationInvocationErrorResponse {
+    error: { message: string };
+    data?: undefined;
+}
+
+export interface MigrationStatusRunItem extends MigrationRunItem {
+    description: string;
+}
+
+export interface MigrationStatus extends MigrationRun {
+    migrations: MigrationStatusRunItem[];
+}
+
+export interface MigrationStatusResponse {
+    data: MigrationStatus;
+    error?: undefined;
+}

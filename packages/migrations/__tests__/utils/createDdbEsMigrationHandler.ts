@@ -37,8 +37,9 @@ export function createDdbEsMigrationHandler(config: DdbEsMigrationHandlerConfig)
     );
 
     return async (payload?: Payload) => {
-        return runResumableMigration(timeLimiter, () =>
-            handler({ version: "0.1.0", ...payload }, {} as any)
-        );
+        return runResumableMigration(timeLimiter, handler, {
+            version: "0.1.0",
+            ...payload
+        });
     };
 }
