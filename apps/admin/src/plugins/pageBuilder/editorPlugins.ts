@@ -44,6 +44,7 @@ import border from "@webiny/app-page-builder/editor/plugins/elementSettings/bord
 import shadow from "@webiny/app-page-builder/editor/plugins/elementSettings/shadow";
 import padding from "@webiny/app-page-builder/editor/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/editor/plugins/elementSettings/margin";
+import mirrorCell from "@webiny/app-page-builder/editor/plugins/elementSettings/mirror-cell";
 import width from "@webiny/app-page-builder/editor/plugins/elementSettings/width";
 import height from "@webiny/app-page-builder/editor/plugins/elementSettings/height";
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
@@ -107,6 +108,7 @@ export default [
     shadow,
     padding,
     margin,
+    mirrorCell,
     align,
     clone,
     deleteElement,
