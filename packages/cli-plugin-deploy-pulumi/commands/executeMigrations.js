@@ -1,10 +1,13 @@
+const readline = require("readline");
 const LambdaClient = require("aws-sdk/clients/lambda");
 const { getStackOutput } = require("../utils");
 const { runMigration, printReport, getDuration } = require("@webiny/data-migration/cli");
 
 const clearLine = () => {
-    process.stdout.clearLine(0);
-    process.stdout.cursorTo(0);
+    if (process.stdout.isTTY) {
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
+    }
 };
 
 /**
