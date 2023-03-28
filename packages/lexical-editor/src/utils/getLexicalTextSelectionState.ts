@@ -80,7 +80,7 @@ export const getToolbarState = (
         const type = parentList ? parentList.getListType() : element.getListType();
         state.textType = type;
     }
-    if ($isHeadingNode(node)) {
+    if ($isHeadingNode(node) || $isHeadingNode(element)) {
         state.textType = "heading";
     }
     if ($isParagraphNode(element)) {
