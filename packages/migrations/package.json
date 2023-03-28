@@ -14,6 +14,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/ioc": "0.0.0",
     "dynamodb-toolbox": "^0.3.5",
+    "jsonpack": "^1.1.5",
     "lodash": "^4.17.21",
     "mdbid": "^1.0.0",
     "p-retry": "^4.6.2",
