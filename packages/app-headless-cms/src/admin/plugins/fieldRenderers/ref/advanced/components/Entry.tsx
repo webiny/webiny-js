@@ -132,7 +132,7 @@ export const Entry: React.VFC<PropsWithRemove | Props> = ({
         [onMoveDownClick, index]
     );
 
-    const icon = model.icon
+    const icon = model.icon;
 
     return (
         <Container>
