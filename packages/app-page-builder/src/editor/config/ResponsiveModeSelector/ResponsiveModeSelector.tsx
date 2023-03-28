@@ -83,20 +83,6 @@ const classes = {
     })
 };
 
-// This function ensures properties that have `undefined` as its
-// value are not assigned to the target object.
-function assignDefined(target: Record<string, any>, ...sources: Array<Record<string, any>>) {
-    for (const source of sources) {
-        for (const key of Object.keys(source)) {
-            const val = source[key];
-            if (val !== undefined) {
-                target[key] = val;
-            }
-        }
-    }
-    return target;
-}
-
 export const ResponsiveModeSelector: React.FC = () => {
     const [{ displayMode, pagePreviewDimension }, setUiValue] = useUI();
     const {
