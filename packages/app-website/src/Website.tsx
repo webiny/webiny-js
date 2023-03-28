@@ -1,10 +1,10 @@
 import React from "react";
 import { App, AppProps, HigherOrderComponent } from "@webiny/app";
 import { ApolloProvider } from "@apollo/react-hooks";
+import { CacheProvider } from "@emotion/react";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { Page } from "./Page";
-import { EmotionProvider } from "./Website/EmotionProvider";
-import { createApolloClient } from "~/utils";
+import { createApolloClient, createEmotionCache } from "~/utils";
 
 export interface WebsiteProps extends AppProps {
     apolloClient?: ReturnType<typeof createApolloClient>;
@@ -27,12 +27,13 @@ export const Website: React.FC<WebsiteProps> = ({
     ...props
 }) => {
     const apolloClient = props.apolloClient || createApolloClient();
+    const emotionCache = createEmotionCache();
 
     // In development, debounce render by 1ms, to avoid router warnings about missing routes.
     const debounceMs = Number(process.env.NODE_ENV !== "production");
 
     return (
-        <EmotionProvider>
+        <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
                 <App
                     debounceRender={debounceMs}
@@ -42,6 +43,6 @@ export const Website: React.FC<WebsiteProps> = ({
                     {children}
                 </App>
             </ApolloProvider>
-        </EmotionProvider>
+        </CacheProvider>
     );
 };
