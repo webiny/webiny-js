@@ -30,8 +30,8 @@ import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "~/types";
-
 import { ElementControls } from "./EditorPageElementsProvider/ElementControls";
+import { mediaToContainer } from "./EditorPageElementsProvider/mediaToContainer";
 
 export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const pageBuilder = usePageBuilder();
@@ -77,7 +77,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
                 const breakpoint = theme.breakpoints[breakpointName];
                 return {
                     ...result,
-                    [breakpointName]: breakpoint.replace("@media", "@container body")
+                    [breakpointName]: mediaToContainer(breakpoint)
                 };
             }, {})
         } as Theme;
