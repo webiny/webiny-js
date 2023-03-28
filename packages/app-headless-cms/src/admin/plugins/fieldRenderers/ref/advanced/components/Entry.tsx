@@ -103,8 +103,7 @@ interface PropsWithRemove {
 }
 
 export const Entry: React.VFC<PropsWithRemove | Props> = ({
-    // TODO @sven uncomment
-    // model,
+    model,
     entry,
     onChange,
     onRemove,
@@ -133,13 +132,12 @@ export const Entry: React.VFC<PropsWithRemove | Props> = ({
         [onMoveDownClick, index]
     );
 
-    // TODO @sven
-    //const icon = model.icon
+    const icon = model.icon;
 
     return (
         <Container>
             <ContentContainer>
-                <Image title={entry.title} src={entry.image} />
+                <Image title={entry.title} src={entry.image} icon={icon} />
                 <Content>
                     <ModelName name={entry.model.name} />
                     <Title title={entry.title} />

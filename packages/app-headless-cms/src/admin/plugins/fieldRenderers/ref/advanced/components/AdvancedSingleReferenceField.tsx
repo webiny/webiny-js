@@ -19,8 +19,8 @@ import { Loader } from "./Loader";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/advanced/components/NewReferencedEntryDialog";
 
 const Container = styled("div")({
-    borderLeft: "3px solid var(--mdc-theme-background)",
-    paddingLeft: "10px"
+    borderLeft: "3px solid var(--mdc-theme-background)"
+    //paddingLeft: "10px"
 });
 
 const FieldLabel = styled("h3")({
