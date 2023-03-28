@@ -80,7 +80,8 @@ describe("Migration Lambda Handler", () => {
             data: {
                 id: "0.1.0-000",
                 description: "starting point for applicable migrations detection",
-                createdOn: expect.stringMatching(/^20/)
+                startedOn: expect.stringMatching(/^20/),
+                finishedOn: expect.stringMatching(/^20/)
             }
         });
         expect(migrationRunRecord).toMatchObject({
