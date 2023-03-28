@@ -72,7 +72,7 @@ const attributes: Parameters<typeof createLegacyEntity>[2] = {
     },
     meta: {
         type: "map"
-    },
+    }
 };
 
 export const createEntryEntity = (table: Table) => {
