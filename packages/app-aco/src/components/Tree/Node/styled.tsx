@@ -56,7 +56,7 @@ export const Text = styled(Typography)`
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 24px;
-    &.focused{
+    &.focused {
         font-weight: 600;
     }
 `;

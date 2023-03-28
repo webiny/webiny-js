@@ -24,14 +24,14 @@ type Props = {
 type FolderProps = {
     text: string;
     isOpen: boolean;
-    isFocused: boolean;
+    isFocused?: boolean;
 };
 
 export const FolderNode = ({ isOpen, isFocused, text }: FolderProps) => {
     return (
         <>
             <FolderIcon>{isOpen ? <FolderOpen /> : <Folder />}</FolderIcon>
-            <Text className={isFocused ? 'focused' : ''} use={"body2"}>
+            <Text className={isFocused ? "focused" : ""} use={"body2"}>
                 {text}
             </Text>
         </>
