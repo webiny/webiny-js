@@ -61,7 +61,7 @@ export class MigrationRunner {
         const lastRun = await this.getOrCreateRun();
 
         // We don't want to run multiple migration processes at the same time.
-        if (lastRun.status === "running") {
+        if (["init", "running"].includes(lastRun.status)) {
             return;
         }
 
@@ -140,11 +140,6 @@ export class MigrationRunner {
             return this.timeLimiter() < 120000;
         };
 
-        if (executableMigrations.length) {
-            lastRun.status = "running";
-            await this.repository.saveRun(lastRun);
-        }
-
         for (const migration of executableMigrations) {
             const runItem = this.getOrCreateRunItem(lastRun, migration);
             const checkpoint = await this.repository.getCheckpoint(migration.getId());
@@ -186,7 +181,11 @@ export class MigrationRunner {
             }
 
             try {
-                runItem.startedOn = getCurrentISOTime();
+                lastRun.status = "running";
+                runItem.status = "running";
+                if (!runItem.startedOn) {
+                    runItem.startedOn = getCurrentISOTime();
+                }
                 await this.setRunItemAndSave(lastRun, runItem);
                 this.logger.info(
                     `Executing migration %s: %s`,
@@ -309,12 +308,18 @@ export class MigrationRunner {
     }
 
     private getOrCreateRunItem(run: MigrationRun, migration: DataMigration): MigrationRunItem {
-        return (
-            run.migrations.find(item => item.id === migration.getId()) || {
-                id: migration.getId(),
+        const existingItem = run.migrations.find(item => item.id === migration.getId());
+        if (existingItem) {
+            return {
+                ...existingItem,
                 status: "running"
-            }
-        );
+            };
+        }
+
+        return {
+            id: migration.getId(),
+            status: "running"
+        };
     }
 
     private setRunItem(run: MigrationRun, item: MigrationRunItem) {
@@ -329,7 +334,7 @@ export class MigrationRunner {
             ];
         }
 
-        run.migrations = run.migrations.sort((a, b) => (a.id > b.id ? -1 : 1));
+        run.migrations = run.migrations.sort((a, b) => (a.id > b.id ? 1 : -1));
     }
 
     private async setRunItemAndSave(run: MigrationRun, item: MigrationRunItem) {

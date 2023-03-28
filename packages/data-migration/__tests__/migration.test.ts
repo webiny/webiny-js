@@ -168,8 +168,6 @@ describe("Migration Lambda Handler", () => {
         await repository.logMigration({
             id: "0.1.0-001",
             description: "0.1.0-001",
-            createdOn: new Date().toISOString(),
-            duration: 0,
             reason: "executed"
         });
 
@@ -242,8 +240,6 @@ describe("Migration Lambda Handler", () => {
         await repository.logMigration({
             id: "1.1.0-001",
             description: "1.1.0-001",
-            createdOn: new Date().toISOString(),
-            duration: 0,
             reason: "executed"
         });
 
