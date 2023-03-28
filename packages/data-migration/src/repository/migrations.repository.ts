@@ -32,11 +32,11 @@ export class MigrationRepositoryImpl implements MigrationRepository {
 
     async saveRun(run: MigrationRun): Promise<void> {
         await this.run.put({
-            PK: `MIGRATION_RUN#${run.createdOn}`,
+            PK: `MIGRATION_RUN#${run.startedOn}`,
             SK: "A",
             TYPE: "migration.run",
             GSI1_PK: "MIGRATION_RUNS",
-            GSI1_SK: run.createdOn,
+            GSI1_SK: run.startedOn,
             data: run
         });
     }
