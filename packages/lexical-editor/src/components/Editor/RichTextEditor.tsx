@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LexicalValue } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
@@ -23,6 +23,7 @@ import { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
 import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -64,6 +65,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
+    const { setTheme } = useRichTextEditor();
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
@@ -85,6 +87,10 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         nodes: [...WebinyNodes, ...(nodes || [])],
         theme: { ...webinyEditorTheme, styles: theme?.styles }
     };
+
+    useEffect(() => {
+        setTheme(theme);
+    }, [theme]);
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
         editorState.read(() => {

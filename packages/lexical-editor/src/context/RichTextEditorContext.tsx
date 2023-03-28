@@ -1,13 +1,16 @@
 import React, { createContext, useState } from "react";
-import { LexicalTextSelection, ToolbarType } from "~/types";
+import { TextBlockSelection, ToolbarType } from "~/types";
+import { WebinyTheme } from "~/themes/webinyLexicalTheme";
 
 export interface RichTextEditorContext {
     nodeIsText: boolean;
     setNodeIsText: (nodeIsText: boolean) => void;
     toolbarType?: ToolbarType;
     setToolbarType: (type: ToolbarType) => void;
-    textBlockSelection: LexicalTextSelection | null;
-    setTextBlockSelection: (textBlockSelection: LexicalTextSelection) => void;
+    textBlockSelection: TextBlockSelection | null;
+    setTextBlockSelection: (textBlockSelection: TextBlockSelection) => void;
+    theme: WebinyTheme | undefined;
+    setTheme: (theme: WebinyTheme) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -19,10 +22,11 @@ interface RichTextEditorProviderProps {
 export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ children }) => {
     const [nodeIsText, setIsText] = useState<boolean>(false);
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
+    const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
-    const [textBlockSelection, setTextBlockSelection] = useState<LexicalTextSelection | null>(null);
+    const [textBlockSelection, setTextBlockSelection] = useState<TextBlockSelection | null>(null);
 
     const setNodeIsText = (nodeIsText: boolean) => {
         setIsText(nodeIsText);
@@ -36,7 +40,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 toolbarType,
                 setToolbarType,
                 textBlockSelection,
-                setTextBlockSelection
+                setTextBlockSelection,
+                theme,
+                setTheme
             }}
         >
             {children}

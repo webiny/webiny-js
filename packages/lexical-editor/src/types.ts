@@ -4,7 +4,7 @@ export type ToolbarType = "heading" | "paragraph" | string;
 export type LexicalValue = string;
 export { FontColorPicker } from "~/components/ToolbarActions/FontColorAction";
 
-export type LexicalTextBlockType =
+export type LexicalTextType =
     | ListType
     | "paragraph"
     | "heading"
@@ -14,7 +14,7 @@ export type LexicalTextBlockType =
     | "link"
     | undefined;
 
-export type TextBlockSelectionFormat = {
+export type TextFormatting = {
     bold: boolean;
     underline: boolean;
     italic: boolean;
@@ -31,7 +31,6 @@ export type ToolbarState = {
     bold: boolean;
     underline: boolean;
     italic: boolean;
-    // highlight: boolean #TODO implement with highlight action
     code: boolean;
     // nodes selection state
     link: NodeState;
@@ -39,14 +38,14 @@ export type ToolbarState = {
     fontColor: NodeState;
     list: NodeState;
     quote: NodeState;
-    textBlockType: LexicalTextBlockType;
+    textType: LexicalTextType;
 };
 
 /*
  * @description Represent set of data from the current selection of the text and nodes selected by the user.
  * You can access this object through the @see useRichTextEditor context.
  * */
-export type LexicalTextSelection = {
+export type TextBlockSelection = {
     elementKey?: string;
     selection: RangeSelection | NodeSelection | null;
     element: LexicalNode;
@@ -80,5 +79,5 @@ export interface WebinyThemeNode {
     /*
      * @desc Get theme style id
      * */
-    getThemeStyleId: () => string;
+    getStyleId: () => string;
 }

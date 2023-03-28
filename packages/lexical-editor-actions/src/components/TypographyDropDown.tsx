@@ -15,15 +15,15 @@ export const TypographyDropDown = () => {
     const [styles, setStyles] = useState<TypographyStyle<ThemeTypographyHTMLTag>[]>([]);
     const typographyStyles = theme.styles?.typographyStyles;
     const { textBlockSelection } = useRichTextEditor();
-    const textBLockType = textBlockSelection?.state?.textBlockType;
+    const textType = textBlockSelection?.state?.textType;
 
     const hasTypographyStyles = (): boolean => {
         return !!typographyStyles;
     };
 
     useEffect(() => {
-        if (textBLockType) {
-            switch (textBLockType) {
+        if (textType) {
+            switch (textType) {
                 case "heading":
                     setStyles(theme.styles?.typographyStyles?.headings || []);
                     break;
@@ -47,7 +47,7 @@ export const TypographyDropDown = () => {
                     setStyles([]);
             }
         }
-    }, [textBLockType]);
+    }, [textType]);
 
     return (
         <>

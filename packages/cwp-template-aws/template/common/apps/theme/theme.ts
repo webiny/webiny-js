@@ -96,6 +96,51 @@ const theme = createTheme({
     styles: {
         colors,
         typography,
+        typographyStyles: {
+            headings: [
+                {
+                    id: "heading1",
+                    name: "Heading 1",
+                    tag: "h1",
+                    css: { fontWeight: "bold", fontSize: 48 }
+                },
+                { id: "heading2", name: "Heading 2", tag: "h2", css: { fontSize: 36 } },
+                { id: "heading3", name: "Heading 3", tag: "h3", css: { fontSize: 30 } },
+                { id: "heading4", name: "Heading 4", tag: "h4", css: { fontSize: 24 } },
+                { id: "heading5", name: "Heading 5", tag: "h5", css: { fontSize: 20 } },
+                {
+                    id: "heading6",
+                    name: "Heading 6",
+                    tag: "h6",
+                    css: { fontSize: 18, lineHeight: "1.75rem" }
+                }
+            ],
+            paragraphs: [
+                { id: "paragraph1", name: "Paragraph 1", tag: "p", css: { fontSize: 16.5 } },
+                {
+                    id: "paragraph2",
+                    name: "Paragraph 2",
+                    tag: "p",
+                    css: {
+                        fontSize: 12.5,
+                        letterSpacing: "0.45px",
+                        lineHeight: "19px"
+                    }
+                }
+            ],
+            quotes: [
+                {
+                    id: "quote1",
+                    name: "Quote1 1",
+                    tag: "p",
+                    css: {
+                        fontWeight: "bold",
+                        fontSize: 22
+                    }
+                }
+            ],
+            lists: [{ id: "list1", name: "list 1", tag: "ul", css: { fontSize: 16.5 } }]
+        },
         elements: {
             document: {
                 a: { color: colors.color1 },

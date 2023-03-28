@@ -5,7 +5,12 @@ import { Compose, makeComposable } from "@webiny/react-composition";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
 
 import { TypographyValue } from "~/types";
-import { ADD_TYPOGRAPHY_ELEMENT_COMMAND, TypographyPayload } from "~/nodes/TypographyElementNode";
+import {
+    $isTypographyElementNode,
+    ADD_TYPOGRAPHY_ELEMENT_COMMAND,
+    TypographyElementNode,
+    TypographyPayload
+} from "~/nodes/TypographyElementNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import {
     INSERT_ORDERED_WEBINY_LIST_COMMAND,
@@ -13,6 +18,7 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
+import { findTypographyStyleById } from "~/utils/theme/typography";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -45,9 +51,9 @@ export interface TypographyAction extends React.FC<unknown> {
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();
     const [typography, setTypography] = useState<TypographyValue>();
-    const { textBlockSelection } = useRichTextEditor();
-    const isTypographySelected = textBlockSelection?.state?.typography.isSelected;
-    const textBLockType = textBlockSelection?.state?.textBlockType;
+    const { textBlockSelection, theme } = useRichTextEditor();
+    const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
+    const textType = textBlockSelection?.state?.textType;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -96,12 +102,25 @@ export const TypographyAction: TypographyAction = () => {
     }, []);
 
     useEffect(() => {
-        /* if ($isTypographyElementNode(parent)) {
-            const el = element as TypographyElementNode;
-            setTypography(el.getTypographyValue());
-        }*/
-        console.log("selected text block", textBlockSelection);
-    }, [isTypographySelected, textBLockType]);
+        if (textBlockSelection) {
+            // header and paragraph elements inserted with typography node
+            if ($isTypographyElementNode(textBlockSelection?.element)) {
+                const el = textBlockSelection.element as TypographyElementNode;
+                setTypography(el.getTypographyValue());
+                return;
+            }
+            // list and quote element
+            if (theme && textBlockSelection?.element?.getStyleId) {
+                const themeStyleId = textBlockSelection?.element?.getStyleId() || undefined;
+                if (themeStyleId) {
+                    const elementStyle = findTypographyStyleById(theme, themeStyleId);
+                    if (elementStyle) {
+                        setTypography(elementStyle);
+                    }
+                }
+            }
+        }
+    }, [isTypographySelected, textType]);
 
     return (
         <TypographyActionContext.Provider

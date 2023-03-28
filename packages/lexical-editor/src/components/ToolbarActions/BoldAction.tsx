@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FORMAT_TEXT_COMMAND } from "lexical";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 /**
  * Toolbar action. On toolbar, you can see as button that is bold.
@@ -8,10 +9,17 @@ import { FORMAT_TEXT_COMMAND } from "lexical";
 export const BoldAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isBold, setIsBold] = useState(false);
+    const { textBlockSelection } = useRichTextEditor();
+    const isBoldSelected = !!textBlockSelection?.state?.bold;
+
     const handleClick = () => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
         setIsBold(!isBold);
     };
+
+    useEffect(() => {
+        setIsBold(isBoldSelected);
+    }, [isBoldSelected]);
 
     return (
         <button

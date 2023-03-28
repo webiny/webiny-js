@@ -51,7 +51,6 @@ export function $getTopListNode(listItem: LexicalNode): WebinyListNode {
     return list;
 }
 
-// This should probably be $getAllChildrenOfType
 export function $getAllListItems(node: WebinyListNode): Array<WebinyListItemNode> {
     let listItemNodes: Array<WebinyListItemNode> = [];
     const listChildren: Array<WebinyListItemNode> = node

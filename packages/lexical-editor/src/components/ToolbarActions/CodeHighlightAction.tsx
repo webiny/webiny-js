@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FORMAT_TEXT_COMMAND } from "lexical";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 /**
  * Toolbar action. User can highlight the selected text.
@@ -9,6 +10,13 @@ import { FORMAT_TEXT_COMMAND } from "lexical";
 export const CodeHighlightAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isCode, setIsCode] = useState(false);
+    const { textBlockSelection } = useRichTextEditor();
+    const isCodeSelected = !!textBlockSelection?.state?.code;
+
+    useEffect(() => {
+        setIsCode(isCodeSelected);
+    }, [isCodeSelected]);
+
     const handleClick = () => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
         setIsCode(!isCode);

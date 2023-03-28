@@ -1,78 +1,24 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isListNode, ListNode } from "@lexical/list";
-import {
-    $getSelection,
-    $isRangeSelection,
-    $isRootOrShadowRoot,
-    COMMAND_PRIORITY_CRITICAL,
-    SELECTION_CHANGE_COMMAND
-} from "lexical";
-import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
 import {
     INSERT_UNORDERED_WEBINY_LIST_COMMAND,
     REMOVE_WEBINY_LIST_COMMAND
 } from "~/commands/webiny-list";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 /**
  * Toolbar button action. On click will wrap the content in bullet list style.
  */
 export const BulletListAction = () => {
     const [editor] = useLexicalComposerContext();
-    const [activeEditor, setActiveEditor] = useState(editor);
     const [isActive, setIsActive] = useState<boolean>(false);
-
-    const updateToolbar = useCallback(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-            const anchorNode = selection.anchor.getNode();
-            let element =
-                anchorNode.getKey() === "root"
-                    ? anchorNode
-                    : $findMatchingParent(anchorNode, e => {
-                          const parent = e.getParent();
-                          return parent !== null && $isRootOrShadowRoot(parent);
-                      });
-
-            if (element === null) {
-                element = anchorNode.getTopLevelElementOrThrow();
-            }
-
-            if ($isListNode(element)) {
-                const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
-                // get the type of the list that is selected with the cursor
-                const type = parentList ? parentList.getListType() : element.getListType();
-                // set the button as active for numbered list
-                if (type === "bullet") {
-                    setIsActive(true);
-                } else {
-                    setIsActive(false);
-                }
-            }
-        }
-    }, [activeEditor]);
+    const { textBlockSelection } = useRichTextEditor();
+    const isListSelected = textBlockSelection?.state?.list.isSelected;
 
     useEffect(() => {
-        return mergeRegister(
-            activeEditor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    updateToolbar();
-                });
-            })
-        );
-    }, [activeEditor, editor, updateToolbar]);
-
-    useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
-        );
-    }, [editor, updateToolbar]);
+        const isListBulletType = textBlockSelection?.state?.textType === "bullet";
+        setIsActive(isListBulletType);
+    }, [isListSelected]);
 
     const formatBulletList = () => {
         if (!isActive) {
@@ -80,8 +26,6 @@ export const BulletListAction = () => {
             editor.dispatchCommand(INSERT_UNORDERED_WEBINY_LIST_COMMAND, { themeStyleId: "list1" });
         } else {
             editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
-            // removing will not update correctly the active state, so we need to set to false manually.
-            setIsActive(false);
         }
     };
 

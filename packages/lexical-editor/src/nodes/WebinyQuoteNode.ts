@@ -42,7 +42,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
         this.__themeStyleId = themeStyleId || "";
     }
 
-    getThemeStyleId = (): string => {
+    getStyleId = (): string => {
         return this.__themeStyleId;
     };
 
