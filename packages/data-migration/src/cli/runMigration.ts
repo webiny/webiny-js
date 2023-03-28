@@ -3,6 +3,7 @@ import {
     MigrationEventHandlerResponse,
     MigrationInvocationErrorResponse,
     MigrationRun,
+    MigrationStatus,
     MigrationStatusResponse
 } from "~/types";
 import { getMigrationStatus } from "./getMigrationStatus";
@@ -31,6 +32,15 @@ export const runMigration = async ({
     lambdaClient,
     statusCallback
 }: RunMigrationParams): Promise<MigrationStatusResponse | MigrationInvocationErrorResponse> => {
+    // We don't report status, if `stdout` is not TTY (usually in CIs, and child processes spawned programmatically).
+    const reportStatus = (data: MigrationStatus) => {
+        if (!process.stdout.isTTY || typeof statusCallback !== "function") {
+            return;
+        }
+
+        statusCallback(data);
+    };
+
     const invokeMigration = async () => {
         const response = await lambdaClient
             .invoke({
@@ -70,17 +80,13 @@ export const runMigration = async ({
 
         switch (data.status) {
             case "init":
-                if (typeof statusCallback === "function") {
-                    statusCallback(data);
-                }
+                reportStatus(data);
                 continue;
             case "pending":
                 await invokeMigration();
                 break;
             case "running":
-                if (typeof statusCallback === "function") {
-                    statusCallback(data);
-                }
+                reportStatus(data);
                 break;
             case "done":
             default:
