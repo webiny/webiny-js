@@ -1,11 +1,14 @@
+import readline from "readline";
 import LambdaClient from "aws-sdk/clients/lambda";
 import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { printReport, runMigration, getDuration } from "@webiny/data-migration/cli";
 
 const clearLine = () => {
-    process.stdout.clearLine(0);
-    process.stdout.cursorTo(0);
+    if (process.stdout.isTTY) {
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
+    }
 };
 
 /**
