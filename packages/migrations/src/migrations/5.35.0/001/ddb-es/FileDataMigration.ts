@@ -46,37 +46,37 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
         return "";
     }
 
-    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
-        if (checkpoint) {
-            return true;
-        }
-
-        const defaultLocale = await queryOne<{ code: string }>({
-            entity: this.localeEntity,
-            partitionKey: `T#root#I18N#L#D`,
-            options: {
-                eq: "default"
-            }
-        });
-
-        if (!defaultLocale) {
-            logger.info(`Default locale not found; system is not yet installed.`);
-            // The system is not yet installed, skip migration.
-            return false;
-        }
-
-        // Check if there are files stored in the GSI1 index, which means files are already migrated.
-        const PK = `T#root#L#${defaultLocale.code}#FM#FILES`;
-        const newFile = await queryOne<{ id: string }>({
-            entity: this.newFileEntity,
-            partitionKey: PK,
-            options: { gt: " ", index: "GSI1" }
-        });
-
-        if (newFile) {
-            logger.info(`Looks like files have already been migrated. Skipping migration.`);
-            return false;
-        }
+    async shouldExecute(): Promise<boolean> {
+        // if (checkpoint) {
+        //     return true;
+        // }
+        //
+        // const defaultLocale = await queryOne<{ code: string }>({
+        //     entity: this.localeEntity,
+        //     partitionKey: `T#root#I18N#L#D`,
+        //     options: {
+        //         eq: "default"
+        //     }
+        // });
+        //
+        // if (!defaultLocale) {
+        //     logger.info(`Default locale not found; system is not yet installed.`);
+        //     // The system is not yet installed, skip migration.
+        //     return false;
+        // }
+        //
+        // // Check if there are files stored in the GSI1 index, which means files are already migrated.
+        // const PK = `T#root#L#${defaultLocale.code}#FM#FILES`;
+        // const newFile = await queryOne<{ id: string }>({
+        //     entity: this.newFileEntity,
+        //     partitionKey: PK,
+        //     options: { gt: " ", index: "GSI1" }
+        // });
+        //
+        // if (newFile) {
+        //     logger.info(`Looks like files have already been migrated. Skipping migration.`);
+        //     return false;
+        // }
 
         return true;
     }
