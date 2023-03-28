@@ -13528,7 +13528,6 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.19.3
     "@babel/core": ^7.19.3
-    "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/preset-env": ^7.19.4
     "@babel/preset-react": ^7.18.6
     "@babel/preset-typescript": ^7.18.6
@@ -13537,12 +13536,10 @@ __metadata:
     "@emotion/styled": ^11.10.6
     "@types/facepaint": ^1.2.2
     "@types/react": 17.0.39
-    "@types/resize-observer-browser": ^0.1.4
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/theme": 0.0.0
-    babel-plugin-lodash: ^3.3.4
     execa: ^5.0.0
     facepaint: ^1.2.1
     rimraf: ^3.0.2
