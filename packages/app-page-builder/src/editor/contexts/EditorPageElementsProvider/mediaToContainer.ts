@@ -15,5 +15,5 @@ export const mediaToContainer = (mediaQuery: string): string => {
         maxWidth && `(max-width: ${maxWidth})`
     ].filter(Boolean).join(" and ");
 
-    return `@container body ${widthRules}`;
+    return `@container page-editor-canvas ${widthRules}`;
 };

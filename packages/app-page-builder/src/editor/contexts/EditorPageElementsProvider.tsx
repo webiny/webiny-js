@@ -66,7 +66,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
         }
     };
 
-    // We override all `@media` usages in breakpoints with `@container body`. This is what
+    // We override all `@media` usages in breakpoints with `@container page-editor-canvas`. This is what
     // enables us responsive design inside the Page Builder's page editor.
     const containerizedTheme = useMemo(() => {
         const theme = pageBuilder.theme as Theme;

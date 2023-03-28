@@ -81,7 +81,7 @@ const BaseContainer = styled(LegacyBaseContainer)`
     /* design not only on the actual website, but also within the Page Builder's page editor. */
     /* Note that on the actual website, regular media queries are being used. */
     container-type: inline-size;
-    container-name: body;
+    container-name: page-editor-canvas;
 `;
 
 const Content: React.FC = () => {
