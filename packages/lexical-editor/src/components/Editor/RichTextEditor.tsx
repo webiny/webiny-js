@@ -24,6 +24,7 @@ import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNo
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { ClassNames } from "@emotion/core";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -104,7 +105,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div ref={scrollRef} style={{ ...sizeStyle }}>
+            <div ref={scrollRef} style={{ ...sizeStyle }} >
                 {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
                 {value && <LexicalUpdateStatePlugin value={value} />}
@@ -143,7 +144,14 @@ export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEdito
     return (
         <RichTextEditorProvider>
             <SharedHistoryContext>
-                <BaseRichTextEditor {...props} />
+                <ClassNames>
+                    {({css}) => {
+                        css.
+                        return (
+                            <BaseRichTextEditor {...props} />
+                        )
+                    }}
+                </ClassNames>
             </SharedHistoryContext>
         </RichTextEditorProvider>
     );

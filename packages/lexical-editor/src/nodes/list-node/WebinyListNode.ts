@@ -60,9 +60,11 @@ export class WebinyListNode extends ElementNode {
         let css = {};
         if (this.__themeStyleId) {
             const typographyStyleValue = findTypographyStyleById(theme, this.__themeStyleId);
+            getEmotionClass(this.__themeStyleId): string
             css = typographyStyleValue?.css ? typographyStyleValue.css : {};
             element.setAttribute(TypographyStyleAttrName, this.__themeStyleId);
         }
+        element.classList.add(emitionClass);
         element.style.cssText = styleObjectToString(css);
         return element;
     }

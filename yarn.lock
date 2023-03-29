@@ -15029,6 +15029,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
+    "@emotion/core": ^10.0.17
     "@lexical/code": 0.8.1
     "@lexical/hashtag": 0.8.1
     "@lexical/history": 0.8.1
