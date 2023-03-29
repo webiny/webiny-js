@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page-builder-elements/contexts/PageElements";
 
 // Attributes modifiers.
@@ -30,8 +30,8 @@ import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "~/types";
-
 import { ElementControls } from "./EditorPageElementsProvider/ElementControls";
+import { mediaToContainer } from "./EditorPageElementsProvider/mediaToContainer";
 
 export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const pageBuilder = usePageBuilder();
@@ -66,10 +66,26 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
         }
     };
 
+    // We override all `@media` usages in breakpoints with `@container page-editor-canvas`. This is what
+    // enables us responsive design inside the Page Builder's page editor.
+    const containerizedTheme = useMemo(() => {
+        const theme = pageBuilder.theme as Theme;
+
+        return {
+            ...pageBuilder.theme,
+            breakpoints: Object.keys(theme.breakpoints).reduce((result, breakpointName) => {
+                const breakpoint = theme.breakpoints[breakpointName];
+                return {
+                    ...result,
+                    [breakpointName]: mediaToContainer(breakpoint)
+                };
+            }, {})
+        } as Theme;
+    }, [pageBuilder.theme]);
+
     return (
         <PbPageElementsProvider
-            // We can assign `Theme` here because we know at this point we're using the new elements rendering engine.
-            theme={pageBuilder.theme as Theme}
+            theme={containerizedTheme}
             renderers={renderers}
             modifiers={modifiers}
             beforeRenderer={ElementControls}

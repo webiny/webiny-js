@@ -75,6 +75,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
                 theme,
                 renderers,
                 modifiers,
+                assignStyles: customAssignStylesCallback,
                 beforeRenderer,
                 afterRenderer
             });
