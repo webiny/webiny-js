@@ -18,6 +18,19 @@ import { createElasticsearchEntity } from "~/definitions/elasticsearch";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
 import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
+import { FormBuilderContext } from "@webiny/api-form-builder/types";
+import {
+    FormDynamoDbFieldPlugin,
+    FormElasticsearchBodyModifierPlugin,
+    FormElasticsearchFieldPlugin,
+    FormElasticsearchIndexPlugin,
+    FormElasticsearchQueryModifierPlugin,
+    FormElasticsearchSortModifierPlugin,
+    SubmissionElasticsearchBodyModifierPlugin,
+    SubmissionElasticsearchFieldPlugin,
+    SubmissionElasticsearchQueryModifierPlugin,
+    SubmissionElasticsearchSortModifierPlugin
+} from "~/plugins";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -29,6 +42,8 @@ const isReserved = (name: string): void => {
         name
     });
 };
+
+export * from "./plugins";
 
 export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFactory = params => {
     const {
@@ -123,7 +138,24 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     };
 
     return {
-        init: async context => {
+        beforeInit: async (context: FormBuilderContext) => {
+            const types: string[] = [
+                FormDynamoDbFieldPlugin.type,
+                FormElasticsearchBodyModifierPlugin.type,
+                FormElasticsearchFieldPlugin.type,
+                FormElasticsearchIndexPlugin.type,
+                FormElasticsearchQueryModifierPlugin.type,
+                FormElasticsearchSortModifierPlugin.type,
+                SubmissionElasticsearchBodyModifierPlugin.type,
+                SubmissionElasticsearchFieldPlugin.type,
+                SubmissionElasticsearchQueryModifierPlugin.type,
+                SubmissionElasticsearchSortModifierPlugin.type
+            ];
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
+        },
+        init: async (context: FormBuilderContext) => {
             context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
