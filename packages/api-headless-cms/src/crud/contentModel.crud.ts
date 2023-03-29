@@ -500,6 +500,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     id: group.id,
                     name: group.name
                 },
+                icon: data.icon,
                 name: data.name,
                 modelId: data.modelId || "",
                 description: data.description || "",

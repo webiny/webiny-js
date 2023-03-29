@@ -147,7 +147,8 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
             "description",
             "titleFieldId",
             "descriptionFieldId",
-            "imageFieldId"
+            "imageFieldId",
+            "icon"
         ]);
         const response = await apolloClient.mutate<
             UpdateCmsModelMutationResponse,
