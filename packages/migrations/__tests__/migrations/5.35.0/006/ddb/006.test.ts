@@ -83,7 +83,7 @@ describe("5.35.0-006", () => {
             ]
         });
 
-        expect(searchRecords.length).toBe(4);
+        expect(searchRecords.length).toBe(22);
 
         // Test result with snapshots - for some fields we need to use property matchers
         searchRecords.forEach(record => {
