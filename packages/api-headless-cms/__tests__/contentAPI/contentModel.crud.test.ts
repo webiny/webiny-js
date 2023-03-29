@@ -43,8 +43,6 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
     }
 ];
 
-jest.setTimeout(100000);
-
 describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };

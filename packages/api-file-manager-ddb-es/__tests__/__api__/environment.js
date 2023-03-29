@@ -72,6 +72,8 @@ class FileManagerTestEnvironment extends NodeEnvironment {
                 },
                 getPlugins: () => {
                     return [
+                        elasticsearchClientContext,
+                        createGzipCompression(),
                         ...dbPlugins({
                             table: process.env.DB_TABLE,
                             driver: new DynamoDbDriver({

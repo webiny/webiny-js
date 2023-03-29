@@ -15,7 +15,10 @@ import { createFormStorageOperations } from "~/operations/form";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
+import {
+    CompressionPlugin,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
@@ -79,10 +82,6 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
          */
         dynamoDbValueFilters(),
         /**
-         * Elasticsearch operators.
-         */
-        getElasticsearchOperators(),
-        /**
          * Built-in Elasticsearch index plugins
          */
         elasticsearchIndexPlugins()
@@ -140,6 +139,10 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     return {
         beforeInit: async (context: FormBuilderContext) => {
             const types: string[] = [
+                // Elasticsearch
+                CompressionPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                // Form Builder
                 FormDynamoDbFieldPlugin.type,
                 FormElasticsearchBodyModifierPlugin.type,
                 FormElasticsearchFieldPlugin.type,

@@ -10,7 +10,10 @@ import { FilesStorageOperations } from "~/operations/files/FilesStorageOperation
 import WebinyError from "@webiny/error";
 import { SettingsStorageOperations } from "~/operations/settings/SettingsStorageOperations";
 import { SystemStorageOperations } from "~/operations/system/SystemStorageOperations";
-import { createGzipCompression, getElasticsearchOperators } from "@webiny/api-elasticsearch";
+import {
+    CompressionPlugin,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { FileManagerContextWithElasticsearch } from "~/types";
 import {
@@ -39,10 +42,8 @@ export const createFileManagerStorageOperations = (
 ): FileManagerStorageOperations => {
     const storagePlugins = new PluginsContainer([
         dynamoDbValueFilters(),
-        getElasticsearchOperators(),
         elasticsearchIndexPlugins(),
         createFileFieldsPlugins(),
-        createGzipCompression(),
         ...(config.plugins || [])
     ]);
 
@@ -74,6 +75,10 @@ export const createFileManagerStorageOperations = (
     return {
         async beforeInit(context) {
             const types: string[] = [
+                // Elasticsearch
+                CompressionPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                // File Manager
                 FileAttributePlugin.type,
                 FileElasticsearchAttributePlugin.type,
                 FileElasticsearchBodyModifierPlugin.type,
