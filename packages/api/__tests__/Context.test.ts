@@ -1,5 +1,6 @@
 import { Context } from "~/index";
 import { Context as ContextInterface } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface DummyContextInterface extends ContextInterface {
     cms: any;
@@ -14,18 +15,7 @@ describe("Context", () => {
         });
 
         expect(context).toBeInstanceOf(Context);
-        expect(context).toEqual({
-            plugins: {
-                _byTypeCache: {},
-                plugins: {}
-            },
-            WEBINY_VERSION: "test",
-            waiters: []
-        });
-        expect(context.plugins).toEqual({
-            _byTypeCache: {},
-            plugins: {}
-        });
+        expect(context.plugins).toBeInstanceOf(PluginsContainer);
         expect(context.WEBINY_VERSION).toEqual("test");
     });
 

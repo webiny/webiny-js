@@ -1,13 +1,23 @@
 import { PluginsContainer } from "~/index";
+import { PluginDecorator } from "~/PluginsContainer";
 
-const mockPlugins = [
+interface MockedPlugin {
+    type: string;
+    name?: string;
+    render?: () => string;
+}
+
+const mockPlugins: MockedPlugin[] = [
     {
         type: "ui-plugin",
         name: "ui-plugin-1"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-2"
+        name: "ui-plugin-2",
+        render() {
+            return "original render";
+        }
     },
     {
         type: "ui-plugin",
@@ -259,5 +269,30 @@ describe("plugins", () => {
 
         const afterRegisterUiPlugins = plugins.byType("ui-plugin");
         expect(afterRegisterUiPlugins).toHaveLength(6);
+    });
+
+    test("should return a decorated plugin", () => {
+        plugins.register(mockPlugins);
+
+        const uiPlugins = plugins.byType("ui-plugin");
+
+        expect(uiPlugins[0].render).toBeUndefined();
+
+        class MockPluginDecorator extends PluginDecorator<MockedPlugin> implements MockedPlugin {
+            render(): string {
+                return this.plugin.render ? this.plugin.render() : "decorated render";
+            }
+        }
+
+        plugins.registerDecorator("ui-plugin", MockPluginDecorator);
+
+        const decoratedPlugins = plugins.byType<MockPluginDecorator>("ui-plugin");
+        const plugin1 = decoratedPlugins[0];
+        const plugin2 = decoratedPlugins[1];
+
+        expect(plugin1.render).toBeInstanceOf(Function);
+        expect(plugin1.render()).toBe("decorated render");
+        expect(plugin2.render).toBeInstanceOf(Function);
+        expect(plugin2.render()).toBe("original render");
     });
 });
