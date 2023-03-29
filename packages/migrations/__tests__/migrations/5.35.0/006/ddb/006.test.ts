@@ -1,5 +1,3 @@
-import sortBy from "lodash/sortBy";
-
 import {
     assertNotError,
     createDdbMigrationHandler,
@@ -11,12 +9,7 @@ import {
 
 import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb";
 
-import {
-    createTenantsData,
-    createLocalesData,
-    createPagesData,
-    createAcoSearchData
-} from "./006.data";
+import { createTenantsData, createLocalesData, createPagesData } from "./006.data";
 
 jest.retryTimes(0);
 
@@ -91,7 +84,14 @@ describe("5.35.0-006", () => {
         });
 
         expect(searchRecords.length).toBe(4);
-        expect(sortBy(searchRecords, ["id"])).toEqual(sortBy(createAcoSearchData(), ["id"]));
+
+        // Test result with snapshots - for some fields we need to use property matchers
+        searchRecords.forEach(record => {
+            expect(record).toMatchSnapshot({
+                created: expect.any(String),
+                modified: expect.any(String)
+            });
+        });
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
