@@ -65,6 +65,7 @@ interface NotInResult {
     paths: string[] | undefined;
     ids: string[] | undefined;
 }
+
 const createNotIn = (exclude?: string[]): NotInResult => {
     const paths: string[] = [];
     const ids: string[] = [];
@@ -130,6 +131,7 @@ export interface CreatePageCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
@@ -503,7 +505,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
             const newPath = input.path;
             if (newPath) {
-                page.path = normalizePath(newPath) as string;;
+                page.path = normalizePath(newPath) as string;
             }
 
             const newContent = input.content;
