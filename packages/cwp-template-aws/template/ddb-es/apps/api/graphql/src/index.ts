@@ -83,7 +83,7 @@ export const handler = createHandler({
             storageOperations: createPageBuilderStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                plugins: [createGzipCompression()]
+                plugins: []
             })
         }),
         createPageBuilderGraphQL(),
@@ -101,7 +101,7 @@ export const handler = createHandler({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                plugins: [createGzipCompression()]
+                plugins: []
             })
         }),
         createHeadlessCmsGraphQL(),
