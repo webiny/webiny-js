@@ -9,7 +9,7 @@ import { createTenantEntity } from "../entities/createTenantEntity";
 import { getSearchablePageContent } from "../utils/getSearchableContent";
 import { queryAll, ddbQueryAllWithCallback, batchWriteAll, executeWithRetry } from "~/utils";
 
-import { CmsEntry, I18NLocale, Page, Tenant, ListLocalesParams, ListEntriesParams } from "./types";
+import { CmsEntry, I18NLocale, Page, Tenant, ListLocalesParams, ListEntriesParams } from "../types";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
