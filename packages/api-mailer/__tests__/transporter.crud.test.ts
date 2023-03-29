@@ -185,7 +185,7 @@ describe("Mailer Transporter CRUD", () => {
         const result = await context.mailer.getTransport();
 
         expect(result).toEqual({
-            name: "dummy-default",
+            name: "mailer.dummy-default",
             send: expect.any(Function),
             getAllSent: expect.any(Function)
         });
