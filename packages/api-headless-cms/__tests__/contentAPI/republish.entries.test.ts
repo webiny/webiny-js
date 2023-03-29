@@ -6,8 +6,6 @@ import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 // @ts-ignore
 import mdbid from "mdbid";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { PluginsContainer } from "@webiny/plugins";
-import { createGraphQLFields } from "~/graphqlFields";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
@@ -326,11 +324,11 @@ describe("Republish entries", () => {
 
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
 
-        const { storageOperations } = useCategoryManageHandler(manageOpts);
+        const { storageOperations, plugins } = useCategoryManageHandler(manageOpts);
 
         if (storageOperations.beforeInit) {
             await storageOperations.beforeInit({
-                plugins: new PluginsContainer(createGraphQLFields())
+                plugins
             } as any);
         }
 
