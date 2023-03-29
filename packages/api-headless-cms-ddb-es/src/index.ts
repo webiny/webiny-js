@@ -154,8 +154,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 CmsEntryElasticsearchFieldPlugin.type
             ];
             for (const type of types) {
-                const contextPlugins = context.plugins.byType(type);
-                plugins.register(contextPlugins);
+                plugins.mergeByType(context.plugins, type);
             }
         },
         init: async context => {
