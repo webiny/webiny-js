@@ -500,6 +500,12 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 version: Number(original.version),
                 savedOn: new Date().toISOString()
             };
+
+            const newPath = input.path;
+            if (newPath) {
+                page.path = normalizePath(newPath) as string;;
+            }
+
             const newContent = input.content;
             if (newContent) {
                 page.content = await compressContent({
