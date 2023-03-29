@@ -1,6 +1,9 @@
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { PluginsContainer } from "@webiny/plugins";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import {
+    CompressionPlugin,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 
 import { ENTITIES, StorageOperationsFactory } from "~/types";
 import { createTable } from "~/definitions/table";
@@ -96,10 +99,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          */
         dynamoDbValueFilters(),
         /**
-         * Elasticsearch operators.
-         */
-        getElasticsearchOperators(),
-        /**
          * Category fields required for filtering/sorting.
          */
         createCategoryDynamoDbFields(),
@@ -192,6 +191,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     return {
         beforeInit: async (context: PbContext) => {
             const types: string[] = [
+                // Elasticsearch
+                CompressionPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                // Page Builder
                 BlockCategoryDynamoDbElasticFieldPlugin.type,
                 CategoryDynamoDbElasticFieldPlugin.type,
                 IndexPageDataPlugin.type,
