@@ -81,6 +81,7 @@ describe("Settings Transporter CRUD", () => {
 
         expect(response).toEqual({
             ...input,
+            port: 25,
             password: ""
         });
     });
@@ -98,6 +99,7 @@ describe("Settings Transporter CRUD", () => {
 
         expect(settings).toEqual({
             ...input,
+            port: 25,
             id: expect.any(String)
         });
     });
@@ -116,6 +118,7 @@ describe("Settings Transporter CRUD", () => {
         const response = await context.mailer.updateSettings({
             input: {
                 ...input,
+                port: 30,
                 host: "dummy-host2.webiny"
             },
             original: settings
@@ -123,6 +126,7 @@ describe("Settings Transporter CRUD", () => {
 
         expect(response).toEqual({
             ...input,
+            port: 30,
             host: "dummy-host2.webiny",
             password: ""
         });
@@ -136,6 +140,7 @@ describe("Settings Transporter CRUD", () => {
 
         expect(responseWithNoOriginal).toEqual({
             ...input,
+            port: 30,
             host: "dummy-host3.webiny",
             password: ""
         });
@@ -160,6 +165,7 @@ describe("Settings Transporter CRUD", () => {
         const response = await context.mailer.updateSettings({
             input: {
                 ...input,
+                port: 25,
                 host: "dummy-host2.webiny"
             },
             original: settings
@@ -167,6 +173,7 @@ describe("Settings Transporter CRUD", () => {
 
         expect(response).toEqual({
             ...input,
+            port: 25,
             host: "dummy-host2.webiny",
             password: ""
         });
@@ -199,6 +206,7 @@ describe("Settings Transporter CRUD", () => {
 
         expect(response).toEqual({
             ...input,
+            port: 25,
             id: expect.any(String)
         });
     });
