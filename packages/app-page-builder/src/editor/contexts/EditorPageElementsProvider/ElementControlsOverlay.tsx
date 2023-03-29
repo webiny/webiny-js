@@ -12,7 +12,7 @@ import { SetterOrUpdater } from "recoil";
 import Draggable from "~/editor/components/Draggable";
 import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
 import { ElementControlsOverlayBorders } from "./ElementControlsOverlay/ElementControlsOverlayBorders";
-import {ConnectDragSource} from "react-dnd";
+import { ConnectDragSource } from "react-dnd";
 
 declare global {
     // eslint-disable-next-line
@@ -42,7 +42,7 @@ type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
     isHighlighted: boolean;
     isDragging: boolean;
     dropRef?: React.RefCallback<any>;
-    dragRef?:  ConnectDragSource | null
+    dragRef?: ConnectDragSource | null;
     zIndex: number;
 };
 
@@ -273,7 +273,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                         updateEditorElement(element => ({ ...element, isHighlighted: false }));
                         setActiveElementId(element.id);
                     }}
-                    onMouseEnter={(e) => {
+                    onMouseEnter={e => {
                         if (isActive || isHighlighted) {
                             return;
                         }
@@ -281,18 +281,18 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, isHighlighted: true }));
                     }}
-                    onMouseLeave={(e) => {
+                    onMouseLeave={e => {
                         if (isActive || !isHighlighted) {
                             return;
                         }
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, isHighlighted: false }));
                     }}
-                    onDragEnter={(e) => {
+                    onDragEnter={e => {
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, dragEntered: true }));
                     }}
-                    onDragLeave={(e) => {
+                    onDragLeave={e => {
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, dragEntered: false }));
                     }}
