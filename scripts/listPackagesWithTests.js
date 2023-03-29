@@ -97,8 +97,8 @@ function hasTestFiles(folder) {
             if (hasTFiles) {
                 return true;
             }
-        } else {
-            return testFilePattern.test(filepath);
+        } else if (testFilePattern.test(filepath)) {
+            return true;
         }
     }
     return false;
