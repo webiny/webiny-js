@@ -23,5 +23,5 @@ export const IconContainer = styled.div`
     margin-right: 4px;
     height: 24px;
     width: 24px;
-    fill: rgba(0, 0, 0, 0.54);
+    fill: var(--mdc-theme-text-secondary-on-background);
 `;

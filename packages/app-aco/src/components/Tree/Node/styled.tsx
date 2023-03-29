@@ -29,7 +29,7 @@ export const Icon = styled("div")`
     height: 24px;
     width: 24px;
     cursor: pointer;
-    fill: rgba(0, 0, 0, 0.54);
+    fill: var(--mdc-theme-text-secondary-on-background);
 `;
 
 export const ArrowIcon = styled(Icon)<ArrowIconContainerProps>`
@@ -39,7 +39,6 @@ export const ArrowIcon = styled(Icon)<ArrowIconContainerProps>`
 
 export const FolderIcon = styled(Icon)`
     margin-right: 4px;
-    fill: rgba(0, 0, 0, 0.54);
 `;
 
 export const Content = styled("div")`
