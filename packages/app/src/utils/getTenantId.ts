@@ -1,10 +1,12 @@
+import { isLocalhost } from "~/utils/isLocalhost";
+
 declare global {
     interface Window {
         __PS_RENDER_TENANT__: string;
     }
 }
 
-export const getTenantId = () => {
+export const getTenantId = (): string | null => {
     // 1. Get tenant via the `__tenant` query param. Useful when doing page previews.
     let tenant = new URLSearchParams(location.search).get("__tenant");
     if (tenant) {
@@ -23,7 +25,11 @@ export const getTenantId = () => {
         return tenant;
     }
 
-    // 4. Finally, for development purposes, we also want to take the
-    // `REACT_APP_WEBSITE_TENANT` environment variable into consideration.
-    return process.env.WEBINY_WEBSITE_TENANT || null;
+    // 4. Finally, for development purposes, we take the `WEBINY_WEBSITE_TENANT_ID`
+    // and `WEBINY_ADMIN_TENANT_ID` environment variables into consideration.
+    if (isLocalhost()) {
+        return process.env.WEBINY_WEBSITE_TENANT_ID || process.env.WEBINY_ADMIN_TENANT_ID || null;
+    }
+
+    return null;
 };

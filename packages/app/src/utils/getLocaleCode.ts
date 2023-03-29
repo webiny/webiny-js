@@ -1,10 +1,12 @@
+import { isLocalhost } from "./isLocalhost";
+
 declare global {
     interface Window {
         __PS_RENDER_LOCALE__: string;
     }
 }
 
-export const getLocaleCode = () => {
+export const getLocaleCode = (): string | null => {
     // 1. Get locale via the `__locale` query param. Useful when doing page previews.
     let locale = new URLSearchParams(location.search).get("__locale");
     if (locale) {
@@ -27,7 +29,13 @@ export const getLocaleCode = () => {
         return matchedLocale;
     }
 
-    // 4. Finally, for development purposes, we also want to take the
-    // `REACT_APP_WEBSITE_LOCALE` environment variable into consideration.
-    return process.env.WEBINY_WEBSITE_LOCALE_CODE || null;
+    // 4. Finally, for development purposes, we take the `WEBINY_WEBSITE_LOCALE_CODE`
+    // and `WEBINY_ADMIN_LOCALE_CODE` environment variables into consideration.
+    if (isLocalhost()) {
+        return (
+            process.env.WEBINY_WEBSITE_LOCALE_CODE || process.env.WEBINY_ADMIN_LOCALE_CODE || null
+        );
+    }
+
+    return null;
 };
