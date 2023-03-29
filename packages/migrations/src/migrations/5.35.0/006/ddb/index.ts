@@ -23,6 +23,11 @@ interface CreateSearchRecordParams {
     page: Page;
 }
 
+interface CreateSearchRecordResult {
+    id: string;
+    pid: string;
+}
+
 export class AcoRecords_5_35_0_006 {
     private readonly entryEntity: ReturnType<typeof createEntryEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
@@ -92,9 +97,15 @@ export class AcoRecords_5_35_0_006 {
 
                 const pages = await this.listPages({ tenant, locale });
 
+                const result = [] as CreateSearchRecordResult[];
                 for (const page of pages) {
-                    await this.createSearchRecord({ page });
+                    const res = await this.createSearchRecord({ page });
+                    result.push(res);
                 }
+
+                logger.info(
+                    `Created ${result.length}/${pages.length} search records for tenant "${tenant.data.id}" and locale "${locale.code}`
+                );
             }
         }
     }
@@ -141,18 +152,47 @@ export class AcoRecords_5_35_0_006 {
         });
     }
 
-    private async createSearchRecord({ page }: CreateSearchRecordParams): Promise<void> {
+    // private async listPagesAndCreateSearchRecords({
+    //     tenant,
+    //     locale
+    // }: ListEntriesParams): Promise<CreateSearchRecordResult[]> {
+    //     const result = [] as CreateSearchRecordResult[];
+    //
+    //     await ddbQueryAllWithCallback<Page>(
+    //         {
+    //             entity: this.pageEntity,
+    //             partitionKey: `T#${tenant.data.id}#L#${locale.code}#PB#L`,
+    //             options: {
+    //                 gte: " "
+    //             }
+    //         },
+    //         pages => {
+    //             if (pages.length === 0) {
+    //                 continue;
+    //             }
+    //         }
+    //
+    //         return result;
+    //         // Promise.all(
+    //         //     pages.map(page => {
+    //         //         await this.createSearchRecord({ page });
+    //         //     })
+    //         // )
+    //     );
+    // }
+
+    private async createSearchRecordCommonFields(page: Page) {
         const {
-            id,
             createdBy,
             createdOn,
-            pid,
-            savedOn,
+            id,
+            locale,
             locked,
             path,
-            tenant,
-            locale,
+            pid,
+            savedOn,
             status,
+            tenant,
             title,
             version,
             webinyVersion
@@ -160,14 +200,10 @@ export class AcoRecords_5_35_0_006 {
 
         const content = await getSearchablePageContent(page);
 
-        const latestEntry = {
-            PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
-            SK: "L",
+        return {
             createdBy,
             createdOn,
             entryId: pid,
-            GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#L`,
-            GSI1_SK: `${pid}#0001`,
             id: `${pid}#0001`,
             locale,
             locked: false,
@@ -178,8 +214,10 @@ export class AcoRecords_5_35_0_006 {
             savedOn,
             status: "draft",
             tenant,
-            TYPE: "cms.entry.l",
+            version: 1,
+            webinyVersion,
             values: {
+                title,
                 content,
                 data: {
                     createdBy,
@@ -196,54 +234,34 @@ export class AcoRecords_5_35_0_006 {
                 location: {
                     folderId: "ROOT"
                 },
-                title,
                 type: "PbPage"
-            },
-            version: 1,
-            webinyVersion
+            }
+        };
+    }
+
+    private async createSearchRecord({
+        page
+    }: CreateSearchRecordParams): Promise<CreateSearchRecordResult> {
+        const { id, pid, tenant, locale } = page;
+
+        const common = await this.createSearchRecordCommonFields(page);
+
+        const latestEntry = {
+            PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
+            SK: "L",
+            GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#L`,
+            GSI1_SK: `${pid}#0001`,
+            TYPE: "cms.entry.l",
+            ...common
         };
 
         const revisionEntry = {
             PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
             SK: "REV#0001",
-            createdBy,
-            createdOn,
-            entryId: pid,
             GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#A`,
             GSI1_SK: `${pid}#0001`,
-            id: `${pid}#0001`,
-            locale,
-            locked: false,
-            meta: {},
-            modelId: "acoSearchRecord",
-            modifiedBy: createdBy,
-            ownedBy: createdBy,
-            savedOn,
-            status: "draft",
-            tenant,
             TYPE: "cms.entry",
-            values: {
-                content,
-                data: {
-                    createdBy,
-                    createdOn,
-                    id,
-                    locked,
-                    path,
-                    pid,
-                    savedOn,
-                    status,
-                    title,
-                    version: 1
-                },
-                location: {
-                    folderId: "ROOT"
-                },
-                title,
-                type: "PbPage"
-            },
-            version: 1,
-            webinyVersion
+            ...common
         };
 
         const items = [
@@ -256,6 +274,11 @@ export class AcoRecords_5_35_0_006 {
                 table: this.entryEntity.table,
                 items
             });
+
+            return {
+                id,
+                pid
+            };
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not insert data into the DynamoDB.",
