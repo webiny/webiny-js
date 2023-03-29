@@ -35,16 +35,22 @@ export const printReport = ({ response, migrationLambdaArn, context }: ReportPar
         return;
     }
 
-    context.success(`Data migration Lambda %s executed successfully!`, migrationLambdaArn);
+    const functionName = migrationLambdaArn.split(":").pop();
+    context.success(`Data migration Lambda %s executed successfully!`, functionName);
 
-    const { migrations } = response.data;
+    const { migrations, ...run } = response.data;
     if (!migrations.length) {
         context.info(`No applicable migrations were found!`);
         return;
     }
 
-    const maxLength = Math.max(...migrations.map(mig => mig.status.length)) + 4;
-
+    const maxLength = Math.max(...migrations.map(mig => mig.status.length)) + 2;
+    context.info(`Migration run: %s`, run.id);
+    context.info(`Status: %s`, run.status);
+    context.info(`Started on: %s`, run.startedOn);
+    if (run.status === "done") {
+        context.info(`Finished on: %s`, run.finishedOn);
+    }
     for (const migration of migrations) {
         context.info(
             ...[
