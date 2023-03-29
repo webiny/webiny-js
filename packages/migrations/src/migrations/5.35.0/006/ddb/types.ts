@@ -88,3 +88,21 @@ export interface Page {
     ownedBy: Identity;
     webinyVersion: string;
 }
+
+export interface ListLocalesParams {
+    tenant: Tenant;
+}
+
+export interface ListEntriesParams {
+    tenant: Tenant;
+    locale: I18NLocale;
+}
+
+export interface CreateSearchRecordParams {
+    page: Page;
+}
+
+export interface CreateSearchRecordResult {
+    id: string;
+    pid: string;
+}

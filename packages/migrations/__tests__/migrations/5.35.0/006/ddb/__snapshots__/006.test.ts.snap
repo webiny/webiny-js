@@ -60,7 +60,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -124,7 +124,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -188,7 +188,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -252,7 +252,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -316,7 +316,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -380,7 +380,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -444,7 +444,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -508,7 +508,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -572,7 +572,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -636,7 +636,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -700,7 +700,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -764,7 +764,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -828,7 +828,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -892,7 +892,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -956,7 +956,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "0.0.0",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -1020,7 +1020,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "0.0.0",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -1084,7 +1084,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "0.0.0",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -1148,7 +1148,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "0.0.0",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -1214,7 +1214,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -1280,7 +1280,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -1344,7 +1344,7 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;
 
@@ -1408,6 +1408,6 @@ Object {
     "type": "PbPage",
   },
   "version": 1,
-  "webinyVersion": "5.34.7",
+  "webinyVersion": Any<String>,
 }
 `;

@@ -89,7 +89,8 @@ describe("5.35.0-006", () => {
         searchRecords.forEach(record => {
             expect(record).toMatchSnapshot({
                 created: expect.any(String),
-                modified: expect.any(String)
+                modified: expect.any(String),
+                webinyVersion: expect.any(String)
             });
         });
     });
