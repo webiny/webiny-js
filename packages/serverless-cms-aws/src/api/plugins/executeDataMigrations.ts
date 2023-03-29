@@ -25,7 +25,7 @@ export const executeDataMigrations = {
 
         const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
-        context.info("Invoking data migrations Lambda function...");
+        context.info("Executing data migrations Lambda function...");
 
         try {
             const lambdaClient = new LambdaClient({

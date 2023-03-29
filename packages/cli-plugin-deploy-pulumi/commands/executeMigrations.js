@@ -16,7 +16,7 @@ const clearLine = () => {
 module.exports = async (params, context) => {
     const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
-    context.info("Invoking data migration Lambda function...");
+    context.info("Executing data migration Lambda function...");
 
     try {
         const lambdaClient = new LambdaClient({
