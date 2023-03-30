@@ -7,7 +7,7 @@ import TargetDataModelsForm from "./TargetDataModelsForm";
  * Main view component - renders data list and form.
  */
 
-const TargetDataModelsView: React.FC = () => {
+const TargetDataModelsView: React.VFC = () => {
     return (
         <SplitView>
             <LeftPanel>

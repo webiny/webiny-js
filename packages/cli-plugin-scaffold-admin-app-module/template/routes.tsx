@@ -9,7 +9,7 @@ import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
  * Registers new "/target-data-models" route.
  */
 
-const Loader: React.FC = ({ children, ...props }) => (
+const Loader: React.VFC = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>
         {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>

@@ -30,7 +30,7 @@ const sorters = [
     }
 ];
 
-const TargetDataModelsDataList: React.FC = () => {
+const TargetDataModelsDataList: React.VFC = () => {
     const {
         targetDataModels,
         loading,
