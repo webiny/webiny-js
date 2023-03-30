@@ -9,7 +9,7 @@ export interface StylesObject {
     [key: string]: CSSObject | string | number | undefined;
 }
 
-export enum DefaultThemeBreakpoints {
+export enum DefaultThemeBreakpoint {
     DESKTOP = "desktop",
     TABLET = "tablet",
     MOBILE_LANDSCAPE = "mobile-landscape",
@@ -17,10 +17,10 @@ export enum DefaultThemeBreakpoints {
 }
 
 export type ThemeBreakpoints = {
-    [DefaultThemeBreakpoints.DESKTOP]: string;
-    [DefaultThemeBreakpoints.TABLET]: string;
-    [DefaultThemeBreakpoints.MOBILE_LANDSCAPE]: string;
-    [DefaultThemeBreakpoints.MOBILE_PORTRAIT]: string;
+    [DefaultThemeBreakpoint.DESKTOP]: string;
+    [DefaultThemeBreakpoint.TABLET]: string;
+    [DefaultThemeBreakpoint.MOBILE_LANDSCAPE]: string;
+    [DefaultThemeBreakpoint.MOBILE_PORTRAIT]: string;
 
     [key: string]: string;
 };

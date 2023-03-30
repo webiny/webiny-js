@@ -8,11 +8,12 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
 import { FormOnSubmit } from "@webiny/form/types";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
+import { css } from "emotion";
 
-const menuFolderFormStyle = {
+const menuFolderFormStyle = css({
     color: "var(--mdc-theme-on-surface)",
     backgroundColor: "var(--mdc-theme-background) !important"
-};
+});
 
 interface FolderFormProps {
     data: MenuTreeItem;
@@ -21,7 +22,7 @@ interface FolderFormProps {
 }
 const FolderForm: React.FC<FolderFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
-        <Elevation z={4} css={menuFolderFormStyle}>
+        <Elevation z={4} className={menuFolderFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
                 {({ submit, Bind }) => (
                     <>
