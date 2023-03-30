@@ -115,7 +115,7 @@ interface LexicalColorPickerProps {
     handlerClassName?: string;
 }
 
-export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
+export const LexicalColorPicker: React.VFC<LexicalColorPickerProps> = ({
     value,
     onChange,
     onChangeComplete
