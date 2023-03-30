@@ -44,7 +44,7 @@ export interface BindComponentProps<T = any> {
     validate?: Function;
 }
 
-export type BindComponent = React.FC<BindComponentProps>;
+export type BindComponent = React.VFC<BindComponentProps>;
 
 export interface FormRenderPropParamsSubmit {
     (event?: React.SyntheticEvent<any, any>): Promise<void>;

@@ -10,7 +10,7 @@ interface FormViewProps {
     onSubmit(data: any): void;
 }
 
-const FormViewWithBind: React.FC<FormViewProps> = ({ onSubmit }) => {
+const FormViewWithBind: React.VFC<FormViewProps> = ({ onSubmit }) => {
     return (
         <Form data={{ name: "empty name" }} onSubmit={data => onSubmit(data)}>
             {({ Bind, form }) => (
@@ -44,7 +44,7 @@ const Input = () => {
     );
 };
 
-const FormViewWithHooks: React.FC<FormViewProps> = ({ onSubmit }) => {
+const FormViewWithHooks: React.VFC<FormViewProps> = ({ onSubmit }) => {
     return (
         <Form data={{ name: "empty name" }} onSubmit={data => onSubmit(data)}>
             {({ form }) => (
