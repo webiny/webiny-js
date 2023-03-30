@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
-import { ACOContext } from "~/types";
+import { AcoContext } from "~/types";
 
-export const onFolderBeforeDeleteHook = ({ aco }: ACOContext) => {
+export const onFolderBeforeDeleteHook = ({ aco }: AcoContext) => {
     aco.folder.onFolderBeforeDelete.subscribe(async ({ folder }) => {
         try {
             const { id, type } = folder;

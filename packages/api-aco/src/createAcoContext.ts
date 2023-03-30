@@ -8,9 +8,9 @@ import { createAcoHooks } from "~/createAcoHooks";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
 
-import { ACOContext } from "~/types";
+import { AcoContext } from "~/types";
 
-const setupAcoContext = (context: ACOContext) => {
+const setupAcoContext = (context: AcoContext) => {
     const { tenancy, security, i18n } = context;
 
     if (isInstallationPending({ tenancy, i18n })) {
@@ -54,7 +54,7 @@ const setupAcoContext = (context: ACOContext) => {
 };
 
 export const createAcoContext = () => {
-    return new ContextPlugin<ACOContext>(async context => {
+    return new ContextPlugin<AcoContext>(async context => {
         if (isInstallationPending(context)) {
             return;
         }

@@ -3,9 +3,9 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 
 import { resolve } from "~/utils/resolve";
 
-import { ACOContext } from "~/types";
+import { AcoContext } from "~/types";
 
-export const folderSchema = new GraphQLSchemaPlugin<ACOContext>({
+export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
         type Folder {
             id: ID!

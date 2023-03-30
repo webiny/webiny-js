@@ -47,7 +47,7 @@ export interface CreateAcoParams {
 
 export type AcoStorageOperations = AcoFolderStorageOperations & AcoSearchRecordStorageOperations;
 
-export interface ACOContext
+export interface AcoContext
     extends BaseContext,
         I18NContext,
         TenancyContext,
@@ -55,3 +55,8 @@ export interface ACOContext
         CmsContext {
     aco: AdvancedContentOrganisation;
 }
+
+/**
+ * @deprecated Use AcoContext instead
+ */
+export type ACOContext = AcoContext;
