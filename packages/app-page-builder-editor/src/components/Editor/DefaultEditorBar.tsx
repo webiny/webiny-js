@@ -14,7 +14,7 @@ const centerTopBar = css({
     }
 });
 
-const DefaultEditorBar = () => {
+const DefaultEditorBar: React.VFC = () => {
     return (
         <TopAppBar className={topBar} fixed>
             <TopAppBarSection style={{ width: "33%" }} alignStart>
