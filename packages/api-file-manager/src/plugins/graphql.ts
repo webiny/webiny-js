@@ -32,7 +32,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             input FileInput {
                 key: String
                 name: String
-                size: Int
+                size: Long
                 type: String
                 tags: [String]
                 meta: JSON
@@ -41,7 +41,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type UploadFileResponseDataFile {
                 name: String
                 type: String
-                size: Int
+                size: Long
                 key: String
             }
 
@@ -84,7 +84,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 id: ID
                 key: String
                 name: String
-                size: Int
+                size: Long
                 type: String
                 src: String
                 tags: [String]
