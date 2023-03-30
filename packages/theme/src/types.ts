@@ -11,8 +11,8 @@ export interface StylesObject {
 export type ThemeBreakpoints = Record<string, string>;
 
 /*
-* Typography section
-* */
+ * Typography section
+ * */
 export type HeadingHtmlTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type ParagraphHtmlTag = "p";
 export type ListHtmlTag = "ul" | "ol";
@@ -30,7 +30,9 @@ export type Typography = {
     [typeName in TypographyType]: TypographyStyle<ThemeTypographyHTMLTag>[];
 };
 
-export type WithById<T extends TypographyStyle<ThemeTypographyHTMLTag>[]> = T & { byId(id: string): TypographyStyle<ThemeTypographyHTMLTag> }
+export type WithById<T extends TypographyStyle<ThemeTypographyHTMLTag>[]> = T & {
+    byId(id: string): TypographyStyle<ThemeTypographyHTMLTag>;
+};
 
 export interface ThemeStyles {
     colors: Record<string, any>;
@@ -40,16 +42,14 @@ export interface ThemeStyles {
     [key: string]: any;
 }
 
-
 export type DecoratedThemeStyles<T extends ThemeStyles> = T & {
-    typography: {[K in keyof T['typography']]: WithById<T[TypographyType][K]> }};
-
+    typography: { [K in keyof T["typography"]]: WithById<T[TypographyType][K]> };
+};
 
 export interface Theme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
-
 
 export type DecoratedTheme = {
     breakpoints: ThemeBreakpoints;

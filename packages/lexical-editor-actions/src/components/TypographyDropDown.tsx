@@ -31,14 +31,10 @@ export const TypographyDropDown = () => {
                     setStyles(theme.styles?.typography?.paragraphs || []);
                     break;
                 case "bullet":
-                    setStyles(
-                        theme.styles?.typography?.lists?.filter(x => x.tag === "ul") || []
-                    );
+                    setStyles(theme.styles?.typography?.lists?.filter(x => x.tag === "ul") || []);
                     break;
                 case "number":
-                    setStyles(
-                        theme.styles?.typography?.lists?.filter(x => x.tag === "ol") || []
-                    );
+                    setStyles(theme.styles?.typography?.lists?.filter(x => x.tag === "ol") || []);
                     break;
                 case "quoteblock":
                     setStyles(theme.styles?.typography?.quotes || []);
