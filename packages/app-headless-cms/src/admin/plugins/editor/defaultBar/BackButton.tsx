@@ -8,7 +8,7 @@ const backStyles = css({
     marginLeft: -10
 });
 
-const BackButton: React.FC = React.memo(() => {
+const BackButton: React.VFC = React.memo(() => {
     const { history } = useRouter();
 
     return (

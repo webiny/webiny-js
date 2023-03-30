@@ -23,7 +23,7 @@ interface ContentModelPermissionProps {
     locales: string[];
     selectedContentModelGroups?: Record<string, string[]>;
 }
-export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
+export const ContentModelPermission: React.VFC<ContentModelPermissionProps> = ({
     Bind,
     data,
     setValue,

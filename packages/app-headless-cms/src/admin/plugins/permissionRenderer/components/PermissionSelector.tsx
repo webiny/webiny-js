@@ -25,10 +25,10 @@ export interface PermissionSelectorProps {
     locales: string[];
     entity: string;
     getItems: (code: string) => PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
-    RenderItems?: React.FC<RenderItemsProps>;
+    RenderItems?: React.VFC<RenderItemsProps>;
 }
 
-const DefaultRenderItems: React.FC<RenderItemsProps> = ({ items, getValue, onChange }) => {
+const DefaultRenderItems: React.VFC<RenderItemsProps> = ({ items, getValue, onChange }) => {
     return (
         <React.Fragment>
             {items.map(({ id, label }) => (
@@ -40,7 +40,7 @@ const DefaultRenderItems: React.FC<RenderItemsProps> = ({ items, getValue, onCha
     );
 };
 
-export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
+export const PermissionSelector: React.VFC<PermissionSelectorProps> = ({
     Bind,
     entity,
     locales,
@@ -88,8 +88,12 @@ export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
         </Fragment>
     );
 };
-
-export const PermissionSelectorWrapper: React.FC = ({ children }) => (
+interface PermissionSelectorWrapperProps {
+    children: React.ReactNode;
+}
+export const PermissionSelectorWrapper: React.VFC<PermissionSelectorWrapperProps> = ({
+    children
+}) => (
     <Fragment>
         <Cell span={1} />
         <Cell span={11}>{children}</Cell>

@@ -5,7 +5,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import usePermission from "~/admin/hooks/usePermission";
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
-const SaveContentButton: React.FC = () => {
+const SaveContentButton: React.VFC = () => {
     const { form, entry } = useContentEntry();
     const { canEdit } = usePermission();
 

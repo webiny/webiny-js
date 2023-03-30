@@ -37,7 +37,7 @@ export interface CMSPermissionsProps {
     value: CmsSecurityPermission[];
     onChange: (value: CmsSecurityPermission[]) => void;
 }
-export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange }) => {
+export const CMSPermissions: React.VFC<CMSPermissionsProps> = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
     const canRead = useCallback((value: any[], permissionName: string) => {

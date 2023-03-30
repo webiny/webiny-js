@@ -9,7 +9,7 @@ export interface Option {
 export interface SelectProps extends BaseSelectProps {
     options: Option[];
 }
-export const Select: React.FC<SelectProps> = props => {
+export const Select: React.VFC<SelectProps> = props => {
     return (
         <UiSelect {...props}>
             {props.options.map(t => {

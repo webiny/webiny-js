@@ -53,7 +53,7 @@ const getInert = (isDroppable: boolean) => {
     return isDroppable ? {} : { inert: "" };
 };
 
-const Center: React.FC<CenterProps> = ({ onDrop, children, style, isDroppable }) => {
+const Center: React.VFC<CenterProps> = ({ onDrop, children, style, isDroppable }) => {
     return (
         <Droppable onDrop={onDrop} isDroppable={isDroppable}>
             {({ isOver, drop, isDroppable }) => (

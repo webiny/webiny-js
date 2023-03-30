@@ -228,7 +228,7 @@ interface RemoveFieldButtonProps {
     // @ts-ignore
     trailingIcon: any;
 }
-export const RemoveFieldButton: React.FC<RemoveFieldButtonProps> = ({ trailingIcon }) => {
+export const RemoveFieldButton: React.VFC<RemoveFieldButtonProps> = ({ trailingIcon }) => {
     if (!trailingIcon) {
         return null;
     }

@@ -9,7 +9,7 @@ import { CmsModel } from "~/types";
 
 type QueryMatch = Pick<Partial<CmsModel>, "modelId">;
 
-const ContentModelEditorView: React.FC = () => {
+const ContentModelEditorView: React.VFC = () => {
     const { params } = useRouter();
     const { apolloClient } = useCms();
 

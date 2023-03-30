@@ -98,7 +98,7 @@ export interface IconPickerProps extends FormComponentProps {
     description?: React.ReactNode;
 }
 
-export const IconPicker: React.FC<IconPickerProps> = ({
+export const IconPicker: React.VFC<IconPickerProps> = ({
     value,
     onChange,
     label,

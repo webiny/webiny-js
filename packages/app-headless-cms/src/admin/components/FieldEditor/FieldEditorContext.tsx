@@ -144,7 +144,7 @@ interface State {
     field: CmsModelField | null;
     dropTarget: DropTarget;
 }
-export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
+export const FieldEditorProvider: React.VFC<FieldEditorProviderProps> = ({
     parent,
     fields,
     layout,

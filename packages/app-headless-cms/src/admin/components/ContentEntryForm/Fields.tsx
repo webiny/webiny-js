@@ -20,7 +20,7 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
-export const Fields: React.FC<FieldsProps> = ({
+export const Fields: React.VFC<FieldsProps> = ({
     Bind,
     fields,
     layout,

@@ -24,10 +24,10 @@ const FileUploadWrapper = styled("div")({
 
 interface FieldRendererProps {
     getBind: GetBindCallable;
-    Label: React.FC;
+    Label: React.VFC<{ children: React.ReactNode }>;
     field: CmsModelField;
 }
-const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) => {
+const FieldRenderer: React.VFC<FieldRendererProps> = ({ getBind, Label, field }) => {
     const Bind = getBind();
 
     const imagesOnly = field.settings && field.settings.imagesOnly;

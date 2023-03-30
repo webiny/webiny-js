@@ -74,7 +74,7 @@ interface EditFieldDialogProps {
     onSubmit: FormOnSubmit<CmsModelField>;
 }
 
-const EditFieldDialog: React.FC<EditFieldDialogProps> = props => {
+const EditFieldDialog: React.VFC<EditFieldDialogProps> = props => {
     const { field, fieldPlugin } = useModelField();
     const { data: contentModel, setData: setContentModelData } = useModelEditor();
     const [{ shadowField, isTitleField }] = useState<EditFieldState>(

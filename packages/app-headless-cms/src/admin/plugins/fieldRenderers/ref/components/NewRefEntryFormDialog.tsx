@@ -45,7 +45,7 @@ const dialogContainerStyles = css`
 interface EntryFormProps {
     onCreate: (entry: CmsEditorContentEntry) => void;
 }
-const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
+const EntryForm: React.VFC<EntryFormProps> = ({ onCreate }) => {
     const { setFormRef, contentModel } = useContentEntry();
 
     return (
@@ -65,7 +65,7 @@ const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     );
 };
 
-const DialogSaveButton: React.FC = () => {
+const DialogSaveButton: React.VFC = () => {
     const { form } = useContentEntry();
 
     return <ButtonPrimary onClick={form.current.submit}>{t`Create Entry`}</ButtonPrimary>;
@@ -91,7 +91,7 @@ interface NewRefEntryProps {
     onChange: (entry: CmsEditorContentEntry) => void;
 }
 
-const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
+const NewRefEntryFormDialog: React.VFC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
     const [contentModel, setContentModel] = useState<CmsModel | undefined>(undefined);
 
     const { showSnackbar } = useSnackbar();

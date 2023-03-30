@@ -14,7 +14,7 @@ const buttonStyles = css({
     marginLeft: 16
 });
 
-const SaveAndPublishButtonComponent: React.FC = () => {
+const SaveAndPublishButtonComponent: React.VFC = () => {
     const { form, loading, entry } = useContentEntry();
     const { publishRevision } = useRevision({ revision: entry });
 

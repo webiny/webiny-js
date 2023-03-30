@@ -60,7 +60,7 @@ interface HorizontalProps {
     ["data-testid"]?: string;
 }
 
-const Horizontal: React.FC<HorizontalProps> = ({ last, onDrop, isVisible, ...rest }) => {
+const Horizontal: React.VFC<HorizontalProps> = ({ last, onDrop, isVisible, ...rest }) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (

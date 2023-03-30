@@ -31,7 +31,10 @@ interface ContentEntriesAutocompleteProps {
     bind: BindComponentRenderProp;
     field: CmsModelField;
 }
-const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({ bind, field }) => {
+const ContentEntriesAutocomplete: React.VFC<ContentEntriesAutocompleteProps> = ({
+    bind,
+    field
+}) => {
     const { options, setSearch, value, loading, onChange } = useReference({
         bind,
         field

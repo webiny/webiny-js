@@ -19,7 +19,7 @@ interface ContentEntriesMultiAutocompleteProps {
     bind: BindComponentRenderProp;
     field: CmsModelField;
 }
-const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteProps> = ({
+const ContentEntriesMultiAutocomplete: React.VFC<ContentEntriesMultiAutocompleteProps> = ({
     bind,
     field
 }) => {

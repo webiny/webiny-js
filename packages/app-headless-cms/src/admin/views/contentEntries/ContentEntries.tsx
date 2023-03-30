@@ -20,7 +20,7 @@ import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries");
 
-const ContentEntries: React.FC = () => {
+const ContentEntries: React.VFC = () => {
     const { params } = useRouter();
     const modelId = params ? params["modelId"] : null;
     const [contentModel, setContentModel] = useState<CmsModel | null>(null);

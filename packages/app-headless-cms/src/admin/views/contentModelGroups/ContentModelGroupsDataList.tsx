@@ -59,7 +59,7 @@ const SORTERS: Sort[] = [
 interface ContentModelGroupsDataListProps {
     canCreate: boolean;
 }
-const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({ canCreate }) => {
+const ContentModelGroupsDataList: React.VFC<ContentModelGroupsDataListProps> = ({ canCreate }) => {
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorters);
     const { history } = useRouter();

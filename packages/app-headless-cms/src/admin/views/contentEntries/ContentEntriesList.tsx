@@ -63,7 +63,7 @@ const disabled = css({
     cursor: "default"
 });
 
-const ContentEntriesList: React.FC = () => {
+const ContentEntriesList: React.VFC = () => {
     const {
         contentModel,
         id,

@@ -91,9 +91,10 @@ interface AccordionProps {
     action?: ReactElement | null;
     icon?: ReactElement;
     defaultValue?: boolean;
+    children: React.ReactNode;
 }
 
-const Accordion: React.FC<AccordionProps> = ({
+const Accordion: React.VFC<AccordionProps> = ({
     title,
     children,
     action,
@@ -125,5 +126,5 @@ const Accordion: React.FC<AccordionProps> = ({
         </div>
     );
 };
-const MemoizedAccordion: React.FC<AccordionProps> = React.memo(Accordion);
+const MemoizedAccordion: React.VFC<AccordionProps> = React.memo(Accordion);
 export default MemoizedAccordion;

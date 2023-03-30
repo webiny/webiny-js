@@ -110,7 +110,7 @@ interface ContentModelEditorProviderProps {
     children: React.ReactElement;
 }
 
-export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProps> = ({
+export const ContentModelEditorProvider: React.VFC<ContentModelEditorProviderProps> = ({
     children,
     apolloClient,
     modelId

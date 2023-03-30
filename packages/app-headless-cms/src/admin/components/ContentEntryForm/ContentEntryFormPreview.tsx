@@ -15,7 +15,7 @@ interface Props {
     contentModel: CmsEditorContentModel;
 }
 
-export const ContentEntryFormPreview: React.FC<Props> = props => {
+export const ContentEntryFormPreview: React.VFC<Props> = props => {
     const { contentModel } = props;
 
     const formRenderer = plugins

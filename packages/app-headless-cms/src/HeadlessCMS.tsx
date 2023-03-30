@@ -11,9 +11,13 @@ import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete
 import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
 import allPlugins from "./allPlugins";
 
+interface ChildrenProps {
+    children: React.ReactNode;
+}
+
 const createHeadlessCMSProvider =
     (createApolloClient: CreateApolloClient) =>
-    (Component: React.FC): React.FC => {
+    (Component: React.VFC<ChildrenProps>): React.VFC<ChildrenProps> => {
         return function HeadlessCMSProvider({ children }) {
             return (
                 <CmsProvider createApolloClient={createApolloClient}>

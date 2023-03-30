@@ -60,7 +60,7 @@ const INSTALL = gql`
 interface CMSInstallerProps {
     onInstalled: () => void;
 }
-const CMSInstaller: React.FC<CMSInstallerProps> = ({ onInstalled }) => {
+const CMSInstaller: React.VFC<CMSInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [error, setError] = useState<string | null>(null);
 

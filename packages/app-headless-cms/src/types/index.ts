@@ -331,7 +331,7 @@ export interface CmsContentEntryRevision {
     };
 }
 
-export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
+export type CmsEditorContentTab = React.VFC<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
 export interface CmsEditorFieldOptionPlugin extends Plugin {
@@ -489,7 +489,7 @@ interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
 }
 
-export type BindComponent = React.FC<BindComponentProps> & {
+export type BindComponent = React.VFC<BindComponentProps> & {
     parentName?: string;
 };
 

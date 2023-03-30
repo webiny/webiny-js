@@ -43,7 +43,7 @@ function toEntriesSorters(sorters: ContentEntriesViewConfigSorter[]) {
     return sorters.map(s => ({ label: s.label, value: s.name }));
 }
 
-export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
+export const Provider: React.VFC<ContentEntriesContextProviderProps> = ({
     contentModel,
     children,
     insideDialog

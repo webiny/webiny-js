@@ -39,7 +39,7 @@ export interface DynamicSectionProps {
     gridClassName?: string;
 }
 
-const DynamicSection: React.FC<DynamicSectionProps> = ({
+const DynamicSection: React.VFC<DynamicSectionProps> = ({
     field,
     getBind,
     Label,

@@ -49,7 +49,7 @@ export interface DateTimeWithoutTimezoneProps {
     trailingIcon?: any;
     field: CmsModelField;
 }
-export const DateTimeWithoutTimezone: React.FC<DateTimeWithoutTimezoneProps> = ({
+export const DateTimeWithoutTimezone: React.VFC<DateTimeWithoutTimezoneProps> = ({
     field,
     bind,
     trailingIcon

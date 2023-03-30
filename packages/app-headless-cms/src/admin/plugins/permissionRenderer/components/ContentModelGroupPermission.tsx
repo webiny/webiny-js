@@ -18,7 +18,7 @@ interface ContentModelGroupPermissionProps {
     title: string;
     locales: string[];
 }
-const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = ({
+const ContentModelGroupPermission: React.VFC<ContentModelGroupPermissionProps> = ({
     Bind,
     data,
     entity,

@@ -73,7 +73,10 @@ export interface Props {
     getBind: (value?: any) => BindComponent;
     renderValueInput?: (Bind: BindComponent) => React.ReactNode;
 }
-const PredefinedValuesDynamicFieldset: React.FC<Props> = ({ getBind, renderValueInput = null }) => {
+const PredefinedValuesDynamicFieldset: React.VFC<Props> = ({
+    getBind,
+    renderValueInput = null
+}) => {
     const Bind = getBind();
     const { field } = useModelField();
 

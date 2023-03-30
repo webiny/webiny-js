@@ -15,7 +15,7 @@ interface RenderFieldElementProps {
     contentModel: CmsEditorContentModel;
 }
 
-const RenderFieldElement: React.FC<RenderFieldElementProps> = props => {
+const RenderFieldElement: React.VFC<RenderFieldElementProps> = props => {
     const renderPlugins = useRenderPlugins();
     const { field, Bind, contentModel } = props;
     const getBind = useBind({ Bind, field });

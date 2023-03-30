@@ -9,7 +9,7 @@ import { CmsEntryFilterStatusPlugin } from "~/types";
 
 const { Filter, Sorter } = ContentEntriesViewConfig;
 
-const FilterByStatus: React.FC = () => {
+const FilterByStatus: React.VFC = () => {
     const bind = useBind({
         name: "status",
         defaultValue: "all",
@@ -43,7 +43,7 @@ const FilterByStatus: React.FC = () => {
     );
 };
 
-export const ContentEntriesModule: React.FC = () => {
+export const ContentEntriesModule: React.VFC = () => {
     return (
         <>
             <Compose component={ContentEntriesViewRenderer} with={ContentEntriesRenderer} />

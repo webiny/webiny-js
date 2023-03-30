@@ -13,7 +13,7 @@ export interface Props {
     trailingIcon?: TrailingIcon;
 }
 
-export const DateOnly: React.FC<Props> = props => {
+export const DateOnly: React.VFC<Props> = props => {
     const { field, bind, trailingIcon } = props;
     const date = getDefaultFieldValue(field, bind, () => {
         return getCurrentDate(new Date());

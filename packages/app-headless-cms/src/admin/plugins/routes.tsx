@@ -10,7 +10,11 @@ import { ContentEntriesView } from "../views/contentEntries/experiment/ContentEn
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
-const Loader: React.FC = ({ children, ...props }) => (
+interface LoaderProps {
+    children: React.ReactElement;
+}
+
+const Loader: React.VFC<LoaderProps> = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>
         {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>

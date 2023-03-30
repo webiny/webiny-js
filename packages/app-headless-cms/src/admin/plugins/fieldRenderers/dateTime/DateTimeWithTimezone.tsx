@@ -60,7 +60,7 @@ export interface DateTimeWithTimezoneProps {
     trailingIcon?: any;
     field: CmsModelField;
 }
-export const DateTimeWithTimezone: React.FC<DateTimeWithTimezoneProps> = ({
+export const DateTimeWithTimezone: React.VFC<DateTimeWithTimezoneProps> = ({
     bind,
     trailingIcon,
     field

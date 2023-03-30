@@ -74,7 +74,7 @@ export const useContentEntryProviderProps = (): UseContentEntryProviderProps => 
     };
 };
 
-export const Provider: React.FC<ContentEntryContextProviderProps> = ({
+export const Provider: React.VFC<ContentEntryContextProviderProps> = ({
     children,
     isNewEntry,
     getContentId

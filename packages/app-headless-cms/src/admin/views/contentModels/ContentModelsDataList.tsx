@@ -101,7 +101,7 @@ const DisplayIcon: React.VFC<IconProps> = ({ model }) => {
     return <FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />;
 };
 
-const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
+const ContentModelsDataList: React.VFC<ContentModelsDataListProps> = ({
     canCreate,
     onCreate,
     onClone

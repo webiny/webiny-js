@@ -9,8 +9,10 @@ import { Typography } from "@webiny/ui/Typography";
 
 interface PermissionRendererWrapperProps {
     label: string;
+    children: React.ReactNode;
 }
-export const PermissionRendererWrapper: React.FC<PermissionRendererWrapperProps> = ({
+
+export const PermissionRendererWrapper: React.VFC<PermissionRendererWrapperProps> = ({
     label,
     children
 }) => (

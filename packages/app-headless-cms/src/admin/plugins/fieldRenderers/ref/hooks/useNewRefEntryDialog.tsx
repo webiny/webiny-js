@@ -12,7 +12,13 @@ export const NewRefEntryDialogContext = createContext<NewRefEntryDialogContextVa
     }
 });
 
-export const NewRefEntryDialogContextProvider: React.FC = ({ children }) => {
+interface NewRefEntryDialogContextProviderProps {
+    children: React.ReactNode;
+}
+
+export const NewRefEntryDialogContextProvider: React.VFC<NewRefEntryDialogContextProviderProps> = ({
+    children
+}) => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (

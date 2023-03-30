@@ -5,7 +5,7 @@ import GlobalSearchPlugins from "./GlobalSearchPlugins";
 import usePermission from "~/admin/hooks/usePermission";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems";
 
-const CmsMenuLoaderComponent: React.FC = () => {
+const CmsMenuLoaderComponent: React.VFC = () => {
     const {
         canAccessManageEndpoint,
         canReadContentModels,
@@ -49,6 +49,6 @@ const CmsMenuLoaderComponent: React.FC = () => {
     );
 };
 
-export const CmsMenuLoader: React.FC = React.memo(CmsMenuLoaderComponent);
+export const CmsMenuLoader: React.VFC = React.memo(CmsMenuLoaderComponent);
 
 CmsMenuLoader.displayName = "CmsMenuLoader";

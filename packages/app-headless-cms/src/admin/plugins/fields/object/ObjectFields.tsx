@@ -6,7 +6,7 @@ import { CmsModelField, CmsModel } from "~/types";
 interface ObjectFieldsProps {
     field: CmsModelField;
 }
-export const ObjectFields: React.FC<ObjectFieldsProps> = ({ field }) => {
+export const ObjectFields: React.VFC<ObjectFieldsProps> = ({ field }) => {
     const { getField, updateField } = useModelFieldEditor();
 
     const onChange = useCallback(

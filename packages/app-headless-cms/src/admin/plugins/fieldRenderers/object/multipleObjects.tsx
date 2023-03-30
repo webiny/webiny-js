@@ -36,7 +36,7 @@ interface ActionsProps {
     };
 }
 
-const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => {
+const Actions: React.VFC<ActionsProps> = ({ setHighlightIndex, bind, index }) => {
     const { moveValueDown, moveValueUp } = bind.field;
 
     const onDown = useCallback(
@@ -72,7 +72,7 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
     ) : null;
 };
 
-const ObjectsRenderer: React.FC<CmsEditorFieldRendererProps> = props => {
+const ObjectsRenderer: React.VFC<CmsEditorFieldRendererProps> = props => {
     const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
     const { field, contentModel } = props;
 

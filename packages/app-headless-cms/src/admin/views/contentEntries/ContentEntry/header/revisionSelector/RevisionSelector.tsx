@@ -42,7 +42,7 @@ const defaultRevisions: CmsEntryRevision[] = [
     }
 ];
 
-const RevisionSelector: React.FC = () => {
+const RevisionSelector: React.VFC = () => {
     const { entry, revisions, loading } = useContentEntry();
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);

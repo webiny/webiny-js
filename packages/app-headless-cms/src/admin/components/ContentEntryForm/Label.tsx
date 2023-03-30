@@ -9,7 +9,11 @@ const style = {
     })
 };
 
-const Label: React.FC = ({ children }) => (
+export interface LabelProps {
+    children: React.ReactNode;
+}
+
+const Label: React.VFC<LabelProps> = ({ children }) => (
     <div
         className={classNames(
             "mdc-text-field-helper-text mdc-text-field-helper-text--persistent",

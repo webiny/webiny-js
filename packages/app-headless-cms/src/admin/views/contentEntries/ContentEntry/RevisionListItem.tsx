@@ -73,7 +73,7 @@ interface RevisionListItemProps {
     revision: CmsEditorContentEntry;
 }
 
-const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
+const RevisionListItem: React.VFC<RevisionListItemProps> = ({ revision }) => {
     const { createRevision, deleteRevision, publishRevision, unpublishRevision, editRevision } =
         useRevision({
             revision

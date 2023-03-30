@@ -36,7 +36,7 @@ export interface FileProps {
     };
     description?: string;
 }
-const File: React.FC<FileProps> = props => {
+const File: React.VFC<FileProps> = props => {
     const { url, onRemove, placeholder, showFileManager, description } = props;
 
     const styles = props.styles || defaultStyles;

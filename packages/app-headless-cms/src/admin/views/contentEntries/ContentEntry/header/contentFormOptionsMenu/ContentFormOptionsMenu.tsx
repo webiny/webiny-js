@@ -31,7 +31,7 @@ const menuStyles = css({
     }
 });
 
-const ContentFormOptionsMenu: React.FC = () => {
+const ContentFormOptionsMenu: React.VFC = () => {
     const { deleteEntry } = useCms();
     const { contentModel, entry, loading, setLoading, listQueryVariables } = useContentEntry();
     const { showSnackbar } = useSnackbar();

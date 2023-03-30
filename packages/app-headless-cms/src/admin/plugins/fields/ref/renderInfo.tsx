@@ -45,7 +45,7 @@ const Extras = styled("div")({
 interface BadgeProps {
     model: CmsModel;
 }
-const Badge: React.FC<BadgeProps> = ({ model }) => {
+const Badge: React.VFC<BadgeProps> = ({ model }) => {
     return <BadgeItem>{model.name}</BadgeItem>;
 };
 
@@ -60,7 +60,7 @@ export const renderInfo = ({ model, field }: Params) => {
     return <RenderInfo model={model} field={field} />;
 };
 
-const RenderInfo: React.FC<Params> = ({ field }) => {
+const RenderInfo: React.VFC<Params> = ({ field }) => {
     const hasAnyModels = (field.settings?.models || []).length > 0;
     const { data, loading, error } = useQuery<ListReferencedModelsQueryResult>(
         LIST_REFERENCED_MODELS,

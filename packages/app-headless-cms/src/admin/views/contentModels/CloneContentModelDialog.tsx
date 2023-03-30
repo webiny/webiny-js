@@ -48,7 +48,11 @@ const getSelectedGroup = (groups: CmsGroupOption[] | null, model: CmsModel): str
     return defaultSelected ? defaultSelected.value : null;
 };
 
-export const CloneContentModelDialog: React.FC<Props> = ({ onClose, contentModel, closeModal }) => {
+export const CloneContentModelDialog: React.VFC<Props> = ({
+    onClose,
+    contentModel,
+    closeModal
+}) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();

@@ -28,7 +28,7 @@ interface ContentEntryPermissionProps {
     setValue: (name: string, value: string) => void;
     title: string;
 }
-export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
+export const ContentEntryPermission: React.VFC<ContentEntryPermissionProps> = ({
     Bind,
     data,
     entity,

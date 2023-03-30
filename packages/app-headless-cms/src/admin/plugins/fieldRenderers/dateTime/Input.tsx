@@ -16,7 +16,7 @@ export interface InputProps {
     trailingIcon?: TrailingIcon;
 }
 
-export const Input: React.FC<InputProps> = ({ bind, ...props }) => {
+export const Input: React.VFC<InputProps> = ({ bind, ...props }) => {
     return (
         <UiInput
             {...props}

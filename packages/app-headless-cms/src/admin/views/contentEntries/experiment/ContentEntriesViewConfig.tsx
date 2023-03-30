@@ -2,9 +2,9 @@ import { makeComposable, Compose, HigherOrderComponent } from "@webiny/app-admin
 import React, { useContext, useState } from "react";
 import { Property, PropertyContainer, toObject } from "./Property";
 
-interface ContentEntriesViewConfig extends React.FC<unknown> {
-    Filter: React.FC<ContentEntriesViewConfigFilterProps>;
-    Sorter: React.FC<ContentEntriesViewConfigSorterProps>;
+interface ContentEntriesViewConfig extends React.VFC<{ children: React.ReactNode }> {
+    Filter: React.VFC<ContentEntriesViewConfigFilterProps>;
+    Sorter: React.VFC<ContentEntriesViewConfigSorterProps>;
 }
 
 const ContentEntriesViewConfigApply = makeComposable(
@@ -38,7 +38,7 @@ export interface ContentEntriesViewConfigFilterProps {
     remove?: boolean;
 }
 
-const Filter: React.FC<ContentEntriesViewConfigFilterProps> = ({
+const Filter: React.VFC<ContentEntriesViewConfigFilterProps> = ({
     name,
     element,
     modelIds = [],
@@ -60,7 +60,7 @@ export interface ContentEntriesViewConfigSorterProps {
     remove?: boolean;
 }
 
-const Sorter: React.FC<ContentEntriesViewConfigSorterProps> = ({
+const Sorter: React.VFC<ContentEntriesViewConfigSorterProps> = ({
     name,
     label,
     modelIds = [],

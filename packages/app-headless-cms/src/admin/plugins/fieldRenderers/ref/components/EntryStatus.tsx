@@ -28,8 +28,9 @@ interface EntryStatusProps {
     item: OptionItem | null;
     placement?: TooltipProps["placement"];
     className?: string;
+    children?: React.ReactNode;
 }
-export const EntryStatus: React.FC<EntryStatusProps> = props => {
+export const EntryStatus: React.VFC<EntryStatusProps> = props => {
     const { item, children, placement = "bottom", className } = props;
     if (!item) {
         return <>{children}</>;

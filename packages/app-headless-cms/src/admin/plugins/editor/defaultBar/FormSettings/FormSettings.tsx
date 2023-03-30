@@ -20,7 +20,7 @@ interface FormSettingsProps {
     onExited: () => void;
 }
 
-const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
+const FormSettings: React.VFC<FormSettingsProps> = ({ onExited }) => {
     const cmsEditorFormSettingsPlugins = plugins.byType<CmsEditorFormSettingsPlugin>(
         "cms-editor-form-settings"
     );
