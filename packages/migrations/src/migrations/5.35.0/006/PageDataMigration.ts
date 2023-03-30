@@ -2,14 +2,14 @@ import { Table } from "dynamodb-toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 
-import { createEntryEntity } from "../entities/createEntryEntity";
-import { createLocaleEntity } from "../entities/createLocaleEntity";
-import { createPageEntity } from "../entities/createPageEntity";
-import { createTenantEntity } from "../entities/createTenantEntity";
-import { getSearchablePageContent } from "../utils/getSearchableContent";
+import { createEntryEntity } from "./entities/createEntryEntity";
+import { createLocaleEntity } from "./entities/createLocaleEntity";
+import { createPageEntity } from "./entities/createPageEntity";
+import { createTenantEntity } from "./entities/createTenantEntity";
+import { getSearchablePageContent } from "./utils/getSearchableContent";
 import { queryAll, ddbQueryAllWithCallback, batchWriteAll, executeWithRetry } from "~/utils";
 
-import { CmsEntry, I18NLocale, Page, Tenant, ListLocalesParams, ListEntriesParams } from "../types";
+import { CmsEntry, I18NLocale, Page, Tenant, ListLocalesParams, ListEntriesParams } from "./types";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -99,7 +99,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                         entity: this.pageEntity,
                         partitionKey: `T#${tenant.data.id}#L#${locale.code}#PB#L`,
                         options: {
-                            gte: " "
+                            gt: status || " "
                         }
                     },
                     async pages => {

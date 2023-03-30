@@ -7,7 +7,7 @@ import {
     scanTable
 } from "~tests/utils";
 
-import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb";
+import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006";
 
 import { createTenantsData, createLocalesData, createPagesData } from "./006.data";
 

@@ -6,7 +6,7 @@ import {
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { AcoRecords_5_35_0_006_PageData } from "~/migrations/5.35.0/006/ddb/PageDataMigration";
+import { AcoRecords_5_35_0_006_PageData } from "./PageDataMigration";
 
 export class AcoRecords_5_35_0_006 implements DataMigration {
     private migrations: DataMigration[];
