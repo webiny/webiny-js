@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Typography } from "@webiny/ui/Typography";
+import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
 import { ReactComponent as LinkIcon } from "@material-design-icons/svg/round/link.svg";
@@ -76,11 +77,23 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = props => {
     const { page } = props;
     const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
-    const [isSiteRunning] = useSiteStatus(getWebsiteUrl());
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
+        getWebsiteUrl(),
+        refreshSiteStatus
+    );
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
     const url = getPageUrl(page);
+
+    const handlePreviewClick = useCallback(() => {
+        if (isSiteRunning) {
+            window.open(url, target, "noopener");
+        } else {
+            showConfigureWebsiteUrlDialog();
+        }
+    }, [url, isSiteRunning]);
 
     return (
         <React.Fragment>
@@ -89,12 +102,10 @@ const Header: React.FC<HeaderProps> = props => {
                     <PageTitle>
                         <Typography use="headline6">{page.title}</Typography>
                     </PageTitle>
-                    {isSiteRunning && (
-                        <PageLink>
-                            <Typography use="caption">{url}</Typography>
-                            <LinkIcon onClick={() => window.open(url, target, "noopener")} />
-                        </PageLink>
-                    )}
+                    <PageLink>
+                        <Typography use="caption">{url}</Typography>
+                        <LinkIcon onClick={handlePreviewClick} />
+                    </PageLink>
                 </PageInfo>
                 <HeaderActions>
                     {renderPlugins("pb-page-details-header-left", props)}

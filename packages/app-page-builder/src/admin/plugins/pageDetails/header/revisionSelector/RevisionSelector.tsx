@@ -62,7 +62,9 @@ const StatusIndicator = styled.div<{ status: string }>`
     border-radius: 50%;
     flex-shrink: 0;
     background-color: ${props =>
-        props.status === "published" ? "var(--mdc-theme-secondary)" : "#fac428"};
+        (props.status === "published" && "var(--mdc-theme-secondary)") ||
+        (props.status === "draft" && "#fac428") ||
+        "var(--mdc-theme-text-icon-on-background)"};
 `;
 
 interface RevisionSelectorProps {
