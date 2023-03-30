@@ -13,7 +13,7 @@ export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
     const [styles, setStyles] = useState<TypographyStyle<ThemeTypographyHTMLTag>[]>([]);
-    const typographyStyles = theme.styles?.typographyStyles;
+    const typographyStyles = theme.styles?.typography;
     const { textBlockSelection } = useRichTextEditor();
     const textType = textBlockSelection?.state?.textType;
 
@@ -25,23 +25,23 @@ export const TypographyDropDown = () => {
         if (textType) {
             switch (textType) {
                 case "heading":
-                    setStyles(theme.styles?.typographyStyles?.headings || []);
+                    setStyles(theme.styles?.typography?.headings || []);
                     break;
                 case "paragraph":
-                    setStyles(theme.styles?.typographyStyles?.paragraphs || []);
+                    setStyles(theme.styles?.typography?.paragraphs || []);
                     break;
                 case "bullet":
                     setStyles(
-                        theme.styles?.typographyStyles?.lists?.filter(x => x.tag === "ul") || []
+                        theme.styles?.typography?.lists?.filter(x => x.tag === "ul") || []
                     );
                     break;
                 case "number":
                     setStyles(
-                        theme.styles?.typographyStyles?.lists?.filter(x => x.tag === "ol") || []
+                        theme.styles?.typography?.lists?.filter(x => x.tag === "ol") || []
                     );
                     break;
                 case "quoteblock":
-                    setStyles(theme.styles?.typographyStyles?.quotes || []);
+                    setStyles(theme.styles?.typography?.quotes || []);
                     break;
                 default:
                     setStyles([]);

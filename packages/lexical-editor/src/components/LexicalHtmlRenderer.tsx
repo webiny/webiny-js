@@ -1,5 +1,5 @@
 import React from "react";
-import { LexicalValue } from "~/types";
+import { LexicalValue, ThemeEmotionMap } from "~/types";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -10,6 +10,8 @@ import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
+import { ClassNames } from "@emotion/core";
+import { toThemeEmotionMap } from "~/utils/toThemeEmotionMap";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -18,12 +20,14 @@ interface LexicalHtmlRendererProps {
      * @description Theme to be injected into lexical editor
      */
     theme: WebinyTheme;
+    themeEmotionMap?: ThemeEmotionMap;
 }
 
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
+export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
     nodes,
     value,
-    theme
+    theme,
+    themeEmotionMap
 }) => {
     const initialConfig = {
         editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
@@ -33,7 +37,7 @@ export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
         },
         editable: false,
         nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: { ...webinyEditorTheme, styles: theme.styles }
+        theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap, styles: theme.styles }
     };
 
     return (
@@ -49,5 +53,20 @@ export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
             />
             <LexicalUpdateStatePlugin value={value} />
         </LexicalComposer>
+    );
+};
+
+/**
+ * @description Main editor container
+ */
+export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = props => {
+    return (
+        <ClassNames>
+            {({ css }) => {
+                const themeEmotionMap =
+                    props?.themeEmotionMap ?? toThemeEmotionMap(css, props.theme);
+                return <BaseLexicalHtmlRenderer {...props} themeEmotionMap={themeEmotionMap} />;
+            }}
+        </ClassNames>
     );
 };

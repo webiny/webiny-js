@@ -96,136 +96,31 @@ const theme = createTheme({
     breakpoints,
     styles: {
         colors,
-        typography,
-        typographyStyles: {
+        typography: {
             headings: [
-                {
-                    id: "heading1",
-                    name: "Heading 1",
-                    tag: "h1",
-                    css: { ...headings, fontWeight: "bold", fontSize: 48 }
-                },
-                {
-                    id: "heading2",
-                    name: "Heading 2",
-                    tag: "h2",
-                    css: { ...headings, fontSize: 36 }
-                },
-                {
-                    id: "heading3",
-                    name: "Heading 3",
-                    tag: "h3",
-                    css: { ...headings, fontSize: 30 }
-                },
-                {
-                    id: "heading4",
-                    name: "Heading 4",
-                    tag: "h4",
-                    css: { ...headings, fontSize: 24 }
-                },
-                {
-                    id: "heading5",
-                    name: "Heading 5",
-                    tag: "h5",
-                    css: { ...headings, fontSize: 20 }
-                },
-                {
-                    id: "heading6",
-                    name: "Heading 6",
-                    tag: "h6",
-                    css: { ...headings, fontSize: 18, lineHeight: "1.75rem" }
-                }
+                { id: "heading1", name: "Heading 1", tag: "h1", css: {  fontWeight: "bold", fontSize: 48 } },
+                { id: "heading2", name: "Heading 2", tag: "h2", css: { fontSize: 36} },
+                { id: "heading3", name: "Heading 3", tag: "h3", css: { fontSize: 30} },
+                { id: "heading4", name: "Heading 4", tag: "h4", css: { fontSize: 24} },
+                { id: "heading5", name: "Heading 5", tag: "h5", css: {  fontSize: 20} },
+                { id: "heading6", name: "Heading 6", tag: "h6", css: { fontSize: 18, lineHeight: "1.75rem"} },
             ],
             paragraphs: [
-                {
-                    id: "paragraph1",
-                    name: "Paragraph 1",
-                    tag: "p",
-                    css: { ...paragraphs, fontSize: 16.5 }
-                },
-                {
-                    id: "paragraph2",
-                    name: "Paragraph 2",
-                    tag: "p",
-                    css: {
-                        ...paragraphs,
+                { id: "paragraph1", name: "Paragraph 1", tag: "p", css: { fontSize: 16.5} },
+                { id: "paragraph2", name: "Paragraph 2", tag: "p", css: {
                         fontSize: 12.5,
                         letterSpacing: "0.45px",
                         lineHeight: "19px"
-                    }
-                }
-            ],
-            lists: [
-                {
-                    id: "list",
-                    name: "Default",
-                    tag: "ul",
-                    css: { ...paragraphs, fontSize: 16.5 }
-                },
-                {
-                    id: "list1",
-                    name: "Bullet List 1",
-                    tag: "ul",
-                    css: { ...paragraphs, fontSize: 18.5, color: "#fa5723" }
-                },
-                {
-                    id: "list2",
-                    name: "Bullet List 2",
-                    tag: "ul",
-                    css: { ...paragraphs, fontSize: 21.5 }
-                },
-                {
-                    id: "number-list",
-                    name: "Default",
-                    tag: "ol",
-                    css: { ...paragraphs, fontSize: 16.5 }
-                },
-                {
-                    id: "number-list1",
-                    name: "Numbered List 1",
-                    tag: "ol",
-                    css: { ...paragraphs, fontSize: 18.5, color: "#fa5723" }
-                },
-                {
-                    id: "number-list2",
-                    name: "Numbered List 2",
-                    tag: "ol",
-                    css: { ...paragraphs, fontSize: 21.5 }
-                }
+                    }}
             ],
             quotes: [
-                {
-                    id: "quote",
-                    name: "Quote 1",
-                    tag: "quoteblock",
-                    css: {
-                        ...paragraphs,
+                { id: "quote1", name: "Quote1 1", tag: "p", css: {
                         fontWeight: "bold",
                         fontSize: 22
-                    }
-                },
-                {
-                    id: "quote1",
-                    name: "Quote 2",
-                    tag: "quoteblock",
-                    css: {
-                        ...paragraphs,
-                        fontWeight: "bold",
-                        fontSize: 26,
-                        color: "#2a9d8f"
-                    }
-                },
-                {
-                    id: "quote2",
-                    name: "Quote 3",
-                    tag: "quoteblock",
-                    css: {
-                        ...paragraphs,
-                        fontWeight: "bold",
-                        fontSize: 31,
-                        color: "#023e8a"
-                    }
-                }
+                    } },
+            ],
+            lists: [
+                { id: "list1", name: "list 1", tag: "ul", css: { fontSize: 16.5} },
             ]
         },
         elements: {

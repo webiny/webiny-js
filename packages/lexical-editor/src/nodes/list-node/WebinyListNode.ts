@@ -3,7 +3,6 @@ import {
     DOMConversionMap,
     DOMConversionOutput,
     EditorConfig,
-    EditorThemeClasses,
     ElementNode,
     LexicalNode,
     NodeKey,
@@ -11,8 +10,6 @@ import {
     Spread
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
-import { findTypographyStyleById } from "~/utils/theme/typography";
-import { styleObjectToString } from "~/utils/styleObjectToString";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
 import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
@@ -56,19 +53,6 @@ export class WebinyListNode extends ElementNode {
         return "webiny-list";
     }
 
-    addStylesHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
-        let css = {};
-        if (this.__themeStyleId) {
-            const typographyStyleValue = findTypographyStyleById(theme, this.__themeStyleId);
-            getEmotionClass(this.__themeStyleId): string
-            css = typographyStyleValue?.css ? typographyStyleValue.css : {};
-            element.setAttribute(TypographyStyleAttrName, this.__themeStyleId);
-        }
-        element.classList.add(emitionClass);
-        element.style.cssText = styleObjectToString(css);
-        return element;
-    }
-
     override createDOM(config: EditorConfig): HTMLElement {
         const tag = this.__tag;
         const dom = document.createElement(tag);
@@ -79,9 +63,9 @@ export class WebinyListNode extends ElementNode {
 
         // @ts-expect-error Internal field.
         dom.__lexicalListType = this.__listType;
-        setListThemeClassNames(dom, config.theme, this);
-        this.addStylesHTMLElement(dom, config.theme);
-
+        const theme = config.theme as WebinyEditorTheme;
+        setListThemeClassNames(dom, theme, this, this.__themeStyleId);
+        dom.setAttribute(TypographyStyleAttrName, this.__themeStyleId);
         return dom;
     }
 
@@ -158,8 +142,8 @@ export class WebinyListNode extends ElementNode {
             return true;
         }
         // update styles for different tag styles
-        setListThemeClassNames(dom, config.theme, this);
-        this.addStylesHTMLElement(dom, config.theme);
+        setListThemeClassNames(dom, config.theme, this, this.__themeStyleId);
+        dom.setAttribute(TypographyStyleAttrName, this.__themeStyleId);
         return false;
     }
 
@@ -170,19 +154,23 @@ export class WebinyListNode extends ElementNode {
 
 function setListThemeClassNames(
     dom: HTMLElement,
-    editorThemeClasses: EditorThemeClasses,
-    node: WebinyListNode
+    editorTheme: WebinyEditorTheme,
+    node: WebinyListNode,
+    themeStyleId: string
 ): void {
+    const editorThemeClasses = editorTheme;
     const classesToAdd = [];
     const classesToRemove = [];
     const listTheme = editorThemeClasses.list;
-
+    const emotionMap = editorTheme?.emotionMap || {};
     if (listTheme !== undefined) {
         const listLevelsClassNames = listTheme[`${node.__tag}Depth`] || [];
         const listDepth = $getListDepth(node) - 1;
         const normalizedListDepth = listDepth % listLevelsClassNames.length;
         const listLevelClassName = listLevelsClassNames[normalizedListDepth];
-        const listClassName = listTheme[node.__tag];
+        const listClassName = `${listTheme[node.__tag]} ${
+            emotionMap[themeStyleId]?.className ?? ""
+        }`;
         let nestedListClassName;
         const nestedListTheme = listTheme.nested;
 

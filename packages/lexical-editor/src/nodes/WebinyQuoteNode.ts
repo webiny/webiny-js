@@ -10,7 +10,6 @@ import {
     Spread
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
-import { findTypographyStyleById } from "~/utils/theme/typography";
 import { styleObjectToString } from "~/utils/styleObjectToString";
 import { QuoteBlockHtmlTag, WebinyThemeNode } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
@@ -60,19 +59,20 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
 
     addThemeStylesToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
         let css: Record<string, any> = {};
-        if (this.__themeStyleId) {
-            const typographyStyleValue = findTypographyStyleById(theme, this.__themeStyleId);
-            if (typographyStyleValue) {
-                css = typographyStyleValue.css;
-            }
+        const typographyStyleValue = theme?.emotionMap
+            ? theme.emotionMap[this.__themeStyleId]
+            : undefined;
+        if (this.__themeStyleId && typographyStyleValue) {
+            css = typographyStyleValue.css;
+            addClassNamesToElement(element, typographyStyleValue?.className);
         }
+
         element.setAttribute(QuoteNodeAttrName, this.__themeStyleId || "");
         element.style.cssText = styleObjectToString(css);
         return element;
     }
 
     // View
-
     override createDOM(config: EditorConfig): HTMLElement {
         const element = document.createElement("blockquote");
         addClassNamesToElement(element, config.theme.quote);

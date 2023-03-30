@@ -34,7 +34,6 @@ export function $getTopListNode(listItem: LexicalNode): WebinyListNode {
 
     if (!$isWebinyListNode(list)) {
         console.log("A WebinyListItemNode must have a ListNode for a parent.");
-        debugger;
         return listItem as WebinyListNode;
     }
 

@@ -1,5 +1,4 @@
 import { type CSSObject } from "@emotion/core";
-import {QueryableThemeStyle} from "~/utils/themeStyleFactory";
 export type Content = Element;
 
 /**
@@ -27,29 +26,32 @@ export type TypographyStyle<T extends ThemeTypographyHTMLTag> = {
     css: CSSObject;
 };
 
-export interface QueryableThemeStyles extends ThemeStyles{
-    typographyStyles: QueryableTypography;
-}
-
-// union of all theme style types typography, colors...
-export type ThemeStyleItem = TypographyStyle<ThemeTypographyHTMLTag>;
 export type Typography = {
     [typeName in TypographyType]: TypographyStyle<ThemeTypographyHTMLTag>[];
 };
+
+export type WithById<T extends TypographyStyle<ThemeTypographyHTMLTag>[]> = T & { byId(id: string): TypographyStyle<ThemeTypographyHTMLTag> }
+
 export interface ThemeStyles {
     colors: Record<string, any>;
     borderRadius?: number;
-    typographyStyles: Typography;
-    typography: Record<string, StylesObject>;
+    typography: Typography;
     elements: Record<string, Record<string, any> | StylesObject>;
     [key: string]: any;
 }
+
+
+export type DecoratedThemeStyles<T extends ThemeStyles> = T & {
+    typography: {[K in keyof T['typography']]: WithById<T[TypographyType][K]> }};
+
 
 export interface Theme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
 
-export interface QueryableTheme extends Theme {
-    styles: QueryableThemeStyles;
-}
+
+export type DecoratedTheme = {
+    breakpoints: ThemeBreakpoints;
+    styles: DecoratedThemeStyles<ThemeStyles>;
+};
