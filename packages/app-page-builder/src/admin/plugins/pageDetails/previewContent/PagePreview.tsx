@@ -44,6 +44,7 @@ const PagePreviewToolbar = styled("div")`
     transform: translateZ(0);
     display: flex;
     overflow: hidden;
+    box-sizing: border-box;
 
     .webiny-ui-select {
         color: var(--mdc-theme-text-secondary-on-background);

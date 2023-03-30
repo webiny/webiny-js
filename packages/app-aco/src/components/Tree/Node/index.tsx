@@ -24,13 +24,16 @@ type Props = {
 type FolderProps = {
     text: string;
     isOpen: boolean;
+    isFocused?: boolean;
 };
 
-export const FolderNode = ({ isOpen, text }: FolderProps) => {
+export const FolderNode = ({ isOpen, isFocused, text }: FolderProps) => {
     return (
         <>
             <FolderIcon>{isOpen ? <FolderOpen /> : <Folder />}</FolderIcon>
-            <Text use={"body2"}>{text}</Text>
+            <Text className={isFocused ? "focused" : ""} use={"body2"}>
+                {text}
+            </Text>
         </>
     );
 };
@@ -59,6 +62,7 @@ export const Node = ({
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         onClick(node.data);
+        onToggle(node.id);
     };
 
     return (
@@ -71,7 +75,7 @@ export const Node = ({
                 <ArrowRight />
             </ArrowIcon>
             <Content onClick={handleClick}>
-                <FolderNode text={node.text} isOpen={isOpen} />
+                <FolderNode text={node.text} isOpen={isOpen} isFocused={!!node.data?.isFocused} />
             </Content>
             {node.data && enableActions && (
                 <MenuActions
