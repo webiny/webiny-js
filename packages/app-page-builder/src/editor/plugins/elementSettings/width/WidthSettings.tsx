@@ -99,7 +99,7 @@ const validateWidth: Validator = (value: string | undefined) => {
 
 const DATA_NAMESPACE = "data.settings.width";
 
-const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const Settings: React.VFC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);

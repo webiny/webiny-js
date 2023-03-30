@@ -10,7 +10,7 @@ interface QuoteProps {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-const Quote: React.FC<QuoteProps> = props => {
+const Quote: React.VFC<QuoteProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbQuote {...props} elementId={props.element.id} />;
     }

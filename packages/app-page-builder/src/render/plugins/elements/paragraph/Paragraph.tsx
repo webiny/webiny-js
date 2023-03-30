@@ -7,7 +7,7 @@ export const className = "webiny-pb-base-page-element-style webiny-pb-page-eleme
 interface TextPropsType {
     element: PbElement;
 }
-const Paragraph: React.FC<TextPropsType> = ({ element }) => {
+const Paragraph: React.VFC<TextPropsType> = ({ element }) => {
     return <Text element={element} />;
 };
 

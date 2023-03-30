@@ -33,7 +33,7 @@ interface ColorPickerProps {
     handlerClassName?: string;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({
+const ColorPicker: React.VFC<ColorPickerProps> = ({
     label,
     value,
     valueKey,
@@ -63,7 +63,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 export default React.memo(ColorPicker);
 
 type BaseColorPickerComponent = Omit<ColorPickerProps, "label">;
-export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = ({
+export const BaseColorPickerComponent: React.VFC<BaseColorPickerComponent> = ({
     value,
     valueKey,
     defaultValue,

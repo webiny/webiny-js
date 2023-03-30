@@ -8,7 +8,7 @@ interface IFrameProps {
     element: PbElement;
 }
 
-const IFrame: React.FC<IFrameProps> = ({ element }) => {
+const IFrame: React.VFC<IFrameProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = usePageBuilder();

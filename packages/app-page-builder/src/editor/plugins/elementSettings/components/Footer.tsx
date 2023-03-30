@@ -15,7 +15,7 @@ interface FooterProps {
     advanced: boolean;
     toggleAdvanced: (value: any) => void;
 }
-const Footer: React.FC<FooterProps> = ({ advanced, toggleAdvanced }) => (
+const Footer: React.VFC<FooterProps> = ({ advanced, toggleAdvanced }) => (
     <FooterStyled>
         <Grid className={"no-bottom-padding"}>
             <Cell span={8}>

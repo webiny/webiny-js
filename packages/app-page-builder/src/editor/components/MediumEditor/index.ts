@@ -21,7 +21,7 @@ interface ReactMediumEditorProps {
     [key: string]: any;
 }
 
-const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
+const ReactMediumEditor: React.VFC<ReactMediumEditorProps> = ({
     tag = "div",
     value,
     onChange,

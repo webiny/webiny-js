@@ -16,7 +16,7 @@ interface CheckboxProps {
     children?: Array<ReactElement<"option"> | ReactElement<"optgroup">>;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({
+const Checkbox: React.VFC<CheckboxProps> = ({
     label,
     valueKey,
     value: defaultValue,

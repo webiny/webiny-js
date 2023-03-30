@@ -25,7 +25,7 @@ interface ExportPageDialogMessageProps {
     selected: string[];
 }
 
-const ExportPageDialogMessage: React.FC<ExportPageDialogMessageProps> = ({ selected }) => {
+const ExportPageDialogMessage: React.VFC<ExportPageDialogMessageProps> = ({ selected }) => {
     const { exportPageData } = usePageBuilder();
     const { revisionType: value, setRevisionType: setValue } = exportPageData;
 

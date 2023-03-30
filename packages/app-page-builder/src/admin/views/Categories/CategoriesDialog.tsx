@@ -37,7 +37,7 @@ interface ListCategoriesQueryResponse {
     data: PageBuilderListCategoriesResponse;
     loading?: boolean;
 }
-const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
+const CategoriesDialog: React.VFC<CategoriesDialogProps> = ({
     open,
     onClose,
     onSelect,

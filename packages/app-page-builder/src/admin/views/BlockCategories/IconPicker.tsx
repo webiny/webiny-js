@@ -96,7 +96,7 @@ interface IconPickerProps extends FormComponentProps {
     label?: React.ReactNode;
     description?: React.ReactNode;
 }
-const IconPicker: React.FC<IconPickerProps> = ({
+const IconPicker: React.VFC<IconPickerProps> = ({
     value,
     onChange,
     label,

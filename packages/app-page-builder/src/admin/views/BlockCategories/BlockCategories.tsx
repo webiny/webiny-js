@@ -5,7 +5,7 @@ import BlockCategoriesDataList from "./BlockCategoriesDataList";
 import BlockCategoriesForm from "./BlockCategoriesForm";
 import { PageBuilderSecurityPermission } from "~/types";
 
-const BlockCategories: React.FC = () => {
+const BlockCategories: React.VFC = () => {
     const { identity, getPermission } = useSecurity();
     const pbMenuPermissionRwd = useMemo((): string | null => {
         const permission = getPermission<PageBuilderSecurityPermission>("pb.blockCategory");

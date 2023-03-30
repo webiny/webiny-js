@@ -8,7 +8,7 @@ import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { makeComposable } from "@webiny/app-admin";
 
-export const ElementSettings: React.FC = () => {
+export const ElementSettings: React.VFC = () => {
     const [element] = useActiveElement();
     const updateElement = useUpdateElement();
 
@@ -56,7 +56,7 @@ interface LegacyPluginsProps {
     formProps: FormRenderPropParams;
 }
 
-const LegacyPlugins: React.FC<LegacyPluginsProps> = ({ formProps }) => {
+const LegacyPlugins: React.VFC<LegacyPluginsProps> = ({ formProps }) => {
     const [element] = useActiveElement();
 
     if (!element) {

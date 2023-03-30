@@ -9,7 +9,7 @@ interface GridProps {
     element: PbEditorElement;
 }
 
-const Grid: React.FC<GridProps> = props => {
+const Grid: React.VFC<GridProps> = props => {
     if (isLegacyRenderingEngine) {
         return <GridContainer {...props} />;
     }

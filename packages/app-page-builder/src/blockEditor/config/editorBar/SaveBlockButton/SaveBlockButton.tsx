@@ -16,7 +16,7 @@ const SpinnerWrapper = styled.div`
     position: relative;
 `;
 
-const DefaultSaveBlockButton: React.FC = () => {
+const DefaultSaveBlockButton: React.VFC = () => {
     const [block] = useBlock();
     const eventActionHandler = useEventActionHandler();
     const { history } = useRouter();

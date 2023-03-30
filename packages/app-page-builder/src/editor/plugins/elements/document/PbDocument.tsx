@@ -7,7 +7,7 @@ interface DocumentProps {
     element: PbEditorElement;
 }
 
-const PbDocument: React.FC<DocumentProps> = ({ element }) => {
+const PbDocument: React.VFC<DocumentProps> = ({ element }) => {
     return (
         <div className={"webiny-pb-page-document"} data-testid={"pb-editor-page-canvas-section"}>
             {element.elements.map((target, index) => {

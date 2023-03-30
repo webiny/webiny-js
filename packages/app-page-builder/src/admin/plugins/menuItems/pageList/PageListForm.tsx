@@ -22,7 +22,7 @@ interface LinkFormProps {
     onSubmit: FormOnSubmit;
     onCancel: () => void;
 }
-const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
+const LinkForm: React.VFC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
         <Elevation z={4} css={menuPageFormStyle} data-testid="pb.page.list.menu.item.form">
             <Form data={data} onSubmit={onSubmit}>

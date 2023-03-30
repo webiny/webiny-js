@@ -94,7 +94,7 @@ const updateChildrenWithPreset = (
     return resizeCells(created, cells);
 };
 
-export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+export const GridSize: React.VFC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const handler = useEventActionHandler();

@@ -11,7 +11,7 @@ import { EditorContent } from "~/editor";
 
 type ItemsState = Pick<ElementsAtomType, "id" | "type">;
 
-const Breadcrumbs: React.FC = () => {
+const Breadcrumbs: React.VFC = () => {
     const [items, setItems] = useState<ItemsState[]>([]);
     const [, setActiveElementId] = useActiveElementId();
     const [element] = useActiveElement();

@@ -26,7 +26,7 @@ interface ActionProps {
     "data-testid"?: string;
 }
 
-const Action: React.FC<ActionProps> = ({
+const Action: React.VFC<ActionProps> = ({
     plugin,
     icon,
     tooltip,

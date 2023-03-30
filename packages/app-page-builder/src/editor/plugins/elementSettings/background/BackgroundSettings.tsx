@@ -53,7 +53,7 @@ interface SettingsPropsType extends PbEditorPageElementSettingsRenderComponentPr
         [key: string]: any;
     };
 }
-const BackgroundSettings: React.FC<SettingsPropsType> = ({ options, defaultAccordionValue }) => {
+const BackgroundSettings: React.VFC<SettingsPropsType> = ({ options, defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(

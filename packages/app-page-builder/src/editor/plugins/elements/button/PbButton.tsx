@@ -6,7 +6,7 @@ import { PbEditorElement } from "~/types";
 interface ButtonProps {
     element: PbEditorElement;
 }
-const PbButton: React.FC<ButtonProps> = ({ element }) => {
+const PbButton: React.VFC<ButtonProps> = ({ element }) => {
     return (
         <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => (

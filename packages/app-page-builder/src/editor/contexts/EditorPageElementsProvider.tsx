@@ -33,7 +33,12 @@ import { PbEditorPageElementPlugin } from "~/types";
 
 import { ElementControls } from "./EditorPageElementsProvider/ElementControls";
 
-export const EditorPageElementsProvider: React.FC = ({ children }) => {
+interface EditorPageElementsProviderProps {
+    children: React.ReactNode;
+}
+export const EditorPageElementsProvider: React.VFC<EditorPageElementsProviderProps> = ({
+    children
+}) => {
     const pageBuilder = usePageBuilder();
 
     const renderers = plugins

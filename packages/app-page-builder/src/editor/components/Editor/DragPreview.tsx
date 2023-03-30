@@ -30,7 +30,7 @@ const onOffsetChange = (monitor: DragLayerMonitor) => () => {
     dragPreviewRef.style["-webkit-transform" as any] = transform;
 };
 
-const DragPreview: React.FC = () => {
+const DragPreview: React.VFC = () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
 
     const { isDragging, item } = useDragLayer((monitor: DragLayerMonitor) => {

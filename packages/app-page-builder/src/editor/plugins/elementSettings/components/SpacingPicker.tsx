@@ -66,7 +66,7 @@ interface SpacingPickerFormData {
     value: string | number;
 }
 
-const SpacingPicker: React.FC<SpacingPickerProps> = ({
+const SpacingPicker: React.VFC<SpacingPickerProps> = ({
     value,
     onChange,
     disabled,

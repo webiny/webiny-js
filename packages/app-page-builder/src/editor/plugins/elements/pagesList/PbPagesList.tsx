@@ -18,7 +18,7 @@ interface PagesListProps {
         resultsPerPage: string;
     };
 }
-const PbPagesList: React.FC<PagesListProps> = props => {
+const PbPagesList: React.VFC<PagesListProps> = props => {
     const { component, ...vars } = props.data;
     const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"

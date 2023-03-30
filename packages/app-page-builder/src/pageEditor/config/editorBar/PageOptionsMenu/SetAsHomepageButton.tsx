@@ -10,7 +10,7 @@ import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
-export const SetAsHomepageButton: React.FC = React.memo(() => {
+export const SetAsHomepageButton: React.VFC = React.memo(() => {
     const [page] = usePage();
     const { navigateToLatestFolder } = usePageViewNavigation();
     const { showSnackbar } = useSnackbar();

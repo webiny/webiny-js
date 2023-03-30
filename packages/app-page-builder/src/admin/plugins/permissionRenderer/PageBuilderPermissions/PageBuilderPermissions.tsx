@@ -34,7 +34,7 @@ interface PageBuilderPermissionsProps {
     value: SecurityPermission;
     onChange: (value: SecurityPermission[]) => void;
 }
-export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
+export const PageBuilderPermissions: React.VFC<PageBuilderPermissionsProps> = ({
     value,
     onChange
 }) => {

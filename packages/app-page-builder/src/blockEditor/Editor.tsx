@@ -19,7 +19,7 @@ import { createElement, addElementId } from "~/editor/helpers";
 import { PbPageBlock, PbEditorElement } from "~/types";
 import elementVariablePlugins from "~/blockEditor/plugins/elementVariables";
 
-export const BlockEditor: React.FC = () => {
+export const BlockEditor: React.VFC = () => {
     plugins.register(elementVariablePlugins());
     const client = useApolloClient();
     const { params } = useRouter();

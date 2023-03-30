@@ -31,7 +31,7 @@ interface BlockContainerPropsType {
     customClasses: string[];
     elementId: string;
 }
-const BlockContainer: React.FC<BlockContainerPropsType> = ({
+const BlockContainer: React.VFC<BlockContainerPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,

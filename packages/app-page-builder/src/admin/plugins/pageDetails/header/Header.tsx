@@ -34,7 +34,7 @@ const HeaderActions = styled("div")({
 interface HeaderProps {
     page: PbPageData;
 }
-const Header: React.FC<HeaderProps> = props => {
+const Header: React.VFC<HeaderProps> = props => {
     const { page } = props;
     return (
         <React.Fragment>

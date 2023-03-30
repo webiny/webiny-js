@@ -14,8 +14,9 @@ interface CustomSectionProps {
     entity: string;
     setValue: (permission: string, type: string) => void;
     title: string;
+    children?: React.ReactNode;
 }
-const CustomSection: React.FC<CustomSectionProps> = ({
+const CustomSection: React.VFC<CustomSectionProps> = ({
     Bind,
     data,
     entity,

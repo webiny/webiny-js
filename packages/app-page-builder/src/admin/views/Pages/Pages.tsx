@@ -15,7 +15,7 @@ import PageDetails from "./PageDetails";
 import PageTemplatesDialog from "./PageTemplatesDialog";
 import { PageBuilderSecurityPermission, PbPageTemplate } from "~/types";
 
-const Pages: React.FC = () => {
+const Pages: React.VFC = () => {
     const { history } = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);

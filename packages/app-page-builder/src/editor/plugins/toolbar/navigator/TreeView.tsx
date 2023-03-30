@@ -62,8 +62,9 @@ interface TreeViewItemProps {
     element: PbEditorElement;
     level: number;
     index: number;
+    children: React.ReactNode;
 }
-const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, index }) => {
+const TreeViewItem: React.VFC<TreeViewItemProps> = ({ element, level, children, index }) => {
     const elementId = element.id;
     const { displayMode } = useRecoilValue(uiAtom);
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
@@ -182,7 +183,7 @@ interface TreeViewProps {
     level: number;
 }
 
-export const TreeView: React.FC<TreeViewProps> = ({ element, level }) => {
+export const TreeView: React.VFC<TreeViewProps> = ({ element, level }) => {
     if (!element.id || element.elements.length === 0) {
         return null;
     }

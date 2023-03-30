@@ -5,7 +5,7 @@ import Text from "../../../components/Text";
 interface TextPropsType {
     element: PbElement;
 }
-const List: React.FC<TextPropsType> = ({ element }) => {
+const List: React.VFC<TextPropsType> = ({ element }) => {
     return (
         <Text
             element={element}

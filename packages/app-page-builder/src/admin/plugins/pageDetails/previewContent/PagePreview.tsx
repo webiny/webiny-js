@@ -87,7 +87,7 @@ interface PagePreviewProps {
     getPageQuery?: Function;
 }
 
-const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
+const PagePreview: React.VFC<PagePreviewProps> = ({ page }) => {
     if (isLegacyRenderingEngine) {
         // @deprecation-warning pb-legacy-rendering-engine
         const { pageElementRef, responsiveClassName } = useResponsiveClassName();

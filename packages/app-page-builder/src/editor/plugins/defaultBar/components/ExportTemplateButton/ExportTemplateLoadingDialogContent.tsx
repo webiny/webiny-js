@@ -29,7 +29,7 @@ interface ExportTemplateLoadingDialogContent {
     taskId: string;
 }
 
-const ExportTemplateLoadingDialogContent: React.FC<ExportTemplateLoadingDialogContent> = ({
+const ExportTemplateLoadingDialogContent: React.VFC<ExportTemplateLoadingDialogContent> = ({
     taskId
 }) => {
     const [completed, setCompleted] = useState<boolean>(false);

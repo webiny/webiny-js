@@ -20,7 +20,7 @@ import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 
 const DATA_NAMESPACE = "data.settings.gridSettings";
 
-export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+export const GridSettings: React.VFC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const { displayMode, config } = useDisplayMode();

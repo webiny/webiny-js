@@ -15,7 +15,7 @@ export interface ImagesListProps {
     };
     theme: PbTheme;
 }
-const ImagesListComponent: React.FC<ImagesListProps> = ({ data, theme }) => {
+const ImagesListComponent: React.VFC<ImagesListProps> = ({ data, theme }) => {
     const { component } = data;
     const listComponentPlugins = plugins.byType<PbPageElementImagesListComponentPlugin>(
         "pb-page-element-images-list-component"
@@ -37,4 +37,4 @@ const ImagesListComponent: React.FC<ImagesListProps> = ({ data, theme }) => {
     return <ListComponent data={data.images || []} theme={theme} />;
 };
 
-export const ImagesList: React.FC<ImagesListProps> = React.memo(ImagesListComponent);
+export const ImagesList: React.VFC<ImagesListProps> = React.memo(ImagesListComponent);

@@ -43,7 +43,7 @@ const extractPageInfo = (page: PageAtomType): PageInfo => {
     };
 };
 
-const Title: React.FC = () => {
+const Title: React.VFC = () => {
     const handler = useEventActionHandler();
     const [page] = usePage();
     const { showSnackbar } = useSnackbar();

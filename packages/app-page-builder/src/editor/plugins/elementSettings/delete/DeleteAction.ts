@@ -25,7 +25,7 @@ const removeVariableFromBlock = (block: PbEditorElement, variableId: string) => 
 interface DeleteActionPropsType {
     children: React.ReactElement;
 }
-const DeleteAction: React.FC<DeleteActionPropsType> = ({ children }) => {
+const DeleteAction: React.VFC<DeleteActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId as string));

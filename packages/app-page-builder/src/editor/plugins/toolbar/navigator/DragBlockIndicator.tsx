@@ -8,7 +8,7 @@ const BLOCK = "block";
 type MoverProps = {
     type: string;
 };
-const DragBlockIndicator: React.FC<MoverProps> = ({ type }) => {
+const DragBlockIndicator: React.VFC<MoverProps> = ({ type }) => {
     const [, drag] = useDrag({
         item: { type } as DraggableItem,
         collect: monitor => ({

@@ -9,7 +9,7 @@ interface ImagesListProps {
     element: PbEditorElement;
 }
 
-const ImagesList: React.FC<ImagesListProps> = props => {
+const ImagesList: React.VFC<ImagesListProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbImagesList {...props} element={props.element} />;
     }

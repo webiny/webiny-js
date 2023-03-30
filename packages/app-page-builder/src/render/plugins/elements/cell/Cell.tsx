@@ -13,7 +13,7 @@ const getSize = (element: Pick<PbElement, "data">): number | null => {
 interface GridPropsType {
     element: PbElement;
 }
-const Cell: React.FC<GridPropsType> = ({ element }) => {
+const Cell: React.VFC<GridPropsType> = ({ element }) => {
     const size = getSize(element);
     if (size === null) {
         throw new Error(`Cell with id "${element.id}" does not have size defined.`);

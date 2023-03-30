@@ -4,7 +4,7 @@ import { BreadcrumbsPlugin } from "./Breadcrumbs";
 import { BackgroundPlugin } from "./Background";
 import { ActionPlugins } from "./ActionPlugins";
 
-export const EditorDefaultConfig = () => {
+export const EditorDefaultConfig: React.VFC = () => {
     return (
         <>
             <ActionPlugins />

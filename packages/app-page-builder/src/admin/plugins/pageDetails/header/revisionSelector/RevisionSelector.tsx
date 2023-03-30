@@ -29,7 +29,7 @@ const menuList = css({
 interface RevisionSelectorProps {
     page: PbPageData;
 }
-const RevisionSelector: React.FC<RevisionSelectorProps> = props => {
+const RevisionSelector: React.VFC<RevisionSelectorProps> = props => {
     const { page } = props;
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);

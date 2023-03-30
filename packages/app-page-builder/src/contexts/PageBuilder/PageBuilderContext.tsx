@@ -48,7 +48,7 @@ function tryLoadingTheme() {
     return themePlugin?.theme as Theme;
 }
 
-export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
+export const PageBuilderProvider: React.VFC<PageBuilderProviderProps> = ({ children }) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
     const [revisionType, setRevisionType] = React.useState("published");
     const [theme, setTheme] = useState<PageBuilderContext["theme"]>(tryLoadingTheme());

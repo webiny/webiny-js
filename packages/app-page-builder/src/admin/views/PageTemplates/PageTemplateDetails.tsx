@@ -71,7 +71,7 @@ interface EmptyTemplateDetailsProps {
     onCreate: () => void;
     canCreate: boolean;
 }
-const EmptyTemplateDetails: React.FC<EmptyTemplateDetailsProps> = ({ onCreate, canCreate }) => {
+const EmptyTemplateDetails: React.VFC<EmptyTemplateDetailsProps> = ({ onCreate, canCreate }) => {
     return (
         <EmptyView
             title={t`Click on the left side list to display page details {message} `({

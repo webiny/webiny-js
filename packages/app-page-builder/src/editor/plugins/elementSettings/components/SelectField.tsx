@@ -48,7 +48,7 @@ interface SelectProps {
     [key: string]: any;
 }
 
-const SelectField: React.FC<SelectProps> = ({
+const SelectField: React.VFC<SelectProps> = ({
     value = "",
     onChange,
     children,

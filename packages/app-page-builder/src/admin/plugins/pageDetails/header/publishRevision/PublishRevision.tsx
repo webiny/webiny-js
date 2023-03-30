@@ -18,7 +18,7 @@ export interface PublishRevisionProps {
     page: PbPageData;
 }
 
-const PublishRevision: React.FC<PublishRevisionProps> = props => {
+const PublishRevision: React.VFC<PublishRevisionProps> = props => {
     const { identity, getPermission } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
     const { page } = props;

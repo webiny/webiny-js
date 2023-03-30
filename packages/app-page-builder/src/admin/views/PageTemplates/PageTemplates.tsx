@@ -22,7 +22,7 @@ export interface CreatableItem {
     };
 }
 
-const PageTemplates: React.FC = () => {
+const PageTemplates: React.VFC = () => {
     const { identity, getPermission } = useSecurity();
     const { history } = useRouter();
     const client = useApolloClient();

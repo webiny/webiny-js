@@ -6,7 +6,7 @@ import { ElementRoot } from "../../../../render/components/ElementRoot";
 type ImagePropsType = {
     element: PbEditorElement;
 };
-const PbImage: React.FC<ImagePropsType> = ({ element }) => {
+const PbImage: React.VFC<ImagePropsType> = ({ element }) => {
     return (
         <ElementRoot
             element={element}

@@ -44,7 +44,7 @@ interface ActionSettingsPropsType extends PbEditorPageElementSettingsRenderCompo
     element: PbEditorElement;
 }
 
-const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
+const ActionSettingsComponent: React.VFC<ActionSettingsPropsType> = ({
     element,
     defaultAccordionValue
 }) => {

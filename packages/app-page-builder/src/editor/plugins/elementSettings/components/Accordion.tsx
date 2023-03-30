@@ -108,7 +108,7 @@ export interface AccordionProps {
     className?: string;
 }
 
-const Accordion: React.FC<AccordionProps> = ({
+const Accordion: React.VFC<AccordionProps> = ({
     title,
     children,
     action,

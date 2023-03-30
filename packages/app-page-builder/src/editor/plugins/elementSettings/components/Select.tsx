@@ -27,7 +27,7 @@ interface SelectProps {
     className?: string;
 }
 
-const Select: React.FC<SelectProps> = ({
+const Select: React.VFC<SelectProps> = ({
     label,
     value,
     valueKey,

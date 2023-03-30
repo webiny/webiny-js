@@ -7,7 +7,7 @@ import { makeComposable } from "@webiny/react-composition";
 interface ImagesListProps {
     element: PbEditorElement;
 }
-const ImagesList: React.FC<ImagesListProps> = ({ element }) => {
+const ImagesList: React.VFC<ImagesListProps> = ({ element }) => {
     const { theme } = usePageBuilder();
     const { component, images } = element.data;
     const components = plugins.byType<PbPageElementImagesListComponentPlugin>(

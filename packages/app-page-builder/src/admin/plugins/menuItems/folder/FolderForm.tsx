@@ -19,7 +19,7 @@ interface FolderFormProps {
     onSubmit: FormOnSubmit;
     onCancel: () => void;
 }
-const FolderForm: React.FC<FolderFormProps> = ({ data, onSubmit, onCancel }) => {
+const FolderForm: React.VFC<FolderFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
         <Elevation z={4} css={menuFolderFormStyle}>
             <Form data={data} onSubmit={onSubmit}>

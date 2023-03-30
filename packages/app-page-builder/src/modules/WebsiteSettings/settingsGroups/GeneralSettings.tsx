@@ -7,7 +7,7 @@ import { usePbWebsiteSettings } from "../usePbWebsiteSettings";
 
 const { Group, Element } = AddPbWebsiteSettings;
 
-const WebsiteURL: React.FC = () => {
+const WebsiteURL: React.VFC = () => {
     const { defaultSettings } = usePbWebsiteSettings();
 
     const websiteUrl = defaultSettings && defaultSettings.websiteUrl;
@@ -35,7 +35,7 @@ const WebsiteURL: React.FC = () => {
     );
 };
 
-const WebsitePreviewURL: React.FC = () => {
+const WebsitePreviewURL: React.VFC = () => {
     const { defaultSettings } = usePbWebsiteSettings();
 
     const websitePreviewUrl = defaultSettings && defaultSettings.websitePreviewUrl;
@@ -62,7 +62,7 @@ const WebsitePreviewURL: React.FC = () => {
     );
 };
 
-export const GeneralSettings: React.FC = () => {
+export const GeneralSettings: React.VFC = () => {
     return (
         <Group name={"website"} label={"Website Settings"}>
             <Element>

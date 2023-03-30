@@ -22,7 +22,7 @@ const RootElement = styled("div")({
     }
 });
 
-const StyleSettingsTabContent: React.FC = () => {
+const StyleSettingsTabContent: React.VFC = () => {
     const [element] = useActiveElement();
     const elementStyleSettings = useElementStyleSettings();
 

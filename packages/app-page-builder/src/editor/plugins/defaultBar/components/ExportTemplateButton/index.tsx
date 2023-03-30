@@ -12,7 +12,7 @@ interface ExportTemplatesButtonProps extends ExportTemplatesDialogProps {
     getMultiSelected: any;
 }
 
-export const ExportTemplatesButton: React.FC<ExportTemplatesButtonProps> = ({
+export const ExportTemplatesButton: React.VFC<ExportTemplatesButtonProps> = ({
     getMultiSelected,
     ...restProps
 }) => {

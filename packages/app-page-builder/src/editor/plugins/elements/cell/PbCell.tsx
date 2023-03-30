@@ -14,7 +14,7 @@ interface CellPropsType {
     index: number;
     isLast?: boolean;
 }
-const PbCell: React.FC<CellPropsType> = ({ id, dropElement, index, isLast = false, type }) => {
+const PbCell: React.VFC<CellPropsType> = ({ id, dropElement, index, isLast = false, type }) => {
     return (
         <CellStyle>
             <DropZone.Above type={type} onDrop={source => dropElement(source, index)} />

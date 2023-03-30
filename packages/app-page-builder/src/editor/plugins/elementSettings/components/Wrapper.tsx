@@ -12,7 +12,7 @@ interface WrapperPropsType {
     children: ReactElement;
 }
 
-const Wrapper: React.FC<WrapperPropsType> = ({
+const Wrapper: React.VFC<WrapperPropsType> = ({
     label,
     containerClassName,
     leftCellSpan = 4,

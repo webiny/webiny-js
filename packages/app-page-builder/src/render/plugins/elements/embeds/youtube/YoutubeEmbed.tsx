@@ -39,7 +39,7 @@ const scaleableVideo = css({
 interface YoutubeEmbedProps {
     element: PbElement;
 }
-const YoutubeEmbed: React.FC<YoutubeEmbedProps> = props => {
+const YoutubeEmbed: React.VFC<YoutubeEmbedProps> = props => {
     const { element } = props;
 
     return (

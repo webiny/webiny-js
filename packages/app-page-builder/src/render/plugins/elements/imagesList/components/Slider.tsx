@@ -12,7 +12,7 @@ import { Image } from "react-images";
 interface SliderProps {
     data: Image[];
 }
-const Slider: React.FC<SliderProps> = ({ data }) => {
+const Slider: React.VFC<SliderProps> = ({ data }) => {
     if (Array.isArray(data)) {
         const settings = {
             dots: true,

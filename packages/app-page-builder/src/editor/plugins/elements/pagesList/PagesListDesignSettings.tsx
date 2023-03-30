@@ -19,7 +19,7 @@ interface PagesListDesignSettingsProps {
     submit: (event: React.MouseEvent) => void;
 }
 
-const PagesListDesignSettings: React.FC<PagesListDesignSettingsProps> = ({ Bind, submit }) => {
+const PagesListDesignSettings: React.VFC<PagesListDesignSettingsProps> = ({ Bind, submit }) => {
     let components: Array<{
         name?: string;
         title: string;

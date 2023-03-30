@@ -75,7 +75,7 @@ interface InputBoxProps {
     type?: "string" | "number";
     [key: string]: any;
 }
-const InputField: React.FC<InputBoxProps> = ({
+const InputField: React.VFC<InputBoxProps> = ({
     className,
     value,
     onChange,

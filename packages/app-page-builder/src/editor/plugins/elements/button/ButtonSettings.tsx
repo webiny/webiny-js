@@ -51,7 +51,7 @@ const classes = {
     })
 };
 
-const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const ButtonSettings: React.VFC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const activeElementId = useRecoilValue(activeElementAtom);

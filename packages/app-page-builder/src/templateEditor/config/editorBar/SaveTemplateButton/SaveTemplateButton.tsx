@@ -14,7 +14,7 @@ const SpinnerWrapper = styled.div`
     position: relative;
 `;
 
-const DefaultSaveTemplateButton: React.FC = () => {
+const DefaultSaveTemplateButton: React.VFC = () => {
     const [template] = useTemplate();
     const eventActionHandler = useEventActionHandler();
     const { history } = useRouter();

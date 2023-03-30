@@ -42,7 +42,7 @@ const menuStyles = css({
 interface PageOptionsMenuProps {
     page: PbPageData;
 }
-const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
+const PageOptionsMenu: React.VFC<PageOptionsMenuProps> = props => {
     const { page } = props;
     const { settings, isSpecialPage, getPageUrl, getWebsiteUrl, updateSettingsMutation } =
         usePageBuilderSettings();

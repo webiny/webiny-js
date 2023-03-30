@@ -14,7 +14,7 @@ interface ImportBlocksDetailsProps {
     result: ListBlockImportExportSubTasksResponse;
 }
 
-const ImportBlocksDetails: React.FC<ImportBlocksDetailsProps> = ({ loading, result }) => {
+const ImportBlocksDetails: React.VFC<ImportBlocksDetailsProps> = ({ loading, result }) => {
     if (loading || !result) {
         return <Typography use={"caption"}> {t`Loading details...`} </Typography>;
     }

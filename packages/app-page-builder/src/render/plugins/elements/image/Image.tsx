@@ -11,7 +11,7 @@ type LinkPropsType = {
     };
     children: React.ReactElement;
 };
-const Link: React.FC<LinkPropsType> = ({ link, children }) => {
+const Link: React.VFC<LinkPropsType> = ({ link, children }) => {
     if (!link || !link.href) {
         return children;
     }
@@ -25,7 +25,7 @@ const Link: React.FC<LinkPropsType> = ({ link, children }) => {
 interface ImagePropsType {
     element: PbElement;
 }
-const Image: React.FC<ImagePropsType> = ({ element }) => {
+const Image: React.VFC<ImagePropsType> = ({ element }) => {
     const { image = {}, link = {} } = element.data || {};
     if (!image || !image.file) {
         return null;

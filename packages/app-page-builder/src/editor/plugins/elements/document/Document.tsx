@@ -9,7 +9,7 @@ interface DocumentProps {
     element: PbEditorElement;
 }
 
-const Document: React.FC<DocumentProps> = props => {
+const Document: React.VFC<DocumentProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbDocument {...props} />;
     }

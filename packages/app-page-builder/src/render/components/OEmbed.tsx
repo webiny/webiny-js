@@ -54,7 +54,7 @@ const centerAlign = css({
     }
 });
 
-export const OEmbed: React.FC<OEmbedProps> = props => {
+export const OEmbed: React.VFC<OEmbedProps> = props => {
     const { element, renderEmbed } = props;
     const { url } = get(element, "data.source") || {};
 

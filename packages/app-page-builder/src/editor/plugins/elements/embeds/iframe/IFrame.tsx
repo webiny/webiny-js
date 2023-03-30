@@ -9,7 +9,7 @@ interface IframeProps {
     element: PbEditorElement;
 }
 
-const Iframe: React.FC<IframeProps> = props => {
+const Iframe: React.VFC<IframeProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbIframe {...props} />;
     }

@@ -18,7 +18,7 @@ const GridContainerStyle = styled("div")({
 interface GridContainerPropsType {
     element: PbEditorElement;
 }
-const GridContainer: React.FC<GridContainerPropsType> = ({ element: { id } }) => {
+const GridContainer: React.VFC<GridContainerPropsType> = ({ element: { id } }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(id));
     const { displayMode } = useRecoilValue(uiAtom);
     // TODO remove when state is fully switched to use content instead of flat elements

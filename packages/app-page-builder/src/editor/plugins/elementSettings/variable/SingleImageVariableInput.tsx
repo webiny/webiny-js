@@ -6,7 +6,7 @@ interface SingleImageVariableInputProps {
     variableId: string;
 }
 
-const SingleImageVariableInput: React.FC<SingleImageVariableInputProps> = ({ variableId }) => {
+const SingleImageVariableInput: React.VFC<SingleImageVariableInputProps> = ({ variableId }) => {
     const { value, onChange } = useVariable(variableId);
 
     return <SingleImageUpload onChange={value => onChange(value, true)} value={value} />;

@@ -49,7 +49,7 @@ interface CellPropsType {
     elementId: string;
     isActive: boolean;
 }
-const CellContainer: React.FC<CellPropsType> = ({ elementId, isActive }) => {
+const CellContainer: React.VFC<CellPropsType> = ({ elementId, isActive }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { isHighlighted } = element as PbEditorElement;

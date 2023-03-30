@@ -42,7 +42,7 @@ const DATA_NAMESPACE = "data.settings.animation";
 type SettingsPropsType = {
     animation: any;
 };
-const Settings: React.FC<SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps> = ({
+const Settings: React.VFC<SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const [element] = useActiveElement<PbEditorElement>();
@@ -178,7 +178,7 @@ type AnimationSettingsPropsType = {
     title?: string;
     styleAttribute?: string;
 };
-const AnimationSettings: React.FC<
+const AnimationSettings: React.VFC<
     AnimationSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = props => {
     return (

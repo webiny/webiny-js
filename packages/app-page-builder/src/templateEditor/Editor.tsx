@@ -44,7 +44,7 @@ const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorEleme
     });
 };
 
-export const TemplateEditor: React.FC = () => {
+export const TemplateEditor: React.VFC = () => {
     plugins.register(elementVariableRendererPlugins());
     const client = useApolloClient();
     const { history, params } = useRouter();

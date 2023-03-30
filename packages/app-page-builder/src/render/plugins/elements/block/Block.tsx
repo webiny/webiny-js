@@ -12,7 +12,7 @@ interface BlockProps {
     element: PbElement;
 }
 
-const Block: React.FC<BlockProps> = ({ element }) => {
+const Block: React.VFC<BlockProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = usePageBuilder();

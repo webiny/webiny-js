@@ -38,7 +38,7 @@ export interface PageItemProps {
     className?: string;
 }
 
-const PageItem: React.FC<PageItemProps> = ({ data, className }) => {
+const PageItem: React.VFC<PageItemProps> = ({ data, className }) => {
     const image = get(data, "images.general.src");
     return (
         <Link to={data.url} className={"webiny-pb-page-element-page-list__item " + className}>
@@ -84,7 +84,7 @@ interface GridPageListProps {
     nextPage?: PageItemProps["data"];
     prevPage?: PageItemProps["data"];
 }
-const GridPageList: React.FC<GridPageListProps> = ({ data, nextPage, prevPage }) => {
+const GridPageList: React.VFC<GridPageListProps> = ({ data, nextPage, prevPage }) => {
     return (
         <div className={"webiny-pb-page-element-page-list webiny-pb-page-element-page-list--grid"}>
             <div className={"webiny-pb-page-element-page-list__items"}>

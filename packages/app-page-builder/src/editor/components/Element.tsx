@@ -42,7 +42,7 @@ const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin |
     return pluginsByType.find(pl => pl.elementType === element.type) || null;
 };
 
-const ElementComponent: React.FC<ElementPropsType> = ({
+const ElementComponent: React.VFC<ElementPropsType> = ({
     id: elementId,
     className = "",
     isActive
@@ -159,7 +159,7 @@ const ElementComponent: React.FC<ElementPropsType> = ({
     );
 };
 
-const withHighlightElement = (Component: React.FC<ElementPropsType>) => {
+const withHighlightElement = (Component: React.VFC<ElementPropsType>) => {
     return function withHighlightElementComponent(props: ElementPropsType) {
         const [activeElementId] = useActiveElementId();
 

@@ -38,7 +38,7 @@ interface ImportBlockDialogContentProps {
     onFileLink: (url: string) => void;
 }
 
-export const ImportBlockDialogContent: React.FC<ImportBlockDialogContentProps> = ({
+export const ImportBlockDialogContent: React.VFC<ImportBlockDialogContentProps> = ({
     onFileLink
 }) => {
     const ui = useUi();

@@ -9,7 +9,7 @@ interface PagesListProps {
     element: PbEditorElement;
 }
 
-const PagesList: React.FC<PagesListProps> = props => {
+const PagesList: React.VFC<PagesListProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbPagesList {...props} data={props.element.data as any} />;
     }

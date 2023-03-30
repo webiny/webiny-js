@@ -9,7 +9,7 @@ interface ButtonProps {
     element: PbEditorElement;
 }
 
-const Button: React.FC<ButtonProps> = props => {
+const Button: React.VFC<ButtonProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbButton {...props} />;
     }

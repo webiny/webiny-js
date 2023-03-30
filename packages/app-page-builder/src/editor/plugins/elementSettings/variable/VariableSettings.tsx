@@ -18,7 +18,7 @@ const labelStyle = css({
     }
 });
 
-const VariableSettings: React.FC = () => {
+const VariableSettings: React.VFC = () => {
     const [element] = useActiveElement();
 
     const elementVariableRendererPlugins =

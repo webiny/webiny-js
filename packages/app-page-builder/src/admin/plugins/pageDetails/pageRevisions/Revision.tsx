@@ -43,11 +43,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const Div: React.FC = ({ children }) => {
-    return <div>{children}</div>;
-};
-
-const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
+const Revision: React.VFC<RevisionProps> = ({ revision, page }) => {
     const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
@@ -135,7 +131,7 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
                             </MenuItem>
 
                             {canDelete(page) && (
-                                <Div>
+                                <div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>
                                         <ListItemGraphic>
@@ -143,7 +139,7 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
                                         </ListItemGraphic>
                                         Delete Revision
                                     </MenuItem>
-                                </Div>
+                                </div>
                             )}
                         </Menu>
                     </ListItemMeta>

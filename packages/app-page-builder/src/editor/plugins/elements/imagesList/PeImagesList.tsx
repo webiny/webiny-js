@@ -25,7 +25,7 @@ interface Props {
     element: Element;
 }
 
-const PeImagesList: React.FC<Props> = props => {
+const PeImagesList: React.VFC<Props> = props => {
     const { element } = props;
     const variableValue = useElementVariableValue(element);
     if (variableValue) {

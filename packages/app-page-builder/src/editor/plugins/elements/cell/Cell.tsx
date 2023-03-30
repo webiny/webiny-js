@@ -10,7 +10,7 @@ interface CellProps {
     isActive: boolean;
 }
 
-const Cell: React.FC<CellProps> = props => {
+const Cell: React.VFC<CellProps> = props => {
     if (isLegacyRenderingEngine) {
         return <CellContainer {...props} elementId={props.element.id} />;
     }

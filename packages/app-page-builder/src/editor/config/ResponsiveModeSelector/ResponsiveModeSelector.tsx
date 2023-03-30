@@ -101,7 +101,7 @@ function assignDefined(target: Record<string, any>, ...sources: Array<Record<str
     return target;
 }
 
-export const ResponsiveModeSelector: React.FC = () => {
+export const ResponsiveModeSelector: React.VFC = () => {
     const [{ displayMode, pagePreviewDimension }, setUiValue] = useUI();
     const {
         responsiveDisplayMode: { setDisplayMode }

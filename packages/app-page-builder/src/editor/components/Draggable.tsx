@@ -29,7 +29,7 @@ export interface DraggableItem extends DragObjectWithType {
     target: string[];
 }
 
-const Draggable: React.FC<DraggableProps> = props => {
+const Draggable: React.VFC<DraggableProps> = props => {
     const { children, beginDrag, endDrag, target, enabled = true } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({

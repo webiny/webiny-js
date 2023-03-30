@@ -6,7 +6,7 @@ import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/round
 import { templateSettingsStateAtom } from "./state";
 import { EditorBar } from "~/editor";
 
-const TemplateSettingsButton: React.FC = () => {
+const TemplateSettingsButton: React.VFC = () => {
     const [, setState] = useRecoilState(templateSettingsStateAtom);
     const onClickHandler = useCallback(() => {
         setState(true);

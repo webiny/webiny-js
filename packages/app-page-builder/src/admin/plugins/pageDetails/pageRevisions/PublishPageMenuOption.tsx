@@ -12,7 +12,7 @@ export interface PublishPageMenuOptionProps {
     publishRevision: (revision: PbPageRevision) => void;
 }
 
-export const PageRevisionPublishPageMenuOption: React.FC<PublishPageMenuOptionProps> = props => {
+export const PageRevisionPublishPageMenuOption: React.VFC<PublishPageMenuOptionProps> = props => {
     const { revision, publishRevision } = props;
     const { canPublish } = usePermission();
 

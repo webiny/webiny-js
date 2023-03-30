@@ -12,7 +12,7 @@ export interface CreatableItem {
     };
 }
 
-const PageBlocks: React.FC = () => {
+const PageBlocks: React.VFC = () => {
     const [filter, setFilter] = useState<string>("");
     const { identity, getPermission } = useSecurity();
     const pbPageBlockPermission = useMemo((): PageBuilderSecurityPermission | null => {

@@ -8,7 +8,7 @@ interface TextInputProps {
     onBlur?: () => void;
 }
 
-const TextInput: React.FC<TextInputProps> = ({ label, value, onChange, onBlur }) => {
+const TextInput: React.VFC<TextInputProps> = ({ label, value, onChange, onBlur }) => {
     const [localValue, setLocalValue] = useState(value);
 
     useEffect(() => {

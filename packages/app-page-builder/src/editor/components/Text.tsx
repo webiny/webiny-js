@@ -12,7 +12,7 @@ interface TextElementProps {
     tag?: string | [string, Record<string, any>];
 }
 
-const Text: React.FC<TextElementProps> = props => {
+const Text: React.VFC<TextElementProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbText {...props} />;
     }

@@ -15,7 +15,7 @@ interface CollapsableListProps {
     highlightItem: HighlightItem;
 }
 
-const CollapsableList: React.FC<CollapsableListProps> = ({
+const CollapsableList: React.VFC<CollapsableListProps> = ({
     children,
     header,
     level,

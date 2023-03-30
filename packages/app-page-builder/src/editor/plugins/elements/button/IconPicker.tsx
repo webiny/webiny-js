@@ -10,7 +10,7 @@ interface IconPickerProps {
     updateValue: (item: PbIcon) => void;
 }
 
-const IconPicker: React.FC<IconPickerProps> = ({ label, value, updateValue }) => {
+const IconPicker: React.VFC<IconPickerProps> = ({ label, value, updateValue }) => {
     return (
         <>
             <Cell span={4}>

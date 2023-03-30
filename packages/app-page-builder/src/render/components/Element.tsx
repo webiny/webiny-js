@@ -10,7 +10,7 @@ export interface ElementProps {
     element: PbElement | null;
 }
 
-const Element: React.FC<ElementProps> = props => {
+const Element: React.VFC<ElementProps> = props => {
     const { element } = props;
 
     // With the new engine, we can simply use the `PeElement` component

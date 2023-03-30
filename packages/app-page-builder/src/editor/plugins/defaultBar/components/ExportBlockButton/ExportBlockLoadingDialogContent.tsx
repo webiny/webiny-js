@@ -29,7 +29,9 @@ interface ExportBlockLoadingDialogContent {
     taskId: string;
 }
 
-const ExportBlockLoadingDialogContent: React.FC<ExportBlockLoadingDialogContent> = ({ taskId }) => {
+const ExportBlockLoadingDialogContent: React.VFC<ExportBlockLoadingDialogContent> = ({
+    taskId
+}) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
     const { showSnackbar } = useSnackbar();

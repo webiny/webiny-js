@@ -38,7 +38,7 @@ type ElementsListProps = {
     refresh: () => void;
 };
 
-const ElementsList: React.FC<ElementsListProps> = ({
+const ElementsList: React.VFC<ElementsListProps> = ({
     groupPlugin,
     elements,
     renderDraggable,
@@ -80,7 +80,7 @@ const ElementsList: React.FC<ElementsListProps> = ({
     );
 };
 
-const AddElement: React.FC = () => {
+const AddElement: React.VFC = () => {
     const handler = useEventActionHandler();
     const params = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();

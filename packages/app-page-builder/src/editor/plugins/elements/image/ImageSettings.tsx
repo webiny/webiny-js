@@ -31,7 +31,7 @@ const spacingPickerStyle = css({
     }
 });
 
-const ImageSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const ImageSettings: React.VFC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue = false
 }) => {
     const activeElementId = useRecoilValue(activeElementAtom) as string;

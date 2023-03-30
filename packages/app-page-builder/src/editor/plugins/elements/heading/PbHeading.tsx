@@ -19,7 +19,7 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const PbHeading: React.FC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
+const PbHeading: React.VFC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
     return (
         <Text
             elementId={elementId}

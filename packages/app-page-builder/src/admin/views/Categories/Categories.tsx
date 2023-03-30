@@ -5,7 +5,7 @@ import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
 import { PageBuilderSecurityPermission } from "~/types";
 
-const Categories: React.FC = () => {
+const Categories: React.VFC = () => {
     const { identity, getPermission } = useSecurity();
     const pbMenuPermissionRwd = useMemo((): string | null => {
         const permission = getPermission<PageBuilderSecurityPermission>("pb.category");

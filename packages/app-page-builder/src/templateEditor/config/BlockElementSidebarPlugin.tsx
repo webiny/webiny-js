@@ -47,7 +47,7 @@ type UnlinkTabProps = {
     permission: boolean;
 };
 
-const UnlinkTab: React.FC<UnlinkTabProps> = ({ permission }) => {
+const UnlinkTab: React.VFC<UnlinkTabProps> = ({ permission }) => {
     return (
         <RootElement>
             <UnlinkBlockWrapper permission={permission}>

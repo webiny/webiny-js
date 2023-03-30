@@ -9,7 +9,7 @@ const center = css({ textAlign: "center" });
 interface IconProps {
     element: PbEditorElement;
 }
-const PbIcon: React.FC<IconProps> = ({ element }) => {
+const PbIcon: React.VFC<IconProps> = ({ element }) => {
     return (
         <ElementRoot element={element}>
             {({ getAllClasses, elementStyle }) => {

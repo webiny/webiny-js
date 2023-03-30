@@ -76,7 +76,7 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const Content: React.FC = () => {
+const Content: React.VFC = () => {
     const rootElementId = useRecoilValue(rootElementAtom);
     const rootElement = useRecoilValue(elementsAtom(rootElementId)) as PbEditorElement;
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);

@@ -50,7 +50,7 @@ const ButtonWrapper = styled("div")({
 interface CategoriesFormProps {
     canCreate: boolean;
 }
-const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
+const CategoriesForm: React.VFC<CategoriesFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 

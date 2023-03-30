@@ -34,7 +34,7 @@ interface LinkSettingsFormData {
 interface LinkSettingsPropsType {
     element: PbEditorElement;
 }
-const LinkSettingsComponent: React.FC<
+const LinkSettingsComponent: React.VFC<
     LinkSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ element, defaultAccordionValue }) => {
     const handler = useEventActionHandler();

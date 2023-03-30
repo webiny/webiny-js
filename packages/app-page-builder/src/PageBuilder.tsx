@@ -29,7 +29,7 @@ const PageBuilderProviderPlugin = createProviderPlugin(Component => {
     };
 });
 
-const PageBuilderMenu: React.FC = () => {
+const PageBuilderMenu: React.VFC = () => {
     return (
         <HasPermission any={["pb.menu", "pb.category", "pb.page", "pb.template", "pb.block"]}>
             <Menu name="pageBuilder" label={"Page Builder"} icon={<PagesIcon />}>
@@ -105,7 +105,7 @@ const EditorRendererPlugin = createComponentPlugin(EditorRenderer, () => {
     };
 });
 
-export const PageBuilder: React.FC = () => {
+export const PageBuilder: React.VFC = () => {
     return (
         <Fragment>
             <PageBuilderProviderPlugin />

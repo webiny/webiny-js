@@ -50,7 +50,7 @@ export interface ExportPagesDialogProps {
     search?: { query: string };
 }
 
-const ExportPageLoadingDialogMessage: React.FC<ExportPagesDialogProps> = props => {
+const ExportPageLoadingDialogMessage: React.VFC<ExportPagesDialogProps> = props => {
     const { exportPage } = useExportPage();
     const {
         exportPageData: { revisionType }
@@ -78,7 +78,7 @@ interface ExportPageDialogProps {
     exportUrl: string;
 }
 
-const ExportPageDialogMessage: React.FC<ExportPageDialogProps> = ({ exportUrl }) => {
+const ExportPageDialogMessage: React.VFC<ExportPageDialogProps> = ({ exportUrl }) => {
     const { showSnackbar } = useSnackbar();
 
     return (

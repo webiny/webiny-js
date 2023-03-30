@@ -21,7 +21,7 @@ type GridPropsType = {
     element: PbEditorElement;
     displayMode: DisplayMode;
 };
-const PbGrid: React.FC<GridPropsType> = ({
+const PbGrid: React.VFC<GridPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,

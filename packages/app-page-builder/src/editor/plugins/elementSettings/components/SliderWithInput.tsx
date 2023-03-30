@@ -19,7 +19,7 @@ interface SliderWithInputPropsType {
     step?: number;
     max?: number;
 }
-const SliderWithInput: React.FC<SliderWithInputPropsType> = ({
+const SliderWithInput: React.VFC<SliderWithInputPropsType> = ({
     icon,
     placeholder,
     updateValue,

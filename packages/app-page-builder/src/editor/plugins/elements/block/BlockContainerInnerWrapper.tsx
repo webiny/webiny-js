@@ -8,8 +8,9 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 interface BlockContainerInnerWrapperProps {
     elementId: string;
     displayMode: string;
+    children: React.ReactNode;
 }
-const BlockContainerInnerWrapper: React.FC<BlockContainerInnerWrapperProps> = ({
+const BlockContainerInnerWrapper: React.VFC<BlockContainerInnerWrapperProps> = ({
     elementId,
     children,
     displayMode

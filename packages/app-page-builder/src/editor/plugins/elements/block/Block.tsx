@@ -9,7 +9,7 @@ interface BlockProps {
     element: PbEditorElement;
 }
 
-const Block: React.FC<BlockProps> = props => {
+const Block: React.VFC<BlockProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbBlock {...props} />;
     }

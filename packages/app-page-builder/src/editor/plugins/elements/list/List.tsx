@@ -10,7 +10,7 @@ interface ListProps {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-const List: React.FC<ListProps> = props => {
+const List: React.VFC<ListProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbList {...props} elementId={props.element.id} />;
     }

@@ -93,7 +93,7 @@ interface PMSettingsPropsType {
     sides?: Record<string, any>[];
 }
 
-const BoxInputs: React.FC<PMSettingsPropsType> = ({
+const BoxInputs: React.VFC<PMSettingsPropsType> = ({
     label,
     value,
     valueKey,

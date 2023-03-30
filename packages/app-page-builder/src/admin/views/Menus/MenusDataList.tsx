@@ -57,7 +57,7 @@ interface MenuDataListResponse {
 interface PageBuilderMenusDataListProps {
     canCreate: boolean;
 }
-const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ canCreate }) => {
+const PageBuilderMenusDataList: React.VFC<PageBuilderMenusDataListProps> = ({ canCreate }) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const { history } = useRouter();

@@ -99,7 +99,11 @@ interface PagesDataListProps {
     canCreate: boolean;
     onImportPage: (event?: React.SyntheticEvent) => void;
 }
-const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, onImportPage }) => {
+const PagesDataList: React.VFC<PagesDataListProps> = ({
+    onCreatePage,
+    canCreate,
+    onImportPage
+}) => {
     const [filter, setFilter] = useState("");
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);

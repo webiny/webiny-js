@@ -39,7 +39,7 @@ const scaleableVideo = css({
 interface VimeoEmbedProps {
     element: PbElement;
 }
-const VimeoEmbed: React.FC<VimeoEmbedProps> = props => {
+const VimeoEmbed: React.VFC<VimeoEmbedProps> = props => {
     const { element } = props;
 
     return (

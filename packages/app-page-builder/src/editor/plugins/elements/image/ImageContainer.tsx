@@ -21,7 +21,7 @@ interface ImageContainerType {
     element: PbEditorElement;
 }
 
-const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
+const ImageContainer: React.VFC<ImageContainerType> = ({ element }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
 

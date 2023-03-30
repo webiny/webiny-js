@@ -28,7 +28,11 @@ import { Theme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
 import { PbRenderElementPlugin } from "~/types";
 
-export const PageElementsProvider: React.FC = ({ children }) => {
+interface PageElementsProviderProps {
+    children: React.ReactNode;
+}
+
+export const PageElementsProvider: React.VFC<PageElementsProviderProps> = ({ children }) => {
     const pageBuilder = usePageBuilder();
 
     const getRenderers = useCallback(() => {

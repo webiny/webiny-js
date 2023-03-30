@@ -19,7 +19,7 @@ export const configureWebsiteUrlTitle = t`Configure website URL`;
 interface ConfigureWebsiteUrlMessageProps {
     websiteUrl?: string;
 }
-export const ConfigureWebsiteUrlMessage: React.FC<ConfigureWebsiteUrlMessageProps> = ({
+export const ConfigureWebsiteUrlMessage: React.VFC<ConfigureWebsiteUrlMessageProps> = ({
     websiteUrl
 }) => {
     if (typeof websiteUrl !== "string") {

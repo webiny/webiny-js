@@ -13,7 +13,7 @@ interface SliderPropsType {
     step?: number;
 }
 
-const Slider: React.FC<SliderPropsType> = ({
+const Slider: React.VFC<SliderPropsType> = ({
     label,
     value,
     updatePreview,

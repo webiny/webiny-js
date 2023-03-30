@@ -8,7 +8,7 @@ import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table");
 
-const Index: React.FC = () => {
+const Index: React.VFC = () => {
     const { currentFolderId, setFolderIdToStorage } = usePageViewNavigation();
 
     useEffect(() => {

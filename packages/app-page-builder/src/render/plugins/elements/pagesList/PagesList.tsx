@@ -20,7 +20,7 @@ interface PagesListRenderProps {
         tagsRule: "all" | "any";
     };
 }
-const PagesListRender: React.FC<PagesListRenderProps> = props => {
+const PagesListRender: React.VFC<PagesListRenderProps> = props => {
     const { component, ...vars } = props.data || ({} as PagesListRenderProps["data"]);
     const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
@@ -116,7 +116,7 @@ const PagesListRender: React.FC<PagesListRenderProps> = props => {
     );
 };
 
-const PagesList: React.FC<PagesListRenderProps> = props => {
+const PagesList: React.VFC<PagesListRenderProps> = props => {
     const { component } = props.data || {};
 
     return (

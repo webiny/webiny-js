@@ -34,7 +34,7 @@ export interface ElementRootProps {
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
 }
 
-const ElementRootComponent: React.FC<ElementRootProps> = ({
+const ElementRootComponent: React.VFC<ElementRootProps> = ({
     element,
     style,
     children,

@@ -96,7 +96,7 @@ export const useVisibilitySetting = (elementId: string): UseVisibilitySettingRes
     };
 };
 
-const PropertySettings: React.FC<
+const PropertySettings: React.VFC<
     PbEditorPageElementSettingsRenderComponentProps & {
         options: any;
     }

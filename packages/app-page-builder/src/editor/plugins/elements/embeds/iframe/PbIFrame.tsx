@@ -18,7 +18,7 @@ interface IFrameProps {
     element: PbEditorElement;
 }
 
-const Iframe: React.FC<IFrameProps> = ({ element }) => {
+const Iframe: React.VFC<IFrameProps> = ({ element }) => {
     const { displayMode } = useDisplayMode();
 
     const elementHeight = element.data?.settings?.height?.[displayMode]?.value || "380px";

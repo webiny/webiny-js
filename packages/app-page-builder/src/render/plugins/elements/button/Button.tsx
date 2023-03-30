@@ -28,7 +28,7 @@ interface ElementData extends Omit<PbElementDataType, "action"> {
 interface ButtonProps {
     element: PbElement;
 }
-const Button: React.FC<ButtonProps> = ({ element }) => {
+const Button: React.VFC<ButtonProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = usePageBuilder();

@@ -84,7 +84,7 @@ export interface OEmbedProps {
     global?: keyof Window;
     init?: (params: OEmbedPropsInitParams) => void;
 }
-const OEmbedComponent: React.FC<OEmbedProps> = props => {
+const OEmbedComponent: React.VFC<OEmbedProps> = props => {
     const [errorMessage, setErrorMessage] = useState(null);
     const eventActionHandler = useEventActionHandler();
     const { showSnackbar } = useSnackbar();

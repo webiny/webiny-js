@@ -56,7 +56,7 @@ const getHTML = (data: PbElementDataTypeSource): string => {
     />`;
 };
 
-const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
+const PinterestEmbed: React.VFC<PinterestEmbedProps> = props => {
     const { element } = props;
 
     useEffect(() => {

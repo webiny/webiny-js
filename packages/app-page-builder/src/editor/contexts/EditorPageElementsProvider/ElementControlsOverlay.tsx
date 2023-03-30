@@ -36,7 +36,7 @@ const DEFAULT_TARGETS = ["cell", "block"];
 // We're doing the same with the list of non-draggable elements.
 const NON_DRAGGABLE_ELEMENTS = ["cell", "block"];
 
-export const ElementControlsOverlay: React.FC<Props> = props => {
+export const ElementControlsOverlay: React.VFC<Props> = props => {
     const [{ isDragging }, setUi] = useUI();
     const [activeElementId, setActiveElementId] = useActiveElementId();
 

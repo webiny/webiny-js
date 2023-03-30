@@ -13,7 +13,7 @@ const BlockStyle = styled("div")({
 interface BlockType {
     element: PbEditorElement;
 }
-const PbBlock: React.FC<BlockType> = ({ element }) => {
+const PbBlock: React.VFC<BlockType> = ({ element }) => {
     const { id } = element;
 
     return (

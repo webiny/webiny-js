@@ -42,7 +42,7 @@ interface EditElementDialogComponentProps {
     onSubmit: FormOnSubmit;
 }
 
-const EditElementDialogComponent: React.FC<EditElementDialogComponentProps> = props => {
+const EditElementDialogComponent: React.VFC<EditElementDialogComponentProps> = props => {
     const { open, onClose, onSubmit, plugin: pluginName } = props;
 
     const plugin: any = plugins.byName(pluginName);

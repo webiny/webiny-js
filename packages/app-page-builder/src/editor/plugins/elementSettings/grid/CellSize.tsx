@@ -47,7 +47,7 @@ interface CellSizePropsType {
     label: string;
     onChange: (value: number) => void;
 }
-const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllowed }) => {
+const CellSize: React.VFC<CellSizePropsType> = ({ value, label, onChange, maxAllowed }) => {
     const [errorMessage, setErrorMessage] = useState("");
     // Hide error message after 2s.
     useEffect((): void => {

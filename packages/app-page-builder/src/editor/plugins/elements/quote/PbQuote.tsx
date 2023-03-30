@@ -18,7 +18,7 @@ const DEFAULT_EDITOR_OPTIONS = {
     }
 };
 
-const PbQuote: React.FC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
+const PbQuote: React.VFC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
     return (
         <Text
             elementId={elementId}

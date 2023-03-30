@@ -9,7 +9,7 @@ interface ImageProps {
     element: PbEditorElement;
 }
 
-const Image: React.FC<ImageProps> = props => {
+const Image: React.VFC<ImageProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbImage {...props} />;
     }

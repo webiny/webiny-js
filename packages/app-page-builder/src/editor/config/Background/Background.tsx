@@ -12,7 +12,7 @@ const backgroundStyle = css({
     minHeight: "100%"
 });
 
-const Background: React.FC = () => {
+const Background: React.VFC = () => {
     const [activeElement, setActiveElement] = useActiveElement();
 
     const deactivateElement = useCallback(() => {

@@ -98,7 +98,7 @@ const validateHeight: Validator = (value: string | undefined) => {
 
 const DATA_NAMESPACE = "data.settings.height";
 
-const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const Settings: React.VFC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);

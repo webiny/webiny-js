@@ -24,7 +24,7 @@ const getZoomLevel = (): number => {
     return zoom;
 };
 
-export const Zoom: React.FC<ZoomProps> = ({ children }) => {
+export const Zoom: React.VFC<ZoomProps> = ({ children }) => {
     const [zoom, setZoom] = useState(() => getZoomLevel());
 
     useEffect(() => {

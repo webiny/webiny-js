@@ -181,7 +181,7 @@ interface ColorPickerProps {
     handlerClassName?: string;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({
+const ColorPicker: React.VFC<ColorPickerProps> = ({
     value,
     onChange,
     onChangeComplete,

@@ -44,7 +44,7 @@ const ButtonWrapper = styled("div")({
 interface MenusFormProps {
     canCreate: boolean;
 }
-const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
+const MenusForm: React.VFC<MenusFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 

@@ -37,6 +37,7 @@ interface ImageDimensionsType {
     width: number;
     height: number;
 }
+
 function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType> {
     return new Promise(resolve => {
         const image = new window.Image();
@@ -66,7 +67,11 @@ const pluginOnSave = (element: BasePbEditorElement): BasePbEditorElement => {
     return plugin.onSave(element);
 };
 
-const SaveAction: React.FC = ({ children }) => {
+interface SaveActionProps {
+    children: React.ReactNode;
+}
+
+const SaveAction: React.VFC<SaveActionProps> = ({ children }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementByIdSelector(activeElementId as string)

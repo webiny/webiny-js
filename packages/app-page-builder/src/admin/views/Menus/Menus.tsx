@@ -5,7 +5,7 @@ import MenusForm from "./MenusForm";
 import { useSecurity } from "@webiny/app-security";
 import { PageBuilderSecurityPermission } from "~/types";
 
-const Menus: React.FC = () => {
+const Menus: React.VFC = () => {
     const { identity, getPermission } = useSecurity();
     const pbMenuPermissionRwd = useMemo((): string | null => {
         const permission = getPermission<PageBuilderSecurityPermission>("pb.menu");

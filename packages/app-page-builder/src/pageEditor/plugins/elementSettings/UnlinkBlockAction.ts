@@ -9,7 +9,7 @@ import { PbElement } from "~/types";
 interface UnlinkBlockActionPropsType {
     children: React.ReactElement;
 }
-const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) => {
+const UnlinkBlockAction: React.VFC<UnlinkBlockActionPropsType> = ({ children }) => {
     const [element] = useActiveElement();
     const { getElementTree } = useEventActionHandler();
     const updateElement = useUpdateElement();

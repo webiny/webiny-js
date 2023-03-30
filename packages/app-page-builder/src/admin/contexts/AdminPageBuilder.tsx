@@ -46,7 +46,13 @@ interface OnPagePublish {
 
 type OnPageDelete = OnPagePublish;
 
-export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
+interface AdminPageBuilderContextProviderProps {
+    children: React.ReactNode;
+}
+
+export const AdminPageBuilderContextProvider: React.VFC<AdminPageBuilderContextProviderProps> = ({
+    children
+}) => {
     const pageBuilder = usePageBuilder();
     const client = useApolloClient();
     const onPagePublish = useRef<OnPagePublishSubscriber[]>([]);

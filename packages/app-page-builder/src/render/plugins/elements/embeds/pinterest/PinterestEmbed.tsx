@@ -49,7 +49,7 @@ const centerAlign = css({
     textAlign: "center"
 });
 
-const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
+const PinterestEmbed: React.VFC<PinterestEmbedProps> = props => {
     const { url } = get(props.element, "data.source") || {};
 
     useEffect(() => {

@@ -40,7 +40,7 @@ const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
     return RevisionStatusEnum.DRAFT;
 };
 
-const Revisions: React.FC = () => {
+const Revisions: React.VFC = () => {
     const [revisions] = useRevisions();
     const { history } = useRouter();
 

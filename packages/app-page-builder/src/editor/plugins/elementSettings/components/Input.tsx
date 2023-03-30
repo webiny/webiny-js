@@ -22,7 +22,7 @@ interface InputPropsType {
     containerClassName?: string;
 }
 
-const Input: React.FC<InputPropsType> = ({
+const Input: React.VFC<InputPropsType> = ({
     label,
     value,
     valueKey,

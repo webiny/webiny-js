@@ -9,7 +9,7 @@ interface IconProps {
     element: PbEditorElement;
 }
 
-const Icon: React.FC<IconProps> = props => {
+const Icon: React.VFC<IconProps> = props => {
     if (isLegacyRenderingEngine) {
         return <PbIcon {...props} />;
     }

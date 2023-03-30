@@ -16,7 +16,7 @@ interface ImagesListDesignSettingsProps {
     Bind: BindComponent;
     submit: (event: React.MouseEvent) => void;
 }
-const ImagesListDesignSettings: React.FC<ImagesListDesignSettingsProps> = ({ Bind, submit }) => {
+const ImagesListDesignSettings: React.VFC<ImagesListDesignSettingsProps> = ({ Bind, submit }) => {
     const components = plugins.byType<PbPageElementImagesListComponentPlugin>(
         "pb-page-element-images-list-component"
     );

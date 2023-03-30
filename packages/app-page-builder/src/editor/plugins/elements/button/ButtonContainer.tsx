@@ -10,7 +10,7 @@ interface ButtonContainerPropsType {
     elementAttributes: { [key: string]: string };
     elementId: string;
 }
-const ButtonContainer: React.FC<ButtonContainerPropsType> = ({
+const ButtonContainer: React.VFC<ButtonContainerPropsType> = ({
     getAllClasses,
     elementStyle,
     elementAttributes,

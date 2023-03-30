@@ -5,7 +5,7 @@ import RenderElement from "../../../components/Element";
 interface DocumentProps {
     element: PbElement;
 }
-const Document: React.FC<DocumentProps> = ({ element }) => {
+const Document: React.VFC<DocumentProps> = ({ element }) => {
     if (!element || Array.isArray(element)) {
         return null;
     }
