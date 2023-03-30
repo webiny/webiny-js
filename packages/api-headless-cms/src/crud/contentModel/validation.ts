@@ -148,8 +148,6 @@ const refinementPluralValidationMessage = (value?: string) => {
     };
 };
 
-
-
 type RefinementApiNameComparison = Partial<
     Pick<zod.infer<typeof modelCreateValidation>, "singularApiName" | "pluralApiName">
 >;

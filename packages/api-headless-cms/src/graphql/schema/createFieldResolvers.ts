@@ -118,16 +118,6 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
 
                 set(isRoot ? parent.values : parent, fieldId, transformedValue);
 
-                const x = {
-                    parent,
-                    fieldId,
-                    field,
-                    fieldResolvers,
-                    fieldResolver,
-                    resolver,
-                    createResolver
-                };
-                const y = x;
                 if (!resolver) {
                     return transformedValue;
                 }
