@@ -191,7 +191,7 @@ interface RichTextRendererProps {
     renderers?: Record<string, RichTextBlockRenderer>;
 }
 
-export const RichTextRenderer: React.FC<RichTextRendererProps> = props => {
+export const RichTextRenderer: React.VFC<RichTextRendererProps> = props => {
     // Combine default renderers with custom renderers
     const renderers = Object.assign({}, defaultRenderers, props.renderers);
 
