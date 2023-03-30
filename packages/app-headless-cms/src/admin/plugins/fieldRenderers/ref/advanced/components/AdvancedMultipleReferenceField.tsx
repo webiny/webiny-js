@@ -276,8 +276,15 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                     {(entry, index) => {
                         const isFirst = index === 0;
                         const isLast = index >= values.length - 1;
+                        const model = loadedModels.find(
+                            model => model.modelId === entry.model.modelId
+                        );
+                        if (!model) {
+                            return null;
+                        }
                         return (
                             <Entry
+                                model={model}
                                 placement="multiRef"
                                 key={`reference-entry-${entry.id}`}
                                 index={index}

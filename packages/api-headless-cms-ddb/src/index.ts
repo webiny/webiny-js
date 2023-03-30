@@ -13,14 +13,15 @@ import { createSettingsStorageOperations } from "~/operations/settings";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { createModelsStorageOperations } from "~/operations/model";
 import { createEntriesStorageOperations } from "./operations/entry";
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 import { createFilterCreatePlugins } from "~/operations/entry/filtering/plugins";
 import {
     CmsEntryFieldFilterPathPlugin,
     CmsEntryFieldFilterPlugin,
-    CmsEntryFieldSortingPlugin
+    CmsEntryFieldSortingPlugin,
+    CmsFieldFilterValueTransformPlugin
 } from "~/plugins";
+import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 
 export * from "./plugins";
 
@@ -82,28 +83,20 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     return {
         name: "dynamodb",
         beforeInit: async context => {
+            const types: string[] = [
+                "cms-model-field-to-graphql",
+                CmsEntryFieldFilterPathPlugin.type,
+                CmsFieldFilterValueTransformPlugin.type,
+                CmsEntryFieldFilterPlugin.type,
+                CmsEntryFieldSortingPlugin.type,
+                ValueFilterPlugin.type
+            ];
             /**
              * Collect all required plugins from parent context.
              */
-            const fieldPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-                "cms-model-field-to-graphql"
-            );
-            plugins.register(fieldPlugins);
-
-            const filterPathPlugins = context.plugins.byType<CmsEntryFieldFilterPathPlugin>(
-                CmsEntryFieldFilterPathPlugin.type
-            );
-            plugins.register(filterPathPlugins);
-
-            const filterPlugins = context.plugins.byType<CmsEntryFieldFilterPlugin>(
-                CmsEntryFieldFilterPlugin.type
-            );
-            plugins.register(filterPlugins);
-
-            const sortingPlugins = context.plugins.byType<CmsEntryFieldSortingPlugin>(
-                CmsEntryFieldSortingPlugin.type
-            );
-            plugins.register(sortingPlugins);
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
             /**
              * Pass the plugins to the parent context.
              */

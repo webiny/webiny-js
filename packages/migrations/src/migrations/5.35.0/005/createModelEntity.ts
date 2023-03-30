@@ -40,6 +40,9 @@ const attributes: Parameters<typeof createLegacyEntity>[2] = {
         type: "map",
         required: true
     },
+    icon: {
+        type: "string"
+    },
     description: {
         type: "string"
     },

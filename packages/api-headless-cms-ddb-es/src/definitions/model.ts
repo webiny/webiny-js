@@ -51,6 +51,9 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 type: "map",
                 required: true
             },
+            icon: {
+                type: "string"
+            },
             description: {
                 type: "string"
             },

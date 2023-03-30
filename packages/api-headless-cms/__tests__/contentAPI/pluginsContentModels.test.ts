@@ -354,7 +354,8 @@ describe("content model plugins", () => {
                         savedOn: null,
                         titleFieldId: "name",
                         descriptionFieldId: "descr",
-                        imageFieldId: null
+                        imageFieldId: null,
+                        icon: null
                     },
                     error: null
                 }
@@ -438,6 +439,7 @@ describe("content model plugins", () => {
                                 slug: "e-commerce",
                                 name: "E-Commerce"
                             },
+                            icon: null,
                             layout: [["name"], ["sku", "price"], ["descr"]],
                             modelId: "product",
                             name: "Product",

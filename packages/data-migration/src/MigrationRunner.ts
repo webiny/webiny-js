@@ -1,30 +1,56 @@
 import { Logger } from "pino";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { coerce } from "semver";
-import { MigrationRepositorySymbol, LoggerSymbol, MigrationSymbol } from "./symbols";
+import {
+    MigrationRepositorySymbol,
+    LoggerSymbol,
+    MigrationSymbol,
+    ExecutionTimeLimiterSymbol
+} from "./symbols";
 import { createPinoLogger, getChildLogger } from "./createPinoLogger";
 import {
-    MigrationResult,
-    ExecutedMigrationResponse,
-    SkippedMigrationResponse,
     MigrationRepository,
     DataMigration,
-    DataMigrationContext
+    DataMigrationContext,
+    ExecutionTimeLimiter,
+    MigrationRun,
+    MigrationStatus,
+    MigrationRunItem
 } from "~/types";
+import { executeWithRetry } from "./executeWithRetry";
+import { createId } from "~/createId";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
+
+const getCurrentISOTime = () => {
+    return new Date().toISOString();
+};
+
+const getRunItemDuration = (runItem: MigrationRunItem) => {
+    if (!runItem.startedOn || !runItem.finishedOn) {
+        return "N/A";
+    }
+
+    return new Date(runItem.finishedOn).getTime() - new Date(runItem.startedOn).getTime();
+};
+
+class MigrationNotFinished extends Error {}
+class MigrationInProgress extends Error {}
 
 export class MigrationRunner {
     private readonly logger: Logger;
     private readonly migrations: DataMigration[];
     private readonly repository: MigrationRepository;
+    private readonly timeLimiter: ExecutionTimeLimiter;
 
     constructor(
         repository: MigrationRepository,
+        timeLimiter: ExecutionTimeLimiter,
         migrations: DataMigration[],
         logger: Logger | undefined
     ) {
         this.repository = repository;
+        this.timeLimiter = timeLimiter;
         this.migrations = migrations || [];
 
         if (!logger) {
@@ -34,7 +60,19 @@ export class MigrationRunner {
     }
 
     async execute(projectVersion: string, isApplicable?: IsMigrationApplicable) {
-        this.validateIds(this.migrations);
+        const lastRun = await this.getOrCreateRun();
+
+        try {
+            this.validateIds(this.migrations);
+        } catch (err) {
+            lastRun.status = "error";
+            lastRun.error = {
+                message: err.message
+            };
+            await this.repository.saveRun(lastRun);
+            return;
+        }
+
         const [latestMigration] = await this.repository.listMigrations({ limit: 1 });
 
         this.logger.info(`Project version is %s.`, projectVersion);
@@ -54,8 +92,8 @@ export class MigrationRunner {
             await this.repository.logMigration({
                 id: startingId,
                 description: "starting point for applicable migrations detection",
-                createdOn: new Date().toISOString(),
-                duration: 0,
+                startedOn: getCurrentISOTime(),
+                finishedOn: getCurrentISOTime(),
                 reason: "initial migration"
             });
         } else {
@@ -68,10 +106,6 @@ export class MigrationRunner {
             this.logger.info(`Using migrations in the range of %s to %s.`, startingId, lastId);
         }
 
-        const executed: ExecutedMigrationResponse[] = [];
-        const skipped: SkippedMigrationResponse[] = [];
-        const notApplicable: SkippedMigrationResponse[] = [];
-
         const defaultIsApplicable: IsMigrationApplicable = mig => {
             return mig.getId() > startingId && mig.getId() <= lastId;
         };
@@ -81,10 +115,9 @@ export class MigrationRunner {
         const executableMigrations = this.migrations
             .filter(mig => {
                 if (!isMigrationApplicable(mig)) {
-                    notApplicable.push({
+                    this.setRunItem(lastRun, {
                         id: mig.getId(),
-                        description: mig.getDescription(),
-                        reason: "not applicable"
+                        status: "not-applicable"
                     });
 
                     return false;
@@ -93,51 +126,82 @@ export class MigrationRunner {
             })
             .sort((a, b) => (a.getId() > b.getId() ? 1 : -1));
 
-        this.logger.info(`Found %s applicable migration(s).`, executableMigrations.length);
+        this.logger.info(
+            `Found %s applicable out of %s available migration(s).`,
+            executableMigrations.length,
+            this.migrations.length
+        );
+
+        // Are we're within the last 2 minutes of the execution time limit?
+        const shouldCreateCheckpoint = () => {
+            return this.timeLimiter() < 120000;
+        };
 
         for (const migration of executableMigrations) {
+            const runItem = this.getOrCreateRunItem(lastRun, migration);
+            const checkpoint = await this.repository.getCheckpoint(migration.getId());
             const logger = getChildLogger(this.logger, migration);
-            const context: DataMigrationContext = { projectVersion, logger };
 
-            const shouldExecute = await migration.shouldExecute(context);
+            if (checkpoint) {
+                this.logger.info(checkpoint, `Found checkpoint ${migration.getId()}.`);
+            }
+
+            const context: DataMigrationContext = {
+                projectVersion,
+                logger,
+                checkpoint,
+                runningOutOfTime: shouldCreateCheckpoint,
+                createCheckpoint: async (data: unknown) => {
+                    await this.createCheckpoint(migration, data);
+                },
+                createCheckpointAndExit: async (data: unknown) => {
+                    await this.createCheckpoint(migration, data);
+                    // We throw an error to break out of the migration execution completely.
+                    throw new MigrationNotFinished();
+                }
+            };
+            const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
 
             if (!shouldExecute) {
                 this.logger.info(`Skipping migration %s.`, migration.getId());
-                skipped.push({
-                    id: migration.getId(),
-                    description: migration.getDescription(),
-                    reason: "migration already applied"
-                });
+                runItem.status = "skipped";
+
+                await this.setRunItemAndSave(lastRun, runItem);
 
                 await this.repository.logMigration({
                     id: migration.getId(),
                     description: migration.getDescription(),
-                    createdOn: new Date().toISOString(),
-                    duration: 0,
                     reason: "skipped"
                 });
 
                 continue;
             }
 
-            const result: MigrationResult = {
-                duration: 0,
-                logs: [],
-                error: null,
-                success: true
-            };
-
-            const start = Date.now();
             try {
+                lastRun.status = "running";
+                runItem.status = "running";
+                if (!runItem.startedOn) {
+                    runItem.startedOn = getCurrentISOTime();
+                }
+                await this.setRunItemAndSave(lastRun, runItem);
                 this.logger.info(
-                    `Executing migration %s: %s.`,
+                    `Executing migration %s: %s`,
                     migration.getId(),
                     migration.getDescription()
                 );
                 await migration.execute(context);
+                runItem.status = "done";
             } catch (err) {
-                result.success = false;
-                result.error = {
+                // If `MigrationNotFinished` was thrown, we will need to resume the migration.
+                if (err instanceof MigrationNotFinished) {
+                    lastRun.status = "pending";
+                    runItem.status = "pending";
+                    return;
+                }
+
+                runItem.status = "error";
+                lastRun.status = "error";
+                lastRun.error = {
                     name: err.name || "Migration error",
                     message: err.message,
                     stack: err.stack,
@@ -145,37 +209,56 @@ export class MigrationRunner {
                     code: err.code
                 };
                 this.logger.error(err, err.message);
+                return;
             } finally {
-                result.duration = Date.now() - start;
+                // We sum duration from the previous run with the current run.
+                runItem.finishedOn = getCurrentISOTime();
+
+                // Update run stats.
+                await this.setRunItemAndSave(lastRun, runItem);
+
                 this.logger.info(
                     `Finished executing migration %s in %sms.`,
                     migration.getId(),
-                    result.duration
+                    getRunItemDuration(runItem)
                 );
             }
 
-            executed.push({
+            await this.repository.logMigration({
                 id: migration.getId(),
                 description: migration.getDescription(),
-                result
+                startedOn: runItem.startedOn,
+                finishedOn: runItem.finishedOn,
+                reason: "executed"
             });
-            /**
-             * If the migration was successful, we'll log it in the database.
-             */
-            if (result.success && !result.error) {
-                await this.repository.logMigration({
-                    id: migration.getId(),
-                    description: migration.getDescription(),
-                    createdOn: new Date().toISOString(),
-                    duration: result.duration,
-                    reason: "executed"
-                });
-            }
+
+            this.logger.info(`Deleting checkpoint ${migration.getId()}.`);
+            await this.repository.deleteCheckpoint(migration.getId());
         }
 
-        this.logger.info(`Finished processing applicable migrations.`);
+        lastRun.status = "done";
+        lastRun.finishedOn = getCurrentISOTime();
+        await this.repository.saveRun(lastRun);
 
-        return { executed, skipped, notApplicable };
+        this.logger.info(`Finished processing applicable migrations.`);
+    }
+
+    async getStatus(): Promise<MigrationStatus> {
+        const lastRun = await this.repository.getLastRun();
+        if (!lastRun) {
+            throw new Error(`No migrations were ever executed!`);
+        }
+
+        // Since we don't store migration descriptions to DB, we need to fetch them from actual migration objects.
+        const withDescriptions = lastRun.migrations.map(mig => {
+            const dataMigration = this.migrations.find(dm => dm.getId() === mig.id);
+            return {
+                ...mig,
+                description: dataMigration ? dataMigration.getDescription() : "N/A"
+            };
+        });
+
+        return { ...lastRun, migrations: withDescriptions };
     }
 
     private validateIds(migrations: DataMigration[]) {
@@ -196,10 +279,77 @@ export class MigrationRunner {
             ids.add(id);
         }
     }
+
+    private async createCheckpoint(migration: DataMigration, checkpoint: unknown) {
+        this.logger.info(checkpoint, `Saving checkpoint ${migration.getId()}`);
+        const execute = () => this.repository.createCheckpoint(migration.getId(), checkpoint);
+        await executeWithRetry(execute);
+    }
+
+    private async getOrCreateRun() {
+        const resolvedStatus: Array<MigrationRun["status"]> = ["done", "error"];
+        const unresolvedStatus: Array<MigrationRun["status"]> = ["init", "running"];
+
+        let lastRun = await this.repository.getLastRun();
+
+        if (lastRun && unresolvedStatus.includes(lastRun.status)) {
+            throw new MigrationInProgress(`Migration is already in progress (ID: ${lastRun.id})!`);
+        }
+
+        if (!lastRun || resolvedStatus.includes(lastRun.status)) {
+            lastRun = {
+                id: createId(),
+                status: "init",
+                startedOn: getCurrentISOTime(),
+                finishedOn: "",
+                migrations: []
+            };
+
+            await this.repository.saveRun(lastRun);
+        }
+
+        return lastRun;
+    }
+
+    private getOrCreateRunItem(run: MigrationRun, migration: DataMigration): MigrationRunItem {
+        const existingItem = run.migrations.find(item => item.id === migration.getId());
+        if (existingItem) {
+            return {
+                ...existingItem,
+                status: "running"
+            };
+        }
+
+        return {
+            id: migration.getId(),
+            status: "running"
+        };
+    }
+
+    private setRunItem(run: MigrationRun, item: MigrationRunItem) {
+        const index = run.migrations.findIndex(runItem => runItem.id === item.id);
+        if (index < 0) {
+            run.migrations.push(item);
+        } else {
+            run.migrations = [
+                ...run.migrations.slice(0, index),
+                item,
+                ...run.migrations.slice(index + 1)
+            ];
+        }
+
+        run.migrations = run.migrations.sort((a, b) => (a.id > b.id ? 1 : -1));
+    }
+
+    private async setRunItemAndSave(run: MigrationRun, item: MigrationRunItem) {
+        this.setRunItem(run, item);
+        await this.repository.saveRun(run);
+    }
 }
 
 makeInjectable(MigrationRunner, [
     inject(MigrationRepositorySymbol),
+    inject(ExecutionTimeLimiterSymbol),
     inject(MigrationSymbol, { multi: true, optional: true }),
     inject(LoggerSymbol, { optional: true })
 ]);

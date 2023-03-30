@@ -1,9 +1,11 @@
-import pRetry from "p-retry";
+import chunk from "lodash/chunk";
 import { Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
-import { DataMigrationContext } from "@webiny/data-migration";
+import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
+import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import {
     createStandardEntity,
+    executeWithRetry,
     queryOne,
     queryAll,
     batchWriteAll,
@@ -13,9 +15,17 @@ import {
 import { createFileEntity, getFileData, legacyAttributes } from "../entities/createFileEntity";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
-import { File } from "./types";
+import { File } from "../types";
 
-export class FileManager_5_35_0_001_FileData {
+type FileMigrationCheckpoint = Record<string, PrimitiveValue[] | boolean | undefined>;
+
+const isGroupMigrationCompleted = (
+    status: PrimitiveValue[] | boolean | undefined
+): status is boolean => {
+    return typeof status === "boolean";
+};
+
+export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrationCheckpoint> {
     private readonly elasticsearchClient: Client;
     private readonly newFileEntity: ReturnType<typeof createFileEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
@@ -36,7 +46,11 @@ export class FileManager_5_35_0_001_FileData {
         return "";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
+        if (checkpoint) {
+            return true;
+        }
+
         const defaultLocale = await queryOne<{ code: string }>({
             entity: this.localeEntity,
             partitionKey: `T#root#I18N#L#D`,
@@ -67,7 +81,10 @@ export class FileManager_5_35_0_001_FileData {
         return true;
     }
 
-    async execute({ logger }: DataMigrationContext): Promise<void> {
+    async execute({
+        logger,
+        ...context
+    }: DataMigrationContext<FileMigrationCheckpoint>): Promise<void> {
         const tenants = await queryAll<{ id: string }>({
             entity: this.tenantEntity,
             partitionKey: "TENANTS",
@@ -76,6 +93,8 @@ export class FileManager_5_35_0_001_FileData {
                 gt: " "
             }
         });
+
+        const migrationStatus: FileMigrationCheckpoint = context.checkpoint || {};
 
         for (const tenant of tenants) {
             const locales = await queryAll<{ code: string }>({
@@ -87,6 +106,13 @@ export class FileManager_5_35_0_001_FileData {
             });
 
             for (const locale of locales) {
+                const groupId = `${tenant.id}:${locale.code}`;
+                const status = migrationStatus[groupId];
+
+                if (isGroupMigrationCompleted(status)) {
+                    continue;
+                }
+
                 let batch = 0;
                 await esQueryAllWithCallback<File>({
                     elasticsearchClient: this.elasticsearchClient,
@@ -100,16 +126,19 @@ export class FileManager_5_35_0_001_FileData {
                                 ]
                             }
                         },
-                        size: 1000,
+                        size: 10000,
                         sort: [
                             {
                                 "id.keyword": "asc"
                             }
-                        ]
+                        ],
+                        search_after: status
                     },
-                    callback: async files => {
+                    callback: async (files, cursor) => {
                         batch++;
-                        logger.info(`Processing batch #${batch} (${files.length} files).`);
+                        logger.info(
+                            `Processing batch #${batch} in group ${groupId} (${files.length} files).`
+                        );
                         const items = files.map(file => {
                             return this.newFileEntity.putBatch({
                                 PK: `T#${tenant.id}#L#${locale.code}#FM#F${file.id}`,
@@ -125,28 +154,40 @@ export class FileManager_5_35_0_001_FileData {
                             });
                         });
 
-                        const execute = () =>
-                            batchWriteAll({ table: this.newFileEntity.table, items });
+                        const execute = () => {
+                            return Promise.all(
+                                chunk(items, 200).map(fileChunk => {
+                                    return batchWriteAll({
+                                        table: this.newFileEntity.table,
+                                        items: fileChunk
+                                    });
+                                })
+                            );
+                        };
 
-                        const retries = 20;
-                        await pRetry(execute, {
-                            maxRetryTime: 300000,
-                            retries,
-                            minTimeout: 1500,
-                            maxTimeout: 30000,
+                        await executeWithRetry(execute, {
                             onFailedAttempt: error => {
-                                /**
-                                 * We will only log attempts which are after 3/4 of total attempts.
-                                 */
-                                if (error.attemptNumber < retries * 0.75) {
-                                    return;
-                                }
-                                console.error(`Attempt #${error.attemptNumber} failed.`);
-                                console.error(error.message);
+                                logger.error(
+                                    `"batchWriteAll" attempt #${error.attemptNumber} failed.`
+                                );
+                                logger.error(error.message);
                             }
                         });
+
+                        // Update checkpoint after every batch
+                        migrationStatus[groupId] = cursor;
+
+                        // Check if we should store checkpoint and exit.
+                        if (context.runningOutOfTime()) {
+                            await context.createCheckpointAndExit(migrationStatus);
+                        } else {
+                            await context.createCheckpoint(migrationStatus);
+                        }
                     }
                 });
+
+                migrationStatus[groupId] = true;
+                await context.createCheckpoint(migrationStatus);
             }
         }
     }

@@ -39,7 +39,7 @@ const buildTransporter = async (params: BuildMailerParams): Promise<Transport> =
     );
 };
 
-const getPort = (value: any) => {
+const getPort = (value: any): number => {
     const port = Number(value);
     if (!!value && isNaN(port) === false) {
         return port;
@@ -66,7 +66,7 @@ const getDefaultSettings = (): TransportSettings | null => {
 
     const result = createValidation.safeParse(input);
 
-    return result.success ? result.data : null;
+    return result.success ? (result.data as TransportSettings) : null;
 };
 
 export const createTransporterCrud = async (
