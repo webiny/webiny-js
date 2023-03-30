@@ -2,6 +2,7 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
+import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as InsightsIcon } from "@material-symbols/svg-400/outlined/insights.svg";
 import GoogleAnalyticsEventDynamicFieldset from "./components/GoogleAnalyticsEventDynamicFieldset";
@@ -38,7 +39,7 @@ const plugin: FbEditorTrigger = {
                             />
                         </Bind>
                     </Cell>
-                    <Cell>
+                    <Cell span={12}>
                         <ButtonPrimary
                             onClick={ev => {
                                 submit(ev);
@@ -46,6 +47,12 @@ const plugin: FbEditorTrigger = {
                         >
                             {t`Save`}
                         </ButtonPrimary>
+                    </Cell>
+                    <Cell span={12}>
+                        <Typography use="body1">
+                            Note: Make sure you have Google Analytics installed on your website
+                            before using this trigger.
+                        </Typography>
                     </Cell>
                 </Grid>
             );

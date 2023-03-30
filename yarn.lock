@@ -10266,6 +10266,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/gtag.js@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "@types/gtag.js@npm:0.0.12"
+  checksum: 34efc27fbfd0013255b8bfd4af38ded9d5a6ba761130c76f17fd3a9585d83acc88d8005aab667cfec4bdec0e7c7217f689739799a8f61aed0edb929be58b162e
+  languageName: node
+  linkType: hard
+
 "@types/highlight.js@npm:^9.1.0":
   version: 9.12.4
   resolution: "@types/highlight.js@npm:9.12.4"
@@ -40475,6 +40482,7 @@ __metadata:
     "@apollo/react-hooks": ^3.1.5
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
+    "@types/gtag.js": ^0.0.12
     "@types/react-hamburger-menu": ^0.0.4
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-page-builder": 0.0.0

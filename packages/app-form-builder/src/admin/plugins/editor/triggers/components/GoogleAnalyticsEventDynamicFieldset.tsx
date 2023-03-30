@@ -3,7 +3,6 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Input } from "@webiny/ui/Input";
-import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonSecondary, ButtonDefault } from "@webiny/ui/Button";
 import { validation } from "@webiny/validation";
@@ -15,8 +14,11 @@ const Header = styled.div`
     margin-bottom: 15px;
 `;
 
-const gridStyles = css`
-    padding: 0 !important;
+const StyledGrid = styled.div`
+    width: 100%;
+    display: grid;
+    column-gap: 24px;
+    grid-template-columns: 1fr 1fr auto;
 `;
 
 const removeButton = css`
@@ -48,35 +50,31 @@ const WebhooksRequestsDynamicFieldset: React.FC<WebhooksRequestsDynamicFieldsetP
             {({ actions, header, row, empty }) => (
                 <>
                     {row(({ index }) => (
-                        <div>
-                            <Grid className={gridStyles}>
-                                <Cell span={5}>
-                                    <Bind
-                                        validators={validation.create("required")}
-                                        name={`eventParams.${index}.name`}
-                                    >
-                                        <Input label={"Name"} />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={5}>
-                                    <Bind
-                                        validators={validation.create("required")}
-                                        name={`eventParams.${index}.content`}
-                                    >
-                                        <Input label={"Content"} />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={2}>
-                                    <ButtonSecondary
-                                        small
-                                        onClick={actions.remove(index)}
-                                        className={removeButton}
-                                    >
-                                        remove
-                                    </ButtonSecondary>
-                                </Cell>
-                            </Grid>
-                        </div>
+                        <StyledGrid>
+                            <div>
+                                <Bind
+                                    validators={validation.create("required")}
+                                    name={`eventParams.${index}.name`}
+                                >
+                                    <Input label={"Name"} />
+                                </Bind>
+                            </div>
+                            <div>
+                                <Bind
+                                    validators={validation.create("required")}
+                                    name={`eventParams.${index}.content`}
+                                >
+                                    <Input label={"Content"} />
+                                </Bind>
+                            </div>
+                            <ButtonSecondary
+                                small
+                                onClick={actions.remove(index)}
+                                className={removeButton}
+                            >
+                                remove
+                            </ButtonSecondary>
+                        </StyledGrid>
                     ))}
                     {empty(() => (
                         <Header>

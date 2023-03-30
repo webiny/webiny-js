@@ -12,8 +12,6 @@ import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
 
 import theme from "../../theme";
 
-declare let gtag: any | undefined;
-
 const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
