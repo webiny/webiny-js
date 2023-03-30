@@ -38,6 +38,28 @@ describe("Files CRUD test", () => {
     const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
         useGqlHandler();
 
+    test("should create a file with a large file size", async () => {
+        const largeFileData = {
+            key: "/files/large-file.png",
+            name: "filenameD.png",
+            size: Number.MAX_SAFE_INTEGER,
+            type: "image/png",
+            tags: []
+        };
+
+        const [create] = await createFile({ data: largeFileData });
+        expect(create).toEqual({
+            data: {
+                fileManager: {
+                    createFile: {
+                        data: { ...largeFileData, id: expect.any(String) },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
     test("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });
         expect(create).toEqual({
