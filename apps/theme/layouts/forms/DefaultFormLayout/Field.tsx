@@ -11,7 +11,7 @@ import { HiddenField } from "./fields/Hidden";
 /**
  * Renders a single form field. If needed, additional field types can be added.
  */
-export const Field: React.FC<{
+export const Field: React.VFC<{
     field: FormRenderFbFormModelField;
 }> = props => {
     switch (props.field.type) {

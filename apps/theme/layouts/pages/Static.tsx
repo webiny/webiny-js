@@ -26,7 +26,7 @@ const Layout = styled.div`
     }
 `;
 
-const Static: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Static: React.VFC<{ children: React.ReactNode }> = ({ children }) => {
     return (
         <Layout>
             <Global styles={globalStyles} />

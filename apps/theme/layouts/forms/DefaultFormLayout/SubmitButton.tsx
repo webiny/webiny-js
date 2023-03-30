@@ -22,7 +22,7 @@ interface Props {
     children: React.ReactNode;
 }
 
-export const SubmitButton: React.FC<Props> = ({ fullWidth, onClick, loading, children }) => {
+export const SubmitButton: React.VFC<Props> = ({ fullWidth, onClick, loading, children }) => {
     return (
         <Wrapper fullWidth={fullWidth}>
             <button className={"button-body"} onClick={onClick} disabled={loading}>

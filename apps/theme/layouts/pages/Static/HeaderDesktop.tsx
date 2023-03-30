@@ -6,7 +6,7 @@ import { Menu } from "@webiny/app-website";
 import { fonts, breakpoints } from "../../../theme";
 import { Navigation } from "./Navigation";
 
-export const HeaderDesktop: React.FC = () => {
+export const HeaderDesktop: React.VFC = () => {
     const { layoutProps } = usePage();
     const { settings } = layoutProps;
     const { name, logo } = settings;

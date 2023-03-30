@@ -10,7 +10,7 @@ interface Props {
     component: ReCaptchaComponent;
 }
 
-export const ReCaptchaSection: React.FC<Props> = ({ component: ReCaptchaComponent }) => {
+export const ReCaptchaSection: React.VFC<Props> = ({ component: ReCaptchaComponent }) => {
     const bind = useBind({
         name: "reCaptcha",
         validators: validation.create("required")

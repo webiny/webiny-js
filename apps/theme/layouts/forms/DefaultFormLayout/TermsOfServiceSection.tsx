@@ -60,6 +60,6 @@ export const renderCheckbox: TermsOfServiceChildrenFunction = ({
     );
 };
 
-export const TermsOfServiceSection: React.FC<Props> = ({ component: TermsOfServiceComponent }) => {
+export const TermsOfServiceSection: React.VFC<Props> = ({ component: TermsOfServiceComponent }) => {
     return <TermsOfServiceComponent>{renderCheckbox}</TermsOfServiceComponent>;
 };

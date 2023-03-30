@@ -9,7 +9,7 @@ import styled from "@emotion/styled";
 import { Navigation } from "./Navigation";
 import { colors, fonts, breakpoints } from "../../../theme";
 
-export const HeaderMobile: React.FC = () => {
+export const HeaderMobile: React.VFC = () => {
     const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: "main-menu" } });
     const [menuOpened, setMenuOpened] = useState(false);
 

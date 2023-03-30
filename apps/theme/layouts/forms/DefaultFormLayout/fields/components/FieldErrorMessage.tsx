@@ -19,6 +19,6 @@ interface FieldErrorMessageProps {
     isValid: boolean | null;
 }
 
-export const FieldErrorMessage: React.FC<FieldErrorMessageProps> = props => {
+export const FieldErrorMessage: React.VFC<FieldErrorMessageProps> = props => {
     return <Wrapper>{props.isValid === false ? props.message : ""}</Wrapper>;
 };

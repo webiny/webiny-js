@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 
 import { colors, typography } from "../../../theme";
 
-export const Header: React.FC = () => {
+export const Header: React.VFC = () => {
     return (
         <HeaderWrapper data-testid={"pb-desktop-mobile-headers"}>
             <HeaderDesktop />
