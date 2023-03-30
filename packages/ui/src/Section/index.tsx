@@ -29,9 +29,10 @@ const ElevationContent = styled("div")({
 
 interface SectionProps {
     title?: String;
+    children?: React.ReactNode;
 }
 
-const Section: React.FC<SectionProps> = ({ children, title, ...props }) => {
+const Section: React.VFC<SectionProps> = ({ children, title, ...props }) => {
     return (
         <SectionWrapper {...props}>
             <h4>

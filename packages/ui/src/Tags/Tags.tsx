@@ -82,7 +82,7 @@ const tagsStyle = css({
     }
 });
 
-export const Tags: React.FC<TagsProps> = props => {
+export const Tags: React.VFC<TagsProps> = props => {
     const [inputValue, setInputValue] = useState("");
 
     const {

@@ -60,7 +60,7 @@ export interface RichTextEditorProps {
     className?: string;
 }
 
-export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
+export const RichTextEditor: React.VFC<RichTextEditorProps> = props => {
     const elementId = useRef("rte-" + shortid.generate());
     const editorRef = useRef<EditorJSType>();
 

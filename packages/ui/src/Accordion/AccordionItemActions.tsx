@@ -1,7 +1,11 @@
 import React from "react";
 import { IconButton } from "~/Button";
 
-export const AccordionItemActions: React.FC = ({ children }) => {
+interface AccordionItemActionsProps {
+    children: React.ReactNode;
+}
+
+export const AccordionItemActions: React.VFC<AccordionItemActionsProps> = ({ children }) => {
     return <>{children}</>;
 };
 
@@ -11,7 +15,11 @@ export interface AccordionItemActionProps {
     disabled?: boolean;
 }
 
-export const AccordionItemAction = ({ icon, onClick, disabled }: AccordionItemActionProps) => {
+export const AccordionItemAction: React.VFC<AccordionItemActionProps> = ({
+    icon,
+    onClick,
+    disabled
+}) => {
     return (
         <IconButton
             disabled={disabled}

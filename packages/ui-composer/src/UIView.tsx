@@ -3,7 +3,11 @@ import pWaitFor from "p-wait-for";
 import { Plugin, plugins } from "@webiny/plugins";
 import { UIElement, UIElementConfig } from "./UIElement";
 
-const UIViewID: React.FC = ({ children }) => {
+interface UIViewIDProps {
+    children: React.ReactNode;
+}
+
+const UIViewID: React.VFC<UIViewIDProps> = ({ children }) => {
     return <>{children}</>;
 };
 
@@ -161,7 +165,7 @@ interface UIViewHooksProps {
     render: any;
 }
 
-const UIViewHooks: React.FC<UIViewHooksProps> = ({ view, props, render }) => {
+const UIViewHooks: React.VFC<UIViewHooksProps> = ({ view, props, render }) => {
     const hooks = view.getHookDefinitions();
     if (hooks) {
         view.setHookValues(

@@ -13,9 +13,10 @@ export interface MosaicProps {
 
     // Custom class for the mosaic container.
     className?: string;
+    children: React.ReactNode;
 }
 
-const Mosaic: React.FC<MosaicProps> = ({ children, columns, className }) => {
+const Mosaic: React.VFC<MosaicProps> = ({ children, columns, className }) => {
     return (
         <Columned columns={columns} className={className}>
             {children}

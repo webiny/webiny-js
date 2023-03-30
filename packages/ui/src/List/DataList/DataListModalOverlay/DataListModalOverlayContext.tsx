@@ -17,7 +17,7 @@ export interface DataListModalOverlayProviderProps {
     children?: React.ReactChild | React.ReactChild[];
 }
 
-export const DataListModalOverlayProvider: React.FC<DataListModalOverlayProviderProps> = ({
+export const DataListModalOverlayProvider: React.VFC<DataListModalOverlayProviderProps> = ({
     children
 }) => {
     const [isOpen, setIsOpen] = React.useState<boolean>(false);

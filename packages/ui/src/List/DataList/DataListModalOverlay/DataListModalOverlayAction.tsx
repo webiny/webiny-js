@@ -7,7 +7,7 @@ export interface DataListModalOverlayActionProps {
     "data-testid"?: string;
 }
 
-export const DataListModalOverlayAction: React.FC<DataListModalOverlayActionProps> = ({
+export const DataListModalOverlayAction: React.VFC<DataListModalOverlayActionProps> = ({
     icon,
     ...rest
 }) => {

@@ -26,7 +26,7 @@ export interface ChipsProps {
     style?: React.CSSProperties;
 }
 
-export const Chips: React.FC<ChipsProps> = props => {
+export const Chips: React.VFC<ChipsProps> = props => {
     const { children, className, disabled, ...rest } = props;
 
     return (

@@ -19,6 +19,7 @@ export const SimpleOverlay = styled<"div", SimpleOverlayProps>("div")(({ showOve
 export interface DataListModalWrapperProps {
     showOverlay: boolean;
 }
+
 export const DataListModalWrapper = styled<"div", DataListModalWrapperProps>("div")(
     ({ showOverlay }) => ({
         position: "absolute",
@@ -66,9 +67,11 @@ export interface DataListModalOverlayProps {
      * This function is called after closing the modal overlay.
      */
     onDismiss?: (event?: React.SyntheticEvent) => void;
+
+    children: React.ReactNode;
 }
 
-export const DataListModalOverlay: React.FC<DataListModalOverlayProps> = ({
+export const DataListModalOverlay: React.VFC<DataListModalOverlayProps> = ({
     onDismiss,
     children
 }) => {

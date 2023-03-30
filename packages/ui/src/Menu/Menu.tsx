@@ -114,7 +114,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
     }
 }
 
-const MenuDivider: React.FC = () => {
+const MenuDivider: React.VFC = () => {
     return <li className="mdc-list-divider" role="separator" />;
 };
 
@@ -125,7 +125,7 @@ interface MenuItemProps extends BaseMenuItemProps {
     "data-testid"?: string;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ disabled, className, ...rest }) => {
+const MenuItem: React.VFC<MenuItemProps> = ({ disabled, className, ...rest }) => {
     return (
         <BaseMenuItem
             {...rest}

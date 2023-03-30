@@ -8,7 +8,7 @@ const NoDataWrapper = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-const NoData: React.FC = () => (
+const NoData: React.VFC = () => (
     <NoDataWrapper>
         <Typography use="overline">No records found.</Typography>
     </NoDataWrapper>

@@ -20,7 +20,7 @@ story.addDecorator(withKnobs);
 story.add(
     "usage",
     () => {
-        const Div: React.FC = props => {
+        const Div: React.VFC<{ children: React.ReactNode }> = props => {
             return <div style={{ padding: 50 }}>{props.children}</div>;
         };
 

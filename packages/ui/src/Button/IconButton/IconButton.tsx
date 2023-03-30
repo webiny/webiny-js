@@ -43,7 +43,7 @@ export interface IconButtonProps extends Omit<FormComponentProps, "onChange">, R
 /**
  * Shows the icon button.
  */
-const IconButton: React.FC<IconButtonProps> = props => {
+const IconButton: React.VFC<IconButtonProps> = props => {
     const { id, icon, label, onClick, className, disabled, ripple } = props;
 
     return (

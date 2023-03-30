@@ -199,7 +199,7 @@ interface DataListProps {
     perPageOptions?: number[];
 }
 
-const MultiSelectAll: React.FC<DataListProps> = props => {
+const MultiSelectAll: React.VFC<DataListProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -227,7 +227,7 @@ const MultiSelectAll: React.FC<DataListProps> = props => {
     );
 };
 
-const MultiSelectActions: React.FC<DataListProps> = props => {
+const MultiSelectActions: React.VFC<DataListProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -236,7 +236,7 @@ const MultiSelectActions: React.FC<DataListProps> = props => {
     return <ListHeaderItem>{multiSelectActions}</ListHeaderItem>;
 };
 
-const RefreshButton: React.FC<DataListProps> = props => {
+const RefreshButton: React.VFC<DataListProps> = props => {
     const refresh = props.refresh;
     if (!refresh) {
         return null;
@@ -249,7 +249,7 @@ const RefreshButton: React.FC<DataListProps> = props => {
     );
 };
 
-const Sorters: React.FC<DataListProps> = props => {
+const Sorters: React.VFC<DataListProps> = props => {
     const sorters = props.sorters;
     if (!sorters) {
         return null;
@@ -275,7 +275,7 @@ const Sorters: React.FC<DataListProps> = props => {
     );
 };
 
-const Filters: React.FC<DataListProps> = props => {
+const Filters: React.VFC<DataListProps> = props => {
     const filters = props.filters;
     if (!filters) {
         return null;
@@ -288,7 +288,7 @@ const Filters: React.FC<DataListProps> = props => {
     );
 };
 
-const Pagination: React.FC<DataListProps> = props => {
+const Pagination: React.VFC<DataListProps> = props => {
     const { pagination } = props;
     if (!pagination) {
         return null;
@@ -349,7 +349,7 @@ const Pagination: React.FC<DataListProps> = props => {
     );
 };
 
-export const DataList: React.FC<DataListProps> = props => {
+export const DataList: React.VFC<DataListProps> = props => {
     let render: React.ReactNode | null = null;
 
     if (props.loading) {
@@ -431,7 +431,7 @@ export interface ScrollListProps extends ListProps {
     children: React.ReactElement<typeof ListItem>[];
 }
 
-export const ScrollList: React.FC<ScrollListProps> = props => {
+export const ScrollList: React.VFC<ScrollListProps> = props => {
     return (
         <List {...props} className={classNames(props.className, scrollList)}>
             {props.children}

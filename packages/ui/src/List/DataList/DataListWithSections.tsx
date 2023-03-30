@@ -210,7 +210,7 @@ interface DataListWithSectionsProps {
     perPageOptions?: number[];
 }
 
-const MultiSelectAll: React.FC<DataListWithSectionsProps> = props => {
+const MultiSelectAll: React.VFC<DataListWithSectionsProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -238,7 +238,7 @@ const MultiSelectAll: React.FC<DataListWithSectionsProps> = props => {
     );
 };
 
-const MultiSelectActions: React.FC<DataListWithSectionsProps> = props => {
+const MultiSelectActions: React.VFC<DataListWithSectionsProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -247,7 +247,7 @@ const MultiSelectActions: React.FC<DataListWithSectionsProps> = props => {
     return <ListHeaderItem>{multiSelectActions}</ListHeaderItem>;
 };
 
-const RefreshButton: React.FC<DataListWithSectionsProps> = props => {
+const RefreshButton: React.VFC<DataListWithSectionsProps> = props => {
     const refresh = props.refresh;
     if (!refresh) {
         return null;
@@ -260,7 +260,7 @@ const RefreshButton: React.FC<DataListWithSectionsProps> = props => {
     );
 };
 
-const Sorters: React.FC<DataListWithSectionsProps> = props => {
+const Sorters: React.VFC<DataListWithSectionsProps> = props => {
     const sorters = props.sorters;
     if (!sorters) {
         return null;
@@ -286,7 +286,7 @@ const Sorters: React.FC<DataListWithSectionsProps> = props => {
     );
 };
 
-const Filters: React.FC<DataListWithSectionsProps> = props => {
+const Filters: React.VFC<DataListWithSectionsProps> = props => {
     const filters = props.filters;
     if (!filters) {
         return null;
@@ -299,7 +299,7 @@ const Filters: React.FC<DataListWithSectionsProps> = props => {
     );
 };
 
-const Pagination: React.FC<DataListWithSectionsProps> = props => {
+const Pagination: React.VFC<DataListWithSectionsProps> = props => {
     const { pagination } = props;
     if (!pagination) {
         return null;
@@ -360,14 +360,14 @@ const Pagination: React.FC<DataListWithSectionsProps> = props => {
     );
 };
 
-const Search: React.FC<DataListWithSectionsProps> = props => {
+const Search: React.VFC<DataListWithSectionsProps> = props => {
     if (!props.search) {
         return null;
     }
     return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
-export const DataListWithSections: React.FC<DataListWithSectionsProps> = props => {
+export const DataListWithSections: React.VFC<DataListWithSectionsProps> = props => {
     let render: React.ReactNode = null;
 
     if (props.loading) {
@@ -460,7 +460,7 @@ interface ScrollListWithSectionsProps extends ListProps {
     children: React.ReactElement<typeof ListItem>[];
 }
 
-export const ScrollListWithSections: React.FC<ScrollListWithSectionsProps> = props => {
+export const ScrollListWithSections: React.VFC<ScrollListWithSectionsProps> = props => {
     return (
         <List {...props} className={classNames(props.className, scrollList)}>
             {props.children}

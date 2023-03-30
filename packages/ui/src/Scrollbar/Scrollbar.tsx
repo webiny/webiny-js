@@ -9,7 +9,7 @@ interface Props extends ScrollbarProps {
 /**
  * Use Scrollbar component to show vertical or horizontal scrollbars.
  */
-const Scrollbar: React.FC<Props> = props => {
+const Scrollbar: React.VFC<Props> = props => {
     return <Scrollbars {...props} />;
 };
 

@@ -42,6 +42,8 @@ export type InputProps<TValue = any> = FormComponentProps<TValue> &
 
         // For testing purposes.
         "data-testid"?: string;
+
+        children?: React.ReactNode;
     };
 
 /**
@@ -80,7 +82,7 @@ const rmwcProps = [
     "characterCount"
 ];
 
-export const Input: React.FC<InputProps> = props => {
+export const Input: React.VFC<InputProps> = props => {
     const onChange = useCallback(
         (e: React.SyntheticEvent<HTMLInputElement>) => {
             const { onChange, rawOnChange } = props;
