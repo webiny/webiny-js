@@ -31,7 +31,7 @@ export function createConfigurableView(name: string) {
     /**
      * This component is used to configure the view (it can be mounted many times).
      */
-    const Config: React.FC = ({ children }) => {
+    const Config: React.VFC = ({ children }) => {
         return <Compose component={ConfigApply} with={createHOC(children)} />;
     };
 
@@ -47,7 +47,7 @@ export function createConfigurableView(name: string) {
 
     const ViewContext = React.createContext<ViewContext>(defaultContext);
 
-    const View: React.FC<ViewProps> = ({ onProperties }) => {
+    const View: React.VFC<ViewProps> = ({ onProperties }) => {
         const [properties, setProperties] = useState<Property[]>([]);
         const context = { properties };
 

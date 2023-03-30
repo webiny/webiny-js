@@ -11,7 +11,7 @@ interface GroupProps {
     label?: string;
 }
 
-const Group: React.FC<GroupProps> = ({ name, label, children }) => {
+const Group: React.VFC<GroupProps> = ({ name, label, children }) => {
     return (
         <Property id={`group:${name}`} name={"settingsGroup"} array={true}>
             <Property id={`group:${name}:name`} name={"name"} value={name} />
@@ -28,7 +28,7 @@ interface FieldProps {
     replace?: string;
 }
 
-const Field: React.FC<FieldProps> = ({ name, label, replace, remove = false }) => {
+const Field: React.VFC<FieldProps> = ({ name, label, replace, remove = false }) => {
     const parentProperty = useParentProperty();
 
     const id = parentProperty ? parentProperty.id : undefined;
@@ -207,7 +207,7 @@ describe("Test Properties", () => {
             label?: string;
         }
 
-        const Group: React.FC<GroupProps> = ({ name, label, children }) => {
+        const Group: React.VFC<GroupProps> = ({ name, label, children }) => {
             return (
                 <Property name={"group"}>
                     <Property name={"name"} value={name} />
@@ -221,7 +221,7 @@ describe("Test Properties", () => {
             name: string;
         }
 
-        const Toolbar: React.FC<ToolbarProps> = ({ name }) => {
+        const Toolbar: React.VFC<ToolbarProps> = ({ name }) => {
             return (
                 <Property name={"toolbar"}>
                     <Property name={"name"} value={name} />
@@ -322,7 +322,7 @@ describe("Test Properties", () => {
     it("should allow addition of custom properties to predefined components", async () => {
         const onChange = jest.fn();
 
-        const Tutorial: React.FC<{ label: string }> = ({ label }) => {
+        const Tutorial: React.VFC<{ label: string }> = ({ label }) => {
             return <Property name={"tutorial"} value={label} />;
         };
 

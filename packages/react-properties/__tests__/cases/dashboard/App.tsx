@@ -46,7 +46,7 @@ const DashboardConfigApply = makeComposable("DashboardConfigApply", ({ children 
     return <>{children}</>;
 });
 
-interface DashboardConfig extends React.FC<unknown> {
+interface DashboardConfig extends React.VFC<unknown> {
     AddWidget: typeof AddWidget;
     DashboardRenderer: typeof DashboardRenderer;
 }
@@ -74,7 +74,7 @@ interface DashboardViewProps {
     onProperties(properties: Property[]): void;
 }
 
-const DashboardView: React.FC<DashboardViewProps> = ({ onProperties }) => {
+const DashboardView: React.VFC<DashboardViewProps> = ({ onProperties }) => {
     const [properties, setProperties] = useState<Property[]>([]);
     const context = { properties };
 
@@ -96,7 +96,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ onProperties }) => {
     );
 };
 
-export const App: React.FC<DashboardViewProps> = ({ onProperties, children }) => {
+export const App: React.VFC<DashboardViewProps> = ({ onProperties, children }) => {
     return (
         <CompositionProvider>
             <DashboardView onProperties={onProperties} />

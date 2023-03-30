@@ -14,7 +14,7 @@ type DynamicProps<T> = T & {
     [key: string]: any;
 };
 
-const SettingsGroup: React.FC<SettingsGroupProps> = ({
+const SettingsGroup: React.VFC<SettingsGroupProps> = ({
     children,
     replace,
     remove = false,
@@ -47,7 +47,7 @@ interface FormFieldProps extends Record<string, unknown> {
     replace?: string;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
+const FormField: React.VFC<FormFieldProps> = ({
     children,
     after,
     before,

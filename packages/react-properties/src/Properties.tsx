@@ -37,9 +37,10 @@ const PropertiesContext = createContext<PropertiesContext | undefined>(undefined
 
 interface PropertiesProps {
     onChange?(properties: Property[]): void;
+    children: React.ReactNode;
 }
 
-export const Properties: React.FC<PropertiesProps> = ({ onChange, children }) => {
+export const Properties: React.VFC<PropertiesProps> = ({ onChange, children }) => {
     const [properties, setProperties] = useState<Property[]>([]);
 
     useEffect(() => {
@@ -141,6 +142,7 @@ interface PropertyProps {
     remove?: boolean;
     parent?: string;
     root?: boolean;
+    children?: React.ReactNode;
 }
 
 const PropertyContext = createContext<Property | undefined>(undefined);
@@ -179,7 +181,7 @@ export function useAncestor(params: AncestorMatch) {
     return property ? matchOrGetAncestor(property, params) : undefined;
 }
 
-export const Property: React.FC<PropertyProps> = ({
+export const Property: React.VFC<PropertyProps> = ({
     id,
     name,
     value,

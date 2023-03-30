@@ -114,7 +114,7 @@ describe("Dashboard", () => {
             title: string;
         }
 
-        const Link: React.FC<LinkProps> = ({ url, title }) => {
+        const Link: React.VFC<LinkProps> = ({ url, title }) => {
             return (
                 <Property name={"link"} array>
                     <Property name={"url"} value={url} />
