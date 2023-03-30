@@ -7,7 +7,7 @@ export const createDummyTransport = (): DummyTransport => {
     const sent: TransportSendData[] = [];
 
     return {
-        name: "dummy-default",
+        name: "mailer.dummy-default",
         send: async params => {
             sent.push(params);
             return {

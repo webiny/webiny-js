@@ -148,6 +148,8 @@ const refinementPluralValidationMessage = (value?: string) => {
     };
 };
 
+
+
 type RefinementApiNameComparison = Partial<
     Pick<zod.infer<typeof modelCreateValidation>, "singularApiName" | "pluralApiName">
 >;
@@ -181,6 +183,7 @@ const modelCreateValidation = zod.object({
     ),
     description: optionalNullishShortString,
     group: shortString,
+    icon: optionalNullishShortString,
     fields: zod.array(fieldSchema).default([]),
     layout: zod.array(zod.array(shortString)).default([]),
     tags: zod.array(shortString).optional(),
@@ -212,6 +215,7 @@ export const createModelCreateFromValidation = () => {
             ),
             description: optionalNullishShortString,
             group: shortString,
+            icon: optionalNullishShortString,
             locale: optionalShortString
         })
         .refine(refinementApiNameComparisonValidation, refinementApiNameComparisonMessage);
@@ -235,6 +239,7 @@ export const createModelUpdateValidation = () => {
             }, refinementPluralValidationMessage),
             description: optionalNullishShortString,
             group: optionalShortString,
+            icon: optionalNullishShortString,
             fields: zod.array(fieldSchema),
             layout: zod.array(zod.array(shortString)),
             titleFieldId: optionalShortString.nullish(),

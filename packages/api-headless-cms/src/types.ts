@@ -469,6 +469,10 @@ export interface CmsModel {
      */
     group: CmsModelGroup;
     /**
+     * Icon for the content model.
+     */
+    icon?: string | null;
+    /**
      * Description for the content model.
      */
     description: string | null;

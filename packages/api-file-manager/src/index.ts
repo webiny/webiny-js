@@ -1,10 +1,12 @@
-import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
+import { ContextPlugin } from "@webiny/api";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerConfig, createFileManager } from "~/createFileManager";
 import { FileManagerContext } from "~/types";
 import { createGraphQLSchemaPlugin } from "./graphql";
 import { FileStorage } from "~/storage/FileStorage";
+
+export * from "./plugins";
 
 export const createFileManagerContext = (config: Pick<FileManagerConfig, "storageOperations">) => {
     return new ContextPlugin<FileManagerContext>(async context => {

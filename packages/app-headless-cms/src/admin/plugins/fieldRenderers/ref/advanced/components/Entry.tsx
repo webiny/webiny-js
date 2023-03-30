@@ -16,6 +16,7 @@ import { Select } from "./entry/Select";
 import { Remove } from "./entry/Remove";
 import { MoveUp } from "./entry/MoveUp";
 import { MoveDown } from "./entry/MoveDown";
+import { CmsModel } from "~/types";
 
 const Container = styled("div")({
     width: "100%",
@@ -78,6 +79,7 @@ const RightContainer = styled("div")({
 });
 
 interface Props {
+    model: CmsModel;
     entry: CmsReferenceContentEntry;
     onChange: (value: CmsReferenceValue) => void;
     index?: never;
@@ -90,6 +92,7 @@ interface Props {
 
 interface PropsWithRemove {
     onRemove: (entryId: string) => void;
+    model: CmsModel;
     entry: CmsReferenceContentEntry;
     index: number;
     onMoveUp?: (index: number, toTop: boolean) => void;
@@ -100,6 +103,7 @@ interface PropsWithRemove {
 }
 
 export const Entry: React.VFC<PropsWithRemove | Props> = ({
+    model,
     entry,
     onChange,
     onRemove,
@@ -128,10 +132,12 @@ export const Entry: React.VFC<PropsWithRemove | Props> = ({
         [onMoveDownClick, index]
     );
 
+    const icon = model.icon;
+
     return (
         <Container>
             <ContentContainer>
-                <Image title={entry.title} src={entry.image} />
+                <Image title={entry.title} src={entry.image} icon={icon} />
                 <Content>
                     <ModelName name={entry.model.name} />
                     <Title title={entry.title} />

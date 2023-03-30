@@ -24,6 +24,7 @@ import { Dialog } from "~/admin/components/Dialog";
 import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator";
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
 import { Checkbox } from "@webiny/ui/Checkbox";
+import { IconPicker } from "~/admin/components/IconPicker";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -185,6 +186,14 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                 label={t`Content model group`}
                                                 options={contentModelGroups}
                                                 data-testid="cms.newcontentmodeldialog.selectgroup"
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind name="icon">
+                                            <IconPicker
+                                                label={t`Icon`}
+                                                description={t`Choose an icon to represent the model.`}
                                             />
                                         </Bind>
                                     </Cell>

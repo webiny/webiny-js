@@ -9,7 +9,7 @@ interface GetStorageOperationsResponse {
     plugins: Plugin[] | Plugin[][] | PluginCollection;
 }
 export const getStorageOperations = (
-    params: GetStorageOperationsParams
+    params?: GetStorageOperationsParams
 ): GetStorageOperationsResponse => {
     // @ts-ignore
     if (typeof __getCreateStorageOperations !== "function") {
@@ -34,7 +34,7 @@ export const getStorageOperations = (
     }
     return {
         storageOperations: createStorageOperations({
-            plugins: params.plugins || []
+            plugins: params?.plugins || []
         }),
         plugins: getPlugins()
     };

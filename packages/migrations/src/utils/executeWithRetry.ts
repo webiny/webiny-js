@@ -7,6 +7,7 @@ export const executeWithRetry = (execute: () => void, options?: Parameters<typeo
         retries,
         minTimeout: 1500,
         maxTimeout: 30000,
+        randomize: true,
         ...options
     });
 };
