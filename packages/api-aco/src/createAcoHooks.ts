@@ -1,7 +1,7 @@
 import { onFolderBeforeDeleteHook } from "~/folder/onFolderBeforeDelete.hook";
 
-import { AcoContext } from "~/types";
+import { ACOContext } from "~/types";
 
-export const createAcoHooks = (context: AcoContext) => {
+export const createAcoHooks = (context: ACOContext) => {
     onFolderBeforeDeleteHook(context);
 };

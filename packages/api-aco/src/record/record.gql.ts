@@ -3,9 +3,9 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 
 import { resolve } from "~/utils/resolve";
 
-import { AcoContext } from "~/types";
+import { ACOContext } from "~/types";
 
-export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
+export const searchRecordSchema = new GraphQLSchemaPlugin<ACOContext>({
     typeDefs: /* GraphQL */ `
         type SearchRecord {
             id: ID!

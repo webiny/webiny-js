@@ -1,6 +1,6 @@
-import { AcoContext } from "~/types";
+import { ACOContext } from "~/types";
 
-type CheckInstallationParams = Pick<AcoContext, "tenancy" | "i18n">;
+type CheckInstallationParams = Pick<ACOContext, "tenancy" | "i18n">;
 export const isInstallationPending = ({ tenancy, i18n }: CheckInstallationParams): boolean => {
     /**
      * In case of a fresh webiny project "tenant" and "locale" won't be there until
