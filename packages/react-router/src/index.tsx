@@ -89,7 +89,7 @@ export function useRouter(): UseRouter {
  * For Webiny, we only need a BrowserRouter, and we also export a StaticRouter, if we ever
  * need to do SSR. Right now, StaticRouter is not being used at all.
  */
-export const BrowserRouter: React.FC<BrowserRouterProps> = enhancer(RBrowserRouter);
+export const BrowserRouter: React.VFC<BrowserRouterProps> = enhancer(RBrowserRouter);
 export type { BrowserRouterProps };
 
-export const StaticRouter: React.FC<StaticRouterProps> = enhancer(RStaticRouter);
+export const StaticRouter: React.VFC<StaticRouterProps> = enhancer(RStaticRouter);

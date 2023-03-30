@@ -8,7 +8,7 @@ export interface PromptProps {
     when: boolean;
     message: string;
 }
-export const Prompt: React.FC<PromptProps> = ({ when, message }) => {
+export const Prompt: React.VFC<PromptProps> = ({ when, message }) => {
     usePrompt(message, when);
     return null;
 };

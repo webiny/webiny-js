@@ -14,7 +14,11 @@ export const RouterContext = React.createContext<ReactRouterContext>({
     }
 });
 
-export const RouterProvider: React.FC = ({ children }) => {
+export interface RouterProviderProps {
+    children: React.ReactNode;
+}
+
+export const RouterProvider: React.VFC<RouterProviderProps> = ({ children }) => {
     let apolloClient: ApolloClient<any>;
     try {
         apolloClient = useApolloClient();
@@ -44,7 +48,11 @@ export const RouterProvider: React.FC = ({ children }) => {
     return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
 
-export const RouterConsumer: React.FC = ({ children }) => (
+export interface RouterConsumerProps {
+    children: React.ReactNode;
+}
+
+export const RouterConsumer: React.VFC<RouterConsumerProps> = ({ children }) => (
     <RouterContext.Consumer>
         {props => React.cloneElement(children as any, props)}
     </RouterContext.Consumer>

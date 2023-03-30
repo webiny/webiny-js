@@ -25,7 +25,7 @@ export type RouteProps = BaseRouteProps & {
     component?: React.ComponentType;
 };
 
-export const Route: React.FC<RouteProps> = props => {
+export const Route: React.VFC<RouteProps> = props => {
     const newProps = {
         ...props
     };
