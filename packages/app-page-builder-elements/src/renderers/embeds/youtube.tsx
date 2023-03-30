@@ -43,7 +43,7 @@ interface YoutubeEmbedProps {
     element: Element;
 }
 
-const YoutubeEmbed: React.FC<YoutubeEmbedProps> = props => {
+const YoutubeEmbed: React.VFC<YoutubeEmbedProps> = props => {
     const { element } = props;
 
     return (

@@ -4,7 +4,7 @@ import { RendererContextValue, RendererProviderProps } from "~/types";
 
 export const RendererContext = createContext<RendererContextValue>(null as unknown as any);
 
-export const RendererProvider: React.FC<RendererProviderProps> = ({
+export const RendererProvider: React.VFC<RendererProviderProps> = ({
     children,
     element,
     attributes,

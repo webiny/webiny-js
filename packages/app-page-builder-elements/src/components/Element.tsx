@@ -8,7 +8,7 @@ export interface Props {
     meta?: RendererMeta;
 }
 
-export const Element: React.FC<Props> = props => {
+export const Element: React.VFC<Props> = props => {
     const { getRenderers } = usePageElements();
 
     const renderers = getRenderers();

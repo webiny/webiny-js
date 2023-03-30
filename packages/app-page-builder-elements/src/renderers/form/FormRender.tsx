@@ -33,7 +33,7 @@ export interface FormRenderProps {
     loading: boolean;
 }
 
-const FormRender: React.FC<FormRenderProps> = props => {
+const FormRender: React.VFC<FormRenderProps> = props => {
     const { formData, createFormParams } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
 

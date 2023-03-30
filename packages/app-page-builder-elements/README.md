@@ -55,7 +55,7 @@ cell, grid, ...), but also the necessary utilities to create new ones.
 <p>
 
 ```ts
-export declare const PageElementsProvider: React.FC<PageElementsProviderProps>;
+export declare const PageElementsProvider: React.VFC<PageElementsProviderProps>;
 ```
 
 </p>
@@ -77,7 +77,7 @@ import { PageElementsProvider as PbPageElementsProvider } from "@webiny/app-page
 // https://github.com/webiny/webiny-js/tree/dev/packages/theme
 import { theme } from "./theme";
 
-export const PageElementsProvider: React.FC = ({ children }) => (
+export const PageElementsProvider: React.VFC = ({ children }) => (
   <PbPageElementsProvider
     theme={theme}
     renderers={

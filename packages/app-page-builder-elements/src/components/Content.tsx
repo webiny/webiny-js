@@ -6,6 +6,6 @@ export interface ContentProps {
     content: ContentType;
 }
 
-export const Content: React.FC<ContentProps> = props => {
+export const Content: React.VFC<ContentProps> = props => {
     return <Element element={props.content} />;
 };

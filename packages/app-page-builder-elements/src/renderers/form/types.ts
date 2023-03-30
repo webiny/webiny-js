@@ -100,7 +100,7 @@ export type ReCaptchaProps = {
     onExpired?: Function;
 };
 
-export type ReCaptchaComponent = React.FC<ReCaptchaProps>;
+export type ReCaptchaComponent = React.VFC<ReCaptchaProps>;
 
 export type TermsOfServiceChildrenFunction = (params: {
     onChange: (value: boolean) => void;
@@ -116,7 +116,7 @@ export interface TermsOfServiceProps {
     onExpired?: Function;
 }
 
-export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;
+export type TermsOfServiceComponent = React.VFC<TermsOfServiceProps>;
 
 export type FormSubmissionFieldValues = Record<string, any>;
 

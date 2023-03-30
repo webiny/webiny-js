@@ -37,11 +37,13 @@ export interface CreateButtonParams {
     clickHandlers?: Array<ButtonClickHandler> | (() => Array<ButtonClickHandler>);
 }
 
-const ButtonBody: React.FC<{ className?: string; onClick?: () => void }> = ({
-    className,
-    children,
-    onClick
-}) => (
+interface ButtonBodyProps {
+    className?: string;
+    onClick?: () => void;
+    children: React.ReactNode;
+}
+
+const ButtonBody: React.VFC<ButtonBodyProps> = ({ className, children, onClick }) => (
     <ClassNames>
         {({ cx }) => (
             <div className={cx("button-body", className)} onClick={onClick}>
@@ -51,7 +53,7 @@ const ButtonBody: React.FC<{ className?: string; onClick?: () => void }> = ({
     </ClassNames>
 );
 
-const ButtonIcon: React.FC<{ className?: string; svg: string }> = ({ className, svg }) => (
+const ButtonIcon: React.VFC<{ className?: string; svg: string }> = ({ className, svg }) => (
     <ClassNames>
         {({ cx }) => (
             <div
@@ -62,7 +64,7 @@ const ButtonIcon: React.FC<{ className?: string; svg: string }> = ({ className, 
     </ClassNames>
 );
 
-const ButtonText: React.FC<{ text: string }> = ({ text }) => {
+const ButtonText: React.VFC<{ text: string }> = ({ text }) => {
     return <div className={"button-text"}>{text}</div>;
 };
 

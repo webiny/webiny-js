@@ -22,7 +22,7 @@ import {
 
 export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
 
-export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
+export const PageElementsProvider: React.VFC<PageElementsProviderProps> = ({
     children,
     theme,
     renderers = {},

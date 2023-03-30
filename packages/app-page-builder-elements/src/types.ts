@@ -30,6 +30,7 @@ export interface PageElementsProviderProps {
     };
     beforeRenderer?: React.VFC | null;
     afterRenderer?: React.VFC | null;
+    children?: React.ReactNode;
 }
 
 export type AttributesObject = React.ComponentProps<any>;
@@ -107,6 +108,7 @@ export interface RendererProviderProps {
     element: Element;
     attributes: HTMLAttributes<HTMLElement>;
     meta: RendererProviderMeta;
+    children: React.ReactNode;
 }
 
 export type RendererMeta = Record<string, any>;
@@ -120,6 +122,7 @@ export interface PageProviderProps {
     page: Page;
     layout?: React.ComponentType<{ children: React.ReactNode }>;
     layoutProps?: Record<string, any>;
+    children: React.ReactNode;
 }
 
 export type Renderer<T = {}, TElementData = Record<string, any>> = React.ComponentType<
