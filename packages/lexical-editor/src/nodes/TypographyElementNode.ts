@@ -12,9 +12,8 @@ import {
     Spread
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
-import { styleObjectToString } from "~/utils/styleObjectToString";
 import { TypographyHTMLTag, TypographyValue } from "~/types";
-import { findTypographyStyleById } from "~/utils/theme/typography";
+import { addClassNamesToElement } from "@lexical/utils";
 
 // Command and payload
 export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(
@@ -84,12 +83,15 @@ export class TypographyElementNode extends ElementNode {
     }
 
     addStylesHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
-        const typographyStyleValue = findTypographyStyleById(theme, this.__styleId);
+        const typographyStyleValue = theme?.emotionMap
+            ? theme?.emotionMap[this.__styleId]
+            : undefined;
         if (typographyStyleValue) {
             this.__css = typographyStyleValue.css;
+            addClassNamesToElement(element, typographyStyleValue.className);
         }
         element.setAttribute(TypographyNodeAttrName, this.__styleId);
-        element.style.cssText = styleObjectToString(this.__css);
+
         return element;
     }
 

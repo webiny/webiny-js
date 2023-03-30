@@ -1,5 +1,5 @@
 import React, { createContext, useState } from "react";
-import { TextBlockSelection, ToolbarType } from "~/types";
+import { TextBlockSelection, ThemeEmotionMap, ToolbarType } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
 
 export interface RichTextEditorContext {
@@ -9,8 +9,10 @@ export interface RichTextEditorContext {
     setToolbarType: (type: ToolbarType) => void;
     textBlockSelection: TextBlockSelection | null;
     setTextBlockSelection: (textBlockSelection: TextBlockSelection) => void;
-    theme: WebinyTheme | undefined;
+    theme?: WebinyTheme;
     setTheme: (theme: WebinyTheme) => void;
+    themeEmotionMap?: ThemeEmotionMap;
+    setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -23,6 +25,7 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     const [nodeIsText, setIsText] = useState<boolean>(false);
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
+    const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
@@ -42,7 +45,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 textBlockSelection,
                 setTextBlockSelection,
                 theme,
-                setTheme
+                setTheme,
+                themeEmotionMap,
+                setThemeEmotionMap
             }}
         >
             {children}

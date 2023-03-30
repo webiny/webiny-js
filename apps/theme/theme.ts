@@ -166,7 +166,7 @@ const theme = createTheme({
                     id: "list1",
                     name: "Bullet List 1",
                     tag: "ul",
-                    css: { ...paragraphs, fontSize: 18.5, color: "#fa5723" }
+                    css: { ...paragraphs, fontSize: 18.5, color: "#fa5723", li: { color: "green" } }
                 },
                 {
                     id: "list2",

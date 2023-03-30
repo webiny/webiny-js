@@ -18,7 +18,6 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
-import { findTypographyStyleById } from "~/utils/theme/typography";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -51,7 +50,7 @@ export interface TypographyAction extends React.FC<unknown> {
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();
     const [typography, setTypography] = useState<TypographyValue>();
-    const { textBlockSelection, theme } = useRichTextEditor();
+    const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
     const setTypographySelect = useCallback(
@@ -110,12 +109,17 @@ export const TypographyAction: TypographyAction = () => {
                 return;
             }
             // list and quote element
-            if (theme && textBlockSelection?.element?.getStyleId) {
+            if (themeEmotionMap && textBlockSelection?.element?.getStyleId) {
                 const themeStyleId = textBlockSelection?.element?.getStyleId() || undefined;
                 if (themeStyleId) {
-                    const elementStyle = findTypographyStyleById(theme, themeStyleId);
+                    const elementStyle = themeEmotionMap[themeStyleId];
                     if (elementStyle) {
-                        setTypography(elementStyle);
+                        setTypography({
+                            id: elementStyle.id,
+                            css: elementStyle.css,
+                            name: elementStyle.name,
+                            tag: elementStyle.tag
+                        });
                     }
                 }
             }

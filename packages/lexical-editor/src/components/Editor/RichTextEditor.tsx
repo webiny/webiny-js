@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { LexicalValue } from "~/types";
+import { LexicalValue, ThemeEmotionMap } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { EditorState } from "lexical/LexicalEditorState";
@@ -24,6 +24,8 @@ import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNo
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { ClassNames } from "@emotion/core";
+import { toThemeEmotionMap } from "~/utils/toThemeEmotionMap";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -44,6 +46,7 @@ export interface RichTextEditorProps {
      * @description Theme to be injected into lexical editor
      */
     theme: WebinyTheme;
+    themeEmotionMap?: ThemeEmotionMap;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -57,7 +60,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     focus,
     width,
     height,
-    theme
+    theme,
+    themeEmotionMap
 }: RichTextEditorProps) => {
     const { historyState } = useSharedHistoryContext();
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
@@ -65,7 +69,12 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
-    const { setTheme } = useRichTextEditor();
+    const { setTheme, setThemeEmotionMap } = useRichTextEditor();
+
+    useEffect(() => {
+        setTheme(theme);
+        setThemeEmotionMap(themeEmotionMap);
+    }, [themeEmotionMap]);
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
@@ -85,12 +94,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             throw error;
         },
         nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: { ...webinyEditorTheme, styles: theme?.styles }
+        theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap }
     };
-
-    useEffect(() => {
-        setTheme(theme);
-    }, [theme]);
 
     function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
         editorState.read(() => {
@@ -142,9 +147,17 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEditor", props => {
     return (
         <RichTextEditorProvider>
-            <SharedHistoryContext>
-                <BaseRichTextEditor {...props} />
-            </SharedHistoryContext>
+            <ClassNames>
+                {({ css }) => {
+                    const themeEmotionMap =
+                        props?.themeEmotionMap ?? toThemeEmotionMap(css, props.theme);
+                    return (
+                        <SharedHistoryContext>
+                            <BaseRichTextEditor {...props} themeEmotionMap={themeEmotionMap} />
+                        </SharedHistoryContext>
+                    );
+                }}
+            </ClassNames>
         </RichTextEditorProvider>
     );
 });
