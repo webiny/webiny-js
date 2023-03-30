@@ -1,5 +1,6 @@
 import button from "./basic/button";
 import heading from "./basic/heading";
+import icon from "./basic/icon";
 import image from "./basic/image";
 import imagesList from "./basic/images-list";
 import list from "./basic/list";
@@ -16,6 +17,7 @@ import twitter from "./social/twitter";
 export default () => [
     button,
     heading,
+    icon,
     image,
     imagesList,
     list,

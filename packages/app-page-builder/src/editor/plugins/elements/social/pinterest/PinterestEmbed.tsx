@@ -4,6 +4,7 @@ import { isEqual } from "lodash";
 import { get } from "lodash";
 import { PbEditorElement, PbElementDataTypeSource } from "~/types";
 import useRenderEmptyEmbed from "~/editor/plugins/elements/utils/oembed/useRenderEmptyEmbed";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 
 declare global {
     interface Window {
@@ -58,6 +59,7 @@ const getHTML = (data: PbElementDataTypeSource): string => {
 
 const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
     const { element } = props;
+    const variableValue = useElementVariableValue(element);
 
     useEffect(() => {
         appendSDK(props).then(() => initEmbed(props));
@@ -76,7 +78,7 @@ const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
         );
     }, [element]);
 
-    const { url } = get(element, "data.source") || {};
+    const url = variableValue || get(element, "data.source.url") || "";
 
     return url ? renderEmbed() : renderEmpty();
 };

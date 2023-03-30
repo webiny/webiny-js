@@ -10,6 +10,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { useEventActionHandler } from "../hooks/useEventActionHandler";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 import { UpdateElementActionEvent } from "../recoil/actions";
 import { PbEditorElement } from "~/types";
 import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
@@ -89,12 +90,13 @@ const PeOEmbedComponent: React.FC<OEmbedProps> = props => {
     const eventActionHandler = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const { element, onData = d => d } = props;
+    const variableValue = useElementVariableValue(element);
 
     useEffect(() => {
         appendSDK(props).then(() => initEmbed(props));
     });
 
-    const source = element.data.source || {};
+    const source = variableValue ? { url: variableValue } : element.data.source || {};
     const oembed = element.data.oembed || {};
     const sourceUrl = source.url;
     const oembedSourceUrl = oembed.source?.url;

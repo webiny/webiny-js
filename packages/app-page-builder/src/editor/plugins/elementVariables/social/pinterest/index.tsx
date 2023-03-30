@@ -1,6 +1,6 @@
 import React from "react";
 import { PbEditorPageElementVariableRendererPlugin } from "~/types";
-import TextVariableInput from "~/editor/plugins/elementSettings/variable/TextVariableInput";
+import LinkVariableInput from "~/editor/plugins/elementSettings/variable/LinkVariableInput";
 import { useElementVariables } from "~/editor/hooks/useElementVariableValue";
 
 export default {
@@ -12,7 +12,13 @@ export default {
         return variables?.length > 0 ? variables[0].value : null;
     },
     renderVariableInput(variableId: string) {
-        return <TextVariableInput variableId={variableId} />;
+        return (
+            <LinkVariableInput
+                variableId={variableId}
+                placeholder={"https://pinterest.com/pin/823666219335767857/"}
+                description={"Enter a Pinterest URL"}
+            />
+        );
     },
     setElementValue(element, variables) {
         const newText = variables?.length > 0 ? variables[0].value : null;
