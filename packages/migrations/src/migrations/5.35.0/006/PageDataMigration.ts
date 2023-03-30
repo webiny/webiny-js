@@ -7,9 +7,15 @@ import { createLocaleEntity } from "./entities/createLocaleEntity";
 import { createPageEntity } from "./entities/createPageEntity";
 import { createTenantEntity } from "./entities/createTenantEntity";
 import { getSearchablePageContent } from "./utils/getSearchableContent";
-import { queryAll, ddbQueryAllWithCallback, batchWriteAll, executeWithRetry } from "~/utils";
+import {
+    queryAll,
+    ddbQueryAllWithCallback,
+    batchWriteAll,
+    executeWithRetry,
+    queryOne
+} from "~/utils";
 
-import { CmsEntry, I18NLocale, Page, Tenant, ListLocalesParams, ListEntriesParams } from "./types";
+import { I18NLocale, Page, Tenant, ListLocalesParams } from "./types";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -55,22 +61,33 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             }
 
             for (const locale of locales) {
-                const pages = await this.listPages({ tenant, locale });
-                if (pages.length === 0) {
+                const lastPage = await queryOne<{ pid: string }>({
+                    entity: this.pageEntity,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#PB#L`,
+                    options: { gt: " ", reverse: true }
+                });
+
+                if (!lastPage) {
                     logger.info(
                         `No pages found in tenant "${tenant.data.id}" and locale "${locale.code}".`
                     );
                     continue;
                 }
 
-                const searchRecords = await this.listSearchRecords({ tenant, locale });
-                if (searchRecords.length === pages.length) {
+                const lastSearchRecord = await queryOne<{ id: string }>({
+                    entity: this.entryEntity,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#CME#${lastPage.pid}`,
+                    options: {
+                        eq: "L"
+                    }
+                });
+
+                if (lastSearchRecord) {
                     logger.info(
                         `Pages already migrated to Search Records in tenant "${tenant.data.id}" and locale "${locale.code}".`
                     );
                     continue;
                 }
-
                 return true;
             }
         }
@@ -192,27 +209,6 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             entity: this.localeEntity,
             partitionKey: `T#${tenant.data.id}#I18N#L`,
             options: {
-                gte: " "
-            }
-        });
-    }
-
-    private async listPages({ tenant, locale }: ListEntriesParams): Promise<Page[]> {
-        return await queryAll<Page>({
-            entity: this.pageEntity,
-            partitionKey: `T#${tenant.data.id}#L#${locale.code}#PB#L`,
-            options: {
-                gte: " "
-            }
-        });
-    }
-
-    private async listSearchRecords({ tenant, locale }: ListEntriesParams): Promise<CmsEntry[]> {
-        return await queryAll<CmsEntry>({
-            entity: this.entryEntity,
-            partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#M#acoSearchRecord#L`,
-            options: {
-                index: "GSI1",
                 gte: " "
             }
         });

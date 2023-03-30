@@ -2,6 +2,7 @@ import {
     assertNotError,
     createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
+    groupMigrations,
     insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest,
     scanTable
@@ -24,10 +25,11 @@ describe("5.35.0-006", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(0);
-        expect(data.skipped.length).toBe(1);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
     });
 
     it("should not run if no locale found", async () => {
@@ -38,10 +40,11 @@ describe("5.35.0-006", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(0);
-        expect(data.skipped.length).toBe(1);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
     });
 
     it("should not run if no pages found", async () => {
@@ -52,10 +55,11 @@ describe("5.35.0-006", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(0);
-        expect(data.skipped.length).toBe(1);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
     });
 
     it("should execute migration", async () => {
@@ -69,10 +73,11 @@ describe("5.35.0-006", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(1);
-        expect(data.skipped.length).toBe(0);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
+        expect(grouped.notApplicable.length).toBe(0);
 
         const searchRecords = await scanTable(table, {
             filters: [
@@ -108,14 +113,16 @@ describe("5.35.0-006", () => {
         process.stdout.write("[First run]\n");
         const firstRun = await handler();
         assertNotError(firstRun.error);
-        expect(firstRun.data.executed.length).toBe(1);
+        const firstData = groupMigrations(firstRun.data.migrations);
+        expect(firstData.executed.length).toBe(1);
 
         // Should skip the migration
         process.stdout.write("[Second run]\n");
         const secondRun = await handler();
         assertNotError(secondRun.error);
-        expect(secondRun.data.executed.length).toBe(0);
-        expect(secondRun.data.skipped.length).toBe(1);
-        expect(secondRun.data.notApplicable.length).toBe(0);
+        const secondData = groupMigrations(secondRun.data.migrations);
+        expect(secondData.executed.length).toBe(0);
+        expect(secondData.skipped.length).toBe(1);
+        expect(secondData.notApplicable.length).toBe(0);
     });
 });

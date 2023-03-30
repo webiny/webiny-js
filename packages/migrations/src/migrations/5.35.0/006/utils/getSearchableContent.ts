@@ -2,7 +2,7 @@ import jsonpack from "jsonpack";
 
 import { processors } from "~/migrations/5.35.0/006/utils/processors";
 
-import { Page } from "~/migrations/5.35.0/006/ddb/types";
+import { Page } from "../types";
 
 export interface CompressedValue {
     compression: string;
