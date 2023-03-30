@@ -15,7 +15,7 @@ interface LexicalEditorProps {
     width?: number | string;
 }
 
-export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChange, ...rest }) => {
+export const LexicalEditor: React.VFC<LexicalEditorProps> = ({ tag, value, onChange, ...rest }) => {
     const { theme } = usePageElements();
     return (
         <>

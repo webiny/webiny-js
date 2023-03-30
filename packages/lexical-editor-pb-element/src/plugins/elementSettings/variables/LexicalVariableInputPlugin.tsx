@@ -48,7 +48,7 @@ interface LexicalVariableInputPlugin {
     tag: string;
     variableId: string;
 }
-export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = ({
+export const LexicalVariableInputPlugin: React.VFC<LexicalVariableInputPlugin> = ({
     tag,
     variableId
 }): JSX.Element => {
