@@ -1,3 +1,4 @@
+import chunk from "lodash/chunk";
 import { Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
@@ -125,7 +126,7 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
                                 ]
                             }
                         },
-                        size: 1000,
+                        size: 10000,
                         sort: [
                             {
                                 "id.keyword": "asc"
@@ -154,7 +155,14 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
                         });
 
                         const execute = () => {
-                            return batchWriteAll({ table: this.newFileEntity.table, items });
+                            return Promise.all(
+                                chunk(items, 200).map(fileChunk => {
+                                    return batchWriteAll({
+                                        table: this.newFileEntity.table,
+                                        items: fileChunk
+                                    });
+                                })
+                            );
                         };
 
                         await executeWithRetry(execute, {

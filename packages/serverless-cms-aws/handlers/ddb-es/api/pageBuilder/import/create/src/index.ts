@@ -15,10 +15,12 @@ import importCreatePlugins from "@webiny/api-page-builder-import-export/import/c
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch from "@webiny/api-elasticsearch";
+import elasticSearch, {
+    createElasticsearchClient,
+    createGzipCompression
+} from "@webiny/api-elasticsearch";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "./security";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
@@ -35,6 +37,7 @@ export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
+        createGzipCompression(),
         elasticSearch(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,

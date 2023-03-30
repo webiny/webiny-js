@@ -1,17 +1,44 @@
 import { Table, Entity } from "dynamodb-toolbox";
-import { queryAll } from "@webiny/db-dynamodb/utils/query";
-import { MigrationItem, MigrationRepository } from "~/types";
+import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { MigrationItem, MigrationRepository, MigrationRun } from "~/types";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { PrimaryDynamoTableSymbol } from "~/symbols";
 import { createStandardEntity } from "./createStandardEntity";
 
 export class MigrationRepositoryImpl implements MigrationRepository {
+    private readonly run: Entity<any>;
     private readonly migration: Entity<any>;
     private readonly checkpoint: Entity<any>;
 
     constructor(table: Table) {
+        this.run = createStandardEntity({ table, name: "MigrationRun" });
         this.migration = createStandardEntity({ table, name: "Migration" });
         this.checkpoint = createStandardEntity({ table, name: "MigrationCheckpoint" });
+    }
+
+    async getLastRun(): Promise<MigrationRun | null> {
+        const result = await queryOne<{ data: MigrationRun }>({
+            entity: this.run,
+            partitionKey: "MIGRATION_RUNS",
+            options: {
+                index: "GSI1",
+                gt: " ",
+                reverse: true
+            }
+        });
+
+        return result ? result.data : null;
+    }
+
+    async saveRun(run: MigrationRun): Promise<void> {
+        await this.run.put({
+            PK: `MIGRATION_RUN#${run.id}`,
+            SK: "A",
+            TYPE: "migration.run",
+            GSI1_PK: "MIGRATION_RUNS",
+            GSI1_SK: run.id,
+            data: run
+        });
     }
 
     async listMigrations(params?: { limit: number }): Promise<MigrationItem[]> {
@@ -46,7 +73,7 @@ export class MigrationRepositoryImpl implements MigrationRepository {
         await this.checkpoint.put({
             PK: `MIGRATION_CHECKPOINT#${id}`,
             SK: "A",
-            TYPE: "checkpoint",
+            TYPE: "migration.checkpoint",
             GSI1_PK: "MIGRATION_CHECKPOINTS",
             GSI1_SK: id,
             data
