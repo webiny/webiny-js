@@ -42,7 +42,7 @@ interface TemplateValueFormProps {
     onClone: () => void;
 }
 
-const TemplateValueForm = ({
+const TemplateValueForm: React.VFC<TemplateValueFormProps> = ({
     value,
     contentModel,
     Bind,
@@ -52,7 +52,7 @@ const TemplateValueForm = ({
     onMoveDown,
     onDelete,
     onClone
-}: TemplateValueFormProps) => {
+}) => {
     const { field } = useModelField();
     const templates = field.settings?.templates || [];
 
@@ -104,11 +104,11 @@ interface MultiValueDynamicZoneProps {
     getBind: GetBind;
 }
 
-export const MultiValueDynamicZone = ({
+export const MultiValueDynamicZone: React.VFC<MultiValueDynamicZoneProps> = ({
     bind,
     getBind,
     contentModel
-}: MultiValueDynamicZoneProps) => {
+}) => {
     const onTemplate = (template: CmsDynamicZoneTemplate) => {
         bind.appendValue({ _templateId: template.id });
     };

@@ -12,7 +12,11 @@ const noBottomPadding = css`
     }
 `;
 
-const DynamicZoneContent = ({ field, getBind, contentModel }: CmsEditorFieldRendererProps) => {
+const DynamicZoneContent: React.VFC<CmsEditorFieldRendererProps> = ({
+    field,
+    getBind,
+    contentModel
+}) => {
     const isMultipleValues = field.multipleValues === true;
     const Bind = getBind();
 
