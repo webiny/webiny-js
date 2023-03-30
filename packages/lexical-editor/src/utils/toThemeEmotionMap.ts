@@ -20,6 +20,7 @@ export const toThemeEmotionMap = (
         }[];
         if (typographyTypeData) {
             typographyTypeData.forEach(styleItem => {
+                // 'le' is for shorter url generation
                 const le = {
                     ...styleItem,
                     className: [css(styleItem.css)].filter(Boolean).join(" ")
