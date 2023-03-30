@@ -41,7 +41,7 @@ export interface RichTextEditorProps {
     theme: WebinyTheme;
 }
 
-const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
+const BaseRichTextEditor: React.VFC<RichTextEditorProps> = ({
     toolbar,
     onChange,
     value,

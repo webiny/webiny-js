@@ -20,7 +20,7 @@ interface LexicalHtmlRendererProps {
     theme: WebinyTheme;
 }
 
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
+export const LexicalHtmlRenderer: React.VFC<LexicalHtmlRendererProps> = ({
     nodes,
     value,
     theme

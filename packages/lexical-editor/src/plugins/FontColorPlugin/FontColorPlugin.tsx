@@ -16,7 +16,7 @@ import {
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
 
-export const FontColorPlugin: React.FC = () => {
+export const FontColorPlugin: React.VFC = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {

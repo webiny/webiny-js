@@ -11,7 +11,7 @@ interface RichTextEditorProviderProps {
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ children }) => {
+export const RichTextEditorProvider: React.VFC<RichTextEditorProviderProps> = ({ children }) => {
     const [nodeIsText, setIsText] = useState<boolean>(false);
     const setNodeIsText = (nodeIsText: boolean) => {
         setIsText(nodeIsText);

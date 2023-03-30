@@ -56,7 +56,7 @@ interface ToolbarActionDialogProps {
     stopCloseOnClickSelf?: boolean;
 }
 
-export const ToolbarActionDialog: React.FC<ToolbarActionDialogProps> = ({
+export const ToolbarActionDialog: React.VFC<ToolbarActionDialogProps> = ({
     disabled,
     buttonAriaLabel,
     buttonClassName,

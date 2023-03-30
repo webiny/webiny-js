@@ -11,7 +11,7 @@ interface ParagraphLexicalEditorProps extends RichTextEditorProps {
     tag?: "p";
 }
 
-const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {
+const ParagraphEditor: React.VFC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {
     return (
         <RichTextEditor
             toolbar={<ParagraphToolbar />}

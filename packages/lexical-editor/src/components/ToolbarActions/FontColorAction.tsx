@@ -21,11 +21,11 @@ interface FontActionColorPicker {
     element: JSX.Element;
 }
 
-const FontActionColorPicker: React.FC<FontActionColorPicker> = ({ element }): JSX.Element => {
+const FontActionColorPicker: React.VFC<FontActionColorPicker> = ({ element }): JSX.Element => {
     return <Compose component={FontColorPicker} with={() => () => element} />;
 };
 
-export interface FontColorAction extends React.FC<unknown> {
+export interface FontColorAction extends React.VFC<unknown> {
     ColorPicker: typeof FontActionColorPicker;
 }
 
