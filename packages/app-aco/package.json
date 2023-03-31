@@ -12,8 +12,8 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@emotion/core": "^10.0.27",
-    "@emotion/styled": "^10.0.27",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@material-design-icons/svg": "^0.12.1",
     "@material-symbols/svg-400": "^0.4.1",
     "@minoru/react-dnd-treeview": "3.2.1",

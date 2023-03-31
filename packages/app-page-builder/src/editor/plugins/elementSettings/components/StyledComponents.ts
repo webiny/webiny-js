@@ -33,7 +33,7 @@ interface InputContainerProps {
     margin?: number | string;
 }
 
-export const InputContainer = styled<"div", InputContainerProps>("div")(props => ({
+export const InputContainer = styled.div<InputContainerProps>(props => ({
     "> .mdc-text-field.mdc-text-field--upgraded": {
         height: "30px !important",
         width: props.width || 50,
@@ -48,7 +48,7 @@ type ContentWrapperProps = {
     direction?: "row" | "row-reverse" | "column" | "column-reverse";
 };
 
-export const ContentWrapper = styled<"div", ContentWrapperProps>("div")(props => ({
+export const ContentWrapper = styled.div<ContentWrapperProps>(props => ({
     display: "flex",
     flexDirection: props.direction || "row"
 }));
