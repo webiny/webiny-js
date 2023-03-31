@@ -2,7 +2,7 @@ import { Plugin, PluginCollection } from "./types";
 import uniqid from "uniqid";
 
 const isOptionsObject = (item?: any) => item && !Array.isArray(item) && !item.type && !item.name;
-const normalizeArgs = (args: any[]) => {
+const normalizeArgs = (args: any[]): [Plugin[], any] => {
     let options = {};
 
     // Check if last item in the plugins array is actually an options object.
@@ -13,9 +13,12 @@ const normalizeArgs = (args: any[]) => {
     return [args, options];
 };
 
-const assign = (plugins: any, options: any, target: Record<string, any>): void => {
-    for (let i = 0; i < plugins.length; i++) {
-        const plugin = plugins[i];
+const assign = (
+    plugins: Plugin[] | Plugin[][],
+    options: any,
+    target: Record<string, any>
+): void => {
+    for (const plugin of plugins) {
         if (Array.isArray(plugin)) {
             assign(plugin, options, target);
             continue;
@@ -79,6 +82,18 @@ export class PluginsContainer {
         return list[0];
     }
 
+    public merge(input: PluginsContainer | PluginCollection): void {
+        if (input instanceof PluginsContainer) {
+            this.register(...input.all());
+            return;
+        }
+        this.register(input);
+    }
+
+    public mergeByType(container: PluginsContainer, type: string): void {
+        this.register(...container.byType(type));
+    }
+
     public all<T extends Plugin>(): T[] {
         return Object.values(this.plugins) as T[];
     }
@@ -97,6 +112,6 @@ export class PluginsContainer {
     }
 
     private findByType<T extends Plugin>(type: T["type"]): T[] {
-        return (Object.values(this.plugins) as T[]).filter(pl => pl.type === type) as T[];
+        return Object.values(this.plugins).filter((pl): pl is T => pl.type === type) as T[];
     }
 }

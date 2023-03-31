@@ -45,7 +45,7 @@ export const PageRenderer = makeComposable<PageRendererProps>(
 
         const head: Head = {
             favicon: settings.favicon,
-            title: page.title || settings.name,
+            title: page.settings?.seo?.title || page.title || settings.name,
             seo: {
                 title: "",
                 description: "",

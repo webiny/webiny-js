@@ -15,7 +15,10 @@ import exportCombinePlugins from "@webiny/api-page-builder-import-export/export/
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch, { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import elasticSearch, {
+    createElasticsearchClient,
+    createGzipCompression
+} from "@webiny/api-elasticsearch";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "./security";
 
@@ -34,6 +37,7 @@ export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
+        createGzipCompression(),
         elasticSearch(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,

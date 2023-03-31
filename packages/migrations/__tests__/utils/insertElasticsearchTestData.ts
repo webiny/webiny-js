@@ -1,4 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
+import chunk from "lodash/chunk";
 
 export const insertElasticsearchTestData = async <
     TItem extends Record<string, any> = Record<string, any>
@@ -13,7 +14,10 @@ export const insertElasticsearchTestData = async <
         operations.push({ index: { _id: record["id"], _index: getIndexName(record) } }, record);
     }
 
-    await elasticsearch.bulk({
-        body: operations
-    });
+    const chunkedItems: any[][] = chunk(operations, 3000);
+    for (const items of chunkedItems) {
+        await elasticsearch.bulk({
+            body: items
+        });
+    }
 };

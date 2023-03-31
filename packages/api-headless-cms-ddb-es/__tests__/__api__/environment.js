@@ -7,7 +7,7 @@ const {
 } = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
-const { createGzipCompression } = require("@webiny/api-elasticsearch");
+const { createGzipCompression, getElasticsearchOperators } = require("@webiny/api-elasticsearch");
 const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
@@ -131,6 +131,8 @@ class CmsTestEnvironment extends NodeEnvironment {
         });
 
         const plugins = [
+            elasticsearchClientContext,
+            getElasticsearchOperators(),
             createGzipCompression(),
             /**
              * TODO remove when all apps are created with their own storage operations factory and drivers.
@@ -156,7 +158,6 @@ class CmsTestEnvironment extends NodeEnvironment {
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
                         plugins: testPlugins.concat([
-                            createGzipCompression(),
                             createCmsEntryElasticsearchBodyModifierPlugin({
                                 modifyBody: ({ body }) => {
                                     if (!body.sort.customSorter) {

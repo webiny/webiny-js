@@ -19,8 +19,8 @@ import { Loader } from "./Loader";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/advanced/components/NewReferencedEntryDialog";
 
 const Container = styled("div")({
-    borderLeft: "3px solid var(--mdc-theme-background)",
-    paddingLeft: "10px"
+    borderLeft: "3px solid var(--mdc-theme-background)"
+    //paddingLeft: "10px"
 });
 
 const FieldLabel = styled("h3")({
@@ -154,16 +154,35 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
         [storeValues]
     );
 
+    const initialValue = useMemo(() => {
+        if (entries.length === 0 || loadedModels.length === 0) {
+            return null;
+        }
+        const entry = entries[0];
+        if (!entry) {
+            return null;
+        }
+        const model = loadedModels.find(model => model.modelId === entry.model.modelId);
+        if (!model) {
+            return null;
+        }
+        return {
+            entry,
+            model
+        };
+    }, [entries, loadedModels]);
+
     return (
         <>
             <FieldLabel>{field.label}</FieldLabel>
             <Container>
                 {loading && <Loader />}
-                {!loadingEntries && !!entries[0] && (
+                {initialValue && (
                     <Entry
+                        model={initialValue.model}
                         placement="singleRefField"
                         index={0}
-                        entry={entries[0]}
+                        entry={initialValue.entry}
                         onRemove={onRemove}
                     />
                 )}

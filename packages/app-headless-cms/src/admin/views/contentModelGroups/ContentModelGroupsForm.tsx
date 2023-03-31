@@ -205,7 +205,7 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
                                     name="name"
                                     validators={validation.create("required,maxLength:100")}
                                 >
-                                    <Input label={t`Name`} />
+                                    <Input data-testid={"cms.form.group.name"} label={t`Name`} />
                                 </Bind>
                             </Cell>
 
@@ -219,7 +219,11 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="description">
-                                    <Input rows={5} label={t`Description`} />
+                                    <Input
+                                        data-testid={"cms.form.group.description"}
+                                        rows={5}
+                                        label={t`Description`}
+                                    />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -237,6 +241,7 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
                                             onClick={ev => {
                                                 form.submit(ev);
                                             }}
+                                            data-testid={"cms.form.group.submit"}
                                         >{t`Save content model group`}</ButtonPrimary>
                                     ) : (
                                         <Tooltip

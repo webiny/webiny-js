@@ -1,8 +1,8 @@
 import { Table, Entity } from "dynamodb-toolbox";
 
-export const createMigrationsEntity = ({ table }: { table: Table }) => {
+export const createStandardEntity = ({ table, name }: { table: Table; name: string }) => {
     return new Entity({
-        name: "Migrations",
+        name,
         table,
         attributes: {
             PK: {

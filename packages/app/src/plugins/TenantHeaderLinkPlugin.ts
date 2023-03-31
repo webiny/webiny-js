@@ -1,12 +1,7 @@
 import { setContext } from "apollo-link-context";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin";
 import { ApolloLink } from "apollo-link";
-
-declare global {
-    interface Window {
-        __PS_RENDER_TENANT__: string;
-    }
-}
+import { getTenantId } from "~/utils";
 
 /**
  * Append `x-tenant` header from URL query (necessary for prerendering service).
@@ -18,12 +13,7 @@ export class TenantHeaderLinkPlugin extends ApolloLinkPlugin {
         super();
         this.name = "tenant-header-link";
 
-        if (!tenant) {
-            const query = new URLSearchParams(location.search);
-            tenant = query.get("__tenant") || window.__PS_RENDER_TENANT__;
-        }
-
-        this.tenant = tenant;
+        this.tenant = tenant || (getTenantId() as string);
     }
 
     public override createLink(): ApolloLink {

@@ -2,12 +2,18 @@ import { Table } from "dynamodb-toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
-import { MigrationRepositorySymbol, MigrationSymbol, PrimaryDynamoTableSymbol } from "~/symbols";
+import {
+    MigrationRepositorySymbol,
+    MigrationSymbol,
+    PrimaryDynamoTableSymbol,
+    ExecutionTimeLimiterSymbol
+} from "~/symbols";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
 import { devVersionErrorResponse } from "./devVersionErrorResponse";
 import { createPatternMatcher } from "./createPatternMatcher";
 import {
     DataMigration,
+    ExecutionTimeLimiter,
     MigrationEventHandlerResponse,
     MigrationEventPayload,
     MigrationRepository
@@ -18,16 +24,18 @@ interface CreateDdbDataMigrationConfig {
     primaryTable: Table;
     repository?: MigrationRepository;
     isMigrationApplicable?: IsMigrationApplicable;
+    timeLimiter?: ExecutionTimeLimiter;
 }
 
 export const createDdbProjectMigration = ({
     migrations,
     primaryTable,
     isMigrationApplicable = undefined,
-    repository = undefined
+    repository = undefined,
+    ...config
 }: CreateDdbDataMigrationConfig) => {
     return createRawEventHandler<MigrationEventPayload, any, MigrationEventHandlerResponse>(
-        async ({ payload }) => {
+        async ({ payload, lambdaContext }) => {
             const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
 
             if (projectVersion === "0.0.0") {
@@ -37,6 +45,10 @@ export const createDdbProjectMigration = ({
             // COMPOSITION ROOT
             const container = createContainer();
             container.bind(PrimaryDynamoTableSymbol).toConstantValue(primaryTable);
+
+            const timeLimiter: ExecutionTimeLimiter =
+                config.timeLimiter || lambdaContext?.getRemainingTimeInMillis || (() => 0);
+            container.bind(ExecutionTimeLimiterSymbol).toConstantValue(timeLimiter);
 
             if (repository) {
                 // Repository implementation provided by the user.
@@ -57,11 +69,14 @@ export const createDdbProjectMigration = ({
 
             // Inject dependencies and execute.
             try {
-                const data = await container
-                    .resolve(MigrationRunner)
-                    .execute(projectVersion, patternMatcher || isMigrationApplicable);
+                const runner = await container.resolve(MigrationRunner);
 
-                return { data };
+                if (payload.command === "execute") {
+                    await runner.execute(projectVersion, patternMatcher || isMigrationApplicable);
+                    return;
+                }
+
+                return { data: await runner.getStatus() };
             } catch (err) {
                 return { error: { message: err.message } };
             }
