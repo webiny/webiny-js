@@ -20,7 +20,6 @@ export interface CreateHandlerCoreParams {
     identity?: SecurityIdentity;
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path?: string;
 }
 export const createHandlerCore = (params: CreateHandlerCoreParams) => {
@@ -37,9 +36,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         setupTenancyAndSecurityGraphQL
     } = params;
 
-    const ops = getStorageOperations({
-        plugins: params.storageOperationPlugins || []
-    });
+    const ops = getStorageOperations();
 
     return {
         storageOperations: ops.storageOperations,

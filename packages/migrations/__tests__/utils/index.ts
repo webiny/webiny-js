@@ -9,3 +9,5 @@ export * from "./scanTable";
 export * from "./logTestNameBeforeEachTest";
 export * from "./createId";
 export * from "./delay";
+export * from "./runResumableMigration";
+export * from "./groupMigrations";

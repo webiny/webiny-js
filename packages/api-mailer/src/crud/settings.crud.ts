@@ -23,6 +23,7 @@ import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
 
+const defaultPort = 25;
 /**
  * Note that settings cannot be used if there is no secret defined.
  */
@@ -195,12 +196,9 @@ export const createSettingsCrud = async (
 
             const { password, ...settings } = result.data;
 
-            if (!settings.port) {
-                settings.port = 25;
-            }
-
             const passwordlessSettings: TransportSettings = {
                 ...settings,
+                port: settings.port || defaultPort,
                 password: ""
             };
 
@@ -215,7 +213,7 @@ export const createSettingsCrud = async (
                     model,
                     transformInputToEntryValues({
                         values: {
-                            ...settings,
+                            ...passwordlessSettings,
                             password
                         },
                         secret
@@ -268,12 +266,9 @@ export const createSettingsCrud = async (
 
             const { password, ...settings } = result.data;
 
-            if (!settings.port) {
-                settings.port = original.port || 25;
-            }
-
             const passwordlessSettings: TransportSettings = {
                 ...settings,
+                port: settings.port || original.port || defaultPort,
                 password: ""
             };
             try {
@@ -286,7 +281,7 @@ export const createSettingsCrud = async (
 
                 const transformedInput = transformInputToEntryValues({
                     values: {
-                        ...settings,
+                        ...passwordlessSettings,
                         password: password || original.password
                     },
                     secret

@@ -51,10 +51,12 @@ export const buildPackages = async () => {
     );
     const metaJson = getBuildMeta();
 
+    const totalBatches = `${batches.length}`.padStart(2, "0");
+
     const tasks = new Listr<BuildContext>(
         batches.map<ListrTask>((packageNames, index) => {
             const id = `${index + 1}`.padStart(2, "0");
-            const title = `[${id}/${batches.length}] Batch #${id} (${packageNames.length} packages)`;
+            const title = `[${id}/${totalBatches}] Batch #${id} (${packageNames.length} packages)`;
 
             return {
                 title,

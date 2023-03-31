@@ -71,6 +71,7 @@ export interface CmsModel {
     layout?: CmsEditorFieldsLayout;
     fields: CmsModelField[];
     lockedFields: CmsModelField[];
+    icon: string;
     name: string;
     modelId: string;
     singularApiName: string;

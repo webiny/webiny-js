@@ -1,6 +1,9 @@
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { PluginsContainer } from "@webiny/plugins";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import {
+    CompressionPlugin,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 
 import { ENTITIES, StorageOperationsFactory } from "~/types";
 import { createTable } from "~/definitions/table";
@@ -42,11 +45,30 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
-export * from "./plugins";
-
 import { createPageTemplateEntity } from "~/definitions/pageTemplateEntity";
 import { createPageTemplateDynamoDbFields } from "~/operations/pageTemplate/fields";
 import { createPageTemplateStorageOperations } from "~/operations/pageTemplate";
+
+import { PbContext } from "@webiny/api-page-builder/types";
+import {
+    BlockCategoryDynamoDbElasticFieldPlugin,
+    CategoryDynamoDbElasticFieldPlugin,
+    IndexPageDataPlugin,
+    MenuDynamoDbElasticFieldPlugin,
+    PageBlockDynamoDbFieldPlugin,
+    PageDynamoDbElasticsearchFieldPlugin,
+    PageElasticsearchBodyModifierPlugin,
+    PageElasticsearchFieldPlugin,
+    PageElasticsearchIndexPlugin,
+    PageElasticsearchQueryModifierPlugin,
+    PageElasticsearchSortModifierPlugin,
+    PageElementDynamoDbElasticFieldPlugin,
+    SearchLatestPagesPlugin,
+    SearchPagesPlugin,
+    SearchPublishedPagesPlugin
+} from "./plugins";
+
+export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -76,10 +98,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
-        /**
-         * Elasticsearch operators.
-         */
-        getElasticsearchOperators(),
         /**
          * Category fields required for filtering/sorting.
          */
@@ -171,7 +189,33 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     };
 
     return {
-        init: async context => {
+        beforeInit: async (context: PbContext) => {
+            const types: string[] = [
+                // Elasticsearch
+                CompressionPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                // Page Builder
+                BlockCategoryDynamoDbElasticFieldPlugin.type,
+                CategoryDynamoDbElasticFieldPlugin.type,
+                IndexPageDataPlugin.type,
+                MenuDynamoDbElasticFieldPlugin.type,
+                PageBlockDynamoDbFieldPlugin.type,
+                PageDynamoDbElasticsearchFieldPlugin.type,
+                PageElasticsearchBodyModifierPlugin.type,
+                PageElasticsearchFieldPlugin.type,
+                PageElasticsearchIndexPlugin.type,
+                PageElasticsearchQueryModifierPlugin.type,
+                PageElasticsearchSortModifierPlugin.type,
+                PageElementDynamoDbElasticFieldPlugin.type,
+                SearchLatestPagesPlugin.type,
+                SearchPagesPlugin.type,
+                SearchPublishedPagesPlugin.type
+            ];
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
+        },
+        init: async (context: PbContext) => {
             context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
                 await createElasticsearchIndex({
                     elasticsearch,

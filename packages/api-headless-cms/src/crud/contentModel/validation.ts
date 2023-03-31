@@ -160,6 +160,7 @@ export const createModelCreateValidation = () => {
         pluralApiName: shortString.refine(refinementValidation, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: shortString,
+        icon: optionalNullishShortString,
         fields: zod.array(fieldSchema).default([]),
         layout: zod.array(zod.array(shortString)).default([]),
         tags: zod.array(shortString).optional(),
@@ -181,6 +182,7 @@ export const createModelCreateFromValidation = () => {
         pluralApiName: shortString.refine(refinementValidation, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: shortString,
+        icon: optionalNullishShortString,
         locale: optionalShortString
     });
 };
@@ -202,6 +204,7 @@ export const createModelUpdateValidation = () => {
         }, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: optionalShortString,
+        icon: optionalNullishShortString,
         fields: zod.array(fieldSchema),
         layout: zod.array(zod.array(shortString)),
         titleFieldId: optionalShortString.nullish(),

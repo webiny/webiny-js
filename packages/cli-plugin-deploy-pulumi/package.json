@@ -11,6 +11,7 @@
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@webiny/cli": "0.0.0",
+    "@webiny/data-migration": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",
     "ansi-to-html": "0.6.15",
     "blessed": "0.1.81",

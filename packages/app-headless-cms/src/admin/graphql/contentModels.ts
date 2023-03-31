@@ -46,6 +46,7 @@ export const MODEL_FIELDS = `
         id
         name
     }
+    icon
     description
     modelId
     singularApiName

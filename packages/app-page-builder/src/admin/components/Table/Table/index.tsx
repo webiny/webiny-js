@@ -27,6 +27,7 @@ import { FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { PbPageDataItem } from "~/types";
 import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
+import { menuStyles } from "./styled";
 
 interface Props {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -138,7 +139,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
                 if (type === "RECORD") {
                     return (
-                        <Menu handle={<IconButton icon={<More />} />}>
+                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
                             <RecordActionEdit record={original as PbPageDataItem} />
                             <RecordActionPreview record={original as PbPageDataItem} />
                             <RecordActionPublish record={original as PbPageDataItem} />
