@@ -63,8 +63,7 @@ import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 import { getSearchableFields } from "./contentEntry/searchableFields";
-import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
-import { removeNullValues } from "~/utils/removeNullValues";
+import { removeUndefinedValues, removeNullValues } from "@webiny/utils";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
