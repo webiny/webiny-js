@@ -23,7 +23,7 @@ export interface PageElement {
 export interface Menu {
     title: string;
     slug: string;
-    description: string;
+    description?: string;
     items: any[];
     createdOn: string;
     createdBy: CreatedBy;
@@ -54,15 +54,15 @@ export type PageSpecialType = "home" | "notFound";
 
 export interface PageSettings {
     social?: {
-        title: string;
-        description: string;
-        image: File;
+        title?: string | null;
+        description?: string | null;
+        image?: File | null;
         meta: Array<{ property: string; content: string }>;
     };
     seo?: {
-        title: string;
-        description: string;
-        meta: Array<{ name: string; content: string }>;
+        title?: string | null;
+        description?: string | null;
+        meta?: Array<{ name: string; content: string }>;
     };
     general?: {
         tags?: string[];

@@ -521,6 +521,12 @@ export interface OnMenuAfterDeleteTopicParams {
     menu: Menu;
 }
 
+interface CreateMenuInput {
+    title: string;
+    slug: string;
+    description: string;
+    items: any[];
+}
 /**
  * @category Menu
  */
@@ -528,7 +534,7 @@ export interface MenusCrud {
     getMenu(slug: string, options?: MenuGetOptions): Promise<Menu | null>;
     getPublicMenu(slug: string): Promise<Menu>;
     listMenus(params?: ListMenuParams): Promise<Menu[]>;
-    createMenu(data: Record<string, any>): Promise<Menu>;
+    createMenu(data: CreateMenuInput): Promise<Menu>;
     updateMenu(slug: string, data: Record<string, any>): Promise<Menu>;
     deleteMenu(slug: string): Promise<Menu>;
     /**
