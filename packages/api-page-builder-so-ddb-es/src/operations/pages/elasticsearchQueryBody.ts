@@ -201,7 +201,9 @@ export const createElasticsearchQueryBody = (
     for (const plugin of queryModifiers) {
         plugin.modifyQuery({
             query,
-            where
+            where,
+            sort,
+            limit
         });
     }
 
@@ -210,7 +212,8 @@ export const createElasticsearchQueryBody = (
     );
     for (const plugin of sortModifiers) {
         plugin.modifySort({
-            sort
+            sort,
+            where
         });
     }
 
@@ -230,7 +233,7 @@ export const createElasticsearchQueryBody = (
          * Which is correct in some cases. In our case, it is not.
          * https://www.elastic.co/guide/en/elasticsearch/reference/7.13/paginate-search-results.html
          */
-        search_after: decodeCursor(after) as any,
+        search_after: decodeCursor(after),
         sort
     };
 
@@ -239,7 +242,8 @@ export const createElasticsearchQueryBody = (
     );
     for (const plugin of bodyModifiers) {
         plugin.modifyBody({
-            body
+            body,
+            where
         });
     }
 

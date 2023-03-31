@@ -5,7 +5,8 @@ import {
     getPrimaryDynamoDbTable,
     insertDynamoDbTestData,
     scanTable,
-    logTestNameBeforeEachTest
+    logTestNameBeforeEachTest,
+    groupMigrations
 } from "~tests/utils";
 import { testData } from "./001.data";
 import {
@@ -16,7 +17,7 @@ import {
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 100;
+const NUMBER_OF_FILES = 1000;
 
 describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();
@@ -61,16 +62,21 @@ describe("5.35.0-001", () => {
 
     logTestNameBeforeEachTest();
 
+    beforeEach(() => {
+        jest.restoreAllMocks();
+    });
+
     it("should not run if system is not installed", async () => {
         const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
 
+        const spy = jest.spyOn(FileManager_5_35_0_001.prototype, "execute");
+
         const { data, error } = await handler();
-
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(0);
-        expect(data.skipped.length).toBe(1);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(0);
+        expect(spy).toHaveBeenCalledTimes(0);
     });
 
     it("should execute migration", async () => {
@@ -81,12 +87,11 @@ describe("5.35.0-001", () => {
         process.stdout.write("Running migration...\n");
         const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
         const { data, error } = await handler();
-
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(1);
-        expect(data.skipped.length).toBe(0);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
 
         // ASSERT FILE CHANGES
 
@@ -145,20 +150,24 @@ describe("5.35.0-001", () => {
     it("should not run migration if data is already in the expected shape", async () => {
         await insertDynamoDbTestData(table, testData);
         await insertTestFiles(25);
+
         const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
 
         // Should run the migration
         process.stdout.write("[First run]\n");
         const firstRun = await handler();
         assertNotError(firstRun.error);
-        expect(firstRun.data.executed.length).toBe(1);
+        const firstData = groupMigrations(firstRun.data.migrations);
+        expect(firstData.executed.length).toBe(1);
 
         // Should skip the migration
+        const spy = jest.spyOn(FileManager_5_35_0_001.prototype, "execute");
         process.stdout.write("[Second run]\n");
         const secondRun = await handler();
         assertNotError(secondRun.error);
-        expect(secondRun.data.executed.length).toBe(0);
-        expect(secondRun.data.skipped.length).toBe(1);
-        expect(secondRun.data.notApplicable.length).toBe(0);
+        const secondData = groupMigrations(secondRun.data.migrations);
+        expect(secondData.executed.length).toBe(0);
+        expect(secondData.skipped.length).toBe(1);
+        expect(spy).toHaveBeenCalledTimes(0);
     });
 });

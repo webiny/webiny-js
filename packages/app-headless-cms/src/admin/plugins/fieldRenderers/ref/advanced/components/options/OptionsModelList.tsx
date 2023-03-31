@@ -19,8 +19,8 @@ const ModelsContainer = styled(Elevation)({
     position: "absolute",
     zIndex: 1,
     top: "40px",
-    left: "auto",
-    width: "200px",
+    left: 0,
+    width: "215px",
     backgroundColor: "#FFFFFF",
     display: "flex",
     flexDirection: "column"

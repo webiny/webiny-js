@@ -26,9 +26,13 @@ export const createApplyFiltering = ({
 
         const plugin = operatorPlugins[operator];
         if (!plugin) {
-            throw new WebinyError("Operator plugin missing.", "PLUGIN_MISSING", {
-                operator
-            });
+            throw new WebinyError(
+                `Elasticsearch operator "${operator}" plugin missing.`,
+                "PLUGIN_MISSING",
+                {
+                    operator
+                }
+            );
         }
 
         const value = transformValueForSearch({

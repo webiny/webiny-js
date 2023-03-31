@@ -10,7 +10,7 @@ import {
 import { makeInjectable, inject } from "@webiny/ioc";
 import { FileManager_5_35_0_001_FileData } from "./FileDataMigration";
 import { FileManager_5_35_0_001_FileManagerSettings } from "../FileSettingsMigration";
-export * from "./types";
+export * from "../types";
 
 export class FileManager_5_35_0_001 implements DataMigration {
     private migrations: DataMigration[];

@@ -156,6 +156,7 @@ export const ReferencesDialog: React.VFC<Props> = props => {
                                 {entry => {
                                     return (
                                         <Entry
+                                            model={contentModel}
                                             key={`reference-entry-${entry.id}`}
                                             entry={entry}
                                             selected={isSelected(entry.entryId, values)}

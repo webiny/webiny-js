@@ -22,6 +22,7 @@ export interface CmsModel {
         id: string;
         name: string;
     };
+    icon?: string | null;
     description: string;
     createdOn?: string;
     savedOn?: string;

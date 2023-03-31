@@ -25,6 +25,7 @@ import { CmsGroupOption } from "~/admin/views/contentModels/types";
 import { Dialog } from "~/admin/components/Dialog";
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
 import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator";
+import { IconPicker } from "~/admin/components/IconPicker";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
 
@@ -233,6 +234,14 @@ export const CloneContentModelDialog: React.FC<Props> = ({ onClose, contentModel
                                             description={t`Choose a content model group`}
                                             label={t`Content model group`}
                                             options={groups || []}
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name="icon">
+                                        <IconPicker
+                                            label={t`Icon`}
+                                            description={t`Choose an icon to represent the model.`}
                                         />
                                     </Bind>
                                 </Cell>

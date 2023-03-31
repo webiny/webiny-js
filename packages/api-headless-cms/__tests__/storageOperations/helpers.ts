@@ -87,6 +87,8 @@ export const createPersonModel = (plugins: PluginsContainer): StorageOperationsC
         plugins,
         model: {
             name: "Person Model",
+            singularApiName: "PersonModel",
+            pluralApiName: "PersonModels",
             group: {
                 id: baseGroup.contentModelGroup.id,
                 name: baseGroup.contentModelGroup.name

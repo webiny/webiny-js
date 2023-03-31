@@ -13,6 +13,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
     singularApiName
     pluralApiName
     name
+    icon
     savedOn
     plugin
     tags
@@ -58,6 +59,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                     singularApiName
                     pluralApiName
                     plugin
+                    icon
                     createdBy {
                         id
                         displayName
