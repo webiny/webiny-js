@@ -68,7 +68,11 @@ export class Tenancy_5_35_0_004 {
                 TYPE: tenant.TYPE,
                 ...getTenantData(tenant),
                 // Move all data to a `data` envelope
-                data: getTenantData(tenant)
+                data: {
+                    ...getTenantData(tenant),
+                    // While we're here, add a `tags` attribute to tenants
+                    tags: []
+                }
             });
         }
     }

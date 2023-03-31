@@ -34,11 +34,21 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
-export * from "./plugins";
-
 import { createPageTemplateEntity } from "~/definitions/pageTemplateEntity";
 import { createPageTemplateDynamoDbFields } from "~/operations/pageTemplate/fields";
 import { createPageTemplateStorageOperations } from "~/operations/pageTemplate";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import {
+    BlockCategoryDynamoDbFieldPlugin,
+    CategoryDynamoDbFieldPlugin,
+    MenuDynamoDbFieldPlugin,
+    PageBlockDynamoDbFieldPlugin,
+    PageDynamoDbFieldPlugin,
+    PageElementDynamoDbFieldPlugin,
+    PageTemplateDynamoDbFieldPlugin
+} from "~/plugins";
+
+export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const { documentClient, table, attributes, plugins: userPlugins } = params;
@@ -135,6 +145,20 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     };
 
     return {
+        beforeInit: async (context: PbContext) => {
+            const types: string[] = [
+                BlockCategoryDynamoDbFieldPlugin.type,
+                CategoryDynamoDbFieldPlugin.type,
+                MenuDynamoDbFieldPlugin.type,
+                PageBlockDynamoDbFieldPlugin.type,
+                PageDynamoDbFieldPlugin.type,
+                PageElementDynamoDbFieldPlugin.type,
+                PageTemplateDynamoDbFieldPlugin.type
+            ];
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
+        },
         getEntities: () => entities,
         getTable: () => tableInstance,
         system: createSystemStorageOperations({

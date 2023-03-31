@@ -29,6 +29,7 @@ module.exports = {
             "child_process",
             "os",
             "fs",
+            "readline",
             "util",
             "events",
             "crypto",

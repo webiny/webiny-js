@@ -12,6 +12,7 @@ const DATA_FIELD = /* GraphQL*/ `
             name
             slug
         }
+        icon
         layout
         titleFieldId
         descriptionFieldId
@@ -95,6 +96,7 @@ export interface CreateContentModelMutationVariables {
         layout?: string[][];
         titleFieldId?: string;
         defaultFields?: boolean;
+        icon?: string;
     };
 }
 export interface CreateContentModelFromMutationVariables {
@@ -110,6 +112,7 @@ export interface CreateContentModelFromMutationVariables {
         layout?: string[][];
         titleFieldId?: string;
         locale?: `${Lowercase<string>}-${Uppercase<string>}`;
+        icon?: string;
     };
 }
 

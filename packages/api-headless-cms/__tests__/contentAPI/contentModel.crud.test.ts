@@ -43,8 +43,6 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
     }
 ];
 
-jest.setTimeout(100000);
-
 describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
@@ -125,7 +123,8 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.id,
+                icon: "fa/fas"
             }
         });
 
@@ -151,7 +150,8 @@ describe("content model test", () => {
                             id: contentModelGroup.id,
                             name: contentModelGroup.name,
                             slug: contentModelGroup.slug
-                        }
+                        },
+                        icon: "fa/fas"
                     },
                     error: null
                 }
@@ -204,7 +204,8 @@ describe("content model test", () => {
                 name: "changed name",
                 description: "changed description",
                 fields: [],
-                layout: []
+                layout: [],
+                icon: "fa/updated"
             }
         });
 
@@ -212,7 +213,8 @@ describe("content model test", () => {
             ...createdContentModel,
             name: "changed name",
             description: "changed description",
-            savedOn: expect.stringMatching(/^20/)
+            savedOn: expect.stringMatching(/^20/),
+            icon: "fa/updated"
         };
 
         expect(changedUpdateResponse).toEqual({
@@ -585,7 +587,8 @@ describe("content model test", () => {
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
                         name: "new name",
-                        plugin: false
+                        plugin: false,
+                        icon: null
                     },
                     error: null
                 }

@@ -19,10 +19,10 @@ const Index: React.FC = () => {
 
     return (
         <SplitView>
-            <LeftPanel span={3}>
+            <LeftPanel span={2}>
                 <Sidebar folderId={currentFolderId} defaultFolderName={defaultFolderName} />
             </LeftPanel>
-            <RightPanel span={9}>
+            <RightPanel span={10}>
                 <Main folderId={currentFolderId} defaultFolderName={defaultFolderName} />
             </RightPanel>
         </SplitView>

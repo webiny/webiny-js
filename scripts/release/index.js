@@ -3,7 +3,7 @@ const { ConsoleLogger } = require("../ConsoleLogger");
 const { getReleaseType } = require("./releaseTypes");
 
 async function runRelease() {
-    const { type, tag } = yargs.argv;
+    const { type, tag, gitReset } = yargs.argv;
     if (!type) {
         throw Error(`Missing required "--type" option.`);
     }
@@ -15,6 +15,10 @@ async function runRelease() {
 
     if (tag) {
         release.setTag(tag);
+    }
+
+    if (gitReset) {
+        release.setResetAllChanges(gitReset);
     }
 
     await release.execute();

@@ -13,7 +13,6 @@ const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 const {
     createElasticsearchClient
 } = require("@webiny/project-utils/testing/elasticsearch/createClient");
-const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -76,12 +75,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                         esTable: process.env.DB_TABLE_ELASTICSEARCH,
                         documentClient,
                         // TODO need to insert elasticsearch client
-                        elasticsearch: elasticsearchClient,
-                        plugins: [
-                            ...dynamoDbPlugins(),
-                            createGzipCompression(),
-                            ...getElasticsearchOperators()
-                        ]
+                        elasticsearch: elasticsearchClient
                     });
                 },
                 getGlobalPlugins: () => {
@@ -94,8 +88,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                             })
                         }),
                         ...dynamoDbPlugins(),
-                        createGzipCompression(),
-                        ...getElasticsearchOperators()
+                        createGzipCompression()
                     ];
                 }
             };

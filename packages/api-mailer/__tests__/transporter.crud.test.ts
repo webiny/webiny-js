@@ -124,7 +124,7 @@ describe("Mailer Transporter CRUD", () => {
         });
     });
 
-    it(`should throw error before sending because of missing "text"`, async () => {
+    it(`should throw error before sending because of missing both "text" and "html"`, async () => {
         const context = await handle();
 
         const params: TransportSendData = {
@@ -135,7 +135,7 @@ describe("Mailer Transporter CRUD", () => {
             replyTo,
             subject,
             text: "",
-            html
+            html: ""
         };
 
         const result = await context.mailer.sendMail(params);
@@ -168,7 +168,7 @@ describe("Mailer Transporter CRUD", () => {
 
         const result = await context.mailer.sendMail(params);
         expect(result).toEqual({
-            result: true,
+            result: "ok",
             error: null
         });
     });
@@ -185,7 +185,7 @@ describe("Mailer Transporter CRUD", () => {
         const result = await context.mailer.getTransport();
 
         expect(result).toEqual({
-            name: "dummy-default",
+            name: "mailer.dummy-default",
             send: expect.any(Function),
             getAllSent: expect.any(Function)
         });
