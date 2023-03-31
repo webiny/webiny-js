@@ -1,7 +1,7 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
+import { Tags } from "@webiny/ui/Tags";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -19,11 +19,6 @@ import { Input } from "@webiny/ui/Input";
 import { TenantFormFields } from "~/components/TenantFormFields";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
-
-const ButtonWrapper = styled("div")({
-    display: "flex",
-    justifyContent: "space-between"
-});
 
 const TenantForm: React.FC = () => {
     const { loading, showEmptyView, createTenant, cancelEditing, tenant, onSubmit } =
@@ -44,7 +39,7 @@ const TenantForm: React.FC = () => {
     }
 
     return (
-        <Form data={tenant} onSubmit={onSubmit}>
+        <Form data={{ tags: [], ...tenant }} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm data-testid={"tenant-form"}>
                     {loading && <CircularProgress />}
@@ -56,26 +51,22 @@ const TenantForm: React.FC = () => {
                                     <Input label={"Name"} />
                                 </Bind>
                             </Cell>
-                        </Grid>
-                        <Grid>
                             <Cell span={12}>
                                 <Bind name="description" validators={validation.create("required")}>
                                     <Input label={"Description"} rows={4} />
                                 </Bind>
                             </Cell>
+                            <Cell span={12}>
+                                <Bind name="tags" validators={validation.create("required")}>
+                                    <Tags label={"Tags"} />
+                                </Bind>
+                            </Cell>
                         </Grid>
-
                         <TenantFormFields />
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonWrapper>
-                            <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
-                            <ButtonPrimary
-                                onClick={ev => {
-                                    form.submit(ev);
-                                }}
-                            >{t`Save tenant`}</ButtonPrimary>
-                        </ButtonWrapper>
+                        <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
+                        <ButtonPrimary onClick={form.submit}>{t`Save tenant`}</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

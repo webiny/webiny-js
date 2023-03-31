@@ -17,6 +17,7 @@ describe(`Test "Tenancy" tenants`, () => {
         const tenant1Data = {
             id: "1",
             name: "Tenant #1",
+            tags: [],
             description: "The first sub-tenant",
             parent: "root"
         };
@@ -27,6 +28,7 @@ describe(`Test "Tenancy" tenants`, () => {
             description: "The second sub-tenant",
             parent: "root",
             status: "pending",
+            tags: ["blog"],
             settings: {
                 domains: [{ fqdn: "domain.com" }]
             }
