@@ -1,3 +1,7 @@
+import checkBasePermissions from "./utils/checkBasePermissions";
+import checkOwnPermissions from "./utils/checkOwnPermissions";
+import prepareMenuItems from "./menus/prepareMenuItems";
+import WebinyError from "@webiny/error";
 import {
     MenuStorageOperationsGetParams,
     Menu,
@@ -14,35 +18,12 @@ import {
     PageBuilderStorageOperations
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
-import { validation } from "@webiny/validation";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-/**
- * Package commodo-fields-object does not have types.
- */
-// @ts-ignore
-import { object } from "commodo-fields-object";
-import prepareMenuItems from "./menus/prepareMenuItems";
-import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
-
-const CreateDataModel = withFields({
-    title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
-    slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:100") }),
-    items: object()
-})();
-
-const UpdateDataModel = withFields({
-    title: string({ validation: validation.create("minLength:1,maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:100") }),
-    items: object()
-})();
+import {
+    createMenuCreateValidation,
+    createMenuUpdateValidation
+} from "~/graphql/crud/menus/validation";
+import { createZodError, removeUndefinedValues } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.menu";
 
@@ -52,6 +33,7 @@ export interface CreateMenuCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
@@ -195,10 +177,12 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         async createMenu(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
+            const validationResult = await createMenuCreateValidation().safeParseAsync(input);
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
 
-            const data: Menu = await createDataModel.toJSON();
+            const data = validationResult.data;
 
             const existing = await storageOperations.menus.get({
                 where: {
@@ -265,12 +249,14 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
+            const validationResult = await createMenuUpdateValidation().safeParseAsync(input);
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
 
-            const data: Partial<Menu> = await updateDataModel.toJSON({ onlyDirty: true });
+            const data = removeUndefinedValues(validationResult.data);
 
-            const menu: Menu = {
+            const menu = {
                 ...original,
                 ...data
             };
