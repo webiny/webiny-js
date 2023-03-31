@@ -1,3 +1,10 @@
+/**
+ * We are copy/pasting the `@webiny/theme/types` file here because of an issue
+ * with our build system. This is not the case in users' projects. There we
+ * simply import the types from `@webiny/theme` packages. See:
+ * packages/cwp-template-aws/template/common/types/emotion/index.d.ts
+ */
+
 import { type CSSObject } from "@emotion/react";
 
 export type Content = Element;
