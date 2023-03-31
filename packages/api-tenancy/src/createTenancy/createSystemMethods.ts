@@ -65,6 +65,7 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                 await this.createTenant({
                     id: "root",
                     name: "Root",
+                    tags: [],
                     description: "The top-level Webiny tenant.",
                     parent: ""
                 });

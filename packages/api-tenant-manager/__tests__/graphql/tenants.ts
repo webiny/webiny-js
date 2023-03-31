@@ -2,6 +2,7 @@ const fields = /* GraphQL */ `
     id
     name
     description
+    tags
     parent
     settings {
         domains {

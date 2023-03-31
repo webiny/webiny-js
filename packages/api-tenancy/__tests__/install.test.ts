@@ -34,6 +34,7 @@ describe(`Test "Tenancy" install`, () => {
             id: "root",
             name: "Root",
             description: "The top-level Webiny tenant.",
+            tags: [],
             webinyVersion: process.env.WEBINY_VERSION,
             parent: null,
             createdOn: expect.any(String),

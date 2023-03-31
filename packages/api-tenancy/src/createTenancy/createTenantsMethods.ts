@@ -86,7 +86,6 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
                 settings: {
                     ...(data.settings || {}),
                     domains: (data.settings && data.settings.domains) || []
-                    // themes: (data.settings && data.settings.themes) || []
                 },
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
@@ -94,11 +93,11 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
                 webinyVersion: process.env.WEBINY_VERSION
             };
 
-            await this.onTenantBeforeCreate.publish({ tenant });
+            await this.onTenantBeforeCreate.publish({ tenant, input: data });
 
             await storageOperations.createTenant(tenant);
 
-            await this.onTenantAfterCreate.publish({ tenant });
+            await this.onTenantAfterCreate.publish({ tenant, input: data });
 
             // Store data in cache
             loaders.getTenant.clear(tenant.id).prime(tenant.id, tenant);
