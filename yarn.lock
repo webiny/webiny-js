@@ -14457,6 +14457,7 @@ __metadata:
     "@webiny/handler-aws": 0.0.0
     "@webiny/ioc": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/utils": 0.0.0
     center-align: ^1.0.1
     chalk: ^4.1.2
     dynamodb-toolbox: ^0.3.5
@@ -14465,7 +14466,6 @@ __metadata:
     jest-mock-console: ^1.0.0
     mdbid: ^1.0.0
     minimatch: ^5.1.6
-    p-retry: 4.6.2
     pino: ^8.11.0
     pino-pretty: ^9.4.0
     rimraf: ^3.0.2
@@ -14858,11 +14858,11 @@ __metadata:
     "@webiny/handler-aws": 0.0.0
     "@webiny/ioc": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.2.0
     lodash: ^4.17.21
     mdbid: ^1.0.0
-    p-retry: ^4.6.2
     pluralize: ^8.0.0
   languageName: unknown
   linkType: soft
@@ -15381,6 +15381,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     nanoid: ^3.3.4
     nanoid-dictionary: ^4.3.0
+    p-retry: 4.6.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
