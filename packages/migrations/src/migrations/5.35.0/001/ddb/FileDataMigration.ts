@@ -1,12 +1,13 @@
 import { Table } from "dynamodb-toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
+import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
+import { executeWithRetry } from "@webiny/utils";
 import {
     createStandardEntity,
     queryOne,
     queryAll,
     ddbQueryAllWithCallback,
-    batchWriteAll,
-    executeWithRetry
+    batchWriteAll
 } from "~/utils";
 import {
     createFileEntity,
@@ -15,7 +16,6 @@ import {
 } from "../entities/createFileEntity";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
-import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 
 export type FileMigrationCheckpoint = Record<string, string | boolean | undefined>;
 

@@ -1,6 +1,7 @@
+import { coerce } from "semver";
 import { Logger } from "pino";
 import { inject, makeInjectable } from "@webiny/ioc";
-import { coerce } from "semver";
+import { executeWithRetry } from "@webiny/utils";
 import {
     MigrationRepositorySymbol,
     LoggerSymbol,
@@ -17,7 +18,6 @@ import {
     MigrationStatus,
     MigrationRunItem
 } from "~/types";
-import { executeWithRetry } from "./executeWithRetry";
 import { createId } from "~/createId";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
