@@ -4,7 +4,9 @@ export interface PresignedPostPayloadData {
     name: string;
     type: string;
     size: number;
-    keyPrefix: string;
+    id?: string;
+    key?: string;
+    keyPrefix?: string;
 }
 
 export interface PresignedPostPayloadDataResponse {

@@ -35,14 +35,16 @@ export const getPresignedPostPayload = (
         throw Error(`File's content type could not be resolved.`);
     }
 
-    const id = mdbid();
-    let key = sanitizeFilename(data.name);
-    if (key) {
+    const id = data.id || mdbid();
+    let key = data.key || sanitizeFilename(data.name);
+
+    // We must prefix file key with file ID.
+    if (!key.startsWith(id)) {
         key = id + "/" + key;
     }
 
     if (data.keyPrefix) {
-        key = `${sanitizeFilename(data.keyPrefix)}${key}`;
+        key = data.keyPrefix + key;
     }
 
     // Replace all whitespace.

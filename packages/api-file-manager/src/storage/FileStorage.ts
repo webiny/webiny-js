@@ -9,11 +9,13 @@ const storagePluginType = "api-file-manager-storage";
 export interface FileStorageUploadParams {
     buffer: Buffer;
     hideInFileManager: boolean | string;
-    tags?: string[];
     size: number;
     name: string;
-    keyPrefix: string;
     type: string;
+    id?: string;
+    key?: string;
+    tags?: string[];
+    keyPrefix?: string;
 }
 export interface FileStorageDeleteParams {
     id: string;
@@ -51,16 +53,15 @@ export class FileStorage {
         if (!settings) {
             throw new WebinyError("Missing File Manager Settings.", "FILE_MANAGER_ERROR");
         }
+
         // Add file to cloud storage.
         const { file: fileData } = await this.storagePlugin.upload({
             ...params,
             settings
         });
 
-        const { fileManager } = this.context;
-
         // Save file in DB.
-        return await fileManager.createFile({
+        return this.context.fileManager.createFile({
             ...(fileData as any),
             meta: {
                 private: Boolean(params.hideInFileManager)
@@ -69,29 +70,31 @@ export class FileStorage {
         });
     }
 
-    async uploadFiles(params: FileStorageUploadMultipleParams) {
+    async uploadFiles({ files }: FileStorageUploadMultipleParams) {
         const settings = await this.context.fileManager.getSettings();
         if (!settings) {
             throw new WebinyError("Missing File Manager Settings.", "FILE_MANAGER_ERROR");
         }
-        // Upload files to cloud storage.
-        const promises = [];
-        for (const item of params.files) {
-            promises.push(
-                this.storagePlugin.upload({
+
+        const filesData = await Promise.all(
+            files.map(async item => {
+                // TODO: improve types of this.storagePlugin.
+                const { file } = await this.storagePlugin.upload({
                     ...item,
                     settings
-                })
-            );
-        }
-        // Wait for all to resolve.
-        const uploadFileResponses = await Promise.all(promises);
+                });
 
-        const filesData = uploadFileResponses.map(response => response.file);
+                return {
+                    ...file,
+                    meta: {
+                        private: Boolean(item.hideInFileManager)
+                    },
+                    tags: Array.isArray(item.tags) ? item.tags : []
+                };
+            })
+        );
 
-        const { fileManager } = this.context;
-        // Save files in DB.
-        return fileManager.createFilesInBatch(filesData);
+        return this.context.fileManager.createFilesInBatch(filesData);
     }
 
     async delete(params: FileStorageDeleteParams) {
