@@ -14,14 +14,14 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             input PreSignedPostPayloadInput {
                 name: String!
                 type: String!
-                size: Int!
+                size: Long!
             }
 
             type GetPreSignedPostPayloadResponseDataFile {
                 id: ID!
                 name: String!
                 type: String!
-                size: Int!
+                size: Long!
                 key: String!
             }
 
