@@ -256,9 +256,24 @@ describe("Workflow assignment to a PB Page", () => {
          * Now page should have this workflow assigned to it.
          */
         const [getPageResponse] = await getPageQuery({ id: page.id });
-        expect(getPageResponse.data.pageBuilder.getPage.data.settings.apw.workflowId).toBe(
-            workflow.id
-        );
+
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            settings: {
+                                apw: {
+                                    contentReviewId: null,
+                                    workflowId: workflow.id
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         /**
          * Let's try creating one more workflow with same scope.

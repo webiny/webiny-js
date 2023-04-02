@@ -88,5 +88,6 @@ export const createPageSettingsUpdateValidation = () => {
                     .nullish()
             })
         })
+        .passthrough()
         .partial();
 };
