@@ -65,16 +65,16 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
             try {
                 body = createRequestBody(request.body);
             } catch (ex) {
-                console.log(`Error while creating the body request.`);
-                console.log(formatErrorPayload(ex));
+                console.error(`Error while creating the body request.`);
+                console.error(formatErrorPayload(ex));
                 throw ex;
             }
             try {
                 const result = await processRequestBody(body, schema, context);
                 return reply.status(200).send(result);
             } catch (ex) {
-                console.log(`Error while processing the body request.`);
-                console.log(formatErrorPayload(ex));
+                console.error(`Error while processing the body request.`);
+                console.error(formatErrorPayload(ex));
                 throw ex;
             }
         });

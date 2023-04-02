@@ -14,7 +14,8 @@
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/ioc": ["../ioc/src"]
+      "@webiny/ioc": ["../ioc/src"],
+      "@webiny/utils": ["../utils/src"]
     }
   },
   "references": [
@@ -35,6 +36,9 @@
     },
     {
       "path": "../ioc"
+    },
+    {
+      "path": "../utils"
     }
   ]
 }

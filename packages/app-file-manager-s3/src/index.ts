@@ -27,7 +27,7 @@ export default () =>
     ({
         type: "app-file-manager-storage",
         name: "app-file-manager-storage",
-        upload: async (file: File, { apolloClient }) => {
+        upload: async (file: File, { apolloClient, onProgress }) => {
             // 1. GET PreSignedPostPayload
             const response = await apolloClient.query({
                 query: GET_PRE_SIGNED_POST_PAYLOAD,
@@ -51,7 +51,17 @@ export default () =>
 
                 formData.append("file", file);
 
-                const xhr = new window.XMLHttpRequest(); // eslint-disable-line
+                const xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener(
+                    "progress",
+                    event => {
+                        const percent = (100 * event.loaded) / event.total;
+                        if (onProgress) {
+                            onProgress(percent);
+                        }
+                    },
+                    false
+                );
                 xhr.open("POST", getPreSignedPostPayload.data.data.url, true);
                 xhr.send(formData);
                 xhr.onload = function () {

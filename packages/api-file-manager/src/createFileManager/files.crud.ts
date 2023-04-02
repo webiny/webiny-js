@@ -15,8 +15,6 @@ import {
 import { checkBasePermissions } from "./checkBasePermissions";
 import { FileManagerConfig } from "~/createFileManager/index";
 
-const BATCH_CREATE_MAX_FILES = 20;
-
 /**
  * If permission is limited to "own" files only, check that current identity owns the file.
  */
@@ -215,24 +213,6 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             return true;
         },
         async createFilesInBatch(inputs) {
-            if (!Array.isArray(inputs)) {
-                throw new WebinyError(`"data" must be an array.`, "CREATE_FILES_NON_ARRAY");
-            }
-
-            if (inputs.length === 0) {
-                throw new WebinyError(
-                    `"data" argument must contain at least one file.`,
-                    "CREATE_FILES_MIN_FILES"
-                );
-            }
-
-            if (inputs.length > BATCH_CREATE_MAX_FILES) {
-                throw new WebinyError(
-                    `"data" argument must not contain more than ${BATCH_CREATE_MAX_FILES} files.`,
-                    "CREATE_FILES_MAX_FILES"
-                );
-            }
-
             await checkBasePermissions(getPermission, { rwd: "w" });
 
             const identity = getIdentity();

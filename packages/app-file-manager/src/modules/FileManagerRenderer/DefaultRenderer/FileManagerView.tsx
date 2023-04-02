@@ -274,7 +274,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     return (
         <Files
             multiple
-            maxSize={settings ? settings.uploadMaxFileSize + "b" : undefined}
+            maxSize={settings ? settings.uploadMaxFileSize + "b" : "1TB"}
+            multipleMaxSize={"1TB"}
             accept={accept}
             onSuccess={files => {
                 const filesToUpload = files.map(file => file.src.file).filter(Boolean) as File[];

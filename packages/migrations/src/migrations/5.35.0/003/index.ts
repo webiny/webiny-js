@@ -1,9 +1,10 @@
 import { Table } from "dynamodb-toolbox";
 import { DataMigrationContext, PrimaryDynamoTableSymbol } from "@webiny/data-migration";
-import { queryOne, queryAll } from "~/utils";
+import { queryOne, queryAll, batchWriteAll } from "~/utils";
 import { createTenantEntity } from "./createTenantEntity";
 import { createLegacyUserEntity, createUserEntity, getUserData } from "./createUserEntity";
 import { makeInjectable, inject } from "@webiny/ioc";
+import { executeWithRetry } from "@webiny/utils";
 
 export class AdminUsers_5_35_0_003 {
     private readonly newUserEntity: ReturnType<typeof createUserEntity>;
@@ -67,26 +68,29 @@ export class AdminUsers_5_35_0_003 {
                 }
             });
 
-            for (const user of users) {
-                if (user.data) {
-                    logger.info(
-                        `Skipping user ${user.id} on tenant ${tenant.name} (${tenant.id}).`
-                    );
-                    continue;
-                }
-
-                logger.info(`Updating user ${user.id} on tenant ${tenant.name} (${tenant.id}).`);
-                await this.newUserEntity.put({
-                    PK: `T#${tenant.id}#ADMIN_USER#${user.id}`,
-                    SK: "A",
-                    GSI1_PK: `T#${tenant.id}#ADMIN_USERS`,
-                    GSI1_SK: user.email,
-                    TYPE: "adminUsers.user",
-                    ...getUserData(user),
-                    // Move all data to a `data` envelope
-                    data: getUserData(user)
-                });
+            if (users.length === 0) {
+                logger.info(`No users found on tenant "${tenant.id}".`);
+                continue;
             }
+
+            const newUsers = users
+                .filter(user => !user.data)
+                .map(user => {
+                    return this.newUserEntity.putBatch({
+                        PK: `T#${tenant.id}#ADMIN_USER#${user.id}`,
+                        SK: "A",
+                        GSI1_PK: `T#${tenant.id}#ADMIN_USERS`,
+                        GSI1_SK: user.email,
+                        TYPE: "adminUsers.user",
+                        ...getUserData(user),
+                        // Move all data to a `data` envelope
+                        data: getUserData(user)
+                    });
+                });
+
+            await executeWithRetry(() =>
+                batchWriteAll({ table: this.newUserEntity.table, items: newUsers })
+            );
         }
     }
 }

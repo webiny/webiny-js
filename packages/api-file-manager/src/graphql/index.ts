@@ -36,7 +36,7 @@ export const createGraphQLSchemaPlugin = () => {
                 id: ID!
                 key: String!
                 name: String!
-                size: Int!
+                size: Long!
                 type: String!
                 tags: [String!]
                 aliases: [String!]
@@ -46,7 +46,7 @@ export const createGraphQLSchemaPlugin = () => {
             input UpdateFileInput {
                 key: String
                 name: String
-                size: Int
+                size: Long
                 type: String
                 tags: [String!]
                 aliases: [String!]
@@ -57,7 +57,7 @@ export const createGraphQLSchemaPlugin = () => {
                 id: ID!
                 name: String!
                 type: String!
-                size: Int!
+                size: Long!
                 key: String!
             }
 
@@ -92,7 +92,7 @@ export const createGraphQLSchemaPlugin = () => {
             }
 
             type CreateFilesResponse {
-                data: [File]
+                data: [File!]
                 error: FileError
             }
 
@@ -100,7 +100,7 @@ export const createGraphQLSchemaPlugin = () => {
                 id: ID!
                 key: String!
                 name: String!
-                size: Int!
+                size: Long!
                 type: String!
                 src: String!
                 tags: [String!]

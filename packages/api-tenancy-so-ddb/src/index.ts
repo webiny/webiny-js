@@ -20,6 +20,18 @@ interface TenantDomainRecord {
     webinyVersion: string;
 }
 
+const setTenantDefaults = (item: Tenant) => {
+    if (!item.tags) {
+        item.tags = [];
+    }
+
+    if (!item.description) {
+        item.description = "";
+    }
+
+    return item;
+};
+
 export const createStorageOperations: CreateTenancyStorageOperations = params => {
     const { table, documentClient } = params;
 
@@ -128,7 +140,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
             const tenants = await batchReadAll<{ data: TTenant }>({ table: tableInstance, items });
 
-            return tenants.map(item => item.data);
+            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as TTenant);
         },
 
         async listTenants<TTenant extends Tenant = Tenant>(
@@ -152,7 +164,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 options
             });
 
-            return tenants.map(item => item.data);
+            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as TTenant);
         },
 
         async createTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant> {

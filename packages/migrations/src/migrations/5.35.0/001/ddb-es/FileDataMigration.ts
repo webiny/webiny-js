@@ -2,10 +2,10 @@ import chunk from "lodash/chunk";
 import { Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
+import { executeWithRetry } from "@webiny/utils";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import {
     createStandardEntity,
-    executeWithRetry,
     queryOne,
     queryAll,
     batchWriteAll,

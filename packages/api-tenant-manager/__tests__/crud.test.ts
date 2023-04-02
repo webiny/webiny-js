@@ -9,6 +9,7 @@ describe(`Test "Tenant Manager"`, () => {
         const tenant1Data = {
             name: "Tenant #1",
             description: "The first sub-tenant",
+            tags: [],
             settings: {
                 domains: [{ fqdn: "domain1.com" }]
             }
@@ -17,6 +18,7 @@ describe(`Test "Tenant Manager"`, () => {
         const tenant2Data = {
             name: "Tenant #2",
             description: "The second sub-tenant",
+            tags: ["child"],
             settings: {
                 domains: [{ fqdn: "domain2.com" }]
             }
@@ -29,6 +31,7 @@ describe(`Test "Tenant Manager"`, () => {
             id: expect.any(String),
             name: "Tenant #1",
             description: "The first sub-tenant",
+            tags: [],
             parent: "root",
             settings: {
                 domains: [{ fqdn: "domain1.com" }]
@@ -47,6 +50,7 @@ describe(`Test "Tenant Manager"`, () => {
             id: expect.any(String),
             name: "Tenant #2",
             description: "The second sub-tenant",
+            tags: ["child"],
             parent: "root",
             settings: {
                 domains: [{ fqdn: "domain2.com" }]
@@ -61,7 +65,12 @@ describe(`Test "Tenant Manager"`, () => {
         // Update
         const [response3] = await handler.updateTenant({
             id: tenant1.id,
-            data: { name: "Updated #1", description: "Updated desc", settings: tenant1.settings }
+            data: {
+                name: "Updated #1",
+                description: "Updated desc",
+                settings: tenant1.settings,
+                tags: ["child", "blog"]
+            }
         });
 
         const tenant1a = response3.data.tenancy.updateTenant.data;
@@ -69,6 +78,7 @@ describe(`Test "Tenant Manager"`, () => {
             id: expect.any(String),
             name: "Updated #1",
             description: "Updated desc",
+            tags: ["child", "blog"],
             parent: "root",
             settings: tenant1.settings
         });
@@ -99,6 +109,7 @@ describe(`Test "Tenant Manager"`, () => {
         const tenant1Data = {
             name: "Tenant #1",
             description: "The first sub-tenant",
+            tags: [],
             settings: {
                 domains: [{ fqdn: "domain1.com" }]
             }
@@ -136,6 +147,7 @@ describe(`Test "Tenant Manager"`, () => {
                 data: {
                     name: "Updated #1",
                     description: "Updated desc",
+                    tags: [],
                     settings: tenant1.settings
                 }
             });
@@ -147,7 +159,12 @@ describe(`Test "Tenant Manager"`, () => {
         // Update with a valid identity
         const [updateResponse] = await authHandler.updateTenant({
             id: tenant1.id,
-            data: { name: "Updated #1", description: "Updated desc", settings: tenant1.settings }
+            data: {
+                name: "Updated #1",
+                description: "Updated desc",
+                tags: [],
+                settings: tenant1.settings
+            }
         });
 
         const tenant1a = updateResponse.data.tenancy.updateTenant.data;
@@ -155,6 +172,7 @@ describe(`Test "Tenant Manager"`, () => {
             id: expect.any(String),
             name: "Updated #1",
             description: "Updated desc",
+            tags: [],
             parent: "root",
             settings: tenant1.settings
         });

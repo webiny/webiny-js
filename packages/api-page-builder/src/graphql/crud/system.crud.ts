@@ -4,7 +4,7 @@ import { preparePageData } from "./install/welcomeToWebinyPageData";
 import { preparePageDataLegacy } from "./install/welcomeToWebinyPageDataLegacy";
 import { notFoundPageData } from "./install/notFoundPageData";
 import { notFoundPageDataLegacy } from "./install/notFoundPageDataLegacy";
-import savePageAssets from "./install/utils/savePageAssets";
+import { savePageAssets } from "./install/utils/savePageAssets";
 import {
     Category,
     OnSystemAfterInstallTopicParams,

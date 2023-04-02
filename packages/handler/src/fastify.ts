@@ -110,10 +110,10 @@ export const createHandler = (params: CreateHandlerParams) => {
             if (!all) {
                 return;
             }
-            console.log(
+            console.error(
                 `Error while registering onAll route. One of the routes is already defined.`
             );
-            console.log(JSON.stringify(all));
+            console.error(JSON.stringify(all));
             throw new WebinyError(
                 `You cannot override a route with onAll() method, please remove unnecessary route from the system.`,
                 "OVERRIDE_ROUTE_ERROR",
@@ -127,7 +127,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         } else if (options?.override === true) {
             return;
         }
-        console.log(`Error while trying to override route: [${type}] ${path}`);
+        console.error(`Error while trying to override route: [${type}] ${path}`);
         throw new WebinyError(
             `When you are trying to override existing route, you must send "override" parameter when adding that route.`,
             "OVERRIDE_ROUTE_ERROR",
@@ -248,8 +248,8 @@ export const createHandler = (params: CreateHandlerParams) => {
             routes
         });
     } catch (ex) {
-        console.log(`Error while constructing the Context.`);
-        console.log(stringifyError(ex));
+        console.error(`Error while constructing the Context.`);
+        console.error(stringifyError(ex));
         throw ex;
     }
 
@@ -280,12 +280,12 @@ export const createHandler = (params: CreateHandlerParams) => {
             });
         }
     } catch (ex) {
-        console.log(
+        console.error(
             `Error while running the "RoutePlugin" ${
                 routePluginName ? `(${routePluginName})` : ""
             } plugin in the beginning of the "createHandler" callable.`
         );
-        console.log(stringifyError(ex));
+        console.error(stringifyError(ex));
         throw ex;
     }
 
@@ -316,12 +316,12 @@ export const createHandler = (params: CreateHandlerParams) => {
                 }
             }
         } catch (ex) {
-            console.log(
+            console.error(
                 `Error while running the "HandlerOnRequestPlugin" ${
                     name ? `(${name})` : ""
                 } plugin in the onRequest hook.`
             );
-            console.log(stringifyError(ex));
+            console.error(stringifyError(ex));
             throw ex;
         }
         /**
@@ -337,7 +337,7 @@ export const createHandler = (params: CreateHandlerParams) => {
             /**
              * At this point throwing an exception will not do anything with the response. So just log it.
              */
-            console.log(
+            console.error(
                 JSON.stringify({
                     message: `Output was already sent. Please check custom plugins of type "HandlerOnRequestPlugin".`,
                     explanation:
@@ -365,12 +365,12 @@ export const createHandler = (params: CreateHandlerParams) => {
                 await plugin.apply(app.webiny);
             }
         } catch (ex) {
-            console.log(
+            console.error(
                 `Error while running the "ContextPlugin" ${
                     name ? `(${name})` : ""
                 } plugin in the preParsing hook.`
             );
-            console.log(stringifyError(ex));
+            console.error(stringifyError(ex));
             throw ex;
         }
     });
@@ -386,12 +386,12 @@ export const createHandler = (params: CreateHandlerParams) => {
                 await plugin.apply(app.webiny);
             }
         } catch (ex) {
-            console.log(
+            console.error(
                 `Error while running the "BeforeHandlerPlugin" ${
                     name ? `(${name})` : ""
                 } plugin in the preHandler hook.`
             );
-            console.log(stringifyError(ex));
+            console.error(stringifyError(ex));
             throw ex;
         }
     });
@@ -408,12 +408,12 @@ export const createHandler = (params: CreateHandlerParams) => {
                 await plugin.handle(app.webiny, payload);
             }
         } catch (ex) {
-            console.log(
+            console.error(
                 `Error while running the "HandlerResultPlugin" ${
                     name ? `(${name})` : ""
                 } plugin in the preSerialization hook.`
             );
-            console.log(stringifyError(ex));
+            console.error(stringifyError(ex));
             throw ex;
         }
         return payload;
@@ -444,8 +444,8 @@ export const createHandler = (params: CreateHandlerParams) => {
         /**
          * Log error to cloud, as these can be extremely annoying to debug!
          */
-        console.log("@webiny/handler");
-        console.log(stringifyError(error));
+        console.error("@webiny/handler");
+        console.error(stringifyError(error));
 
         reply
             .status(500)
@@ -487,12 +487,12 @@ export const createHandler = (params: CreateHandlerParams) => {
             plugin.modify(app);
         }
     } catch (ex) {
-        console.log(
+        console.error(
             `Error while running the "ModifyFastifyPlugin" ${
                 modifyFastifyPluginName ? `(${modifyFastifyPluginName})` : ""
             } plugin in the end of the "createHandler" callable.`
         );
-        console.log(stringifyError(ex));
+        console.error(stringifyError(ex));
         throw ex;
     }
 
