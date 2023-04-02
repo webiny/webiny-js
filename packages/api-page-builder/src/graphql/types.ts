@@ -585,7 +585,7 @@ export interface DefaultSettingsCrudOptions {
 
 export interface SettingsUpdateTopicMetaParams {
     diff: {
-        pages: Array<[PageSpecialType, string, string, Page]>;
+        pages: [PageSpecialType, string | null | undefined, string, Page][];
     };
 }
 /**

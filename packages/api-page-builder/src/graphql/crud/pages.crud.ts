@@ -663,10 +663,11 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
             const settings = await this.getCurrentSettings();
-            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
+            const pages = settings?.pages || {};
             for (const key in pages) {
                 // We don't allow delete operation for "published" version of special pages.
-                if (pages[key] === page.pid && page.status === "published") {
+                const value = pages[key as keyof typeof pages];
+                if (value === page.pid && page.status === "published") {
                     throw new WebinyError(
                         `Cannot delete page because it's set as ${key}.`,
                         "DELETE_PAGE_ERROR"
@@ -943,9 +944,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             const settings = await this.getCurrentSettings();
-            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
+            const pages = settings?.pages || {};
             for (const key in pages) {
-                if (pages[key] === original.pid) {
+                const value = pages[key as keyof typeof pages];
+                if (value === original.pid) {
                     throw new WebinyError(
                         `Cannot unpublish page because it's set as ${key}.`,
                         "UNPUBLISH_PAGE_ERROR"

@@ -12362,7 +12362,6 @@ __metadata:
     "@babel/preset-env": ^7.19.4
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
-    "@commodo/fields": beta
     "@types/extract-zip": ^1.6.2
     "@types/node-fetch": ^2.6.1
     "@types/rimraf": ^3.0.2
@@ -12391,7 +12390,6 @@ __metadata:
     "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
     aws-sdk: ^2.971.0
-    commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.5
     extract-zip: ^1.6.7

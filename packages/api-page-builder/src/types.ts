@@ -11,7 +11,7 @@ export interface PageElement {
     type: "element" | "block";
     category: string;
     content: any;
-    preview: File;
+    preview?: Partial<File>;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -390,10 +390,10 @@ export interface SystemStorageOperations {
  */
 export interface Settings {
     name: string;
-    websiteUrl: string;
-    websitePreviewUrl: string;
-    favicon: File;
-    logo: File;
+    websiteUrl?: string | null;
+    websitePreviewUrl?: string | null;
+    favicon?: Partial<File>;
+    logo?: Partial<File>;
     prerendering: {
         app: {
             url: string;
@@ -403,19 +403,19 @@ export interface Settings {
         };
         meta: Record<string, any>;
     };
-    social: {
-        facebook: string;
-        twitter: string;
-        instagram: string;
-        image: File;
+    social?: {
+        facebook?: string;
+        twitter?: string;
+        instagram?: string;
+        image?: Partial<File>;
     };
-    htmlTags: {
-        header: string;
-        footer: string;
+    htmlTags?: {
+        header?: string;
+        footer?: string;
     };
-    pages: {
-        home: string;
-        notFound: string;
+    pages?: {
+        home?: string | null;
+        notFound?: string | null;
     };
     tenant: string | undefined | false;
     locale: string | undefined | false;
