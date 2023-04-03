@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { booksSchema } from "~tests/mocks/booksSchema";
+import { booksSchema, booksCrudPlugin } from "~tests/mocks/booksSchema";
 
 const disableIntrospectionPlugin = new BeforeHandlerPlugin(async context => {
     // Check in the context.request.body if there is an introspection query.
@@ -33,8 +33,8 @@ describe("disable introspection query", () => {
             }
         });
 
-        const { introspect: disabledIntrospect } = useGqlHandler({
-            plugins: [booksSchema, disableIntrospectionPlugin]
+        const { introspect: disabledIntrospect, invoke: disabledIntrospectInvoke } = useGqlHandler({
+            plugins: [booksCrudPlugin, booksSchema, disableIntrospectionPlugin]
         });
 
         const [response, rawResponse] = await disabledIntrospect();
@@ -46,5 +46,11 @@ describe("disable introspection query", () => {
         expect(response).toEqual({
             message: "Forbidden to execute introspection queries."
         });
+
+        const [booksResponse] = await disabledIntrospectInvoke({
+            body: { query: `{ books { name } }` }
+        });
+        expect(booksResponse.errors).toBeFalsy();
+        expect(booksResponse.data.books.length).toBe(2);
     });
 });

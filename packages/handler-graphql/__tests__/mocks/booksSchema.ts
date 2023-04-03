@@ -1,4 +1,5 @@
 import { GraphQLSchemaPlugin } from "~/types";
+import { ContextPlugin } from "@webiny/api";
 
 export const books = [
     {
@@ -8,6 +9,15 @@ export const books = [
         name: "Book 2"
     }
 ];
+
+export const booksCrudPlugin = new ContextPlugin(async context => {
+    (context as any).getBooks = () => {
+        console.log("getBooks");
+        console.table(books);
+        console.warn("Your store is quite empty!");
+        return books;
+    };
+});
 
 export const booksSchema: GraphQLSchemaPlugin = {
     type: "graphql-schema",

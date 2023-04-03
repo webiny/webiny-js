@@ -1,15 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { ContextPlugin } from "@webiny/api";
-import { books, booksSchema } from "~tests/mocks/booksSchema";
-
-const crudPlugin = new ContextPlugin(async context => {
-    (context as any).getBooks = () => {
-        console.log("getBooks");
-        console.table(books);
-        console.warn("Your store is quite empty!");
-        return books;
-    };
-});
+import { booksSchema, booksCrudPlugin } from "~tests/mocks/booksSchema";
 
 describe("GraphQL Handler", () => {
     test("should return errors if schema doesn't exist", async () => {
@@ -29,7 +19,7 @@ describe("GraphQL Handler", () => {
     });
 
     test("should return logs in the extensions", async () => {
-        const { invoke } = useGqlHandler({ debug: true, plugins: [crudPlugin, booksSchema] });
+        const { invoke } = useGqlHandler({ debug: true, plugins: [booksCrudPlugin, booksSchema] });
         const [response] = await invoke({ body: { query: `{ books { name } }` } });
         expect(response.errors).toBeFalsy();
         expect(response.data.books.length).toBe(2);
@@ -37,7 +27,7 @@ describe("GraphQL Handler", () => {
     });
 
     test("should return logs for specific queries when executed in batch", async () => {
-        const { invoke } = useGqlHandler({ debug: true, plugins: [crudPlugin, booksSchema] });
+        const { invoke } = useGqlHandler({ debug: true, plugins: [booksCrudPlugin, booksSchema] });
         const [[r1, r2, r3]] = await invoke({
             body: [
                 { query: `{ books { name } }` },
