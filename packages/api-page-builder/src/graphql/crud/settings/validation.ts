@@ -57,6 +57,7 @@ export const createSettingsCreateValidation = () => {
                     .passthrough()
                     .optional()
             })
+            .passthrough()
             .default({})
             .optional(),
         htmlTags: zod
@@ -92,7 +93,6 @@ export const createSettingsCreateValidation = () => {
                     })
             })
             .passthrough()
-            .optional(),
-        theme: zod.string().optional()
+            .optional()
     });
 };
