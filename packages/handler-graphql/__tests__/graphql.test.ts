@@ -1,15 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
-import { GraphQLSchemaPlugin } from "~/types";
 import { ContextPlugin } from "@webiny/api";
-
-const books = [
-    {
-        name: "Book 1"
-    },
-    {
-        name: "Book 2"
-    }
-];
+import { books, booksSchema } from "~tests/mocks/booksSchema";
 
 const crudPlugin = new ContextPlugin(async context => {
     (context as any).getBooks = () => {
@@ -19,49 +10,6 @@ const crudPlugin = new ContextPlugin(async context => {
         return books;
     };
 });
-
-const booksSchema: GraphQLSchemaPlugin = {
-    type: "graphql-schema",
-    schema: {
-        typeDefs: /* GraphQL */ `
-            type Book {
-                name: String
-            }
-
-            extend type Query {
-                books: [Book]
-                book(name: String!): Book
-            }
-
-            extend type Mutation {
-                createBook: Boolean
-            }
-        `,
-        resolvers: {
-            Query: {
-                books(_, __, context: any) {
-                    console.group("books resolver");
-                    const books = context.getBooks();
-                    console.groupEnd();
-                    return books;
-                },
-                book(_, { name }) {
-                    console.log("Find book by name");
-                    const book = books.find(b => b.name === name);
-                    if (book) {
-                        console.log(`Found book "${book.name}"`);
-                        return book;
-                    }
-                    console.log(`Book not found!`);
-                    return null;
-                }
-            },
-            Mutation: {
-                createBook: () => true
-            }
-        }
-    }
-};
 
 describe("GraphQL Handler", () => {
     test("should return errors if schema doesn't exist", async () => {
