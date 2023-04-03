@@ -17,12 +17,12 @@
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/ioc": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "center-align": "^1.0.1",
     "chalk": "^4.1.2",
     "dynamodb-toolbox": "^0.3.5",
     "mdbid": "^1.0.0",
     "minimatch": "^5.1.6",
-    "p-retry": "4.6.2",
     "pino": "^8.11.0",
     "pino-pretty": "^9.4.0",
     "semver": "^6.3.0"

@@ -15,6 +15,7 @@ export interface Tenant {
     id: string;
     name: string;
     description: string;
+    tags: string[];
     status: string;
     settings: TenantSettings;
     parent: string | null;
@@ -56,6 +57,7 @@ export interface CreateTenantInput {
     id?: string;
     name: string;
     description: string;
+    tags: string[];
     status?: string;
     settings?: TenantSettings;
     parent: string;
@@ -83,10 +85,12 @@ export interface System {
 // Tenant lifecycle events
 export interface TenantBeforeCreateEvent {
     tenant: Tenant;
+    input: CreateTenantInput & Record<string, any>;
 }
 
 export interface TenantAfterCreateEvent {
     tenant: Tenant;
+    input: CreateTenantInput & Record<string, any>;
 }
 
 export interface TenantBeforeUpdateEvent {

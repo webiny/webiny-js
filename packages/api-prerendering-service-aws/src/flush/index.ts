@@ -50,11 +50,11 @@ export default (): FlushHookPlugin => {
                     })
                     .promise();
             } catch (e) {
-                // eslint-disable-next-line
-                console.log(
+                console.error(
                     `Failed to issue a cache invalidation request to CloudFront distribution "${distributionId}".`,
                     e.stack
                 );
+                return;
             }
 
             console.log(`Cache invalidation request (path "${path}") successfully issued.`);

@@ -41,13 +41,22 @@ const classes = {
     })
 };
 
-interface CellSizePropsType {
+interface CounterInputPropsType {
     value: number;
     maxAllowed: number;
     label: string;
+    minErrorMessage: string;
+    maxErrorMessage: string;
     onChange: (value: number) => void;
 }
-const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllowed }) => {
+const CounterInput: React.FC<CounterInputPropsType> = ({
+    value,
+    label,
+    minErrorMessage,
+    maxErrorMessage,
+    onChange,
+    maxAllowed
+}) => {
     const [errorMessage, setErrorMessage] = useState("");
     // Hide error message after 2s.
     useEffect((): void => {
@@ -59,7 +68,7 @@ const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllo
     const onReduceHandler = (): boolean => {
         const newValue = value - 1;
         if (newValue <= 0) {
-            setErrorMessage("Cell can't get smaller than this.");
+            setErrorMessage(minErrorMessage);
             return false;
         }
         onChange(newValue);
@@ -68,7 +77,7 @@ const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllo
 
     const onAddHandler = (): boolean => {
         if (maxAllowed <= 0) {
-            setErrorMessage("Cell can't get bigger than this.");
+            setErrorMessage(maxErrorMessage);
             return false;
         }
         onChange(value + 1);
@@ -100,4 +109,4 @@ const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllo
     );
 };
 
-export default React.memo(CellSize);
+export default React.memo(CounterInput);

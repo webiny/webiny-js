@@ -154,11 +154,11 @@ export default (configuration: Params) => {
                 data: null,
                 error: null
             };
-        } catch (e) {
-            log("An error occurred while prerendering...", e);
+        } catch (ex) {
+            console.error("An error occurred while prerendering...", ex);
             return {
                 data: null,
-                error: e
+                error: ex
             };
         }
     });

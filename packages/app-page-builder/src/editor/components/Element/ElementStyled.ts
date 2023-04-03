@@ -51,7 +51,7 @@ interface ElementContainerProps {
 }
 
 export const ElementContainer = React.memo<ElementContainerProps>(
-    styled<"div", ElementContainerProps>("div")(({ highlight, active }) => {
+    styled.div<ElementContainerProps>(({ highlight, active }) => {
         const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
         return {

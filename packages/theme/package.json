@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.19.0",
-    "@emotion/core": "^10.0.17"
+    "@emotion/react": "^11.10.6"
   },
   "peerDependencies": {
     "react": "^17.0.2"
