@@ -1,6 +1,8 @@
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+
 import {
     assertNotError,
-    createDdbMigrationHandler,
+    createDdbEsMigrationHandler,
     getPrimaryDynamoDbTable,
     groupMigrations,
     insertDynamoDbTestData as insertTestData,
@@ -8,7 +10,7 @@ import {
     scanTable
 } from "~tests/utils";
 
-import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006";
+import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb-es";
 
 import { createTenantsData, createLocalesData, createPagesData } from "./006.data";
 
@@ -16,11 +18,22 @@ jest.retryTimes(0);
 
 describe("5.35.0-006", () => {
     const table = getPrimaryDynamoDbTable();
+    const elasticsearchClient = createElasticsearchClient();
+
+    beforeAll(() => {
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX =
+            new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+    });
 
     logTestNameBeforeEachTest();
 
     it("should not run if no tenant found", async () => {
-        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_35_0_006] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_35_0_006]
+        });
 
         const { data, error } = await handler();
 
@@ -35,7 +48,12 @@ describe("5.35.0-006", () => {
     it("should not run if no locale found", async () => {
         await insertTestData(table, [...createTenantsData()]);
 
-        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_35_0_006] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_35_0_006]
+        });
 
         const { data, error } = await handler();
 
@@ -50,7 +68,12 @@ describe("5.35.0-006", () => {
     it("should not run if no pages found", async () => {
         await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
 
-        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_35_0_006] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_35_0_006]
+        });
 
         const { data, error } = await handler();
 
@@ -69,7 +92,13 @@ describe("5.35.0-006", () => {
             ...createPagesData()
         ]);
 
-        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_35_0_006] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_35_0_006]
+        });
+
         const { data, error } = await handler();
 
         assertNotError(error);
@@ -107,7 +136,12 @@ describe("5.35.0-006", () => {
             ...createPagesData()
         ]);
 
-        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_35_0_006] });
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: table,
+            dynamoToEsTable: table,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_35_0_006]
+        });
 
         // Should run the migration
         process.stdout.write("[First run]\n");
