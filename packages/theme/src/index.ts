@@ -9,7 +9,7 @@ function byId(this: Array<any>, id: string, includeAllItemProps = false) {
     if (includeAllItemProps) {
         return typographyStyle ?? undefined;
     }
-    return typographyStyle.css ?? undefined;
+    return typographyStyle?.css ?? undefined;
 }
 
 export const createTheme = (theme: Theme): DecoratedTheme => {
