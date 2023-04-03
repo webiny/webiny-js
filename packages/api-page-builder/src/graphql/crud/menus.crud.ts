@@ -199,6 +199,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
 
             const menu: Menu = {
                 ...data,
+                items: data.items || [],
                 createdOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
