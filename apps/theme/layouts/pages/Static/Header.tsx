@@ -3,7 +3,7 @@ import { HeaderDesktop } from "./HeaderDesktop";
 import { HeaderMobile } from "./HeaderMobile";
 import styled from "@emotion/styled";
 
-import { colors, typography } from "../../../theme";
+import theme, { colors } from "../../../theme";
 
 export const Header: React.FC = () => {
     return (
@@ -26,7 +26,7 @@ const HeaderWrapper = styled.header`
     top: 0;
 
     a {
-        ${typography.paragraph1}
+        ${theme?.styles?.typography?.paragraphs.byId("paragraph1")}
         color: ${colors.color1};
         text-decoration: none;
     }

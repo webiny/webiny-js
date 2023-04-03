@@ -15,7 +15,7 @@ export const BeforeFormRender: React.VFC<{ message: React.ReactNode; border?: bo
             pointer-events: none;
             text-align: center;
             ${border !== false && `border: 1px dashed ${theme.styles.colors.color2};`}
-            ${theme.styles.typography.paragraph1};
+            ${theme.styles.typography.paragraphs.byId("paragraph1")};
             color: ${theme.styles.colors.color4};
         `;
 

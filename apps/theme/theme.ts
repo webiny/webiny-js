@@ -43,29 +43,6 @@ const paragraphs = {
     WebkitFontSmoothing: "antialiased"
 };
 
-// Legacy
-export const typography = {
-    heading1: { ...headings, fontWeight: "bold", fontSize: 48 },
-    heading2: { ...headings, fontSize: 36 },
-    heading3: { ...headings, fontSize: 30 },
-    heading4: { ...headings, fontSize: 24 },
-    heading5: { ...headings, fontSize: 20 },
-    heading6: { ...headings, fontSize: 18, lineHeight: "1.75rem" },
-    paragraph1: { ...paragraphs, fontSize: 16.5 },
-    paragraph2: {
-        ...paragraphs,
-        fontSize: 12.5,
-        letterSpacing: "0.45px",
-        lineHeight: "19px"
-    },
-    quote: {
-        ...paragraphs,
-        fontWeight: "bold",
-        fontSize: 22
-    },
-    list: { ...paragraphs, fontSize: 17 }
-};
-
 // Buttons.
 const buttons = (overrides: CSSObject) => ({
     a: { textDecoration: "none" },
@@ -102,26 +79,52 @@ const theme = createTheme({
                     id: "heading1",
                     name: "Heading 1",
                     tag: "h1",
-                    css: { fontWeight: "bold", fontSize: 48 }
+                    css: { ...headings, fontWeight: "bold", fontSize: 48 }
                 },
-                { id: "heading2", name: "Heading 2", tag: "h2", css: { fontSize: 36 } },
-                { id: "heading3", name: "Heading 3", tag: "h3", css: { fontSize: 30 } },
-                { id: "heading4", name: "Heading 4", tag: "h4", css: { fontSize: 24 } },
-                { id: "heading5", name: "Heading 5", tag: "h5", css: { fontSize: 20 } },
+                {
+                    id: "heading2",
+                    name: "Heading 2",
+                    tag: "h2",
+                    css: { ...headings, fontSize: 36 }
+                },
+                {
+                    id: "heading3",
+                    name: "Heading 3",
+                    tag: "h3",
+                    css: { ...headings, fontSize: 30 }
+                },
+                {
+                    id: "heading4",
+                    name: "Heading 4",
+                    tag: "h4",
+                    css: { ...headings, fontSize: 24 }
+                },
+                {
+                    id: "heading5",
+                    name: "Heading 5",
+                    tag: "h5",
+                    css: { ...headings, fontSize: 20 }
+                },
                 {
                     id: "heading6",
                     name: "Heading 6",
                     tag: "h6",
-                    css: { fontSize: 18, lineHeight: "1.75rem" }
+                    css: { ...headings, fontSize: 18, lineHeight: "1.75rem" }
                 }
             ],
             paragraphs: [
-                { id: "paragraph1", name: "Paragraph 1", tag: "p", css: { fontSize: 16.5 } },
+                {
+                    id: "paragraph1",
+                    name: "Paragraph 1",
+                    tag: "p",
+                    css: { ...paragraphs, fontSize: 16.5 }
+                },
                 {
                     id: "paragraph2",
                     name: "Paragraph 2",
                     tag: "p",
                     css: {
+                        ...paragraphs,
                         fontSize: 12.5,
                         letterSpacing: "0.45px",
                         lineHeight: "19px"
@@ -130,16 +133,17 @@ const theme = createTheme({
             ],
             quotes: [
                 {
-                    id: "quote1",
-                    name: "Quote1 1",
+                    id: "quote",
+                    name: "Quote 1",
                     tag: "p",
                     css: {
+                        ...paragraphs,
                         fontWeight: "bold",
                         fontSize: 22
                     }
                 }
             ],
-            lists: [{ id: "list1", name: "list 1", tag: "ul", css: { fontSize: 16.5 } }]
+            lists: [{ id: "list", name: "list 1", tag: "ul", css: { ...paragraphs, fontSize: 17 } }]
         },
         elements: {
             document: {

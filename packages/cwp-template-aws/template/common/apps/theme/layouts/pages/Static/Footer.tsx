@@ -4,7 +4,7 @@ import { ReactComponent as FacebookIcon } from "./assets/facebook-square-brands.
 import { ReactComponent as TwitterIcon } from "./assets/twitter-square-brands.svg";
 import { ReactComponent as InstagramIcon } from "./assets/instagram-brands.svg";
 import styled from "@emotion/styled";
-import { breakpoints, colors, typography } from "../../../theme";
+import theme, { breakpoints, colors } from "../../../theme";
 import { usePage } from "@webiny/app-page-builder-elements";
 
 export const Footer: React.FC = () => {
@@ -78,7 +78,7 @@ const FooterLogo = styled.div`
     }
 
     .copy {
-        ${typography.paragraph2}
+        ${theme.styles.typography.paragraphs.byId("paragraph2")}
         color: ${colors.color4}
     }
 `;

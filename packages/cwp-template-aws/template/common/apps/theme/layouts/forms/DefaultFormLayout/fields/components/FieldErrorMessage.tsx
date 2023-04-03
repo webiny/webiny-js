@@ -1,11 +1,11 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import { breakpoints, typography, colors } from "../../../../../theme";
+import theme, { breakpoints, colors } from "../../../../../theme";
 
 const Wrapper = styled.div`
   margin-left: 2px;
   margin-top: 5px;
-  ${typography.paragraph2};
+  ${theme.styles.typography.paragraphs.byId("paragraph2")};
   color: ${colors.color1};
 
   ${breakpoints["mobile-landscape"]} {

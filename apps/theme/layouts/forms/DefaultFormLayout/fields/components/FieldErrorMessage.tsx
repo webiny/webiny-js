@@ -5,7 +5,7 @@ import theme from "../../../../../theme";
 const Wrapper = styled.div`
   margin-left: 2px;
   margin-top: 5px;
-  ${theme.styles.typography.paragraph2};
+  ${theme.styles.typography.paragraphs.byId("paragraph2")};
   color: ${theme.styles.colors.color1};
 
   ${theme.breakpoints["mobile-landscape"]} {

@@ -13,7 +13,13 @@ import {
     StylesCallback
 } from "~/types";
 
-import { StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
+import {
+    StylesObject,
+    ThemeBreakpoints,
+    ThemeTypographyHTMLTag,
+    Typography,
+    TypographyStyle
+} from "@webiny/theme/types";
 
 let usingPageElementsFlag = false;
 
@@ -164,4 +170,25 @@ export const elementDataPropsAreEqual = (prevProps: RendererProps, nextProps: Re
     const prevRendererMetaHash = JSON.stringify(prevProps.meta);
     const nextRendererMetaHash = JSON.stringify(nextProps.meta);
     return prevRendererMetaHash === nextRendererMetaHash;
+};
+
+/*
+ * Desc: CSSObject style
+ * */
+export const getTypographyStyleById = (
+    typographyId: string,
+    typography?: Typography
+): Record<string, any> | undefined => {
+    if (!typography) {
+        return undefined;
+    }
+    for (const key in typography) {
+        // @ts-ignore
+        const typographyStyles = typography[key] as TypographyStyle<ThemeTypographyHTMLTag>[];
+        const style = typographyStyles.find(x => x.id === typographyId);
+        if (style) {
+            return style.css;
+        }
+    }
+    return undefined;
 };
