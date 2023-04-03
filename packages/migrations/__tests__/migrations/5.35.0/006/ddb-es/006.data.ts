@@ -1558,7 +1558,7 @@ export const createPagesData = () => {
             _md: "2023-03-29T10:00:39.143Z"
         },
         {
-            PK: "T#otherTenant#L#fr-FRPB#64240c416a2555000891814d",
+            PK: "T#otherTenant#L#fr-FR#PB#64240c416a2555000891814d",
             SK: "1",
             category: "static",
             content: {
@@ -1614,5 +1614,92 @@ export const createPagesData = () => {
             _et: "PbPages",
             _md: "2023-03-29T10:00:39.143Z"
         }
+        // {
+        //     PK: "T#root#L#en-US#PB#P#6425bf093a2f8e0008b49dbf",
+        //     SK: "L",
+        //     data: {
+        //         category: "static",
+        //         createdBy: {
+        //             displayName: "Leonardo Giacone",
+        //             id: "1c7efeeb-17fb-4dfd-bfdd-b34d92a43097",
+        //             type: "admin"
+        //         },
+        //         createdOn: "2023-03-30T16:55:37.892Z",
+        //         editor: "page-builder",
+        //         id: "6425bf093a2f8e0008b49dbf#0001",
+        //         images: {
+        //             general: null
+        //         },
+        //         latest: true,
+        //         locale: "en-US",
+        //         locked: true,
+        //         ownedBy: {
+        //             displayName: "Leonardo Giacone",
+        //             id: "1c7efeeb-17fb-4dfd-bfdd-b34d92a43097",
+        //             type: "admin"
+        //         },
+        //         path: "/welcome-to-webiny",
+        //         pid: "6425bf093a2f8e0008b49dbf",
+        //         publishedOn: "2023-03-30T16:55:38.312Z",
+        //         savedOn: "2023-03-30T16:55:38.312Z",
+        //         snippet: null,
+        //         status: "published",
+        //         tags: [],
+        //         tenant: "root",
+        //         title: "Welcome to Webiny",
+        //         titleLC: "welcome to webiny",
+        //         version: 1,
+        //         webinyVersion: "5.34.7",
+        //         __type: "page"
+        //     },
+        //
+        //     index: "root-en-us-page-builder",
+        //     _ct: "2023-03-30T16:55:38.313Z",
+        //     _et: "PbPagesEs",
+        //     _md: "2023-03-30T16:55:38.313Z"
+        // },
+        // {
+        //     PK: "T#root#L#en-US#PB#P#6425bf093a2f8e0008b49dbf",
+        //     SK: "P",
+        //     data: {
+        //         category: "static",
+        //         createdBy: {
+        //             displayName: "Leonardo Giacone",
+        //             id: "1c7efeeb-17fb-4dfd-bfdd-b34d92a43097",
+        //             type: "admin"
+        //         },
+        //         createdOn: "2023-03-30T16:55:37.892Z",
+        //         editor: "page-builder",
+        //         id: "6425bf093a2f8e0008b49dbf#0001",
+        //         images: {
+        //             general: null
+        //         },
+        //         locale: "en-US",
+        //         locked: true,
+        //         ownedBy: {
+        //             displayName: "Leonardo Giacone",
+        //             id: "1c7efeeb-17fb-4dfd-bfdd-b34d92a43097",
+        //             type: "admin"
+        //         },
+        //         path: "/welcome-to-webiny",
+        //         pid: "6425bf093a2f8e0008b49dbf",
+        //         published: true,
+        //         publishedOn: "2023-03-30T16:55:38.312Z",
+        //         savedOn: "2023-03-30T16:55:38.312Z",
+        //         snippet: null,
+        //         status: "published",
+        //         tags: [],
+        //         tenant: "root",
+        //         title: "Welcome to Webiny",
+        //         titleLC: "welcome to webiny",
+        //         version: 1,
+        //         webinyVersion: "5.34.7",
+        //         __type: "page"
+        //     },
+        //     index: "root-en-us-page-builder",
+        //     _ct: "2023-03-30T16:55:38.313Z",
+        //     _et: "PbPagesEs",
+        //     _md: "2023-03-30T16:55:38.313Z"
+        // }
     ];
 };

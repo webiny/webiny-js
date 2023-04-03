@@ -1,21 +1,16 @@
 import { Table } from "dynamodb-toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
+import { executeWithRetry } from "@webiny/utils";
 
 import { createEntryEntity } from "../entities/createEntryEntity";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
 import { createPageEntity } from "../entities/createPageEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
 import { getSearchablePageContent } from "../utils/getSearchableContent";
-import {
-    queryAll,
-    ddbQueryAllWithCallback,
-    batchWriteAll,
-    executeWithRetry,
-    queryOne
-} from "~/utils";
 
 import { I18NLocale, Page, Tenant, ListLocalesParams } from "../types";
+import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined

@@ -3,18 +3,27 @@ import { createElasticsearchClient } from "@webiny/project-utils/testing/elastic
 import {
     assertNotError,
     createDdbEsMigrationHandler,
+    createId,
+    delay,
     getPrimaryDynamoDbTable,
     groupMigrations,
+    insertDynamoDbTestData,
     insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
 
-import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb-es";
+import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
 
 import { createTenantsData, createLocalesData, createPagesData } from "./006.data";
+import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
+import { getIndexName } from "~/utils";
 
 jest.retryTimes(0);
+jest.setTimeout(900000);
+
+const NUMBER_OF_PAGES = 100;
+let numberOfGeneratedPages = 0;
 
 describe("5.35.0-006", () => {
     const table = getPrimaryDynamoDbTable();
@@ -24,6 +33,119 @@ describe("5.35.0-006", () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
     });
+
+    const createPagesData = async (numberOfPages = NUMBER_OF_PAGES) => {
+        const tenants = createTenantsData();
+
+        for (const tenant of tenants) {
+            const locales = createLocalesData();
+
+            for (const locale of locales) {
+                let batch = [];
+                const allPages = [];
+                for (let index = 0; index < numberOfPages; index++) {
+                    if (index % 25 === 0) {
+                        await insertDynamoDbTestData(table, batch);
+                        batch = [];
+                    }
+
+                    const id = createId();
+
+                    const page = {
+                        id: `${id}#0001`,
+                        category: "static",
+                        content: {
+                            compression: "jsonpack",
+                            content:
+                                "id|iQZiPRF1kL|type|document|data|settings|elements|path^^^$0|1|2|3|4|$5|$]]|6|@]|7|@]]"
+                        },
+                        createdBy: {
+                            displayName: "Leonardo Giacone",
+                            id: "172d2b80-d554-439e-ad68-445b1486e60a",
+                            type: "admin"
+                        },
+                        createdOn: "2023-03-29T10:00:33.958Z",
+                        editor: "page-builder",
+                        locale,
+                        locked: false,
+                        ownedBy: {
+                            displayName: "Leonardo Giacone",
+                            id: "172d2b80-d554-439e-ad68-445b1486e60a",
+                            type: "admin"
+                        },
+                        path: `/untitled-${id}`,
+                        pid: `${id}`,
+                        savedOn: "2023-03-29T10:00:39.123Z",
+                        settings: {
+                            general: {
+                                image: null,
+                                layout: "static",
+                                snippet: null,
+                                tags: null
+                            },
+                            seo: {
+                                description: null,
+                                meta: [],
+                                title: null
+                            },
+                            social: {
+                                description: null,
+                                image: null,
+                                meta: [],
+                                title: null
+                            }
+                        },
+                        status: "draft",
+                        tenant: tenant.data.id,
+                        title: `Page ${id}`,
+                        titleLC: `page ${id}`
+                    };
+
+                    batch.push({
+                        PK: `T#${tenant.data.id}#L#${locale.code}#PB#${id}`,
+                        SK: "1",
+                        TYPE: "pb.page",
+                        _ct: "2023-01-25T09:38:41.961Z",
+                        _et: "PbPages",
+                        _md: "2023-01-25T09:38:41.961Z",
+                        ...page
+                    });
+
+                    batch.push({
+                        PK: `T#${tenant.data.id}#L#${locale.code}#PB#L`,
+                        SK: id,
+                        TYPE: "pb.page",
+                        _ct: "2023-01-25T09:38:41.961Z",
+                        _et: "PbPages",
+                        _md: "2023-01-25T09:38:41.961Z",
+                        ...page
+                    });
+
+                    allPages.push(page);
+
+                    if (allPages.length > 3000) {
+                        await insertElasticsearchTestData<Page>(
+                            elasticsearchClient,
+                            allPages,
+                            item => {
+                                return getIndexName(item.tenant, item.locale);
+                            }
+                        );
+                        allPages.length = 0;
+                    }
+                }
+                await insertDynamoDbTestData(table, batch);
+                await insertElasticsearchTestData<Page>(elasticsearchClient, allPages, item => {
+                    return getIndexName(item.tenant, item.locale);
+                });
+
+                console.log("allPages", allPages);
+
+                // Track generated files
+                numberOfGeneratedPages += NUMBER_OF_PAGES;
+            }
+        }
+    };
 
     logTestNameBeforeEachTest();
 
@@ -86,11 +208,10 @@ describe("5.35.0-006", () => {
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, [
-            ...createTenantsData(),
-            ...createLocalesData(),
-            ...createPagesData()
-        ]);
+        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+
+        await createPagesData();
+        await delay(3000);
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: table,
