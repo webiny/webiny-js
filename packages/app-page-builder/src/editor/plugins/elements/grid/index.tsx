@@ -45,6 +45,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         "pb-editor-page-element-style-settings-width",
         "pb-editor-page-element-style-settings-height",
         "pb-editor-page-element-style-settings-vertical-align",
+        "pb-editor-page-element-style-settings-position",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
     ];

@@ -46,6 +46,7 @@ export default () => {
                 "pb-editor-page-element-style-settings-shadow",
                 "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-style-settings-margin",
+                "pb-editor-page-element-style-settings-position",
                 "pb-editor-page-element-style-settings-iframe"
             ],
             target: ["cell", "block"],

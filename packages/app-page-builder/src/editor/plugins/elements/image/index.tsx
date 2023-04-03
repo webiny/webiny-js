@@ -50,6 +50,7 @@ export default (args: PbEditorElementPluginArgs = {}): Plugin[] => {
         "pb-editor-page-element-style-settings-horizontal-align-flex",
         "pb-editor-page-element-style-settings-padding",
         "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-style-settings-position",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
     ];

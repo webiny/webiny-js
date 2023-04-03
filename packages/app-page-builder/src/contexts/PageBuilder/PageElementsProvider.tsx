@@ -10,11 +10,13 @@ import { initializeAos } from "@webiny/app-page-builder-elements/modifiers/attri
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
 import { createBorder } from "@webiny/app-page-builder-elements/modifiers/styles/border";
+import { createCell } from "@webiny/app-page-builder-elements/modifiers/styles/cell";
 import { createGrid } from "@webiny/app-page-builder-elements/modifiers/styles/grid";
 import { createHeight } from "@webiny/app-page-builder-elements/modifiers/styles/height";
 import { createHorizontalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/horizontalAlign";
 import { createMargin } from "@webiny/app-page-builder-elements/modifiers/styles/margin";
 import { createPadding } from "@webiny/app-page-builder-elements/modifiers/styles/padding";
+import { createPosition } from "@webiny/app-page-builder-elements/modifiers/styles/position";
 import { createShadow } from "@webiny/app-page-builder-elements/modifiers/styles/shadow";
 import { createText } from "@webiny/app-page-builder-elements/modifiers/styles/text";
 import { createTextAlign } from "@webiny/app-page-builder-elements/modifiers/styles/textAlign";
@@ -49,6 +51,7 @@ export const PageElementsProvider: React.FC = ({ children }) => {
             styles: {
                 background: createBackground(),
                 border: createBorder(),
+                cell: createCell(),
                 grid: createGrid(),
                 height: createHeight(),
                 horizontalAlign: createHorizontalAlign(),
@@ -56,6 +59,7 @@ export const PageElementsProvider: React.FC = ({ children }) => {
                 text: createText(),
                 textAlign: createTextAlign(),
                 padding: createPadding(),
+                position: createPosition(),
                 shadow: createShadow(),
                 verticalAlign: createVerticalAlign(),
                 visibility: createVisibility(),

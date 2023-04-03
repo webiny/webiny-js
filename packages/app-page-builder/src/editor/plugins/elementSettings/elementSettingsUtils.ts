@@ -93,8 +93,11 @@ export const applyFallbackDisplayMode = (
     let output: string | undefined = undefined;
     for (let i = 0; i < index; i++) {
         const currentValue = getValue(orderedConfigs[i].displayMode);
-        // In case of "string", we don't need to merge all values
-        if (currentValue && typeof currentValue === "string") {
+        // In case of "string" or "boolean", we don't need to merge all values
+        if (
+            currentValue &&
+            (typeof currentValue === "string" || typeof currentValue === "boolean")
+        ) {
             output = currentValue;
         } else if (currentValue) {
             output = merge(output, currentValue);

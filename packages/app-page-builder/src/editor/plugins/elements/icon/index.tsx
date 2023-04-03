@@ -49,6 +49,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             "pb-editor-page-element-style-settings-horizontal-align",
             { alignments: ["left", "center", "right"] }
         ],
+        "pb-editor-page-element-style-settings-position",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
     ];
