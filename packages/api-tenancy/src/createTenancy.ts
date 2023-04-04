@@ -41,6 +41,30 @@ export async function createTenancy({
         setCurrentTenant(tenant: Tenant) {
             currentTenant = withToString(tenant);
         },
+        async withRootTenant(cb) {
+            const initialTenant = this.getCurrentTenant();
+            const rootTenant = await this.getRootTenant();
+            this.setCurrentTenant(rootTenant);
+            try {
+                return await cb();
+            } finally {
+                // Make sure that, whatever happens in the callback, the tenant is set back to the initial one.
+                tenancy.setCurrentTenant(initialTenant);
+            }
+        },
+        async withEachTenant(tenants, cb) {
+            const initialTenant = this.getCurrentTenant();
+            const results = [];
+            for (const tenant of tenants) {
+                this.setCurrentTenant(tenant);
+                try {
+                    results.push(await cb(tenant));
+                } finally {
+                    this.setCurrentTenant(initialTenant);
+                }
+            }
+            return results;
+        },
         ...createSystemMethods({ storageOperations }),
         ...createTenantsMethods({ storageOperations, incrementWcpTenants, decrementWcpTenants })
     };
