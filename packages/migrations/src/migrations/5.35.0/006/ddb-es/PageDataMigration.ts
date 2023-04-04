@@ -8,9 +8,6 @@ import { createTenantEntity } from "../entities/createTenantEntity";
 import { I18NLocale, ListLocalesParams, Page, Tenant } from "../types";
 import { createEntryEntity } from "~/migrations/5.35.0/006/entities/createEntryEntity";
 import { createPageEntity } from "~/migrations/5.35.0/006/entities/createPageEntity";
-import { File } from "~/migrations/5.35.0/001/types";
-import { getFileData } from "~/migrations/5.35.0/001/entities/createFileEntity";
-import chunk from "lodash/chunk";
 import { executeWithRetry } from "@webiny/utils";
 import { getSearchablePageContent } from "~/migrations/5.35.0/006/utils/getSearchableContent";
 
@@ -175,15 +172,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                         );
 
                         const execute = () => {
-                            return Promise.all(
-                                chunk(items, 200).map(pageChunk => {
-                                    console.log("pageChunk", pageChunk);
-                                    return batchWriteAll({
-                                        table: this.entryEntity.table,
-                                        items: pageChunk
-                                    });
-                                })
-                            );
+                            return batchWriteAll({ table: this.entryEntity.table, items });
                         };
 
                         await executeWithRetry(execute, {

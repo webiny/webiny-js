@@ -7,7 +7,6 @@ import {
     delay,
     getPrimaryDynamoDbTable,
     groupMigrations,
-    insertDynamoDbTestData,
     insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest,
     scanTable
@@ -43,7 +42,7 @@ describe("5.35.0-006", () => {
             const allPages = [];
             for (let index = 0; index < numberOfPages; index++) {
                 if (index % 25 === 0) {
-                    await insertDynamoDbTestData(table, batch);
+                    await insertTestData(table, batch);
                     batch = [];
                 }
 
@@ -123,7 +122,7 @@ describe("5.35.0-006", () => {
                     allPages.length = 0;
                 }
             }
-            await insertDynamoDbTestData(table, batch);
+            await insertTestData(table, batch);
             await insertElasticsearchTestData<Page>(elasticsearchClient, allPages, item => {
                 return getIndexName(item.tenant, item.locale, INDEX_SUFFIX);
             });
