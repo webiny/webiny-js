@@ -10,7 +10,7 @@ export const createFileRecordPayload = (
 ): CreateSearchRecordParams<FmFileRecordData> => {
     const { id, key, size, type, name, meta, createdOn, createdBy, tags } = file;
     const location = {
-        folderId: meta?.location?.folderId || ROOT_FOLDER
+        folderId: ROOT_FOLDER //TODO: fix this with the right folderId
     };
 
     return {
@@ -26,7 +26,8 @@ export const createFileRecordPayload = (
             name,
             createdOn,
             createdBy,
-            tags
+            tags,
+            meta
         }
     };
 };
