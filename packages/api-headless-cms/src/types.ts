@@ -1384,7 +1384,7 @@ export interface CmsModelFieldInput {
     /**
      * @see CmsModelField.listValidation
      */
-    listValidation: CmsModelFieldValidation[];
+    listValidation?: CmsModelFieldValidation[];
     /**
      * User defined settings.
      */
