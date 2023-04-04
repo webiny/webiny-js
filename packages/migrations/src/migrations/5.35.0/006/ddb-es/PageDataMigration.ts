@@ -115,7 +115,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 let batch = 0;
                 await esQueryAllWithCallback<Page>({
                     elasticsearchClient: this.elasticsearchClient,
-                    index: getIndexName(tenant.data.id, locale.code),
+                    index: getIndexName(tenant.data.id, locale.code, "page-builder"),
                     body: {
                         query: {
                             bool: {
@@ -136,7 +136,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     callback: async (pages, cursor) => {
                         batch++;
                         logger.info(
-                            `Processing batch #${batch} in group ${groupId} (${pages.length} files).`
+                            `Processing batch #${batch} in group ${groupId} (${pages.length} pages).`
                         );
 
                         const items = await pages.reduce(
@@ -176,10 +176,11 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
 
                         const execute = () => {
                             return Promise.all(
-                                chunk(items, 200).map(fileChunk => {
+                                chunk(items, 200).map(pageChunk => {
+                                    console.log("pageChunk", pageChunk);
                                     return batchWriteAll({
                                         table: this.entryEntity.table,
-                                        items: fileChunk
+                                        items: pageChunk
                                     });
                                 })
                             );

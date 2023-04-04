@@ -79,9 +79,9 @@ export interface Page {
     content: Record<string, any> | null;
     publishedOn: string | null;
     version: number;
-    settings: PageSettings;
+    settings: Record<string, any>;
     locked: boolean;
-    status: PageStatus;
+    status: string;
     createdOn: string;
     savedOn: string;
     createdBy: Identity;

@@ -3,7 +3,7 @@ import { PageBuilder_5_35_0_002 } from "~/migrations/5.35.0/002";
 import { AdminUsers_5_35_0_003 } from "~/migrations/5.35.0/003";
 import { Tenancy_5_35_0_004 } from "~/migrations/5.35.0/004";
 import { CmsModels_5_35_0_005 } from "~/migrations/5.35.0/005";
-import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb";
+import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb-es";
 
 export const migrations = () => {
     return [

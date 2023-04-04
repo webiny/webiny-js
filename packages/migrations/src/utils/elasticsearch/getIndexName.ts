@@ -1,6 +1,13 @@
 import WebinyError from "@webiny/error";
 
-export const getIndexName = (tenant: string, locale: string) => {
+export const getIndexName = (tenant: string, locale: string, indexSuffix: string) => {
+    if (!indexSuffix) {
+        throw new WebinyError(
+            `Missing "indexSuffix" parameter when trying to create Elasticsearch index name.`,
+            "INDEX_SUFFIX_ERROR"
+        );
+    }
+
     if (!tenant) {
         throw new WebinyError(
             `Missing "tenant" parameter when trying to create Elasticsearch index name.`,
@@ -22,7 +29,7 @@ export const getIndexName = (tenant: string, locale: string) => {
         localeCode = locale;
     }
 
-    const index = [tenantId, localeCode, "file-manager"].filter(Boolean).join("-").toLowerCase();
+    const index = [tenantId, localeCode, indexSuffix].filter(Boolean).join("-").toLowerCase();
 
     const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
     if (!prefix) {

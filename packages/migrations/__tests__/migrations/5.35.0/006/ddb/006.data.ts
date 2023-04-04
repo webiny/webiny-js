@@ -1,4 +1,4 @@
-const createdBy = {
+export const createdBy = {
     id: "admin",
     type: "admin",
     displayName: "Admin"

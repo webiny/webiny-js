@@ -23,6 +23,7 @@ jest.retryTimes(0);
 jest.setTimeout(900000);
 
 const NUMBER_OF_FILES = 3000;
+const INDEX_SUFFIX = "file-manager";
 let numberOfGeneratedFiles = 0;
 
 describe("5.35.0-001", () => {
@@ -93,7 +94,7 @@ describe("5.35.0-001", () => {
                             elasticsearchClient,
                             allFiles,
                             item => {
-                                return getIndexName(item.tenant, item.locale);
+                                return getIndexName(item.tenant, item.locale, INDEX_SUFFIX);
                             }
                         );
                         allFiles.length = 0;
@@ -101,7 +102,7 @@ describe("5.35.0-001", () => {
                 }
                 await insertDynamoDbTestData(table, batch);
                 await insertElasticsearchTestData<File>(elasticsearchClient, allFiles, item => {
-                    return getIndexName(item.tenant, item.locale);
+                    return getIndexName(item.tenant, item.locale, INDEX_SUFFIX);
                 });
 
                 // Track generated files

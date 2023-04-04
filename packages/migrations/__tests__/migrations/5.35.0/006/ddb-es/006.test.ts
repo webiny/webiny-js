@@ -15,7 +15,7 @@ import {
 
 import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
 
-import { createTenantsData, createLocalesData, createPagesData } from "./006.data";
+import { createTenantsData, createLocalesData, createdBy } from "./006.data";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { getIndexName } from "~/utils";
 
@@ -23,6 +23,7 @@ jest.retryTimes(0);
 jest.setTimeout(900000);
 
 const NUMBER_OF_PAGES = 100;
+const INDEX_SUFFIX = "page-builder";
 let numberOfGeneratedPages = 0;
 
 describe("5.35.0-006", () => {
@@ -35,115 +36,100 @@ describe("5.35.0-006", () => {
     });
 
     const createPagesData = async (numberOfPages = NUMBER_OF_PAGES) => {
-        const tenants = createTenantsData();
+        const locales = createLocalesData();
 
-        for (const tenant of tenants) {
-            const locales = createLocalesData();
-
-            for (const locale of locales) {
-                let batch = [];
-                const allPages = [];
-                for (let index = 0; index < numberOfPages; index++) {
-                    if (index % 25 === 0) {
-                        await insertDynamoDbTestData(table, batch);
-                        batch = [];
-                    }
-
-                    const id = createId();
-
-                    const page = {
-                        id: `${id}#0001`,
-                        category: "static",
-                        content: {
-                            compression: "jsonpack",
-                            content:
-                                "id|iQZiPRF1kL|type|document|data|settings|elements|path^^^$0|1|2|3|4|$5|$]]|6|@]|7|@]]"
-                        },
-                        createdBy: {
-                            displayName: "Leonardo Giacone",
-                            id: "172d2b80-d554-439e-ad68-445b1486e60a",
-                            type: "admin"
-                        },
-                        createdOn: "2023-03-29T10:00:33.958Z",
-                        editor: "page-builder",
-                        locale,
-                        locked: false,
-                        ownedBy: {
-                            displayName: "Leonardo Giacone",
-                            id: "172d2b80-d554-439e-ad68-445b1486e60a",
-                            type: "admin"
-                        },
-                        path: `/untitled-${id}`,
-                        pid: `${id}`,
-                        savedOn: "2023-03-29T10:00:39.123Z",
-                        settings: {
-                            general: {
-                                image: null,
-                                layout: "static",
-                                snippet: null,
-                                tags: null
-                            },
-                            seo: {
-                                description: null,
-                                meta: [],
-                                title: null
-                            },
-                            social: {
-                                description: null,
-                                image: null,
-                                meta: [],
-                                title: null
-                            }
-                        },
-                        status: "draft",
-                        tenant: tenant.data.id,
-                        title: `Page ${id}`,
-                        titleLC: `page ${id}`
-                    };
-
-                    batch.push({
-                        PK: `T#${tenant.data.id}#L#${locale.code}#PB#${id}`,
-                        SK: "1",
-                        TYPE: "pb.page",
-                        _ct: "2023-01-25T09:38:41.961Z",
-                        _et: "PbPages",
-                        _md: "2023-01-25T09:38:41.961Z",
-                        ...page
-                    });
-
-                    batch.push({
-                        PK: `T#${tenant.data.id}#L#${locale.code}#PB#L`,
-                        SK: id,
-                        TYPE: "pb.page",
-                        _ct: "2023-01-25T09:38:41.961Z",
-                        _et: "PbPages",
-                        _md: "2023-01-25T09:38:41.961Z",
-                        ...page
-                    });
-
-                    allPages.push(page);
-
-                    if (allPages.length > 3000) {
-                        await insertElasticsearchTestData<Page>(
-                            elasticsearchClient,
-                            allPages,
-                            item => {
-                                return getIndexName(item.tenant, item.locale);
-                            }
-                        );
-                        allPages.length = 0;
-                    }
+        for (const locale of locales) {
+            let batch = [];
+            const allPages = [];
+            for (let index = 0; index < numberOfPages; index++) {
+                if (index % 25 === 0) {
+                    await insertDynamoDbTestData(table, batch);
+                    batch = [];
                 }
-                await insertDynamoDbTestData(table, batch);
-                await insertElasticsearchTestData<Page>(elasticsearchClient, allPages, item => {
-                    return getIndexName(item.tenant, item.locale);
+
+                const id = createId();
+
+                const page = {
+                    id: `${id}#0001`,
+                    pid: `${id}`,
+                    locale: locale.code,
+                    tenant: locale.tenant,
+                    title: `Page ${id}`,
+                    editor: "page-builder",
+                    createdFrom: null,
+                    path: `/untitled-${id}`,
+                    category: "static",
+                    content: {
+                        compression: "jsonpack",
+                        content:
+                            "id|iQZiPRF1kL|type|document|data|settings|elements|path^^^$0|1|2|3|4|$5|$]]|6|@]|7|@]]"
+                    },
+                    publishedOn: null,
+                    version: 1,
+                    settings: {
+                        general: {
+                            image: null,
+                            layout: "static",
+                            snippet: null,
+                            tags: null
+                        },
+                        seo: {
+                            description: null,
+                            meta: [],
+                            title: null
+                        },
+                        social: {
+                            description: null,
+                            image: null,
+                            meta: [],
+                            title: null
+                        }
+                    },
+                    locked: false,
+                    status: "draft",
+                    createdOn: "2023-03-29T10:00:33.958Z",
+                    savedOn: "2023-03-29T10:00:39.123Z",
+                    createdBy,
+                    ownedBy: createdBy,
+                    webinyVersion: "0.0.0"
+                };
+
+                batch.push({
+                    PK: `T#${locale.tenant}#L#${locale.code}#PB#${id}`,
+                    SK: "1",
+                    TYPE: "pb.page",
+                    _ct: "2023-01-25T09:38:41.961Z",
+                    _et: "PbPages",
+                    _md: "2023-01-25T09:38:41.961Z",
+                    ...page
                 });
 
-                console.log("allPages", allPages);
+                batch.push({
+                    PK: `T#${locale.tenant}#L#${locale.code}#PB#L`,
+                    SK: id,
+                    TYPE: "pb.page",
+                    _ct: "2023-01-25T09:38:41.961Z",
+                    _et: "PbPages",
+                    _md: "2023-01-25T09:38:41.961Z",
+                    ...page
+                });
 
-                // Track generated files
-                numberOfGeneratedPages += NUMBER_OF_PAGES;
+                allPages.push(page);
+
+                if (allPages.length > 3000) {
+                    await insertElasticsearchTestData<Page>(elasticsearchClient, allPages, item => {
+                        return getIndexName(item.tenant, item.locale, INDEX_SUFFIX);
+                    });
+                    allPages.length = 0;
+                }
             }
+            await insertDynamoDbTestData(table, batch);
+            await insertElasticsearchTestData<Page>(elasticsearchClient, allPages, item => {
+                return getIndexName(item.tenant, item.locale, INDEX_SUFFIX);
+            });
+
+            // Track generated pages
+            numberOfGeneratedPages += NUMBER_OF_PAGES;
         }
     };
 
@@ -230,6 +216,7 @@ describe("5.35.0-006", () => {
         expect(grouped.notApplicable.length).toBe(0);
 
         const searchRecords = await scanTable(table, {
+            entity: "CmsEntries",
             filters: [
                 {
                     attr: "modelId",
@@ -238,7 +225,7 @@ describe("5.35.0-006", () => {
             ]
         });
 
-        expect(searchRecords.length).toBe(22);
+        expect(searchRecords.length).toBe(numberOfGeneratedPages * 2);
 
         // Test result with snapshots - for some fields we need to use property matchers
         searchRecords.forEach(record => {
@@ -251,11 +238,10 @@ describe("5.35.0-006", () => {
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, [
-            ...createTenantsData(),
-            ...createLocalesData(),
-            ...createPagesData()
-        ]);
+        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+
+        await createPagesData();
+        await delay(3000);
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: table,
