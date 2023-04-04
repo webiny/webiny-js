@@ -4,11 +4,11 @@ import { createFileRecordPayload } from "../../utils/createRecordPayload";
 
 import { FmAcoContext, FmFileRecordData } from "~/types";
 
-export const onFileAfterCreateHook = ({ fileManager, aco }: FmAcoContext) => {
+export const onFileAfterUpdateHook = ({ aco, fileManager }: FmAcoContext) => {
     /**
-     * Intercept file creation and create a new search record.
+     * Intercept page update event and update the related search record.
      */
-    fileManager.onFileAfterCreate.subscribe(async ({ file }) => {
+    fileManager.onFileAfterUpdate.subscribe(async ({ file }) => {
         try {
             const payload = createFileRecordPayload(file);
             await aco.search.create<FmFileRecordData>(payload);
