@@ -1,7 +1,7 @@
 import { useHandler } from "~tests/graphql/handler";
 import { CmsContext } from "~/types";
 import { createCmsModel } from "@webiny/api-headless-cms";
-import { CmsGroup, CmsModel, CmsModelCreateInput } from "@webiny/api-headless-cms/types";
+import { CmsGroup, CmsModelCreateInput } from "@webiny/api-headless-cms/types";
 import { configurations } from "~/configurations";
 import { createMappingsSnapshot } from "./mocks/mappingsSnapshot";
 

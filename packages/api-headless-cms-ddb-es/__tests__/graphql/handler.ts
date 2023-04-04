@@ -5,7 +5,7 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createRawHandler, createRawEventHandler } from "@webiny/handler-aws";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createStorageOperations } from "~/index";
 import { CmsContext } from "~/types";
@@ -22,9 +22,7 @@ interface UseHandlerParams {
 export const useHandler = (params: UseHandlerParams = {}) => {
     const { plugins = [] } = params;
 
-    const elasticsearch = createElasticsearchClient({
-        endpoint: "http://localhost:9200"
-    });
+    const elasticsearch = createElasticsearchClient();
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
