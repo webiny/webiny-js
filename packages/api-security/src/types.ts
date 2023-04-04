@@ -16,6 +16,7 @@ export interface SecurityAuthorizationPlugin extends Plugin {
     type: "security-authorization";
     getPermissions(context: SecurityContext): Promise<SecurityPermission[]>;
 }
+
 // Backwards compatibility - END
 
 export type GetPermission = <T extends SecurityPermission = SecurityPermission>(
@@ -71,6 +72,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
     onIdentity: Topic<IdentityEvent<TIdentity>>;
     getStorageOperations(): SecurityStorageOperations;
+    withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
     enableAuthorization(): void;
     disableAuthorization(): void;
     addAuthorizer(authorizer: Authorizer): void;
@@ -341,10 +343,12 @@ export type StorageOperationsDeleteGroupParams = DeleteGroupParams;
 export type StorageOperationsGetSystemParams = GetSystemParams;
 export type StorageOperationsCreateSystemParams = CreateSystemParams;
 export type StorageOperationsUpdateSystemParams = UpdateSystemParams;
+
 export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
     createdOn: string;
     webinyVersion: string;
 }
+
 export type StorageOperationsUpdateTenantLinkParams = UpdateTenantLinkParams;
 export type StorageOperationsDeleteTenantLinkParams = DeleteTenantLinkParams;
 export type StorageOperationsListTenantLinksParams = ListTenantLinksParams;
