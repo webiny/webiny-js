@@ -1,4 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
+import { Page } from "~/types";
 
 jest.setTimeout(100000);
 
@@ -14,7 +15,7 @@ describe("Prepared Menus Test", () => {
         until
     } = useGqlHandler();
 
-    let initialPages;
+    let initialPages: Page[] = [];
 
     beforeEach(async () => {
         initialPages = [];

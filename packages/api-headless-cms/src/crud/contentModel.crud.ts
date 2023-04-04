@@ -48,7 +48,7 @@ import {
 } from "~/crud/contentModel/validation";
 import { createZodError } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
-import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
+import { removeUndefinedValues } from "@webiny/utils";
 import {
     ensurePluralApiName,
     ensureSingularApiName

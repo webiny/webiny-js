@@ -151,7 +151,8 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         title: "Main Menu",
                         slug: "main-menu",
                         description:
-                            "The main menu of the website, containing links to most important pages."
+                            "The main menu of the website, containing links to most important pages.",
+                        items: []
                     });
                 }
 
