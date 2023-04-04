@@ -57,11 +57,11 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
      * We need all the API models.
      * Private models are hidden in the GraphQL, so filter them out.
      */
-    context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
-        return model.isPrivate !== true;
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter((model): model is CmsModel => {
+            return model.isPrivate !== true;
+        });
     });
-    context.security.enableAuthorization();
     try {
         const schema = await generateSchema({
             ...params,

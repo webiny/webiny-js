@@ -8,6 +8,7 @@ import { toSlug } from "~/utils/toSlug";
 interface Params {
     context: CmsContext;
 }
+
 export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
@@ -43,9 +44,9 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
         },
         CmsContentModel: {
             group: async (model: CmsModel) => {
-                context.security.disableAuthorization();
-                const groups = await context.cms.listGroups();
-                context.security.enableAuthorization();
+                const groups = await context.security.withoutAuthorization(async () => {
+                    return context.cms.listGroups();
+                });
 
                 const group = groups.find(group => group.id === model.group.id);
                 return {
