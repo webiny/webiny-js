@@ -6,8 +6,9 @@ interface ElasticsearchConfig {
 }
 
 interface CmsElasticsearchParams {
-    model: CmsModel;
+    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
 }
+
 interface Configurations {
     es: (params: CmsElasticsearchParams) => ElasticsearchConfig;
 }
