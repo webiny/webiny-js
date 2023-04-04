@@ -398,6 +398,9 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                                 if (args.returnNotFoundPage === true && err.code === "NOT_FOUND") {
                                     // Load NOT FOUND page from settings
                                     const settings = await context.pageBuilder.getCurrentSettings();
+                                    if (!settings.pages?.notFound) {
+                                        return null;
+                                    }
                                     return context.pageBuilder.getPublishedPageById({
                                         id: settings.pages.notFound
                                     });

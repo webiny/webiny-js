@@ -10,7 +10,7 @@ import { documentClient } from "./documentClient";
 
 interface Config {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
 }
 
 export const defaultIdentity = {

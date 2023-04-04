@@ -31,13 +31,13 @@ interface UpdateFieldsAndLayout {
 
 const TEMPLATES_PATH = "settings.templates";
 
-export const DynamicZoneTemplate = ({
+export const DynamicZoneTemplate: React.VFC<DynamicZoneTemplateProps> = ({
     index,
     field,
     template,
     onChange,
     open
-}: DynamicZoneTemplateProps) => {
+}) => {
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete content template",
         message: "Are you sure you want to delete this content template?",

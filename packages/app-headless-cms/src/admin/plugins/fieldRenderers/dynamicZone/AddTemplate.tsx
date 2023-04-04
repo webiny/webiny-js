@@ -15,6 +15,7 @@ const AddIconContainer = styled.div`
 const AddButtonContainer = styled.div`
     text-align: center;
     margin-top: 20px;
+
     :first-of-type {
         margin-top: 0;
     }
@@ -25,6 +26,7 @@ const Info = styled.div`
     justify-content: center;
     align-items: center;
     margin-top: 5px;
+
     > svg {
         width: 20px;
         margin-right: 5px;
@@ -64,7 +66,7 @@ interface AddTemplateProps {
     onTemplate: UseAddTemplateParams["onTemplate"];
 }
 
-export const AddTemplateButton = (props: AddTemplateProps) => {
+export const AddTemplateButton: React.VFC<AddTemplateProps> = props => {
     const { showGallery, onTemplate, browseTemplates, onGalleryClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });
@@ -88,7 +90,7 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
     );
 };
 
-export const AddTemplateIcon = (props: AddTemplateProps) => {
+export const AddTemplateIcon: React.VFC<AddTemplateProps> = props => {
     const { showGallery, onTemplate, browseTemplates, onGalleryClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });

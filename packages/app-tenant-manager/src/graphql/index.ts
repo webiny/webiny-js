@@ -6,6 +6,7 @@ const fields = /* GraphQL */ `
         id
         name
         description
+        tags
         parent
     }
 `;
@@ -34,6 +35,7 @@ interface CreateTenantInputSettings {
 interface CreateTenantInput {
     name: string;
     description: string;
+    tags: string[];
     settings: CreateTenantInputSettings;
 }
 export interface CreateTenantMutationResponse {

@@ -16,8 +16,8 @@
   "dependencies": {
     "@babel/runtime": "^7.19.0",
     "@editorjs/editorjs": "^2.24.3",
-    "@emotion/core": "^10.0.17",
-    "@emotion/styled": "^10.0.17",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@material-design-icons/svg": "^0.14.2",
     "@rmwc/button": "7.0.3",
     "@rmwc/checkbox": "7.0.3",
@@ -129,7 +129,7 @@
       "dependencies": [
         "@svgr/webpack",
         "material-components-web",
-        "@emotion/core"
+        "@emotion/react"
       ]
     }
   },

@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../db-dynamodb" }, { "path": "../ioc" }, { "path": "../handler-aws" }],
+  "references": [
+    { "path": "../db-dynamodb" },
+    { "path": "../ioc" },
+    { "path": "../handler-aws" },
+    { "path": "../utils" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -14,7 +19,8 @@
       "@webiny/ioc/*": ["../ioc/src/*"],
       "@webiny/ioc": ["../ioc/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

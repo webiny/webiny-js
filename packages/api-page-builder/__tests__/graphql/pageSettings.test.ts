@@ -1,4 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
+import { PageSettings } from "~/types";
 
 jest.setTimeout(100000);
 
@@ -19,40 +20,56 @@ describe("Page Settings Test", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await updatePage({
+        const settings: PageSettings = {
+            general: {
+                snippet: "snippet",
+                tags: ["a", "b", "c"],
+                layout: "some-layout",
+                image: {
+                    id: "settings.general.image.id",
+                    src: "settings.general.image.src"
+                }
+            },
+            social: {
+                meta: [
+                    { property: "p1", content: "c1" },
+                    { property: "p2", content: "c2" },
+                    { property: "p3", content: "c3" }
+                ],
+                title: "Social Title",
+                description: "Social Description",
+                image: {
+                    id: "settings.social.image.id",
+                    src: "settings.social.image.src"
+                }
+            },
+            seo: {
+                title: "SEO Title",
+                description: "SEO Description",
+                meta: [
+                    { name: "n1", content: "c1" },
+                    { name: "n2", content: "c2" },
+                    { name: "n3", content: "c3" }
+                ]
+            }
+        };
+
+        const [updatePageResponse] = await updatePage({
             id: page.id,
             data: {
-                settings: {
-                    general: {
-                        snippet: "snippet",
-                        tags: ["a", "b", "c"],
-                        layout: "some-layout",
-                        image: {
-                            id: "settings.general.image.id",
-                            src: "settings.general.image.src"
-                        }
-                    },
-                    social: {
-                        meta: [
-                            { property: "p1", content: "c1" },
-                            { property: "p2", content: "c2" },
-                            { property: "p3", content: "c3" }
-                        ],
-                        title: "Social Title",
-                        description: "Social Description",
-                        image: {
-                            id: "settings.social.image.id",
-                            src: "settings.social.image.src"
-                        }
-                    },
-                    seo: {
-                        title: "SEO Title",
-                        description: "SEO Description",
-                        meta: [
-                            { name: "n1", content: "c1" },
-                            { name: "n2", content: "c2" },
-                            { name: "n3", content: "c3" }
-                        ]
+                settings
+            }
+        });
+
+        expect(updatePageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id: page.id,
+                            settings
+                        },
+                        error: null
                     }
                 }
             }
@@ -112,35 +129,51 @@ describe("Page Settings Test", () => {
             }
         });
 
+        const updatedSettings: PageSettings = {
+            general: {
+                tags: ["a", "b", "c", "d"],
+                image: {
+                    id: "settings.general.image.id-UPDATED",
+                    src: "settings.general.image.src-UPDATED"
+                }
+            },
+            social: {
+                meta: [
+                    { property: "p1", content: "c1" },
+                    { property: "p2", content: "c2" },
+                    { property: "p3", content: "c3-UPDATED" }
+                ],
+                image: {
+                    id: "settings.social.image.id-UPDATED",
+                    src: "settings.social.image.src-UPDATED"
+                }
+            },
+            seo: {
+                title: "SEO Title",
+                description: "SEO Description-UPDATED"
+            }
+        };
+
         // Note that partial updates don't work correctly because of the way how `populate` works.
         // When sending an object to a `fields` Commodo fields, it wont try to merge it with the
         // current value. Instead, it will just create a new model instance, populate it, and assign that as
         // the new field value. For now, we didn't bother with this behaviour.
-        await updatePage({
+        const [updatePageSettingsResult] = await updatePage({
             id: page.id,
             data: {
-                settings: {
-                    general: {
-                        tags: ["a", "b", "c", "d"],
-                        image: {
-                            id: "settings.general.image.id-UPDATED",
-                            src: "settings.general.image.src-UPDATED"
-                        }
-                    },
-                    social: {
-                        meta: [
-                            { property: "p1", content: "c1" },
-                            { property: "p2", content: "c2" },
-                            { property: "p3", content: "c3-UPDATED" }
-                        ],
-                        image: {
-                            id: "settings.social.image.id-UPDATED",
-                            src: "settings.social.image.src-UPDATED"
-                        }
-                    },
-                    seo: {
-                        title: "SEO Title",
-                        description: "SEO Description-UPDATED"
+                settings: updatedSettings
+            }
+        });
+
+        expect(updatePageSettingsResult).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id: page.id,
+                            settings: updatedSettings
+                        },
+                        error: null
                     }
                 }
             }
