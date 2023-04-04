@@ -47,6 +47,11 @@ export interface Tenancy {
         data: Partial<TTenant>
     ): Promise<TTenant>;
     deleteTenant(id: string): Promise<boolean>;
+    withRootTenant<T>(cb: () => T): Promise<T>;
+    withEachTenant<TTenant extends Tenant, TReturn>(
+        tenants: TTenant[],
+        cb: (tenant: TTenant) => Promise<TReturn>
+    ): Promise<TReturn[]>;
 }
 
 export interface TenancyContext extends BaseContext, DbContext, WcpContext {
