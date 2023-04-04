@@ -88,8 +88,6 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             performAuthorization = false;
             try {
                 return await cb();
-            } catch (ex) {
-                throw ex;
             } finally {
                 if (isAuthorizationEnabled) {
                     performAuthorization = true;
