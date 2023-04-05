@@ -1,5 +1,7 @@
 import { Context } from "~/index";
 import { Context as ContextInterface } from "~/types";
+import { Benchmark } from "~/Benchmark";
+import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
 
 interface DummyContextInterface extends ContextInterface {
     cms: any;
@@ -15,16 +17,21 @@ describe("Context", () => {
 
         expect(context).toBeInstanceOf(Context);
         expect(context).toEqual({
+            benchmark: new Benchmark(),
             plugins: {
                 _byTypeCache: {},
-                plugins: {}
+                plugins: {
+                    ["context.benchmark"]: new BenchmarkPlugin(context.benchmark)
+                }
             },
             WEBINY_VERSION: "test",
             waiters: []
         });
         expect(context.plugins).toEqual({
             _byTypeCache: {},
-            plugins: {}
+            plugins: {
+                ["context.benchmark"]: new BenchmarkPlugin(context.benchmark)
+            }
         });
         expect(context.WEBINY_VERSION).toEqual("test");
     });

@@ -2,7 +2,7 @@ import { Plugin } from "@webiny/plugins";
 import { Benchmark } from "~/types";
 
 /**
- * This plugin should be initialized only once per context.
+ * This plugin should be initialized only once per context, hence the name of the plugin.
  */
 export class BenchmarkPlugin extends Plugin {
     public static override readonly type: string = "context.benchmark";

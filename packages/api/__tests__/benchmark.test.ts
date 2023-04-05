@@ -88,5 +88,10 @@ describe("benchmark", () => {
         expect(context.benchmark.measurements[0].elapsed).toBeGreaterThanOrEqual(50);
         expect(context.benchmark.measurements[1].elapsed).toBeGreaterThanOrEqual(50);
         expect(context.benchmark.measurements[2].elapsed).toBeGreaterThanOrEqual(50);
+        expect(context.benchmark.runs).toEqual({
+            test: 2,
+            "another test": 1
+        });
+        expect(context.benchmark.elapsed).toBeGreaterThanOrEqual(150);
     });
 });

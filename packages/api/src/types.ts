@@ -1,7 +1,7 @@
 import { PluginsContainer } from "@webiny/plugins";
 
-export interface Benchmark {
-    measure: <T = any>(name: string, cb: () => Promise<T>) => Promise<T>;
+export interface BenchmarkRuns {
+    [key: string]: number;
 }
 export interface BenchmarkMeasurement {
     name: string;
@@ -9,6 +9,15 @@ export interface BenchmarkMeasurement {
     end: Date;
     elapsed: number;
     memory: number;
+}
+
+export interface Benchmark {
+    measurements: BenchmarkMeasurement[];
+    runs: BenchmarkRuns;
+    elapsed: number;
+    measure: <T = any>(name: string, cb: () => Promise<T>) => Promise<T>;
+    enable: () => void;
+    disable: () => void;
 }
 /**
  * The main context which is constructed on every request.

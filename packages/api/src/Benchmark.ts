@@ -1,9 +1,16 @@
-import { Benchmark as BenchmarkInterface, BenchmarkMeasurement } from "~/types";
+import { Benchmark as BenchmarkInterface, BenchmarkMeasurement, BenchmarkRuns } from "~/types";
 
 export class Benchmark implements BenchmarkInterface {
     public readonly measurements: BenchmarkMeasurement[] = [];
 
+    private totalElapsed = 0;
+    public readonly runs: BenchmarkRuns = {};
+
     private enabled = false;
+
+    public get elapsed(): number {
+        return this.totalElapsed;
+    }
 
     public enable(): void {
         this.enabled = true;
@@ -24,13 +31,27 @@ export class Benchmark implements BenchmarkInterface {
         } finally {
             const end = new Date();
             const memoryEnd = process.memoryUsage().heapUsed;
+            const elapsed = end.getTime() - start.getTime();
             this.measurements.push({
                 name,
                 start,
                 end,
-                elapsed: end.getTime() - start.getTime(),
+                elapsed,
                 memory: memoryEnd - memoryStart
             });
+            this.addElapsed(elapsed);
+            this.addRun(name);
         }
+    }
+
+    private addElapsed(elapsed: number): void {
+        this.totalElapsed = this.totalElapsed + elapsed;
+    }
+
+    private addRun(name: string): void {
+        if (!this.runs[name]) {
+            this.runs[name] = 0;
+        }
+        this.runs[name]++;
     }
 }
