@@ -7,10 +7,13 @@ import {
 import { File } from "@webiny/api-file-manager/types";
 import { FmFileRecordData } from "~/types";
 
-export const createFileRecordPayload = (file: File): CreateSearchRecordParams<FmFileRecordData> => {
+export const createFileRecordPayload = (
+    file: File,
+    requestMeta?: Record<string, any>
+): CreateSearchRecordParams<FmFileRecordData> => {
     const { id, key, size, type, name, meta, createdOn, createdBy, tags } = file;
     const location = {
-        folderId: ROOT_FOLDER //TODO: fix this with the right folderId
+        folderId: requestMeta?.location?.folderId || ROOT_FOLDER
     };
 
     return {

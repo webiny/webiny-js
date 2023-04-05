@@ -8,9 +8,9 @@ export const onFileAfterCreateHook = ({ fileManager, aco }: FmAcoContext) => {
     /**
      * Intercept file creation and create a new search record.
      */
-    fileManager.onFileAfterCreate.subscribe(async ({ file }) => {
+    fileManager.onFileAfterCreate.subscribe(async ({ file, meta }) => {
         try {
-            const payload = createFileRecordPayload(file);
+            const payload = createFileRecordPayload(file, meta);
             await aco.search.create<FmFileRecordData>(payload);
         } catch (error) {
             throw WebinyError.from(error, {

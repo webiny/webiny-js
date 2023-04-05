@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 
-import { createFileRecordPayload } from "../../utils/createRecordPayload";
+import { updatePageRecordPayload } from "../../utils/createRecordPayload";
 
 import { FmAcoContext, FmFileRecordData } from "~/types";
 
@@ -10,12 +10,12 @@ export const onFileAfterUpdateHook = ({ aco, fileManager }: FmAcoContext) => {
      */
     fileManager.onFileAfterUpdate.subscribe(async ({ file }) => {
         try {
-            const payload = createFileRecordPayload(file);
-            await aco.search.create<FmFileRecordData>(payload);
+            const payload = await updatePageRecordPayload(file);
+            await aco.search.update<FmFileRecordData>(file.id, payload);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing onFileAfterCreateHook hook",
-                code: "ACO_AFTER_FILE_CREATE_HOOK"
+                message: "Error while executing onFileAfterUpdateHook hook",
+                code: "ACO_AFTER_FILE_UPDATE_HOOK"
             });
         }
     });

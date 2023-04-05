@@ -178,8 +178,8 @@ export const createGraphQLSchemaPlugin = () => {
             }
 
             type FmMutation {
-                createFile(data: CreateFileInput!): FileResponse
-                createFiles(data: [CreateFileInput]!): CreateFilesResponse
+                createFile(data: CreateFileInput!, meta: JSON): FileResponse
+                createFiles(data: [CreateFileInput]!, meta: JSON): CreateFilesResponse
                 updateFile(id: ID!, data: UpdateFileInput!): FileResponse
                 deleteFile(id: ID!): FilesDeleteResponse
                 install(srcPrefix: String): FileManagerBooleanResponse
@@ -244,13 +244,15 @@ export const createGraphQLSchemaPlugin = () => {
             },
             FmMutation: {
                 async createFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.createFile(args.data));
+                    return resolve(() => context.fileManager.createFile(args.data, args.meta));
                 },
                 async updateFile(_, args: any, context) {
                     return resolve(() => context.fileManager.updateFile(args.id, args.data));
                 },
                 async createFiles(_, args: any, context) {
-                    return resolve(() => context.fileManager.createFilesInBatch(args.data));
+                    return resolve(() =>
+                        context.fileManager.createFilesInBatch(args.data, args.meta)
+                    );
                 },
                 async deleteFile(_, args: any, context) {
                     return resolve(async () => {

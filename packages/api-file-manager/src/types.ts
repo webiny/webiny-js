@@ -78,10 +78,10 @@ export interface FilesCRUD extends FileLifecycleEvents {
     getFile(id: string): Promise<File>;
     listFiles(opts?: FilesListOpts): Promise<[File[], FileListMeta]>;
     listTags(params: FilesCrudListTagsParams): Promise<string[]>;
-    createFile(data: FileInput): Promise<File>;
+    createFile(data: FileInput, meta?: Record<string, any>): Promise<File>;
     updateFile(id: string, data: Partial<FileInput>): Promise<File>;
     deleteFile(id: string): Promise<boolean>;
-    createFilesInBatch(data: FileInput[]): Promise<File[]>;
+    createFilesInBatch(data: FileInput[], meta?: Record<string, any>): Promise<File[]>;
 }
 
 export interface SystemCRUD {
