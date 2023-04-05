@@ -3,9 +3,9 @@ import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { executeWithRetry } from "@webiny/utils";
 
-import { createEntryEntity } from "../entities/createEntryEntity";
+import { createDdbEntryEntity } from "../entities/createEntryEntity";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
-import { createPageEntity } from "../entities/createPageEntity";
+import { createDdbPageEntity } from "../entities/createPageEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
 import { getSearchablePageContent } from "../utils/getSearchableContent";
 
@@ -21,15 +21,15 @@ const isGroupMigrationCompleted = (
 export type PageDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
 export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMigrationCheckpoint> {
-    private readonly entryEntity: ReturnType<typeof createEntryEntity>;
+    private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
-    private readonly pageEntity: ReturnType<typeof createPageEntity>;
+    private readonly pageEntity: ReturnType<typeof createDdbPageEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
     constructor(table: Table) {
-        this.entryEntity = createEntryEntity(table);
+        this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
-        this.pageEntity = createPageEntity(table);
+        this.pageEntity = createDdbPageEntity(table);
         this.tenantEntity = createTenantEntity(table);
     }
 
@@ -56,6 +56,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             }
 
             for (const locale of locales) {
+                //TODO: check this query
                 const lastPage = await queryOne<{ pid: string }>({
                     entity: this.pageEntity,
                     partitionKey: `T#${tenant.data.id}#L#${locale.code}#PB#L`,

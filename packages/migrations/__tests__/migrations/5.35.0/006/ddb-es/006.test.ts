@@ -3,8 +3,8 @@ import { createElasticsearchClient } from "@webiny/project-utils/testing/elastic
 import {
     assertNotError,
     createDdbEsMigrationHandler,
-    createId,
     delay,
+    getDynamoToEsTable,
     getPrimaryDynamoDbTable,
     groupMigrations,
     insertDynamoDbTestData as insertTestData,
@@ -12,21 +12,21 @@ import {
     scanTable
 } from "~tests/utils";
 
-import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
+import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb-es";
 
-import { createTenantsData, createLocalesData, createdBy } from "./006.data";
-import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { getIndexName } from "~/utils";
+import {
+    createTenantsData,
+    createLocalesData,
+    createDdbEsPagesData,
+    createDdbPagesData
+} from "./006.data";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_PAGES = 100;
-const INDEX_SUFFIX = "page-builder";
-let numberOfGeneratedPages = 0;
-
 describe("5.35.0-006", () => {
-    const table = getPrimaryDynamoDbTable();
+    const ddbTable = getPrimaryDynamoDbTable();
+    const ddbToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();
 
     beforeAll(() => {
@@ -34,110 +34,12 @@ describe("5.35.0-006", () => {
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
     });
 
-    const createPagesData = async (numberOfPages = NUMBER_OF_PAGES) => {
-        const locales = createLocalesData();
-
-        for (const locale of locales) {
-            let batch = [];
-            const allPages = [];
-            for (let index = 0; index < numberOfPages; index++) {
-                if (index % 25 === 0) {
-                    await insertTestData(table, batch);
-                    batch = [];
-                }
-
-                const id = createId();
-
-                const page = {
-                    id: `${id}#0001`,
-                    pid: `${id}`,
-                    locale: locale.code,
-                    tenant: locale.tenant,
-                    title: `Page ${id}`,
-                    editor: "page-builder",
-                    createdFrom: null,
-                    path: `/untitled-${id}`,
-                    category: "static",
-                    content: {
-                        compression: "jsonpack",
-                        content:
-                            "id|iQZiPRF1kL|type|document|data|settings|elements|path^^^$0|1|2|3|4|$5|$]]|6|@]|7|@]]"
-                    },
-                    publishedOn: null,
-                    version: 1,
-                    settings: {
-                        general: {
-                            image: null,
-                            layout: "static",
-                            snippet: null,
-                            tags: null
-                        },
-                        seo: {
-                            description: null,
-                            meta: [],
-                            title: null
-                        },
-                        social: {
-                            description: null,
-                            image: null,
-                            meta: [],
-                            title: null
-                        }
-                    },
-                    locked: false,
-                    status: "draft",
-                    createdOn: "2023-03-29T10:00:33.958Z",
-                    savedOn: "2023-03-29T10:00:39.123Z",
-                    createdBy,
-                    ownedBy: createdBy,
-                    webinyVersion: "0.0.0"
-                };
-
-                batch.push({
-                    PK: `T#${locale.tenant}#L#${locale.code}#PB#${id}`,
-                    SK: "1",
-                    TYPE: "pb.page",
-                    _ct: "2023-01-25T09:38:41.961Z",
-                    _et: "PbPages",
-                    _md: "2023-01-25T09:38:41.961Z",
-                    ...page
-                });
-
-                batch.push({
-                    PK: `T#${locale.tenant}#L#${locale.code}#PB#L`,
-                    SK: id,
-                    TYPE: "pb.page",
-                    _ct: "2023-01-25T09:38:41.961Z",
-                    _et: "PbPages",
-                    _md: "2023-01-25T09:38:41.961Z",
-                    ...page
-                });
-
-                allPages.push(page);
-
-                if (allPages.length > 3000) {
-                    await insertElasticsearchTestData<Page>(elasticsearchClient, allPages, item => {
-                        return getIndexName(item.tenant, item.locale, INDEX_SUFFIX);
-                    });
-                    allPages.length = 0;
-                }
-            }
-            await insertTestData(table, batch);
-            await insertElasticsearchTestData<Page>(elasticsearchClient, allPages, item => {
-                return getIndexName(item.tenant, item.locale, INDEX_SUFFIX);
-            });
-
-            // Track generated pages
-            numberOfGeneratedPages += NUMBER_OF_PAGES;
-        }
-    };
-
     logTestNameBeforeEachTest();
 
     it("should not run if no tenant found", async () => {
         const handler = createDdbEsMigrationHandler({
-            primaryTable: table,
-            dynamoToEsTable: table,
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
             elasticsearchClient,
             migrations: [AcoRecords_5_35_0_006]
         });
@@ -153,11 +55,11 @@ describe("5.35.0-006", () => {
     });
 
     it("should not run if no locale found", async () => {
-        await insertTestData(table, [...createTenantsData()]);
+        await insertTestData(ddbTable, [...createTenantsData()]);
 
         const handler = createDdbEsMigrationHandler({
-            primaryTable: table,
-            dynamoToEsTable: table,
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
             elasticsearchClient,
             migrations: [AcoRecords_5_35_0_006]
         });
@@ -173,11 +75,11 @@ describe("5.35.0-006", () => {
     });
 
     it("should not run if no pages found", async () => {
-        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
 
         const handler = createDdbEsMigrationHandler({
-            primaryTable: table,
-            dynamoToEsTable: table,
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
             elasticsearchClient,
             migrations: [AcoRecords_5_35_0_006]
         });
@@ -193,14 +95,17 @@ describe("5.35.0-006", () => {
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestData(ddbTable, [
+            ...createTenantsData(),
+            ...createLocalesData(),
+            ...createDdbPagesData()
+        ]);
 
-        await createPagesData();
-        await delay(3000);
+        await insertTestData(ddbToEsTable, [...createDdbEsPagesData()]);
 
         const handler = createDdbEsMigrationHandler({
-            primaryTable: table,
-            dynamoToEsTable: table,
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
             elasticsearchClient,
             migrations: [AcoRecords_5_35_0_006]
         });
@@ -214,7 +119,7 @@ describe("5.35.0-006", () => {
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
-        const searchRecords = await scanTable(table, {
+        const ddbSearchRecords = await scanTable(ddbTable, {
             entity: "CmsEntries",
             filters: [
                 {
@@ -224,27 +129,51 @@ describe("5.35.0-006", () => {
             ]
         });
 
-        expect(searchRecords.length).toBe(numberOfGeneratedPages * 2);
+        expect(ddbSearchRecords.length).toBe(4);
 
         // Test result with snapshots - for some fields we need to use property matchers
-        searchRecords.forEach(record => {
+        ddbSearchRecords.forEach(record => {
             expect(record).toMatchSnapshot({
                 created: expect.any(String),
                 modified: expect.any(String),
                 webinyVersion: expect.any(String)
             });
         });
+
+        const ddbEsSearchRecords = await scanTable(ddbToEsTable, {
+            entity: "CmsEntries",
+            filters: [
+                {
+                    attr: "index",
+                    contains: "acosearchrecord"
+                }
+            ]
+        });
+
+        expect(ddbEsSearchRecords.length).toBe(2);
+
+        ddbEsSearchRecords.forEach(record => {
+            expect(record).toMatchSnapshot({
+                created: expect.any(String),
+                modified: expect.any(String)
+            });
+        });
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestData(ddbTable, [
+            ...createTenantsData(),
+            ...createLocalesData(),
+            ...createDdbPagesData()
+        ]);
 
-        await createPagesData();
+        await insertTestData(ddbToEsTable, [...createDdbEsPagesData()]);
+
         await delay(3000);
 
         const handler = createDdbEsMigrationHandler({
-            primaryTable: table,
-            dynamoToEsTable: table,
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
             elasticsearchClient,
             migrations: [AcoRecords_5_35_0_006]
         });

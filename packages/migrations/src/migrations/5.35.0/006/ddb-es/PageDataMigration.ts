@@ -2,14 +2,25 @@ import { Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
-import { queryOne, queryAll, esQueryAllWithCallback, getIndexName, batchWriteAll } from "~/utils";
+import { queryOne, queryAll, batchWriteAll } from "~/utils";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
 import { I18NLocale, ListLocalesParams, Page, Tenant } from "../types";
-import { createEntryEntity } from "~/migrations/5.35.0/006/entities/createEntryEntity";
-import { createPageEntity } from "~/migrations/5.35.0/006/entities/createPageEntity";
+import {
+    createDdbEntryEntity,
+    createDdbEsEntryEntity
+} from "~/migrations/5.35.0/006/entities/createEntryEntity";
+import {
+    createDdbEsPageEntity,
+    createDdbPageEntity
+} from "~/migrations/5.35.0/006/entities/createPageEntity";
 import { executeWithRetry } from "@webiny/utils";
 import { getSearchablePageContent } from "~/migrations/5.35.0/006/utils/getSearchableContent";
+import { scanTable } from "~tests/utils";
+import { compress as gzip } from "@webiny/utils/compression/gzip";
+
+const GZIP = "gzip";
+const TO_STORAGE_ENCODING = "base64";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -17,20 +28,24 @@ const isGroupMigrationCompleted = (
     return typeof status === "boolean";
 };
 
-type PageDataMigrationCheckpoint = Record<string, PrimitiveValue[] | boolean | undefined>;
+export type PageDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
 export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMigrationCheckpoint> {
     private readonly elasticsearchClient: Client;
-    private readonly entryEntity: ReturnType<typeof createEntryEntity>;
+    private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
+    private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
+    private readonly ddbPageEntity: ReturnType<typeof createDdbPageEntity>;
+    private readonly ddbEsPageEntity: ReturnType<typeof createDdbEsPageEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
-    private readonly pageEntity: ReturnType<typeof createPageEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table, elasticsearchClient: Client) {
+    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
         this.elasticsearchClient = elasticsearchClient;
-        this.entryEntity = createEntryEntity(table);
+        this.ddbEntryEntity = createDdbEntryEntity(table);
+        this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
+        this.ddbPageEntity = createDdbPageEntity(table);
+        this.ddbEsPageEntity = createDdbEsPageEntity(esTable);
         this.localeEntity = createLocaleEntity(table);
-        this.pageEntity = createPageEntity(table);
         this.tenantEntity = createTenantEntity(table);
     }
 
@@ -42,7 +57,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
         return "Migrate PbPage Data -> Create ACO Search Records";
     }
 
-    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
         const tenants = await this.listTenants();
         if (tenants.length === 0) {
             logger.info(`No tenants found in the system; skipping migration.`);
@@ -57,28 +72,65 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             }
 
             for (const locale of locales) {
-                const lastPage = await queryOne<{ pid: string }>({
-                    entity: this.pageEntity,
-                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#PB#L`,
-                    options: { gt: " ", reverse: true }
+                // Fetch latest page record from ddb table
+                const latestDdbPages: Page[] = await scanTable(this.ddbPageEntity.table, {
+                    filters: [
+                        {
+                            attr: "TYPE",
+                            eq: "pb.page.l"
+                        },
+                        {
+                            attr: "tenant",
+                            eq: tenant.data.id
+                        },
+                        {
+                            attr: "locale",
+                            eq: locale.code
+                        }
+                    ],
+                    limit: 1
                 });
 
-                if (!lastPage) {
+                if (latestDdbPages.length === 0) {
                     logger.info(
-                        `No pages found in tenant "${tenant.data.id}" and locale "${locale.code}".`
+                        `No pages found in tenant "${tenant.data.id}" and locale "${locale.code}" (DDB).`
                     );
                     continue;
                 }
 
-                const lastSearchRecord = await queryOne<{ id: string }>({
-                    entity: this.entryEntity,
-                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#CME#${lastPage.pid}`,
+                // Fetch latest page record from ddb+es table, here we can create PK from previously fetched item
+                const latestDdbEsPage = await queryOne<{ pid: string }>({
+                    entity: this.ddbEsPageEntity,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#PB#P#${latestDdbPages[0].pid}`,
+                    options: { gt: " ", reverse: true }
+                });
+
+                if (!latestDdbEsPage) {
+                    logger.info(
+                        `No pages found in tenant "${tenant.data.id}" and locale "${locale.code}" (DDB + ES).`
+                    );
+                    continue;
+                }
+
+                // Fetch latest search record from ddb table, here we can create PK from previously fetched item
+                const latestDdbSearchRecord = await queryOne<{ id: string }>({
+                    entity: this.ddbEntryEntity,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#${latestDdbPages[0].pid}`,
                     options: {
                         eq: "L"
                     }
                 });
 
-                if (lastSearchRecord) {
+                // Fetch latest search record from ddb+es table, here we can create PK from previously fetched item
+                const latestDdbEsSearchRecord = await queryOne<{ id: string }>({
+                    entity: this.ddbEsEntryEntity,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#${latestDdbPages[0].pid}`,
+                    options: {
+                        eq: "L"
+                    }
+                });
+
+                if (latestDdbSearchRecord && latestDdbEsSearchRecord) {
                     logger.info(
                         `Pages already migrated to Search Records in tenant "${tenant.data.id}" and locale "${locale.code}".`
                     );
@@ -90,13 +142,10 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
         return false;
     }
 
-    async execute({
-        logger,
-        ...context
-    }: DataMigrationContext<PageDataMigrationCheckpoint>): Promise<void> {
+    async execute({ logger, ...context }: DataMigrationContext): Promise<void> {
         const tenants = await this.listTenants();
 
-        const migrationStatus: PageDataMigrationCheckpoint = context.checkpoint || {};
+        const migrationStatus = context.checkpoint || {};
 
         for (const tenant of tenants) {
             const locales = await this.listLocales({ tenant });
@@ -109,95 +158,151 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     continue;
                 }
 
-                let batch = 0;
-                await esQueryAllWithCallback<Page>({
-                    elasticsearchClient: this.elasticsearchClient,
-                    index: getIndexName(tenant.data.id, locale.code, "page-builder"),
-                    body: {
-                        query: {
-                            bool: {
-                                filter: [
-                                    { term: { "tenant.keyword": tenant.data.id } },
-                                    { term: { "locale.keyword": locale.code } }
-                                ]
-                            }
+                const pages: Page[] = await scanTable(this.ddbPageEntity.table, {
+                    filters: [
+                        {
+                            attr: "TYPE",
+                            eq: "pb.page.l"
                         },
-                        size: 10000,
-                        sort: [
-                            {
-                                "id.keyword": "asc"
-                            }
-                        ],
-                        search_after: status
-                    },
-                    callback: async (pages, cursor) => {
-                        batch++;
-                        logger.info(
-                            `Processing batch #${batch} in group ${groupId} (${pages.length} pages).`
-                        );
+                        {
+                            attr: "tenant",
+                            eq: tenant.data.id
+                        },
+                        {
+                            attr: "locale",
+                            eq: locale.code
+                        }
+                    ]
+                });
 
-                        const items = await pages.reduce(
-                            async (accumulator: Promise<any>, current) => {
-                                const { pid, tenant, locale } = current;
+                const ddbItems = await pages.reduce(async (accumulator: Promise<any>, current) => {
+                    const { pid, tenant, locale } = current;
 
-                                const entry = await this.createSearchRecordCommonFields(current);
+                    const entry = await this.createSearchRecordCommonFields(current);
 
-                                const latestEntry = {
-                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
-                                    SK: "L",
-                                    GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#L`,
-                                    GSI1_SK: `${pid}#0001`,
-                                    TYPE: "cms.entry.l",
-                                    ...entry
-                                };
+                    const latestEntry = {
+                        PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                        SK: "L",
+                        TYPE: "cms.entry.l",
+                        ...entry
+                    };
 
-                                const revisionEntry = {
-                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
-                                    SK: "REV#0001",
-                                    GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#A`,
-                                    GSI1_SK: `${pid}#0001`,
-                                    TYPE: "cms.entry",
-                                    ...entry
-                                };
+                    const revisionEntry = {
+                        PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                        SK: "REV#0001",
+                        TYPE: "cms.entry",
+                        ...entry
+                    };
 
-                                const acc = await accumulator;
+                    const acc = await accumulator;
 
-                                return [
-                                    ...acc,
-                                    this.entryEntity.putBatch(latestEntry),
-                                    this.entryEntity.putBatch(revisionEntry)
-                                ];
+                    return [
+                        ...acc,
+                        this.ddbEntryEntity.putBatch(latestEntry),
+                        this.ddbEntryEntity.putBatch(revisionEntry)
+                    ];
+                }, Promise.resolve([]));
+
+                const ddbEsItems = await pages.reduce(
+                    async (accumulator: Promise<any>, current) => {
+                        const {
+                            createdBy,
+                            createdOn,
+                            locale,
+                            locked,
+                            path,
+                            pid,
+                            savedOn,
+                            status,
+                            tenant,
+                            title,
+                            version
+                        } = current;
+
+                        const content = await getSearchablePageContent(current);
+
+                        const rawDatas = {
+                            modelId: "acoSearchRecord",
+                            version: 1,
+                            savedOn,
+                            locale,
+                            status: "draft",
+                            values: {
+                                type: "PbPage",
+                                title,
+                                content,
+                                location: {
+                                    folderId: "ROOT"
+                                }
                             },
-                            Promise.resolve([])
-                        );
-
-                        const execute = () => {
-                            return batchWriteAll({ table: this.entryEntity.table, items });
+                            createdBy,
+                            entryId: pid,
+                            tenant,
+                            createdOn,
+                            locked: false,
+                            ownedBy: createdBy,
+                            webinyVersion: process.env.WEBINY_VERSION,
+                            id: `${pid}#0001`,
+                            modifiedBy: createdBy,
+                            latest: true,
+                            TYPE: "cms.entry.l",
+                            __type: "cms.entry.l",
+                            rawValues: {
+                                data: {
+                                    id: `${pid}#0001`,
+                                    pid,
+                                    title,
+                                    createdBy,
+                                    createdOn,
+                                    savedOn,
+                                    status,
+                                    version,
+                                    locked,
+                                    path
+                                }
+                            }
                         };
 
-                        await executeWithRetry(execute, {
-                            onFailedAttempt: error => {
-                                logger.error(
-                                    `"batchWriteAll" attempt #${error.attemptNumber} failed.`
-                                );
-                                logger.error(error.message);
-                            }
-                        });
+                        const entry = {
+                            PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                            SK: "L",
+                            data: await this.compress(rawDatas),
+                            index: `${tenant.toLowerCase()}-headless-cms-${locale.toLowerCase()}-acosearchrecord`
+                        };
 
-                        // Update checkpoint after every batch
-                        migrationStatus[groupId] = cursor;
+                        const acc = await accumulator;
 
-                        // Check if we should store checkpoint and exit.
-                        if (context.runningOutOfTime()) {
-                            await context.createCheckpointAndExit(migrationStatus);
-                        } else {
-                            await context.createCheckpoint(migrationStatus);
-                        }
+                        return [...acc, this.ddbEsEntryEntity.putBatch(entry)];
+                    },
+                    Promise.resolve([])
+                );
+
+                const executeDdb = () => {
+                    return batchWriteAll({ table: this.ddbEntryEntity.table, items: ddbItems });
+                };
+
+                const executeDdbEs = () => {
+                    return batchWriteAll({ table: this.ddbEsEntryEntity.table, items: ddbEsItems });
+                };
+
+                await executeWithRetry(executeDdb, {
+                    onFailedAttempt: error => {
+                        logger.error(`"batchWriteAll ddb" attempt #${error.attemptNumber} failed.`);
+                        logger.error(error.message);
+                    }
+                });
+
+                await executeWithRetry(executeDdbEs, {
+                    onFailedAttempt: error => {
+                        logger.error(
+                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed.`
+                        );
+                        logger.error(error.message);
                     }
                 });
 
                 migrationStatus[groupId] = true;
-                await context.createCheckpoint(migrationStatus);
+                context.createCheckpoint(migrationStatus);
             }
         }
     }
@@ -277,6 +382,15 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 },
                 type: "PbPage"
             }
+        };
+    }
+
+    private async compress(data: any) {
+        const value = await gzip(JSON.stringify(data));
+
+        return {
+            compression: GZIP,
+            value: value.toString(TO_STORAGE_ENCODING)
         };
     }
 }

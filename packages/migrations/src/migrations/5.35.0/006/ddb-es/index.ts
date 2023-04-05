@@ -4,6 +4,7 @@ import {
     DataMigration,
     DataMigrationContext,
     ElasticsearchClientSymbol,
+    ElasticsearchDynamoTableSymbol,
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
@@ -14,8 +15,8 @@ export * from "../types";
 export class AcoRecords_5_35_0_006 implements DataMigration {
     private migrations: DataMigration[];
 
-    constructor(table: Table, elasticsearchClient: Client) {
-        this.migrations = [new AcoRecords_5_35_0_006_PageData(table, elasticsearchClient)];
+    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+        this.migrations = [new AcoRecords_5_35_0_006_PageData(table, esTable, elasticsearchClient)];
     }
 
     getId(): string {
@@ -50,5 +51,6 @@ export class AcoRecords_5_35_0_006 implements DataMigration {
 
 makeInjectable(AcoRecords_5_35_0_006, [
     inject(PrimaryDynamoTableSymbol),
+    inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)
 ]);

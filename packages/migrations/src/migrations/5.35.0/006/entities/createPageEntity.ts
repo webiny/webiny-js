@@ -1,7 +1,7 @@
 import { Table } from "dynamodb-toolbox";
-import { createLegacyEntity } from "~/utils";
+import { createLegacyEntity, createStandardEntity } from "~/utils";
 
-const attributes: Parameters<typeof createLegacyEntity>[2] = {
+const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
     PK: {
         partitionKey: true
     },
@@ -82,6 +82,27 @@ const attributes: Parameters<typeof createLegacyEntity>[2] = {
     }
 };
 
-export const createPageEntity = (table: Table) => {
-    return createLegacyEntity(table, "PbPages", attributes);
+const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {
+    PK: {
+        type: "string",
+        partitionKey: true
+    },
+    SK: {
+        type: "string",
+        sortKey: true
+    },
+    index: {
+        type: "string"
+    },
+    data: {
+        type: "map"
+    }
+};
+
+export const createDdbPageEntity = (table: Table) => {
+    return createLegacyEntity(table, "PbPages", ddbAttributes);
+};
+
+export const createDdbEsPageEntity = (table: Table) => {
+    return createStandardEntity(table, "PbPagesEs", ddbEsAttributes);
 };
