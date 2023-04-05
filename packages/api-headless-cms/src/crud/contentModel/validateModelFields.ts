@@ -215,11 +215,11 @@ interface CreateGraphQLSchemaParams {
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
-    context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
-        return !model.isPrivate;
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter((model): model is CmsModel => {
+            return model.isPrivate !== true;
+        });
     });
-    context.security.enableAuthorization();
 
     const modelPlugins = await buildSchemaPlugins({
         context,
