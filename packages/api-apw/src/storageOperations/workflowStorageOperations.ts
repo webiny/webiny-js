@@ -31,9 +31,9 @@ export const createWorkflowStorageOperations = (
 ): ApwWorkflowStorageOperations => {
     const { cms, security } = params;
     const getWorkflowModel = async () => {
-        security.disableAuthorization();
-        const model = await cms.getModel(WORKFLOW_MODEL_ID);
-        security.enableAuthorization();
+        const model = await security.withoutAuthorization(async () => {
+            return cms.getModel(WORKFLOW_MODEL_ID);
+        });
         if (!model) {
             throw new WebinyError(
                 `Could not find "${WORKFLOW_MODEL_ID}" model.`,
@@ -44,9 +44,9 @@ export const createWorkflowStorageOperations = (
     };
     const getWorkflow: ApwWorkflowStorageOperations["getWorkflow"] = async ({ id }) => {
         const model = await getWorkflowModel();
-        security.disableAuthorization();
-        const entry = await cms.getEntryById(model, id);
-        security.enableAuthorization();
+        const entry = await security.withoutAuthorization(async () => {
+            return cms.getEntryById(model, id);
+        });
         return getFieldValues(entry, baseFields);
     };
     return {
@@ -54,14 +54,15 @@ export const createWorkflowStorageOperations = (
         getWorkflow,
         async listWorkflows(params) {
             const model = await getWorkflowModel();
-            security.disableAuthorization();
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...(params.where || {})
-                }
+
+            const [entries, meta] = await security.withoutAuthorization(async () => {
+                return cms.listLatestEntries(model, {
+                    ...params,
+                    where: {
+                        ...params.where
+                    }
+                });
             });
-            security.enableAuthorization();
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createWorkflow(this: ApwStorageOperations, params) {
@@ -69,9 +70,10 @@ export const createWorkflowStorageOperations = (
             const reviewerModel = await this.getReviewerModel();
 
             const data = formatReviewersForRefInput(params.data, reviewerModel.modelId);
-            security.disableAuthorization();
-            const entry = await cms.createEntry(model, data);
-            security.enableAuthorization();
+
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.createEntry(model, data);
+            });
 
             return getFieldValues(entry, baseFields);
         },
@@ -91,16 +93,19 @@ export const createWorkflowStorageOperations = (
                 input as CreateApwWorkflowParams,
                 reviewerModel.modelId
             );
-            security.disableAuthorization();
-            const entry = await cms.updateEntry(model, params.id, data);
-            security.enableAuthorization();
+
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.updateEntry(model, params.id, data);
+            });
+
             return getFieldValues(entry, baseFields);
         },
         async deleteWorkflow(params) {
             const model = await getWorkflowModel();
-            security.disableAuthorization();
-            await cms.deleteEntry(model, params.id);
-            security.enableAuthorization();
+
+            await security.withoutAuthorization(async () => {
+                return cms.deleteEntry(model, params.id);
+            });
             return true;
         }
     };

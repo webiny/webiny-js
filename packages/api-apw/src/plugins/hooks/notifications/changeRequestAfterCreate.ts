@@ -112,13 +112,8 @@ export const attachChangeRequestAfterCreate = (context: ApwContext): void => {
             }
         };
 
-        try {
-            context.security.disableAuthorization();
-            await execute();
-        } catch (ex) {
-            throw ex;
-        } finally {
-            context.security.enableAuthorization();
-        }
+        await context.security.withoutAuthorization(async () => {
+            return execute();
+        });
     });
 };
