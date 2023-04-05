@@ -7,11 +7,19 @@ import { Benchmark } from "~/types";
 export class BenchmarkPlugin extends Plugin {
     public static override readonly type: string = "context.benchmark";
     public override name = "context.benchmark";
-    private readonly benchmark: Benchmark;
+    public readonly benchmark: Benchmark;
 
     public constructor(benchmark: Benchmark) {
         super();
         this.benchmark = benchmark;
+    }
+
+    public enable(): void {
+        this.benchmark.enable();
+    }
+
+    public disable(): void {
+        this.benchmark.disable();
     }
 
     public async measure<T = any>(name: string, cb: () => Promise<T>): Promise<T> {

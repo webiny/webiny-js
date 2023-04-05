@@ -1,5 +1,6 @@
 import { Context } from "~/Context";
 import { BenchmarkMeasurement } from "~/types";
+import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -93,5 +94,55 @@ describe("benchmark", () => {
             "another test": 1
         });
         expect(context.benchmark.elapsed).toBeGreaterThanOrEqual(150);
+    });
+
+    it("should have benchmark plugin initialized", async () => {
+        const plugins = context.plugins.byType<BenchmarkPlugin>(BenchmarkPlugin.type);
+
+        expect(plugins).toHaveLength(1);
+        expect(plugins[0].name).toEqual("context.benchmark");
+    });
+
+    it("should measure using the plugin", async () => {
+        const plugins = context.plugins.byType<BenchmarkPlugin>(BenchmarkPlugin.type);
+        const plugin = plugins[0];
+        expect(context.benchmark.measurements).toHaveLength(0);
+
+        const expected: BenchmarkMeasurement[] = [
+            {
+                name: "test",
+                start: expect.any(Date),
+                end: expect.any(Date),
+                elapsed: expect.any(Number),
+                memory: expect.any(Number)
+            }
+        ];
+
+        await plugin.measure("test", async () => {
+            await sleep(50);
+            return true;
+        });
+        expect(context.benchmark.measurements).toHaveLength(0);
+
+        plugin.enable();
+
+        const result = await plugin.measure("test", async () => {
+            await sleep(50);
+            return true;
+        });
+
+        expect(result).toEqual(true);
+        expect(context.benchmark.measurements).toHaveLength(1);
+        expect(context.benchmark.measurements).toEqual(expected);
+
+        plugin.disable();
+        await plugin.measure("test", async () => {
+            await sleep(50);
+            return true;
+        });
+
+        expect(result).toEqual(true);
+        expect(context.benchmark.measurements).toHaveLength(1);
+        expect(context.benchmark.measurements).toEqual(expected);
     });
 });
