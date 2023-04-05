@@ -206,7 +206,7 @@ describe("content model - cloning", () => {
                     error: {
                         code: "MODEL_ID_EXISTS",
                         data: {
-                            modelId: originalModel.modelId
+                            input: originalModel.modelId
                         },
                         message: `Content model with modelId "product" already exists.`
                     }
@@ -235,7 +235,7 @@ describe("content model - cloning", () => {
                     error: {
                         code: "MODEL_ID_EXISTS",
                         data: {
-                            modelId: originalModel.modelId
+                            input: originalModel.modelId
                         },
                         message: `Content model with modelId "${originalModel.modelId}" already exists.`
                     }
@@ -263,8 +263,7 @@ describe("content model - cloning", () => {
                     error: {
                         code: "MODEL_SINGULAR_API_NAME_EXISTS",
                         data: {
-                            existingSingularApiName: originalModel.singularApiName,
-                            singularApiName: originalModel.singularApiName
+                            input: originalModel.singularApiName
                         },
                         message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }
@@ -292,8 +291,7 @@ describe("content model - cloning", () => {
                     error: {
                         code: "MODEL_PLURAL_API_NAME_EXISTS",
                         data: {
-                            existingPluralApiName: originalModel.pluralApiName,
-                            singularApiName: originalModel.pluralApiName
+                            input: originalModel.pluralApiName
                         },
                         message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
                     }
@@ -321,8 +319,7 @@ describe("content model - cloning", () => {
                     error: {
                         code: "MODEL_PLURAL_API_NAME_EXISTS",
                         data: {
-                            existingPluralApiName: originalModel.pluralApiName,
-                            pluralApiName: originalModel.pluralApiName
+                            input: originalModel.pluralApiName
                         },
                         message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
                     }
@@ -350,8 +347,7 @@ describe("content model - cloning", () => {
                     error: {
                         code: "MODEL_SINGULAR_API_NAME_EXISTS",
                         data: {
-                            existingSingularApiName: originalModel.singularApiName,
-                            pluralApiName: originalModel.singularApiName
+                            input: originalModel.singularApiName
                         },
                         message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }

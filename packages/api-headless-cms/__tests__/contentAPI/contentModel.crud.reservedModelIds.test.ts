@@ -40,8 +40,10 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "",
-                        data: null,
+                        code: "MODEL_ID_NOT_ALLOWED",
+                        data: {
+                            input: "contentModel"
+                        },
                         message: 'Provided model ID "contentModel" is not allowed.'
                     }
                 }
@@ -63,8 +65,10 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "",
-                        data: null,
+                        code: "MODEL_ID_NOT_ALLOWED",
+                        data: {
+                            input: "contentModelGroup"
+                        },
                         message: 'Provided model ID "contentModelGroup" is not allowed.'
                     }
                 }
