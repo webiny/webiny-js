@@ -31,7 +31,7 @@ export class Context implements ContextInterface {
          * At the moment let's have benchmark as part of the context.
          * Also, register the plugin to have benchmark accessible via plugins container.
          */
-        this.benchmark = new Benchmark();
+        this.benchmark = new Benchmark(this);
         this.plugins.register(new BenchmarkPlugin(this.benchmark));
     }
 

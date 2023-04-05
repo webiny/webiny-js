@@ -1,6 +1,7 @@
 import { Context } from "~/Context";
 import { BenchmarkMeasurement } from "~/types";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
+import { createBenchmarkEnablePlugin } from "~/plugins/BenchmarkEnablePlugin";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -144,5 +145,82 @@ describe("benchmark", () => {
         expect(result).toEqual(true);
         expect(context.benchmark.measurements).toHaveLength(1);
         expect(context.benchmark.measurements).toEqual(expected);
+    });
+
+    it("should enable benchmark when certain conditions are met", async () => {
+        context.benchmark.enableOn(async () => {
+            return process.env.BENCHMARK_ENABLE === "true";
+        });
+
+        await context.benchmark.measure("test", async () => {
+            return true;
+        });
+
+        expect(context.benchmark.measurements).toEqual([]);
+
+        process.env.BENCHMARK_ENABLE = "true";
+
+        const result = await context.benchmark.measure("test", async () => {
+            return true;
+        });
+
+        expect(result).toEqual(true);
+
+        const expected: BenchmarkMeasurement[] = [
+            {
+                name: "test",
+                start: expect.any(Date),
+                end: expect.any(Date),
+                elapsed: expect.any(Number),
+                memory: expect.any(Number)
+            }
+        ];
+
+        expect(context.benchmark.measurements).toHaveLength(1);
+        expect(context.benchmark.measurements).toEqual(expected);
+        expect(context.benchmark.measurements[0].elapsed).toBeGreaterThanOrEqual(0);
+    });
+
+    it("should enable benchmark when certain conditions are met via plugin", async () => {
+        await context.benchmark.measure("test", async () => {
+            return true;
+        });
+
+        expect(context.benchmark.measurements).toEqual([]);
+        context.plugins.register(
+            createBenchmarkEnablePlugin(async ctx => {
+                return process.env.BENCHMARK_ENABLE === "true";
+            })
+        );
+        await context.benchmark.measure("test", async () => {
+            return true;
+        });
+
+        expect(context.benchmark.measurements).toEqual([]);
+
+        process.env.BENCHMARK_ENABLE = "true";
+
+        await context.benchmark.measure("test", async () => {
+            return true;
+        });
+        const result = await context.benchmark.measure("test", async () => {
+            return true;
+        });
+
+        expect(result).toEqual(true);
+
+        const expected: BenchmarkMeasurement[] = [
+            {
+                name: "test",
+                start: expect.any(Date),
+                end: expect.any(Date),
+                elapsed: expect.any(Number),
+                memory: expect.any(Number)
+            }
+        ];
+
+        expect(context.benchmark.measurements).toHaveLength(1);
+        expect(context.benchmark.measurements).toEqual(expected);
+        expect(context.benchmark.measurements[0].elapsed).toBeGreaterThanOrEqual(0);
     });
 });
