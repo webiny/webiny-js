@@ -124,6 +124,7 @@ interface CreateOnModelBeforeCreateCbParams {
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
+
 const createOnModelBeforeCb = ({
     plugins,
     storageOperations
@@ -198,9 +199,9 @@ export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) =
             model,
             input
         });
-        context.security.disableAuthorization();
-        const models = await context.cms.listModels();
-        context.security.enableAuthorization();
+        const models = await context.security.withoutAuthorization(async () => {
+            return context.cms.listModels();
+        });
         /**
          * and then we move onto model and fields...
          */
