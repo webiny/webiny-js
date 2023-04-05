@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase";
-import pluralize from "pluralize";
 import {
     OnModelBeforeCreateFromTopicParams,
     OnModelBeforeCreateTopicParams,
@@ -33,75 +32,20 @@ const disallowedModelIdEndingList: string[] = [
     "RefType"
 ];
 
-/**
- * Checks for the uniqueness of provided modelId, against the provided list of models.
- * It also takes plural / singular forms of the provided modelId into account.
- */
-const checkModelIdUniqueness = (modelIdList: string[], modelId: string) => {
-    if (modelIdList.includes(modelId) === true) {
-        throw new WebinyError(
-            `Content model with modelId "${modelId}" already exists.`,
-            "MODEL_ID_EXISTS",
-            {
-                modelId
-            }
-        );
-    }
-    /**
-     * Additionally, check if the plural form of the received modelId exists too. This prevents users
-     * from creating, for example, "event" and "events" models, which would break the GraphQL schema.
-     * 1. First check if user wants to create the "event" model, but the "events" model already exists.
-     */
-    const pluralizedModelIdCamelCase = pluralize(modelId);
-    if (modelIdList.includes(pluralizedModelIdCamelCase) === true) {
-        throw new WebinyError(
-            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${pluralizedModelIdCamelCase}" does.`,
-            "MODEL_ID_PLURAL_ERROR",
-            {
-                modelId,
-                plural: pluralizedModelIdCamelCase
-            }
-        );
-    }
-
-    /**
-     * 2. Then check if user wants to create the "events" model, but the "event" model already exists.
-     */
-    const singularizedModelIdCamelCase = pluralize.singular(modelId);
-    if (modelIdList.includes(singularizedModelIdCamelCase) === true) {
-        throw new WebinyError(
-            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${singularizedModelIdCamelCase}" does.`,
-            "MODEL_ID_SINGULAR_ERROR",
-            {
-                modelId,
-                singular: singularizedModelIdCamelCase
-            }
-        );
-    }
+const isModelIdAllowed = (modelId: string): boolean => {
+    return disallowedModelIdList.includes(modelId) === false;
 };
 
-const checkModelIdAllowed = (modelId: string): void => {
-    if (disallowedModelIdList.includes(modelId) === false) {
-        return;
-    }
-    throw new WebinyError(`Provided model ID "${modelId}" is not allowed.`);
-};
-
-const checkModelIdEndingAllowed = (modelId: string): void => {
+const isModelEndingAllowed = (apiName: string): boolean => {
     for (const ending of disallowedModelIdEndingList) {
         const re = new RegExp(`${ending}$`, "i");
-        const matched = modelId.match(re);
+        const matched = apiName.match(re);
         if (matched === null) {
             continue;
         }
-        throw new WebinyError(
-            `ModelId that ends with "${ending}" is not allowed.`,
-            "MODEL_ID_NOT_ALLOWED",
-            {
-                modelId
-            }
-        );
+        return false;
     }
+    return true;
 };
 
 const getModelId = (model: CmsModel): string => {
@@ -124,14 +68,17 @@ interface CreateOnModelBeforeCreateCbParams {
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
+
 const createOnModelBeforeCb = ({
     plugins,
     storageOperations
 }: CreateOnModelBeforeCreateCbParams) => {
     return async (params: OnModelBeforeCreateTopicParams | OnModelBeforeCreateFromTopicParams) => {
-        const { model } = params;
+        const { model: newModel } = params;
 
-        const modelId = getModelId(model);
+        const modelId = getModelId(newModel);
+
+        newModel.modelId = modelId;
 
         const modelPlugin = plugins
             .byType<CmsModelPlugin>(CmsModelPlugin.type)
@@ -139,32 +86,101 @@ const createOnModelBeforeCb = ({
 
         if (modelPlugin) {
             throw new WebinyError(
-                `Cannot create "${model.modelId}" content model because one is already registered via a plugin.`,
+                `Cannot create "${newModel.modelId}" content model because one is already registered via a plugin.`,
                 "CONTENT_MODEL_CREATE_ERROR",
                 {
-                    modelId: model.modelId
+                    modelId: newModel.modelId
                 }
             );
         }
 
         const models = await storageOperations.models.list({
             where: {
-                tenant: model.tenant,
-                locale: model.locale
+                tenant: newModel.tenant,
+                locale: newModel.locale
             }
         });
-        const modelIdList = models.map(m => m.modelId);
 
         /**
-         * We need to check for:
-         *  - is that exact modelId allowed
-         *  - is modelId unique
-         *  - is model ending allowed
+         * We need to check for the existence of:
+         * - modelId
+         * - singularApiName
+         * - pluralApiName
          */
-        checkModelIdAllowed(modelId);
-        checkModelIdEndingAllowed(modelId);
-        checkModelIdUniqueness(modelIdList, modelId);
-        model.modelId = modelId;
+        for (const model of models) {
+            if (isModelIdAllowed(model.modelId) === false) {
+                throw new WebinyError(
+                    `Content model with modelId "${model.modelId}" is not allowed.`,
+                    "MODEL_ID_NOT_ALLOWED",
+                    {
+                        modelId: model.modelId,
+                        disallowed: disallowedModelIdList
+                    }
+                );
+            } else if (model.modelId === newModel.modelId) {
+                throw new WebinyError(
+                    `Content model with modelId "${modelId}" already exists.`,
+                    "MODEL_ID_EXISTS",
+                    {
+                        modelId: model.modelId
+                    }
+                );
+            } else if (model.singularApiName === newModel.singularApiName) {
+                throw new WebinyError(
+                    `Content model with singularApiName "${newModel.singularApiName}" already exists.`,
+                    "MODEL_SINGULAR_API_NAME_EXISTS",
+                    {
+                        existingSingularApiName: model.singularApiName,
+                        singularApiName: newModel.singularApiName
+                    }
+                );
+            } else if (model.pluralApiName === newModel.singularApiName) {
+                throw new WebinyError(
+                    `Content model with pluralApiName "${newModel.singularApiName}" already exists.`,
+                    "MODEL_PLURAL_API_NAME_EXISTS",
+                    {
+                        existingPluralApiName: model.pluralApiName,
+                        singularApiName: newModel.singularApiName
+                    }
+                );
+            } else if (model.singularApiName === newModel.pluralApiName) {
+                throw new WebinyError(
+                    `Content model with singularApiName "${newModel.pluralApiName}" already exists.`,
+                    "MODEL_SINGULAR_API_NAME_EXISTS",
+                    {
+                        existingSingularApiName: model.singularApiName,
+                        pluralApiName: newModel.pluralApiName
+                    }
+                );
+            } else if (model.pluralApiName === newModel.pluralApiName) {
+                throw new WebinyError(
+                    `Content model with pluralApiName "${newModel.pluralApiName}" already exists.`,
+                    "MODEL_PLURAL_API_NAME_EXISTS",
+                    {
+                        existingPluralApiName: model.pluralApiName,
+                        pluralApiName: newModel.pluralApiName
+                    }
+                );
+            } else if (isModelEndingAllowed(newModel.singularApiName) === false) {
+                throw new WebinyError(
+                    `Content model with singularApiName "${newModel.singularApiName}" is not allowed.`,
+                    "MODEL_SINGULAR_API_NAME_NOT_ALLOWED",
+                    {
+                        singularApiName: newModel.singularApiName,
+                        disallowedEnding: disallowedModelIdEndingList
+                    }
+                );
+            } else if (isModelEndingAllowed(newModel.pluralApiName) === false) {
+                throw new WebinyError(
+                    `Content model with singularApiName "${newModel.pluralApiName}" is not allowed.`,
+                    "MODEL_PLURAL_API_NAME_NOT_ALLOWED",
+                    {
+                        pluralApiName: newModel.pluralApiName,
+                        disallowedEnding: disallowedModelIdEndingList
+                    }
+                );
+            }
+        }
     };
 };
 

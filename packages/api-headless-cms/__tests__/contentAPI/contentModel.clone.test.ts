@@ -208,7 +208,7 @@ describe("content model - cloning", () => {
                         data: {
                             modelId: originalModel.modelId
                         },
-                        message: `Content model with modelId "${originalModel.modelId}" already exists.`
+                        message: `Content model with modelId "product" already exists.`
                     }
                 }
             }
@@ -238,6 +238,122 @@ describe("content model - cloning", () => {
                             modelId: originalModel.modelId
                         },
                         message: `Content model with modelId "${originalModel.modelId}" already exists.`
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow to clone a model and give it existing singularApiName - sending exact singularApiName", async () => {
+        const [cloneResponse] = await createContentModelFromMutation({
+            modelId: originalModel.modelId,
+            data: {
+                name: "Cloned model",
+                modelId: "clonedModel",
+                group: defaultGroup.id,
+                singularApiName: originalModel.singularApiName,
+                pluralApiName: "ClonedModels",
+                description: "Cloned model description"
+            }
+        });
+        expect(cloneResponse).toEqual({
+            data: {
+                createContentModelFrom: {
+                    data: null,
+                    error: {
+                        code: "MODEL_SINGULAR_API_NAME_EXISTS",
+                        data: {
+                            existingSingularApiName: originalModel.singularApiName,
+                            singularApiName: originalModel.singularApiName
+                        },
+                        message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow to clone a model and give it existing singularApiName - sending exact pluralApiName", async () => {
+        const [cloneResponse] = await createContentModelFromMutation({
+            modelId: originalModel.modelId,
+            data: {
+                name: "Cloned model",
+                modelId: "clonedModel",
+                group: defaultGroup.id,
+                singularApiName: originalModel.pluralApiName,
+                pluralApiName: "ClonedModels",
+                description: "Cloned model description"
+            }
+        });
+        expect(cloneResponse).toEqual({
+            data: {
+                createContentModelFrom: {
+                    data: null,
+                    error: {
+                        code: "MODEL_PLURAL_API_NAME_EXISTS",
+                        data: {
+                            existingPluralApiName: originalModel.pluralApiName,
+                            singularApiName: originalModel.pluralApiName
+                        },
+                        message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow to clone a model and give it existing pluralApiName - sending exact pluralApiName", async () => {
+        const [cloneResponse] = await createContentModelFromMutation({
+            modelId: originalModel.modelId,
+            data: {
+                name: "Cloned model",
+                modelId: "clonedModel",
+                group: defaultGroup.id,
+                singularApiName: "ClonedModel",
+                pluralApiName: originalModel.pluralApiName,
+                description: "Cloned model description"
+            }
+        });
+        expect(cloneResponse).toEqual({
+            data: {
+                createContentModelFrom: {
+                    data: null,
+                    error: {
+                        code: "MODEL_PLURAL_API_NAME_EXISTS",
+                        data: {
+                            existingPluralApiName: originalModel.pluralApiName,
+                            pluralApiName: originalModel.pluralApiName
+                        },
+                        message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow to clone a model and give it existing pluralApiName - sending exact singularApiName", async () => {
+        const [cloneResponse] = await createContentModelFromMutation({
+            modelId: originalModel.modelId,
+            data: {
+                name: "Cloned model",
+                modelId: "clonedModel",
+                group: defaultGroup.id,
+                singularApiName: "ClonedModel",
+                pluralApiName: originalModel.singularApiName,
+                description: "Cloned model description"
+            }
+        });
+        expect(cloneResponse).toEqual({
+            data: {
+                createContentModelFrom: {
+                    data: null,
+                    error: {
+                        code: "MODEL_SINGULAR_API_NAME_EXISTS",
+                        data: {
+                            existingSingularApiName: originalModel.singularApiName,
+                            pluralApiName: originalModel.singularApiName
+                        },
+                        message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }
                 }
             }
