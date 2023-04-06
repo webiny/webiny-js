@@ -263,8 +263,9 @@ describe("benchmark", () => {
 
         await context.benchmark.output();
 
-        expect(log).toHaveLength(2);
+        expect(log).toHaveLength(3);
         expect(log).toMatchObject([
+            `Benchmark total time elapsed: ${context.benchmark.elapsed}ms`,
             "Benchmark measurements:",
             [
                 {
@@ -308,8 +309,9 @@ describe("benchmark", () => {
 
         await context.benchmark.output();
 
-        expect(log).toHaveLength(2);
+        expect(log).toHaveLength(3);
         expect(log).toMatchObject([
+            `Benchmark total time elapsed: ${context.benchmark.elapsed}ms`,
             "Benchmark measurements:",
             [
                 {
@@ -393,6 +395,46 @@ describe("benchmark", () => {
             {
                 name: "test 5"
             }
+        ]);
+    });
+
+    it("should properly measure nested benchmarks", async () => {
+        context.benchmark.enable();
+
+        const result = await context.benchmark.measure(`first level`, async () => {
+            await sleep(10);
+            return context.benchmark.measure(`second level`, async () => {
+                await sleep(10);
+                return context.benchmark.measure(`third level`, async () => {
+                    return "level 3";
+                });
+            });
+        });
+
+        expect(result).toEqual("level 3");
+        expect(context.benchmark.measurements).toHaveLength(3);
+        const logs: any[] = [];
+        jest.spyOn(console, "log").mockImplementation((...args) => {
+            logs.push(...args);
+        });
+
+        await context.benchmark.output();
+
+        expect(logs).toHaveLength(3);
+        expect(logs).toMatchObject([
+            `Benchmark total time elapsed: ${context.benchmark.elapsed}ms`,
+            "Benchmark measurements:",
+            [
+                {
+                    name: "third level"
+                },
+                {
+                    name: "second level"
+                },
+                {
+                    name: "first level"
+                }
+            ]
         ]);
     });
 });
