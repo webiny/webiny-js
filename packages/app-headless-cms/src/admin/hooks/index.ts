@@ -10,4 +10,4 @@ export { useModelEditor } from "../components/ContentModelEditor";
 export { useModelField } from "../components/ModelFieldProvider";
 export { useModelFieldEditor } from "../components/FieldEditor";
 export * from "./useContentModels";
-export { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
+export * from "~/admin/views/contentEntries/hooks";

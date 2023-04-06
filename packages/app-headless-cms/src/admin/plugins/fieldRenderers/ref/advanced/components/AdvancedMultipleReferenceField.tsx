@@ -59,9 +59,11 @@ const Container = styled("div")({
         }
     },
     "&.single-entry": {
-        height: 295,
-        ">div": {
-            height: 270
+        "> .entries": {
+            height: "auto",
+            " > div > div": {
+                position: "relative !important" as any
+            }
         }
     }
 });
