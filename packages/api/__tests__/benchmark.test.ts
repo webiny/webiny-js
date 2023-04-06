@@ -216,4 +216,34 @@ describe("benchmark", () => {
         expect(context.benchmark.measurements).toEqual(expected);
         expect(context.benchmark.measurements[0].elapsed).toBeGreaterThanOrEqual(0);
     });
+
+    it("should not enable benchmark if it was disabled manually", async () => {
+        context.benchmark.enableOn(async () => {
+            return process.env.BENCHMARK_ENABLE === "true";
+        });
+        process.env.BENCHMARK_ENABLE = "true";
+        await context.benchmark.measure("test", async () => {
+            return true;
+        });
+        const expected: BenchmarkMeasurement[] = [
+            {
+                name: "test",
+                start: expect.any(Date),
+                end: expect.any(Date),
+                elapsed: expect.any(Number),
+                memory: expect.any(Number)
+            }
+        ];
+        expect(context.benchmark.measurements).toEqual(expected);
+
+        context.benchmark.disable();
+
+        const result = await context.benchmark.measure("test", async () => {
+            return true;
+        });
+
+        expect(result).toEqual(true);
+
+        expect(context.benchmark.measurements).toEqual(expected);
+    });
 });

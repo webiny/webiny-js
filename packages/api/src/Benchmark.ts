@@ -6,6 +6,12 @@ import {
     Context
 } from "~/types";
 
+enum BenchmarkState {
+    DISABLED = "disabled",
+    ENABLED = "enabled",
+    UNDETERMINED = "undetermined"
+}
+
 export class Benchmark implements BenchmarkInterface {
     public readonly measurements: BenchmarkMeasurement[] = [];
 
@@ -13,23 +19,8 @@ export class Benchmark implements BenchmarkInterface {
     public readonly runs: BenchmarkRuns = {};
     private readonly context: Context;
     private readonly enableOnCallables: BenchmarkEnableOnCallable[] = [];
-    /**
-     * The enabled flag acts as permanent enable - when running check if the benchmark is enabled.
-     * It can be set to false by calling disable() method.
-     *
-     * @see enable()
-     * @see disable()
-     */
-    private enabled = false;
-    /**
-     * The disabled flag acts as permanent disable - when running check if the benchmark is enabled.
-     * It can be set to false by calling enable() method.
-     *
-     * Benchmark cannot be permanently disabled from the outside of this class.
-     *
-     * @see enable()
-     */
-    private disabled = false;
+
+    private state: BenchmarkState = BenchmarkState.UNDETERMINED;
 
     public constructor(context: Context) {
         this.context = context;
@@ -44,17 +35,15 @@ export class Benchmark implements BenchmarkInterface {
     }
 
     public enable(): void {
-        this.enabled = true;
-        this.disabled = false;
+        this.setState(BenchmarkState.ENABLED);
     }
 
     public disable(): void {
-        this.enabled = false;
-        this.disabled = false;
+        this.setState(BenchmarkState.DISABLED);
     }
 
     public async measure<T = any>(name: string, cb: () => Promise<T>): Promise<T> {
-        const enabled = await this.isEnabled();
+        const enabled = await this.getIsEnabled();
         if (!enabled) {
             return cb();
         }
@@ -78,15 +67,10 @@ export class Benchmark implements BenchmarkInterface {
         }
     }
 
-    private async isEnabled(): Promise<boolean> {
-        if (this.enabled) {
+    private async getIsEnabled(): Promise<boolean> {
+        if (this.state === BenchmarkState.ENABLED) {
             return true;
-        }
-        /**
-         * If benchmark is disabled, we don't want to run all the checks again.
-         */
-        //
-        else if (this.disabled) {
+        } else if (this.state === BenchmarkState.DISABLED) {
             return false;
         }
 
@@ -98,7 +82,6 @@ export class Benchmark implements BenchmarkInterface {
             }
         }
         this.disable();
-        this.disabled = true;
         return false;
     }
 
@@ -111,5 +94,9 @@ export class Benchmark implements BenchmarkInterface {
             this.runs[name] = 0;
         }
         this.runs[name]++;
+    }
+
+    private setState(state: BenchmarkState): void {
+        this.state = state;
     }
 }
