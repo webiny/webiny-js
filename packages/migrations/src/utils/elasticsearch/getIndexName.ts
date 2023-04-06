@@ -1,10 +1,15 @@
 import WebinyError from "@webiny/error";
 
-export const getIndexName = (tenant: string, locale: string, indexSuffix: string) => {
-    if (!indexSuffix) {
+export const getIndexName = (
+    tenant: string,
+    locale: string,
+    type: string,
+    isHeadlessCmsModel?: boolean
+) => {
+    if (!type) {
         throw new WebinyError(
-            `Missing "indexSuffix" parameter when trying to create Elasticsearch index name.`,
-            "INDEX_SUFFIX_ERROR"
+            `Missing "type" parameter when trying to create Elasticsearch index name.`,
+            "INDEX_TYPE_ERROR"
         );
     }
 
@@ -29,7 +34,10 @@ export const getIndexName = (tenant: string, locale: string, indexSuffix: string
         localeCode = locale;
     }
 
-    const index = [tenantId, localeCode, indexSuffix].filter(Boolean).join("-").toLowerCase();
+    const index = [tenantId, isHeadlessCmsModel && "headless-cms", localeCode, type]
+        .filter(Boolean)
+        .join("-")
+        .toLowerCase();
 
     const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
     if (!prefix) {
