@@ -112,7 +112,7 @@ export const createValueKeyFromStorageConverter = (params: Params): CmsModelConv
     };
 };
 
-interface AttachConvertersParams {
+export interface AttachConvertersParams {
     plugins: PluginsContainer;
     model: CmsModel;
 }

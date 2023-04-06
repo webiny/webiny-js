@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     BindComponentRenderProp,
     CmsEditorContentEntry,
-    CmsEditorFieldRendererProps,
+    CmsModelFieldRendererProps,
     CmsModel
 } from "~/types";
 import { Options } from "./Options";
@@ -31,7 +31,7 @@ const FieldLabel = styled("h3")({
     paddingBottom: "5px"
 });
 
-interface Props extends CmsEditorFieldRendererProps {
+interface Props extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
 }
 

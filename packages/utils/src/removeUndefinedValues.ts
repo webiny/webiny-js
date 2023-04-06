@@ -1,4 +1,4 @@
-export const removeUndefinedValues = <T extends Record<string, any>>(target: T): T => {
+export const removeUndefinedValues = <T extends Record<string, any>>(target: T) => {
     const result = {} as T;
     for (const key in target) {
         if (target[key] === undefined) {
@@ -7,5 +7,5 @@ export const removeUndefinedValues = <T extends Record<string, any>>(target: T):
 
         result[key] = target[key];
     }
-    return result as T;
+    return result;
 };

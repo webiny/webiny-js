@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
-import { CmsEditorFieldRendererPlugin, CmsEditorFieldRendererProps } from "~/types";
+import { CmsEditorFieldRendererPlugin, CmsModelFieldRendererProps } from "~/types";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
@@ -12,7 +12,7 @@ const noBottomPadding = css`
     }
 `;
 
-const DynamicZoneContent: React.VFC<CmsEditorFieldRendererProps> = ({
+const DynamicZoneContent: React.VFC<CmsModelFieldRendererProps> = ({
     field,
     getBind,
     contentModel

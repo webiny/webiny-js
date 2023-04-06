@@ -33,6 +33,7 @@ import {
     SearchContentEntriesVariables
 } from "./graphql/contentEntry";
 import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
+import { acceptIncomingChanges } from "~tests/testHelpers/acceptIncommingChanges";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -51,7 +52,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const core = createHandlerCore(params);
 
     const handler = createHandler({
-        plugins: core.plugins,
+        plugins: core.plugins.concat([acceptIncomingChanges()]),
         http: {
             debug: false
         }

@@ -196,8 +196,10 @@ describe("Block Categories CRUD Test", () => {
                             data: {
                                 invalidFields: {
                                     slug: {
-                                        code: "VALIDATION_FAILED_INVALID_FIELD",
-                                        data: null,
+                                        code: "custom",
+                                        data: {
+                                            path: ["slug"]
+                                        },
                                         message: "Value is required."
                                     }
                                 }
@@ -228,8 +230,10 @@ describe("Block Categories CRUD Test", () => {
                             data: {
                                 invalidFields: {
                                     slug: {
-                                        code: "VALIDATION_FAILED_INVALID_FIELD",
-                                        data: null,
+                                        code: "custom",
+                                        data: {
+                                            path: ["slug"]
+                                        },
                                         message:
                                             "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some-slug-2')"
                                     }

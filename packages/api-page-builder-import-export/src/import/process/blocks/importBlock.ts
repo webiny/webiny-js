@@ -79,7 +79,10 @@ export async function importBlock({
         });
 
         block.preview = updateBlockPreviewImage({
-            file: block.preview || {},
+            /**
+             * Casting as this is only a type error.
+             */
+            file: (block.preview as ImageFile) || {},
             fileIdToNewFileMap,
             srcPrefix
         });

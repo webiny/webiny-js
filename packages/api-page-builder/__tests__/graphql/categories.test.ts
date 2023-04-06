@@ -21,15 +21,15 @@ describe("Categories CRUD Test", () => {
         // Test creating, getting and updating three categories.
         for (let i = 0; i < 3; i++) {
             const prefix = `category-${i}-`;
-            let data = {
+            const data = {
                 slug: `${prefix}slug`,
                 name: `${prefix}name`,
                 url: `${prefix}url`,
                 layout: `${prefix}layout`
             };
 
-            let [response] = await createCategory({ data });
-            expect(response).toMatchObject({
+            const [createCategoryResponse] = await createCategory({ data });
+            expect(createCategoryResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         createCategory: {
@@ -44,8 +44,8 @@ describe("Categories CRUD Test", () => {
                 }
             });
 
-            [response] = await getCategory({ slug: data.slug });
-            expect(response).toMatchObject({
+            const [getCategoryAfterCreateResponse] = await getCategory({ slug: data.slug });
+            expect(getCategoryAfterCreateResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         getCategory: {
@@ -60,20 +60,24 @@ describe("Categories CRUD Test", () => {
                 }
             });
 
-            data = {
-                slug: data.slug, // Slug cannot be changed.
+            const updatedData = {
+                slug: "changed slug - should not have effect", // Slug cannot be changed.
                 name: data.name + "-UPDATED",
                 url: data.url + "-UPDATED",
                 layout: data.layout + "-UPDATED"
             };
 
-            [response] = await updateCategory({ slug: data.slug, data });
-            expect(response).toMatchObject({
+            const [updateCategoryResponse] = await updateCategory({
+                slug: data.slug,
+                data: updatedData
+            });
+            expect(updateCategoryResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         updateCategory: {
                             data: {
-                                ...data,
+                                ...updatedData,
+                                slug: data.slug,
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
                             },
@@ -85,8 +89,8 @@ describe("Categories CRUD Test", () => {
         }
 
         // List should show three categories.
-        let [response] = await listCategories();
-        expect(response).toMatchObject({
+        const [listCategoriesResponse] = await listCategories();
+        expect(listCategoriesResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     listCategories: {
@@ -150,7 +154,7 @@ describe("Categories CRUD Test", () => {
         }
 
         // List should show zero categories.
-        [response] = await listCategories();
+        const [response] = await listCategories();
         expect(response).toEqual({
             data: {
                 pageBuilder: {

@@ -4,7 +4,7 @@ import * as GQL from "~/admin/viewsGraphql";
 import {
     BindComponentRenderProp,
     CmsEditorContentEntry,
-    CmsEditorFieldRendererProps,
+    CmsModelFieldRendererProps,
     CmsModel
 } from "~/types";
 import { Options } from "./Options";
@@ -85,7 +85,7 @@ const getRecordCountMessage = (count: number) => {
     }
 };
 
-interface Props extends CmsEditorFieldRendererProps {
+interface Props extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
 }
 

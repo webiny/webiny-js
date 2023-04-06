@@ -48,7 +48,7 @@ import {
 } from "~/crud/contentModel/validation";
 import { createZodError } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
-import { removeUndefinedValues } from "~/utils/removeUndefinedValues";
+import { removeUndefinedValues } from "@webiny/utils";
 import {
     ensurePluralApiName,
     ensureSingularApiName
@@ -346,9 +346,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 assignModelDefaultFields(data);
             }
 
-            context.security.disableAuthorization();
-            const group = await context.cms.getGroup(data.group);
-            context.security.enableAuthorization();
+            const group = await context.security.withoutAuthorization(async () => {
+                return context.cms.getGroup(data.group);
+            });
             if (!group) {
                 throw new NotFoundError(`There is no group "${data.group}".`);
             }
@@ -570,12 +570,13 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 id: original.group.id,
                 name: original.group.name
             };
-            if (data.group) {
-                context.security.disableAuthorization();
-                const groupData = await context.cms.getGroup(data.group);
-                context.security.enableAuthorization();
+            const groupId = data.group;
+            if (groupId) {
+                const groupData = await context.security.withoutAuthorization(async () => {
+                    return context.cms.getGroup(groupId);
+                });
                 if (!groupData) {
-                    throw new NotFoundError(`There is no group "${data.group}".`);
+                    throw new NotFoundError(`There is no group "${groupId}".`);
                 }
                 group = {
                     id: groupData.id,

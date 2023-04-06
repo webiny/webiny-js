@@ -17,9 +17,9 @@ export const assignModelBeforeUpdate = (params: AssignBeforeModelUpdateParams) =
          */
         validateLayout(model.layout, model.fields);
 
-        context.security.disableAuthorization();
-        const models = await context.cms.listModels();
-        context.security.enableAuthorization();
+        const models = await context.security.withoutAuthorization(async () => {
+            return context.cms.listModels();
+        });
         /**
          * then the model and fields...
          */

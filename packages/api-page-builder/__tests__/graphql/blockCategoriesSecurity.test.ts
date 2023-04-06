@@ -1,14 +1,22 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB } from "./mocks";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 
-function Mock(prefix = "") {
-    this.slug = `${prefix}slug`;
-    this.name = `${prefix}name`;
-    this.icon = `${prefix}icon`;
-    this.description = `${prefix}description`;
+class Mock {
+    public slug: string;
+    public name: string;
+    public icon: string;
+    public description: string;
+
+    constructor(prefix = "") {
+        this.slug = `${prefix}slug`;
+        this.name = `${prefix}name`;
+        this.icon = `${prefix}icon`;
+        this.description = `${prefix}description`;
+    }
 }
 
-const NOT_AUTHORIZED_RESPONSE = operation => ({
+const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
     data: {
         pageBuilder: {
             [operation]: {
@@ -341,7 +349,7 @@ describe("Block Categories Security Test", () => {
         }
     });
 
-    const deleteBlockCategoryInsufficientPermissions = [
+    const deleteBlockCategoryInsufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
         // [[], null],
         // [[], identityA],
         [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "r" }], identityA],
@@ -356,7 +364,7 @@ describe("Block Categories Security Test", () => {
 
     test.each(deleteBlockCategoryInsufficientPermissions)(
         `do not allow "deleteBlockCategory" if identity has not sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("delete-block-category-");
 
             await createBlockCategory({ data: mock });
@@ -367,7 +375,7 @@ describe("Block Categories Security Test", () => {
         }
     );
 
-    const deleteBlockCategorySufficientPermissions = [
+    const deleteBlockCategorySufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
         [
             [
                 { name: "content.i18n" },
@@ -404,12 +412,12 @@ describe("Block Categories Security Test", () => {
     ];
     test.each(deleteBlockCategorySufficientPermissions)(
         `allow "deleteBlockCategory" if identity has sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("delete-block-category-");
 
             const { createBlockCategory, deleteBlockCategory } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             await createBlockCategory({ data: mock });
             const [response] = await deleteBlockCategory({
@@ -428,7 +436,10 @@ describe("Block Categories Security Test", () => {
         }
     );
 
-    const getBlockCategoryInsufficientPermissions = [
+    const getBlockCategoryInsufficientPermissions: [
+        SecurityPermission[],
+        SecurityIdentity | null
+    ][] = [
         [[], null],
         [[], identityA],
         [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "w" }], identityA],
@@ -442,7 +453,7 @@ describe("Block Categories Security Test", () => {
 
     test.each(getBlockCategoryInsufficientPermissions)(
         `do not allow "getBlockCategory" if identity has no sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("get-block-category-");
             await createBlockCategory({ data: mock });
             const { getBlockCategory } = useGqlHandler({ permissions, identity });
@@ -451,7 +462,7 @@ describe("Block Categories Security Test", () => {
         }
     );
 
-    const getBlockCategorySufficientPermissions = [
+    const getBlockCategorySufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
         [[{ name: "content.i18n" }, { name: "pb.blockCategory" }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "r" }], identityA],
@@ -469,7 +480,7 @@ describe("Block Categories Security Test", () => {
 
     test.each(getBlockCategorySufficientPermissions)(
         `allow "getBlockCategory" if identity has sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("get-block-category-");
 
             await createBlockCategory({ data: mock });
