@@ -19,6 +19,8 @@ import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/c
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
+import tabs from "@webiny/app-page-builder/editor/plugins/elements/tabs";
+import tab from "@webiny/app-page-builder/editor/plugins/elements/tab";
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -54,6 +56,8 @@ import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSetting
 import cellSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/cell";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import property from "@webiny/app-page-builder/editor/plugins/elementSettings/property";
+import tabsSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tabs";
+import tabSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tab";
 // Responsive editor mode
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
@@ -84,6 +88,8 @@ export default [
     twitter(),
     codesandbox(),
     pagesList(),
+    tabs(),
+    tab(),
     // grid presets
     ...gridPresets,
     // Element groups
@@ -120,6 +126,8 @@ export default [
     cellSettings,
     textSettings,
     property,
+    tabsSettings,
+    tabSettings,
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings

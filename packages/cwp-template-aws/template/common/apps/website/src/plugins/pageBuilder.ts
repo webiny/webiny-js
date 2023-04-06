@@ -31,6 +31,8 @@ import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/p
 import iframe from "@webiny/app-page-builder/render/plugins/elements/iframe";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
+import tabs from "@webiny/app-page-builder/render/plugins/elements/tabs";
+import tab from "@webiny/app-page-builder/render/plugins/elements/tab";
 
 /**
  * Page settings plugins (seo, social, etc.).
@@ -83,6 +85,8 @@ export default [
     iframe(),
     pagesList(),
     imagesList(),
+    tabs(),
+    tab(),
 
     // Page settings
     pageSettings(),
