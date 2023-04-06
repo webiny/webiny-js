@@ -1,10 +1,10 @@
 import {
     Benchmark as BenchmarkInterface,
+    BenchmarkEnableOnCallable,
     BenchmarkMeasurement,
     BenchmarkRuns,
     Context
 } from "~/types";
-import { BenchmarkEnablePlugin } from "~/plugins/BenchmarkEnablePlugin";
 
 export class Benchmark implements BenchmarkInterface {
     public readonly measurements: BenchmarkMeasurement[] = [];
@@ -12,8 +12,7 @@ export class Benchmark implements BenchmarkInterface {
     private totalElapsed = 0;
     public readonly runs: BenchmarkRuns = {};
     private readonly context: Context;
-
-    private enableOnCb?: () => Promise<boolean>;
+    private readonly enableOnCallables: BenchmarkEnableOnCallable[] = [];
     /**
      * The enabled flag acts as permanent enable - when running check if the benchmark is enabled.
      * It can be set to false by calling disable() method.
@@ -21,7 +20,7 @@ export class Benchmark implements BenchmarkInterface {
      * @see enable()
      * @see disable()
      */
-    private enabled: boolean = false;
+    private enabled = false;
     /**
      * The disabled flag acts as permanent disable - when running check if the benchmark is enabled.
      * It can be set to false by calling enable() method.
@@ -30,7 +29,7 @@ export class Benchmark implements BenchmarkInterface {
      *
      * @see enable()
      */
-    private disabled: boolean = false;
+    private disabled = false;
 
     public constructor(context: Context) {
         this.context = context;
@@ -40,8 +39,8 @@ export class Benchmark implements BenchmarkInterface {
         return this.totalElapsed;
     }
 
-    public enableOn(cb: () => Promise<boolean>): void {
-        this.enableOnCb = cb;
+    public enableOn(cb: BenchmarkEnableOnCallable): void {
+        this.enableOnCallables.push(cb);
     }
 
     public enable(): void {
@@ -51,6 +50,7 @@ export class Benchmark implements BenchmarkInterface {
 
     public disable(): void {
         this.enabled = false;
+        this.disabled = false;
     }
 
     public async measure<T = any>(name: string, cb: () => Promise<T>): Promise<T> {
@@ -86,25 +86,18 @@ export class Benchmark implements BenchmarkInterface {
          * If benchmark is disabled, we don't want to run all the checks again.
          */
         //
-        else if (this.disabled === false) {
+        else if (this.disabled) {
             return false;
         }
-        if (this.enableOnCb) {
-            const result = await this.enableOnCb();
+
+        for (const cb of this.enableOnCallables) {
+            const result = await cb();
             if (result) {
                 this.enable();
-            }
-            return result;
-        }
-        const plugins = this.context.plugins.byType<BenchmarkEnablePlugin>(
-            BenchmarkEnablePlugin.type
-        );
-        for (const plugin of plugins) {
-            const result = await plugin.isEnabled(this.context);
-            if (result) {
-                this.enable();
+                return true;
             }
         }
+        this.disable();
         this.disabled = true;
         return false;
     }

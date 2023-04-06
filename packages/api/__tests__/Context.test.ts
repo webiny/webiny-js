@@ -16,8 +16,8 @@ describe("Context", () => {
         });
 
         expect(context).toBeInstanceOf(Context);
-        expect(context).toEqual({
-            benchmark: new Benchmark(),
+        expect(context).toMatchObject({
+            benchmark: new Benchmark(context),
             plugins: {
                 _byTypeCache: {},
                 plugins: {

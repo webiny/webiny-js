@@ -1,7 +1,7 @@
 import { Context } from "~/Context";
 import { BenchmarkMeasurement } from "~/types";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
-import { createBenchmarkEnablePlugin } from "~/plugins/BenchmarkEnablePlugin";
+import { ContextPlugin } from "~/plugins/ContextPlugin";
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -148,17 +148,12 @@ describe("benchmark", () => {
     });
 
     it("should enable benchmark when certain conditions are met", async () => {
+        process.env.BENCHMARK_ENABLE = "true";
         context.benchmark.enableOn(async () => {
             return process.env.BENCHMARK_ENABLE === "true";
         });
 
-        await context.benchmark.measure("test", async () => {
-            return true;
-        });
-
-        expect(context.benchmark.measurements).toEqual([]);
-
-        process.env.BENCHMARK_ENABLE = "true";
+        expect(context.benchmark.measurements).toHaveLength(0);
 
         const result = await context.benchmark.measure("test", async () => {
             return true;
@@ -181,28 +176,26 @@ describe("benchmark", () => {
         expect(context.benchmark.measurements[0].elapsed).toBeGreaterThanOrEqual(0);
     });
 
-    it("should enable benchmark when certain conditions are met via plugin", async () => {
-        await context.benchmark.measure("test", async () => {
-            return true;
+    it("should enable benchmark when certain conditions are met - via plugin", async () => {
+        process.env.BENCHMARK_ENABLE = "true";
+        const context = new Context({
+            WEBINY_VERSION: "test",
+            plugins: [
+                new ContextPlugin(async ctx => {
+                    ctx.benchmark.enableOn(async () => {
+                        return process.env.BENCHMARK_ENABLE === "true";
+                    });
+                })
+            ]
         });
-
-        expect(context.benchmark.measurements).toEqual([]);
-        context.plugins.register(
-            createBenchmarkEnablePlugin(async ctx => {
-                return process.env.BENCHMARK_ENABLE === "true";
+        await Promise.all(
+            context.plugins.byType<ContextPlugin>(ContextPlugin.type).map(plugin => {
+                return plugin.apply(context);
             })
         );
-        await context.benchmark.measure("test", async () => {
-            return true;
-        });
 
         expect(context.benchmark.measurements).toEqual([]);
 
-        process.env.BENCHMARK_ENABLE = "true";
-
-        await context.benchmark.measure("test", async () => {
-            return true;
-        });
         const result = await context.benchmark.measure("test", async () => {
             return true;
         });

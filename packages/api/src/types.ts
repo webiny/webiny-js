@@ -11,9 +11,14 @@ export interface BenchmarkMeasurement {
     memory: number;
 }
 
+export interface BenchmarkEnableOnCallable {
+    (): Promise<boolean>;
+}
+
 export interface Benchmark {
     measurements: BenchmarkMeasurement[];
     runs: BenchmarkRuns;
+    enableOn: (cb: BenchmarkEnableOnCallable) => void;
     elapsed: number;
     measure: <T = any>(name: string, cb: () => Promise<T>) => Promise<T>;
     enable: () => void;
