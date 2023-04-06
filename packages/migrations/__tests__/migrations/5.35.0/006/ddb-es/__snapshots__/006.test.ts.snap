@@ -4,7 +4,7 @@ exports[`5.35.0-006 should execute migration 1`] = `
 Object {
   "PK": "T#root#L#en-US#CMS#CME#642d3f644d7cdc000821b67e",
   "SK": "L",
-  "TYPE": "cms.entry.l",
+  "TYPE": "L",
   "created": Any<String>,
   "createdBy": Object {
     "displayName": "Admin",
@@ -17,7 +17,6 @@ Object {
   "id": "642d3f644d7cdc000821b67e#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -79,7 +78,6 @@ Object {
   "id": "642d3f644d7cdc000821b67e#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -128,7 +126,7 @@ exports[`5.35.0-006 should execute migration 3`] = `
 Object {
   "PK": "T#root#L#en-US#CMS#CME#642d401c4d7cdc000821b681",
   "SK": "L",
-  "TYPE": "cms.entry.l",
+  "TYPE": "L",
   "created": Any<String>,
   "createdBy": Object {
     "displayName": "Admin",
@@ -141,7 +139,6 @@ Object {
   "id": "642d401c4d7cdc000821b681#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -203,7 +200,6 @@ Object {
   "id": "642d401c4d7cdc000821b681#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -255,7 +251,7 @@ Object {
   "created": Any<String>,
   "data": Object {
     "compression": "gzip",
-    "value": "H4sIAAAAAAAAE6VUTW/bMAz9K4J2dTzns2luG7bDgGEJmqxAdykYi0mIyZIrUQmCIP99tPMBbCi6AoEPFp/IJ/KR0kFX3qD9ZvREQ+nnCKHcPGDpg9GZ3mKI5J2edDMdYYtmKmvdK3r9TjHoFMNFcT/p9yZFNx/1x78kwPoSLIoPus7PuQCRgVMUwARYcUMJNqEAB837uvGcLWewRtlh4ja0MVVXgNI7RsdXSJ1/333ASlEdU6WMtz6oSKygQs6UxEQsGTkFBYZqiiW5tUJLnKt5ijU6QzGi2kKgFBU6EiqnMHgxLFZyoNByoMj0kjBXXxJFVaYQU8xUReqlsbck0gRQPjgImJ3CT7mQJB2McLhkLWQqsSRVicpeGYJKWVqKtzAwoMQB52fduFX6oFfeGgxtRx6m04U+HkWKgMBoPu8bB2qbZSpyjWonFS+mFFdb2P8QNQT91KISL1WFfUs5GvRMfzUaDMxdacqiKMa97nJ01zYAHbRyB++bVp0PfaXnvftJMc6H157/RqFegY2Yab9zNyS6wyW5/eNl7nSRyyfu9FbuH2TZDIyITCu64XQr9UZRgEOSShZPs6+yW1Yxb/XLrUQ+P5+p/oYD7B6vk22A4ZrB/5Ku3/R69V7cOAzv7Ou7Lvz1ftdpaSlu8N9n4zIdJ0lr4I04f0yurcp07Lq/qYYjkik//gFiJ98pjAQAAA==",
+    "value": "H4sIAAAAAAAAE6VUTW/bMAz9K4J2dTzns2luG7bDgGEJmqzAdikYi0mIyZIrUQmCIP99tPOBbSi6AoEPtp7IJ/I9ygddeYP2i9ETDaWfI4Ry84ClD0Zneoshknd60s10hC2aqXzrXtHrd4pBpxguivtJvzcpuvmoP/4pCdaXYFFi0HW+zwWIDJyiACbAihtKsAkFOGje103kbDmDNcoOE7epzVJ1BSi9Y3R8hdT59dUHrBTVMVXKeOuDisQKKuRMSU7EkpFTUGCopliSWyu0xLmap1ijMxQjqi0ESlGhI6FyCoOXhcVKDhRaDhSZnhPm6lOiqMoUYoqZqkg9N+stiTQBlA8OAman9FMtJEUHIxwuWQuZSixFVaKyV4agUpaWEi0MDCh5wPlZN26VPuiVtwZD68jDdLrQx6NIERAYzcd9E0CtWaYi16h2UvGylOZqC/tvooagH1pU8qWrsG8pR4Oe6a9Gg4G5K01ZFMW4112O7loD0EErd/C+sep86Aue9+4nxTgfXj3/hUK9Ahsx037nbih0h0ty+8fL3Okil0fC6bXa38lnMzAiMq3ohtOt9BtFAQ5JOln8mH2W3bKKeatfbiXz6elM9TccYPd4new/3BRSAwzXev7XQv1q1Iu35MbReKPLb7r+19tep6WluMF/fyKXWTkJXANvJPh9cm1XpmPX/U01HJHM/PE3xDW2vZoEAAA=",
   },
   "entity": "CmsEntries",
   "index": "root-headless-cms-en-us-acosearchrecord",
@@ -270,7 +266,7 @@ Object {
   "created": Any<String>,
   "data": Object {
     "compression": "gzip",
-    "value": "H4sIAAAAAAAAE6VTTW8aMRD9K5Z7ha33owT21ko9VKoCSmik9hIZewCrXntjj0EI8d87u9mgNonSSMgH288z43kzb4688RrsN81rLpW/BRnU9gaUD5qP+A5CNN7xOh/xKHeg53TmhSjKsajG4tNSzOryqhZVNptNf5GD9UpaIBtw4x+3BESUmCIBOsg1diGlTUDAkeOh7SwXq4XcAL2gwd61u7KCAOUdgsMzxIbtuw/QMNPG1DDtrQ8sGmSyARwx8omgEDAFJrVpTVTGbRhYgxm7Tk6xhCyS+86gBBZMTJEhbWgeErDWxwQBsoEK9uSPfO2thtAX6WY+X/LTibILIBH0l0NnYPr66ca4jsgjsaerNrG18nBNCRL6uUfJn5iFQx9yUhW6Ermq9JXSSggxLfLVZJp3ocDJvgLB+656w6evtaGo8yKrysnQht9AodfSRhhxv3cXJLqHlXGHuycpcJHRInPzVu4f6NgRIHWZtbngd0t8I1UAQyImy5+Lr/Sqmpj19cssed7fD6H+hYPc353FpiXKcwb/S7p90+pVqV4ohnf29V0z+HLk/priZ8poJW7J8mNyPSU9tpty+1AWkSR++gOp5TpPHAQAAA==",
+    "value": "H4sIAAAAAAAAE6VTTW8aMRD9K5Z7ha33owT2lko9VKoCSmik9hIZewCrXntjj0ErxH/v7JagtI2SSMgH288z43kzbw688RrsV81rLpW/AxnU9haUD5qP+A5CNN7xOh/xKHeg53TmhSjKsajG4tNSzOryqhZVNptNf5KD9UpaIBtw4+93BESUmCIBOsg19iGlTUDAgWPX9paL1UJugF7Q4ODaX1lBgPIOweEZYqftmw/QMNPG1DDtrQ8sGmSyARwx8omgEDAFJrVpTVTGbRhYgxm7SU6xhCyS+86gBBZMTJEhbWgeE7DWxwQBshMVHMgf+NpbDWEo0u18vuTHI2UXQCLoz11vYIb66ca4nsgfYk9XbWJrZXdDCRJ6PaDkT8xCN4ScVIWuRK4qfaW0EkJMi3w1meZ9KHByqEDwvq/e6dOX2lDUeZFV5eTUhl9AodfSRhhxv3cXJLqHlXHd/ZMUuMhokbl5LfcPdOwJkLrM2lzwuyW+kSqAIRGT5Y/FF3pVTcyG+mWWPB8eTqH+hoPc35/F9qybFFRLlOd83qLQvmr1onAvlMY7u/yuifx/AJ/N9D86aSVuyfJjcgMlPbabcvtYFpEEf/wN7E+PtyoEAAA=",
   },
   "entity": "CmsEntries",
   "index": "root-headless-cms-en-us-acosearchrecord",
