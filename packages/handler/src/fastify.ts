@@ -478,10 +478,10 @@ export const createHandler = (params: CreateHandlerParams) => {
      * We need to output the benchmark results at the end of the request in both response and timeout cases
      */
     app.addHook("onResponse", async () => {
-        return context.benchmark.output();
+        await context.benchmark.output();
     });
     app.addHook("onTimeout", async () => {
-        return context.benchmark.output();
+        await context.benchmark.output();
     });
 
     /**
