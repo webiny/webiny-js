@@ -60,8 +60,9 @@ describe("benchmark", () => {
             }
         ]);
 
-        expect(logs).toHaveLength(2);
+        expect(logs).toHaveLength(3);
         expect(logs).toMatchObject([
+            `Benchmark total time elapsed: ${app.webiny.benchmark.elapsed}ms`,
             "Benchmark measurements:",
             [
                 {
