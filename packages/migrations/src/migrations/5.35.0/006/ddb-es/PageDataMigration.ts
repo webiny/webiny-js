@@ -18,7 +18,7 @@ import { executeWithRetry } from "@webiny/utils";
 import { getSearchablePageContent } from "~/migrations/5.35.0/006/utils/getSearchableContent";
 import { scanTable } from "~tests/utils";
 import { compress as gzip } from "@webiny/utils/compression/gzip";
-import { PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
+import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
 
 const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";
@@ -223,7 +223,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                         const content = await getSearchablePageContent(current);
 
                         const rawDatas = {
-                            modelId: "acoSearchRecord",
+                            modelId: ACO_SEARCH_MODEL_ID,
                             version: 1,
                             savedOn,
                             locale,
@@ -354,7 +354,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             id: `${pid}#0001`,
             locale,
             locked: false,
-            modelId: "acoSearchRecord",
+            modelId: ACO_SEARCH_MODEL_ID,
             modifiedBy: createdBy,
             ownedBy: createdBy,
             savedOn,

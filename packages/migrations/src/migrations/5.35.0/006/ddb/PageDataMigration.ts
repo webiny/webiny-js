@@ -11,7 +11,7 @@ import { getSearchablePageContent } from "../utils/getSearchableContent";
 
 import { I18NLocale, Page, Tenant, ListLocalesParams } from "../types";
 import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
-import { PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
+import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -236,7 +236,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             id: `${pid}#0001`,
             locale,
             locked: false,
-            modelId: "acoSearchRecord",
+            modelId: ACO_SEARCH_MODEL_ID,
             modifiedBy: createdBy,
             ownedBy: createdBy,
             savedOn,
