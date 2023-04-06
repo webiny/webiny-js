@@ -354,7 +354,6 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             id: `${pid}#0001`,
             locale,
             locked: false,
-            meta: {},
             modelId: "acoSearchRecord",
             modifiedBy: createdBy,
             ownedBy: createdBy,
