@@ -47,56 +47,59 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             return context.tenancy.getCurrentTenant();
         };
 
-        if (storageOperations.beforeInit) {
-            await storageOperations.beforeInit(context);
-        }
+        await context.benchmark.measure("headlessCms.createContext", async () => {
+            if (storageOperations.beforeInit) {
+                await storageOperations.beforeInit(context);
+            }
 
-        context.cms = {
-            type,
-            locale,
-            getLocale,
-            READ: type === "read",
-            PREVIEW: type === "preview",
-            MANAGE: type === "manage",
-            storageOperations,
-            ...createSystemCrud({
-                context,
-                getTenant,
+            context.cms = {
+                type,
+                locale,
                 getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            ...createSettingsCrud({
-                context,
-                getTenant,
-                getLocale,
-                storageOperations
-            }),
-            ...createModelGroupsCrud({
-                context,
-                getTenant,
-                getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            ...createModelsCrud({
-                context,
-                getLocale,
-                getTenant,
-                getIdentity,
-                storageOperations
-            }),
-            ...createContentEntryCrud({
-                context,
-                getIdentity,
-                getTenant,
-                storageOperations
-            })
-        };
+                READ: type === "read",
+                PREVIEW: type === "preview",
+                MANAGE: type === "manage",
+                storageOperations,
+                ...createSystemCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createSettingsCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    storageOperations
+                }),
+                ...createModelGroupsCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createModelsCrud({
+                    context,
+                    getLocale,
+                    getTenant,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createContentEntryCrud({
+                    context,
+                    getIdentity,
+                    getTenant,
+                    getLocale,
+                    storageOperations
+                })
+            };
 
-        if (!storageOperations.init) {
-            return;
-        }
-        await storageOperations.init(context);
+            if (!storageOperations.init) {
+                return;
+            }
+            await storageOperations.init(context);
+        });
     });
 };

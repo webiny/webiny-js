@@ -32,8 +32,8 @@ import {
     SEARCH_CONTENT_ENTRIES_QUERY,
     SearchContentEntriesVariables
 } from "./graphql/contentEntry";
-import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
-import { acceptIncomingChanges } from "~tests/testHelpers/acceptIncommingChanges";
+import { createHandlerCore, CreateHandlerCoreParams } from "./plugins";
+import { acceptIncomingChanges } from "./acceptIncommingChanges";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 

@@ -146,36 +146,46 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             });
         }
 
-        let schema: GraphQLSchema;
-        try {
-            schema = await getSchema({
-                context,
-                locale: context.cms.getLocale(),
-                type: context.cms.type as ApiEndpoint
-            });
-        } catch (ex) {
-            console.error(`Error while generating the schema.`);
-            console.error(formatErrorPayload(ex));
-            throw ex;
-        }
+        const schema = await context.benchmark.measure(
+            "headlessCms.graphql.getSchema",
+            async () => {
+                try {
+                    return await getSchema({
+                        context,
+                        locale: context.cms.getLocale(),
+                        type: context.cms.type as ApiEndpoint
+                    });
+                } catch (ex) {
+                    console.error(`Error while generating the schema.`);
+                    console.error(formatErrorPayload(ex));
+                    throw ex;
+                }
+            }
+        );
 
-        let body: GraphQLRequestBody | GraphQLRequestBody[] = [];
-        try {
-            body = createRequestBody(request.body);
-        } catch (ex) {
-            console.error(`Error while creating the body request.`);
-            console.error(formatErrorPayload(ex));
-            throw ex;
-        }
+        const body = await context.benchmark.measure(
+            "headlessCms.graphql.createRequestBody",
+            async () => {
+                try {
+                    return createRequestBody(request.body);
+                } catch (ex) {
+                    console.error(`Error while creating the body request.`);
+                    console.error(formatErrorPayload(ex));
+                    throw ex;
+                }
+            }
+        );
 
-        try {
-            const result = await processRequestBody(body, schema, context);
-            return reply.code(200).send(result);
-        } catch (ex) {
-            console.error(`Error while processing the body request.`);
-            console.error(formatErrorPayload(ex));
-            throw ex;
-        }
+        return context.benchmark.measure("headlessCms.graphql.processRequestBody", async () => {
+            try {
+                const result = await processRequestBody(body, schema, context);
+                return reply.code(200).send(result);
+            } catch (ex) {
+                console.error(`Error while processing the body request.`);
+                console.error(formatErrorPayload(ex));
+                throw ex;
+            }
+        });
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
