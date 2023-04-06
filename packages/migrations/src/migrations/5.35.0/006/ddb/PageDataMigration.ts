@@ -11,6 +11,7 @@ import { getSearchablePageContent } from "../utils/getSearchableContent";
 
 import { I18NLocale, Page, Tenant, ListLocalesParams } from "../types";
 import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
+import { PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -260,9 +261,9 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     version
                 },
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
-                type: "PbPage"
+                type: PB_PAGE_TYPE
             }
         };
     }

@@ -18,6 +18,7 @@ import { executeWithRetry } from "@webiny/utils";
 import { getSearchablePageContent } from "~/migrations/5.35.0/006/utils/getSearchableContent";
 import { scanTable } from "~tests/utils";
 import { compress as gzip } from "@webiny/utils/compression/gzip";
+import { PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
 
 const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";
@@ -183,7 +184,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     const latestEntry = {
                         PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
                         SK: "L",
-                        TYPE: "cms.entry.l",
+                        TYPE: "L",
                         ...entry
                     };
 
@@ -228,11 +229,11 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             locale,
                             status: "draft",
                             values: {
-                                type: "PbPage",
+                                type: PB_PAGE_TYPE,
                                 title,
                                 content,
                                 location: {
-                                    folderId: "ROOT"
+                                    folderId: ROOT_FOLDER
                                 }
                             },
                             createdBy,
@@ -378,9 +379,9 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     version
                 },
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
-                type: "PbPage"
+                type: PB_PAGE_TYPE
             }
         };
     }
