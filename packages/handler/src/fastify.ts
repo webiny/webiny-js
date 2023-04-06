@@ -474,6 +474,15 @@ export const createHandler = (params: CreateHandlerParams) => {
 
         return reply;
     });
+    /**
+     * We need to output the benchmark results at the end of the request in both response and timeout cases
+     */
+    app.addHook("onResponse", async () => {
+        return context.benchmark.output();
+    });
+    app.addHook("onTimeout", async () => {
+        return context.benchmark.output();
+    });
 
     /**
      * With these plugins we give users possibility to do anything they want on our fastify instance.

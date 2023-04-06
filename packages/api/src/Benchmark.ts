@@ -2,8 +2,9 @@ import {
     Benchmark as BenchmarkInterface,
     BenchmarkEnableOnCallable,
     BenchmarkMeasurement,
-    BenchmarkRuns,
-    Context
+    BenchmarkOutputCallable,
+    BenchmarkOutputCallableResponse,
+    BenchmarkRuns
 } from "~/types";
 
 enum BenchmarkState {
@@ -15,15 +16,23 @@ enum BenchmarkState {
 export class Benchmark implements BenchmarkInterface {
     public readonly measurements: BenchmarkMeasurement[] = [];
 
+    private outputDone = false;
     private totalElapsed = 0;
     public readonly runs: BenchmarkRuns = {};
-    private readonly context: Context;
     private readonly enableOnCallables: BenchmarkEnableOnCallable[] = [];
+    private readonly onOutputCallables: BenchmarkOutputCallable[] = [];
 
     private state: BenchmarkState = BenchmarkState.UNDETERMINED;
 
-    public constructor(context: Context) {
-        this.context = context;
+    public constructor() {
+        /**
+         * The default output is to the console.
+         * This one is executed after all other user defined outputs.
+         */
+        this.onOutputCallables.push(async () => {
+            console.log("Benchmark measurements:");
+            console.log(this.measurements);
+        });
     }
 
     public get elapsed(): number {
@@ -34,12 +43,38 @@ export class Benchmark implements BenchmarkInterface {
         this.enableOnCallables.push(cb);
     }
 
+    public onOutput(cb: BenchmarkOutputCallable): void {
+        this.onOutputCallables.push(cb);
+    }
+
     public enable(): void {
         this.setState(BenchmarkState.ENABLED);
     }
 
     public disable(): void {
         this.setState(BenchmarkState.DISABLED);
+    }
+
+    /**
+     * When running the output, we need to reverse the callables array, so that the last one added is the first one executed.
+     *
+     * The first one is our built-in console.log output, which we want to be the last one executed - and we need to stop output if user wants to end it.
+     */
+    public async output(): Promise<void> {
+        /**
+         * No point in outputting more than once or if no measurements were made.
+         */
+        if (this.outputDone || this.measurements.length === 0) {
+            return;
+        }
+        const callables = this.onOutputCallables.reverse();
+        for (const cb of callables) {
+            const result = await cb(this);
+            if (result === BenchmarkOutputCallableResponse.BREAK) {
+                return;
+            }
+        }
+        this.outputDone = true;
     }
 
     public async measure<T = any>(name: string, cb: () => Promise<T>): Promise<T> {

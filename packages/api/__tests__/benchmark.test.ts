@@ -1,5 +1,5 @@
 import { Context } from "~/Context";
-import { BenchmarkMeasurement } from "~/types";
+import { BenchmarkMeasurement, BenchmarkOutputCallableResponse } from "~/types";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
 import { ContextPlugin } from "~/plugins/ContextPlugin";
 
@@ -245,5 +245,154 @@ describe("benchmark", () => {
         expect(result).toEqual(true);
 
         expect(context.benchmark.measurements).toEqual(expected);
+    });
+
+    it("should output measurements to console by default", async () => {
+        context.benchmark.enable();
+        for (let i = 1; i <= 5; i++) {
+            await context.benchmark.measure(`test ${i}`, async () => {
+                return true;
+            });
+        }
+        expect(context.benchmark.measurements).toHaveLength(5);
+
+        const log: any[] = [];
+        jest.spyOn(console, "log").mockImplementation((...args) => {
+            log.push(...args);
+        });
+
+        await context.benchmark.output();
+
+        expect(log).toHaveLength(2);
+        expect(log).toMatchObject([
+            "Benchmark measurements:",
+            [
+                {
+                    name: "test 1"
+                },
+                {
+                    name: "test 2"
+                },
+                {
+                    name: "test 3"
+                },
+                {
+                    name: "test 4"
+                },
+                {
+                    name: "test 5"
+                }
+            ]
+        ]);
+    });
+
+    it("should output measurements to some outside system and console", async () => {
+        context.benchmark.enable();
+        for (let i = 1; i <= 5; i++) {
+            await context.benchmark.measure(`test ${i}`, async () => {
+                return true;
+            });
+        }
+        expect(context.benchmark.measurements).toHaveLength(5);
+
+        const outsideSystemLog: any[] = [];
+
+        const log: any[] = [];
+        jest.spyOn(console, "log").mockImplementation((...args) => {
+            log.push(...args);
+        });
+
+        context.benchmark.onOutput(async benchmark => {
+            outsideSystemLog.push(...benchmark.measurements);
+        });
+
+        await context.benchmark.output();
+
+        expect(log).toHaveLength(2);
+        expect(log).toMatchObject([
+            "Benchmark measurements:",
+            [
+                {
+                    name: "test 1"
+                },
+                {
+                    name: "test 2"
+                },
+                {
+                    name: "test 3"
+                },
+                {
+                    name: "test 4"
+                },
+                {
+                    name: "test 5"
+                }
+            ]
+        ]);
+
+        expect(outsideSystemLog).toHaveLength(5);
+        expect(outsideSystemLog).toMatchObject([
+            {
+                name: "test 1"
+            },
+            {
+                name: "test 2"
+            },
+            {
+                name: "test 3"
+            },
+            {
+                name: "test 4"
+            },
+            {
+                name: "test 5"
+            }
+        ]);
+    });
+
+    it("should output measurements to some outside system and not our default because of the break", async () => {
+        context.benchmark.enable();
+        for (let i = 1; i <= 5; i++) {
+            await context.benchmark.measure(`test ${i}`, async () => {
+                return true;
+            });
+        }
+        expect(context.benchmark.measurements).toHaveLength(5);
+
+        const outsideSystemLog: any[] = [];
+
+        const log: any[] = [];
+        jest.spyOn(console, "log").mockImplementation((...args) => {
+            log.push(...args);
+        });
+
+        context.benchmark.onOutput(async benchmark => {
+            outsideSystemLog.push(...benchmark.measurements);
+
+            return BenchmarkOutputCallableResponse.BREAK;
+        });
+
+        await context.benchmark.output();
+
+        expect(log).toHaveLength(0);
+
+        expect(outsideSystemLog).toHaveLength(5);
+        expect(outsideSystemLog).toMatchObject([
+            {
+                name: "test 1"
+            },
+            {
+                name: "test 2"
+            },
+            {
+                name: "test 3"
+            },
+            {
+                name: "test 4"
+            },
+            {
+                name: "test 5"
+            }
+        ]);
     });
 });
