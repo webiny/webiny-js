@@ -69,7 +69,7 @@ describe("content model test", () => {
                     error: {
                         code: "MODEL_ID_EXISTS",
                         data: {
-                            modelId: "event"
+                            input: "event"
                         },
                         message: 'Content model with modelId "event" already exists.'
                     }
@@ -78,7 +78,7 @@ describe("content model test", () => {
         });
     });
 
-    test("should not allow creation of a model with an existing modelId (plural form of it)", async () => {
+    test("should not allow creation of a model with an existing singularApiName", async () => {
         const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const eventData = {
@@ -107,37 +107,62 @@ describe("content model test", () => {
             }
         });
 
-        const eventsData = {
+        const eventSingularData = {
             name: "Events",
             modelId: "events",
             singularApiName: "Event",
-            pluralApiName: "Events",
+            pluralApiName: "EventsPlural",
             group: contentModelGroup.id
         };
 
-        const [response] = await createContentModelMutation({
-            data: eventsData
+        const [singularResponse] = await createContentModelMutation({
+            data: eventSingularData
         });
 
-        expect(response).toEqual({
+        expect(singularResponse).toEqual({
             data: {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_SINGULAR_ERROR",
+                        code: "MODEL_SINGULAR_API_NAME_EXISTS",
                         data: {
-                            modelId: "events",
-                            singular: "event"
+                            input: "Event"
                         },
-                        message:
-                            'Content model with modelId "events" does not exist, but a model with modelId "event" does.'
+                        message: 'Content model with singularApiName "Event" already exists.'
+                    }
+                }
+            }
+        });
+
+        const eventPluralData = {
+            name: "Events",
+            modelId: "events",
+            singularApiName: "Events",
+            pluralApiName: "EventsPluralized",
+            group: contentModelGroup.id
+        };
+
+        const [pluralResponse] = await createContentModelMutation({
+            data: eventPluralData
+        });
+
+        expect(pluralResponse).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "MODEL_PLURAL_API_NAME_EXISTS",
+                        data: {
+                            input: "Events"
+                        },
+                        message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }
             }
         });
     });
 
-    test("should not allow creation of a model with an existing modelId (singular form of it)", async () => {
+    it("should not allow creation of a model with an existing pluralApiName", async () => {
         const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         await createContentModelMutation({
@@ -150,28 +175,51 @@ describe("content model test", () => {
             }
         });
 
-        const [response] = await createContentModelMutation({
+        const [singularResponse] = await createContentModelMutation({
             data: {
                 name: "Event",
                 modelId: "event",
-                singularApiName: "Event",
+                singularApiName: "EventDifferentThanBefore",
                 pluralApiName: "Events",
                 group: contentModelGroup.id
             }
         });
 
-        expect(response).toEqual({
+        expect(singularResponse).toEqual({
             data: {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_PLURAL_ERROR",
+                        code: "MODEL_PLURAL_API_NAME_EXISTS",
                         data: {
-                            modelId: "event",
-                            plural: "events"
+                            input: "Events"
                         },
-                        message:
-                            'Content model with modelId "event" does not exist, but a model with modelId "events" does.'
+                        message: 'Content model with pluralApiName "Events" already exists.'
+                    }
+                }
+            }
+        });
+
+        const [pluralResponse] = await createContentModelMutation({
+            data: {
+                name: "Event",
+                modelId: "event",
+                singularApiName: "Events",
+                pluralApiName: "EventsWhichIsOk",
+                group: contentModelGroup.id
+            }
+        });
+
+        expect(pluralResponse).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "MODEL_PLURAL_API_NAME_EXISTS",
+                        data: {
+                            input: "Events"
+                        },
+                        message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }
             }
