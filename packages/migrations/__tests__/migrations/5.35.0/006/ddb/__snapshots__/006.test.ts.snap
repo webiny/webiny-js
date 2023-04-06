@@ -19,7 +19,6 @@ Object {
   "id": "64240c276a2555000891814a#0001",
   "locale": "de-DE",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -83,7 +82,6 @@ Object {
   "id": "64240c276a2555000891814a#0001",
   "locale": "de-DE",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -147,7 +145,6 @@ Object {
   "id": "64240c1e6a25550008918149#0001",
   "locale": "de-DE",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -211,7 +208,6 @@ Object {
   "id": "64240c1e6a25550008918149#0001",
   "locale": "de-DE",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -275,7 +271,6 @@ Object {
   "id": "64240c386a2555000891814c#0001",
   "locale": "de-DE",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -339,7 +334,6 @@ Object {
   "id": "64240c386a2555000891814c#0001",
   "locale": "de-DE",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -403,7 +397,6 @@ Object {
   "id": "64240c416a2555000891814d#0001",
   "locale": "fr-FR",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -467,7 +460,6 @@ Object {
   "id": "64240c416a2555000891814d#0001",
   "locale": "fr-FR",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -531,7 +523,6 @@ Object {
   "id": "64240c156a25550008918148#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -595,7 +586,6 @@ Object {
   "id": "64240c156a25550008918148#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -659,7 +649,6 @@ Object {
   "id": "64240c0d6a25550008918147#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -723,7 +712,6 @@ Object {
   "id": "64240c0d6a25550008918147#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -787,7 +775,6 @@ Object {
   "id": "64240c026a25550008918146#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -851,7 +838,6 @@ Object {
   "id": "64240c026a25550008918146#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -915,7 +901,6 @@ Object {
   "id": "64229f6fce15ca00086c890f#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -979,7 +964,6 @@ Object {
   "id": "64229f6fce15ca00086c890f#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -1043,7 +1027,6 @@ Object {
   "id": "64229f4fce15ca00086c890e#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -1107,7 +1090,6 @@ Object {
   "id": "64229f4fce15ca00086c890e#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -1171,7 +1153,6 @@ Object {
   "id": "642406c52a40e70008fee21d#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -1237,7 +1218,6 @@ Object {
   "id": "642406c52a40e70008fee21d#0001",
   "locale": "en-US",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -1303,7 +1283,6 @@ Object {
   "id": "64240c306a2555000891814b#0001",
   "locale": "fr-FR",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {
@@ -1367,7 +1346,6 @@ Object {
   "id": "64240c306a2555000891814b#0001",
   "locale": "fr-FR",
   "locked": false,
-  "meta": Object {},
   "modelId": "acoSearchRecord",
   "modified": Any<String>,
   "modifiedBy": Object {

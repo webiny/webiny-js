@@ -88,8 +88,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             attr: "locale",
                             eq: locale.code
                         }
-                    ],
-                    limit: 1
+                    ]
                 });
 
                 if (latestDdbPages.length === 0) {
@@ -131,7 +130,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     }
                 });
 
-                if (latestDdbSearchRecord && latestDdbEsSearchRecord) {
+                if (latestDdbSearchRecord || latestDdbEsSearchRecord) {
                     logger.info(
                         `Pages already migrated to Search Records in tenant "${tenant.data.id}" and locale "${locale.code}".`
                     );
@@ -249,6 +248,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             TYPE: "cms.entry.l",
                             __type: "cms.entry.l",
                             rawValues: {
+                                location: {},
                                 data: {
                                     id: `${pid}#0001`,
                                     pid,
