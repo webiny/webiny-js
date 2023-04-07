@@ -258,19 +258,23 @@ describe("5.35.0-006", () => {
         const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_35_0_006] });
 
         // Should run the migration
-        process.stdout.write("[First run]\n");
-        const firstRun = await handler();
-        assertNotError(firstRun.error);
-        const firstData = groupMigrations(firstRun.data.migrations);
-        expect(firstData.executed.length).toBe(1);
+        {
+            process.stdout.write("[First run]\n");
+            const { data, error } = await handler();
+            assertNotError(error);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toBe(1);
+        }
 
         // Should skip the migration
-        process.stdout.write("[Second run]\n");
-        const secondRun = await handler();
-        assertNotError(secondRun.error);
-        const secondData = groupMigrations(secondRun.data.migrations);
-        expect(secondData.executed.length).toBe(0);
-        expect(secondData.skipped.length).toBe(1);
-        expect(secondData.notApplicable.length).toBe(0);
+        {
+            process.stdout.write("[Second run]\n");
+            const { data, error } = await handler();
+            assertNotError(error);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toBe(0);
+            expect(grouped.skipped.length).toBe(1);
+            expect(grouped.notApplicable.length).toBe(0);
+        }
     });
 });
