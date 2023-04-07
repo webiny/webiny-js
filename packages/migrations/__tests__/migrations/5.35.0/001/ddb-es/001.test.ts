@@ -17,7 +17,7 @@ import {
     createSettingsEntity
 } from "~/migrations/5.35.0/001/entities/createSettingsEntity";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { getIndexName } from "~/utils";
+import { esGetIndexName } from "~/utils";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -94,7 +94,7 @@ describe("5.35.0-001", () => {
                             elasticsearchClient,
                             allFiles,
                             item => {
-                                return getIndexName({
+                                return esGetIndexName({
                                     tenant: item.tenant,
                                     locale: item.locale,
                                     type: INDEX_TYPE
@@ -106,7 +106,7 @@ describe("5.35.0-001", () => {
                 }
                 await insertDynamoDbTestData(table, batch);
                 await insertElasticsearchTestData<File>(elasticsearchClient, allFiles, item => {
-                    return getIndexName({
+                    return esGetIndexName({
                         tenant: item.tenant,
                         locale: item.locale,
                         type: INDEX_TYPE

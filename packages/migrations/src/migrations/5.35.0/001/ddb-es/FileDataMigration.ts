@@ -10,7 +10,7 @@ import {
     queryAll,
     batchWriteAll,
     esQueryAllWithCallback,
-    getIndexName
+    esGetIndexName
 } from "~/utils";
 import { createFileEntity, getFileData, legacyAttributes } from "../entities/createFileEntity";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
@@ -116,7 +116,7 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
                 let batch = 0;
                 await esQueryAllWithCallback<File>({
                     elasticsearchClient: this.elasticsearchClient,
-                    index: getIndexName({
+                    index: esGetIndexName({
                         tenant: tenant.id,
                         locale: locale.code,
                         type: "file-manager"

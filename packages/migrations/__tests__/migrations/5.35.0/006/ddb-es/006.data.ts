@@ -84,8 +84,8 @@ export const createLocalesData = () => {
         },
         {
             PK: `T#otherTenant#I18N#L`,
-            SK: "fr-FR",
-            code: "fr-FR",
+            SK: "ja-JP",
+            code: "ja-JP",
             default: false,
             createdOn: "2023-01-25T09:37:58.220Z",
             createdBy,

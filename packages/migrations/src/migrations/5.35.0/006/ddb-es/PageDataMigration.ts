@@ -19,11 +19,11 @@ import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedDa
 
 import {
     batchWriteAll,
-    createElasticSearchIndex,
+    esCreateIndex,
     esFindOne,
     esGetIndexExist,
     esQueryAllWithCallback,
-    getIndexName,
+    esGetIndexName,
     queryAll,
     queryOne
 } from "~/utils";
@@ -101,7 +101,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 // Fetch latest page record from ES
                 const latestPage = await esFindOne<Page>({
                     elasticsearchClient: this.elasticsearchClient,
-                    index: getIndexName({
+                    index: esGetIndexName({
                         tenant: tenant.data.id,
                         locale: locale.code,
                         type: "page-builder"
@@ -175,7 +175,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 let batch = 0;
 
                 // Since it's the first time we add an ACO record, we also need to create the index
-                await createElasticSearchIndex({
+                await esCreateIndex({
                     elasticsearchClient: this.elasticsearchClient,
                     tenant: tenant.data.id,
                     locale: locale.code,
@@ -185,7 +185,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
 
                 await esQueryAllWithCallback<Page>({
                     elasticsearchClient: this.elasticsearchClient,
-                    index: getIndexName({
+                    index: esGetIndexName({
                         tenant: tenant.data.id,
                         locale: locale.code,
                         type: "page-builder"
@@ -305,7 +305,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#${pid}`,
                                 SK: "L",
                                 data: await getCompressedData(rawDatas),
-                                index: getIndexName({
+                                index: esGetIndexName({
                                     tenant: pageTenant,
                                     locale: pageLocale,
                                     type: "acosearchrecord",

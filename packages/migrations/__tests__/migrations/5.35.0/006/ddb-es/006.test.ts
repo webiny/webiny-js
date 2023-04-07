@@ -18,14 +18,14 @@ import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
 
 import { createTenantsData, createLocalesData, createdBy } from "./006.data";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { getIndexName } from "~/utils";
+import { esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedData";
 import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "~/migrations/5.35.0/006/constants";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_PAGES = 1;
+const NUMBER_OF_PAGES = 50;
 const INDEX_TYPE = "page-builder";
 let numberOfGeneratedPages = 0;
 
@@ -146,7 +146,7 @@ describe("5.35.0-006", () => {
                 await insertDynamoDbTestData(ddbTable, ddbPages);
                 await insertDynamoDbTestData(ddbToEsTable, ddbEsPages);
                 await insertElasticsearchTestData<Page>(elasticsearchClient, esPages, item => {
-                    return getIndexName({
+                    return esGetIndexName({
                         tenant: item.tenant,
                         locale: item.locale,
                         type: INDEX_TYPE
@@ -365,7 +365,7 @@ describe("5.35.0-006", () => {
             expect(ddbEsSearchRecord).toMatchObject({
                 PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
                 SK: "L",
-                index: getIndexName({
+                index: esGetIndexName({
                     tenant,
                     locale,
                     type: "acosearchrecord",

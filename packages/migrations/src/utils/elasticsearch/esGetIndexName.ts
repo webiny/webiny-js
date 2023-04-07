@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
 
-export interface GetElasticSearchIndexNameParams {
+export interface EsGetIndexNameParams {
     tenant: string;
     locale: string;
     type: string;
     isHeadlessCmsModel?: boolean;
 }
 
-export const getIndexName = (params: GetElasticSearchIndexNameParams) => {
+export const esGetIndexName = (params: EsGetIndexNameParams) => {
     const { tenant, locale, type, isHeadlessCmsModel } = params;
 
     if (!type) {
