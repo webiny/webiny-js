@@ -1,4 +1,4 @@
-import { GraphQLSchema } from "graphql";
+import { ExecutionResult, GraphQLSchema } from "graphql";
 import { ApiEndpoint, CmsModel, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -176,16 +176,23 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             }
         );
 
-        return context.benchmark.measure("headlessCms.graphql.processRequestBody", async () => {
+        /**
+         * We need to store the processRequestBody result in a variable and output it after the measurement.
+         * Otherwise, the measurement will not be shown in the output.
+         */
+        let result: ExecutionResult[] | ExecutionResult | null = null;
+
+        await context.benchmark.measure("headlessCms.graphql.processRequestBody", async () => {
             try {
-                const result = await processRequestBody(body, schema, context);
-                return reply.code(200).send(result);
+                result = await processRequestBody(body, schema, context);
             } catch (ex) {
                 console.error(`Error while processing the body request.`);
                 console.error(formatErrorPayload(ex));
                 throw ex;
             }
         });
+
+        return reply.code(200).send(result);
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {

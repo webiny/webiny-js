@@ -3,6 +3,7 @@ import { createHandler } from "@webiny/handler-aws/gateway";
 import { until, sleep } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
+    ContentModelGroupsMutationVariables,
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
     DELETE_CONTENT_MODEL_GROUP_MUTATION,
     GET_CONTENT_MODEL_GROUP_QUERY,
@@ -105,7 +106,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             return invoke({ body: { query: INSTALL_MUTATION } });
         },
         // content model group
-        async createContentModelGroupMutation(variables: Record<string, any>) {
+        async createContentModelGroupMutation(variables: ContentModelGroupsMutationVariables) {
             return invoke({ body: { query: CREATE_CONTENT_MODEL_GROUP_MUTATION, variables } });
         },
         async getContentModelGroupQuery(variables: Record<string, any>) {
