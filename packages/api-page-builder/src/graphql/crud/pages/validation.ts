@@ -64,7 +64,7 @@ export const updatePageSettingsValidation = zod
 
 export const updatePageValidation = zod
     .object({
-        title: zod.string().max(150),
+        title: zod.string().max(500),
         path: zod
             .string()
             .min(2)
