@@ -22,7 +22,6 @@ import {
     OnModelDeleteErrorTopicParams,
     CmsModelGroup
 } from "~/types";
-
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -192,25 +191,29 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     };
 
     const listModels = async () => {
-        const permission = await checkModelPermissions("r");
-        const models = await modelsList();
-        return filterAsync(models, async model => {
-            if (!validateOwnership(context, permission, model)) {
-                return false;
-            }
-            return validateModelAccess(context, model);
+        return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
+            const permission = await checkModelPermissions("r");
+            const models = await modelsList();
+            return filterAsync(models, async model => {
+                if (!validateOwnership(context, permission, model)) {
+                    return false;
+                }
+                return validateModelAccess(context, model);
+            });
         });
     };
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
-        const permission = await checkModelPermissions("r");
+        return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
+            const permission = await checkModelPermissions("r");
 
-        const model = await modelsGet(modelId);
+            const model = await modelsGet(modelId);
 
-        checkOwnership(context, permission, model);
-        await checkModelAccess(context, model);
+            checkOwnership(context, permission, model);
+            await checkModelAccess(context, model);
 
-        return model;
+            return model;
+        });
     };
 
     const getModelManager: CmsModelContext["getModelManager"] = async (
@@ -300,6 +303,362 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onModelAfterDelete
     });
 
+    /**
+     * CRUD methods
+     */
+    const createModel: CmsModelContext["createModel"] = async input => {
+        await checkModelPermissions("w");
+
+        const result = await createModelCreateValidation().safeParseAsync(input);
+        if (!result.success) {
+            throw createZodError(result.error);
+        }
+        /**
+         * We need to extract the defaultFields because it is not for the CmsModel object.
+         */
+        const { defaultFields, ...data } = removeUndefinedValues(result.data);
+        if (defaultFields) {
+            assignModelDefaultFields(data);
+        }
+
+        const group = await context.security.withoutAuthorization(async () => {
+            return context.cms.getGroup(data.group);
+        });
+        if (!group) {
+            throw new NotFoundError(`There is no group "${data.group}".`);
+        }
+
+        const identity = getIdentity();
+        const model: CmsModel = {
+            ...data,
+            modelId: data.modelId || "",
+            singularApiName: data.singularApiName,
+            pluralApiName: data.pluralApiName,
+            titleFieldId: "id",
+            descriptionFieldId: null,
+            imageFieldId: null,
+            description: data.description || "",
+            locale: getLocale().code,
+            tenant: getTenant().id,
+            group: {
+                id: group.id,
+                name: group.name
+            },
+            createdBy: {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            },
+            createdOn: new Date().toISOString(),
+            savedOn: new Date().toISOString(),
+            lockedFields: [],
+            webinyVersion: context.WEBINY_VERSION
+        };
+
+        model.tags = ensureTypeTag(model);
+
+        try {
+            await onModelBeforeCreate.publish({
+                input: data,
+                model
+            });
+
+            const createdModel = await storageOperations.models.create({
+                model
+            });
+
+            loaders.listModels.clearAll();
+
+            await updateManager(context, model);
+
+            await onModelAfterCreate.publish({
+                input: data,
+                model: createdModel
+            });
+
+            return createdModel;
+        } catch (ex) {
+            await onModelCreateError.publish({
+                input: data,
+                model,
+                error: ex
+            });
+            throw ex;
+        }
+    };
+    const updateModel: CmsModelContext["updateModel"] = async (modelId, input) => {
+        await checkModelPermissions("w");
+
+        // Get a model record; this will also perform ownership validation.
+        const original = await getModel(modelId);
+
+        const result = await createModelUpdateValidation().safeParseAsync(input);
+        if (!result.success) {
+            throw createZodError(result.error);
+        }
+
+        const data = removeUndefinedValues(result.data);
+
+        if (Object.keys(data).length === 0) {
+            /**
+             * We need to return the original if nothing is to be updated.
+             */
+            return original;
+        }
+        let group: CmsModelGroup = {
+            id: original.group.id,
+            name: original.group.name
+        };
+        const groupId = data.group;
+        if (groupId) {
+            const groupData = await context.security.withoutAuthorization(async () => {
+                return context.cms.getGroup(groupId);
+            });
+            if (!groupData) {
+                throw new NotFoundError(`There is no group "${groupId}".`);
+            }
+            group = {
+                id: groupData.id,
+                name: groupData.name
+            };
+        }
+        const model: CmsModel = {
+            ...original,
+            ...data,
+            titleFieldId:
+                data.titleFieldId === undefined
+                    ? original.titleFieldId
+                    : (data.titleFieldId as string),
+            descriptionFieldId:
+                data.descriptionFieldId === undefined
+                    ? original.descriptionFieldId
+                    : data.descriptionFieldId,
+            imageFieldId:
+                data.imageFieldId === undefined ? original.imageFieldId : data.imageFieldId,
+            group,
+            description: data.description || original.description,
+            tenant: original.tenant || getTenant().id,
+            locale: original.locale || getLocale().code,
+            webinyVersion: context.WEBINY_VERSION,
+            savedOn: new Date().toISOString()
+        };
+
+        model.tags = ensureTypeTag(model);
+
+        try {
+            await onModelBeforeUpdate.publish({
+                input: data,
+                original,
+                model
+            });
+
+            const resultModel = await storageOperations.models.update({
+                model
+            });
+
+            await updateManager(context, resultModel);
+
+            await onModelAfterUpdate.publish({
+                input: data,
+                original,
+                model: resultModel
+            });
+
+            return resultModel;
+        } catch (ex) {
+            await onModelUpdateError.publish({
+                input: data,
+                model,
+                original,
+                error: ex
+            });
+
+            throw ex;
+        }
+    };
+    const updateModelDirect: CmsModelContext["updateModelDirect"] = async params => {
+        const { model: initialModel, original } = params;
+
+        const model: CmsModel = {
+            ...initialModel,
+            tenant: initialModel.tenant || getTenant().id,
+            locale: initialModel.locale || getLocale().code,
+            webinyVersion: context.WEBINY_VERSION
+        };
+
+        try {
+            await onModelBeforeUpdate.publish({
+                input: {} as CmsModelUpdateInput,
+                original,
+                model
+            });
+
+            const resultModel = await storageOperations.models.update({
+                model
+            });
+
+            await updateManager(context, resultModel);
+
+            loaders.listModels.clearAll();
+
+            await onModelAfterUpdate.publish({
+                input: {} as CmsModelUpdateInput,
+                original,
+                model: resultModel
+            });
+
+            return resultModel;
+        } catch (ex) {
+            await onModelUpdateError.publish({
+                input: {} as CmsModelUpdateInput,
+                original,
+                model,
+                error: ex
+            });
+            throw ex;
+        }
+    };
+    const createModelFrom: CmsModelContext["createModelFrom"] = async (modelId, input) => {
+        await checkModelPermissions("w");
+        /**
+         * Get a model record; this will also perform ownership validation.
+         */
+        const original = await getModel(modelId);
+
+        const result = await createModelCreateFromValidation().safeParseAsync({
+            ...input,
+            description: input.description || original.description
+        });
+        if (!result.success) {
+            throw createZodError(result.error);
+        }
+
+        const data = removeUndefinedValues(result.data);
+
+        const locale = await context.i18n.getLocale(data.locale || original.locale);
+        if (!locale) {
+            throw new NotFoundError(`There is no locale "${data.locale}".`);
+        }
+        /**
+         * Use storage operations directly because we cannot get group from different locale via context methods.
+         */
+        const group = await context.cms.storageOperations.groups.get({
+            id: data.group,
+            tenant: original.tenant,
+            locale: locale.code
+        });
+        if (!group) {
+            throw new NotFoundError(`There is no group "${data.group}".`);
+        }
+
+        const identity = getIdentity();
+        const model: CmsModel = {
+            ...original,
+            singularApiName: data.singularApiName,
+            pluralApiName: data.pluralApiName,
+            locale: locale.code,
+            group: {
+                id: group.id,
+                name: group.name
+            },
+            icon: data.icon,
+            name: data.name,
+            modelId: data.modelId || "",
+            description: data.description || "",
+            createdBy: {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            },
+            createdOn: new Date().toISOString(),
+            savedOn: new Date().toISOString(),
+            lockedFields: [],
+            webinyVersion: context.WEBINY_VERSION
+        };
+
+        try {
+            await onModelBeforeCreateFrom.publish({
+                input: data,
+                model,
+                original
+            });
+
+            const createdModel = await storageOperations.models.create({
+                model
+            });
+
+            loaders.listModels.clearAll();
+
+            await updateManager(context, model);
+
+            await onModelAfterCreateFrom.publish({
+                input: data,
+                original,
+                model: createdModel
+            });
+
+            return createdModel;
+        } catch (ex) {
+            await onModelCreateFromError.publish({
+                input: data,
+                original,
+                model,
+                error: ex
+            });
+            throw ex;
+        }
+    };
+    const deleteModel: CmsModelContext["deleteModel"] = async modelId => {
+        await checkModelPermissions("d");
+
+        const model = await getModel(modelId);
+
+        try {
+            await onModelBeforeDelete.publish({
+                model
+            });
+
+            try {
+                await storageOperations.models.delete({
+                    model
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete the content model",
+                    ex.code || "CONTENT_MODEL_DELETE_ERROR",
+                    {
+                        error: ex,
+                        modelId: model.modelId
+                    }
+                );
+            }
+
+            await onModelAfterDelete.publish({
+                model
+            });
+
+            managers.delete(model.modelId);
+        } catch (ex) {
+            await onModelDeleteError.publish({
+                model,
+                error: ex
+            });
+            throw ex;
+        }
+    };
+    const initializeModel: CmsModelContext["initializeModel"] = async (modelId, data) => {
+        /**
+         * We require that users have write permissions to initialize models.
+         * Maybe introduce another permission for it?
+         */
+        await checkModelPermissions("w");
+
+        const model = await getModel(modelId);
+
+        await onModelInitialize.publish({ model, data });
+
+        return true;
+    };
     return {
         /**
          * Deprecated - will be removed in 5.36.0
@@ -332,361 +691,47 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         getModel,
         listModels,
         async createModel(input) {
-            await checkModelPermissions("w");
-
-            const result = await createModelCreateValidation().safeParseAsync(input);
-            if (!result.success) {
-                throw createZodError(result.error);
-            }
-            /**
-             * We need to extract the defaultFields because it is not for the CmsModel object.
-             */
-            const { defaultFields, ...data } = removeUndefinedValues(result.data);
-            if (defaultFields) {
-                assignModelDefaultFields(data);
-            }
-
-            const group = await context.security.withoutAuthorization(async () => {
-                return context.cms.getGroup(data.group);
+            return context.benchmark.measure("headlessCms.crud.models.createModel", async () => {
+                return createModel(input);
             });
-            if (!group) {
-                throw new NotFoundError(`There is no group "${data.group}".`);
-            }
-
-            const identity = getIdentity();
-            const model: CmsModel = {
-                ...data,
-                modelId: data.modelId || "",
-                singularApiName: data.singularApiName,
-                pluralApiName: data.pluralApiName,
-                titleFieldId: "id",
-                descriptionFieldId: null,
-                imageFieldId: null,
-                description: data.description || "",
-                locale: getLocale().code,
-                tenant: getTenant().id,
-                group: {
-                    id: group.id,
-                    name: group.name
-                },
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
-                lockedFields: [],
-                webinyVersion: context.WEBINY_VERSION
-            };
-
-            model.tags = ensureTypeTag(model);
-
-            try {
-                await onModelBeforeCreate.publish({
-                    input: data,
-                    model
-                });
-
-                const createdModel = await storageOperations.models.create({
-                    model
-                });
-
-                loaders.listModels.clearAll();
-
-                await updateManager(context, model);
-
-                await onModelAfterCreate.publish({
-                    input: data,
-                    model: createdModel
-                });
-
-                return createdModel;
-            } catch (ex) {
-                await onModelCreateError.publish({
-                    input: data,
-                    model,
-                    error: ex
-                });
-                throw ex;
-            }
         },
         /**
          * Method does not check for permissions or ownership.
          * @internal
          */
         async updateModelDirect(params) {
-            const { model: initialModel, original } = params;
-
-            const model: CmsModel = {
-                ...initialModel,
-                tenant: initialModel.tenant || getTenant().id,
-                locale: initialModel.locale || getLocale().code,
-                webinyVersion: context.WEBINY_VERSION
-            };
-
-            try {
-                await onModelBeforeUpdate.publish({
-                    input: {} as CmsModelUpdateInput,
-                    original,
-                    model
-                });
-
-                const resultModel = await storageOperations.models.update({
-                    model
-                });
-
-                await updateManager(context, resultModel);
-
-                loaders.listModels.clearAll();
-
-                await onModelAfterUpdate.publish({
-                    input: {} as CmsModelUpdateInput,
-                    original,
-                    model: resultModel
-                });
-
-                return resultModel;
-            } catch (ex) {
-                await onModelUpdateError.publish({
-                    input: {} as CmsModelUpdateInput,
-                    original,
-                    model,
-                    error: ex
-                });
-                throw ex;
-            }
+            return context.benchmark.measure(
+                "headlessCms.crud.models.updateModelDirect",
+                async () => {
+                    return updateModelDirect(params);
+                }
+            );
         },
         async createModelFrom(modelId, userInput) {
-            await checkModelPermissions("w");
-            /**
-             * Get a model record; this will also perform ownership validation.
-             */
-            const original = await getModel(modelId);
-
-            const result = await createModelCreateFromValidation().safeParseAsync({
-                ...userInput,
-                description: userInput.description || original.description
-            });
-            if (!result.success) {
-                throw createZodError(result.error);
-            }
-
-            const data = removeUndefinedValues(result.data);
-
-            const locale = await context.i18n.getLocale(data.locale || original.locale);
-            if (!locale) {
-                throw new NotFoundError(`There is no locale "${data.locale}".`);
-            }
-            /**
-             * Use storage operations directly because we cannot get group from different locale via context methods.
-             */
-            const group = await context.cms.storageOperations.groups.get({
-                id: data.group,
-                tenant: original.tenant,
-                locale: locale.code
-            });
-            if (!group) {
-                throw new NotFoundError(`There is no group "${data.group}".`);
-            }
-
-            const identity = getIdentity();
-            const model: CmsModel = {
-                ...original,
-                singularApiName: data.singularApiName,
-                pluralApiName: data.pluralApiName,
-                locale: locale.code,
-                group: {
-                    id: group.id,
-                    name: group.name
-                },
-                icon: data.icon,
-                name: data.name,
-                modelId: data.modelId || "",
-                description: data.description || "",
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
-                lockedFields: [],
-                webinyVersion: context.WEBINY_VERSION
-            };
-
-            try {
-                await onModelBeforeCreateFrom.publish({
-                    input: data,
-                    model,
-                    original
-                });
-
-                const createdModel = await storageOperations.models.create({
-                    model
-                });
-
-                loaders.listModels.clearAll();
-
-                await updateManager(context, model);
-
-                await onModelAfterCreateFrom.publish({
-                    input: data,
-                    original,
-                    model: createdModel
-                });
-
-                return createdModel;
-            } catch (ex) {
-                await onModelCreateFromError.publish({
-                    input: data,
-                    original,
-                    model,
-                    error: ex
-                });
-                throw ex;
-            }
+            return context.benchmark.measure(
+                "headlessCms.crud.models.createModelFrom",
+                async () => {
+                    return createModelFrom(modelId, userInput);
+                }
+            );
         },
         async updateModel(modelId, input) {
-            await checkModelPermissions("w");
-
-            // Get a model record; this will also perform ownership validation.
-            const original = await getModel(modelId);
-
-            const result = await createModelUpdateValidation().safeParseAsync(input);
-            if (!result.success) {
-                throw createZodError(result.error);
-            }
-
-            const data = removeUndefinedValues(result.data);
-
-            if (Object.keys(data).length === 0) {
-                /**
-                 * We need to return the original if nothing is to be updated.
-                 */
-                return original;
-            }
-            let group: CmsModelGroup = {
-                id: original.group.id,
-                name: original.group.name
-            };
-            const groupId = data.group;
-            if (groupId) {
-                const groupData = await context.security.withoutAuthorization(async () => {
-                    return context.cms.getGroup(groupId);
-                });
-                if (!groupData) {
-                    throw new NotFoundError(`There is no group "${groupId}".`);
-                }
-                group = {
-                    id: groupData.id,
-                    name: groupData.name
-                };
-            }
-            const model: CmsModel = {
-                ...original,
-                ...data,
-                titleFieldId:
-                    data.titleFieldId === undefined
-                        ? original.titleFieldId
-                        : (data.titleFieldId as string),
-                descriptionFieldId:
-                    data.descriptionFieldId === undefined
-                        ? original.descriptionFieldId
-                        : data.descriptionFieldId,
-                imageFieldId:
-                    data.imageFieldId === undefined ? original.imageFieldId : data.imageFieldId,
-                group,
-                description: data.description || original.description,
-                tenant: original.tenant || getTenant().id,
-                locale: original.locale || getLocale().code,
-                webinyVersion: context.WEBINY_VERSION,
-                savedOn: new Date().toISOString()
-            };
-
-            model.tags = ensureTypeTag(model);
-
-            try {
-                await onModelBeforeUpdate.publish({
-                    input: data,
-                    original,
-                    model
-                });
-
-                const resultModel = await storageOperations.models.update({
-                    model
-                });
-
-                await updateManager(context, resultModel);
-
-                await onModelAfterUpdate.publish({
-                    input: data,
-                    original,
-                    model: resultModel
-                });
-
-                return resultModel;
-            } catch (ex) {
-                await onModelUpdateError.publish({
-                    input: data,
-                    model,
-                    original,
-                    error: ex
-                });
-
-                throw ex;
-            }
+            return context.benchmark.measure("headlessCms.crud.models.updateModel", async () => {
+                return updateModel(modelId, input);
+            });
         },
         async deleteModel(modelId) {
-            await checkModelPermissions("d");
-
-            const model = await getModel(modelId);
-
-            try {
-                await onModelBeforeDelete.publish({
-                    model
-                });
-
-                try {
-                    await storageOperations.models.delete({
-                        model
-                    });
-                } catch (ex) {
-                    throw new WebinyError(
-                        ex.message || "Could not delete the content model",
-                        ex.code || "CONTENT_MODEL_DELETE_ERROR",
-                        {
-                            error: ex,
-                            modelId: model.modelId
-                        }
-                    );
-                }
-
-                await onModelAfterDelete.publish({
-                    model
-                });
-
-                managers.delete(model.modelId);
-            } catch (ex) {
-                await onModelDeleteError.publish({
-                    model,
-                    error: ex
-                });
-                throw ex;
-            }
+            return context.benchmark.measure("headlessCms.crud.models.deleteModel", async () => {
+                return deleteModel(modelId);
+            });
         },
         async initializeModel(modelId, data) {
-            /**
-             * We require that users have write permissions to initialize models.
-             * Maybe introduce another permission for it?
-             */
-            await checkModelPermissions("w");
-
-            const model = await getModel(modelId);
-
-            await onModelInitialize.publish({ model, data });
-
-            return true;
+            return context.benchmark.measure(
+                "headlessCms.crud.models.initializeModel",
+                async () => {
+                    return initializeModel(modelId, data);
+                }
+            );
         },
         getModelManager,
         getEntryManager: async model => {

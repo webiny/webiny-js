@@ -13,16 +13,24 @@ enum BenchmarkState {
     UNDETERMINED = "undetermined"
 }
 
+interface BenchmarkMeasurementStart extends Pick<BenchmarkMeasurement, "name" | "start"> {
+    memoryStart: number;
+}
+
 export class Benchmark implements BenchmarkInterface {
     public readonly measurements: BenchmarkMeasurement[] = [];
 
     private outputDone = false;
+    private isAlreadyRunning = false;
     private totalElapsed = 0;
     public readonly runs: BenchmarkRuns = {};
     private readonly enableOnCallables: BenchmarkEnableOnCallable[] = [];
     private readonly onOutputCallables: BenchmarkOutputCallable[] = [];
-
     private state: BenchmarkState = BenchmarkState.UNDETERMINED;
+
+    public get elapsed(): number {
+        return this.totalElapsed;
+    }
 
     public constructor() {
         /**
@@ -30,13 +38,10 @@ export class Benchmark implements BenchmarkInterface {
          * This one is executed after all other user defined outputs.
          */
         this.onOutputCallables.push(async () => {
+            console.log(`Benchmark total time elapsed: ${this.elapsed}ms`);
             console.log("Benchmark measurements:");
             console.log(this.measurements);
         });
-    }
-
-    public get elapsed(): number {
-        return this.totalElapsed;
     }
 
     public enableOn(cb: BenchmarkEnableOnCallable): void {
@@ -82,24 +87,34 @@ export class Benchmark implements BenchmarkInterface {
         if (!enabled) {
             return cb();
         }
-        const start = new Date();
-        const memoryStart = process.memoryUsage().heapUsed;
+        const measurement = this.startMeasurement(name);
+        const isAlreadyRunning = this.getIsAlreadyRunning();
+        this.startRunning();
         try {
             return await cb();
         } finally {
-            const end = new Date();
-            const memoryEnd = process.memoryUsage().heapUsed;
-            const elapsed = end.getTime() - start.getTime();
-            this.measurements.push({
-                name,
-                start,
-                end,
-                elapsed,
-                memory: memoryEnd - memoryStart
-            });
-            this.addElapsed(elapsed);
-            this.addRun(name);
+            const measurementEnded = this.stopMeasurement(measurement);
+            this.measurements.push(measurementEnded);
+            this.addRun(measurementEnded.name);
+            /**
+             * Only add to total time if this run is not a child of another run.
+             * And then end running.
+             */
+            if (!isAlreadyRunning) {
+                this.addElapsed(measurementEnded);
+                this.endRunning();
+            }
         }
+    }
+
+    private getIsAlreadyRunning(): boolean {
+        return this.isAlreadyRunning;
+    }
+    private startRunning(): void {
+        this.isAlreadyRunning = true;
+    }
+    private endRunning(): void {
+        this.isAlreadyRunning = false;
     }
 
     private async getIsEnabled(): Promise<boolean> {
@@ -120,8 +135,8 @@ export class Benchmark implements BenchmarkInterface {
         return false;
     }
 
-    private addElapsed(elapsed: number): void {
-        this.totalElapsed = this.totalElapsed + elapsed;
+    private addElapsed(measurement: Pick<BenchmarkMeasurement, "elapsed">): void {
+        this.totalElapsed = this.totalElapsed + measurement.elapsed;
     }
 
     private addRun(name: string): void {
@@ -133,5 +148,26 @@ export class Benchmark implements BenchmarkInterface {
 
     private setState(state: BenchmarkState): void {
         this.state = state;
+    }
+
+    private startMeasurement(name: string): BenchmarkMeasurementStart {
+        return {
+            name,
+            start: new Date(),
+            memoryStart: process.memoryUsage().heapUsed
+        };
+    }
+
+    private stopMeasurement(measurement: BenchmarkMeasurementStart): BenchmarkMeasurement {
+        const end = new Date();
+        const memoryEnd = process.memoryUsage().heapUsed;
+        const elapsed = end.getTime() - measurement.start.getTime();
+        return {
+            name: measurement.name,
+            start: measurement.start,
+            end,
+            elapsed,
+            memory: memoryEnd - measurement.memoryStart
+        };
     }
 }
