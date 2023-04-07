@@ -57,7 +57,7 @@ export interface PageSettings {
         title?: string | null;
         description?: string | null;
         image?: File | null;
-        meta: Array<{ property: string; content: string }>;
+        meta?: Array<{ property: string; content: string }>;
     };
     seo?: {
         title?: string | null;
