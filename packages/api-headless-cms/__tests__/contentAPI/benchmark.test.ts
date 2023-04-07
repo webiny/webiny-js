@@ -6,7 +6,7 @@ describe("benchmark points", () => {
 
     const { createContentModelGroupMutation } = useGraphQLHandler({
         path: "manage/en-US",
-        plugins: [
+        topPlugins: [
             new ContextPlugin(async context => {
                 context.benchmark.enable();
 
