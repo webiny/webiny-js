@@ -19,12 +19,14 @@ import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
 import { createTenantsData, createLocalesData, createdBy } from "./006.data";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { getIndexName } from "~/utils";
+import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedData";
+import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "~/migrations/5.35.0/006/constants";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_PAGES = 50;
-const INDEX_SUFFIX = "page-builder";
+const NUMBER_OF_PAGES = 100;
+const INDEX_TYPE = "page-builder";
 let numberOfGeneratedPages = 0;
 
 describe("5.35.0-006", () => {
@@ -140,10 +142,15 @@ describe("5.35.0-006", () => {
                     });
                 }
 
+                // Inserting useful data: latest page record
                 await insertDynamoDbTestData(ddbTable, ddbPages);
                 await insertDynamoDbTestData(ddbToEsTable, ddbEsPages);
                 await insertElasticsearchTestData<Page>(elasticsearchClient, esPages, item => {
-                    return getIndexName(item.tenant, item.locale, INDEX_SUFFIX, false);
+                    return getIndexName({
+                        tenant: item.tenant,
+                        locale: item.locale,
+                        type: INDEX_TYPE
+                    });
                 });
 
                 // Track generated files
@@ -194,7 +201,6 @@ describe("5.35.0-006", () => {
 
     it("should not run if no pages found", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
-        await insertTestPages(1);
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
@@ -244,9 +250,20 @@ describe("5.35.0-006", () => {
             ]
         });
 
-        expect(ddbSearchRecords.length).toBe(numberOfGeneratedPages * 2);
+        const ddbEsSearchRecords = await scanTable(ddbToEsTable, {
+            entity: "CmsEntriesElasticsearch",
+            filters: [
+                {
+                    attr: "index",
+                    contains: "acosearchrecord"
+                }
+            ]
+        });
 
-        ddbPages.forEach(page => {
+        expect(ddbSearchRecords.length).toBe(numberOfGeneratedPages * 2);
+        expect(ddbEsSearchRecords.length).toBe(numberOfGeneratedPages);
+
+        for (const page of ddbPages) {
             const {
                 createdBy,
                 createdOn,
@@ -263,9 +280,13 @@ describe("5.35.0-006", () => {
                 webinyVersion
             } = page;
 
-            const searchRecord = ddbSearchRecords.find(record => record.id === `${pid}#0001`);
+            const ddbSearchRecord = ddbSearchRecords.find(record => record.id === `${pid}#0001`);
+            const ddbEsSearchRecord = ddbEsSearchRecords.find(
+                record => record.PK === `T#${tenant}#L#${locale}#CMS#CME#${pid}`
+            );
 
-            expect(searchRecord).toMatchObject({
+            // Checking DDB ACO search record
+            expect(ddbSearchRecord).toMatchObject({
                 PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
                 SK: "L",
                 TYPE: "L",
@@ -278,9 +299,9 @@ describe("5.35.0-006", () => {
                 values: {
                     title,
                     content: `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
-                    type: "PbPage",
+                    type: PB_PAGE_TYPE,
                     location: {
-                        folderId: "ROOT"
+                        folderId: ROOT_FOLDER
                     },
                     data: {
                         createdBy,
@@ -296,26 +317,63 @@ describe("5.35.0-006", () => {
                     }
                 }
             });
-        });
 
-        const ddbEsSearchRecords = await scanTable(ddbToEsTable, {
-            entity: "CmsEntries",
-            filters: [
-                {
-                    attr: "index",
-                    contains: "acosearchrecord"
+            const data = await getCompressedData({
+                modelId: ACO_SEARCH_MODEL_ID,
+                version: 1,
+                savedOn,
+                locale,
+                status: "draft",
+                values: {
+                    type: PB_PAGE_TYPE,
+                    title,
+                    content: `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                    location: {
+                        folderId: ROOT_FOLDER
+                    }
+                },
+                createdBy,
+                entryId: pid,
+                tenant,
+                createdOn,
+                locked: false,
+                ownedBy: createdBy,
+                webinyVersion: process.env.WEBINY_VERSION,
+                id: `${pid}#0001`,
+                modifiedBy: createdBy,
+                latest: true,
+                TYPE: "cms.entry.l",
+                __type: "cms.entry.l",
+                rawValues: {
+                    location: {},
+                    data: {
+                        id: `${pid}#0001`,
+                        pid,
+                        title,
+                        createdBy,
+                        createdOn,
+                        savedOn,
+                        status,
+                        version,
+                        locked,
+                        path
+                    }
                 }
-            ]
-        });
+            });
 
-        expect(ddbEsSearchRecords.length).toBe(numberOfGeneratedPages);
-
-        // ddbEsSearchRecords.forEach(record => {
-        //     expect(record).toMatchSnapshot({
-        //         created: expect.any(String),
-        //         modified: expect.any(String)
-        //     });
-        // });
+            // Checking DDB + ES ACO search record
+            expect(ddbEsSearchRecord).toMatchObject({
+                PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                SK: "L",
+                index: getIndexName({
+                    tenant,
+                    locale,
+                    type: "acosearchrecord",
+                    isHeadlessCmsModel: true
+                }),
+                data
+            });
+        }
     });
 
     it("should not run migration if data is already in the expected shape", async () => {

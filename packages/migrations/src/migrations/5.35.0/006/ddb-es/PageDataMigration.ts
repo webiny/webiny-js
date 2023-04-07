@@ -1,7 +1,6 @@
 import { Table } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
-import { compress as gzip } from "@webiny/utils/compression/gzip";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { executeWithRetry } from "@webiny/utils";
 
@@ -16,11 +15,13 @@ import {
     createDdbPageEntity
 } from "~/migrations/5.35.0/006/entities/createPageEntity";
 import { getSearchablePageContent } from "~/migrations/5.35.0/006/utils/getSearchableContent";
+import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedData";
 
 import {
     batchWriteAll,
     createElasticSearchIndex,
     esFindOne,
+    esGetIndexExist,
     esQueryAllWithCallback,
     getIndexName,
     queryAll,
@@ -30,9 +31,6 @@ import {
 import { I18NLocale, ListLocalesParams, Page, Tenant } from "../types";
 
 import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
-
-const GZIP = "gzip";
-const TO_STORAGE_ENCODING = "base64";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -84,16 +82,38 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             }
 
             for (const locale of locales) {
+                // there is an index? NO -> skip
+                const indexExists = await esGetIndexExist({
+                    elasticsearchClient: this.elasticsearchClient,
+                    tenant: tenant.data.id,
+                    locale: locale.code,
+                    type: "page-builder",
+                    isHeadlessCmsModel: false
+                });
+
+                if (!indexExists) {
+                    logger.info(
+                        `No elastic search index found for pages in tenant "${tenant.data.id}" and locale "${locale.code}".`
+                    );
+                    continue;
+                }
+
                 // Fetch latest page record from ES
                 const latestPage = await esFindOne<Page>({
                     elasticsearchClient: this.elasticsearchClient,
-                    index: getIndexName(tenant.data.id, locale.code, "page-builder"),
+                    index: getIndexName({
+                        tenant: tenant.data.id,
+                        locale: locale.code,
+                        type: "page-builder"
+                    }),
                     body: {
                         query: {
                             bool: {
                                 filter: [
                                     { term: { "tenant.keyword": tenant.data.id } },
-                                    { term: { "locale.keyword": locale.code } }
+                                    { term: { "locale.keyword": locale.code } },
+                                    { term: { "__type.keyword": "page" } },
+                                    { term: { latest: true } }
                                 ]
                             }
                         },
@@ -112,7 +132,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     continue;
                 }
 
-                // Fetch latest aco search record from DDB
+                // Fetch latest aco search record from DDB using latest page "pid"
                 const latestSearchRecord = await queryOne<{ id: string }>({
                     entity: this.ddbEntryEntity,
                     partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#${latestPage.pid}`,
@@ -154,6 +174,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
 
                 let batch = 0;
 
+                // Since it's the first time we add an ACO record, we also need to create the index
                 await createElasticSearchIndex({
                     elasticsearchClient: this.elasticsearchClient,
                     tenant: tenant.data.id,
@@ -164,17 +185,23 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
 
                 await esQueryAllWithCallback<Page>({
                     elasticsearchClient: this.elasticsearchClient,
-                    index: getIndexName(tenant.data.id, locale.code, "page-builder"),
+                    index: getIndexName({
+                        tenant: tenant.data.id,
+                        locale: locale.code,
+                        type: "page-builder"
+                    }),
                     body: {
                         query: {
                             bool: {
                                 filter: [
                                     { term: { "tenant.keyword": tenant.data.id } },
-                                    { term: { "locale.keyword": locale.code } }
+                                    { term: { "locale.keyword": locale.code } },
+                                    { term: { "__type.keyword": "page" } },
+                                    { term: { latest: true } }
                                 ]
                             }
                         },
-                        size: 100,
+                        size: 500,
                         sort: [
                             {
                                 "id.keyword": "asc"
@@ -277,8 +304,13 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             const latestDdbEs = {
                                 PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#${pid}`,
                                 SK: "L",
-                                data: await this.compress(rawDatas),
-                                index: getIndexName(pageTenant, pageLocale, "acosearchrecord", true)
+                                data: await getCompressedData(rawDatas),
+                                index: getIndexName({
+                                    tenant: pageTenant,
+                                    locale: pageLocale,
+                                    type: "acosearchrecord",
+                                    isHeadlessCmsModel: true
+                                })
                             };
 
                             ddbItems.push(
@@ -413,15 +445,6 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 },
                 type: PB_PAGE_TYPE
             }
-        };
-    }
-
-    private async compress(data: any) {
-        const value = await gzip(JSON.stringify(data));
-
-        return {
-            compression: GZIP,
-            value: value.toString(TO_STORAGE_ENCODING)
         };
     }
 }

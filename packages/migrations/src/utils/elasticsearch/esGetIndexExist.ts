@@ -2,15 +2,15 @@ import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
 import { getIndexName } from "~/utils";
 
-export interface CreateElasticSearchIndexParams {
+export interface GetIndexExistParams {
     elasticsearchClient: Client;
     tenant: string;
     locale: string;
     type: string;
-    isHeadlessCmsModel: boolean;
+    isHeadlessCmsModel?: boolean;
 }
 
-export const createElasticSearchIndex = async (params: CreateElasticSearchIndexParams) => {
+export const esGetIndexExist = async (params: GetIndexExistParams) => {
     const { elasticsearchClient, tenant, locale, type, isHeadlessCmsModel } = params;
 
     try {
@@ -20,16 +20,14 @@ export const createElasticSearchIndex = async (params: CreateElasticSearchIndexP
         });
 
         if (response.body) {
-            return;
+            return true;
         }
 
-        await elasticsearchClient.indices.create({
-            index
-        });
+        return false;
     } catch (ex) {
         throw new WebinyError(
-            ex.message || "Could not create Elasticsearch index.",
-            ex.code || "CREATE_ELASTICSEARCH_INDEX_ERROR",
+            ex.message || "Could not get Elasticsearch index.",
+            ex.code || "GET_ELASTICSEARCH_INDEX_ERROR",
             {
                 error: ex,
                 locale,

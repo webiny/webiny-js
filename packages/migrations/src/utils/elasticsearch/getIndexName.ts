@@ -1,11 +1,15 @@
 import WebinyError from "@webiny/error";
 
-export const getIndexName = (
-    tenant: string,
-    locale: string,
-    type: string,
-    isHeadlessCmsModel?: boolean
-) => {
+export interface GetElasticSearchIndexNameParams {
+    tenant: string;
+    locale: string;
+    type: string;
+    isHeadlessCmsModel?: boolean;
+}
+
+export const getIndexName = (params: GetElasticSearchIndexNameParams) => {
+    const { tenant, locale, type, isHeadlessCmsModel } = params;
+
     if (!type) {
         throw new WebinyError(
             `Missing "type" parameter when trying to create Elasticsearch index name.`,

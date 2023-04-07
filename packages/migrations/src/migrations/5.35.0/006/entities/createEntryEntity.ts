@@ -97,5 +97,5 @@ export const createDdbEntryEntity = (table: Table) => {
 };
 
 export const createDdbEsEntryEntity = (table: Table) => {
-    return createStandardEntity(table, "CmsEntries", ddbEsAttributes);
+    return createStandardEntity(table, "CmsEntriesElasticsearch", ddbEsAttributes);
 };
