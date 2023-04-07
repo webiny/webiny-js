@@ -60,7 +60,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 },
                 status: "any",
                 createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString()
+                savedOn: new Date().toISOString(),
+                tags: []
             });
 
             context.security.addAuthenticator(async () => {
