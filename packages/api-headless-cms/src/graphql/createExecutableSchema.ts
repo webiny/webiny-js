@@ -1,10 +1,10 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { CmsContext } from "~/types";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface Params {
-    plugins: GraphQLSchemaPlugin<CmsContext>[];
+    plugins: CmsGraphQLSchemaPlugin[];
 }
+
 export const createExecutableSchema = (params: Params) => {
     const { plugins } = params;
     /**

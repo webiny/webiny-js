@@ -1,4 +1,4 @@
-import { GraphQLSchema } from "graphql";
+import { ExecutionResult, GraphQLSchema } from "graphql";
 import { ApiEndpoint, CmsModel, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -57,11 +57,11 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
      * We need all the API models.
      * Private models are hidden in the GraphQL, so filter them out.
      */
-    context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
-        return model.isPrivate !== true;
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter((model): model is CmsModel => {
+            return model.isPrivate !== true;
+        });
     });
-    context.security.enableAuthorization();
     try {
         const schema = await generateSchema({
             ...params,
@@ -146,36 +146,53 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             });
         }
 
-        let schema: GraphQLSchema;
-        try {
-            schema = await getSchema({
-                context,
-                locale: context.cms.getLocale(),
-                type: context.cms.type as ApiEndpoint
-            });
-        } catch (ex) {
-            console.error(`Error while generating the schema.`);
-            console.error(formatErrorPayload(ex));
-            throw ex;
-        }
+        const schema = await context.benchmark.measure(
+            "headlessCms.graphql.getSchema",
+            async () => {
+                try {
+                    return await getSchema({
+                        context,
+                        locale: context.cms.getLocale(),
+                        type: context.cms.type as ApiEndpoint
+                    });
+                } catch (ex) {
+                    console.error(`Error while generating the schema.`);
+                    console.error(formatErrorPayload(ex));
+                    throw ex;
+                }
+            }
+        );
 
-        let body: GraphQLRequestBody | GraphQLRequestBody[] = [];
-        try {
-            body = createRequestBody(request.body);
-        } catch (ex) {
-            console.error(`Error while creating the body request.`);
-            console.error(formatErrorPayload(ex));
-            throw ex;
-        }
+        const body = await context.benchmark.measure(
+            "headlessCms.graphql.createRequestBody",
+            async () => {
+                try {
+                    return createRequestBody(request.body);
+                } catch (ex) {
+                    console.error(`Error while creating the body request.`);
+                    console.error(formatErrorPayload(ex));
+                    throw ex;
+                }
+            }
+        );
 
-        try {
-            const result = await processRequestBody(body, schema, context);
-            return reply.code(200).send(result);
-        } catch (ex) {
-            console.error(`Error while processing the body request.`);
-            console.error(formatErrorPayload(ex));
-            throw ex;
-        }
+        /**
+         * We need to store the processRequestBody result in a variable and output it after the measurement.
+         * Otherwise, the measurement will not be shown in the output.
+         */
+        let result: ExecutionResult[] | ExecutionResult | null = null;
+
+        await context.benchmark.measure("headlessCms.graphql.processRequestBody", async () => {
+            try {
+                result = await processRequestBody(body, schema, context);
+            } catch (ex) {
+                console.error(`Error while processing the body request.`);
+                console.error(formatErrorPayload(ex));
+                throw ex;
+            }
+        });
+
+        return reply.code(200).send(result);
     });
 
     onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {

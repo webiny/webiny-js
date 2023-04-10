@@ -13,6 +13,7 @@ import { ContextPlugin } from "@webiny/api";
 import { TestContext } from "~tests/testHelpers/types";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
+import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -42,6 +43,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         storageOperations: ops.storageOperations,
         tenant,
         plugins: [
+            enableBenchmarkOnEnvironmentVariable(),
             topPlugins,
             createWcpContext(),
             ...ops.plugins,

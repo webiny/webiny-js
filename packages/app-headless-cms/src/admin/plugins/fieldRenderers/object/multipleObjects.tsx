@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import {
     BindComponentRenderProp,
     CmsEditorFieldRendererPlugin,
-    CmsEditorFieldRendererProps
+    CmsModelFieldRendererProps
 } from "~/types";
 import DynamicSection from "../DynamicSection";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
@@ -72,7 +72,7 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
     ) : null;
 };
 
-const ObjectsRenderer: React.FC<CmsEditorFieldRendererProps> = props => {
+const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
     const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
     const { field, contentModel } = props;
 

@@ -14,7 +14,7 @@ import {
     BindComponent,
     BindComponentRenderProp,
     CmsDynamicZoneTemplate,
-    CmsEditorFieldRendererProps,
+    CmsModelFieldRendererProps,
     CmsModel,
     CmsModelField
 } from "~/types";
@@ -23,7 +23,7 @@ const BottomMargin = styled.div`
     margin-bottom: 20px;
 `;
 
-type GetBind = CmsEditorFieldRendererProps["getBind"];
+type GetBind = CmsModelFieldRendererProps["getBind"];
 
 interface TemplateValue {
     _templateId: string;

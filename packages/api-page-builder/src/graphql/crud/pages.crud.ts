@@ -374,7 +374,21 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 locked: false,
                 publishedOn: null,
                 createdFrom: null,
-                settings,
+                settings: {
+                    ...settings,
+                    general: {
+                        ...settings.general,
+                        tags: settings.general?.tags || undefined
+                    },
+                    social: {
+                        ...settings.social,
+                        meta: settings.social?.meta || []
+                    },
+                    seo: {
+                        ...settings.seo,
+                        meta: settings.seo?.meta || []
+                    }
+                },
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
                 ownedBy: owner,
@@ -542,7 +556,15 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 ...data,
                 settings: {
                     ...original.settings,
-                    ...(data.settings || {})
+                    ...(data.settings || {}),
+                    seo: {
+                        ...(data.settings?.seo || {}),
+                        meta: data.settings?.seo?.meta || []
+                    },
+                    social: {
+                        ...(data.settings?.social || {}),
+                        meta: data.settings?.social?.meta || []
+                    }
                 },
                 version: Number(original.version),
                 savedOn: new Date().toISOString()

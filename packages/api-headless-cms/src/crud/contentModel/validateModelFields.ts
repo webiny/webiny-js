@@ -16,10 +16,9 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { getContentModelTitleFieldId } from "./fields/titleField";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField";
 import { getContentModelImageFieldId } from "./fields/imageField";
-import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { generateAlphaNumericId } from "@webiny/utils";
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
@@ -216,11 +215,11 @@ interface CreateGraphQLSchemaParams {
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
-    context.security.disableAuthorization();
-    const models = (await context.cms.listModels()).filter((model): model is CmsModel => {
-        return !model.isPrivate;
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter((model): model is CmsModel => {
+            return model.isPrivate !== true;
+        });
     });
-    context.security.enableAuthorization();
 
     const modelPlugins = await buildSchemaPlugins({
         context,
@@ -228,9 +227,10 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
     });
 
     const plugins = context.plugins
-        .byType<GraphQLSchemaPlugin<CmsContext>>(GraphQLSchemaPlugin.type)
-        .reduce<Record<string, GraphQLSchemaPlugin<CmsContext>>>((collection, plugin) => {
-            const name = plugin.name || `${plugin.type}-${generateAlphaNumericId(16)}`;
+        .byType<CmsGraphQLSchemaPlugin>(CmsGraphQLSchemaPlugin.type)
+        .reduce<Record<string, CmsGraphQLSchemaPlugin>>((collection, plugin) => {
+            const name =
+                plugin.name || `${CmsGraphQLSchemaPlugin.type}-${generateAlphaNumericId(16)}`;
             collection[name] = plugin;
             return collection;
         }, {});
