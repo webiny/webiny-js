@@ -1,16 +1,17 @@
-import { ExecutionResult, GraphQLSchema } from "graphql";
-import { ApiEndpoint, CmsModel, CmsContext } from "~/types";
-import { I18NLocale } from "@webiny/api-i18n/types";
-import { NotAuthorizedError } from "@webiny/api-security";
-import { PluginCollection } from "@webiny/plugins/types";
-import debugPlugins from "@webiny/handler-graphql/debugPlugins";
-import processRequestBody from "@webiny/handler-graphql/processRequestBody";
-import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
-import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 // @ts-ignore `code-frame` has no types
 import codeFrame from "code-frame";
+import debugPlugins from "@webiny/handler-graphql/debugPlugins";
+import processRequestBody from "@webiny/handler-graphql/processRequestBody";
+import { ExecutionResult, GraphQLSchema } from "graphql";
+import { ApiEndpoint, CmsContext } from "~/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
+import { NotAuthorizedError } from "@webiny/api-security";
+import { PluginCollection } from "@webiny/plugins/types";
+import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
+import { RoutePlugin } from "@webiny/handler";
 import { generateSchema } from "~/graphql/generateSchema";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 interface SchemaCache {
     key: string;
@@ -20,7 +21,9 @@ interface SchemaCache {
 interface GetSchemaParams {
     context: CmsContext;
     type: ApiEndpoint;
-    locale: I18NLocale;
+    getLastModifiedTime: () => Promise<Date | null>;
+    getTenant: () => Tenant;
+    getLocale: () => I18NLocale;
 }
 
 const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
@@ -33,10 +36,29 @@ const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBo
 
 const schemaList = new Map<string, SchemaCache>();
 
-const generateCacheKey = async (args: GetSchemaParams): Promise<string> => {
-    const { context, locale, type } = args;
-    const lastModelChange = await context.cms.getModelLastChange();
-    return [locale.code, type, lastModelChange.toISOString()].join("#");
+/**
+ * Method generates cache ID based on:
+ * - tenant
+ * - endpoint type
+ * - locale
+ */
+type GenerateCacheIdParams = Pick<GetSchemaParams, "getTenant" | "getLocale" | "type">;
+const generateCacheId = (params: GenerateCacheIdParams): string => {
+    const { getTenant, type, getLocale } = params;
+    return [`tenant:${getTenant().id}`, `endpoint:${type}`, `locale:${getLocale().code}`].join("#");
+};
+/**
+ * Method generates cache key based on last model change time.
+ * Or sets "unknown" - possible when no models in database.
+ */
+type GenerateCacheKeyParams = Pick<GetSchemaParams, "getLastModifiedTime">;
+const generateCacheKey = async (params: GenerateCacheKeyParams): Promise<string> => {
+    const { getLastModifiedTime } = params;
+    const lastModelChange = await getLastModifiedTime();
+    if (!lastModelChange) {
+        return "unknown";
+    }
+    return lastModelChange.toISOString();
 };
 
 /**
@@ -44,21 +66,22 @@ const generateCacheKey = async (args: GetSchemaParams): Promise<string> => {
  * depending on the schemaId created from type and locale parameters
  */
 const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
-    const { context, type, locale } = params;
-    const tenantId = context.tenancy.getCurrentTenant().id;
-    const id = `${tenantId}#${type}#${locale.code}`;
+    const { context } = params;
+
+    const cacheId = generateCacheId(params);
 
     const cacheKey = await generateCacheKey(params);
-    const cachedSchema = schemaList.get(id);
+    const cachedSchema = schemaList.get(cacheId);
     if (cachedSchema?.key === cacheKey) {
         return cachedSchema.schema;
     }
+
     /**
      * We need all the API models.
      * Private models are hidden in the GraphQL, so filter them out.
      */
     const models = await context.security.withoutAuthorization(async () => {
-        return (await context.cms.listModels()).filter((model): model is CmsModel => {
+        return (await context.cms.listModels()).filter(model => {
             return model.isPrivate !== true;
         });
     });
@@ -67,7 +90,7 @@ const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
             ...params,
             models
         });
-        schemaList.set(id, {
+        schemaList.set(cacheId, {
             key: cacheKey,
             schema
         });
@@ -146,13 +169,25 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             });
         }
 
+        const getTenant = () => {
+            return context.tenancy.getCurrentTenant();
+        };
+
+        const getLastModifiedTime = async () => {
+            return context.cms.getModelLastChange();
+        };
+
         const schema = await context.benchmark.measure(
             "headlessCms.graphql.getSchema",
             async () => {
                 try {
                     return await getSchema({
                         context,
-                        locale: context.cms.getLocale(),
+                        getTenant,
+                        getLastModifiedTime,
+                        getLocale: () => {
+                            return context.cms.getLocale();
+                        },
                         type: context.cms.type as ApiEndpoint
                     });
                 } catch (ex) {

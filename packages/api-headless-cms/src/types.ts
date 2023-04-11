@@ -943,7 +943,7 @@ export interface CmsSettingsContext {
     /**
      * Get the datetime when content model last changed.
      */
-    getModelLastChange: () => Promise<Date>;
+    getModelLastChange: () => Promise<Date | null>;
 }
 
 export interface OnSystemBeforeInstallTopicParams {
