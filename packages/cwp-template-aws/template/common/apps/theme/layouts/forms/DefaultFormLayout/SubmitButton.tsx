@@ -3,15 +3,15 @@ import { FormRenderPropParamsSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 
 export const Wrapper = styled.div<{ fullWidth: boolean }>`
-  ${props => props.theme.styles.elements["button"]["primary"]}
-  .button-body {
-    width: ${props => (props.fullWidth ? "100%" : "auto")};
-    margin-left: auto;
+    ${props => props.theme.styles.elements["button"]["primary"]}
+    .button-body {
+        width: ${props => (props.fullWidth ? "100%" : "auto")};
+        margin-left: auto;
 
-    &:disabled {
-      opacity: 0.5;
+        &:disabled {
+            opacity: 0.5;
+        }
     }
-  }
 `;
 
 interface Props {
