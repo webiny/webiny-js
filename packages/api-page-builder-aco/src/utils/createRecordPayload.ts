@@ -41,8 +41,7 @@ export const createPageRecordPayload = async (
 
 export const updatePageRecordPayload = async (
     context: PbAcoContext,
-    page: Page,
-    meta?: Record<string, any>
+    page: Page
 ): Promise<UpdateSearchRecordParams<PbPageRecordData>> => {
     const { id, pid, title, createdOn, createdBy, savedOn, status, version, locked, path } = page;
     const content = await context.pageBuilderAco.getSearchablePageContent(page);
@@ -61,7 +60,6 @@ export const updatePageRecordPayload = async (
             version,
             locked,
             path
-        },
-        ...(meta && { ...meta })
+        }
     };
 };
