@@ -46,7 +46,7 @@ interface Props {
     zIndex: number;
 }
 
-export const ElementControlsOverlayBorders: React.FC<Props> = props => {
+export const ElementControlsOverlayBorders: React.VFC<Props> = props => {
     return (
         <>
             <ElementControlsOverlayBorder placement={"top"} {...props} />
