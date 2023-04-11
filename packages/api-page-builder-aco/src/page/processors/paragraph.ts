@@ -15,9 +15,11 @@ export const paragraphProcessor = (context: PbAcoContext) => {
         const value = get(element, "data.text.data.text");
         // Get text from Lexical Editor JSON string.
         const text = getLexicalContentText(value);
-        // Remove any HTML tag
-        const regex = /(<([^>]+)>)/gi;
 
-        return text.replace(regex, "").trim();
+        return text
+            .replace(/(<([^>]+)>)/gi, "") // Remove any HTML tag
+            .replace(/(\n)|(\r)|(\r\n)/gi, "") // Remove any new line char
+            .replace(/([ ]{2,})/gi, " ") // Replace multiple spaces with one space only
+            .trim();
     });
 };

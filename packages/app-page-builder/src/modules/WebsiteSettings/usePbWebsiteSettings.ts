@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { get, set } from "lodash";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
@@ -10,12 +10,13 @@ import { useRouter } from "@webiny/react-router";
 import { sendEvent, setProperties } from "@webiny/telemetry/react";
 import {
     GET_SETTINGS,
-    UPDATE_SETTINGS,
     GetSettingsQueryResponse,
     GetSettingsResponseData,
+    UPDATE_SETTINGS,
     UpdateSettingsMutationResponse,
     UpdateSettingsMutationVariables
 } from "./graphql";
+import { PbErrorResponse } from "~/types";
 
 interface PageBuilderWebsiteSettings {
     websiteUrl?: string;
@@ -24,6 +25,8 @@ interface PageBuilderWebsiteSettings {
 export function usePbWebsiteSettings() {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
+
+    const [error, setError] = useState<PbErrorResponse | null>(null);
 
     const { data, loading: queryInProgress } = useQuery<GetSettingsQueryResponse>(GET_SETTINGS);
     const settings = get(
@@ -92,7 +95,13 @@ export function usePbWebsiteSettings() {
 
             // TODO @ts-refactor
             delete (data as any).id;
-            await update({ variables: { data } });
+            const response = await update({ variables: { data } });
+            const responseError = response.data?.pageBuilder.updateSettings.error;
+            setError(responseError || null);
+            if (responseError) {
+                showSnackbar(responseError.message);
+                return;
+            }
             showSnackbar("Settings updated successfully.");
         },
         [settings, update]
@@ -104,6 +113,7 @@ export function usePbWebsiteSettings() {
         saveSettings: onSubmit,
         editPage,
         settings,
-        defaultSettings
+        defaultSettings,
+        error
     };
 }

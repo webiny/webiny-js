@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { PbErrorResponse } from "~/types";
 
 const fields = /* GraphQL */ `
     {
@@ -34,6 +35,8 @@ const fields = /* GraphQL */ `
         }
         error {
             message
+            code
+            data
         }
     }
 `;
@@ -109,7 +112,10 @@ export const GET_SETTINGS = gql`
  */
 export interface UpdateSettingsMutationResponse {
     pageBuilder: {
-        updateSettings: GetSettingsResponseData;
+        updateSettings: {
+            data: GetSettingsResponseData | null;
+            error: PbErrorResponse | null;
+        };
     };
 }
 export interface UpdateSettingsMutationVariablesData {

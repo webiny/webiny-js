@@ -150,7 +150,7 @@ export const pageLegacyContentMock = {
                                                 tag: "p"
                                             },
                                             data: {
-                                                text: "Demo Content"
+                                                text: "Demo Content with multiple    spaces and \n new line"
                                             }
                                         },
                                         settings: {
@@ -425,7 +425,7 @@ export const pageContentMock = {
                                                 tag: "p"
                                             },
                                             data: {
-                                                text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Demo Content","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+                                                text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Demo Content with multiple    spaces and \\n new line","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
                                             }
                                         },
                                         settings: {
