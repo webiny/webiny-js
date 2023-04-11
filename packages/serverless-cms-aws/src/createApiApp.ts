@@ -2,11 +2,11 @@ import { PulumiAppParam } from "@webiny/pulumi";
 import { createApiPulumiApp, CreateApiPulumiAppParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
+    executeDataMigrations,
+    generateCommonHandlers,
     generateDdbHandlers,
     generateDdbEsHandlers,
-    generateCommonHandlers,
-    injectWcpTelemetryClientCode,
-    executeDataMigrations
+    injectWcpTelemetryClientCode
 } from "./api/plugins";
 
 export { ApiOutput } from "@webiny/pulumi-aws";
