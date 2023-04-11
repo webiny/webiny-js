@@ -86,7 +86,7 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
                     </RadioGroup>
                 );
             })}
-            {field.settings.otherOption && (
+            {field.settings["otherOption"] && (
                 <RadioGroup>
                     <RadioButton
                         name={fieldId}
