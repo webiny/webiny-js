@@ -29,7 +29,7 @@ import {
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
-import { createACO } from "@webiny/api-aco";
+import { createAco } from "@webiny/api-aco";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -89,7 +89,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 })
             }),
             createPageBuilderGraphQL(),
-            createACO(),
+            createAco(),
             createAcoPageBuilderContext(),
             plugins
         ],
