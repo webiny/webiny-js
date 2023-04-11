@@ -1,8 +1,37 @@
 import { recordMocks } from "./mocks/record.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
+jest.retryTimes(0);
+jest.setTimeout(900000);
+
 describe("`search` CRUD", () => {
     const { search } = useGraphQlHandler();
+
+    const insertTestRecords = async (numberOfRecords = 10, type = "test", numberOfTags = 1) => {
+        try {
+            for (let index = 0; index < numberOfRecords; index++) {
+                const data = {
+                    id: `record-${index}`,
+                    type,
+                    title: `Record ${index}`,
+                    content: `Content ${index}`,
+                    location: {
+                        folderId: "folderId"
+                    },
+                    data: {
+                        any: "data"
+                    },
+                    tags: Array(numberOfTags)
+                        .fill(null)
+                        .map((_, i) => `tag-${i}`)
+                };
+
+                await search.createRecord({ data });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     it("should be able to create, read, update and delete `records`", async () => {
         // Let's create some search records.
@@ -269,5 +298,78 @@ describe("`search` CRUD", () => {
                 }
             }
         });
+    });
+
+    it("should list existing tags sorted alphabetically attached to search records", async () => {
+        // Let's create some search records.
+        await search.createRecord({ data: recordMocks.recordA });
+        await search.createRecord({ data: recordMocks.recordB });
+        await search.createRecord({ data: recordMocks.recordC });
+        await search.createRecord({ data: recordMocks.recordD });
+        await search.createRecord({ data: recordMocks.recordE });
+
+        // Let's search for tags.
+        const [response] = await search.listTags({
+            where: { type: "page" }
+        });
+
+        expect(response.data.search.listTags).toEqual(
+            expect.objectContaining({
+                data: ["tag1", "tag2", "tag3"],
+                meta: expect.objectContaining({
+                    cursor: null,
+                    totalCount: 3,
+                    hasMoreItems: false
+                }),
+                error: null
+            })
+        );
+    });
+
+    it("should list existing tags for large amount of records", async () => {
+        const type = "test";
+        const numberOfTags = 50;
+
+        // Let's create some search records.
+        await insertTestRecords(1000, type, 50);
+
+        // Let's search for tags.
+        const [response] = await search.listTags({
+            where: { type }
+        });
+
+        expect(response.data.search.listTags).toEqual(
+            expect.objectContaining({
+                data: expect.any(Array),
+                meta: expect.objectContaining({
+                    cursor: null,
+                    totalCount: numberOfTags,
+                    hasMoreItems: false
+                }),
+                error: null
+            })
+        );
+    });
+
+    it("should list an empty array in case of not found tags", async () => {
+        // Let's create some search records.
+        await search.createRecord({ data: recordMocks.recordE });
+
+        // Let's search for tags.
+        const [response] = await search.listTags({
+            where: { type: "page" }
+        });
+
+        expect(response.data.search.listTags).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([]),
+                meta: expect.objectContaining({
+                    cursor: null,
+                    totalCount: 0,
+                    hasMoreItems: false
+                }),
+                error: null
+            })
+        );
     });
 });

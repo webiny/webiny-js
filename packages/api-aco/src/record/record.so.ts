@@ -8,7 +8,10 @@ import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFieldValues } from "~/utils/getFieldValues";
 
-import { AcoSearchRecordStorageOperations } from "./record.types";
+import {
+    AcoSearchRecordStorageOperations,
+    StorageOperationsListSearchRecordTagsParams
+} from "./record.types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export const createSearchRecordOperations = (
@@ -66,6 +69,47 @@ export const createSearchRecordOperations = (
                 });
 
                 return [entries.map(entry => getFieldValues(entry, baseFields, true)), meta];
+            });
+        },
+        listTags(params: StorageOperationsListSearchRecordTagsParams) {
+            return withModel(async model => {
+                const { where } = params;
+
+                const [entries] = await cms.listLatestEntries(model, {
+                    ...params,
+                    where: {
+                        ...(where || {})
+                    }
+                });
+
+                const entryValues = entries.map(entry =>
+                    getFieldValues(entry, ["id", "tags"], true)
+                );
+
+                const tags = entryValues
+                    .reduce((collection, item) => {
+                        const tags = Array.isArray(item.tags) ? item.tags : [];
+
+                        for (const tag of tags) {
+                            if (collection.find((item: string) => item === tag)) {
+                                continue;
+                            }
+                            collection.push(tag);
+                        }
+
+                        return collection;
+                    }, [] as string[])
+                    .sort();
+
+                //const tags: string[] = Object.keys(tagsObject).sort();
+
+                const meta = {
+                    hasMoreItems: false,
+                    totalCount: tags.length,
+                    cursor: null
+                };
+
+                return [tags, meta];
             });
         },
         createRecord({ data }) {

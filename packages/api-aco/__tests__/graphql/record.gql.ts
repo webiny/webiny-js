@@ -83,3 +83,15 @@ export const GET_RECORD = /* GraphQL */ `
         }
     }
 `;
+
+export const LIST_TAGS = /* GraphQL */ `
+    query ListTags($where: SearchRecordTagListWhereInput) {
+        search {
+            listTags(where: $where) {
+                data
+                meta ${LIST_META_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;

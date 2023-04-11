@@ -52,6 +52,10 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             tags_in: [String!]
         }
 
+        input SearchRecordTagListWhereInput {
+            type: String!
+        }
+
         type SearchRecordResponse {
             data: SearchRecord
             error: AcoError
@@ -59,6 +63,12 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
 
         type SearchRecordListResponse {
             data: [SearchRecord]
+            error: AcoError
+            meta: AcoMeta
+        }
+
+        type SearchRecordTagListResponse {
+            data: [String!]
             error: AcoError
             meta: AcoMeta
         }
@@ -72,6 +82,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
                 after: String
                 sort: AcoSort
             ): SearchRecordListResponse
+            listTags(where: SearchRecordTagListWhereInput): SearchRecordTagListResponse
         }
 
         extend type SearchMutation {
@@ -89,6 +100,14 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
                 try {
                     const [entries, meta] = await context.aco.search.list(args);
                     return new ListResponse(entries, meta);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            },
+            listTags: async (_, args: any, context) => {
+                try {
+                    const [tags, meta] = await context.aco.search.listTags(args);
+                    return new ListResponse(tags, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
