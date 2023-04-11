@@ -57,7 +57,7 @@ const FooterBody = styled.div`
     margin: 0 auto;
     max-width: 1200px;
 
-    ${props => props.theme.breakpoints.tablet} {
+    ${props => props.theme.breakpoints["tablet"]} {
         flex-direction: column;
     }
 `;

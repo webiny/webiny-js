@@ -115,7 +115,7 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
                     <label htmlFor={"checkbox-" + fieldId + option.value}>{option.label}</label>
                 </CheckboxGroup>
             ))}
-            {field.settings.otherOption && (
+            {field.settings["otherOption"] && (
                 <CheckboxGroup>
                     <CheckboxButton
                         name={fieldId}
