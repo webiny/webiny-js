@@ -55,6 +55,8 @@ export const Elements: React.VFC<ElementsProps> = props => {
                         key={key}
                         element={element}
                         meta={{
+                            // @ts-ignore
+                            depth: (currentRendererMeta.depth || 0) + 1,
                             parentElement: props.element,
                             parentBlockElement,
                             isFirstElement: index === 0,

@@ -29,6 +29,9 @@ interface QueryFieldParams {
     field: CmsModelField;
 }
 
+/**
+ * @deprecated Use `CmsModelFieldTypePlugin`.
+ */
 export type CmsEditorFieldTypePlugin = CmsModelFieldTypePlugin;
 
 export interface CmsModelFieldTypePlugin extends Plugin {
@@ -99,7 +102,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
          * allowMultipleValues: true
          * ```
          */
-        allowMultipleValues: boolean;
+        allowMultipleValues?: boolean;
         /**
          * Does this field type have a fixed list of values that can be selected?
          *
@@ -107,11 +110,11 @@ export interface CmsModelFieldTypePlugin extends Plugin {
          * allowPredefinedValues: false
          * ```
          */
-        allowPredefinedValues: boolean;
+        allowPredefinedValues?: boolean;
         /**
          * A ReactNode label when multiple values are enabled.
          */
-        multipleValuesLabel: React.ReactNode;
+        multipleValuesLabel?: React.ReactNode;
         /**
          * These are default values when the field is first created. This is a representation of the field that is stored in the database.
          *
@@ -203,21 +206,26 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
-export interface CmsEditorFieldRendererProps {
+export interface CmsModelFieldRendererProps {
     field: CmsModelField;
     Label: typeof Label;
     getBind: (index?: number, key?: string) => BindComponent;
     contentModel: CmsModel;
 }
 
-export interface CmsEditorFieldRendererPlugin extends Plugin {
+/**
+ * @deprecated Use `CmsModelFieldRendererPlugin`.
+ */
+export type CmsEditorFieldRendererPlugin = CmsModelFieldRendererPlugin;
+
+export interface CmsModelFieldRendererPlugin extends Plugin {
     /**
      * a plugin type
      */
     type: "cms-editor-field-renderer";
     renderer: {
         /**
-         * Name of the renderer to match the one from `createField()` method in `CmsEditorFieldTypePlugin`.
+         * Name of the renderer to match the one from `createField()` method in `CmsModelFieldTypePlugin`.
          *
          * ```ts
          * renderName: "myFieldTypeRenderer"
@@ -251,7 +259,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          * }
          * ```
          */
-        canUse(props: { field: CmsModelField; fieldPlugin: CmsEditorFieldTypePlugin }): boolean;
+        canUse(props: { field: CmsModelField; fieldPlugin: CmsModelFieldTypePlugin }): boolean;
         /**
          * Renders a field in the UI.
          *
@@ -274,7 +282,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          * }
          * ```
          */
-        render(props: CmsEditorFieldRendererProps): React.ReactNode;
+        render(props: CmsModelFieldRendererProps): React.ReactNode;
     };
 }
 
@@ -302,7 +310,12 @@ export interface CmsDynamicZoneTemplate {
 
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
 
-export interface CmsEditorContentEntry {
+/**
+ * @deprecated Use `CmsContentEntry`.
+ */
+export type CmsEditorContentEntry = CmsContentEntry;
+
+export interface CmsContentEntry {
     id: string;
     savedOn: string;
     modelId: string;

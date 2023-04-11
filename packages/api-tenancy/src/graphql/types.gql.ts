@@ -8,6 +8,7 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
             name: String!
             description: String!
             parent: ID
+            tags: [String!]!
             settings: TenantSettings!
         }
 
@@ -18,12 +19,5 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
         type TenantSettings {
             domains: [TenantDomain!]!
         }
-    `,
-    resolvers: {
-        Tenant: {
-            description(tenant) {
-                return tenant.description || "";
-            }
-        }
-    }
+    `
 });

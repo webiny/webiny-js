@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
+import { ThemeProvider } from "@emotion/react";
 import {
     PageElementsContextValue,
     PageElementsProviderProps,
@@ -122,5 +123,9 @@ export const PageElementsProvider: React.VFC<PageElementsProviderProps> = ({
         afterRenderer
     };
 
-    return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;
+    return (
+        <ThemeProvider theme={theme}>
+            <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>
+        </ThemeProvider>
+    );
 };

@@ -23,8 +23,6 @@ export const createApwModels = (context: CmsContext) => {
         return;
     }
 
-    context.security.disableAuthorization();
-
     const locale = context.i18n.getContentLocale();
     if (!locale) {
         throw new WebinyError(
@@ -92,6 +90,4 @@ export const createApwModels = (context: CmsContext) => {
      *  Register them so that they are accessible in cms context
      */
     context.plugins.register([cmsGroupPlugin, cmsModelPlugins]);
-
-    context.security.enableAuthorization();
 };

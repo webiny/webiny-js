@@ -11,17 +11,17 @@ import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
 const pulse = keyframes`
   0% {
-    box-shadow: 0 0 0 0 rgba(0,204,176, 0.4);
+    box-shadow: 0 0 0 0 rgba(0, 204, 176, 0.4);
   }
   70% {
-      box-shadow: 0 0 0 30px rgba(0,204,176, 0);
+    box-shadow: 0 0 0 30px rgba(0, 204, 176, 0);
   }
   100% {
-      box-shadow: 0 0 0 0 rgba(0,204,176, 0);
+    box-shadow: 0 0 0 0 rgba(0, 204, 176, 0);
   }
 `;
 
-const AddBlockContainer = styled<"div", { displayMode: string }>("div")(({ displayMode }) => {
+const AddBlockContainer = styled.div<{ displayMode: string }>(({ displayMode }) => {
     const marginLeft = displayMode === "desktop" ? 54 : 0;
     return {
         position: "absolute",
@@ -48,7 +48,7 @@ const AddBlockContainer = styled<"div", { displayMode: string }>("div")(({ displ
     };
 });
 
-const AddBlockContent = styled<"div", { displayMode: string }>("div")(({ displayMode }) => ({
+const AddBlockContent = styled.div<{ displayMode: string }>(({ displayMode }) => ({
     width: displayMode === "mobile-portrait" ? 280 : 300,
     margin: 5,
     textAlign: "center",

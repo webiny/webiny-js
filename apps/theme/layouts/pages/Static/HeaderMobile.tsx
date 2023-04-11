@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { Link } from "@webiny/react-router";
 import { usePage } from "@webiny/app-page-builder-elements";
 import { Menu, GET_PUBLIC_MENU, hasMenuItems } from "@webiny/app-website";
-import { ClassNames } from "@emotion/core";
+import { ClassNames } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Navigation } from "./Navigation";
 import { colors, fonts, breakpoints } from "../../../theme";

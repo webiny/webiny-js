@@ -17,7 +17,7 @@ const Container = styled("span")({
 });
 const ModelsContainer = styled(Elevation)({
     position: "absolute",
-    zIndex: 1,
+    zIndex: 2,
     top: "40px",
     left: 0,
     width: "215px",

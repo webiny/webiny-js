@@ -1,7 +1,12 @@
+import { dirname } from "path";
 import S3 from "aws-sdk/clients/s3";
 import { getObjectParams, getEnvironment } from "~/handlers/utils";
 import * as newUtils from "../utils";
 import * as legacyUtils from "../legacyUtils";
+
+const isLegacyKey = (key: string) => {
+    return !key.includes("/");
+};
 
 export interface ImageManagerCanProcessParams {
     key: string;
@@ -39,12 +44,20 @@ export default {
             return;
         }
 
-        // 2. Search for all transformed images and delete those too.
-        const prefix = key.includes("/")
-            ? // New keys
-              key.split("/")[0] + "/"
-            : // Legacy keys
-              utils.getOptimizedImageKeyPrefix(key);
+        /**
+         * Search for all transformed images and delete those too.
+         *
+         * For new keys, we take the entire path, up to, but not including, the file name:
+         *  - demo-pages/60228148f98841000981c724/welcome-to-webiny__idp.svg
+         *  - 60228148f98841000981c724/welcome-to-webiny__idp.svg
+         *
+         * Legacy keys don't have sub-folders:
+         *  - 8ldc5n3w2-custom-field-renderers.mp4
+         */
+
+        const prefix = isLegacyKey(key)
+            ? utils.getOptimizedImageKeyPrefix(key)
+            : dirname(key) + "/";
 
         const env = getEnvironment();
         const imagesList = await s3

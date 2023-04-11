@@ -1,7 +1,11 @@
 import WebinyError from "@webiny/error";
 import { Tenancy, TenancyStorageOperations } from "~/types";
 
-export function createSystemMethods(storageOperations: TenancyStorageOperations) {
+interface CreateSystemMethodsParams {
+    storageOperations: TenancyStorageOperations;
+}
+
+export function createSystemMethods({ storageOperations }: CreateSystemMethodsParams) {
     return {
         async getVersion(this: Tenancy): Promise<string | null> {
             const system = await storageOperations.getSystemData();
@@ -65,6 +69,7 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                 await this.createTenant({
                     id: "root",
                     name: "Root",
+                    tags: [],
                     description: "The top-level Webiny tenant.",
                     parent: ""
                 });

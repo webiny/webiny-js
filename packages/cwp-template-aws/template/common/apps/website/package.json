@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/core": "^10.0.17",
+    "@emotion/react": "^11.10.6",
     "@types/react": "17.0.39",
     "@webiny/app": "latest",
     "@webiny/app-form-builder": "latest",

@@ -4,7 +4,7 @@ import { DialogHeader } from "./dialog/DialogHeader";
 import { Search } from "./Search";
 import { Entry } from "./Entry";
 import { DialogActions, DialogContent as BaseDialogContent } from "~/admin/components/Dialog";
-import { CmsEditorFieldRendererProps } from "~/types";
+import { CmsModelFieldRendererProps } from "~/types";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin";
@@ -48,7 +48,7 @@ const isSelected = (entryId: string, values: CmsReferenceValue[]) => {
     });
 };
 
-interface Props extends CmsEditorFieldRendererProps {
+interface Props extends CmsModelFieldRendererProps {
     values?: CmsReferenceValue[] | null;
     onDialogClose: () => void;
     storeValues: (values: CmsReferenceValue[]) => void;

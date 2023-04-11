@@ -9,9 +9,11 @@ import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/rec
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
 import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import { isLegacyRenderingEngine } from "~/utils";
 // Components
 import Wrapper from "~/editor/plugins/elementSettings/components/Wrapper";
 import SelectField from "~/editor/plugins/elementSettings/components/SelectField";
+import InputField from "~/editor/plugins/elementSettings/components/InputField";
 import {
     ContentWrapper,
     classes
@@ -29,9 +31,12 @@ export const GridSettings: React.VFC<PbEditorPageElementSettingsRenderComponentP
         elementWithChildrenByIdSelector(activeElementId)
     ) as unknown as PbEditorElement;
     const updateElement = useUpdateElement();
-    const propName = `${DATA_NAMESPACE}.${displayMode}.flexDirection`;
+    const flexDirectionPropName = `${DATA_NAMESPACE}.${displayMode}.flexDirection`;
+    const verticalAlignPropName = `data.settings.verticalAlign.${displayMode}`;
+    const columnGapPropName = `${DATA_NAMESPACE}.${displayMode}.columnGap`;
+    const rowGapPropName = `${DATA_NAMESPACE}.${displayMode}.rowGap`;
 
-    const fallbackValue = useMemo(() => {
+    const flexDirectionFallbackValue = useMemo(() => {
         const value = applyFallbackDisplayMode(displayMode, mode =>
             get(element, `${DATA_NAMESPACE}.${mode}.flexDirection`)
         );
@@ -46,14 +51,70 @@ export const GridSettings: React.VFC<PbEditorPageElementSettingsRenderComponentP
         return value;
     }, [displayMode]);
 
-    const flexDirection = get(element, propName, fallbackValue || "row");
+    const flexDirection = get(element, flexDirectionPropName, flexDirectionFallbackValue || "row");
 
     const columnWrap = useMemo(() => {
         return flexDirection === "row" ? "row" : "column";
     }, [flexDirection]);
 
-    const onClick = (type: any) => {
-        const newElement = merge({}, element, set({}, propName, type));
+    const onFlexDirectionChange = (type: any) => {
+        const newElement = merge({}, element, set({}, flexDirectionPropName, type));
+        updateElement(newElement);
+    };
+
+    const verticalAlignFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.verticalAlign.${mode}`)
+            ),
+        [displayMode]
+    );
+
+    const columnHeight =
+        get(
+            element,
+            `data.settings.verticalAlign.${displayMode}`,
+            verticalAlignFallbackValue || "flex-start"
+        ) === "stretch"
+            ? "full-height"
+            : "auto";
+
+    const onColumnHeightChange = (value: string) => {
+        const newElement = merge(
+            {},
+            element,
+            set({}, verticalAlignPropName, value === "auto" ? "flex-start" : "stretch")
+        );
+        updateElement(newElement);
+    };
+
+    const columnGapFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.gridSettings.${mode}.columnGap`)
+            ),
+        [displayMode]
+    );
+
+    const columnGap = get(element, columnGapPropName, columnGapFallbackValue || "");
+
+    const onColumnGapChange = (value: string) => {
+        const newElement = merge({}, element, set({}, columnGapPropName, value));
+        updateElement(newElement);
+    };
+
+    const rowGapFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.gridSettings.${mode}.rowGap`)
+            ),
+        [displayMode]
+    );
+
+    const rowGap = get(element, rowGapPropName, rowGapFallbackValue || "");
+
+    const onRowGapChange = (value: string) => {
+        const newElement = merge({}, element, set({}, rowGapPropName, value));
         updateElement(newElement);
     };
 
@@ -77,7 +138,7 @@ export const GridSettings: React.VFC<PbEditorPageElementSettingsRenderComponentP
                     <SelectField
                         disabled={false}
                         value={columnWrap}
-                        onChange={value => onClick(value)}
+                        onChange={value => onFlexDirectionChange(value)}
                     >
                         <option value="row">No wrap</option>
                         <option value="column">Wrap</option>
@@ -91,13 +152,55 @@ export const GridSettings: React.VFC<PbEditorPageElementSettingsRenderComponentP
                 >
                     <SelectField
                         value={flexDirection}
-                        onChange={value => onClick(value)}
+                        onChange={value => onFlexDirectionChange(value)}
                         disabled={flexDirection === "row"}
                     >
                         <option value="column">Regular</option>
                         <option value="column-reverse">Reverse</option>
                     </SelectField>
                 </Wrapper>
+                {!isLegacyRenderingEngine && (
+                    <>
+                        <Wrapper
+                            label={"Column height"}
+                            leftCellSpan={5}
+                            rightCellSpan={7}
+                            containerClassName={classes.simpleGrid}
+                        >
+                            <SelectField
+                                value={columnHeight}
+                                onChange={value => onColumnHeightChange(value)}
+                            >
+                                <option value="auto">Match content size</option>
+                                <option value="full-height">Match grid height</option>
+                            </SelectField>
+                        </Wrapper>
+                        <Wrapper
+                            containerClassName={classes.simpleGrid}
+                            label={"Column gap"}
+                            leftCellSpan={8}
+                            rightCellSpan={4}
+                        >
+                            <InputField
+                                placeholder={"px"}
+                                value={columnGap}
+                                onChange={onColumnGapChange}
+                            />
+                        </Wrapper>
+                        <Wrapper
+                            containerClassName={classes.simpleGrid}
+                            label={"Row gap"}
+                            leftCellSpan={8}
+                            rightCellSpan={4}
+                        >
+                            <InputField
+                                placeholder={"px"}
+                                value={rowGap}
+                                onChange={onRowGapChange}
+                            />
+                        </Wrapper>
+                    </>
+                )}
             </ContentWrapper>
         </Accordion>
     );

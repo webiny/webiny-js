@@ -26,7 +26,7 @@ export const ApiMigration = createAppModule({
                 handler: "handler.handler",
                 timeout: 900,
                 runtime: "nodejs14.x",
-                memorySize: 3072,
+                memorySize: 3008,
                 role: role.output.arn,
                 description: "Performs data migrations.",
                 code: new pulumi.asset.AssetArchive({

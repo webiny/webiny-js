@@ -203,12 +203,12 @@ export default (params: RenderParams) => {
                 data: null,
                 error: null
             };
-        } catch (e) {
-            console.log("An error occurred while prerendering...", e);
-            console.log(JSON.stringify(e.message));
+        } catch (ex) {
+            console.error("An error occurred while prerendering...", ex);
+            console.error(JSON.stringify(ex.message));
             return {
                 data: null,
-                error: e
+                error: ex
             };
         }
     });

@@ -2,8 +2,12 @@ import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
+import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import {
+    DisplayMode,
     PbEditorGridPresetPluginType,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorElement
@@ -13,8 +17,9 @@ import { createElement } from "../../../helpers";
 import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
+import { isLegacyRenderingEngine } from "~/utils";
 // Components
-import CellSize from "./CellSize";
+import CounterInput from "./CounterInput";
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
 
@@ -80,9 +85,10 @@ const resizeCells = (elements: PbEditorElement[], cells: number[]): PbEditorElem
 
 const updateChildrenWithPreset = (
     target: PbEditorElement,
-    pl: PbEditorGridPresetPluginType
+    pl: PbEditorGridPresetPluginType,
+    rowCount?: number
 ): PbEditorElement[] => {
-    const cells = calculatePresetPluginCells(pl);
+    const cells = [...Array(rowCount || 1)].map(() => calculatePresetPluginCells(pl)).flat();
     const total = target.elements.length;
     const max = cells.length;
     if (total === max) {
@@ -94,6 +100,29 @@ const updateChildrenWithPreset = (
     return resizeCells(created, cells);
 };
 
+const updateCells = (
+    target: PbEditorElement,
+    rowCount: number,
+    columns: number
+): PbEditorElement[] => {
+    const cells = [...Array(rowCount || 1)]
+        .map(() => {
+            return [...Array(columns || 1)].map((_, index) =>
+                get(target.elements?.[index] || {}, "data.settings.grid.size", 1)
+            );
+        })
+        .flat();
+    const total = target.elements.length;
+    const max = cells.length;
+    if (total < max) {
+        const created = [...(target.elements as PbEditorElement[]), ...createCells(max - total)];
+        return resizeCells(created, cells);
+    } else if (total > max) {
+        return resizeCells(target.elements.slice(0, max) as PbEditorElement[], cells);
+    }
+    return target.elements as PbEditorElement[];
+};
+
 export const GridSize: React.VFC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
@@ -103,26 +132,37 @@ export const GridSize: React.VFC<PbEditorPageElementSettingsRenderComponentProps
         elementWithChildrenByIdSelector(activeElementId)
     ) as unknown as PbEditorElement;
     const currentCellsType = element.data.settings?.grid?.cellsType;
+    const currentRowCount = element.data.settings?.grid?.rowCount || 1;
+    const columnsCount = element.data?.settings?.grid?.cellsType?.split("-")?.length || 1;
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
-        const cellElement = element.elements[index] as PbEditorElement;
-        if (!cellElement) {
-            throw new Error(`There is no element on index ${index}.`);
-        }
+        const columnSizes = element.elements?.slice(0, columnsCount)?.map((cell, cellIndex) => {
+            if (cellIndex === index) {
+                return value;
+            }
+            return (cell as PbEditorElement)?.data?.settings?.grid?.size || 1;
+        });
+        const newElement = merge(
+            {},
+            element,
+            set({}, "data.settings.grid.columnSizes", columnSizes)
+        );
+        const cellsToUpdate = [...Array(currentRowCount)].map(
+            (_, rowIndex) => index + columnsCount * rowIndex
+        );
+        const updatedCells = element.elements.map((cell, cellIndex) => {
+            if (cellsToUpdate.includes(cellIndex)) {
+                return merge({}, cell, set({}, "data.settings.grid.size", value));
+            }
+            return cell;
+        });
+
         handler.trigger(
             new UpdateElementActionEvent({
                 element: {
-                    ...cellElement,
-                    data: {
-                        ...cellElement.data,
-                        settings: {
-                            ...(cellElement.data.settings || {}),
-                            grid: {
-                                size: value
-                            }
-                        }
-                    }
+                    ...newElement,
+                    elements: updatedCells
                 } as any,
                 history: true
             })
@@ -143,19 +183,44 @@ export const GridSize: React.VFC<PbEditorPageElementSettingsRenderComponentProps
                         settings: {
                             ...(element.data.settings || {}),
                             grid: {
+                                ...(element.data.settings?.grid || {}),
+                                columnSizes: undefined,
                                 cellsType
                             }
                         }
                     },
-                    elements: updateChildrenWithPreset(element, pl) as any
+                    elements: updateChildrenWithPreset(element, pl, currentRowCount) as any
                 },
                 history: true
             })
         );
     };
-    const totalCellsUsed = element.elements.reduce((total, cell) => {
+    const totalCellsUsed = element.elements.slice(0, columnsCount).reduce((total, cell) => {
         return total + ((cell as PbEditorElement).data.settings?.grid?.size || 1);
     }, 0);
+
+    const onRowsChange = (rowCount: number) => {
+        const newElement = merge(
+            {},
+            element,
+            set({}, "data.settings.grid.rowCount", rowCount),
+            set({}, `data.settings.gridSettings.${DisplayMode.DESKTOP}.flexDirection`, "column"),
+            set({}, `data.settings.gridSettings.${DisplayMode.TABLET}.flexDirection`, "column"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.DESKTOP}`, "stretch"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.TABLET}`, "stretch"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.MOBILE_LANDSCAPE}`, "flex-start"),
+            set({}, `data.settings.verticalAlign.${DisplayMode.MOBILE_PORTRAIT}`, "flex-start")
+        );
+        handler.trigger(
+            new UpdateElementActionEvent({
+                element: {
+                    ...newElement,
+                    elements: updateCells(newElement, rowCount, columnsCount) as any
+                },
+                history: true
+            })
+        );
+    };
 
     return (
         <Accordion title={"Grid Size"} defaultValue={defaultAccordionValue}>
@@ -176,14 +241,35 @@ export const GridSize: React.VFC<PbEditorPageElementSettingsRenderComponentProps
                     })}
                 </Grid>
 
+                {!isLegacyRenderingEngine && (
+                    <Grid className={classes.grid}>
+                        <Cell span={12}>
+                            <CounterInput
+                                value={element.data.settings?.grid?.rowCount || 1}
+                                label={"Row count"}
+                                minErrorMessage={"Grid can't have less rows than this."}
+                                maxErrorMessage={"Grid can't have more rows than this."}
+                                onChange={value => {
+                                    onRowsChange(value);
+                                }}
+                                maxAllowed={12}
+                            />
+                        </Cell>
+                    </Grid>
+                )}
+
                 <Grid className={classes.grid}>
-                    {element.elements.map((cell, index) => {
-                        const size = (cell as PbEditorElement).data.settings?.grid?.size || 1;
+                    {[...Array(columnsCount)].map((_, index) => {
+                        const size =
+                            (element.elements?.[index] as PbEditorElement)?.data?.settings?.grid
+                                ?.size || 1;
                         return (
-                            <Cell span={12} key={`cell-size-${index}`}>
-                                <CellSize
+                            <Cell span={12} key={`column-size-${index}`}>
+                                <CounterInput
                                     value={size}
-                                    label={`Cell ${index + 1}`}
+                                    label={`Column ${index + 1}`}
+                                    minErrorMessage={"Column can't get smaller than this."}
+                                    maxErrorMessage={"Column can't get bigger than this."}
                                     onChange={value => onInputSizeChange(value, index)}
                                     maxAllowed={12 - totalCellsUsed}
                                 />

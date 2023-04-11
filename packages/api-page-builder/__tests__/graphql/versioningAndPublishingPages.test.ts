@@ -511,6 +511,37 @@ describe("versioning and publishing pages", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
+        expect(p1v1).toMatchObject({
+            category: {
+                slug: "slug"
+            },
+            locked: false,
+            path: expect.stringMatching("/some-url/untitled-"),
+            settings: {
+                general: {
+                    image: null,
+                    layout: "layout",
+                    snippet: null,
+                    tags: null
+                },
+                seo: {
+                    description: null,
+                    meta: [],
+                    title: null
+                },
+                social: {
+                    description: null,
+                    image: null,
+                    meta: [],
+                    title: null
+                }
+            },
+            status: "draft",
+            title: "Untitled",
+            url: expect.stringMatching("untitled-"),
+            version: 1
+        });
+
         await updatePage({
             id: p1v1.id,
             data: { path: "/pages-test" }

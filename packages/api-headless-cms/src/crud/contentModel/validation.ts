@@ -88,7 +88,7 @@ const fieldSchema = zod.object({
         .array(
             zod.object({
                 name: shortString,
-                message: shortString,
+                message: optionalShortString.default("Value is required."),
                 settings: zod
                     .object({})
                     .passthrough()
@@ -106,7 +106,7 @@ const fieldSchema = zod.object({
         .array(
             zod.object({
                 name: shortString,
-                message: shortString,
+                message: optionalShortString.default("Value is required."),
                 settings: zod
                     .object({})
                     .passthrough()

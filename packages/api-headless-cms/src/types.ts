@@ -174,15 +174,13 @@ export interface CmsModelField {
         | string;
     /**
      * A unique storage ID for storing actual values.
-     * Must in form of a-zA-Z0-9@a-zA-Z0-9@a-zA-Z0-9.
+     * Must in form of a-zA-Z0-9@a-zA-Z0-9
      *
      * This is an auto-generated value: uses `id` and `type`
      *
      * This is used as path for the entry value.
-     *
-     * @internal
      */
-    storageId: string;
+    storageId: `${string}@${string}` | string;
     /**
      * Field identifier for the model field that will be available to the outside world.
      * `storageId` is used as path (or column) to store the data.
@@ -1384,7 +1382,7 @@ export interface CmsModelFieldInput {
     /**
      * @see CmsModelField.listValidation
      */
-    listValidation: CmsModelFieldValidation[];
+    listValidation?: CmsModelFieldValidation[];
     /**
      * User defined settings.
      */

@@ -53,3 +53,5 @@ export {
     RawEventHandlerCallable,
     RawEventHandler
 } from "~/raw";
+
+export { ContextPlugin, createContextPlugin } from "@webiny/handler";

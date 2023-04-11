@@ -9,6 +9,7 @@ export interface CmsDataCmsGroup {
 }
 export interface CmsDataCmsModel {
     id: string;
+    modelId: string;
     label: string;
     group: CmsDataCmsGroup;
 }
@@ -30,6 +31,7 @@ const LIST_DATA = gql`
     query CmsLoadPermissionsData {
         listContentModels {
             data {
+                modelId
                 id: modelId
                 label: name
                 group {

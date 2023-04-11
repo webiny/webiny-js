@@ -1,12 +1,9 @@
 // @ts-ignore
 import mdbid from "mdbid";
-import chunk from "lodash/chunk";
 import { PbImportExportContext } from "~/graphql/types";
 import { File, FileInput } from "@webiny/api-file-manager/types";
 import { UploadFileMap, uploadFilesFromS3 } from "~/import/utils/uploadFilesFromS3";
 import { FileUploadsData } from "~/types";
-
-const FILES_COUNT_IN_EACH_BATCH = 15;
 
 interface UploadAssetsParams {
     context: PbImportExportContext;
@@ -47,11 +44,7 @@ export const uploadAssets = async (params: UploadAssetsParams) => {
 
     await uploadFilesFromS3(uploadFileMap);
 
-    // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
-    const createFilesInputChunks = chunk(createFilesInput, FILES_COUNT_IN_EACH_BATCH);
-    for (const inputChunk of createFilesInputChunks) {
-        await context.fileManager.createFilesInBatch(inputChunk);
-    }
+    await context.fileManager.createFilesInBatch(createFilesInput);
 
     return oldIdToNewFileMap;
 };

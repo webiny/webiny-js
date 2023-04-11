@@ -1,7 +1,7 @@
 import React from "react";
 import { App, AppProps, HigherOrderComponent } from "@webiny/app";
 import { ApolloProvider } from "@apollo/react-hooks";
-import { CacheProvider } from "@emotion/core";
+import { CacheProvider } from "@emotion/react";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";

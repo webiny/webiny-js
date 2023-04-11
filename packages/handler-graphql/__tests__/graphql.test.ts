@@ -1,67 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { GraphQLSchemaPlugin } from "~/types";
-import { ContextPlugin } from "@webiny/api";
-
-const books = [
-    {
-        name: "Book 1"
-    },
-    {
-        name: "Book 2"
-    }
-];
-
-const crudPlugin = new ContextPlugin(async context => {
-    (context as any).getBooks = () => {
-        console.log("getBooks");
-        console.table(books);
-        console.warn("Your store is quite empty!");
-        return books;
-    };
-});
-
-const booksSchema: GraphQLSchemaPlugin = {
-    type: "graphql-schema",
-    schema: {
-        typeDefs: /* GraphQL */ `
-            type Book {
-                name: String
-            }
-
-            extend type Query {
-                books: [Book]
-                book(name: String!): Book
-            }
-
-            extend type Mutation {
-                createBook: Boolean
-            }
-        `,
-        resolvers: {
-            Query: {
-                books(_, __, context: any) {
-                    console.group("books resolver");
-                    const books = context.getBooks();
-                    console.groupEnd();
-                    return books;
-                },
-                book(_, { name }) {
-                    console.log("Find book by name");
-                    const book = books.find(b => b.name === name);
-                    if (book) {
-                        console.log(`Found book "${book.name}"`);
-                        return book;
-                    }
-                    console.log(`Book not found!`);
-                    return null;
-                }
-            },
-            Mutation: {
-                createBook: () => true
-            }
-        }
-    }
-};
+import { booksSchema, booksCrudPlugin } from "~tests/mocks/booksSchema";
 
 describe("GraphQL Handler", () => {
     test("should return errors if schema doesn't exist", async () => {
@@ -81,7 +19,7 @@ describe("GraphQL Handler", () => {
     });
 
     test("should return logs in the extensions", async () => {
-        const { invoke } = useGqlHandler({ debug: true, plugins: [crudPlugin, booksSchema] });
+        const { invoke } = useGqlHandler({ debug: true, plugins: [booksCrudPlugin, booksSchema] });
         const [response] = await invoke({ body: { query: `{ books { name } }` } });
         expect(response.errors).toBeFalsy();
         expect(response.data.books.length).toBe(2);
@@ -89,7 +27,7 @@ describe("GraphQL Handler", () => {
     });
 
     test("should return logs for specific queries when executed in batch", async () => {
-        const { invoke } = useGqlHandler({ debug: true, plugins: [crudPlugin, booksSchema] });
+        const { invoke } = useGqlHandler({ debug: true, plugins: [booksCrudPlugin, booksSchema] });
         const [[r1, r2, r3]] = await invoke({
             body: [
                 { query: `{ books { name } }` },

@@ -77,7 +77,7 @@ import { documentClient } from "~tests/documentClient";
 
 interface Params {
     permissions?: any;
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
     plugins?: any[];
     storageOperationPlugins?: any[];
 }

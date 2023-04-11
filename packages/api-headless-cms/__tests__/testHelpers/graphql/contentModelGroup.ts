@@ -1,3 +1,5 @@
+import { CmsGroupCreateInput } from "~/types";
+
 const DATA_FIELD = /* GraphQL*/ `
     {
         id
@@ -22,6 +24,9 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+export interface ContentModelGroupsMutationVariables {
+    data: CmsGroupCreateInput;
+}
 export const CREATE_CONTENT_MODEL_GROUP_MUTATION = /* GraphQL */ `
     mutation CreateContentModelGroupMutation($data: CmsContentModelGroupInput!) {
         createContentModelGroup(data: $data) {

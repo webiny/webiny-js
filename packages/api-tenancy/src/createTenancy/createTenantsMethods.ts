@@ -45,7 +45,17 @@ function createTenantLoaders(storageOperations: TenancyStorageOperations) {
     };
 }
 
-export function createTenantsMethods(storageOperations: TenancyStorageOperations) {
+export interface CreateTenantsMethodsParams {
+    storageOperations: TenancyStorageOperations;
+    incrementWcpTenants: () => Promise<void>;
+    decrementWcpTenants: () => Promise<void>;
+}
+
+export function createTenantsMethods({
+    storageOperations,
+    incrementWcpTenants,
+    decrementWcpTenants
+}: CreateTenantsMethodsParams) {
     const loaders = createTenantLoaders(storageOperations);
 
     return {
@@ -86,7 +96,6 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
                 settings: {
                     ...(data.settings || {}),
                     domains: (data.settings && data.settings.domains) || []
-                    // themes: (data.settings && data.settings.themes) || []
                 },
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
@@ -94,11 +103,18 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
                 webinyVersion: process.env.WEBINY_VERSION
             };
 
-            await this.onTenantBeforeCreate.publish({ tenant });
+            await this.onTenantBeforeCreate.publish({ tenant, input: data });
 
-            await storageOperations.createTenant(tenant);
+            await incrementWcpTenants();
 
-            await this.onTenantAfterCreate.publish({ tenant });
+            try {
+                await storageOperations.createTenant(tenant);
+            } catch (e) {
+                await decrementWcpTenants();
+                throw e;
+            }
+
+            await this.onTenantAfterCreate.publish({ tenant, input: data });
 
             // Store data in cache
             loaders.getTenant.clear(tenant.id).prime(tenant.id, tenant);
@@ -134,6 +150,8 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
             await this.onTenantBeforeDelete.publish({ tenant });
 
             await storageOperations.deleteTenant(id);
+
+            await decrementWcpTenants();
 
             await this.onTenantAfterDelete.publish({ tenant });
 

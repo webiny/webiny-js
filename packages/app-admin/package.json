@@ -14,8 +14,8 @@
     "@apollo/react-hooks": "^3.1.5",
     "@babel/runtime": "^7.19.0",
     "@editorjs/editorjs": "^2.19.0",
-    "@emotion/core": "^10.0.17",
-    "@emotion/styled": "^10.0.17",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@material-design-icons/svg": "^0.14.3",
     "@svgr/webpack": "^6.1.1",
     "@types/mime": "^2.0.3",
@@ -80,7 +80,7 @@
     "ignore": {
       "dependencies": [
         "@svgr/webpack",
-        "@emotion/core",
+        "@emotion/react",
         "@types/mime"
       ],
       "peerDependencies": [

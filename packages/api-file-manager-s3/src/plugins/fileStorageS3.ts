@@ -8,7 +8,7 @@ const S3_BUCKET = process.env.S3_BUCKET;
 
 export default (): FilePhysicalStoragePlugin => {
     /**
-     * We need to extends the type for FilePhysicalStoragePlugin.
+     * We need to extend the type for FilePhysicalStoragePlugin.
      * Otherwise, the `getPresignedPostPayload` doesn't know it has all required values in params.
      */
     return new FilePhysicalStoragePlugin({
