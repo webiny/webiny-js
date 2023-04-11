@@ -3,7 +3,6 @@ import { Link } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { usePage } from "@webiny/app-page-builder-elements";
 import { Menu } from "@webiny/app-website";
-import { fonts, breakpoints } from "../../../theme";
 import { Navigation } from "./Navigation";
 
 export const HeaderDesktop: React.FC = () => {
@@ -34,7 +33,7 @@ const HeaderDesktopWrapper = styled.div`
     margin: 0 auto;
     max-width: 1200px;
 
-    ${breakpoints.tablet} {
+    ${props => props.theme.breakpoints["tablet"]} {
         display: none;
     }
 
@@ -48,6 +47,5 @@ const HeaderDesktopWrapper = styled.div`
         -moz-osx-font-smoothing: grayscale;
         -webkit-font-smoothing: antialiased;
         flex: 1;
-        font-family: ${fonts.font1};
     }
 `;
