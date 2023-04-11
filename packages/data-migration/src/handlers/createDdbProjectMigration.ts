@@ -3,10 +3,10 @@ import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
 import {
+    ExecutionTimeLimiterSymbol,
     MigrationRepositorySymbol,
     MigrationSymbol,
-    PrimaryDynamoTableSymbol,
-    ExecutionTimeLimiterSymbol
+    PrimaryDynamoTableSymbol
 } from "~/symbols";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
 import { devVersionErrorResponse } from "./devVersionErrorResponse";
@@ -18,6 +18,7 @@ import {
     MigrationEventPayload,
     MigrationRepository
 } from "~/types";
+import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbDataMigrationConfig {
     migrations: Constructor<DataMigration>[];
@@ -38,7 +39,8 @@ export const createDdbProjectMigration = ({
         async ({ payload, lambdaContext }) => {
             const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
 
-            if (projectVersion === "0.0.0") {
+            const version = semverCoerce(projectVersion);
+            if (version?.version === "0.0.0") {
                 return devVersionErrorResponse();
             }
 
