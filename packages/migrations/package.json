@@ -1,7 +1,6 @@
 {
   "name": "@webiny/migrations",
   "version": "0.0.0",
-  "private": true,
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
