@@ -45,3 +45,11 @@ export interface Theme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
+
+type WTheme = Theme;
+
+declare module "@emotion/react" {
+    // Ignoring "@typescript-eslint/no-empty-interface" rule here.
+    // eslint-disable-next-line
+    export interface Theme extends WTheme {}
+}
