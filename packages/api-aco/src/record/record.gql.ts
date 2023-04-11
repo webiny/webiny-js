@@ -14,6 +14,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             title: String!
             content: String
             data: JSON
+            tags: [String!]
             savedOn: DateTime
             createdOn: DateTime
             createdBy: AcoUser
@@ -41,6 +42,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             content: String
             location: SearchLocationInput
             data: JSON
+            tags: [String!]
         }
 
         input SearchRecordListWhereInput {

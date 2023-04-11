@@ -8,8 +8,9 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            tags: ["tag1", "tag2"]
-        }
+            any: "data"
+        },
+        tags: ["tag1", "tag2"]
     },
     recordB: {
         id: "page-b",
@@ -20,8 +21,9 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            tags: ["tag1"]
-        }
+            any: 1
+        },
+        tags: ["tag1"]
     },
     recordC: {
         id: "page-c",
@@ -32,8 +34,9 @@ export const recordMocks = {
             folderId: "folder-2"
         },
         data: {
-            tags: ["tag1"]
-        }
+            any: "data"
+        },
+        tags: ["tag3"]
     },
     recordD: {
         id: "post-d",
@@ -44,8 +47,9 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            any: "string"
-        }
+            any: "data"
+        },
+        tags: ["tag1", "tag2"]
     },
     recordE: {
         id: "post-e",

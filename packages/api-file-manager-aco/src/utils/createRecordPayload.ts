@@ -21,6 +21,7 @@ export const createFileRecordPayload = (
         type: FM_FILE_TYPE,
         title: name,
         location,
+        tags,
         data: {
             id,
             key,
@@ -42,6 +43,7 @@ export const updatePageRecordPayload = async (
 
     return {
         title: name,
+        tags,
         data: {
             id,
             key,

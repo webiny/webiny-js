@@ -16,6 +16,7 @@ export interface SearchRecord<TData extends GenericSearchData = GenericSearchDat
     content?: string;
     location?: Location;
     data?: TData;
+    tags?: string[];
 }
 
 export interface ListSearchRecordsWhere {
@@ -35,7 +36,7 @@ export interface ListSearchRecordsParams {
 
 export type CreateSearchRecordParams<TData> = Pick<
     SearchRecord<TData>,
-    "id" | "title" | "content" | "type" | "location" | "data"
+    "id" | "title" | "content" | "type" | "location" | "data" | "tags"
 >;
 
 export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
@@ -43,6 +44,7 @@ export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
     content?: string;
     location?: Location;
     data?: TData;
+    tags?: string[];
 }
 
 export interface DeleteSearchRecordParams {
