@@ -24,6 +24,7 @@ export interface ListSearchRecordsWhere {
     location?: {
         folderId: string;
     };
+    tags_in?: string[];
 }
 
 export interface ListSearchRecordsParams {

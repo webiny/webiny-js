@@ -35,6 +35,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             content: String
             location: SearchLocationInput!
             data: JSON
+            tags: [String!]
         }
 
         input SearchRecordUpdateInput {
@@ -48,6 +49,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         input SearchRecordListWhereInput {
             type: String!
             location: SearchLocationInput
+            tags_in: [String!]
         }
 
         type SearchRecordResponse {

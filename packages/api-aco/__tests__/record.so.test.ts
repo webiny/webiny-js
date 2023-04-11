@@ -24,7 +24,7 @@ describe("`search` CRUD", () => {
 
         const [responseE] = await search.createRecord({ data: recordMocks.recordE });
         const recordE = responseE.data.search.createRecord.data;
-        expect(recordE).toEqual({ ...recordMocks.recordE, id: recordE.id });
+        expect(recordE).toEqual({ ...recordMocks.recordE, id: recordE.id, tags: null });
 
         // Let's check whether both of the record exists, listing them by `type` and `location`.
         // List records -> type: "page" / folderId: "folder-1"
@@ -146,6 +146,21 @@ describe("`search` CRUD", () => {
                 data: expect.arrayContaining([
                     expect.objectContaining({ ...recordMocks.recordB, id: recordB.id }),
                     expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
+                ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using ``tags
+        const [tagsResponse] = await search.listRecords({
+            where: { type: "page", tags_in: ["tag1"] }
+        });
+
+        expect(tagsResponse.data.search.listRecords).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
                 ]),
                 error: null
             })
