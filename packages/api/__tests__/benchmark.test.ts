@@ -37,6 +37,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -73,6 +74,7 @@ describe("benchmark", () => {
 
         expected.push({
             name: "test",
+            category: "webiny",
             start: expect.any(Date),
             end: expect.any(Date),
             elapsed: expect.any(Number),
@@ -80,6 +82,7 @@ describe("benchmark", () => {
         });
         expected.push({
             name: "another test",
+            category: "webiny",
             start: expect.any(Date),
             end: expect.any(Date),
             elapsed: expect.any(Number),
@@ -112,6 +115,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -164,6 +168,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -205,6 +210,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -228,6 +234,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),

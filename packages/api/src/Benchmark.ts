@@ -2,6 +2,7 @@ import {
     Benchmark as BenchmarkInterface,
     BenchmarkEnableOnCallable,
     BenchmarkMeasurement,
+    BenchmarkMeasureOptions,
     BenchmarkOutputCallable,
     BenchmarkOutputCallableResponse,
     BenchmarkRuns
@@ -13,7 +14,8 @@ enum BenchmarkState {
     UNDETERMINED = "undetermined"
 }
 
-interface BenchmarkMeasurementStart extends Pick<BenchmarkMeasurement, "name" | "start"> {
+interface BenchmarkMeasurementStart
+    extends Pick<BenchmarkMeasurement, "name" | "category" | "start"> {
     memoryStart: number;
 }
 
@@ -82,12 +84,15 @@ export class Benchmark implements BenchmarkInterface {
         this.outputDone = true;
     }
 
-    public async measure<T = any>(name: string, cb: () => Promise<T>): Promise<T> {
+    public async measure<T = any>(
+        options: BenchmarkMeasureOptions | string,
+        cb: () => Promise<T>
+    ): Promise<T> {
         const enabled = await this.getIsEnabled();
         if (!enabled) {
             return cb();
         }
-        const measurement = this.startMeasurement(name);
+        const measurement = this.startMeasurement(options);
         const isAlreadyRunning = this.getIsAlreadyRunning();
         this.startRunning();
         try {
@@ -150,9 +155,12 @@ export class Benchmark implements BenchmarkInterface {
         this.state = state;
     }
 
-    private startMeasurement(name: string): BenchmarkMeasurementStart {
+    private startMeasurement(options: BenchmarkMeasureOptions | string): BenchmarkMeasurementStart {
+        const name = typeof options === "string" ? options : options.name;
+        const category = typeof options === "string" ? "webiny" : options.category;
         return {
             name,
+            category,
             start: new Date(),
             memoryStart: process.memoryUsage().heapUsed
         };
@@ -164,6 +172,7 @@ export class Benchmark implements BenchmarkInterface {
         const elapsed = end.getTime() - measurement.start.getTime();
         return {
             name: measurement.name,
+            category: measurement.category,
             start: measurement.start,
             end,
             elapsed,

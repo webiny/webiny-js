@@ -6,6 +6,7 @@ export interface BenchmarkRuns {
 
 export interface BenchmarkMeasurement {
     name: string;
+    category: string;
     start: Date;
     end: Date;
     elapsed: number;
@@ -23,7 +24,10 @@ export enum BenchmarkOutputCallableResponse {
 export interface BenchmarkOutputCallable {
     (benchmark: Benchmark): Promise<BenchmarkOutputCallableResponse | undefined | null | void>;
 }
-
+export interface BenchmarkMeasureOptions {
+    name: string;
+    category: string;
+}
 export interface Benchmark {
     elapsed: number;
     runs: BenchmarkRuns;
@@ -31,7 +35,10 @@ export interface Benchmark {
     output: () => Promise<void>;
     onOutput: (cb: BenchmarkOutputCallable) => void;
     enableOn: (cb: BenchmarkEnableOnCallable) => void;
-    measure: <T = any>(name: string, cb: () => Promise<T>) => Promise<T>;
+    measure: <T = any>(
+        options: BenchmarkMeasureOptions | string,
+        cb: () => Promise<T>
+    ) => Promise<T>;
     enable: () => void;
     disable: () => void;
 }
