@@ -58,6 +58,7 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.createContext",
+                    category: "webiny",
                     start: expect.any(Date)
                 },
                 {
@@ -65,6 +66,7 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.crud.models.listModels",
+                    category: "webiny",
                     start: expect.any(Date)
                 },
                 {
@@ -72,6 +74,7 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.graphql.getSchema",
+                    category: "webiny",
                     start: expect.any(Date)
                 },
                 {
@@ -79,6 +82,7 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.graphql.createRequestBody",
+                    category: "webiny",
                     start: expect.any(Date)
                 },
                 {
@@ -86,6 +90,7 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.crud.groups.createGroup",
+                    category: "webiny",
                     start: expect.any(Date)
                 },
                 {
@@ -93,6 +98,7 @@ describe("benchmark points", () => {
                     end: expect.any(Date),
                     memory: expect.any(Number),
                     name: "headlessCms.graphql.processRequestBody",
+                    category: "webiny",
                     start: expect.any(Date)
                 }
             ]
