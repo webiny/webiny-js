@@ -29,6 +29,11 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     data: TData;
 }
 
+export interface TagItem {
+    name: string;
+    active: boolean;
+}
+
 export type Loading<T extends string> = { [P in T]?: boolean };
 
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
@@ -146,6 +151,19 @@ export interface ListSearchRecordsQueryVariables {
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
+}
+
+export interface ListTagsResponse {
+    search: {
+        listTags: {
+            data: string[] | null;
+            error: Error | null;
+        };
+    };
+}
+
+export interface ListTagsQueryVariables {
+    type: string;
 }
 
 export interface GetSearchRecordResponse {

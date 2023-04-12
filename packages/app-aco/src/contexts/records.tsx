@@ -9,6 +9,7 @@ import {
     DELETE_RECORD,
     GET_RECORD,
     LIST_RECORDS,
+    LIST_TAGS,
     UPDATE_RECORD
 } from "~/graphql/records.gql";
 
@@ -28,12 +29,16 @@ import {
     Meta,
     UpdateSearchRecordResponse,
     UpdateSearchRecordVariables,
-    ListDbSort
+    ListDbSort,
+    ListTagsResponse,
+    ListTagsQueryVariables,
+    TagItem
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 interface SearchRecordsContext {
     records: SearchRecordItem[];
+    tags: Record<string, TagItem[]>;
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
     listRecords: (params: {
@@ -47,6 +52,8 @@ interface SearchRecordsContext {
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
     deleteRecord(record: SearchRecordItem): Promise<true>;
+    listTags: (params: { type: string }) => Promise<TagItem[]>;
+    updateTag: (tag: TagItem, type: string) => TagItem;
 }
 
 export const SearchRecordsContext = React.createContext<SearchRecordsContext | undefined>(
@@ -70,11 +77,13 @@ const defaultLoading: Record<LoadingActions, boolean> = {
 export const SearchRecordsProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
+    const [tags, setTags] = useState<Record<string, TagItem[]>>(Object.create(null));
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
 
     const context: SearchRecordsContext = {
         records,
+        tags,
         loading,
         meta,
         async listRecords(params) {
@@ -298,6 +307,57 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             return true;
+        },
+
+        async listTags(params) {
+            const { type } = params;
+
+            if (!type) {
+                throw new Error("`type` is mandatory");
+            }
+
+            const { data: response } = await apolloFetchingHandler(
+                loadingHandler("LIST", setLoading),
+                () =>
+                    client.query<ListTagsResponse, ListTagsQueryVariables>({
+                        query: LIST_TAGS,
+                        variables: { type }
+                    })
+            );
+
+            const { data, error } = response.search.listTags;
+
+            if (!data) {
+                throw new Error(error?.message || "Could not fetch tags");
+            }
+
+            setTags(tags => ({
+                ...tags,
+                [type]: data.map((tag: string) => ({
+                    name: tag,
+                    active: false
+                }))
+            }));
+
+            return data;
+        },
+
+        updateTag(tag, type) {
+            const { name } = tag;
+
+            setTags(tags => {
+                const tagIndex = tags[type].findIndex(t => t.name === name);
+                if (tagIndex === -1) {
+                    return tags;
+                }
+
+                const typeTags = tags[type];
+                typeTags[tagIndex] = tag;
+
+                return { ...tags, [type]: typeTags };
+            });
+
+            return tag;
         }
     };
 

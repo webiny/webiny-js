@@ -158,10 +158,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const toggleTag = useCallback(async ({ tag, queryParams }) => {
         const finalTags = Array.isArray(queryParams.tags) ? [...queryParams.tags] : [];
 
-        if (finalTags.includes(tag)) {
-            finalTags.splice(finalTags.indexOf(tag), 1);
+        if (finalTags.includes(tag.name)) {
+            finalTags.splice(finalTags.indexOf(tag.name), 1);
         } else {
-            finalTags.push(tag);
+            finalTags.push(tag.name);
         }
 
         setQueryParams({ ...queryParams, tags: finalTags });
@@ -272,122 +272,126 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     );
 
     return (
-        <Files
-            multiple
-            maxSize={settings ? settings.uploadMaxFileSize + "b" : "1TB"}
-            multipleMaxSize={"1TB"}
-            accept={accept}
-            onSuccess={files => {
-                const filesToUpload = files.map(file => file.src.file).filter(Boolean) as File[];
-                uploadFiles(filesToUpload);
-            }}
-            onError={errors => {
-                console.log("onError", errors);
-                const message = outputFileSelectionError(errors);
-                showSnackbar(message);
-            }}
-        >
-            {({ getDropZoneProps, browseFiles }) => (
-                <OverlayLayout
-                    {...getDropZoneProps({
-                        onDragEnter: () => hasPreviouslyUploadedFiles && setDragging(true),
-                        onExited: onClose
-                    })}
-                    barLeft={
-                        <InputSearch>
-                            <Icon className={searchIcon} icon={<SearchIcon />} />
-                            <input
-                                ref={searchInput}
-                                onChange={e => searchOnChange(e.target.value)}
-                                placeholder={t`Search by filename or tags`}
-                                disabled={!fileManager.canRead}
-                                data-testid={"file-manager.search-input"}
-                            />
-                        </InputSearch>
-                    }
-                    barRight={
-                        selected.length > 0 ? (
-                            <ButtonPrimary
-                                disabled={uploading}
-                                onClick={() => {
-                                    (async () => {
-                                        if (typeof onChange === "function") {
-                                            await onChange(multiple ? selected : selected[0]);
+        <>
+            <Files
+                multiple
+                maxSize={settings ? settings.uploadMaxFileSize + "b" : "1TB"}
+                multipleMaxSize={"1TB"}
+                accept={accept}
+                onSuccess={files => {
+                    const filesToUpload = files
+                        .map(file => file.src.file)
+                        .filter(Boolean) as File[];
+                    uploadFiles(filesToUpload);
+                }}
+                onError={errors => {
+                    console.log("onError", errors);
+                    const message = outputFileSelectionError(errors);
+                    showSnackbar(message);
+                }}
+            >
+                {({ getDropZoneProps, browseFiles }) => (
+                    <OverlayLayout
+                        {...getDropZoneProps({
+                            onDragEnter: () => hasPreviouslyUploadedFiles && setDragging(true),
+                            onExited: onClose
+                        })}
+                        barLeft={
+                            <InputSearch>
+                                <Icon className={searchIcon} icon={<SearchIcon />} />
+                                <input
+                                    ref={searchInput}
+                                    onChange={e => searchOnChange(e.target.value)}
+                                    placeholder={t`Search by filename or tags`}
+                                    disabled={!fileManager.canRead}
+                                    data-testid={"file-manager.search-input"}
+                                />
+                            </InputSearch>
+                        }
+                        barRight={
+                            selected.length > 0 ? (
+                                <ButtonPrimary
+                                    disabled={uploading}
+                                    onClick={() => {
+                                        (async () => {
+                                            if (typeof onChange === "function") {
+                                                await onChange(multiple ? selected : selected[0]);
 
-                                            onClose && onClose();
-                                        }
-                                    })();
-                                }}
-                            >
-                                {t`Select`} {multiple && `(${selected.length})`}
-                            </ButtonPrimary>
-                        ) : (
-                            renderUploadFileAction({ browseFiles })
-                        )
-                    }
-                >
-                    <>
-                        {dragging && hasPreviouslyUploadedFiles && (
-                            <DropFilesHere
-                                onDragLeave={() => setDragging(false)}
-                                onDrop={() => setDragging(false)}
-                            />
-                        )}
-
-                        {showingFileDetails ? (
-                            <FileDetails
-                                file={files.find(item => item.id === showingFileDetails)!}
-                                onClose={hideFileDetails}
-                            />
-                        ) : null}
-
-                        <LeftSidebar toggleTag={tag => toggleTag({ tag, queryParams })} />
-
-                        <FileListWrapper data-testid={"fm-list-wrapper"}>
-                            {loadingFiles && (
-                                <CircularProgress
-                                    label={t`Loading Files...`}
-                                    style={{ opacity: 1 }}
+                                                onClose && onClose();
+                                            }
+                                        })();
+                                    }}
+                                >
+                                    {t`Select`} {multiple && `(${selected.length})`}
+                                </ButtonPrimary>
+                            ) : (
+                                renderUploadFileAction({ browseFiles })
+                            )
+                        }
+                    >
+                        <>
+                            {dragging && hasPreviouslyUploadedFiles && (
+                                <DropFilesHere
+                                    onDragLeave={() => setDragging(false)}
+                                    onDrop={() => setDragging(false)}
                                 />
                             )}
-                            <Scrollbar
-                                onScrollFrame={scrollFrame =>
-                                    refreshOnScroll({ scrollFrame, loadMore })
-                                }
-                            >
-                                <FileList>
-                                    {files.length ? (
-                                        files.map(file =>
-                                            renderFile({
-                                                file,
-                                                showFileDetails: () => showFileDetails(file.id),
-                                                selected: selected.some(
-                                                    current => current.src === file.src
-                                                ),
-                                                onSelect: async () => {
-                                                    if (typeof onChange === "function") {
-                                                        if (multiple) {
-                                                            toggleSelected(file);
-                                                            return;
-                                                        }
 
-                                                        await onChange(file);
-                                                        onClose && onClose();
+                            {showingFileDetails ? (
+                                <FileDetails
+                                    file={files.find(item => item.id === showingFileDetails)!}
+                                    onClose={hideFileDetails}
+                                />
+                            ) : null}
+
+                            <LeftSidebar toggleTag={tag => toggleTag({ tag, queryParams })} />
+
+                            <FileListWrapper data-testid={"fm-list-wrapper"}>
+                                {loadingFiles && (
+                                    <CircularProgress
+                                        label={t`Loading Files...`}
+                                        style={{ opacity: 1 }}
+                                    />
+                                )}
+                                <Scrollbar
+                                    onScrollFrame={scrollFrame =>
+                                        refreshOnScroll({ scrollFrame, loadMore })
+                                    }
+                                >
+                                    <FileList>
+                                        {files.length ? (
+                                            files.map(file =>
+                                                renderFile({
+                                                    file,
+                                                    showFileDetails: () => showFileDetails(file.id),
+                                                    selected: selected.some(
+                                                        current => current.src === file.src
+                                                    ),
+                                                    onSelect: async () => {
+                                                        if (typeof onChange === "function") {
+                                                            if (multiple) {
+                                                                toggleSelected(file);
+                                                                return;
+                                                            }
+
+                                                            await onChange(file);
+                                                            onClose && onClose();
+                                                        }
                                                     }
-                                                }
-                                            })
-                                        )
-                                    ) : (
-                                        <EmptyView browseFiles={browseFiles} />
-                                    )}
-                                </FileList>
-                            </Scrollbar>
-                            <BottomInfoBar accept={accept} uploading={uploading} />
-                        </FileListWrapper>
-                    </>
-                </OverlayLayout>
-            )}
-        </Files>
+                                                })
+                                            )
+                                        ) : (
+                                            <EmptyView browseFiles={browseFiles} />
+                                        )}
+                                    </FileList>
+                                </Scrollbar>
+                                <BottomInfoBar accept={accept} uploading={uploading} />
+                            </FileListWrapper>
+                        </>
+                    </OverlayLayout>
+                )}
+            </Files>
+        </>
     );
 };
 

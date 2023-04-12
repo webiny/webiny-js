@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-aco" },
     { "path": "../app-security" },
     { "path": "../form" },
     { "path": "../plugins" },
@@ -21,6 +22,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/form/*": ["../form/src/*"],

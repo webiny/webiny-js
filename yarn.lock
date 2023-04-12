@@ -13205,6 +13205,7 @@ __metadata:
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@webiny/app": 0.0.0
+    "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0

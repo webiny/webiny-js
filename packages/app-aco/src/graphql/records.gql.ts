@@ -85,3 +85,15 @@ export const DELETE_RECORD = gql`
         }
     }
 `;
+
+export const LIST_TAGS = gql`
+    query ListTags($type: String!) {
+        search {
+            listTags(where: { type: $type }) {
+                data
+                meta ${LIST_META_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
