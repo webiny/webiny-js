@@ -100,7 +100,7 @@ export class Benchmark implements BenchmarkInterface {
         } finally {
             const measurementEnded = this.stopMeasurement(measurement);
             this.measurements.push(measurementEnded);
-            this.addRun(measurementEnded.name);
+            this.addRun(measurementEnded);
             /**
              * Only add to total time if this run is not a child of another run.
              * And then end running.
@@ -144,7 +144,8 @@ export class Benchmark implements BenchmarkInterface {
         this.totalElapsed = this.totalElapsed + measurement.elapsed;
     }
 
-    private addRun(name: string): void {
+    private addRun(measurement: Pick<BenchmarkMeasurement, "name" | "category">): void {
+        const name = `${measurement.category}#${measurement.name}`;
         if (!this.runs[name]) {
             this.runs[name] = 0;
         }

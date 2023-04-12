@@ -94,8 +94,8 @@ describe("benchmark", () => {
         expect(context.benchmark.measurements[1].elapsed).toBeGreaterThanOrEqual(50);
         expect(context.benchmark.measurements[2].elapsed).toBeGreaterThanOrEqual(50);
         expect(context.benchmark.runs).toEqual({
-            test: 2,
-            "another test": 1
+            "webiny#test": 2,
+            "webiny#another test": 1
         });
         expect(context.benchmark.elapsed).toBeGreaterThanOrEqual(150);
     });

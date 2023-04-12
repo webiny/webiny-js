@@ -34,7 +34,8 @@ export class Context extends BaseContext implements ContextInterface {
  *
  * This can be removed when we introduce the type augmentation.
  */
-export type ContextPluginCallable<T extends ContextInterface = ContextInterface> = BaseContextPluginCallable<T>
+export type ContextPluginCallable<T extends ContextInterface = ContextInterface> =
+    BaseContextPluginCallable<T>;
 
 export class ContextPlugin<
     T extends ContextInterface = ContextInterface
