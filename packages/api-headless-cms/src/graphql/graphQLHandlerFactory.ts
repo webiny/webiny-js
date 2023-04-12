@@ -173,6 +173,10 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
             return context.tenancy.getCurrentTenant();
         };
 
+        const getLocale = () => {
+            return context.cms.getLocale();
+        };
+
         const getLastModifiedTime = async () => {
             return context.cms.getModelLastChange();
         };
@@ -185,9 +189,7 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
                         context,
                         getTenant,
                         getLastModifiedTime,
-                        getLocale: () => {
-                            return context.cms.getLocale();
-                        },
+                        getLocale,
                         type: context.cms.type as ApiEndpoint
                     });
                 } catch (ex) {
