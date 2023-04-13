@@ -245,9 +245,9 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             version: 1,
             webinyVersion: process.env.WEBINY_VERSION,
             values: {
-                title,
-                content,
-                data: {
+                "text@title": title,
+                "text@content": content,
+                "wby-aco-json@data": {
                     createdBy,
                     createdOn,
                     id,
@@ -259,10 +259,10 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     title,
                     version
                 },
-                location: {
-                    folderId: ROOT_FOLDER
+                "object@location": {
+                    "text@folderId": ROOT_FOLDER
                 },
-                type: PB_PAGE_TYPE
+                "text@type": PB_PAGE_TYPE
             }
         };
     }
