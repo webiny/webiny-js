@@ -11,12 +11,12 @@ import {
 } from "~/types";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
 
-const transformNameToSingularApiName = (name: string) => {
+const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
 };
 
-const transformNameToPluralApiName = (name: string) => {
-    return pluralize(transformNameToSingularApiName(name));
+const createPluralApiName = (name: string) => {
+    return pluralize(createApiName(name));
 };
 
 interface CmsModelFieldSettings extends Omit<BaseCmsModelFieldSettings, "fields"> {
@@ -91,8 +91,12 @@ export class CmsModelPlugin extends Plugin {
 
     private buildModel(input: CmsModelInput): CmsModel {
         const isPrivate = input.isPrivate || false;
-        const singularApiName = input.singularApiName || transformNameToSingularApiName(input.name);
-        const pluralApiName = input.pluralApiName || transformNameToPluralApiName(input.name);
+        const singularApiName = input.singularApiName
+            ? createApiName(input.singularApiName)
+            : createApiName(input.name);
+        const pluralApiName = input.pluralApiName
+            ? createApiName(input.pluralApiName)
+            : createPluralApiName(input.name);
 
         if (input.noValidate) {
             /**
