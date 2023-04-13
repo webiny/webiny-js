@@ -14,6 +14,7 @@ export interface FileItem {
     createdOn: string;
     createdBy: {
         id: string;
+        displayName: stringw;
     };
     [key: string]: any;
 }

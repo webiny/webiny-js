@@ -40,6 +40,17 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
         }
     };
 
+    const getCurrentRecordList = (
+        records: SearchRecordItem[],
+        currentFolderId?: string
+    ): SearchRecordItem[] | [] => {
+        if (!records) {
+            return [];
+        }
+
+        return records.filter(record => record.location.folderId === currentFolderId);
+    };
+
     /**
      * On first mount, call `listFolders` and `listRecords`, which will either issue a network request, or load folders and records from cache.
      * We don't need to store the result of it to any local state; that is managed by the context provider.
@@ -76,9 +87,9 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
      * - we return the `records` list filtered by the current `folderId`.
      */
     useDeepCompareEffect(() => {
-        const subRecords = originalRecords.filter(record => record.location.folderId === folderId);
+        const subRecords = getCurrentRecordList(originalRecords[type], folderId);
         setRecords(subRecords);
-    }, [{ ...originalRecords }, folderId]);
+    }, [{ ...originalRecords[type] }, folderId]);
 
     /**
      * Any time we receive a new `sort` value:

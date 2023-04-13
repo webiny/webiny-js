@@ -37,7 +37,7 @@ import {
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 interface SearchRecordsContext {
-    records: SearchRecordItem[];
+    records: Record<string, SearchRecordItem[]>;
     tags: Record<string, TagItem[]>;
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
@@ -76,7 +76,7 @@ const defaultLoading: Record<LoadingActions, boolean> = {
 
 export const SearchRecordsProvider = ({ children }: Props) => {
     const client = useApolloClient();
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
+    const [records, setRecords] = useState<Record<string, SearchRecordItem[]>>(Object.create(null));
     const [tags, setTags] = useState<Record<string, TagItem[]>>(Object.create(null));
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
@@ -102,9 +102,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
              * Avoiding to fetch records in case they have already been fetched.
              * This happens when visiting a list with all records loaded and receives "after" param.
              */
-            const recordsCount = records.filter(
-                record => record.location.folderId === folderId
-            ).length;
+            const recordsCount =
+                records[type] &&
+                records[type].filter(record => record.location.folderId === folderId).length;
             const totalCount = meta[folderId]?.totalCount || 0;
             if (after && recordsCount === totalCount) {
                 return;
@@ -112,7 +112,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             // Remove records in case of sorting change and not a paginated request.
             if (sorting && !after) {
-                setRecords([]);
+                setRecords(records => ({
+                    ...records,
+                    [type]: []
+                }));
             }
 
             const action = after ? "LIST_MORE" : "LIST";
@@ -135,7 +138,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             // Adjusting sorting while merging records with data received from the server.
-            setRecords(records => sortTableItems(unionBy(data, records, "id"), sort));
+            setRecords(records => ({
+                ...records,
+                [type]: sortTableItems(unionBy(data, records[type], "id"), sort)
+            }));
 
             setMeta(meta => ({
                 ...meta,
@@ -175,25 +181,33 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             if (!data) {
                 // No record found - must be deleted by previous operation
-                setRecords(records => records.filter(record => record.id !== id));
+                setRecords(records => ({
+                    ...records,
+                    [data.type]: records[data.type].filter(record => record.id !== id)
+                }));
             } else {
                 setRecords(prevRecords => {
-                    const recordIndex = prevRecords.findIndex(record => record.id === id);
+                    const prevRecordsByType = prevRecords[data.type];
+
+                    const recordIndex = prevRecordsByType.findIndex(record => record.id === id);
 
                     // No record found in the list - must be added by previous operation
                     if (recordIndex === -1) {
-                        return [...prevRecords, data];
+                        return { ...prevRecords, [data.type]: [...prevRecordsByType, data] };
                     }
 
                     // Updating record found in the list
-                    const result = [
-                        ...prevRecords.slice(0, recordIndex),
-                        {
-                            ...prevRecords[recordIndex],
-                            ...data
-                        },
-                        ...prevRecords.slice(recordIndex + 1)
-                    ];
+                    const result = {
+                        ...prevRecords,
+                        [data.type]: [
+                            ...prevRecordsByType.slice(0, recordIndex),
+                            {
+                                ...prevRecordsByType[recordIndex],
+                                ...data
+                            },
+                            ...prevRecordsByType.slice(recordIndex + 1)
+                        ]
+                    };
 
                     return result;
                 });
@@ -225,7 +239,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not create record");
             }
 
-            setRecords(records => [...records, data]);
+            setRecords(records => ({
+                ...records,
+                [data.type]: [...records[data.type], data]
+            }));
 
             setMeta(meta => ({
                 ...meta,
@@ -243,7 +260,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("`folderId` is mandatory");
             }
 
-            const { id, location, data, title, content } = record;
+            console.log("record", record);
+
+            const { id, location, data, title, content, type } = record;
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler("UPDATE", setLoading),
@@ -264,11 +283,14 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not update record");
             }
 
-            setRecords(records =>
-                records
+            console.log("records", records);
+
+            setRecords(records => ({
+                ...records,
+                [type]: records[type]
                     .map(record => (record.id === id ? result : record))
                     .filter(record => record.location.folderId === contextFolderId)
-            );
+            }));
 
             return result;
         },
@@ -296,7 +318,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not delete record");
             }
 
-            setRecords(records => records.filter(record => record.id !== id));
+            setRecords(records => ({
+                ...records,
+                [data.type]: records[data.type].filter(record => record.id !== id)
+            }));
 
             setMeta(meta => ({
                 ...meta,

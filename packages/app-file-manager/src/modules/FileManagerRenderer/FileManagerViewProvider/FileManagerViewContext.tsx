@@ -47,6 +47,8 @@ export interface FileManagerViewContextData<TFileItem extends FileItem = FileIte
     showFileDetails: (id: string) => void;
     showingFileDetails: string | null;
     hideFileDetails: () => void;
+    currentFolder?: string;
+    setCurrentFolder: (folderId: string | undefined) => void;
 }
 
 function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
@@ -77,6 +79,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const [meta, setMeta] = useState<ListFilesListFilesResponse["meta"]>();
     const [settings, setSettings] = useState<Settings | undefined>(undefined);
     const [loadingFiles, setLoading] = useState(false);
+    const [currentFolder, setCurrentFolder] = useState<string>();
 
     const [state, dispatch] = React.useReducer(
         stateReducer,
@@ -321,7 +324,9 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         hideFileDetails() {
             dispatch({ type: "showFileDetails", id: null });
         },
-        showingFileDetails: state.showingFileDetails
+        showingFileDetails: state.showingFileDetails,
+        currentFolder,
+        setCurrentFolder
     };
 
     return (

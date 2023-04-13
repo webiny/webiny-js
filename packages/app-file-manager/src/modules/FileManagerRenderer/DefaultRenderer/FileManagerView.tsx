@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import Files from "react-butterfiles";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
@@ -24,8 +24,15 @@ import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { useFileManagerApi, useFileManagerView } from "~/index";
 import { EmptyView } from "./EmptyView";
+import { useAcoList } from "@webiny/app-aco";
+import { FOLDER_TYPE } from "~/constants/folders";
+import { ListDbSort, SearchRecordItem } from "@webiny/app-aco/types";
+import { Sorting } from "@webiny/ui/DataTable";
+import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
+
+const defaultFolderName = t`All files`;
 
 const InputSearch = styled("div")({
     backgroundColor: "var(--mdc-theme-on-background)",
@@ -129,8 +136,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         files,
         loadingFiles,
         loadMore,
-        selected,
-        toggleSelected,
+        // selected,
+        // toggleSelected,
         dragging,
         setDragging,
         uploading,
@@ -143,8 +150,36 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         hasPreviouslyUploadedFiles,
         setHasPreviouslyUploadedFiles,
         uploadFile,
-        settings
+        settings,
+        currentFolder,
+        setCurrentFolder
     } = useFileManagerView();
+
+    const {
+        records,
+        folders,
+        listTitle = defaultFolderName,
+        meta,
+        isListLoading,
+        isListLoadingMore,
+        listItems
+    } = useAcoList(FOLDER_TYPE, currentFolder);
+
+    const [selected, setSelected] = useState<string[]>([]);
+    const [tableSorting, setTableSorting] = useState<Sorting>([]);
+    const [sort, setSort] = useState<ListDbSort>();
+
+    const { innerHeight: windowHeight } = window;
+    const [tableHeight, setTableHeight] = useState(0);
+    const tableRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setTableHeight(tableRef?.current?.clientHeight || 0);
+
+        return () => {
+            setTableHeight(0);
+        };
+    });
 
     const fileManager = useFileManagerApi();
     const { showSnackbar } = useSnackbar();
@@ -330,13 +365,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                         }
                     >
                         <>
-                            {dragging && hasPreviouslyUploadedFiles && (
-                                <DropFilesHere
-                                    onDragLeave={() => setDragging(false)}
-                                    onDrop={() => setDragging(false)}
-                                />
-                            )}
-
                             {showingFileDetails ? (
                                 <FileDetails
                                     file={files.find(item => item.id === showingFileDetails)!}
@@ -344,7 +372,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 />
                             ) : null}
 
-                            <LeftSidebar toggleTag={tag => toggleTag({ tag, queryParams })} />
+                            <LeftSidebar
+                                title={defaultFolderName}
+                                currentFolder={currentFolder}
+                                onFolderClick={setCurrentFolder}
+                                toggleTag={tag => toggleTag({ tag, queryParams })}
+                            />
 
                             <FileListWrapper data-testid={"fm-list-wrapper"}>
                                 {loadingFiles && (
@@ -353,37 +386,57 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                         style={{ opacity: 1 }}
                                     />
                                 )}
+                                {dragging && hasPreviouslyUploadedFiles && (
+                                    <DropFilesHere
+                                        onDragLeave={() => setDragging(false)}
+                                        onDrop={() => setDragging(false)}
+                                    />
+                                )}
                                 <Scrollbar
                                     onScrollFrame={scrollFrame =>
                                         refreshOnScroll({ scrollFrame, loadMore })
                                     }
                                 >
-                                    <FileList>
-                                        {files.length ? (
-                                            files.map(file =>
-                                                renderFile({
-                                                    file,
-                                                    showFileDetails: () => showFileDetails(file.id),
-                                                    selected: selected.some(
-                                                        current => current.src === file.src
-                                                    ),
-                                                    onSelect: async () => {
-                                                        if (typeof onChange === "function") {
-                                                            if (multiple) {
-                                                                toggleSelected(file);
-                                                                return;
-                                                            }
+                                    <Table
+                                        ref={tableRef}
+                                        folders={folders}
+                                        records={records as SearchRecordItem<FileItem>[]}
+                                        loading={isListLoading}
+                                        openPreviewDrawer={showFileDetails}
+                                        onSelectRow={rows => {
+                                            //@ts-ignore
+                                            const ids = rows.map(row => row.original.pid);
+                                            setSelected(ids);
+                                        }}
+                                        sorting={tableSorting}
+                                        onSortingChange={setTableSorting}
+                                    />
+                                    {/*<FileList>*/}
+                                    {/*    {files.length ? (*/}
+                                    {/*        files.map(file =>*/}
+                                    {/*            renderFile({*/}
+                                    {/*                file,*/}
+                                    {/*                showFileDetails: () => showFileDetails(file.id),*/}
+                                    {/*                selected: selected.some(*/}
+                                    {/*                    current => current.src === file.src*/}
+                                    {/*                ),*/}
+                                    {/*                onSelect: async () => {*/}
+                                    {/*                    if (typeof onChange === "function") {*/}
+                                    {/*                        if (multiple) {*/}
+                                    {/*                            toggleSelected(file);*/}
+                                    {/*                            return;*/}
+                                    {/*                        }*/}
 
-                                                            await onChange(file);
-                                                            onClose && onClose();
-                                                        }
-                                                    }
-                                                })
-                                            )
-                                        ) : (
-                                            <EmptyView browseFiles={browseFiles} />
-                                        )}
-                                    </FileList>
+                                    {/*                        await onChange(file);*/}
+                                    {/*                        onClose && onClose();*/}
+                                    {/*                    }*/}
+                                    {/*                }*/}
+                                    {/*            })*/}
+                                    {/*        )*/}
+                                    {/*    ) : (*/}
+                                    {/*        <EmptyView browseFiles={browseFiles} />*/}
+                                    {/*    )}*/}
+                                    {/*</FileList>*/}
                                 </Scrollbar>
                                 <BottomInfoBar accept={accept} uploading={uploading} />
                             </FileListWrapper>

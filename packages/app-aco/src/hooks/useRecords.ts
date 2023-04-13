@@ -39,7 +39,7 @@ export const useRecords = (type?: string, folderId?: string) => {
              */
             loading,
             meta: meta[folderId!] || {},
-            records: records.filter(record => record.location.folderId === folderId),
+            records,
             listRecords(params: { after?: string; limit?: number; sort?: ListDbSort }) {
                 return listRecords({ type, folderId, ...params });
             },
@@ -56,6 +56,6 @@ export const useRecords = (type?: string, folderId?: string) => {
                 return deleteRecord(record);
             }
         }),
-        [records, loading, meta]
+        [records, loading, meta, type]
     );
 };

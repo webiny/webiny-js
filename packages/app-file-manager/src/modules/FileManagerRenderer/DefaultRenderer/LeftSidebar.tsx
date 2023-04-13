@@ -14,10 +14,11 @@ const style = {
     leftDrawer: css({
         float: "left",
         display: "inline-block",
-        width: 250,
+        width: 249,
         height: "100%",
         backgroundColor: "var(--mdc-theme-surface)",
-        padding: 10
+        padding: 10,
+        borderRight: "1px solid var(--mdc-theme-on-background)"
     }),
     divider: css({
         height: "1px",
@@ -27,17 +28,20 @@ const style = {
 };
 
 interface LeftSidebarProps {
+    title: string;
     toggleTag: (tag: TagItem) => void;
+    currentFolder?: string;
+    onFolderClick: (folderId: string | undefined) => void;
 }
-const LeftSidebar = ({ toggleTag }: LeftSidebarProps) => {
+const LeftSidebar = ({ title, toggleTag, currentFolder, onFolderClick }: LeftSidebarProps) => {
     return (
         <div className={style.leftDrawer}>
             <FolderTree
                 type={FOLDER_TYPE}
-                title={"All files"}
-                focusedFolderId={"12345678"}
-                onTitleClick={() => console.log("title click")}
-                onFolderClick={data => data?.id && console.log(data?.id)}
+                title={title}
+                focusedFolderId={currentFolder}
+                onTitleClick={() => onFolderClick(undefined)}
+                onFolderClick={data => data?.id && onFolderClick(data?.id)}
                 enableActions={true}
                 enableCreate={true}
             />
