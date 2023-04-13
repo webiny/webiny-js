@@ -8,12 +8,12 @@ import {
     CmsFieldTypePlugins,
     CmsModelFieldToGraphQLCreateResolver
 } from "~/types";
-import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
+import { createTypeName } from "~/utils/createTypeName";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 import { createGraphQLInputField } from "../helpers";
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${model.singularApiName}_${createReadTypeName(field.fieldId)}`;
+    return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 };
 
 const getFieldTemplates = (field: CmsModelDynamicZoneField): CmsDynamicZoneTemplate[] => {
