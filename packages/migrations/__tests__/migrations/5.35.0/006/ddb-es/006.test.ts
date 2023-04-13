@@ -297,13 +297,13 @@ describe("5.35.0-006", () => {
                 version: 1,
                 webinyVersion,
                 values: {
-                    title,
-                    content: `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
-                    type: PB_PAGE_TYPE,
-                    location: {
-                        folderId: ROOT_FOLDER
+                    "text@title": title,
+                    "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                    "text@type": PB_PAGE_TYPE,
+                    "object@location": {
+                        "text@folderId": ROOT_FOLDER
                     },
-                    data: {
+                    "wby-aco-json@data": {
                         createdBy,
                         createdOn,
                         id,
@@ -325,11 +325,11 @@ describe("5.35.0-006", () => {
                 locale,
                 status: "draft",
                 values: {
-                    type: PB_PAGE_TYPE,
-                    title,
-                    content: `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
-                    location: {
-                        folderId: ROOT_FOLDER
+                    "text@type": PB_PAGE_TYPE,
+                    "text@title": title,
+                    "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                    "object@location": {
+                        "text@folderId": ROOT_FOLDER
                     }
                 },
                 createdBy,
@@ -345,8 +345,8 @@ describe("5.35.0-006", () => {
                 TYPE: "cms.entry.l",
                 __type: "cms.entry.l",
                 rawValues: {
-                    location: {},
-                    data: {
+                    "object@location": {},
+                    "wby-aco-json@data": {
                         id: `${pid}#0001`,
                         pid,
                         title,
