@@ -7,6 +7,8 @@ import { createSettingsCrud } from "~/crud/settings.crud";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
+import { StorageOperationsCmsModelPlugin } from "~/plugins";
+import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -47,10 +49,14 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             return context.tenancy.getCurrentTenant();
         };
 
+        context.plugins.register(
+            new StorageOperationsCmsModelPlugin(
+                createCmsModelFieldConvertersAttachFactory(context.plugins)
+            )
+        );
+
         await context.benchmark.measure("headlessCms.createContext", async () => {
-            if (storageOperations.beforeInit) {
-                await storageOperations.beforeInit(context);
-            }
+            await storageOperations.beforeInit(context);
 
             context.cms = {
                 type,

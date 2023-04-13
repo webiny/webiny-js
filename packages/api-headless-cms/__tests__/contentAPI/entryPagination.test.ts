@@ -1,12 +1,11 @@
+// @ts-ignore
+import mdbid from "mdbid";
 /**
  * We need the "until" because we are using storage operations directly.
  */
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
-// @ts-ignore
-import mdbid from "mdbid";
-import { CmsEntry, CmsModel, StorageOperationsCmsModel } from "~/types";
+import { CmsEntry, CmsModel } from "~/types";
 import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
-import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 const NUMBER_OF_FRUITS = 200;
 
@@ -60,10 +59,8 @@ const createFruitData = (counter: number): CmsEntry => {
 describe("entry pagination", () => {
     const manageOpts = { path: "manage/en-US" };
 
-    let fruitContentModel: StorageOperationsCmsModel;
-
     const manager = useFruitManageHandler(manageOpts);
-    const { storageOperations, until, plugins } = manager;
+    const { storageOperations, until } = manager;
     /**
      * We need to create N fruit entries
      */
@@ -75,13 +72,9 @@ describe("entry pagination", () => {
             tenant: "root",
             modelId: "fruit"
         })) as CmsModel;
-        fruitContentModel = attachCmsModelFieldConverters({
-            plugins,
-            model
-        });
         for (let i = 1; i <= NUMBER_OF_FRUITS; i++) {
             const fruit = createFruitData(i);
-            await storageOperations.entries.create(fruitContentModel, {
+            await storageOperations.entries.create(model, {
                 storageEntry: fruit,
                 entry: fruit
             });

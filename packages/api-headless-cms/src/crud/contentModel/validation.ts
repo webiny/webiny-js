@@ -100,8 +100,10 @@ const fieldSchema = zod.object({
                     .default({})
             })
         )
+        .nullish()
         .optional()
-        .default([]),
+        .default([])
+        .transform(value => value || []),
     listValidation: zod
         .array(
             zod.object({
@@ -118,8 +120,10 @@ const fieldSchema = zod.object({
                     .default({})
             })
         )
+        .nullish()
         .optional()
-        .default([]),
+        .default([])
+        .transform(value => value || []),
     settings: zod
         .object({})
         .passthrough()
