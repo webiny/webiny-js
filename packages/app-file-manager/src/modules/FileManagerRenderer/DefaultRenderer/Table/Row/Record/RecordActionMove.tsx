@@ -7,12 +7,12 @@ import { MenuItem } from "@webiny/ui/Menu";
 
 import { ListItemGraphic } from "~/modules/FileManagerRenderer/DefaultRenderer/Table/styled";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/move");
+const t = i18n.ns("app-admin/file-manager/file-manager-view/actions/file/move");
 
-interface Props {
+interface RecordActionMoveProps {
     onClick: () => void;
 }
-export const RecordActionMove = ({ onClick }: Props): ReactElement => {
+export const RecordActionMove = ({ onClick }: RecordActionMoveProps): ReactElement => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>

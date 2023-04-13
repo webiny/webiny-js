@@ -8,6 +8,8 @@ import {
     ListFilesListFilesResponse,
     ListFilesQueryVariables
 } from "~/modules/FileManagerApiProvider/graphql";
+import { FOLDER_ID_DEFAULT } from "@webiny/app-page-builder/admin/constants/folders";
+import { useRecords } from "@webiny/app-aco";
 
 const DEFAULT_SCOPE = "scope:";
 
@@ -74,6 +76,7 @@ export interface FileManagerViewProviderProps {
 export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
+    const { getRecord } = useRecords();
     const [files, setFiles] = useState<FileItem[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [meta, setMeta] = useState<ListFilesListFilesResponse["meta"]>();
@@ -133,7 +136,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     };
 
     useEffect(() => {
-        listTags();
+        //listTags();
         getSettings();
     }, []);
 
@@ -177,10 +180,17 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             data.tags = [...(data.tags || []), props.scope];
         }
 
-        const newFile = await fileManager.createFile(data);
+        const meta = {
+            location: {
+                folderId: currentFolder || FOLDER_ID_DEFAULT
+            }
+        };
+
+        const newFile = await fileManager.createFile(data, meta);
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags || []);
             setFiles(files => [newFile, ...files]);
+            await getRecord(newFile.id);
         }
         return newFile;
     };
@@ -223,6 +233,8 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             // Create an array of unique tags
             return Array.from(new Set([...tags, ...(data.tags || [])]));
         });
+
+        await getRecord(id);
     };
 
     const deleteFile = async (id: string) => {
@@ -241,6 +253,8 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
 
             return [...files.slice(0, index), ...files.slice(index + 1)];
         });
+
+        await getRecord(id);
     };
 
     /**
@@ -251,10 +265,17 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const uploadFile = async (file: File) => {
         const tags = props.scope ? [props.scope] : [];
 
-        const newFile = await fileManager.uploadFile(file, { tags });
+        const meta = {
+            location: {
+                folderId: currentFolder || FOLDER_ID_DEFAULT
+            }
+        };
+
+        const newFile = await fileManager.uploadFile(file, meta, { tags });
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags);
             setFiles(files => [newFile, ...files]);
+            await getRecord(newFile.id);
         }
         return newFile;
     };

@@ -1,5 +1,8 @@
 import React from "react";
+import { i18n } from "@webiny/app/i18n";
 import mime from "mime/lite";
+
+const t = i18n.ns("app-admin/file-manager/file-manager-view/bottom-info-bar/supported-files");
 
 mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
@@ -28,12 +31,14 @@ const SupportedFileTypes: React.FC<SupportedFileTypesProps> = ({ accept }) => {
     }
 
     if (accept.length === 0) {
-        return <span>Showing all file extensions.</span>;
+        return <span>{t`Showing all file extensions.`}</span>;
     }
 
     return (
         <span>
-            Showing the following file extensions: {getUniqueFilePlugins(accept).join(", ")}.
+            {t`Showing the following file extensions: {files}.`({
+                files: getUniqueFilePlugins(accept).join(", ")
+            })}
         </span>
     );
 };

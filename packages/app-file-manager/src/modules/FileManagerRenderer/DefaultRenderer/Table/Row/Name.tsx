@@ -5,8 +5,6 @@ import { ReactComponent as Image } from "@material-design-icons/svg/outlined/ins
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
-import { useRouter } from "@webiny/react-router";
-import { TagItem } from "@webiny/app-aco/types";
 
 const Title = styled("div")`
     display: flex;
@@ -28,18 +26,16 @@ const Text = styled(Typography)`
 interface DefaultProps {
     name: string;
     id: string;
+    onClick: (id: string) => void;
 }
 
 interface FileProps extends DefaultProps {
     type?: string;
-    onClick: (id: string) => void;
 }
 
-export const FolderName = ({ name, id }: DefaultProps): ReactElement => {
-    //const { navigateToFolder } = usePageViewNavigation();
-
+export const FolderName = ({ name, id, onClick }: DefaultProps): ReactElement => {
     return (
-        <Title onClick={() => console.log(id)}>
+        <Title onClick={() => onClick(id)}>
             <Icon>
                 <Folder />
             </Icon>

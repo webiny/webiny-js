@@ -30,10 +30,14 @@ export interface FileManagerApiContextData<TFileItem extends FileItem = FileItem
     canCreate: boolean;
     canEdit: (file: TFileItem) => boolean;
     canDelete: (file: TFileItem) => boolean;
-    createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
+    createFile: (data: TFileItem, meta: Record<string, any>) => Promise<TFileItem | undefined>;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
-    uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
+    uploadFile: (
+        file: File,
+        meta: Record<string, any>,
+        options?: UploadFileOptions
+    ) => Promise<TFileItem | undefined>;
     listFiles: (
         params?: ListFilesQueryVariables
     ) => Promise<{ files: TFileItem[]; meta: ListFilesListFilesResponse["meta"] }>;
@@ -131,14 +135,15 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         [fmFilePermission]
     );
 
-    const createFile = async (data: FileItem) => {
+    const createFile = async (data: FileItem, meta: Record<string, any>) => {
         const response = await client.mutate<
             CreateFileMutationResponse,
             CreateFileMutationVariables
         >({
             mutation: CREATE_FILE,
             variables: {
-                data
+                data,
+                meta
             }
         });
 
@@ -188,12 +193,16 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
      * @see https://developer.mozilla.org/en-US/docs/Web/API/File
      * @param File file
      */
-    const uploadFile = async (file: File, options: UploadFileOptions = {}) => {
+    const uploadFile = async (
+        file: File,
+        meta: Record<string, any>,
+        options: UploadFileOptions = {}
+    ) => {
         const response = await getFileUploader()(file, { apolloClient: client });
 
         const tags = options?.tags || [];
 
-        return await createFile({ ...response, tags });
+        return await createFile({ ...response, tags }, meta);
     };
 
     const getSettings = async () => {

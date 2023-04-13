@@ -104,12 +104,13 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
             folders,
             records,
             listTitle,
-            isListLoading:
+            isListLoading: Boolean(
                 recordsLoading.INIT ||
-                foldersLoading.INIT ||
-                recordsLoading.LIST ||
-                foldersLoading.LIST,
-            isListLoadingMore: recordsLoading.LIST_MORE,
+                    foldersLoading.INIT ||
+                    recordsLoading.LIST ||
+                    foldersLoading.LIST
+            ),
+            isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
             meta: meta[folderId] || {},
             listItems(params: { after?: string; limit?: number; sort?: ListDbSort }) {
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.

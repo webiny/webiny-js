@@ -11,25 +11,23 @@ import { useDeleteFile } from "~/modules/Hooks/useDeleteFile";
 
 import { ListItemGraphic } from "~/modules/FileManagerRenderer/DefaultRenderer/Table/styled";
 
-import { useFile } from "~/components/FileDetails/FileProvider";
 import { FileItem } from "@webiny/app/types";
+import { SearchRecordItem } from "@webiny/app-aco/types";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/delete");
+const t = i18n.ns("app-admin/file-manager/file-manager-view/actions/file/delete");
 
 interface RecordActionDeleteProps {
-    record: FileItem;
+    record: SearchRecordItem<FileItem>["data"];
 }
-export const RecordActionDelete = ({ record }: RecordActionDeleteProps): ReactElement => {
-    //const { file } = useFile();
+
+export const RecordActionDelete = ({ record }: RecordActionDeleteProps): ReactElement | null => {
     const { canEdit } = useFileManagerApi();
     const { openDialogDeleteFile } = useDeleteFile({
-        onDelete: () => console.log("qui"),
         file: record
     });
 
-    if (!canEdit(record as FileItem)) {
-        console.log("Does not have permission to delete file.");
-        return <></>;
+    if (!canEdit(record)) {
+        return null;
     }
 
     return (

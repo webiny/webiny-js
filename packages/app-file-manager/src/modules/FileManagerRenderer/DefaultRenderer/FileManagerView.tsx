@@ -26,9 +26,11 @@ import { useFileManagerApi, useFileManagerView } from "~/index";
 import { EmptyView } from "./EmptyView";
 import { useAcoList } from "@webiny/app-aco";
 import { FOLDER_TYPE } from "~/constants/folders";
-import { ListDbSort, SearchRecordItem } from "@webiny/app-aco/types";
+import { ListDbSort, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
+import { LoadMoreButton } from "~/components/LoadMoreButton";
+import { Title } from "~/components/Title";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -46,7 +48,7 @@ const InputSearch = styled("div")({
         fontSize: 14,
         width: "calc(100% - 10px)",
         height: "100%",
-        marginLeft: 50,
+        marginLeft: 32,
         backgroundColor: "transparent",
         outline: "none",
         color: "var(--mdc-theme-text-primary-on-background)"
@@ -59,8 +61,8 @@ const searchIcon = css({
         position: "absolute",
         width: 24,
         height: 24,
-        left: 15,
-        top: 7
+        left: 8,
+        top: 8
     }
 });
 
@@ -68,7 +70,17 @@ const FileListWrapper = styled("div")({
     float: "right",
     display: "inline-block",
     width: "calc(100vw - 270px)",
-    height: "100%"
+    height: "100%",
+    ".mdc-data-table": {
+        display: "inline-table"
+    },
+    ".mdc-data-table__cell": {
+        width: "250px",
+        maxWidth: "250px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+    }
 });
 
 const FileList = styled("div")({
@@ -180,6 +192,41 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             setTableHeight(0);
         };
     });
+
+    useEffect(() => {
+        const sort = tableSorting.reduce((current, next) => {
+            return { ...current, [next.id]: next.desc ? "DESC" : "ASC" };
+        }, {});
+
+        setSort(sort);
+    }, [tableSorting]);
+
+    useEffect(() => {
+        const listSortedRecords = async () => {
+            await listItems({ sort });
+        };
+
+        listSortedRecords();
+    }, [sort]);
+
+    const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
+        if (hasMoreItems && cursor) {
+            await listItems({ after: cursor, sort });
+        }
+    };
+
+    const loadMoreOnScroll = useCallback(
+        debounce(async ({ scrollFrame }) => {
+            if (scrollFrame.top > 0.8) {
+                await loadMoreRecords(meta);
+            }
+        }, 200),
+        [meta]
+    );
+
+    const loadMoreOnClick = useCallback(async () => {
+        await loadMoreRecords(meta);
+    }, [meta]);
 
     const fileManager = useFileManagerApi();
     const { showSnackbar } = useSnackbar();
@@ -331,7 +378,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                             onDragEnter: () => hasPreviouslyUploadedFiles && setDragging(true),
                             onExited: onClose
                         })}
-                        barLeft={
+                        barLeft={<Title title={listTitle} />}
+                        barMiddle={
                             <InputSearch>
                                 <Icon className={searchIcon} icon={<SearchIcon />} />
                                 <input
@@ -380,12 +428,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                             />
 
                             <FileListWrapper data-testid={"fm-list-wrapper"}>
-                                {loadingFiles && (
-                                    <CircularProgress
-                                        label={t`Loading Files...`}
-                                        style={{ opacity: 1 }}
-                                    />
-                                )}
+                                {/*{isListLoading && (*/}
+                                {/*    <CircularProgress*/}
+                                {/*        label={t`Loading Files...`}*/}
+                                {/*        style={{ opacity: 1 }}*/}
+                                {/*    />*/}
+                                {/*)}*/}
                                 {dragging && hasPreviouslyUploadedFiles && (
                                     <DropFilesHere
                                         onDragLeave={() => setDragging(false)}
@@ -393,16 +441,15 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     />
                                 )}
                                 <Scrollbar
-                                    onScrollFrame={scrollFrame =>
-                                        refreshOnScroll({ scrollFrame, loadMore })
-                                    }
+                                    onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                                 >
                                     <Table
                                         ref={tableRef}
                                         folders={folders}
                                         records={records as SearchRecordItem<FileItem>[]}
                                         loading={isListLoading}
-                                        openPreviewDrawer={showFileDetails}
+                                        onRecordClick={showFileDetails}
+                                        onFolderClick={id => setCurrentFolder(id)}
                                         onSelectRow={rows => {
                                             //@ts-ignore
                                             const ids = rows.map(row => row.original.pid);
@@ -410,6 +457,14 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                         }}
                                         sorting={tableSorting}
                                         onSortingChange={setTableSorting}
+                                        settings={settings}
+                                    />
+                                    <LoadMoreButton
+                                        show={!isListLoading && meta.hasMoreItems}
+                                        disabled={isListLoadingMore}
+                                        windowHeight={windowHeight}
+                                        tableHeight={tableHeight}
+                                        onClick={loadMoreOnClick}
                                     />
                                     {/*<FileList>*/}
                                     {/*    {files.length ? (*/}
@@ -438,7 +493,11 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     {/*    )}*/}
                                     {/*</FileList>*/}
                                 </Scrollbar>
-                                <BottomInfoBar accept={accept} uploading={uploading} />
+                                <BottomInfoBar
+                                    accept={accept}
+                                    uploading={uploading}
+                                    listing={isListLoadingMore}
+                                />
                             </FileListWrapper>
                         </>
                     </OverlayLayout>

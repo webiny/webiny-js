@@ -48,7 +48,7 @@ const LeftSidebar = ({ title, toggleTag, currentFolder, onFolderClick }: LeftSid
             <div className={style.divider} />
             <TagList
                 type={FOLDER_TYPE}
-                emptyDisclaimer={t`No tag found: once you tag a file, the tag will be displayed here.`}
+                emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}
             />
         </div>

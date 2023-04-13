@@ -133,12 +133,13 @@ export interface FileInput {
 
 export interface CreateFileMutationVariables {
     data: FileInput;
+    meta?: Record<string, any>;
 }
 
 export const CREATE_FILE = gql`
-    mutation CreateFile($data: CreateFileInput!) {
+    mutation CreateFile($data: CreateFileInput!, $meta: JSON) {
         fileManager {
-            createFile(data: $data) {
+            createFile(data: $data, meta: $meta) {
                 error ${ERROR_FIELDS}
                 data ${FILE_FIELDS}
             }

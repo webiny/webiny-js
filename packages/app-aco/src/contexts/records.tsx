@@ -181,10 +181,24 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             if (!data) {
                 // No record found - must be deleted by previous operation
-                setRecords(records => ({
-                    ...records,
-                    [data.type]: records[data.type].filter(record => record.id !== id)
-                }));
+                setRecords(records => {
+                    const currentRecord = Object.keys(records)
+                        .reduce((accumulator, current) => {
+                            return [...accumulator, ...records[current]];
+                        }, [] as SearchRecordItem[])
+                        .find(record => record.id === id);
+
+                    if (!currentRecord) {
+                        return records;
+                    }
+
+                    return {
+                        ...records,
+                        [currentRecord.type]: records[currentRecord.type].filter(
+                            record => record.id !== id
+                        )
+                    };
+                });
             } else {
                 setRecords(prevRecords => {
                     const prevRecordsByType = prevRecords[data.type];
@@ -283,8 +297,6 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not update record");
             }
 
-            console.log("records", records);
-
             setRecords(records => ({
                 ...records,
                 [type]: records[type]
@@ -296,7 +308,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         },
 
         async deleteRecord(record) {
-            const { id, location } = record;
+            const { id, location, type } = record;
             const { folderId } = location;
 
             const { data: response } = await apolloFetchingHandler(
@@ -320,7 +332,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             setRecords(records => ({
                 ...records,
-                [data.type]: records[data.type].filter(record => record.id !== id)
+                [type]: records[type].filter(record => record.id !== id)
             }));
 
             setMeta(meta => ({

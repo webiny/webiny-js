@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
+
+const t = i18n.ns("app-admin/file-manager/file-manager-view/bottom-info-bar/status");
 
 const StatusWrapper = styled("div")({
     color: "var(--mdc-theme-primary)",
@@ -25,17 +28,20 @@ const UploadingLabel = styled("div")({
     marginRight: 5
 });
 
-export interface UploadStatusProps {
+export interface ListStatusProps {
     uploading: boolean;
+    listing: boolean;
 }
-const UploadStatus: React.FC<UploadStatusProps> = ({ uploading }) => {
-    if (!uploading) {
+const ListStatus: React.FC<ListStatusProps> = ({ uploading, listing }) => {
+    if (!uploading && !listing) {
         return null;
     }
 
+    const label = listing ? t`Loading more files...` : t`Uploading...`;
+
     return (
         <StatusWrapper>
-            <UploadingLabel>Uploading...</UploadingLabel>
+            <UploadingLabel>{label}</UploadingLabel>
             <CircularProgressHolder>
                 <CircularProgress size={10} spinnerWidth={1} />
             </CircularProgressHolder>
@@ -43,4 +49,4 @@ const UploadStatus: React.FC<UploadStatusProps> = ({ uploading }) => {
     );
 };
 
-export default UploadStatus;
+export default ListStatus;

@@ -7,14 +7,14 @@ import { MenuItem } from "@webiny/ui/Menu";
 
 import { ListItemGraphic } from "~/modules/FileManagerRenderer/DefaultRenderer/Table/styled";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/edit");
+const t = i18n.ns("app-admin/file-manager/file-manager-view/actions/file/edit");
 
-interface Props {
+interface RecordActionEditProps {
     id: string;
     onClick: (id: string) => void;
 }
 
-export const RecordActionEdit = ({ id, onClick }: Props): ReactElement => {
+export const RecordActionEdit = ({ id, onClick }: RecordActionEditProps): ReactElement => {
     return (
         <MenuItem onClick={() => onClick(id)}>
             <ListItemGraphic>

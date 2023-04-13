@@ -11,10 +11,11 @@ export interface FileItem {
     size: number;
     type: string;
     tags: string[];
+    aliases: string[];
     createdOn: string;
     createdBy: {
         id: string;
-        displayName: stringw;
+        displayName: string;
     };
     [key: string]: any;
 }

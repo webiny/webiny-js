@@ -1,3 +1,5 @@
+import { useCopyFile } from "~/modules/Hooks/useCopyFile";
+
 export { useFile } from "./FileDetails/FileProvider";
 import React, { useMemo, useState } from "react";
 import bytes from "bytes";
@@ -155,7 +157,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
     const filePlugin = getFileTypePlugin(file);
 
     const [darkImageBackground, setDarkImageBackground] = useState(false);
-    const { showSnackbar } = useSnackbar();
+    const { copyFileUrl } = useCopyFile({ file });
 
     useHotkeys({
         zIndex: 55,
@@ -203,10 +205,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
                             <>
                                 <Tooltip content={<span>{t`Copy URL`}</span>} placement={"bottom"}>
                                     <IconButton
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(file.src);
-                                            showSnackbar(t`URL copied successfully.`);
-                                        }}
+                                        onClick={copyFileUrl}
                                         icon={<CopyContentIcon style={{ margin: "0 8px 0 0" }} />}
                                     />
                                 </Tooltip>

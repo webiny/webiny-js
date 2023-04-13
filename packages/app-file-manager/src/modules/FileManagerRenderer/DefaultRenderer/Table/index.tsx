@@ -17,6 +17,7 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { FileName, FolderName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
+import { RecordActionCopy } from "./Row/Record/RecordActionCopy";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
@@ -26,15 +27,18 @@ import { FOLDER_TYPE } from "~/constants/folders";
 import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
 import { menuStyles } from "./styled";
 import { FileItem } from "@webiny/app/types";
+import { Settings } from "~/types";
 
 interface TableProps {
     records: SearchRecordItem<FileItem>[];
     folders: FolderItem[];
     loading?: boolean;
-    openPreviewDrawer: (id: string) => void;
+    onRecordClick: (id: string) => void;
+    onFolderClick: (id: string) => void;
     onSelectRow: (rows: Entry[] | []) => void;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
+    settings?: Settings;
 }
 
 interface Entry {
@@ -50,8 +54,16 @@ interface Entry {
 }
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
-    const { folders, records, loading, openPreviewDrawer, onSelectRow, sorting, onSortingChange } =
-        props;
+    const {
+        folders,
+        records,
+        loading,
+        onRecordClick,
+        onFolderClick,
+        onSelectRow,
+        sorting,
+        onSortingChange
+    } = props;
 
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -101,15 +113,10 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: ({ id, title, type, fileType }) => {
                 if (type === "RECORD") {
                     return (
-                        <FileName
-                            name={title}
-                            id={id}
-                            type={fileType}
-                            onClick={openPreviewDrawer}
-                        />
+                        <FileName name={title} id={id} type={fileType} onClick={onRecordClick} />
                     );
                 } else {
-                    return <FolderName name={title} id={id} />;
+                    return <FolderName name={title} id={id} onClick={onFolderClick} />;
                 }
             },
             enableSorting: true
@@ -156,7 +163,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 if (type === "RECORD") {
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
-                            <RecordActionEdit id={original.id} onClick={openPreviewDrawer} />
+                            <RecordActionCopy record={original as FileItem} />
+                            <RecordActionEdit id={original.id} onClick={onRecordClick} />
                             <RecordActionMove
                                 onClick={() => {
                                     setMoveSearchRecordDialogOpen(true);
