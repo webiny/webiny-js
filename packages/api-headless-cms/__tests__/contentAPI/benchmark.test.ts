@@ -10,7 +10,7 @@ describe("benchmark points", () => {
             new ContextPlugin(async context => {
                 context.benchmark.enable();
 
-                context.benchmark.onOutput(async benchmark => {
+                context.benchmark.onOutput(async ({ benchmark }) => {
                     elapsed = benchmark.elapsed;
                 });
             })
