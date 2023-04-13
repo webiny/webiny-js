@@ -1,5 +1,5 @@
 import { Context } from "~/Context";
-import { BenchmarkMeasurement, BenchmarkOutputCallableResponse } from "~/types";
+import { BenchmarkMeasurement } from "~/types";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
 import { ContextPlugin } from "~/plugins/ContextPlugin";
 
@@ -310,7 +310,7 @@ describe("benchmark", () => {
             log.push(...args);
         });
 
-        context.benchmark.onOutput(async benchmark => {
+        context.benchmark.onOutput(async ({ benchmark }) => {
             outsideSystemLog.push(...benchmark.measurements);
         });
 
@@ -359,7 +359,7 @@ describe("benchmark", () => {
         ]);
     });
 
-    it("should output measurements to some outside system and not our default because of the break", async () => {
+    it("should output measurements to some outside system and not our default because of the stop", async () => {
         context.benchmark.enable();
         for (let i = 1; i <= 5; i++) {
             await context.benchmark.measure(`test ${i}`, async () => {
@@ -375,10 +375,10 @@ describe("benchmark", () => {
             log.push(...args);
         });
 
-        context.benchmark.onOutput(async benchmark => {
+        context.benchmark.onOutput(async ({ benchmark, stop }) => {
             outsideSystemLog.push(...benchmark.measurements);
 
-            return BenchmarkOutputCallableResponse.BREAK;
+            return stop();
         });
 
         await context.benchmark.output();

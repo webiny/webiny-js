@@ -17,12 +17,12 @@ export interface BenchmarkEnableOnCallable {
     (): Promise<boolean>;
 }
 
-export enum BenchmarkOutputCallableResponse {
-    BREAK = "break"
+export interface BenchmarkOutputCallableParams {
+    benchmark: Benchmark;
+    stop: () => "stop";
 }
-
 export interface BenchmarkOutputCallable {
-    (benchmark: Benchmark): Promise<BenchmarkOutputCallableResponse | undefined | null | void>;
+    (params: BenchmarkOutputCallableParams): Promise<"stop" | undefined | null | void>;
 }
 export interface BenchmarkMeasureOptions {
     name: string;

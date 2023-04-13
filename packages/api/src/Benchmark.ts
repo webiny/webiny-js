@@ -4,7 +4,6 @@ import {
     BenchmarkMeasurement,
     BenchmarkMeasureOptions,
     BenchmarkOutputCallable,
-    BenchmarkOutputCallableResponse,
     BenchmarkRuns
 } from "~/types";
 
@@ -76,8 +75,11 @@ export class Benchmark implements BenchmarkInterface {
         }
         const callables = this.onOutputCallables.reverse();
         for (const cb of callables) {
-            const result = await cb(this);
-            if (result === BenchmarkOutputCallableResponse.BREAK) {
+            const result = await cb({
+                benchmark: this,
+                stop: () => "stop"
+            });
+            if (result === "stop") {
                 return;
             }
         }
