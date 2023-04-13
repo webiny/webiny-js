@@ -195,13 +195,13 @@ describe("5.35.0-006", () => {
             );
 
             const values = {
-                title,
-                content: `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
-                type: PB_PAGE_TYPE,
-                location: {
-                    folderId: ROOT_FOLDER
+                "text@title": title,
+                "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                "text@type": PB_PAGE_TYPE,
+                "object@location": {
+                    "text@folderId": ROOT_FOLDER
                 },
-                data: {
+                "wby-aco-json@data": {
                     createdBy,
                     createdOn,
                     id,

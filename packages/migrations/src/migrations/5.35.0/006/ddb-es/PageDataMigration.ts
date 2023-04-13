@@ -251,11 +251,11 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 locale: pageLocale,
                                 status: "draft",
                                 values: {
-                                    type: PB_PAGE_TYPE,
-                                    title,
-                                    content,
-                                    location: {
-                                        folderId: ROOT_FOLDER
+                                    "text@type": PB_PAGE_TYPE,
+                                    "text@title": title,
+                                    "text@content": content,
+                                    "object@location": {
+                                        "text@folderId": ROOT_FOLDER
                                     }
                                 },
                                 createdBy,
@@ -271,8 +271,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 TYPE: "cms.entry.l",
                                 __type: "cms.entry.l",
                                 rawValues: {
-                                    location: {},
-                                    data: {
+                                    "object@location": {},
+                                    "wby-aco-json@data": {
                                         id: `${pid}#0001`,
                                         pid,
                                         title,
@@ -426,9 +426,9 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             version: 1,
             webinyVersion: process.env.WEBINY_VERSION,
             values: {
-                title,
-                content,
-                data: {
+                "text@title": title,
+                "text@content": content,
+                "wby-aco-json@data": {
                     createdBy,
                     createdOn,
                     id,
@@ -440,10 +440,10 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                     title,
                     version
                 },
-                location: {
-                    folderId: ROOT_FOLDER
+                "object@location": {
+                    "text@folderId": ROOT_FOLDER
                 },
-                type: PB_PAGE_TYPE
+                "text@type": PB_PAGE_TYPE
             }
         };
     }
