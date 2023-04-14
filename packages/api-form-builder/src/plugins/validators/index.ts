@@ -9,4 +9,15 @@ import pattern from "./pattern";
 import required from "./required";
 import patternPlugins from "./patternPlugins";
 
-export default [gte, gteDate, inValidator, lte, lteDate, pattern, required, minLength, maxLength, patternPlugins];
+export default [
+    gte,
+    gteDate,
+    inValidator,
+    lte,
+    lteDate,
+    pattern,
+    required,
+    minLength,
+    maxLength,
+    patternPlugins
+];

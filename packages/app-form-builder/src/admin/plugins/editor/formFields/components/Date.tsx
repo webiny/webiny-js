@@ -164,7 +164,7 @@ const UTC_TIMEZONES = [
     }
 ];
 
-export const Date = ({ fieldFormat, Bind } : { fieldFormat: string, Bind: BindComponent }) => {
+export const Date = ({ fieldFormat, Bind }: { fieldFormat: string; Bind: BindComponent }) => {
     if (fieldFormat === "time") {
         return (
             <Grid>
@@ -220,5 +220,5 @@ export const Date = ({ fieldFormat, Bind } : { fieldFormat: string, Bind: BindCo
                 </Bind>
             </Cell>
         </Grid>
-    )
-}
+    );
+};

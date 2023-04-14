@@ -78,7 +78,6 @@ const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
         form: { Bind, data: formFieldData }
     } = props;
 
-
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
     const validators = useMemo(() => {

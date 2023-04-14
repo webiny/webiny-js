@@ -197,7 +197,7 @@ const SelectTimeZoneField = ({
     const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setTimeZone(e.target.value);
         onChange(`${dateTime}${e.target.value}`);
-    }
+    };
 
     return (
         <FieldWrapper>
@@ -238,41 +238,43 @@ const DateFieldWithTimeZone = (props: { field: FormRenderFbFormModelField }) => 
     const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDateTime(e.target.value);
         onChange(`${e.target.value}${timeZone}`);
-    }
+    };
 
     return (
         <DateFieldWrapper>
             <FieldWrapper>
                 <FieldLabel {...props} />
-                <StyledInput type="datetime-local" value={dateTime} onChange={handleDateTimeChange} onBlur={onBlur}/>
+                <StyledInput
+                    type="datetime-local"
+                    value={dateTime}
+                    onChange={handleDateTimeChange}
+                    onBlur={onBlur}
+                />
                 <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
             </FieldWrapper>
             <FieldWrapper>
                 <SelectLabel>Timezone</SelectLabel>
-                <SelectTimeZoneField onChange={onChange} timeZone={timeZone} setTimeZone={setTimeZone} dateTime={dateTime} />
+                <SelectTimeZoneField
+                    onChange={onChange}
+                    timeZone={timeZone}
+                    setTimeZone={setTimeZone}
+                    dateTime={dateTime}
+                />
             </FieldWrapper>
         </DateFieldWrapper>
-    )
+    );
 };
 
 export const DateField = (props: { field: FormRenderFbFormModelField }) => {
     const { settings } = props.field;
 
     if (settings.format === "time") {
-        return (
-            <InputField {...props} type="time" />
-        )
+        return <InputField {...props} type="time" />;
     } else if (settings.format === "dateTimeWithoutTimezone") {
-        return (
-            <InputField {...props} type="datetime-local" /> 
-        )
+        return <InputField {...props} type="datetime-local" />;
     } else if (settings.format === "dateTimeWithTimezone") {
-        return (
-            <DateFieldWithTimeZone {...props} />
-        )
+        return <DateFieldWithTimeZone {...props} />;
     } else {
-        return (
-            <InputField {...props} type="date" />
-        );
+        return <InputField {...props} type="date" />;
     }
 };

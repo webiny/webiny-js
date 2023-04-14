@@ -9,7 +9,9 @@ const plugin: FbFormFieldValidatorPlugin = {
         validate: async (value, validator) => {
             const regex = /(^\d*:\d*)/gm;
 
-            const validValue = `${validator.settings.value}${validator.settings.timeZone ? validator.settings.timeZone : ""}`;
+            const validValue = `${validator.settings.value}${
+                validator.settings.timeZone ? validator.settings.timeZone : ""
+            }`;
 
             if (!value.length) {
                 return true;

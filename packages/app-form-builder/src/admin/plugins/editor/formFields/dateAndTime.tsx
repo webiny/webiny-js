@@ -35,10 +35,7 @@ const plugin: FbBuilderFieldPlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"settings.format"}>
-                            <Select
-                                label={t`Format`}
-                                description={t`Cannot be changed later`}
-                            >
+                            <Select label={t`Format`} description={t`Cannot be changed later`}>
                                 <option value={t`date`}>{t`Date only`}</option>
                                 <option value={t`time`}>{t`Time only`}</option>
                                 <option

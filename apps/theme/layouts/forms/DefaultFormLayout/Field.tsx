@@ -1,6 +1,5 @@
 import React from "react";
 import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
-
 import { InputField } from "./fields/Input";
 import { SelectField } from "./fields/Select";
 import { RadioField } from "./fields/Radio";
@@ -30,7 +29,7 @@ export const Field: React.FC<{
             return <CheckboxField {...props} />;
         case "hidden":
             return <HiddenField {...props} />;
-        case "datetime": 
+        case "datetime":
             return <DateField {...props} />;
         default:
             return <span>Cannot render field.</span>;
