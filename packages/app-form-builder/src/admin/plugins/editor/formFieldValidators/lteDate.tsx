@@ -1,6 +1,6 @@
 import React from "react";
 import { FbBuilderFormFieldValidatorPlugin } from "~/types";
-import { Date } from "~/admin/plugins/editor/formFields/components/Date
+import { Date } from "~/admin/plugins/editor/formFields/components/Date";
 
 const plugin: FbBuilderFormFieldValidatorPlugin = {
     type: "form-editor-field-validator",
@@ -13,7 +13,7 @@ const plugin: FbBuilderFormFieldValidatorPlugin = {
         renderSettings({ Bind, formFieldData }) {
             const fieldFormat = formFieldData?.settings?.format;
 
-            return <Date fieldFormat={fieldFormat} Bind={Bind} />
+            return <Date fieldFormat={fieldFormat} Bind={Bind} />;
         }
     }
 };
