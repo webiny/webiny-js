@@ -7,6 +7,7 @@ import { RadioField } from "./fields/Radio";
 import { CheckboxField } from "./fields/Checkbox";
 import { TextareaField } from "./fields/Textarea";
 import { HiddenField } from "./fields/Hidden";
+import { DateField } from "./fields/Date";
 
 /**
  * Renders a single form field. If needed, additional field types can be added.
@@ -29,6 +30,8 @@ export const Field: React.FC<{
             return <CheckboxField {...props} />;
         case "hidden":
             return <HiddenField {...props} />;
+        case "datetime": 
+            return <DateField {...props} />;
         default:
             return <span>Cannot render field.</span>;
     }

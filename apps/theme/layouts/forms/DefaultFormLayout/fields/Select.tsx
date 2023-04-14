@@ -11,7 +11,7 @@ interface SelectProps {
     field: FormRenderFbFormModelField;
 }
 
-const StyledSelect = styled.select`
+export const StyledSelect = styled.select`
     ${props => props.theme.styles.typography["paragraph1"]};
     border: 1px solid ${props => props.theme.styles.colors["color5"]};
     background-color: ${props => props.theme.styles.colors["color5"]};

@@ -75,8 +75,9 @@ const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
     const { getFieldPlugin } = useFormEditor();
     const {
         field,
-        form: { Bind }
+        form: { Bind, data: formFieldData }
     } = props;
+
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
@@ -172,7 +173,8 @@ const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
                                                         setValue("message", message);
                                                     },
                                                     data,
-                                                    Bind
+                                                    Bind,
+                                                    formFieldData
                                                 })}
                                         </SimpleFormContent>
                                     )}
