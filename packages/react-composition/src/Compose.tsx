@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { HigherOrderComponent, useComposition } from "./Context";
 
-export interface ComposableFC<TProps = unknown> extends React.FC<TProps> {
-    original: React.FC<TProps>;
+export interface ComposableFC<TProps = unknown>
+    extends React.VFC<TProps & { children?: React.ReactNode }> {
+    original: React.VFC<TProps & { children?: React.ReactNode }>;
     originalName: string;
 }
 
@@ -15,7 +16,7 @@ export interface ComposeProps {
     with: HigherOrderComponent | HigherOrderComponent[];
 }
 
-export const Compose: React.FC<ComposeProps> = props => {
+export const Compose: React.VFC<ComposeProps> = props => {
     const { composeComponent } = useComposition();
 
     useEffect(() => {

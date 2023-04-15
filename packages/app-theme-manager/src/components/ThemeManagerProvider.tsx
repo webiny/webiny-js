@@ -15,7 +15,9 @@ export const ThemeManagerContext = createContext<ThemeManagerContext>({
 });
 ThemeManagerContext.displayName = "ThemeManagerContext";
 
-export const ThemeManagerProviderHOC: HigherOrderComponent<unknown> = PreviousProvider => {
+export const ThemeManagerProviderHOC: HigherOrderComponent<
+    unknown & { children?: React.ReactNode }
+> = PreviousProvider => {
     return function ThemeProvider({ children }) {
         const [themes, setThemes] = useState<ThemeSource[]>([]);
 

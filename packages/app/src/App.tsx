@@ -108,9 +108,11 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
     }, [state.routes]);
 
     const Providers = useMemo(() => {
-        return compose(...(state.providers || []))(({ children }: any) => (
-            <DebounceRender wait={debounceRender}>{children}</DebounceRender>
-        ));
+        return compose(...(state.providers || []))(
+            ({ children }: { children?: React.ReactNode }) => (
+                <DebounceRender wait={debounceRender}>{children}</DebounceRender>
+            )
+        );
     }, [state.providers.length]);
 
     Providers.displayName = "Providers";

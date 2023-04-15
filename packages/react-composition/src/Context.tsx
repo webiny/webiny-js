@@ -1,15 +1,16 @@
 import React, {
-    FC,
     ComponentType,
-    useState,
-    useCallback,
     createContext,
+    useCallback,
     useContext,
-    useMemo
+    useMemo,
+    useState
 } from "react";
 
 export function compose(...fns: HigherOrderComponent[]) {
-    return function ComposedComponent(Base: FC<unknown>): FC<unknown> {
+    return function ComposedComponent(
+        Base: React.VFC<unknown & { children?: React.ReactNode }>
+    ): React.VFC<unknown & { children?: React.ReactNode }> {
         return fns.reduceRight((Component, hoc) => hoc(Component), Base);
     };
 }
@@ -31,7 +32,9 @@ interface ComposedComponent {
  * to let it be `any` in this interface.
  */
 export interface HigherOrderComponent<TInputProps = any, TOutputProps = TInputProps> {
-    (Component: FC<TInputProps>): FC<TOutputProps>;
+    (Component: React.VFC<TInputProps & { children?: React.ReactNode }>): React.VFC<
+        TOutputProps & { children?: React.ReactNode }
+    >;
 }
 
 type ComposedComponents = Map<ComponentType<unknown>, ComposedComponent>;
@@ -44,7 +47,11 @@ interface CompositionContext {
 
 const CompositionContext = createContext<CompositionContext | undefined>(undefined);
 
-export const CompositionProvider: React.FC = ({ children }) => {
+interface CompositionProviderProps {
+    children?: React.ReactNode;
+}
+
+export const CompositionProvider: React.VFC<CompositionProviderProps> = ({ children }) => {
     const [components, setComponents] = useState<ComposedComponents>(new Map());
 
     const composeComponent = useCallback(
