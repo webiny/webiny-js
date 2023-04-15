@@ -34,6 +34,7 @@ import {
 } from "~/plugins";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
+import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 
 export * from "./plugins";
 
@@ -147,7 +148,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 CmsEntryElasticsearchQueryBuilderValueSearchPlugin.type,
                 CmsEntryElasticsearchQueryModifierPlugin.type,
                 CmsEntryElasticsearchSortModifierPlugin.type,
-                CmsEntryElasticsearchFieldPlugin.type
+                CmsEntryElasticsearchFieldPlugin.type,
+                StorageOperationsCmsModelPlugin.type
             ];
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);

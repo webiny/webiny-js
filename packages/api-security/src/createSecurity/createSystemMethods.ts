@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
 import {
-    System as SystemRecord,
-    SecurityConfig,
-    Security,
     ErrorEvent,
-    InstallEvent
+    InstallEvent,
+    Security,
+    SecurityConfig,
+    System as SystemRecord
 } from "../types";
 import { createTopic } from "@webiny/pubsub";
 
@@ -80,17 +80,17 @@ export const createSystemMethods = ({
                 tenant: getTenant()
             };
 
-            try {
-                this.disableAuthorization();
-                await this.onSystemBeforeInstall.publish(installEvent);
-                await this.onInstall.publish(installEvent);
-                await this.onSystemAfterInstall.publish(installEvent);
-                this.enableAuthorization();
-            } catch (err) {
-                await this.onCleanup.publish({ error: err, tenant: getTenant() });
+            await this.withoutAuthorization(async () => {
+                try {
+                    await this.onSystemBeforeInstall.publish(installEvent);
+                    await this.onInstall.publish(installEvent);
+                    await this.onSystemAfterInstall.publish(installEvent);
+                } catch (err) {
+                    await this.onCleanup.publish({ error: err, tenant: getTenant() });
 
-                throw new WebinyError(err.message, "SECURITY_INSTALL_ABORTED", err.data || {});
-            }
+                    throw new WebinyError(err.message, "SECURITY_INSTALL_ABORTED", err.data || {});
+                }
+            });
 
             // Store app version
             await this.setVersion(process.env.WEBINY_VERSION as string);

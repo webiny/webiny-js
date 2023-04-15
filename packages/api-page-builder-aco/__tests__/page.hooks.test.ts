@@ -130,7 +130,7 @@ describe("Pages -> Search records", () => {
         expect(searchRecord).toMatchObject({
             id: pid,
             title: updatePage.title,
-            content: `${updatePage.title} Demo Heading Demo Content Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
+            content: `${updatePage.title} Demo Heading Demo Content with multiple spaces and new line Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
             data: {
                 title: updatePage.title,
                 savedOn: updatePage.savedOn
@@ -160,7 +160,7 @@ describe("Pages -> Search records", () => {
         expect(searchRecord).toMatchObject({
             id: pid,
             title: updatePage.title,
-            content: `${updatePage.title} Demo Heading Demo Content Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
+            content: `${updatePage.title} Demo Heading Demo Content with multiple spaces and new line Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
             data: {
                 title: updatePage.title,
                 savedOn: updatePage.savedOn

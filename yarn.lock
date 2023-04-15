@@ -14865,6 +14865,7 @@ __metadata:
     "@webiny/utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.2.0
+    jsonpack: ^1.1.5
     lodash: ^4.17.21
     mdbid: ^1.0.0
     pluralize: ^8.0.0

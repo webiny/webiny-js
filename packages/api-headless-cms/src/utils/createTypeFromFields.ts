@@ -1,4 +1,3 @@
-import { createTypeName } from "~/utils/createTypeName";
 import { renderField } from "~/utils/renderFields";
 import { renderInputField } from "~/utils/renderInputFields";
 import { ApiEndpoint, CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
@@ -21,10 +20,10 @@ interface TypeFromFieldResponse {
 export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
     const { typeOfType, model, models, type, typeNamePrefix, fields, fieldTypePlugins } = params;
     const typeSuffix = typeOfType === "input" ? "Input" : "";
-    const mTypeName = createTypeName(model.singularApiName);
+    const mTypeName = model.singularApiName;
 
-    const typeFields = [];
-    const nestedTypes = [];
+    const typeFields: string[] = [];
+    const nestedTypes: string[] = [];
 
     // Once the loop below starts, we'll be executing a recursive "object" type generation.
     // The main trick here is that nested objects don't know who the parent is, and will generate

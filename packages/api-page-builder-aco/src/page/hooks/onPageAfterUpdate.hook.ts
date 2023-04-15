@@ -10,9 +10,9 @@ export const onPageAfterUpdateHook = (context: PbAcoContext) => {
     /**
      * Intercept page update event and update the related search record.
      */
-    pageBuilder.onPageAfterUpdate.subscribe(async ({ page, meta }) => {
+    pageBuilder.onPageAfterUpdate.subscribe(async ({ page }) => {
         try {
-            const payload = await updatePageRecordPayload(context, page, meta);
+            const payload = await updatePageRecordPayload(context, page);
             await aco.search.update<PbPageRecordData>(page.pid, payload);
         } catch (error) {
             throw WebinyError.from(error, {

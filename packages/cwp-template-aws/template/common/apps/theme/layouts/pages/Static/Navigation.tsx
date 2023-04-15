@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "@webiny/react-router";
 import { PublishedMenuData } from "@webiny/app-website/";
 import styled from "@emotion/styled";
-import { colors, borderRadius, breakpoints } from "../../../theme";
 
 export const Navigation: React.ComponentType<{ data?: PublishedMenuData }> = ({ data }) => {
     if (!data) {
@@ -55,12 +54,12 @@ const NavigationUl = styled.ul`
         transition: background-color 0.2s;
 
         &:hover {
-            background-color: ${colors.color5};
-            border-radius: ${borderRadius};
+            background-color: ${props => props.theme.styles.colors["color5"]};
+            border-radius: ${props => props.theme.styles.borderRadius};
         }
     }
 
-    ${breakpoints.tablet} {
+    ${props => props.theme.breakpoints["tablet"]} {
         display: block;
         margin: 75px 0 0 35px;
         text-transform: uppercase;

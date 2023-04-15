@@ -55,3 +55,8 @@ export interface AcoContext
         CmsContext {
     aco: AdvancedContentOrganisation;
 }
+
+/**
+ * @deprecated Use AcoContext instead
+ */
+export type ACOContext = AcoContext;
