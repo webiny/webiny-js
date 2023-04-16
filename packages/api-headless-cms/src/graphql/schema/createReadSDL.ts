@@ -1,13 +1,12 @@
 import { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types";
-import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
-import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateReadSDLParams {
+    models: CmsModel[];
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
@@ -17,13 +16,11 @@ interface CreateReadSDL {
 }
 
 export const createReadSDL: CreateReadSDL = ({
+    models,
     model,
     fieldTypePlugins,
     sorterPlugins
 }): string => {
-    const typeName = createTypeName(model.modelId);
-    const rTypeName = createReadTypeName(typeName);
-
     const type: ApiEndpoint = "read";
 
     const listFilterFieldsRender = renderListFilterFields({
@@ -42,6 +39,7 @@ export const createReadSDL: CreateReadSDL = ({
         fieldTypePlugins
     });
     const fieldsRender = renderFields({
+        models,
         model,
         type,
         fieldTypePlugins
@@ -53,16 +51,18 @@ export const createReadSDL: CreateReadSDL = ({
 
     const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");
 
+    const { singularApiName: singularName, pluralApiName: pluralName } = model;
+
     return `
-        """${model.description || ""}"""
-        type ${rTypeName} {
+        """${model.description || singularName}"""
+        type ${singularName} {
             id: ID!
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
             createdOn: DateTime!
             savedOn: DateTime!
-            createdBy: CmsCreatedBy!
-            ownedBy: CmsOwnedBy!
+            createdBy: CmsIdentity!
+            ownedBy: CmsIdentity!
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
         
@@ -73,7 +73,7 @@ export const createReadSDL: CreateReadSDL = ({
         
         ${
             getFilterFieldsRender &&
-            `input ${rTypeName}GetWhereInput {
+            `input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
         }`
         }
@@ -81,41 +81,41 @@ export const createReadSDL: CreateReadSDL = ({
         
         ${
             listFilterFieldsRender &&
-            `input ${rTypeName}ListWhereInput {
+            `input ${singularName}ListWhereInput {
                 ${listFilterFieldsRender}
-                AND: [${rTypeName}ListWhereInput!]
-                OR: [${rTypeName}ListWhereInput!]
+                AND: [${singularName}ListWhereInput!]
+                OR: [${singularName}ListWhereInput!]
         }`
         }
         
         
         ${
             sortEnumRender &&
-            `enum ${rTypeName}ListSorter {
+            `enum ${singularName}ListSorter {
             ${sortEnumRender}
         }`
         }
         
-        type ${rTypeName}Response {
-            data: ${rTypeName}
+        type ${singularName}Response {
+            data: ${singularName}
             error: CmsError
         }
         
-        type ${rTypeName}ListResponse {
-            data: [${rTypeName}]
+        type ${singularName}ListResponse {
+            data: [${singularName}]
             meta: CmsListMeta
             error: CmsError
         }
         
         extend type Query {
-            get${typeName}(where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
+            get${singularName}(where: ${singularName}GetWhereInput!): ${singularName}Response
 
-            list${pluralizedTypeName(typeName)}(
-                where: ${rTypeName}ListWhereInput
-                sort: [${rTypeName}ListSorter]
+            list${pluralName}(
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
                 limit: Int
                 after: String
-            ): ${rTypeName}ListResponse
+            ): ${singularName}ListResponse
         }
     `;
 };

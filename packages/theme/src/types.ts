@@ -1,4 +1,4 @@
-import { type CSSObject } from "@emotion/core";
+import { type CSSObject } from "@emotion/react";
 
 export type Content = Element;
 
@@ -9,7 +9,21 @@ export interface StylesObject {
     [key: string]: CSSObject | string | number | undefined;
 }
 
-export type ThemeBreakpoints = Record<string, string>;
+export enum DefaultThemeBreakpoint {
+    DESKTOP = "desktop",
+    TABLET = "tablet",
+    MOBILE_LANDSCAPE = "mobile-landscape",
+    MOBILE_PORTRAIT = "mobile-portrait"
+}
+
+export type ThemeBreakpoints = {
+    [DefaultThemeBreakpoint.DESKTOP]: string;
+    [DefaultThemeBreakpoint.TABLET]: string;
+    [DefaultThemeBreakpoint.MOBILE_LANDSCAPE]: string;
+    [DefaultThemeBreakpoint.MOBILE_PORTRAIT]: string;
+
+    [key: string]: string;
+};
 
 export type HeadingHtmlTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type ParagraphHtmlTag = "p";

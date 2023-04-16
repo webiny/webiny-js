@@ -235,7 +235,7 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value is too short.",
                                     fieldId: "title",
-                                    storageId: "title"
+                                    storageId: "text@title"
                                 }
                             ]
                         }
@@ -265,7 +265,7 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value is too short.",
                                     fieldId: "slug",
-                                    storageId: "slug"
+                                    storageId: "text@slug"
                                 }
                             ]
                         }
@@ -295,7 +295,7 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value is too long.",
                                     fieldId: "slug",
-                                    storageId: "slug"
+                                    storageId: "text@slug"
                                 }
                             ]
                         }
@@ -325,7 +325,7 @@ describe("`folder` CRUD", () => {
                                 {
                                     error: "Value must consist of only 'a-z', '0-9' and '-'.",
                                     fieldId: "slug",
-                                    storageId: "slug"
+                                    storageId: "text@slug"
                                 }
                             ]
                         }

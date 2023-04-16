@@ -1,9 +1,9 @@
-import { BaseCmsSecurityPermission, CmsContext, CreatedBy } from "~/types";
+import { BaseCmsSecurityPermission, CmsContext, CmsIdentity } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 
 interface OwnableRecord {
-    createdBy?: CreatedBy;
-    ownedBy?: CreatedBy;
+    createdBy?: CmsIdentity;
+    ownedBy?: CmsIdentity;
 }
 
 export const checkOwnership = (

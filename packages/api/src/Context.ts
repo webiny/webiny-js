@@ -1,6 +1,8 @@
 import { Context as ContextInterface } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { PluginCollection } from "@webiny/plugins/types";
+import { Benchmark } from "~/Benchmark";
+import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
 
 interface Waiter {
     targets: string[];
@@ -11,11 +13,13 @@ export interface ContextParams {
     plugins?: PluginCollection;
     WEBINY_VERSION: string;
 }
+
 export class Context implements ContextInterface {
     public _result: any;
     public args: any;
     public readonly plugins: PluginsContainer;
     public readonly WEBINY_VERSION: string;
+    public readonly benchmark: Benchmark;
 
     private readonly waiters: Waiter[] = [];
 
@@ -23,6 +27,12 @@ export class Context implements ContextInterface {
         const { plugins, WEBINY_VERSION } = params;
         this.plugins = new PluginsContainer(plugins || []);
         this.WEBINY_VERSION = WEBINY_VERSION;
+        /**
+         * At the moment let's have benchmark as part of the context.
+         * Also, register the plugin to have benchmark accessible via plugins container.
+         */
+        this.benchmark = new Benchmark();
+        this.plugins.register(new BenchmarkPlugin(this.benchmark));
     }
 
     public getResult(): any {

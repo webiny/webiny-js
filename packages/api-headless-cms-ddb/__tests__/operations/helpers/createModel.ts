@@ -13,6 +13,8 @@ export const createModel = (): CmsModel => {
         titleFieldId: "title",
         lockedFields: [],
         name: "Category",
+        singularApiName: "Category",
+        pluralApiName: "Categories",
         description: "Product category",
         modelId: "category",
         group: {

@@ -11,6 +11,7 @@ import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Bind, BindComponentRenderProp, useForm } from "@webiny/form";
 import { useQuery, useModel } from "~/admin/hooks";
+import { renderInfo } from "./ref/renderInfo";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -113,7 +114,8 @@ const plugin: CmsModelFieldTypePlugin = {
                     id
                 }
             `
-        }
+        },
+        renderInfo
     }
 };
 

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin, LockedField } from "~/types";
+import { CmsEntry, CmsContext, CmsModelLockedFieldPlugin, LockedField, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
@@ -8,6 +8,7 @@ interface MarkLockedFieldsParams {
     entry: CmsEntry;
     context: CmsContext;
 }
+
 export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<void> => {
     const { model, context } = params;
     /**
@@ -61,11 +62,14 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
 
     try {
         await context.cms.updateModelDirect({
-            original: model,
+            /**
+             * At this point we know this is a CmsModel, so it is safe to cast.
+             */
+            original: model as CmsModel,
             model: {
                 ...model,
                 lockedFields: newLockedFields
-            }
+            } as CmsModel
         });
         model.lockedFields = newLockedFields;
     } catch (ex) {
@@ -85,6 +89,7 @@ export interface MarkFieldsUnlockedParams {
     context: CmsContext;
     model: CmsModel;
 }
+
 export const markUnlockedFields = async (params: MarkFieldsUnlockedParams) => {
     const { context, model } = params;
     /**
@@ -97,11 +102,11 @@ export const markUnlockedFields = async (params: MarkFieldsUnlockedParams) => {
 
     try {
         await context.cms.updateModelDirect({
-            original: model,
+            original: model as CmsModel,
             model: {
                 ...model,
                 lockedFields: []
-            }
+            } as CmsModel
         });
         model.lockedFields = [];
     } catch (ex) {

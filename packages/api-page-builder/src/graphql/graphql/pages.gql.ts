@@ -238,7 +238,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     createPage(from: ID, category: String, meta: JSON): PbPageResponse
 
                     # Update page by given ID.
-                    updatePage(id: ID!, data: PbUpdatePageInput!, meta: JSON): PbPageResponse
+                    updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
 
                     # Duplicate page by given ID.
                     duplicatePage(id: ID!): PbPageResponse
@@ -398,6 +398,9 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                                 if (args.returnNotFoundPage === true && err.code === "NOT_FOUND") {
                                     // Load NOT FOUND page from settings
                                     const settings = await context.pageBuilder.getCurrentSettings();
+                                    if (!settings.pages?.notFound) {
+                                        return null;
+                                    }
                                     return context.pageBuilder.getPublishedPageById({
                                         id: settings.pages.notFound
                                     });

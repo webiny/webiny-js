@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import upperFirst from "lodash/upperFirst";
 import {
     CmsFieldTypePlugins,
@@ -62,7 +63,7 @@ interface CreateTypeNameParams {
 }
 const createTypeName = (params: CreateTypeNameParams): string => {
     const { model, parents = [], field } = params;
-    return [model.modelId]
+    return [model.singularApiName]
         .concat(parents)
         .concat([field.fieldId])
         .filter(Boolean)
@@ -96,14 +97,32 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
         validateChildFields: params => {
             const { field, originalField, validate } = params;
 
+            const fields = field.settings?.fields || [];
+            /**
+             * At the moment we do not allow dynamic zone fields inside the object field.
+             */
+            const hasDynamicZone = fields.some(f => f.type === "dynamicZone");
+            if (hasDynamicZone) {
+                throw new WebinyError(
+                    "Dynamic zones cannot be used inside of an object field.",
+                    "DYNAMIC_ZONE_INSIDE_OBJECT",
+                    {
+                        id: field.id,
+                        fieldId: field.fieldId,
+                        fieldLabel: field.label
+                    }
+                );
+            }
+
             validate({
-                fields: field.settings?.fields || [],
+                fields,
                 originalFields: originalField?.settings?.fields || []
             });
         },
         read: {
-            createTypeField({ field, model, fieldTypePlugins }) {
+            createTypeField({ field, models, model, fieldTypePlugins }) {
                 const result = createTypeFromFields({
+                    models,
                     typeOfType: "type",
                     model,
                     type: "read",
@@ -154,9 +173,10 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
             createListFilters
         },
         manage: {
-            createTypeField({ model, field, fieldTypePlugins }) {
+            createTypeField({ models, model, field, fieldTypePlugins }) {
                 const result = createTypeFromFields({
                     typeOfType: "type",
+                    models,
                     model,
                     type: "manage",
                     typeNamePrefix: createTypeName({
@@ -187,9 +207,10 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     typeDefs: `${typeDefs}${childTypeDefs}`
                 };
             },
-            createInputField({ model, field, fieldTypePlugins }) {
+            createInputField({ models, model, field, fieldTypePlugins }) {
                 const result = createTypeFromFields({
                     typeOfType: "input",
+                    models,
                     model,
                     type: "manage",
                     typeNamePrefix: createTypeName({

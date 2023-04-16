@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "name": "@webiny-scripts/build-packages",
+  "version": "0.0.0",
+  "sideEffects": false,
+  "bin": "./src/index.js",
+  "main": "./src/index.js",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "execa": "^5.1.1",
+    "folder-hash": "^4.0.4",
+    "fs-extra": "^7.0.1",
+    "listr2": "^5.0.8",
+    "load-json-file": "^6.2.0",
+    "write-json-file": "^4.3.0",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/folder-hash": "^4.0.2",
+    "@types/yargs": "^17.0.8",
+    "ts-node": "^10.5.0"
+  }
+}

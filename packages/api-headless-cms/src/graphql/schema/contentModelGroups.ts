@@ -55,9 +55,9 @@ export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    context.security.disableAuthorization();
-                    const models = await context.cms.listModels();
-                    context.security.enableAuthorization();
+                    const models = await context.security.withoutAuthorization(async () => {
+                        return context.cms.listModels();
+                    });
                     return models.filter(model => {
                         if (model.isPrivate === true) {
                             return false;
@@ -66,9 +66,9 @@ export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
                     });
                 },
                 totalContentModels: async (group, _, context) => {
-                    context.security.disableAuthorization();
-                    const models = await context.cms.listModels();
-                    context.security.enableAuthorization();
+                    const models = await context.security.withoutAuthorization(async () => {
+                        return context.cms.listModels();
+                    });
                     return models.filter(model => {
                         if (model.isPrivate === true) {
                             return false;
@@ -145,7 +145,7 @@ export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
                 slug: String!
                 description: String
                 icon: String
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
 
                 # Returns true if the content model group is registered via a plugin.
                 plugin: Boolean!

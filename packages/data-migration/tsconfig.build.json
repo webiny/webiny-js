@@ -4,7 +4,8 @@
   "references": [
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../ioc/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" }
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

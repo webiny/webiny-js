@@ -2,10 +2,10 @@ import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { CmsCreatedBy, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
+import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
 
 interface CreatableItem {
-    createdBy: Pick<CmsCreatedBy, "id">;
+    createdBy: Pick<CmsIdentity, "id">;
 }
 
 interface CanReadEntriesCallableParams {

@@ -28,7 +28,7 @@ export const PreviewPageButtonPlugin = createComponentPlugin(PageOptionsMenu, Or
 
         const onClick = () => {
             if (isSiteRunning) {
-                window.open(getPageUrl(pageData, true), openTarget, "noopener");
+                window.open(getPageUrl(pageData), openTarget, "noopener");
             } else {
                 showConfigureWebsiteUrlDialog();
             }

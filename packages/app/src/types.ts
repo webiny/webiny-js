@@ -20,6 +20,7 @@ export interface FileItem {
 
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
+    onProgress?: (progress: number) => void;
 };
 
 export type UiStatePlugin = Plugin & {
@@ -30,13 +31,13 @@ export type UiStatePlugin = Plugin & {
 export type FileUploaderPlugin = Plugin & {
     type: "file-uploader";
     // TODO: @adrian define type for the returned object
-    upload(file: FileItem, options: UploadOptions): Promise<any>;
+    upload(file: File, options: UploadOptions): Promise<any>;
 };
 
 export type AppFileManagerStoragePlugin = Plugin & {
     type: "app-file-manager-storage";
     // TODO: @adrian define type for the returned object
-    upload(file: FileItem, options: UploadOptions): Promise<any>;
+    upload(file: File, options: UploadOptions): Promise<any>;
 };
 
 export { Plugin };

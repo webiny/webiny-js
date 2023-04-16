@@ -26,8 +26,8 @@
     "react-style-object-to-css": "^1.1.2"
   },
   "devDependencies": {
-    "@webiny/cli": "^5.33.1",
-    "@webiny/project-utils": "^5.33.1"
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0"
   },
   "publishConfig": {
     "access": "public",

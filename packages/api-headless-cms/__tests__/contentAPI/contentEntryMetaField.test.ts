@@ -2,10 +2,9 @@
  * There must be the "until" in this file because we are using storage operations directly.
  */
 import models from "./mocks/contentModels";
-import { CmsEntry, CmsGroup, StorageOperationsCmsModel } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
-import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
 
 const manageOpts = {
     path: "manage/en-US"
@@ -45,8 +44,7 @@ describe("Content Entry Meta Field", () => {
         updateContentModelMutation,
         createContentModelGroupMutation,
         storageOperations,
-        until,
-        plugins
+        until
     } = useCategoryManageHandler(manageOpts);
 
     const setup = async () => {
@@ -68,6 +66,8 @@ describe("Content Entry Meta Field", () => {
             data: {
                 name: targetModel.name,
                 modelId: targetModel.modelId,
+                singularApiName: targetModel.singularApiName,
+                pluralApiName: targetModel.pluralApiName,
                 group: group.id
             }
         });
@@ -79,14 +79,11 @@ describe("Content Entry Meta Field", () => {
                 layout: targetModel.layout
             }
         });
-        const model: StorageOperationsCmsModel = attachCmsModelFieldConverters({
-            plugins,
-            model: {
-                ...updateModelResponse.data.updateContentModel.data,
-                tenant: "root",
-                locale: "en-US"
-            }
-        });
+        const model: CmsModel = {
+            ...updateModelResponse.data.updateContentModel.data,
+            tenant: "root",
+            locale: "en-US"
+        };
 
         return {
             model,

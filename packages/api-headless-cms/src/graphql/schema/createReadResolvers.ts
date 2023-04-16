@@ -2,8 +2,6 @@ import { CmsModel, CmsFieldTypePlugins, CmsContext } from "~/types";
 import { resolveGet } from "./resolvers/read/resolveGet";
 import { resolveList } from "./resolvers/read/resolveList";
 import { createFieldResolversFactory } from "./createFieldResolvers";
-import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
-import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 
 interface CreateReadResolversParams {
     models: CmsModel[];
@@ -11,6 +9,7 @@ interface CreateReadResolversParams {
     context: CmsContext;
     fieldTypePlugins: CmsFieldTypePlugins;
 }
+
 export interface CreateReadResolvers {
     // TODO @ts-refactor determine correct type.
     (params: CreateReadResolversParams): any;
@@ -22,8 +21,6 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
             Query: {}
         };
     }
-    const typeName = createTypeName(model.modelId);
-    const rTypeName = createReadTypeName(typeName);
 
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "read",
@@ -33,17 +30,17 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
     });
 
     const fieldResolvers = createFieldResolvers({
-        graphQLType: rTypeName,
+        graphQLType: model.singularApiName,
         fields: model.fields,
         isRoot: true
     });
 
     return {
         Query: {
-            [`get${typeName}`]: resolveGet({ model }),
-            [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
+            [`get${model.singularApiName}`]: resolveGet({ model }),
+            [`list${model.pluralApiName}`]: resolveList({ model })
         },
-        [rTypeName]: {
+        [model.singularApiName]: {
             modelId: () => {
                 return model.modelId;
             }

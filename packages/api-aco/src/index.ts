@@ -4,7 +4,7 @@ import { createAcoContext } from "~/createAcoContext";
 import { createAcoFields } from "~/createAcoFields";
 import { createAcoGraphQL } from "~/createAcoGraphQL";
 
-export const createACO = () => {
+export const createAco = () => {
     return [
         ...createAdminSettingsContext(),
         createAcoContext(),

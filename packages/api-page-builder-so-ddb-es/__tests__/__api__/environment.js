@@ -10,7 +10,7 @@ const {
 } = require("@webiny/project-utils/testing/elasticsearch/createClient");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
-const { createGzipCompression } = require("@webiny/api-elasticsearch");
+const { createGzipCompression, getElasticsearchOperators } = require("@webiny/api-elasticsearch");
 const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
@@ -61,6 +61,7 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
 
         const plugins = [
             createGzipCompression(),
+            getElasticsearchOperators(),
             dbPlugins({
                 table: process.env.DB_TABLE,
                 driver: new DynamoDbDriver({
@@ -80,7 +81,7 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
                         elasticsearch: elasticsearchClient,
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
-                        plugins: testPlugins.concat([createGzipCompression()])
+                        plugins: testPlugins
                     });
                 },
                 getPlugins: () => {

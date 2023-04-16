@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback } from "react";
 
-import { ReactComponent as Visibility } from "@material-design-icons/svg/filled/visibility.svg";
+import { ReactComponent as Visibility } from "@material-design-icons/svg/outlined/visibility.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
@@ -29,7 +29,8 @@ export const RecordActionPreview = ({ record }: Props): ReactElement => {
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";
-    const url = getPageUrl(record, !record.locked);
+
+    const url = getPageUrl(record);
 
     const handlePreviewClick = useCallback(() => {
         if (isSiteRunning) {
@@ -39,7 +40,7 @@ export const RecordActionPreview = ({ record }: Props): ReactElement => {
         }
     }, [url, isSiteRunning]);
 
-    const previewButtonLabel = record.locked ? t`View` : t`Preview`;
+    const previewButtonLabel = record.status === "published" ? t`View` : t`Preview`;
 
     return (
         <MenuItem onClick={handlePreviewClick}>

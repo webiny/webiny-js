@@ -6,7 +6,6 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   init:
@@ -72,7 +71,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -147,7 +146,7 @@ jobs:
           key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Run tests
         run: yarn test ${{ matrix.package }}
@@ -171,7 +170,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages (full)
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   npm-release-experimental:
     needs: [init, code-analysis, jest-tests, code-analysis-typescript]

@@ -18,6 +18,9 @@ const plugin: CmsModelFieldTypePlugin = {
         allowMultipleValues: true,
         allowPredefinedValues: false,
         multipleValuesLabel: t`Use as a repeatable object`,
+        canAccept(_, draggable): boolean {
+            return draggable.fieldType !== "dynamicZone";
+        },
         createField() {
             return {
                 type: this.type,

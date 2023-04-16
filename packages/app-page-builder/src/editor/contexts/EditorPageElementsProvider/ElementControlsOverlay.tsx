@@ -1,32 +1,31 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Element, RendererMeta } from "@webiny/app-page-builder-elements/types";
 import styled from "@emotion/styled";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
+import { plugins } from "@webiny/plugins";
 import { useUI } from "~/editor/hooks/useUI";
 import { useElementById } from "~/editor/hooks/useElementById";
-import { PbEditorElement } from "~/types";
+import { PbEditorElement, PbEditorBlockPlugin } from "~/types";
 import { SetterOrUpdater } from "recoil";
 import Draggable from "~/editor/components/Draggable";
 import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
-
-const ACTIVE_COLOR = "var(--mdc-theme-primary)";
-const HOVER_COLOR = "var(--mdc-theme-secondary)";
+import { ElementControlsOverlayBorders } from "./ElementControlsOverlay/ElementControlsOverlayBorders";
+import { ConnectDragSource } from "react-dnd";
 
 declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            "pb-element-controls-overlay": React.HTMLProps<HTMLDivElement>;
+            "pb-eco": React.HTMLProps<HTMLDivElement>;
         }
     }
 }
 
-interface Props {
-    children?: React.ReactNode;
-    dropRef?: React.Ref<any>;
-}
+// Basic border colors.
+const ACTIVE_COLOR = "var(--mdc-theme-primary)";
+const HOVER_COLOR = "var(--mdc-theme-secondary)";
 
 // Until the need for custom targets arises, we're hard-coding the available
 // targets (types of elements onto which another element can be dropped).
@@ -34,6 +33,176 @@ const DEFAULT_TARGETS = ["cell", "block"];
 
 // We're doing the same with the list of non-draggable elements.
 const NON_DRAGGABLE_ELEMENTS = ["cell", "block"];
+
+type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
+    className?: String;
+    element: Element;
+    elementRendererMeta: RendererMeta;
+    isActive: boolean;
+    isHighlighted: boolean;
+    isDragging: boolean;
+    dropRef?: React.RefCallback<any>;
+    dragRef?: ConnectDragSource | null;
+    zIndex: number;
+};
+
+const PbElementControlsOverlay = ({
+    className,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+    onDragEnter,
+    onDragLeave,
+    onDrop,
+    dropRef,
+    dragRef,
+    isActive,
+    zIndex,
+    children
+}: PbElementControlsOverlayProps) => {
+    return (
+        <>
+            {isActive && <ElementControlsOverlayBorders zIndex={zIndex} color={ACTIVE_COLOR} />}
+            <pb-eco
+                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
+                class={className}
+                onClick={onClick}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                onDragEnter={onDragEnter}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
+                ref={element => {
+                    if (dropRef) {
+                        dropRef(element);
+                    }
+
+                    if (dragRef) {
+                        dragRef(element);
+                    }
+                }}
+            >
+                {children}
+            </pb-eco>
+        </>
+    );
+};
+
+const titleContainerBaseStyles = {
+    color: "#fff",
+    textTransform: "lowercase",
+    position: "absolute",
+    padding: "2px 5px",
+    fontSize: "10px",
+    textAlign: "center",
+    lineHeight: "14px",
+    top: "-16px",
+    right: "0"
+};
+
+const StyledPbElementControlsOverlay = styled(
+    PbElementControlsOverlay
+)<PbElementControlsOverlayProps>(
+    ({ title, zIndex, elementRendererMeta, isActive, isHighlighted, isDragging }) => {
+        const hoverStyles: CSSObject = {};
+        if (isHighlighted) {
+            Object.assign(hoverStyles, {
+                boxShadow: "inset 0px 0px 0px 2px " + HOVER_COLOR,
+                "&::after": {
+                    ...titleContainerBaseStyles,
+                    backgroundColor: HOVER_COLOR,
+                    content: `"${title}"`
+                }
+            });
+        }
+
+        const activeStyles: CSSObject = {};
+        if (isActive) {
+            Object.assign(hoverStyles, {
+                // No need to apply the box shadow here. Active page element's
+                // borders are handled separately (`ElementControlsOverlayBorders`).
+                // boxShadow: "inset 0px 0px 0px 2px " + ACTIVE_COLOR,
+                "&::after": {
+                    ...titleContainerBaseStyles,
+                    backgroundColor: ACTIVE_COLOR,
+                    content: `"${title}"`
+                }
+            });
+
+            if (!isDragging) {
+                // When an element is active, we're increasing the z-index of the actual page element.
+                // We are putting it "in front of the user", above the element controls overlay.
+                // This enables us to actually interact with the page element. For example, when
+                // activating a paragraph page element, we get to type the paragraph text.
+                Object.assign(activeStyles, {
+                    "& + *": {
+                        zIndex: zIndex + 5,
+                        position: "relative"
+                    }
+                });
+
+                // Note that we don't apply active border styles here. We do that via the `pb-eco-border`
+                // elements, rendered within the `PbElementControlsOverlayBaseComponent` component.
+            }
+        }
+
+        // By default, the element controls overlay takes the size of the actual element.
+        // But, if margins were set, they won't be taken into consideration. The shown
+        // overlay is smaller than the actual space the page element takes. That's why,
+        // when calculating the size of the overlay, we also need to take into consideration
+        // any margins that the user might've set.
+        const margins: CSSObject = elementRendererMeta.calculatedStyles.reduce(
+            (current: CSSObject, item: CSSObject) => {
+                if (item.margin) {
+                    current.marginTop = item.margin;
+                    current.marginRight = item.margin;
+                    current.marginBottom = item.margin;
+                    current.marginLeft = item.margin;
+                } else {
+                    if (item.marginTop) {
+                        current.marginTop = item.marginTop;
+                    }
+                    if (item.marginRight) {
+                        current.marginRight = item.marginRight;
+                    }
+                    if (item.marginBottom) {
+                        current.marginBottom = item.marginBottom;
+                    }
+                    if (item.marginLeft) {
+                        current.marginLeft = item.marginLeft;
+                    }
+                }
+
+                return current;
+            },
+            {
+                marginTop: "0px",
+                marginRight: "0px",
+                marginBottom: "0px",
+                marginLeft: "0px"
+            }
+        );
+
+        return {
+            display: "block",
+            position: "absolute",
+            zIndex,
+            top: `calc(0px - ${margins.marginTop})`,
+            left: `calc(0px - ${margins.marginLeft})`,
+            width: `calc(100%  + ${margins.marginLeft} + ${margins.marginRight})`,
+            height: `calc(100%  + ${margins.marginTop} + ${margins.marginBottom})`,
+            transition: "box-shadow 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
+            cursor: "pointer",
+            ...hoverStyles,
+            ...activeStyles
+        };
+    }
+);
+
+interface Props {
+    children?: React.ReactNode;
+    dropRef?: React.RefCallback<any>;
+}
 
 export const ElementControlsOverlay: React.FC<Props> = props => {
     const [{ isDragging }, setUi] = useUI();
@@ -67,6 +236,23 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 
     const isDraggable = !NON_DRAGGABLE_ELEMENTS.includes(element.type);
 
+    const title = useMemo(() => {
+        if (element.data.blockId) {
+            const blockName = plugins
+                .byType<PbEditorBlockPlugin>("pb-editor-block")
+                .find(block => block.id === element.data.blockId)
+                ?.title?.toLowerCase();
+
+            return `block | ${blockName}`;
+        }
+
+        return element.type;
+    }, [element.data.blockId]);
+
+    // Z-index of element controls overlay depends on the depth of the page element.
+    // The deeper the page element is in the content hierarchy, the greater the index.
+    const zIndex = meta.depth * 10;
+
     return (
         <Draggable
             enabled={isDraggable}
@@ -75,7 +261,9 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             endDrag={endDrag}
         >
             {({ drag: dragRef }) => (
-                <PbElementControlsOverlay
+                <StyledPbElementControlsOverlay
+                    title={title}
+                    zIndex={zIndex}
                     isDragging={isDragging}
                     isActive={isActive}
                     isHighlighted={isHighlighted}
@@ -85,7 +273,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                         updateEditorElement(element => ({ ...element, isHighlighted: false }));
                         setActiveElementId(element.id);
                     }}
-                    onMouseEnter={(e: MouseEvent) => {
+                    onMouseEnter={e => {
                         if (isActive || isHighlighted) {
                             return;
                         }
@@ -93,18 +281,18 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, isHighlighted: true }));
                     }}
-                    onMouseLeave={(e: MouseEvent) => {
+                    onMouseLeave={e => {
                         if (isActive || !isHighlighted) {
                             return;
                         }
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, isHighlighted: false }));
                     }}
-                    onDragEnter={(e: MouseEvent) => {
+                    onDragEnter={e => {
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, dragEntered: true }));
                     }}
-                    onDragLeave={(e: MouseEvent) => {
+                    onDragLeave={e => {
                         e.stopPropagation();
                         updateEditorElement(element => ({ ...element, dragEntered: false }));
                     }}
@@ -119,155 +307,8 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
                     {...rest}
                 >
                     {children}
-                </PbElementControlsOverlay>
+                </StyledPbElementControlsOverlay>
             )}
         </Draggable>
     );
 };
-
-const PbElementControlsOverlay = styled(
-    ({
-        className,
-        onClick,
-        onMouseEnter,
-        onMouseLeave,
-        onDragEnter,
-        onDragLeave,
-        onDrop,
-        dropRef,
-        dragRef,
-        children
-    }) => {
-        return (
-            <pb-element-controls-overlay
-                // @ts-ignore Not supported by `React.HTMLProps<HTMLDivElement>`.
-                class={className}
-                onClick={onClick}
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
-                onDragEnter={onDragEnter}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                ref={element => {
-                    if (dropRef) {
-                        dropRef(element);
-                    }
-
-                    if (dragRef) {
-                        dragRef(element);
-                    }
-                }}
-            >
-                {children}
-            </pb-element-controls-overlay>
-        );
-    }
-)<{
-    element: Element;
-    elementRendererMeta: RendererMeta;
-    isActive: boolean;
-    isHighlighted: boolean;
-    isDragging: boolean;
-}>(({ element, elementRendererMeta, isActive, isHighlighted, isDragging }) => {
-    // By default, the element controls overlay takes the size of the actual element.
-    // But, if margins were set, they won't be taken into consideration. The shown
-    // overlay is smaller than the actual space the page element takes. That's why,
-    // when calculating the size of the overlay, we also need to take into consideration
-    // any margins that the user might've set.
-    const margins: CSSObject = elementRendererMeta.calculatedStyles.reduce(
-        (current: CSSObject, item: CSSObject) => {
-            if (item.margin) {
-                current.marginTop = item.margin;
-                current.marginRight = item.margin;
-                current.marginBottom = item.margin;
-                current.marginLeft = item.margin;
-            } else {
-                if (item.marginTop) {
-                    current.marginTop = item.marginTop;
-                }
-                if (item.marginRight) {
-                    current.marginRight = item.marginRight;
-                }
-                if (item.marginBottom) {
-                    current.marginBottom = item.marginBottom;
-                }
-                if (item.marginLeft) {
-                    current.marginLeft = item.marginLeft;
-                }
-            }
-
-            return current;
-        },
-        {
-            marginTop: "0px",
-            marginRight: "0px",
-            marginBottom: "0px",
-            marginLeft: "0px"
-        }
-    );
-
-    const hoverStyles: CSSObject = {};
-    if (isHighlighted) {
-        Object.assign(hoverStyles, {
-            boxShadow: "inset 0px 0px 0px 2px " + HOVER_COLOR,
-            "&::after": {
-                backgroundColor: HOVER_COLOR,
-                color: "#fff",
-                content: `"${element.type}"`,
-                position: "absolute",
-                top: "-16px",
-                right: "0",
-                padding: "2px 5px",
-                fontSize: "10px",
-                textAlign: "center",
-                lineHeight: "14px"
-            }
-        });
-    }
-
-    const activeStyles: CSSObject = {};
-    if (isActive) {
-        Object.assign(activeStyles, {
-            boxShadow: "inset 0px 0px 0px 2px " + ACTIVE_COLOR,
-            "&::after": {
-                backgroundColor: ACTIVE_COLOR,
-                color: "#fff",
-                content: `"${element.type}"`,
-                position: "absolute",
-                top: "-16px",
-                right: "0",
-                padding: "2px 5px",
-                fontSize: "10px",
-                textAlign: "center",
-                lineHeight: "14px"
-            }
-        });
-
-        if (!isDragging) {
-            // When an element is active, we're increasing the z-index of the actual page element.
-            // We are putting it "in front of the user", above the element controls overlay.
-            // This enables us to actually interact with the page element. For example, when
-            // activating a paragraph page element, we get to type the paragraph text.
-            Object.assign(activeStyles, {
-                "& + *": {
-                    zIndex: 5,
-                    position: "relative"
-                }
-            });
-        }
-    }
-
-    return {
-        display: "block",
-        position: "absolute",
-        zIndex: 1,
-        top: `calc(0px - ${margins.marginTop})`,
-        left: `calc(0px - ${margins.marginLeft})`,
-        width: `calc(100%  + ${margins.marginLeft} + ${margins.marginRight})`,
-        height: `calc(100%  + ${margins.marginTop} + ${margins.marginBottom})`,
-        transition: "box-shadow 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
-        cursor: "pointer",
-        ...hoverStyles,
-        ...activeStyles
-    };
-});

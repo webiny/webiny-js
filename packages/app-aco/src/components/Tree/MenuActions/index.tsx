@@ -1,8 +1,8 @@
 import React from "react";
 
-import { ReactComponent as Delete } from "@material-design-icons/svg/filled/delete.svg";
-import { ReactComponent as Edit } from "@material-design-icons/svg/filled/edit.svg";
-import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
+import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
+import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
+import { ReactComponent as More } from "@material-design-icons/svg/outlined/more_vert.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { Menu, MenuItem } from "@webiny/ui/Menu";

@@ -3,6 +3,8 @@ const entryFields = `
     entryId
     status
     title
+    description
+    image
     model {
         modelId
         name

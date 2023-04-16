@@ -47,7 +47,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   cache-dependencies-packages-next:
     name: Cache dependencies and packages ("next" folder)
@@ -80,4 +80,4 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js
+        run: yarn build

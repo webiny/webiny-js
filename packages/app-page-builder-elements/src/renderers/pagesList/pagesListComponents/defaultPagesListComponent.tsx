@@ -3,7 +3,7 @@ import { PagesListComponent, PagesListPage } from "./../types";
 import { LinkComponent } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 import styled from "@emotion/styled";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 import { usePageElements } from "~/hooks/usePageElements";
 
 declare global {

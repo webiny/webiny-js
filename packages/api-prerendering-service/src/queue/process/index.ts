@@ -291,13 +291,13 @@ export default (params: Configuration) => {
                 },
                 error: null
             };
-        } catch (e) {
-            log("An error occurred while trying to add to prerendering queue...", e);
+        } catch (ex) {
+            console.error("An error occurred while trying to add to prerendering queue...", ex);
             return {
                 data: {
                     stats
                 },
-                error: e
+                error: ex
             };
         }
     });

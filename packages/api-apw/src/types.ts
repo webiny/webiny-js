@@ -1,6 +1,5 @@
 import {
     CmsEntry as BaseCmsEntry,
-    CmsModel,
     OnEntryBeforePublishTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterUnpublishTopicParams
@@ -25,6 +24,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { WcpContextObject } from "@webiny/api-wcp/types";
 import { MailerContext } from "@webiny/api-mailer/types";
 import { AdminSettingsContext } from "@webiny/api-admin-settings/types";
+import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
     title: string;
@@ -94,6 +94,7 @@ export interface PageSettingsWithWorkflow extends PageSettings {
         contentReviewId: string | null;
     };
 }
+
 export interface PageWithWorkflow extends Page {
     settings: PageSettingsWithWorkflow;
 }
@@ -128,7 +129,7 @@ export enum ApwWorkflowApplications {
  *
  * @category General
  */
-export interface CreatedBy {
+export interface ApwIdentity {
     /**
      * ID if the user.
      */
@@ -148,7 +149,7 @@ export interface ApwBaseFields {
     entryId: string;
     createdOn: string;
     savedOn: string;
-    createdBy: CreatedBy;
+    createdBy: ApwIdentity;
 }
 
 export interface ApwReviewer extends ApwBaseFields {
@@ -157,6 +158,7 @@ export interface ApwReviewer extends ApwBaseFields {
     type: string;
     email?: string;
 }
+
 export interface ApwReviewerWithEmail extends Omit<ApwReviewer, "email"> {
     email: string;
 }
@@ -185,7 +187,7 @@ export interface ApwContentReviewStep {
     pendingChangeRequests: number;
     totalComments: number;
     signOffProvidedOn: string | null;
-    signOffProvidedBy: CreatedBy | null;
+    signOffProvidedBy: ApwIdentity | null;
 }
 
 export interface ApwContentReview extends ApwBaseFields {
@@ -208,6 +210,7 @@ interface ApwWorkflowScopeCmsEntry {
     id: string;
     modelId: string;
 }
+
 export interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
@@ -954,10 +957,7 @@ export interface OnWorkflowAfterDeleteTopicParams {
     workflow: ApwWorkflow;
 }
 
-export type WorkflowModelDefinition = Pick<
-    CmsModel,
-    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
->;
+export type WorkflowModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
 
 /**
  * Headless CMS
@@ -966,10 +966,12 @@ export interface OnCmsEntryBeforePublishTopicParams
     extends Omit<OnEntryBeforePublishTopicParams, "entry"> {
     entry: ApwCmsEntry;
 }
+
 export interface OnCmsEntryAfterPublishTopicParams
     extends Omit<OnEntryAfterPublishTopicParams, "entry"> {
     entry: ApwCmsEntry;
 }
+
 export interface OnCmsEntryAfterUnpublishTopicParams
     extends Omit<OnEntryAfterUnpublishTopicParams, "entry"> {
     entry: ApwCmsEntry;

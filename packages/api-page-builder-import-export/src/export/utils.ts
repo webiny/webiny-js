@@ -32,7 +32,7 @@ export async function exportPage(
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.files.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ ids: fileIds });
         imageFilesData.push(...filesData);
     }
 
@@ -78,12 +78,12 @@ export async function exportBlock(
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.files.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ ids: fileIds });
         imageFilesData.push(...filesData);
     }
     // Add block preview image file data
     if (block.preview.id) {
-        imageFilesData.push(await fileManager.files.getFile(block.preview.id));
+        imageFilesData.push(await fileManager.getFile(block.preview.id));
     }
 
     // Extract the block data in a json file and upload it to S3
@@ -128,7 +128,7 @@ export async function exportTemplate(
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.files.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ ids: fileIds });
         imageFilesData.push(...filesData);
     }
 

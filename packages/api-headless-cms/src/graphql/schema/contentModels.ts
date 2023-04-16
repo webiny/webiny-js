@@ -8,6 +8,7 @@ import { toSlug } from "~/utils/toSlug";
 interface Params {
     context: CmsContext;
 }
+
 export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
@@ -43,9 +44,9 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
         },
         CmsContentModel: {
             group: async (model: CmsModel) => {
-                context.security.disableAuthorization();
-                const groups = await context.cms.listGroups();
-                context.security.enableAuthorization();
+                const groups = await context.security.withoutAuthorization(async () => {
+                    return context.cms.listGroups();
+                });
 
                 const group = groups.find(group => group.id === model.group.id);
                 return {
@@ -159,30 +160,44 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
 
             input CmsContentModelCreateInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
+                icon: String
                 description: String
                 layout: [[ID!]!]
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]
+                defaultFields: Boolean
             }
 
             input CmsContentModelCreateFromInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
+                icon: String
                 description: String
                 locale: String
             }
 
             input CmsContentModelUpdateInput {
                 name: String
+                singularApiName: String
+                pluralApiName: String
                 group: RefInput
+                icon: String
                 description: String
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]
             }
 
@@ -256,16 +271,21 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
 
             type CmsContentModel {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String!
                 description: String
                 group: CmsContentModelGroup!
+                icon: String
                 createdOn: DateTime
                 savedOn: DateTime
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
                 lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!

@@ -26,7 +26,7 @@ import {
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
 
-import { createACO } from "~/index";
+import { createAco } from "~/index";
 import { createStorageOperations } from "~tests/utils/storageOperations";
 
 export interface UseGQLHandlerParams {
@@ -81,7 +81,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 })
             }),
             createHeadlessCmsGraphQL(),
-            createACO(),
+            createAco(),
             plugins
         ],
         http: {

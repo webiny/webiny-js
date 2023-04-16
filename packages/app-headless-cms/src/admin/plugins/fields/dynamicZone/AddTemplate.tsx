@@ -19,6 +19,7 @@ const AddTemplateButtonContainer = styled(Elevation)`
 const AddTemplateIconContainer = styled.div`
     text-align: center;
     height: 36px;
+
     > button {
         margin-left: -24px;
         position: absolute;
@@ -30,6 +31,7 @@ const Info = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+
     > svg {
         width: 20px;
         margin-right: 5px;
@@ -67,7 +69,7 @@ function useAddTemplate(params: UseAddTemplateParams) {
     };
 }
 
-export const AddTemplateButton = (props: AddTemplateProps) => {
+export const AddTemplateButton: React.VFC<AddTemplateProps> = props => {
     const { addTemplate, onTemplate, showTemplateDialog, onDialogClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });
@@ -88,7 +90,7 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
     );
 };
 
-export const AddTemplateIcon = (props: AddTemplateProps) => {
+export const AddTemplateIcon: React.VFC<AddTemplateProps> = props => {
     const { addTemplate, onTemplate, showTemplateDialog, onDialogClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });

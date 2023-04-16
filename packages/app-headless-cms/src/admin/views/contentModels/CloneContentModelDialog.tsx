@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import get from "lodash/get";
+import * as UID from "@webiny/ui/Dialog";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
@@ -7,13 +7,12 @@ import { Select } from "@webiny/ui/Select";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { useMutation, useQueryLocale } from "../../hooks";
+import { useApolloClient, useMutation, useQueryLocale } from "../../hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
-import * as UID from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
-import { CmsEditorContentModel, CmsModel } from "~/types";
+import { CmsModel } from "~/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import {
     CREATE_CONTENT_MODEL_FROM,
@@ -22,29 +21,21 @@ import {
     CreateCmsModelFromMutationVariables,
     ListMenuCmsGroupsQueryResponse
 } from "../../viewsGraphql";
-import { CmsGroup } from "~/admin/views/contentModelGroups/graphql";
 import { CmsGroupOption } from "~/admin/views/contentModels/types";
 import { Dialog } from "~/admin/components/Dialog";
+import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
+import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator";
+import { IconPicker } from "~/admin/components/IconPicker";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
 
-export interface Props {
-    open: boolean;
+interface Props {
     onClose: UID.DialogOnClose;
-    contentModel: CmsEditorContentModel;
+    contentModel: CmsModel;
     closeModal: () => void;
 }
 
-/**
- * This list is to disallow creating models that might interfere with GraphQL schema creation.
- * Add more if required.
- */
-const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
-
-const getSelectedGroup = (
-    groups: CmsGroupOption[] | null,
-    model: CmsEditorContentModel
-): string | null => {
+const getSelectedGroup = (groups: CmsGroupOption[] | null, model: CmsModel): string | null => {
     if (!groups || groups.length === 0 || !model) {
         return "";
     }
@@ -57,15 +48,17 @@ const getSelectedGroup = (
     return defaultSelected ? defaultSelected.value : null;
 };
 
-const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel, closeModal }) => {
+export const CloneContentModelDialog: React.FC<Props> = ({ onClose, contentModel, closeModal }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { getLocales, getCurrentLocale, setCurrentLocale } = useI18N();
+    const client = useApolloClient();
 
     const currentLocale = getCurrentLocale("content");
     const [locale, setLocale] = useState<string>(currentLocale || "");
     const [groups, setGroups] = useState<CmsGroupOption[] | null>(null);
+    const [models, setModels] = useState<CmsModel[]>([]);
 
     const [createContentModelFrom] = useMutation<
         CreateCmsModelFromMutationResponse,
@@ -105,159 +98,177 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
     const locales = getLocales().map(({ code }) => {
         return {
             value: code,
-            label: code === currentLocale ? "Current locale" : code
+            label: code === currentLocale ? `Current locale (${code})` : code
         };
     });
 
-    const { data, loading: groupsLoading } = useQueryLocale<ListMenuCmsGroupsQueryResponse>(
+    const listMenuGroupsQuery = useQueryLocale<ListMenuCmsGroupsQueryResponse>(
         LIST_MENU_CONTENT_GROUPS_MODELS,
-        locale,
-        {
-            skip: !open || !!groups
-        }
+        locale
     );
 
     useEffect(() => {
-        if (!data || groupsLoading) {
+        if (!listMenuGroupsQuery.data || listMenuGroupsQuery.loading) {
             return;
         }
-        const contentModelGroups: CmsGroupOption[] = get(
-            data,
-            "listContentModelGroups.data",
-            []
-        ).map((item: CmsGroup): CmsGroupOption => {
-            return {
+        const options: CmsGroupOption[] = [];
+        const models: CmsModel[] = [];
+        const items = listMenuGroupsQuery.data.listContentModelGroups.data || [];
+        for (const item of items) {
+            options.push({
                 value: item.id,
                 label: item.name
-            };
-        });
-        setGroups(contentModelGroups);
-    }, [data, groupsLoading]);
+            });
+            models.push(...item.contentModels);
+        }
+        setGroups(options);
+        setModels(models);
+    }, [listMenuGroupsQuery.data, listMenuGroupsQuery.loading]);
 
     const selectedGroup = getSelectedGroup(groups, contentModel);
 
-    const nameValidator = useCallback((name: string) => {
-        const target = (name || "").trim();
-        if (!target.charAt(0).match(/[a-zA-Z]/)) {
-            throw new Error("Value is not valid - must not start with a number.");
-        }
-        if (target.toLowerCase() === "id") {
-            throw new Error('Value is not valid - "id" is an auto-generated field.');
-        }
-        for (const ending of disallowedModelIdEndingList) {
-            const re = new RegExp(`${ending}$`, "i");
-            const matched = target.match(re);
-            if (matched === null) {
-                continue;
-            }
-            throw new Error(`Model name that ends with "${ending}" is not allowed.`);
-        }
-        return true;
-    }, []);
+    const nameValidator = useCallback(createNameValidator({ models }), [client, models]);
+
+    const apiNameValidator = useCallback(createApiNameValidator({ client, models }), [
+        client,
+        models
+    ]);
 
     return (
-        <Dialog open={open} onClose={onClose} data-testid="cms-clone-content-model-modal">
-            {(!groups || groupsLoading) && (
+        <Dialog open={true} onClose={onClose} data-testid="cms-clone-content-model-modal">
+            {!groups && (
                 <CircularProgress label={"Please wait while we load required information."} />
             )}
-            {open && (
-                <Form
-                    data={{
-                        group: selectedGroup,
-                        locale,
-                        name: contentModel.name
-                    }}
-                    onSubmit={data => {
-                        setLoading(true);
-                        createContentModelFrom({
-                            variables: {
-                                modelId: contentModel.modelId,
-                                /**
-                                 * We know that data is CmsModel
-                                 */
-                                data: data as unknown as CmsModel
-                            }
-                        });
-                    }}
-                >
-                    {({ Bind, submit }) => (
-                        <>
-                            {loading && <CircularProgress />}
-                            <UID.DialogTitle>{t`Clone Content Model`}</UID.DialogTitle>
-                            <UID.DialogContent>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name={"name"}
-                                            validators={[
-                                                validation.create("required,maxLength:100"),
-                                                nameValidator
-                                            ]}
-                                        >
-                                            <Input
-                                                label={t`Name`}
-                                                description={t`The name of the content model`}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name={"locale"}
-                                            validators={validation.create("required")}
-                                            afterChange={(value?: string) => {
-                                                if (!value) {
-                                                    return;
-                                                }
-                                                setLocale(value);
-                                                setGroups(null);
-                                            }}
-                                        >
-                                            <Select
-                                                description={t`Choose a locale into which you wish to clone the model`}
-                                                label={t`Content model locale`}
-                                                options={locales}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name={"group"}
-                                            validators={validation.create("required")}
-                                        >
-                                            <Select
-                                                description={t`Choose a content model group`}
-                                                label={t`Content model group`}
-                                                options={groups || []}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind name="description">
-                                            <Input
-                                                rows={4}
-                                                maxLength={200}
-                                                characterCount
-                                                label={t`Description`}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            </UID.DialogContent>
-                            <UID.DialogActions>
-                                <ButtonDefault
-                                    onClick={ev => {
-                                        submit(ev);
-                                    }}
-                                >
-                                    + {t`Clone`}
-                                </ButtonDefault>
-                            </UID.DialogActions>
-                        </>
-                    )}
-                </Form>
-            )}
+
+            <Form
+                data={{
+                    group: selectedGroup,
+                    locale,
+                    name: contentModel.name
+                }}
+                onSubmit={data => {
+                    setLoading(true);
+                    createContentModelFrom({
+                        variables: {
+                            modelId: contentModel.modelId,
+                            /**
+                             * We know that data is CmsModel
+                             */
+                            data: data as unknown as CmsModel
+                        }
+                    });
+                }}
+            >
+                {({ Bind, submit }) => (
+                    <>
+                        {loading && <CircularProgress />}
+                        <UID.DialogTitle>{t`Clone Content Model`}</UID.DialogTitle>
+                        <UID.DialogContent>
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"name"}
+                                        validators={[
+                                            validation.create("required,maxLength:100"),
+                                            nameValidator
+                                        ]}
+                                    >
+                                        <Input
+                                            label={t`Name`}
+                                            description={t`The name of the content model`}
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"locale"}
+                                        validators={validation.create("required")}
+                                        afterChange={(value?: string) => {
+                                            if (!value) {
+                                                return;
+                                            }
+                                            setLocale(value);
+                                            setGroups(null);
+                                        }}
+                                    >
+                                        <Select
+                                            description={t`Choose a locale into which you wish to clone the model`}
+                                            label={t`Content model locale`}
+                                            options={locales}
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"singularApiName"}
+                                        validators={[
+                                            validation.create("required,maxLength:100"),
+                                            apiNameValidator
+                                        ]}
+                                    >
+                                        <Input
+                                            label={t`Singular API Name`}
+                                            description={t`The API name of the content model. For example: AuthorCategory.`}
+                                            data-testid="cms.newcontentmodeldialog.singularApiName"
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"pluralApiName"}
+                                        validators={[
+                                            validation.create("required,maxLength:100"),
+                                            apiNameValidator
+                                        ]}
+                                    >
+                                        <Input
+                                            label={t`Plural API Name`}
+                                            description={t`The plural API name of the content model. For example: AuthorCategories.`}
+                                            data-testid="cms.newcontentmodeldialog.pluralApiName"
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name={"group"} validators={validation.create("required")}>
+                                        <Select
+                                            description={t`Choose a content model group`}
+                                            label={t`Content model group`}
+                                            options={groups || []}
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name="icon">
+                                        <IconPicker
+                                            label={t`Icon`}
+                                            description={t`Choose an icon to represent the model.`}
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name="description">
+                                        <Input
+                                            rows={4}
+                                            maxLength={200}
+                                            characterCount
+                                            label={t`Description`}
+                                        />
+                                    </Bind>
+                                </Cell>
+                            </Grid>
+                        </UID.DialogContent>
+                        <UID.DialogActions>
+                            <ButtonDefault
+                                onClick={ev => {
+                                    submit(ev);
+                                }}
+                            >
+                                + {t`Clone`}
+                            </ButtonDefault>
+                        </UID.DialogActions>
+                    </>
+                )}
+            </Form>
         </Dialog>
     );
 };
-
-export default CloneContentModelDialog;

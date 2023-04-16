@@ -80,6 +80,9 @@
       "backup/"
     ],
     "ignore": {
+      "src": [
+        "listr2"
+      ],
       "dependencies": [
         "@aws-sdk/client-cloudwatch-events",
         "@pulumi/pulumi",

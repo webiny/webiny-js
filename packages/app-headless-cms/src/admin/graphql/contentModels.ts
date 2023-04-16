@@ -46,10 +46,15 @@ export const MODEL_FIELDS = `
         id
         name
     }
+    icon
     description
     modelId
+    singularApiName
+    pluralApiName
     savedOn
     titleFieldId
+    descriptionFieldId
+    imageFieldId
     lockedFields
     layout
     tags

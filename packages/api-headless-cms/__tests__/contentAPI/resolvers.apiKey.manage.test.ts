@@ -78,6 +78,8 @@ describe("MANAGE - resolvers - api key", () => {
             data: {
                 name: category.name,
                 modelId: category.modelId,
+                singularApiName: category.singularApiName,
+                pluralApiName: category.pluralApiName,
                 group: contentModelGroup.id
             }
         });

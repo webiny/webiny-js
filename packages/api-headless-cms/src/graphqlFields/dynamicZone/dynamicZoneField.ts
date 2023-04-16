@@ -8,12 +8,12 @@ import {
     CmsFieldTypePlugins,
     CmsModelFieldToGraphQLCreateResolver
 } from "~/types";
-import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
+import { createTypeName } from "~/utils/createTypeName";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 import { createGraphQLInputField } from "../helpers";
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}_${createReadTypeName(field.fieldId)}`;
+    return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 };
 
 const getFieldTemplates = (field: CmsModelDynamicZoneField): CmsDynamicZoneTemplate[] => {
@@ -24,6 +24,7 @@ const getFieldTemplates = (field: CmsModelDynamicZoneField): CmsDynamicZoneTempl
 };
 
 interface CreateTypeDefsForTemplatesParams {
+    models: CmsModel[];
     model: CmsModel;
     field: CmsModelField;
     type: ApiEndpoint;
@@ -33,6 +34,7 @@ interface CreateTypeDefsForTemplatesParams {
 }
 
 const createTypeDefsForTemplates = ({
+    models,
     model,
     field,
     type,
@@ -45,12 +47,13 @@ const createTypeDefsForTemplates = ({
 
     templates.forEach(template => {
         const typeName = [
-            createTypeName(model.modelId),
+            model.singularApiName,
             createTypeName(field.fieldId),
             template.gqlTypeName
         ].join("_");
 
         const result = createTypeFromFields({
+            models,
             typeOfType,
             model,
             type,
@@ -86,7 +89,7 @@ const createResolver: CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneFi
             return value;
         }
 
-        const typeName = `${createTypeName(model.modelId)}_${createTypeName(field.fieldId)}`;
+        const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
         if (field.multipleValues && Array.isArray(value)) {
             return value.map(v => remapTemplateValue(v, typeName));
@@ -125,11 +128,12 @@ export const createDynamicZoneField =
                 }
             },
             read: {
-                createTypeField({ model, field, fieldTypePlugins }) {
+                createTypeField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
                     const unionTypeName = createUnionTypeName(model, field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        models,
                         field,
                         type: "read",
                         typeOfType: "type",
@@ -150,11 +154,12 @@ export const createDynamicZoneField =
                 createResolver
             },
             manage: {
-                createTypeField({ model, field, fieldTypePlugins }) {
+                createTypeField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
                     const unionTypeName = createUnionTypeName(model, field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        models,
                         field,
                         type: "manage",
                         typeOfType: "type",
@@ -180,10 +185,11 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.concat(templateIds).join("\n")
                     };
                 },
-                createInputField({ model, field, fieldTypePlugins }) {
+                createInputField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        models,
                         field,
                         type: "manage",
                         typeOfType: "input",
@@ -192,9 +198,7 @@ export const createDynamicZoneField =
                         templates
                     });
 
-                    const typeName = `${createTypeName(model.modelId)}_${createTypeName(
-                        field.fieldId
-                    )}`;
+                    const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
                     const inputProperties = templateTypes.map(inputTypeName => {
                         const key = inputTypeName.replace(`${typeName}_`, "").replace("Input", "");
