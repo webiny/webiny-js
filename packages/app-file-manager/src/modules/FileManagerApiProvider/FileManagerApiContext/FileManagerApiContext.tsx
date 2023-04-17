@@ -19,7 +19,8 @@ import {
     UPDATE_FILE,
     UpdateFileMutationResponse,
     UpdateFileMutationVariables,
-    GET_FILE_SETTINGS
+    GET_FILE_SETTINGS,
+    GET_FILE
 } from "../graphql";
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
@@ -33,6 +34,7 @@ export interface FileManagerApiContextData<TFileItem extends FileItem = FileItem
     createFile: (data: TFileItem, meta: Record<string, any>) => Promise<TFileItem | undefined>;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
+    getFile: (id: string) => Promise<TFileItem | undefined>;
     uploadFile: (
         file: File,
         meta: Record<string, any>,
@@ -169,6 +171,17 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         });
     };
 
+    const getFile = async (id: string) => {
+        const response = await client.query({
+            query: GET_FILE,
+            variables: {
+                id
+            }
+        });
+
+        return response.data?.fileManager.getFile.data;
+    };
+
     const listFiles: FileManagerApiContextData["listFiles"] = async (params = {}) => {
         const { data } = await client.query<ListFilesQueryResponse>({
             query: LIST_FILES,
@@ -221,6 +234,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         updateFile,
         deleteFile,
         uploadFile,
+        getFile,
         listFiles,
         listTags,
         getSettings

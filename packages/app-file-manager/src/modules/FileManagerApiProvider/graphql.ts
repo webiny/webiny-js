@@ -91,6 +91,17 @@ export const LIST_FILES = gql`
     }
 `;
 
+export const GET_FILE = gql`
+    query GetFile($id: ID!) {
+        fileManager {
+            getFile(id: $id) {
+                data ${FILE_FIELDS}
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
 export interface ListFileTagsQueryResponse {
     fileManager: {
         listTags: string[];

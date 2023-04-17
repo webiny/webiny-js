@@ -164,7 +164,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         uploadFile,
         settings,
         currentFolder,
-        setCurrentFolder
+        setCurrentFolder,
+        getFile
     } = useFileManagerView();
 
     const {
@@ -353,6 +354,21 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         [uploading, fileManager.canCreate]
     );
 
+    const [currentFile, setCurrentFile] = useState<FileItem>();
+    useEffect(() => {
+        const fetchFileDetails = async () => {
+            if (showingFileDetails) {
+                const file = await getFile(showingFileDetails);
+                setCurrentFile(file);
+            } else {
+                setCurrentFile(undefined);
+            }
+        };
+
+        // call the function
+        fetchFileDetails();
+    }, [showingFileDetails]);
+
     return (
         <>
             <Files
@@ -413,11 +429,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                         }
                     >
                         <>
-                            {showingFileDetails ? (
-                                <FileDetails
-                                    file={files.find(item => item.id === showingFileDetails)!}
-                                    onClose={hideFileDetails}
-                                />
+                            {currentFile ? (
+                                <FileDetails file={currentFile} onClose={hideFileDetails} />
                             ) : null}
 
                             <LeftSidebar

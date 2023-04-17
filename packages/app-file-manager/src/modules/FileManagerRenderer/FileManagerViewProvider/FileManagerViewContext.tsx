@@ -8,7 +8,7 @@ import {
     ListFilesListFilesResponse,
     ListFilesQueryVariables
 } from "~/modules/FileManagerApiProvider/graphql";
-import { FOLDER_ID_DEFAULT } from "@webiny/app-page-builder/admin/constants/folders";
+import { FOLDER_ID_DEFAULT } from "~/constants/folders";
 import { useRecords } from "@webiny/app-aco";
 
 const DEFAULT_SCOPE = "scope:";
@@ -27,6 +27,7 @@ export const getWhere = (scope: string | undefined) => {
 export interface FileManagerViewContextData<TFileItem extends FileItem = FileItem> {
     state: State;
     dispatch: React.Dispatch<Action>;
+    getFile: (id: string) => Promise<TFileItem | undefined>;
     createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
@@ -103,6 +104,42 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         };
     };
 
+    const getFile = async (id: string) => {
+        setLoading(true);
+
+        const file = await fileManager.getFile(id);
+
+        if (!file) {
+            // No file found - must be deleted by previous operation
+            setFiles(files => files.filter(file => file.id !== id));
+        } else {
+            setFiles(prevFiles => {
+                const fileIndex = prevFiles.findIndex(file => file.id === id);
+
+                // No record found in the list - must be added by previous operation
+                if (fileIndex === -1) {
+                    return [...prevFiles, file];
+                }
+
+                // Updating record found in the list
+                const result = [
+                    ...prevFiles.slice(0, fileIndex),
+                    {
+                        ...prevFiles[fileIndex],
+                        ...file
+                    },
+                    ...prevFiles.slice(fileIndex + 1)
+                ];
+
+                return result;
+            });
+        }
+
+        setLoading(false);
+
+        return file;
+    };
+
     const listFiles = async () => {
         setLoading(true);
         const { files, meta } = await fileManager.listFiles(
@@ -141,7 +178,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     }, []);
 
     useEffect(() => {
-        listFiles();
+        //listFiles();
     }, [JSON.stringify(state.queryParams)]);
 
     const setHasPreviouslyUploadedFiles: FileManagerViewContextData["setHasPreviouslyUploadedFiles"] =
@@ -307,6 +344,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         loadingFiles,
         loadMore,
         tags: removeScopePrefix(tags),
+        getFile,
         createFile,
         updateFile,
         deleteFile,
