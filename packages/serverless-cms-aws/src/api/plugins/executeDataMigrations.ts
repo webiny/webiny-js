@@ -35,6 +35,9 @@ export const executeDataMigrations = {
             const response = await runMigration({
                 lambdaClient,
                 functionName: apiOutput["migrationLambdaArn"],
+                payload: {
+                    version: process.env.WEBINY_VERSION || context.version
+                },
                 statusCallback: ({ status, migrations }) => {
                     clearLine();
                     if (status === "running") {

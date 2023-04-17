@@ -1,6 +1,22 @@
 import WebinyError from "@webiny/error";
 
-export const getIndexName = (tenant: string, locale: string) => {
+export interface EsGetIndexNameParams {
+    tenant: string;
+    locale: string;
+    type: string;
+    isHeadlessCmsModel?: boolean;
+}
+
+export const esGetIndexName = (params: EsGetIndexNameParams) => {
+    const { tenant, locale, type, isHeadlessCmsModel } = params;
+
+    if (!type) {
+        throw new WebinyError(
+            `Missing "type" parameter when trying to create Elasticsearch index name.`,
+            "INDEX_TYPE_ERROR"
+        );
+    }
+
     if (!tenant) {
         throw new WebinyError(
             `Missing "tenant" parameter when trying to create Elasticsearch index name.`,
@@ -22,7 +38,10 @@ export const getIndexName = (tenant: string, locale: string) => {
         localeCode = locale;
     }
 
-    const index = [tenantId, localeCode, "file-manager"].filter(Boolean).join("-").toLowerCase();
+    const index = [tenantId, isHeadlessCmsModel && "headless-cms", localeCode, type]
+        .filter(Boolean)
+        .join("-")
+        .toLowerCase();
 
     const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
     if (!prefix) {

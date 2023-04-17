@@ -28,7 +28,7 @@ import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
-import { createACO } from "@webiny/api-aco";
+import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAcoFileManagerContext } from "@webiny/api-file-manager-aco";
 import securityPlugins from "./security";
@@ -111,7 +111,7 @@ export const handler = createHandler({
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
-        createACO(),
+        createAco(),
         createAcoPageBuilderContext(),
         createAcoFileManagerContext(),
         scaffoldsPlugins()

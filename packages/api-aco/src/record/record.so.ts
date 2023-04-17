@@ -1,13 +1,9 @@
-import { attachCmsModelFieldConverters } from "@webiny/api-headless-cms/utils/converters/valueKeyStorageConverter";
-
 import WebinyError from "@webiny/error";
-
 import { SEARCH_RECORD_MODEL_ID } from "./record.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFieldValues } from "~/utils/getFieldValues";
-
 import {
     AcoSearchRecordStorageOperations,
     StorageOperationsListSearchRecordTagsParams
@@ -17,21 +13,14 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoSearchRecordStorageOperations => {
-    const { cms, getCmsContext } = params;
+    const { cms } = params;
 
     const { withModel } = createOperationsWrapper({
         ...params,
         modelName: SEARCH_RECORD_MODEL_ID
     });
 
-    const getRecord = async (initialModel: CmsModel, id: string) => {
-        const context = getCmsContext();
-
-        const model = attachCmsModelFieldConverters({
-            model: initialModel,
-            plugins: context.plugins
-        });
-
+    const getRecord = async (model: CmsModel, id: string) => {
         /**
          * The record "id" has been passed by the original entry.
          * We need to retrieve it via `cms.storageOperations.entries.getLatestByIds()` method and return the first one.

@@ -112,30 +112,22 @@ export const createValueKeyFromStorageConverter = (params: Params): CmsModelConv
     };
 };
 
-export interface AttachConvertersParams {
-    plugins: PluginsContainer;
-    model: CmsModel | StorageOperationsCmsModel;
-}
-
-export const attachCmsModelFieldConverters = (
-    params: AttachConvertersParams
-): StorageOperationsCmsModel => {
-    const { model, plugins } = params;
-    /**
-     * We can safely return the model as it already has the converters attached.
-     */
-    if ((model as any).convertValueKeyToStorage && (model as any).convertValueKeyFromStorage) {
-        return model as StorageOperationsCmsModel;
-    }
-    return {
-        ...model,
-        convertValueKeyToStorage: createValueKeyToStorageConverter({
-            model,
-            plugins
-        }),
-        convertValueKeyFromStorage: createValueKeyFromStorageConverter({
-            model,
-            plugins
-        })
+export const createCmsModelFieldConvertersAttachFactory = (plugins: PluginsContainer) => {
+    return (model: StorageOperationsCmsModel | CmsModel): StorageOperationsCmsModel => {
+        const storageModel = model as Partial<StorageOperationsCmsModel>;
+        if (!!storageModel.convertValueKeyToStorage && !!storageModel.convertValueKeyFromStorage) {
+            return storageModel as StorageOperationsCmsModel;
+        }
+        return {
+            ...model,
+            convertValueKeyToStorage: createValueKeyToStorageConverter({
+                model,
+                plugins
+            }),
+            convertValueKeyFromStorage: createValueKeyFromStorageConverter({
+                model,
+                plugins
+            })
+        };
     };
 };

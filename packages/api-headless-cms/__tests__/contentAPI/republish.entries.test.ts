@@ -1,12 +1,12 @@
-import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";
-import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 // @ts-ignore
 import mdbid from "mdbid";
+import models from "./mocks/contentModels";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { CmsContext, CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
+
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
 
@@ -22,14 +22,13 @@ describe("Republish entries", () => {
     const {
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation,
-        plugins
+        createContentModelGroupMutation
     } = useGraphQLHandler(manageOpts);
 
     const { createCategory, publishCategory, republishCategory } =
         useCategoryManageHandler(manageOpts);
 
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
+    // This function is not directly within `beforeEach` as we don't always create the same content model.
     // We call this function manually at the beginning of each test, where needed.
     const setupGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
@@ -74,14 +73,11 @@ describe("Republish entries", () => {
                 layout: model.layout
             }
         });
-        return attachCmsModelFieldConverters({
-            plugins,
-            model: {
-                ...update.data.updateContentModel.data,
-                tenant: "root",
-                locale: "en-US"
-            }
-        });
+        return {
+            ...update.data.updateContentModel.data,
+            tenant: "root",
+            locale: "en-US"
+        };
     };
 
     const createPublishedCategories = async () => {
@@ -312,7 +308,7 @@ describe("Republish entries", () => {
     });
 
     /**
-     * This test checks values directly in the storage operations so we make sure there are required values in ref objects.
+     * This test checks values directly in the storage operations, so we make sure there are required values in ref objects.
      * We check in both latest and published records because in different storages that can be two different records.
      */
     test("storage operations - should republish entries without changing them", async () => {
@@ -326,11 +322,9 @@ describe("Republish entries", () => {
 
         const { storageOperations, plugins } = useCategoryManageHandler(manageOpts);
 
-        if (storageOperations.beforeInit) {
-            await storageOperations.beforeInit({
-                plugins
-            } as any);
-        }
+        await storageOperations.beforeInit({
+            plugins
+        } as CmsContext);
 
         const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",

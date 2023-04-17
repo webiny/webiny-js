@@ -2,8 +2,8 @@ import {
     Benchmark as BenchmarkInterface,
     BenchmarkEnableOnCallable,
     BenchmarkMeasurement,
+    BenchmarkMeasureOptions,
     BenchmarkOutputCallable,
-    BenchmarkOutputCallableResponse,
     BenchmarkRuns
 } from "~/types";
 
@@ -13,7 +13,8 @@ enum BenchmarkState {
     UNDETERMINED = "undetermined"
 }
 
-interface BenchmarkMeasurementStart extends Pick<BenchmarkMeasurement, "name" | "start"> {
+interface BenchmarkMeasurementStart
+    extends Pick<BenchmarkMeasurement, "name" | "category" | "start"> {
     memoryStart: number;
 }
 
@@ -74,20 +75,26 @@ export class Benchmark implements BenchmarkInterface {
         }
         const callables = this.onOutputCallables.reverse();
         for (const cb of callables) {
-            const result = await cb(this);
-            if (result === BenchmarkOutputCallableResponse.BREAK) {
+            const result = await cb({
+                benchmark: this,
+                stop: () => "stop"
+            });
+            if (result === "stop") {
                 return;
             }
         }
         this.outputDone = true;
     }
 
-    public async measure<T = any>(name: string, cb: () => Promise<T>): Promise<T> {
+    public async measure<T = any>(
+        options: BenchmarkMeasureOptions | string,
+        cb: () => Promise<T>
+    ): Promise<T> {
         const enabled = await this.getIsEnabled();
         if (!enabled) {
             return cb();
         }
-        const measurement = this.startMeasurement(name);
+        const measurement = this.startMeasurement(options);
         const isAlreadyRunning = this.getIsAlreadyRunning();
         this.startRunning();
         try {
@@ -95,7 +102,7 @@ export class Benchmark implements BenchmarkInterface {
         } finally {
             const measurementEnded = this.stopMeasurement(measurement);
             this.measurements.push(measurementEnded);
-            this.addRun(measurementEnded.name);
+            this.addRun(measurementEnded);
             /**
              * Only add to total time if this run is not a child of another run.
              * And then end running.
@@ -139,7 +146,8 @@ export class Benchmark implements BenchmarkInterface {
         this.totalElapsed = this.totalElapsed + measurement.elapsed;
     }
 
-    private addRun(name: string): void {
+    private addRun(measurement: Pick<BenchmarkMeasurement, "name" | "category">): void {
+        const name = `${measurement.category}#${measurement.name}`;
         if (!this.runs[name]) {
             this.runs[name] = 0;
         }
@@ -150,9 +158,12 @@ export class Benchmark implements BenchmarkInterface {
         this.state = state;
     }
 
-    private startMeasurement(name: string): BenchmarkMeasurementStart {
+    private startMeasurement(options: BenchmarkMeasureOptions | string): BenchmarkMeasurementStart {
+        const name = typeof options === "string" ? options : options.name;
+        const category = typeof options === "string" ? "webiny" : options.category;
         return {
             name,
+            category,
             start: new Date(),
             memoryStart: process.memoryUsage().heapUsed
         };
@@ -164,6 +175,7 @@ export class Benchmark implements BenchmarkInterface {
         const elapsed = end.getTime() - measurement.start.getTime();
         return {
             name: measurement.name,
+            category: measurement.category,
             start: measurement.start,
             end,
             elapsed,

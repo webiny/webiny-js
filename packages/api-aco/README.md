@@ -18,16 +18,16 @@ yarn add @webiny/api-aco
 ```
 ## Testing
 
-To run tests api-apw tests with targeted storage operations loaded use:
+To run tests api-aco tests with targeted storage operations loaded use:
 
 ### DynamoDB
 
 ```
-yarn test packages/api-aco --keyword=cms:ddb --keyword=aco:base
+yarn test packages/api-aco/* --keyword=cms:ddb --keyword=aco:base
 ```
 
-#### Note
+### DynamoDB + ElasticSearch
 
-> All the tests in `@webiny/api-aco` package are being tested against ddb-only storage operations because
-current jest setup doesn't allow usage of more than one storage operations at a time with the help of --keyword flag.
-We should revisit these tests once we have the ability to load multiple storage operations in the jest setup.
+```
+yarn test packages/api-aco/* --keyword=cms:ddb-es --keyword=aco:base
+```

@@ -17,7 +17,10 @@ module.exports = async (params, context) => {
 
         const response = await runMigration({
             lambdaClient,
-            functionName: apiOutput["migrationLambdaArn"]
+            functionName: apiOutput["migrationLambdaArn"],
+            payload: {
+                version: process.env.WEBINY_VERSION || context.version
+            }
         });
 
         printReport({ response, context, migrationLambdaArn: apiOutput["migrationLambdaArn"] });

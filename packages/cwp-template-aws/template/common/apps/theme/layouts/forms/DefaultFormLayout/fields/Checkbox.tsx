@@ -7,7 +7,6 @@ import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import { StyledInput } from "./Input";
 import styled from "@emotion/styled";
-import theme from "../../../../theme";
 
 export const CheckboxGroup = styled.div`
     align-items: center;
@@ -18,15 +17,15 @@ export const CheckboxGroup = styled.div`
 
 export const CheckboxButton = styled.input`
     margin-left: 0;
-    background-color: ${theme.styles.colors["color5"]};
+    background-color: ${props => props.theme.styles.colors["color5"]};
     min-width: 25px;
     width: 25px;
     height: 25px;
     -webkit-appearance: none;
-    border-radius: ${theme.styles.borderRadius};
+    border-radius: ${props => props.theme.styles.borderRadius};
 
     &:focus {
-        border-color: ${theme.styles.colors["color2"]};
+        border-color: ${props => props.theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }
