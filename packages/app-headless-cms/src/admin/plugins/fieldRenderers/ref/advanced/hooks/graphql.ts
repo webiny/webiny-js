@@ -8,8 +8,6 @@ import {
 } from "~/types";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { CmsEntryGetEntryVariable } from "~/admin/plugins/fieldRenderers/ref/components/graphql";
-import upperFirst from "lodash/upperFirst";
-import pluralize from "pluralize";
 
 const fields = `
     data {
@@ -99,12 +97,9 @@ export interface SearchQueryVariables {
 }
 
 export const createSearchQuery = (model: CmsModel) => {
-    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
-    const ucFirstModelId = upperFirst(model.modelId);
-
     return gql`
-        query Search${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String) {
-            content: list${ucFirstPluralizedModelId}(
+        query Search${model.pluralApiName}($where: ${model.singularApiName}ListWhereInput, $sort: [${model.singularApiName}ListSorter], $limit: Int, $after: String) {
+            content: list${model.pluralApiName}(
             where: $where
             sort: $sort
             limit: $limit

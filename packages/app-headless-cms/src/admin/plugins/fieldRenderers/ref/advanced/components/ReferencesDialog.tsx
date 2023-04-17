@@ -26,7 +26,7 @@ const Content = styled("div")({
     flexDirection: "column",
     position: "relative",
     width: "100%",
-    minHeight: "100px",
+    minHeight: "20px",
     boxSizing: "border-box",
     padding: "20px 0 20px 20px",
     backgroundColor: "var(--mdc-theme-background)",
