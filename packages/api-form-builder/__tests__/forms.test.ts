@@ -36,7 +36,8 @@ describe('Form Builder "Form" Test', () => {
             // Run FM installer (we'll need to have FM settings to perform submissions export)
             await installFileManager({ srcPrefix: "https://some.domain.com/files/" });
         } catch (e) {
-            console.log(e);
+            console.error(e);
+            process.exit(1);
         }
     });
 

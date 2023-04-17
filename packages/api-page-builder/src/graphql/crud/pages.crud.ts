@@ -25,7 +25,11 @@ import {
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import normalizePath from "./pages/normalizePath";
-import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
+import {
+    createPageCreateValidation,
+    createPageSettingsUpdateValidation,
+    createPageUpdateValidation
+} from "./pages/validation";
 import { processPageContent } from "./pages/processPageContent";
 import WebinyError from "@webiny/error";
 import lodashTrimEnd from "lodash/trimEnd";
@@ -45,7 +49,14 @@ import {
     RenderParams
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
-import { parseIdentifier, zeroPad } from "@webiny/utils";
+import {
+    createIdentifier,
+    createZodError,
+    parseIdentifier,
+    removeNullValues,
+    removeUndefinedValues,
+    zeroPad
+} from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 
 const STATUS_DRAFT = "draft";
@@ -65,6 +76,7 @@ interface NotInResult {
     paths: string[] | undefined;
     ids: string[] | undefined;
 }
+
 const createNotIn = (exclude?: string[]): NotInResult => {
     const paths: string[] = [];
     const ids: string[] = [];
@@ -130,6 +142,7 @@ export interface CreatePageCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
@@ -302,18 +315,44 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             const identity = context.security.getIdentity();
-            new CreateDataModel().populate({ category: category.slug }).validate();
+
+            const result = await createPageCreateValidation().safeParseAsync({
+                category: category.slug
+            });
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
 
             const pageId = mdbid();
             const version = 1;
 
-            const id = `${pageId}#${zeroPad(version)}`;
-
-            const updateSettingsModel = new UpdateSettingsModel().populate({
-                general: {
-                    layout: category.layout
-                }
+            const id = createIdentifier({
+                id: pageId,
+                version
             });
+
+            const updateSettingsValidationResult =
+                await createPageSettingsUpdateValidation().safeParseAsync({
+                    general: {
+                        layout: category.layout
+                    },
+                    social: {
+                        description: null,
+                        image: null,
+                        meta: [],
+                        title: null
+                    },
+                    seo: {
+                        title: null,
+                        description: null,
+                        meta: []
+                    }
+                });
+            if (!updateSettingsValidationResult.success) {
+                throw createZodError(updateSettingsValidationResult.error);
+            }
+
+            const settings = updateSettingsValidationResult.data;
 
             const owner: CreatedBy = {
                 id: identity.id,
@@ -335,7 +374,21 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 locked: false,
                 publishedOn: null,
                 createdFrom: null,
-                settings: await updateSettingsModel.toJSON(),
+                settings: {
+                    ...settings,
+                    general: {
+                        ...settings.general,
+                        tags: settings.general?.tags || undefined
+                    },
+                    social: {
+                        ...settings.social,
+                        meta: settings.social?.meta || []
+                    },
+                    seo: {
+                        ...settings.seo,
+                        meta: settings.seo?.meta || []
+                    }
+                },
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
                 ownedBy: owner,
@@ -343,13 +396,14 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 content: null,
                 webinyVersion: context.WEBINY_VERSION
             };
-            page.content = await compressContent(page);
 
             try {
                 await onPageBeforeCreate.publish({
                     page,
                     meta
                 });
+
+                page.content = await compressContent(page);
 
                 const result = await storageOperations.pages.create({
                     input: {
@@ -469,7 +523,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
         },
 
-        async updatePage(id, input, meta): Promise<any> {
+        async updatePage(id, input): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -490,17 +544,32 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original, "ownedBy");
 
+            const result = await createPageUpdateValidation().safeParseAsync(input);
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
+
+            const data = removeNullValues(removeUndefinedValues(result.data));
+
             const page: Page = {
                 ...original,
-                ...input,
+                ...data,
                 settings: {
                     ...original.settings,
-                    ...(input.settings || {})
+                    ...(data.settings || {}),
+                    seo: {
+                        ...(data.settings?.seo || {}),
+                        meta: data.settings?.seo?.meta || []
+                    },
+                    social: {
+                        ...(data.settings?.social || {}),
+                        meta: data.settings?.social?.meta || []
+                    }
                 },
                 version: Number(original.version),
                 savedOn: new Date().toISOString()
             };
-            const newContent = input.content;
+            const newContent = data.content;
             if (newContent) {
                 page.content = await compressContent({
                     ...page,
@@ -512,8 +581,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageBeforeUpdate.publish({
                     original,
                     page,
-                    input,
-                    meta
+                    input
                 });
 
                 const result = await storageOperations.pages.update({
@@ -525,8 +593,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageAfterUpdate.publish({
                     original,
                     page: result,
-                    input,
-                    meta
+                    input
                 });
 
                 /**
@@ -616,10 +683,11 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
             const settings = await this.getCurrentSettings();
-            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
+            const pages = settings?.pages || {};
             for (const key in pages) {
                 // We don't allow delete operation for "published" version of special pages.
-                if (pages[key] === page.pid && page.status === "published") {
+                const value = pages[key as keyof typeof pages];
+                if (value === page.pid && page.status === "published") {
                     throw new WebinyError(
                         `Cannot delete page because it's set as ${key}.`,
                         "DELETE_PAGE_ERROR"
@@ -896,9 +964,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             const settings = await this.getCurrentSettings();
-            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
+            const pages = settings?.pages || {};
             for (const key in pages) {
-                if (pages[key] === original.pid) {
+                const value = pages[key as keyof typeof pages];
+                if (value === original.pid) {
                     throw new WebinyError(
                         `Cannot unpublish page because it's set as ${key}.`,
                         "UNPUBLISH_PAGE_ERROR"

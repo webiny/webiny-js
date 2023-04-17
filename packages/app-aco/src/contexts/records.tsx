@@ -1,6 +1,5 @@
 import React, { ReactNode, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import orderBy from "lodash/orderBy";
 import unionBy from "lodash/unionBy";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
@@ -29,8 +28,9 @@ import {
     Meta,
     UpdateSearchRecordResponse,
     UpdateSearchRecordVariables,
-    ListSort
+    ListDbSort
 } from "~/types";
+import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 interface SearchRecordsContext {
     records: SearchRecordItem[];
@@ -41,7 +41,7 @@ interface SearchRecordsContext {
         folderId?: string;
         limit?: number;
         after?: string;
-        sort?: ListSort;
+        sort?: ListDbSort;
     }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
@@ -107,10 +107,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             const action = after ? "LIST_MORE" : "LIST";
-            const sort =
-                sorting && Object.keys(sorting).length > 0
-                    ? sorting
-                    : ({ savedOn: "DESC" } as unknown as ListSort);
+            const sort = validateOrGetDefaultDbSort(sorting);
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
@@ -129,13 +126,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }
 
             // Adjusting sorting while merging records with data received from the server.
-            const fields = [] as string[];
-            const orders = [] as Array<"asc" | "desc">;
-            for (const [field, order] of Object.entries(sort)) {
-                fields.push(field);
-                orders.push(order.toLowerCase() as "asc" | "desc");
-            }
-            setRecords(records => orderBy(unionBy(data, records, "id"), fields, orders));
+            setRecords(records => sortTableItems(unionBy(data, records, "id"), sort));
 
             setMeta(meta => ({
                 ...meta,
@@ -258,7 +249,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("Network error while updating record");
             }
 
-            const { result, error } = response.search.updateRecord;
+            const { data: result, error } = response.search.updateRecord;
 
             if (!result) {
                 throw new Error(error?.message || "Could not update record");

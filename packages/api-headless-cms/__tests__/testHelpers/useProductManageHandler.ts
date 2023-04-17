@@ -1,4 +1,6 @@
 import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
+import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
+import { CmsModel } from "~/types";
 
 const productFields = `
     id
@@ -73,163 +75,185 @@ const errorFields = `
     }
 `;
 
-const getProductQuery = /* GraphQL */ `
-    query GetProduct($revision: ID!) {
-        getProduct(revision: $revision) {
-            data {
-                ${productFields}
+const getProductQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetProduct($revision: ID!) {
+            getProduct: get${model.singularApiName}(revision: $revision) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const getProductsByIdsQuery = /* GraphQL */ `
-    query GetProducts($revisions: [ID!]!) {
-        getProductsByIds(revisions: $revisions) {
-            data {
-                ${productFields}
+const getProductsByIdsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetProducts($revisions: [ID!]!) {
+            getProductsByIds: get${model.pluralApiName}ByIds(revisions: $revisions) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const listProductsQuery = /* GraphQL */ `
-    query ListProducts(
-        $where: ProductListWhereInput
-        $sort: [ProductListSorter]
-        $limit: Int
-        $after: String
-    ) {
-        listProducts(where: $where, sort: $sort, limit: $limit, after: $after) {
-            data {
-                ${productFields}
+const listProductsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query ListProducts(
+            $where: ${model.singularApiName}ListWhereInput
+            $sort: [${model.singularApiName}ListSorter]
+            $limit: Int
+            $after: String
+        ) {
+        listProducts: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+                data {
+                    ${productFields}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                ${errorFields}
             }
-            meta {
-                cursor
-                hasMoreItems
-                totalCount
-            }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createProductMutation = /* GraphQL */ `
-    mutation CreateProduct($data: ProductInput!) {
-        createProduct(data: $data) {
-            data {
-                ${productFields}
+const createProductMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateProduct($data: ${model.singularApiName}Input!) {
+        createProduct: create${model.singularApiName}(data: $data) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createProductFromMutation = /* GraphQL */ `
-    mutation CreateProductFrom($revision: ID!) {
-        createProductFrom(revision: $revision) {
-            data {
-                ${productFields}
+const createProductFromMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateProductFrom($revision: ID!) {
+            createProductFrom: create${model.singularApiName}From(revision: $revision) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const updateProductMutation = /* GraphQL */ `
-    mutation UpdateProduct($revision: ID!, $data: ProductInput!) {
-        updateProduct(revision: $revision, data: $data) {
-            data {
-                ${productFields}
+const updateProductMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdateProduct($revision: ID!, $data: ${model.singularApiName}Input!) {
+            updateProduct: update${model.singularApiName}(revision: $revision, data: $data) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const deleteProductMutation = /* GraphQL */ `
-    mutation DeleteProduct($revision: ID!) {
-        deleteProduct(revision: $revision) {
-            data
-            ${errorFields}
-        }
-    }
-`;
-
-const publishProductMutation = /* GraphQL */ `
-    mutation PublishProduct($revision: ID!) {
-        publishProduct(revision: $revision) {
-            data {
-                ${productFields}
+const deleteProductMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DeleteProduct($revision: ID!) {
+            deleteProduct: delete${model.singularApiName}(revision: $revision) {
+                data
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const republishProductMutation = /* GraphQL */ `
-    mutation RepublishProduct($revision: ID!) {
-        republishProduct(revision: $revision) {
-            data {
-                ${productFields}
+const publishProductMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation PublishProduct($revision: ID!) {
+            publishProduct: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const unpublishProductMutation = /* GraphQL */ `
-    mutation UnpublishProduct($revision: ID!) {
-        unpublishProduct(revision: $revision) {
-            data {
-                ${productFields}
+const republishProductMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation RepublishProduct($revision: ID!) {
+            republishProduct: republish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
+
+const unpublishProductMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UnpublishProduct($revision: ID!) {
+            unpublishProduct: unpublish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${productFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
 
 export const useProductManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
+
+    const model = getCmsModel("product");
 
     return {
         ...contentHandler,
         async getProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getProductQuery, variables },
+                body: { query: getProductQuery(model), variables },
                 headers
             });
         },
         async getProductsByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getProductsByIdsQuery, variables },
+                body: { query: getProductsByIdsQuery(model), variables },
                 headers
             });
         },
         async listProducts(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: listProductsQuery, variables },
+                body: { query: listProductsQuery(model), variables },
                 headers
             });
         },
         async createProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createProductMutation, variables },
+                body: { query: createProductMutation(model), variables },
                 headers
             });
         },
         async createProductFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createProductFromMutation, variables },
+                body: { query: createProductFromMutation(model), variables },
                 headers
             });
         },
         async updateProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: updateProductMutation,
+                    query: updateProductMutation(model),
                     variables
                 },
                 headers
@@ -238,7 +262,7 @@ export const useProductManageHandler = (params: GraphQLHandlerParams) => {
         async deleteProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: deleteProductMutation,
+                    query: deleteProductMutation(model),
                     variables
                 },
                 headers
@@ -247,7 +271,7 @@ export const useProductManageHandler = (params: GraphQLHandlerParams) => {
         async publishProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: publishProductMutation,
+                    query: publishProductMutation(model),
                     variables
                 },
                 headers
@@ -256,7 +280,7 @@ export const useProductManageHandler = (params: GraphQLHandlerParams) => {
         async republishProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: republishProductMutation,
+                    query: republishProductMutation(model),
                     variables
                 },
                 headers
@@ -266,7 +290,7 @@ export const useProductManageHandler = (params: GraphQLHandlerParams) => {
         async unpublishProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: unpublishProductMutation,
+                    query: unpublishProductMutation(model),
                     variables
                 },
                 headers

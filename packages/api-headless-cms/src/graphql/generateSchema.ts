@@ -1,6 +1,6 @@
 import { CmsContext, CmsModel } from "~/types";
-import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
-import { createExecutableSchema } from "~/graphql/createExecutableSchema";
+import { buildSchemaPlugins } from "./buildSchemaPlugins";
+import { createExecutableSchema } from "./createExecutableSchema";
 import { GraphQLSchema } from "graphql/type";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 

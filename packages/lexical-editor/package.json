@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@emotion/core": "^10.0.27",
+    "@emotion/react": "^11.10.6",
     "@lexical/code": "0.8.1",
     "@lexical/hashtag": "0.8.1",
     "@lexical/history": "0.8.1",
@@ -26,8 +26,8 @@
     "react-style-object-to-css": "^1.1.2"
   },
   "devDependencies": {
-    "@webiny/cli": "^5.33.1",
-    "@webiny/project-utils": "^5.33.1"
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0"
   },
   "publishConfig": {
     "access": "public",

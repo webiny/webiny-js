@@ -9,6 +9,8 @@ const ERROR_FIELDS = `
 const BASE_CONTENT_MODEL_FIELDS = `
     description
     modelId
+    singularApiName
+    pluralApiName
     name
     savedOn
     fields {
@@ -103,29 +105,10 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
                 ${BASE_CONTENT_MODEL_GROUP_FIELDS}
                 contentModels {
                     modelId
+                    singularApiName
+                    pluralApiName
                     name
                 }
-            }
-            error {
-                ${ERROR_FIELDS}
-            }
-        }
-    }
-`;
-
-export const LIST_BOOKS = gql`
-    query CmsListBooks {
-        listBooks {
-            data {
-                id
-                title
-                meta {
-                    locked
-                    status
-                }
-            }
-            meta {
-                totalCount
             }
             error {
                 ${ERROR_FIELDS}

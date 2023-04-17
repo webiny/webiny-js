@@ -1,9 +1,11 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import {
     createCorePulumiApp as baseCreateCorePulumiApp,
     CreateCorePulumiAppParams as BaseCreateCorePulumiAppParams
 } from "~/apps/core/createCorePulumiApp";
 import { isResourceOfType, PulumiAppParam } from "@webiny/pulumi";
+import { getAwsRegion } from "~/apps/awsUtils";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -29,7 +31,8 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             return usingAdvancedVpcParams && vpc.useExistingVpc ? false : Boolean(vpc);
         },
         pulumi(...args) {
-            const [{ getParam }] = args;
+            const [app] = args;
+            const { getParam } = app;
             const vpc = getParam(projectAppParams.vpc);
             const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
 
@@ -94,6 +97,8 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
 
             // 2. Now we deal with "non-existing VPC" setup.
             if (useVpcEndpoints) {
+                const region = getAwsRegion(app);
+
                 onResource(resource => {
                     if (isResourceOfType(resource, aws.ec2.Vpc)) {
                         resource.config.enableDnsSupport(true);
@@ -106,7 +111,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-s3-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.s3",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.s3`,
                         routeTableIds: [routeTables.privateSubnets.output.id]
                     }
                 });
@@ -115,7 +120,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-dynamodb-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.dynamodb",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.dynamodb`,
                         routeTableIds: [routeTables.privateSubnets.output.id]
                     }
                 });
@@ -124,7 +129,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-sqs-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.sqs",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.sqs`,
                         vpcEndpointType: "Interface",
                         privateDnsEnabled: true,
                         securityGroupIds: [vpc.output.defaultSecurityGroupId],
@@ -136,7 +141,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-events-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.events",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.events`,
                         vpcEndpointType: "Interface",
                         privateDnsEnabled: true,
                         securityGroupIds: [vpc.output.defaultSecurityGroupId],

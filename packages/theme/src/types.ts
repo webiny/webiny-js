@@ -1,4 +1,5 @@
-import { type CSSObject } from "@emotion/core";
+import { type CSSObject } from "@emotion/react";
+
 export type Content = Element;
 
 /**
@@ -8,7 +9,21 @@ export interface StylesObject {
     [key: string]: CSSObject | string | number | undefined;
 }
 
-export type ThemeBreakpoints = Record<string, string>;
+export enum DefaultThemeBreakpoint {
+    DESKTOP = "desktop",
+    TABLET = "tablet",
+    MOBILE_LANDSCAPE = "mobile-landscape",
+    MOBILE_PORTRAIT = "mobile-portrait"
+}
+
+export type ThemeBreakpoints = {
+    [DefaultThemeBreakpoint.DESKTOP]: string;
+    [DefaultThemeBreakpoint.TABLET]: string;
+    [DefaultThemeBreakpoint.MOBILE_LANDSCAPE]: string;
+    [DefaultThemeBreakpoint.MOBILE_PORTRAIT]: string;
+
+    [key: string]: string;
+};
 
 /*
  * Typography section
@@ -30,8 +45,12 @@ export type Typography = {
     [typeName in TypographyType]: TypographyStyle<ThemeTypographyHTMLTag>[];
 };
 
+export type WithCssById<T extends TypographyStyle<ThemeTypographyHTMLTag>[]> = T & {
+    cssById(id: string): CSSObject;
+};
+
 export type WithById<T extends TypographyStyle<ThemeTypographyHTMLTag>[]> = T & {
-    byId(id: string): TypographyStyle<ThemeTypographyHTMLTag>;
+    ById(id: string): TypographyStyle<ThemeTypographyHTMLTag>;
 };
 
 export interface ThemeStyles {
@@ -43,7 +62,7 @@ export interface ThemeStyles {
 }
 
 export type DecoratedThemeStyles<T extends ThemeStyles> = T & {
-    typography: { [K in keyof T["typography"]]: WithById<T[TypographyType][K]> };
+    typography: { [K in keyof T["typography"]]: WithCssById<T[TypographyType][K]> }
 };
 
 export interface Theme {

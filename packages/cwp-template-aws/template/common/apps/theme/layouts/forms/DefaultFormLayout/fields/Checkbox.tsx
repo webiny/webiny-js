@@ -5,8 +5,8 @@ import { Field } from "./components/Field";
 import { FieldErrorMessage } from "./components/FieldErrorMessage";
 import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
+import { StyledInput } from "./Input";
 import styled from "@emotion/styled";
-import theme from "../../../../theme";
 
 export const CheckboxGroup = styled.div`
     align-items: center;
@@ -17,15 +17,15 @@ export const CheckboxGroup = styled.div`
 
 export const CheckboxButton = styled.input`
     margin-left: 0;
-    background-color: ${theme.styles.colors["color5"]};
+    background-color: ${props => props.theme.styles.colors["color5"]};
     min-width: 25px;
     width: 25px;
     height: 25px;
     -webkit-appearance: none;
-    border-radius: ${theme.styles.borderRadius};
+    border-radius: ${props => props.theme.styles.borderRadius};
 
     &:focus {
-        border-color: ${theme.styles.colors["color2"]};
+        border-color: ${props => props.theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }
@@ -38,6 +38,14 @@ export const CheckboxButton = styled.input`
         margin-left: 10px;
         padding-top: 2px;
     }
+`;
+
+const OtherInput = styled(StyledInput)`
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    margin-left: 16px;
 `;
 
 interface Option {
@@ -71,6 +79,11 @@ const checked = ({ option, value }: CheckedParams) => {
     return Array.isArray(value) && value.includes(option.value);
 };
 
+const otherOption: Option = {
+    label: "Other",
+    value: "other"
+};
+
 interface CheckboxProps {
     field: FormRenderFbFormModelField;
 }
@@ -81,6 +94,9 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators
+    });
+    const { value: otherOptionValue, onChange: otherOptionOnChange } = useBind({
+        name: `${field.fieldId}Other`
     });
 
     return (
@@ -99,6 +115,29 @@ export const CheckboxField: React.FC<CheckboxProps> = ({ field }) => {
                     <label htmlFor={"checkbox-" + fieldId + option.value}>{option.label}</label>
                 </CheckboxGroup>
             ))}
+            {field.settings["otherOption"] && (
+                <CheckboxGroup>
+                    <CheckboxButton
+                        name={fieldId}
+                        type="checkbox"
+                        id={"checkbox-" + fieldId + otherOption.value}
+                        checked={checked({ option: otherOption, value })}
+                        onChange={() => change({ option: otherOption, value, onChange })}
+                    />
+                    <label htmlFor={"checkbox-" + fieldId + otherOption.value}>
+                        {otherOption.label}
+                    </label>
+                    {checked({ option: otherOption, value }) && (
+                        <OtherInput
+                            name={`${fieldId}Other`}
+                            id={`${fieldId}Other`}
+                            onChange={e => otherOptionOnChange(e.target.value)}
+                            value={otherOptionValue}
+                            autoFocus
+                        />
+                    )}
+                </CheckboxGroup>
+            )}
             <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );

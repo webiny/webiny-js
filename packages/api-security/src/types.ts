@@ -16,7 +16,12 @@ export interface SecurityAuthorizationPlugin extends Plugin {
     type: "security-authorization";
     getPermissions(context: SecurityContext): Promise<SecurityPermission[]>;
 }
+
 // Backwards compatibility - END
+
+export type GetPermission = <T extends SecurityPermission = SecurityPermission>(
+    name: string
+) => Promise<T | null>;
 
 export interface Authorizer {
     (): Promise<SecurityPermission[] | null>;
@@ -67,13 +72,24 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
     onIdentity: Topic<IdentityEvent<TIdentity>>;
     getStorageOperations(): SecurityStorageOperations;
+    withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
+    /**
+     * Replace in favor of withoutAuthorization.
+     *
+     * If really required, should be used carefully.
+     * @deprecated
+     */
     enableAuthorization(): void;
+    /**
+     * Replace in favor of withoutAuthorization.
+     *
+     * If really required, should be used carefully.
+     * @deprecated
+     */
     disableAuthorization(): void;
     addAuthorizer(authorizer: Authorizer): void;
     getAuthorizers(): Authorizer[];
-    getPermission<TPermission extends SecurityPermission = SecurityPermission>(
-        permission: string
-    ): Promise<TPermission | null>;
+    getPermission: GetPermission;
     getPermissions(): Promise<SecurityPermission[]>;
     hasFullAccess(): Promise<boolean>;
     // API Keys
@@ -339,10 +355,12 @@ export type StorageOperationsDeleteGroupParams = DeleteGroupParams;
 export type StorageOperationsGetSystemParams = GetSystemParams;
 export type StorageOperationsCreateSystemParams = CreateSystemParams;
 export type StorageOperationsUpdateSystemParams = UpdateSystemParams;
+
 export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
     createdOn: string;
     webinyVersion: string;
 }
+
 export type StorageOperationsUpdateTenantLinkParams = UpdateTenantLinkParams;
 export type StorageOperationsDeleteTenantLinkParams = DeleteTenantLinkParams;
 export type StorageOperationsListTenantLinksParams = ListTenantLinksParams;

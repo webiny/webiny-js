@@ -27,7 +27,8 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
     /**
      * If is a test environment, always have this turned on.
      */
-    if (process.env.NODE_ENV === "test" || isBetaOrNext(model) === true) {
+    const nodeEnv = process.env.NODE_ENV as string;
+    if (nodeEnv === "test" || nodeEnv === "disable" || isBetaOrNext(model)) {
         return true;
     }
     /**
@@ -111,23 +112,22 @@ export const createValueKeyFromStorageConverter = (params: Params): CmsModelConv
     };
 };
 
-interface AttachConvertersParams {
-    plugins: PluginsContainer;
-    model: CmsModel;
-}
-export const attachCmsModelFieldConverters = (
-    params: AttachConvertersParams
-): StorageOperationsCmsModel => {
-    const { model, plugins } = params;
-    return {
-        ...model,
-        convertValueKeyToStorage: createValueKeyToStorageConverter({
-            model,
-            plugins
-        }),
-        convertValueKeyFromStorage: createValueKeyFromStorageConverter({
-            model,
-            plugins
-        })
+export const createCmsModelFieldConvertersAttachFactory = (plugins: PluginsContainer) => {
+    return (model: StorageOperationsCmsModel | CmsModel): StorageOperationsCmsModel => {
+        const storageModel = model as Partial<StorageOperationsCmsModel>;
+        if (!!storageModel.convertValueKeyToStorage && !!storageModel.convertValueKeyFromStorage) {
+            return storageModel as StorageOperationsCmsModel;
+        }
+        return {
+            ...model,
+            convertValueKeyToStorage: createValueKeyToStorageConverter({
+                model,
+                plugins
+            }),
+            convertValueKeyFromStorage: createValueKeyFromStorageConverter({
+                model,
+                plugins
+            })
+        };
     };
 };

@@ -1,22 +1,11 @@
 // @ts-ignore
 import mdbid from "mdbid";
 import useGqlHandler from "./useGqlHandler";
-import { fileLifecyclePlugin, lifecycleEventTracker } from "./mocks/lifecyclePlugin";
+import { assignFileLifecycleEvents, tracker } from "./mocks/lifecycleEvents";
 
 const WEBINY_VERSION = process.env.WEBINY_VERSION;
 
 const TAG = "webiny";
-
-enum FileLifecycle {
-    BEFORE_CREATE = "file:beforeCreate",
-    AFTER_CREATE = "file:afterCreate",
-    BEFORE_UPDATE = "file:beforeUpdate",
-    AFTER_UPDATE = "file:afterUpdate",
-    BEFORE_BATCH_CREATE = "file:beforeBatchCreate",
-    AFTER_BATCH_CREATE = "file:afterBatchCreate",
-    BEFORE_DELETE = "file:beforeDelete",
-    AFTER_DELETE = "file:afterDelete"
-}
 
 const id = mdbid();
 
@@ -32,8 +21,9 @@ const fileData = {
 
 describe("File lifecycle events", () => {
     const { createFile, updateFile, createFiles, deleteFile } = useGqlHandler({
-        plugins: [fileLifecyclePlugin]
+        plugins: [assignFileLifecycleEvents()]
     });
+
     const hookParamsExpected = {
         id: expect.any(String),
         createdOn: expect.stringMatching(/^20/),
@@ -51,7 +41,7 @@ describe("File lifecycle events", () => {
     };
 
     beforeEach(() => {
-        lifecycleEventTracker.reset();
+        tracker.reset();
     });
 
     test(`it should call "beforeCreate" and "afterCreate" methods`, async () => {
@@ -75,32 +65,26 @@ describe("File lifecycle events", () => {
         /**
          * After that we expect that lifecycle method was triggered.
          */
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_UPDATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_UPDATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_BATCH_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_BATCH_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_DELETE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_DELETE)).toEqual(0);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeUpdate")).toEqual(0);
+        expect(tracker.getExecuted("file:afterUpdate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeBatchCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:afterBatchCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeDelete")).toEqual(0);
+        expect(tracker.getExecuted("file:afterDelete")).toEqual(0);
         /**
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
-        const beforeCreate = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_CREATE);
-        expect(beforeCreate.params[0]).toEqual({
-            context: expect.any(Object),
-            data: {
+        const beforeCreate = tracker.getLast("file:beforeCreate");
+        expect(beforeCreate && beforeCreate.params[0]).toEqual({
+            file: {
                 ...fileData,
                 ...hookParamsExpected
             }
         });
-        const afterCreate = lifecycleEventTracker.getLast(FileLifecycle.AFTER_CREATE);
-        expect(afterCreate.params[0]).toEqual({
-            context: expect.any(Object),
-            data: {
-                ...fileData,
-                ...hookParamsExpected
-            },
+        const afterCreate = tracker.getLast("file:beforeCreate");
+        expect(afterCreate && afterCreate.params[0]).toEqual({
             file: {
                 ...fileData,
                 ...hookParamsExpected
@@ -134,43 +118,38 @@ describe("File lifecycle events", () => {
         /**
          * After that we expect that lifecycle method was triggered.
          */
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_UPDATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_UPDATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_BATCH_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_BATCH_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_DELETE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_DELETE)).toEqual(0);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeUpdate")).toEqual(1);
+        expect(tracker.getExecuted("file:afterUpdate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeBatchCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:afterBatchCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeDelete")).toEqual(0);
+        expect(tracker.getExecuted("file:afterDelete")).toEqual(0);
         /**
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
-        const beforeUpdate = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_UPDATE);
-        expect(beforeUpdate.params[0]).toEqual({
-            context: expect.any(Object),
+        const beforeUpdate = tracker.getLast("file:beforeUpdate");
+        expect(beforeUpdate && beforeUpdate.params[0]).toEqual({
+            input: { tags: [...fileData.tags, TAG] },
             original: {
                 ...fileData,
                 ...hookParamsExpected,
                 id: expect.any(String)
             },
-            data: {
+            file: {
                 ...fileData,
                 ...hookParamsExpected,
                 tags: [...fileData.tags, TAG]
             }
         });
-        const afterUpdate = lifecycleEventTracker.getLast(FileLifecycle.AFTER_UPDATE);
-        expect(afterUpdate.params[0]).toEqual({
-            context: expect.any(Object),
+        const afterUpdate = tracker.getLast("file:afterUpdate");
+        expect(afterUpdate && afterUpdate.params[0]).toEqual({
+            input: { tags: [...fileData.tags, TAG] },
             original: {
                 ...fileData,
                 ...hookParamsExpected,
                 id: expect.any(String)
-            },
-            data: {
-                ...fileData,
-                ...hookParamsExpected,
-                tags: [...fileData.tags, TAG]
             },
             file: {
                 ...fileData,
@@ -200,28 +179,26 @@ describe("File lifecycle events", () => {
         /**
          * After that we expect that lifecycle method was triggered.
          */
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_UPDATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_UPDATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_BATCH_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_BATCH_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_DELETE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_DELETE)).toEqual(1);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeUpdate")).toEqual(0);
+        expect(tracker.getExecuted("file:afterUpdate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeBatchCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:afterBatchCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeDelete")).toEqual(1);
+        expect(tracker.getExecuted("file:afterDelete")).toEqual(1);
         /**
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
-        const beforeDelete = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_DELETE);
-        expect(beforeDelete.params[0]).toEqual({
-            context: expect.any(Object),
+        const beforeDelete = tracker.getLast("file:beforeDelete");
+        expect(beforeDelete && beforeDelete.params[0]).toEqual({
             file: {
                 ...fileData,
                 ...hookParamsExpected
             }
         });
-        const afterDelete = lifecycleEventTracker.getLast(FileLifecycle.AFTER_DELETE);
-        expect(afterDelete.params[0]).toEqual({
-            context: expect.any(Object),
+        const afterDelete = tracker.getLast("file:afterDelete");
+        expect(afterDelete && afterDelete.params[0]).toEqual({
             file: {
                 ...fileData,
                 ...hookParamsExpected
@@ -251,36 +228,28 @@ describe("File lifecycle events", () => {
         /**
          * After that we expect that lifecycle method was triggered.
          */
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_CREATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_UPDATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_UPDATE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_BATCH_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_BATCH_CREATE)).toEqual(1);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.BEFORE_DELETE)).toEqual(0);
-        expect(lifecycleEventTracker.getExecuted(FileLifecycle.AFTER_DELETE)).toEqual(0);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeCreate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeUpdate")).toEqual(0);
+        expect(tracker.getExecuted("file:afterUpdate")).toEqual(0);
+        expect(tracker.getExecuted("file:beforeBatchCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:afterBatchCreate")).toEqual(1);
+        expect(tracker.getExecuted("file:beforeDelete")).toEqual(0);
+        expect(tracker.getExecuted("file:afterDelete")).toEqual(0);
         /**
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
-        const beforeBatchCreate = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_BATCH_CREATE);
-        expect(beforeBatchCreate.params[0]).toEqual({
-            context: expect.any(Object),
-            data: [
+        const beforeBatchCreate = tracker.getLast("file:beforeBatchCreate");
+        expect(beforeBatchCreate && beforeBatchCreate.params[0]).toEqual({
+            files: [
                 {
                     ...fileData,
                     ...hookParamsExpected
                 }
             ]
         });
-        const afterBatchCreate = lifecycleEventTracker.getLast(FileLifecycle.AFTER_BATCH_CREATE);
-        expect(afterBatchCreate.params[0]).toEqual({
-            context: expect.any(Object),
-            data: [
-                {
-                    ...fileData,
-                    ...hookParamsExpected
-                }
-            ],
+        const afterBatchCreate = tracker.getLast("file:afterBatchCreate");
+        expect(afterBatchCreate && afterBatchCreate.params[0]).toEqual({
             files: [
                 {
                     ...fileData,

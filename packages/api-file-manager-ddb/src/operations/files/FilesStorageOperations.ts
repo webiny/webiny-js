@@ -1,7 +1,6 @@
 import {
     File,
     FileAlias,
-    FileManagerContext,
     FileManagerFilesStorageOperations,
     FileManagerFilesStorageOperationsCreateBatchParams,
     FileManagerFilesStorageOperationsCreateParams,
@@ -18,7 +17,7 @@ import {
 } from "@webiny/api-file-manager/types";
 import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
-import defineTable from "~/definitions/table";
+import { createTable } from "~/definitions/table";
 import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
@@ -28,12 +27,15 @@ import { FileDynamoDbFieldPlugin } from "~/plugins/FileDynamoDbFieldPlugin";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { createStandardEntity, DbItem } from "@webiny/db-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { PluginsContainer } from "@webiny/plugins";
 
 type FileItem = DbItem<File>;
 type FileAliasItem = DbItem<FileAlias>;
 
 interface ConstructorParams {
-    context: FileManagerContext;
+    documentClient: DocumentClient;
+    plugins: PluginsContainer;
 }
 
 interface QueryAllOptionsParams {
@@ -49,21 +51,14 @@ interface CreatePartitionKeyParams {
 type CreateGSI1PartitionKeyParams = Pick<CreatePartitionKeyParams, "tenant" | "locale">;
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly _context: FileManagerContext;
+    private readonly plugins: PluginsContainer;
     private readonly table: Table;
     private readonly fileEntity: Entity<any>;
     private readonly aliasEntity: Entity<any>;
 
-    private get context(): FileManagerContext {
-        return this._context;
-    }
-
-    public constructor({ context }: ConstructorParams) {
-        this._context = context;
-        this.table = defineTable({
-            context
-        });
-
+    public constructor({ documentClient, plugins }: ConstructorParams) {
+        this.plugins = plugins;
+        this.table = createTable({ documentClient });
         this.fileEntity = createStandardEntity(this.table, "FM.File");
         this.aliasEntity = createStandardEntity(this.table, "FM.FileAlias");
     }
@@ -336,15 +331,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         delete where["locale"];
         delete where["search"];
 
-        const fields = this.context.plugins.byType<FileDynamoDbFieldPlugin>(
-            FileDynamoDbFieldPlugin.type
-        );
+        const fields = this.plugins.byType<FileDynamoDbFieldPlugin>(FileDynamoDbFieldPlugin.type);
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
          */
         const filteredFiles = filterItems({
-            plugins: this.context.plugins,
+            plugins: this.plugins,
             items,
             where,
             fields
@@ -409,9 +402,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             );
         }
 
-        const fields = this.context.plugins.byType<FileDynamoDbFieldPlugin>(
-            FileDynamoDbFieldPlugin.type
-        );
+        const fields = this.plugins.byType<FileDynamoDbFieldPlugin>(FileDynamoDbFieldPlugin.type);
 
         const where: Partial<FileManagerFilesStorageOperationsTagsParamsWhere> = {
             ...initialWhere
@@ -425,7 +416,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
          * It will build the filters out of the where input and transform the values it is using.
          */
         const filteredItems = filterItems({
-            plugins: this.context.plugins,
+            plugins: this.plugins,
             items: results,
             where,
             fields

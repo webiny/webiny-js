@@ -11,7 +11,7 @@
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
     "@babel/runtime": "^7.19.0",
-    "@emotion/core": "^10.0.27",
+    "@emotion/react": "^11.10.6",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/form": "0.0.0",

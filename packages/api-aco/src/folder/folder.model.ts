@@ -1,17 +1,12 @@
-import { CmsModel } from "@webiny/api-headless-cms/types";
-
 import { createModelField } from "~/utils/createModelField";
+import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 
-export type FolderModelDefinition = Pick<
-    CmsModel,
-    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
->;
+export type FolderModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
 
 const titleField = () =>
     createModelField({
         label: "Title",
         type: "text",
-        parent: "folder",
         validation: [
             {
                 name: "required",
@@ -31,7 +26,6 @@ const slugField = () =>
     createModelField({
         label: "Slug",
         type: "text",
-        parent: "folder",
         validation: [
             {
                 name: "required",
@@ -67,7 +61,6 @@ const typeField = () =>
     createModelField({
         label: "Type",
         type: "text",
-        parent: "folder",
         validation: [
             {
                 name: "required",
@@ -79,18 +72,17 @@ const typeField = () =>
 const parentIdField = () =>
     createModelField({
         label: "Parent Id",
-        type: "text",
-        parent: "folder"
+        type: "text"
     });
 
-export const FOLDER_MODEL_ID = "acoFolderModelDefinition";
+export const FOLDER_MODEL_ID = "acoFolder";
 
 export const createFolderModelDefinition = (): FolderModelDefinition => {
     return {
         name: "ACO - Folder",
         modelId: FOLDER_MODEL_ID,
         titleFieldId: "title",
-        layout: [["folder_title"], ["folder_slug"], ["folder_type"], ["folder_parentId"]],
+        layout: [["title"], ["slug"], ["type"], ["parentId"]],
         fields: [titleField(), slugField(), typeField(), parentIdField()],
         description: "ACO - Folder content model",
         isPrivate: true

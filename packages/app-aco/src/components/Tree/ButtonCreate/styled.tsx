@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ReactComponent as Plus } from "@material-design-icons/svg/filled/add_circle_outline.svg";
+import { ReactComponent as Plus } from "@material-design-icons/svg/outlined/add_circle_outline.svg";
 
 export const Button = styled("button")`
     background: none;

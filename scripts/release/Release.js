@@ -10,6 +10,7 @@ const { Octokit } = require("@octokit/rest");
 class Release {
     tag = undefined;
     version = undefined;
+    resetAllChanges = true;
     mostRecentVersion = undefined;
     createGithubRelease = false;
 
@@ -43,6 +44,10 @@ class Release {
 
     setCreateGithubRelease(flag) {
         this.createGithubRelease = flag;
+    }
+
+    setResetAllChanges(reset) {
+        this.resetAllChanges = reset;
     }
 
     async execute() {
@@ -122,8 +127,10 @@ class Release {
             this.logger.info("Created Github release: %s", release.html_url);
         }
 
-        // Reset all changes made during versioing.
-        await execa("git", ["reset", "--hard", "HEAD"]);
+        // Reset all changes made during versioning.
+        if (this.resetAllChanges) {
+            await execa("git", ["reset", "--hard", "HEAD"]);
+        }
 
         this.logger.success("Release process has finished successfully!");
     }

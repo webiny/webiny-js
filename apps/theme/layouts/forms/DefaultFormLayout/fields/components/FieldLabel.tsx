@@ -1,19 +1,19 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
-import theme from "../../../../../theme";
 
 export const FieldLabelStyled = styled.label`
     width: 100%;
     display: inline-block;
     margin: 0 0 5px 1px;
-    ${theme.breakpoints["mobile-landscape"]} {
+
+    ${props => props.theme.breakpoints["mobile-landscape"]} {
         text-align: left !important;
     }
 
     .asterisk {
         margin-left: 5px;
-        color: ${theme.styles.colors.color1};
+        color: ${props => props.theme.styles.colors["color1"]};
     }
 `;
 

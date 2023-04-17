@@ -1,4 +1,4 @@
-import { CmsModel, CmsFieldTypePlugins, CmsContext, CmsEntry } from "~/types";
+import { CmsFieldTypePlugins, CmsContext, CmsEntry, CmsModel } from "~/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
@@ -12,9 +12,9 @@ import { resolveRepublish } from "./resolvers/manage/resolveRepublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createFieldResolversFactory } from "./createFieldResolvers";
-import { createManageTypeName, createTypeName } from "~/utils/createTypeName";
-import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 import { getEntryTitle } from "~/utils/getEntryTitle";
+import { getEntryImage } from "~/utils/getEntryImage";
+import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 
 interface CreateManageResolversParams {
     models: CmsModel[];
@@ -22,6 +22,7 @@ interface CreateManageResolversParams {
     context: CmsContext;
     fieldTypePlugins: CmsFieldTypePlugins;
 }
+
 interface CreateManageResolvers {
     // TODO @ts-refactor determine correct type.
     (params: CreateManageResolversParams): any;
@@ -38,8 +39,7 @@ export const createManageResolvers: CreateManageResolvers = ({
             Mutation: {}
         };
     }
-    const typeName = createTypeName(model.modelId);
-    const mTypeName = createManageTypeName(typeName);
+
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "manage",
         models,
@@ -48,7 +48,7 @@ export const createManageResolvers: CreateManageResolvers = ({
     });
 
     const fieldResolvers = createFieldResolvers({
-        graphQLType: mTypeName,
+        graphQLType: model.singularApiName,
         fields: model.fields,
         isRoot: true,
         // These are extra fields we want to apply to field resolvers of "gqlType"
@@ -62,24 +62,43 @@ export const createManageResolvers: CreateManageResolvers = ({
 
     return {
         Query: {
-            [`get${typeName}`]: resolveGet({ model }),
-            [`get${typeName}Revisions`]: resolveGetRevisions({ model }),
-            [`get${pluralizedTypeName(typeName)}ByIds`]: resolveGetByIds({ model }),
-            [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
+            [`get${model.singularApiName}`]: resolveGet({ model }),
+            [`get${model.singularApiName}Revisions`]: resolveGetRevisions({ model }),
+            [`get${model.pluralApiName}ByIds`]: resolveGetByIds({ model }),
+            [`list${model.pluralApiName}`]: resolveList({ model })
         },
         Mutation: {
-            [`create${typeName}`]: resolveCreate({ model }),
-            [`update${typeName}`]: resolveUpdate({ model }),
-            [`delete${typeName}`]: resolveDelete({ model }),
-            [`publish${typeName}`]: resolvePublish({ model }),
-            [`republish${typeName}`]: resolveRepublish({ model }),
-            [`unpublish${typeName}`]: resolveUnpublish({ model }),
-            [`create${typeName}From`]: resolveCreateFrom({ model })
+            [`create${model.singularApiName}`]: resolveCreate({ model }),
+            [`update${model.singularApiName}`]: resolveUpdate({ model }),
+            [`delete${model.singularApiName}`]: resolveDelete({ model }),
+            [`publish${model.singularApiName}`]: resolvePublish({ model }),
+            [`republish${model.singularApiName}`]: resolveRepublish({ model }),
+            [`unpublish${model.singularApiName}`]: resolveUnpublish({ model }),
+            [`create${model.singularApiName}From`]: resolveCreateFrom({ model })
         },
         ...fieldResolvers,
-        [`${mTypeName}Meta`]: {
+        [`${model.singularApiName}Meta`]: {
             title(entry: CmsEntry) {
                 return getEntryTitle(model, entry);
+            },
+            description: (entry: CmsEntry, _: any, context: CmsContext) => {
+                if (!model.descriptionFieldId) {
+                    return "";
+                }
+                const field = model.fields.find(f => f.fieldId === model.descriptionFieldId);
+                if (!field) {
+                    return "";
+                }
+
+                return entryFieldFromStorageTransform({
+                    context,
+                    model,
+                    field,
+                    value: entry.values[field.fieldId]
+                });
+            },
+            image: (entry: CmsEntry) => {
+                return getEntryImage(model, entry);
             },
             status(entry: CmsEntry) {
                 return entry.status;

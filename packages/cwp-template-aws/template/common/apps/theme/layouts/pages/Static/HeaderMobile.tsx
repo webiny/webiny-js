@@ -4,10 +4,9 @@ import { useQuery } from "@apollo/react-hooks";
 import { Link } from "@webiny/react-router";
 import { usePage } from "@webiny/app-page-builder-elements";
 import { Menu, GET_PUBLIC_MENU, hasMenuItems } from "@webiny/app-website";
-import { ClassNames } from "@emotion/core";
+import { ClassNames } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Navigation } from "./Navigation";
-import { colors, fonts, breakpoints } from "../../../theme";
 
 export const HeaderMobile: React.FC = () => {
     const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: "main-menu" } });
@@ -79,7 +78,7 @@ const HeaderMobileWrapper = styled.div`
         }
     }
 
-    ${breakpoints.tablet} {
+    ${props => props.theme.breakpoints["tablet"]} {
         align-items: center;
         display: flex;
         height: 35px;
@@ -88,7 +87,7 @@ const HeaderMobileWrapper = styled.div`
         max-width: 1200px;
 
         > .logo {
-            ${breakpoints.tablet} {
+            ${props => props.theme.breakpoints["tablet"]} {
                 margin-left: 25px;
                 width: 50%;
             }
@@ -103,9 +102,8 @@ const HeaderMobileWrapper = styled.div`
             -webkit-font-smoothing: antialiased;
             animation: slide-out 0.5s forwards;
             animation-timing-function: ease-in-out;
-            background: ${colors.color5};
-            color: ${colors.color1};
-            font-family: ${fonts.font1};
+            background: ${props => props.theme.styles.colors["color5"]};
+            color: ${props => props.theme.styles.colors["color1"]};
             height: 100%;
             position: fixed;
             right: 0;
@@ -142,7 +140,6 @@ const HeaderMobileWrapper = styled.div`
         }
 
         .mobile-overlay {
-            background-color: var(--webiny-theme-color-on-background, #131313);
             opacity: 0;
             transition: opacity 0.25s ease-in-out;
 

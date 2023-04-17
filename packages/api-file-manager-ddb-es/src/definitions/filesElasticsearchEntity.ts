@@ -1,15 +1,10 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
-import { FileManagerContext } from "~/types";
 
 export interface FileElasticsearchEntityParams {
-    context: FileManagerContext;
     table: Table;
 }
-export default (params: FileElasticsearchEntityParams): Entity<any> => {
-    const { context, table } = params;
+export default ({ table }: FileElasticsearchEntityParams): Entity<any> => {
     const entityName = "FilesElasticsearch";
-    const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         name: entityName,
         table,
@@ -25,8 +20,7 @@ export default (params: FileElasticsearchEntityParams): Entity<any> => {
             },
             data: {
                 type: "map"
-            },
-            ...attributes
+            }
         }
     });
 };

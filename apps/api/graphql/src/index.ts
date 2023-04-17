@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createApiGatewayHandler as createHandler } from "@webiny/handler-aws";
+import { createApiGatewayHandler as createHandler, ContextPlugin } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -16,8 +16,8 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/cli
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
@@ -29,11 +29,12 @@ import tenantManager from "@webiny/api-tenant-manager";
 import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
-import { createACO } from "@webiny/api-aco";
+import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
+import { Context } from "~/types";
 
 const debug = process.env.DEBUG === "true";
 
@@ -44,6 +45,16 @@ const documentClient = new DocumentClient({
 
 export const handler = createHandler({
     plugins: [
+        new ContextPlugin<Context>(async context => {
+            context.benchmark.enableOn(async () => {
+                if (debug) {
+                    return true;
+                } else if (process.env.BENCHMARK_ENABLE === "true") {
+                    return true;
+                }
+                return context.request.headers["x-benchmark"] === "true";
+            });
+        }),
         createWcpContext(),
         createWcpGraphQL(),
         dynamoDbPlugins(),
@@ -57,8 +68,12 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbStorageOperation(),
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({
+                documentClient
+            })
+        }),
+        createFileManagerGraphQL(),
         fileManagerS3(),
         prerenderingServicePlugins({
             eventBus: String(process.env.EVENT_BUS)
@@ -88,7 +103,7 @@ export const handler = createHandler({
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
-        createACO(),
+        createAco(),
         createAcoPageBuilderContext(),
         scaffoldsPlugins()
     ],

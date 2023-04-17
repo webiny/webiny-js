@@ -18,12 +18,16 @@ import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
 import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
+import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 
 import statusLabels from "~/admin/constants/pageStatusesLabels";
+import { FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { PbPageDataItem } from "~/types";
+import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
+import { menuStyles } from "./styled";
 
 interface Props {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -55,6 +59,9 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+
+    const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
+    const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const createRecordsData = useMemo(() => {
         return (items: SearchRecordItem<PbPageDataItem>[]): Entry[] =>
@@ -132,10 +139,20 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
                 if (type === "RECORD") {
                     return (
-                        <Menu handle={<IconButton icon={<More />} />}>
+                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
                             <RecordActionEdit record={original as PbPageDataItem} />
                             <RecordActionPreview record={original as PbPageDataItem} />
                             <RecordActionPublish record={original as PbPageDataItem} />
+                            <RecordActionMove
+                                onClick={() => {
+                                    setMoveSearchRecordDialogOpen(true);
+                                    setSelectedSearchRecord(() =>
+                                        records.find(
+                                            record => record.id === (original as PbPageDataItem).pid
+                                        )
+                                    );
+                                }}
+                            />
                             <RecordActionDelete record={original as PbPageDataItem} />
                         </Menu>
                     );
@@ -185,6 +202,14 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                         onClose={() => setDeleteDialogOpen(false)}
                     />
                 </>
+            )}
+            {selectedSearchRecord && (
+                <EntryDialogMove
+                    type={FOLDER_TYPE}
+                    searchRecord={selectedSearchRecord}
+                    open={moveSearchRecordDialogOpen}
+                    onClose={() => setMoveSearchRecordDialogOpen(false)}
+                />
             )}
         </div>
     );

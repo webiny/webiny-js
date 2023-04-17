@@ -28,9 +28,19 @@ process.env.NODE_PATH = (process.env.NODE_PATH || "")
 // injected into the application via DefinePlugin in Webpack configuration.
 const REACT_APP = /^REACT_APP_/i;
 
-function getClientEnvironment(publicUrl) {
+function getClientEnvironment({ publicUrl, projectApplication }) {
     const raw = Object.keys(process.env)
-        .filter(key => REACT_APP.test(key))
+        .filter(key => {
+            if (REACT_APP.test(key)) {
+                return true;
+            }
+
+            if (projectApplication) {
+                return new RegExp(`^WEBINY_${projectApplication.id.toUpperCase()}_`).test(key);
+            }
+
+            return false;
+        })
         .reduce(
             (env, key) => {
                 env[key] = process.env[key];

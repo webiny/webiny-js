@@ -1,17 +1,13 @@
-import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
-
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createModelField } from "~/utils/createModelField";
+import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 
-export type SearchRecordModelDefinition = Pick<
-    CmsModel,
-    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
->;
+export type SearchRecordModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
 
 const typeField = () =>
     createModelField({
         label: "Type",
         type: "text",
-        parent: "searchRecord",
         validation: [
             {
                 name: "required",
@@ -23,22 +19,19 @@ const typeField = () =>
 const titleField = () =>
     createModelField({
         label: "Title",
-        type: "text",
-        parent: "searchRecord"
+        type: "text"
     });
 
 const contentField = () =>
     createModelField({
         label: "Content",
-        type: "text",
-        parent: "searchRecord"
+        type: "text"
     });
 
 const locationField = (fields: CmsModelField[]) =>
     createModelField({
         label: "Location",
         type: "object",
-        parent: "searchRecord",
         multipleValues: false,
         settings: { fields }
     });
@@ -47,7 +40,6 @@ const locationFolderIdField = () =>
     createModelField({
         label: "Folder Id",
         type: "text",
-        parent: "searchRecord Location",
         validation: [
             {
                 name: "required",
@@ -59,24 +51,17 @@ const locationFolderIdField = () =>
 const dataField = () =>
     createModelField({
         label: "Data",
-        type: "wby-aco-json",
-        parent: "searchRecord"
+        type: "wby-aco-json"
     });
 
-export const SEARCH_RECORD_MODEL_ID = "acoSearchRecordModelDefinition";
+export const SEARCH_RECORD_MODEL_ID = "acoSearchRecord";
 
 export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
     return {
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
         titleFieldId: "title",
-        layout: [
-            ["searchRecord_type"],
-            ["searchRecord_title"],
-            ["searchRecord_content"],
-            ["searchRecord_location"],
-            ["searchRecord_data"]
-        ],
+        layout: [["type"], ["title"], ["content"], ["location"], ["data"]],
         fields: [
             typeField(),
             titleField(),

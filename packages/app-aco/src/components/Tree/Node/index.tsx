@@ -14,6 +14,7 @@ type Props = {
     node: NodeModel<DndItemData>;
     depth: number;
     isOpen: boolean;
+    enableActions?: boolean;
     onToggle: (id: NodeModel<DndItemData>["id"]) => void;
     onClick: (data: NodeModel<DndItemData>["data"]) => void;
     onUpdateFolder: (data: NodeModel<DndItemData>["data"]) => void;
@@ -23,13 +24,16 @@ type Props = {
 type FolderProps = {
     text: string;
     isOpen: boolean;
+    isFocused?: boolean;
 };
 
-export const FolderNode = ({ isOpen, text }: FolderProps) => {
+export const FolderNode = ({ isOpen, isFocused, text }: FolderProps) => {
     return (
         <>
             <FolderIcon>{isOpen ? <FolderOpen /> : <Folder />}</FolderIcon>
-            <Text use={"body2"}>{text}</Text>
+            <Text className={isFocused ? "focused" : ""} use={"body2"}>
+                {text}
+            </Text>
         </>
     );
 };
@@ -38,6 +42,7 @@ export const Node = ({
     node,
     depth,
     isOpen,
+    enableActions,
     onToggle,
     onClick,
     onUpdateFolder,
@@ -57,6 +62,7 @@ export const Node = ({
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         onClick(node.data);
+        onToggle(node.id);
     };
 
     return (
@@ -69,9 +75,9 @@ export const Node = ({
                 <ArrowRight />
             </ArrowIcon>
             <Content onClick={handleClick}>
-                <FolderNode text={node.text} isOpen={isOpen} />
+                <FolderNode text={node.text} isOpen={isOpen} isFocused={!!node.data?.isFocused} />
             </Content>
-            {node.data && (
+            {node.data && enableActions && (
                 <MenuActions
                     folder={node.data}
                     onUpdateFolder={onUpdateFolder}

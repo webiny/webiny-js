@@ -1,5 +1,5 @@
 import { createTheme } from "@webiny/app-theme";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 
 // Breakpoints (desktop, tablet, mobile).
 export const breakpoints = {
@@ -68,83 +68,85 @@ const buttons = (overrides: CSSObject) => ({
     }
 });
 
+export const typography = {
+    headings: [
+        {
+            id: "heading1",
+            name: "Heading 1",
+            tag: "h1",
+            css: { ...headings, fontWeight: "bold", fontSize: 48 }
+        },
+        {
+            id: "heading2",
+            name: "Heading 2",
+            tag: "h2",
+            css: { ...headings, fontSize: 36 }
+        },
+        {
+            id: "heading3",
+            name: "Heading 3",
+            tag: "h3",
+            css: { ...headings, fontSize: 30 }
+        },
+        {
+            id: "heading4",
+            name: "Heading 4",
+            tag: "h4",
+            css: { ...headings, fontSize: 24 }
+        },
+        {
+            id: "heading5",
+            name: "Heading 5",
+            tag: "h5",
+            css: { ...headings, fontSize: 20 }
+        },
+        {
+            id: "heading6",
+            name: "Heading 6",
+            tag: "h6",
+            css: { ...headings, fontSize: 18, lineHeight: "1.75rem" }
+        }
+    ],
+    paragraphs: [
+        {
+            id: "paragraph1",
+            name: "Paragraph 1",
+            tag: "p",
+            css: { ...paragraphs, fontSize: 16.5 }
+        },
+        {
+            id: "paragraph2",
+            name: "Paragraph 2",
+            tag: "p",
+            css: {
+                ...paragraphs,
+                fontSize: 12.5,
+                letterSpacing: "0.45px",
+                lineHeight: "19px"
+            }
+        }
+    ],
+    quotes: [
+        {
+            id: "quote",
+            name: "Quote 1",
+            tag: "p",
+            css: {
+                ...paragraphs,
+                fontWeight: "bold",
+                fontSize: 22
+            }
+        }
+    ],
+    lists: [{ id: "list", name: "list 1", tag: "ul", css: { ...paragraphs, fontSize: 17 } }]
+}
+
 // Theme object.
 const theme = createTheme({
     breakpoints,
     styles: {
         colors,
-        typography: {
-            headings: [
-                {
-                    id: "heading1",
-                    name: "Heading 1",
-                    tag: "h1",
-                    css: { ...headings, fontWeight: "bold", fontSize: 48 }
-                },
-                {
-                    id: "heading2",
-                    name: "Heading 2",
-                    tag: "h2",
-                    css: { ...headings, fontSize: 36 }
-                },
-                {
-                    id: "heading3",
-                    name: "Heading 3",
-                    tag: "h3",
-                    css: { ...headings, fontSize: 30 }
-                },
-                {
-                    id: "heading4",
-                    name: "Heading 4",
-                    tag: "h4",
-                    css: { ...headings, fontSize: 24 }
-                },
-                {
-                    id: "heading5",
-                    name: "Heading 5",
-                    tag: "h5",
-                    css: { ...headings, fontSize: 20 }
-                },
-                {
-                    id: "heading6",
-                    name: "Heading 6",
-                    tag: "h6",
-                    css: { ...headings, fontSize: 18, lineHeight: "1.75rem" }
-                }
-            ],
-            paragraphs: [
-                {
-                    id: "paragraph1",
-                    name: "Paragraph 1",
-                    tag: "p",
-                    css: { ...paragraphs, fontSize: 16.5 }
-                },
-                {
-                    id: "paragraph2",
-                    name: "Paragraph 2",
-                    tag: "p",
-                    css: {
-                        ...paragraphs,
-                        fontSize: 12.5,
-                        letterSpacing: "0.45px",
-                        lineHeight: "19px"
-                    }
-                }
-            ],
-            quotes: [
-                {
-                    id: "quote",
-                    name: "Quote 1",
-                    tag: "p",
-                    css: {
-                        ...paragraphs,
-                        fontWeight: "bold",
-                        fontSize: 22
-                    }
-                }
-            ],
-            lists: [{ id: "list", name: "list 1", tag: "ul", css: { ...paragraphs, fontSize: 17 } }]
-        },
+        typography,
         elements: {
             document: {
                 a: { color: colors.color1 },

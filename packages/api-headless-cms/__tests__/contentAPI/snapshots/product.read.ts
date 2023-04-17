@@ -2,16 +2,16 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
-    type Product {
+    type ProductApiSingular {
         id: ID!
         entryId: String!
         modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
         title: String
-        category(populate: Boolean = true): Category
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -20,19 +20,19 @@ export default /* GraphQL */ `
         availableSizes: [String]
         image: String
         richText: JSON
-        variant: Product_Variant
-        fieldsObject: Product_FieldsObject
+        variant: ProductApiSingular_Variant
+        fieldsObject: ProductApiSingular_FieldsObject
     }
 
-    type Product_Variant_Options {
+    type ProductApiSingular_Variant_Options {
         name: String
         price: Number
         image: String
-        category(populate: Boolean = true): Category
-        categories(populate: Boolean = true): [Category!]
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
+        categories(populate: Boolean = true): [CategoryApiNameWhichIsABitDifferentThanModelId!]
         longText: [String]
     }
-    input Product_Variant_OptionsWhereInput {
+    input ProductApiSingular_Variant_OptionsWhereInput {
         name: String
         name_not: String
         name_in: [String]
@@ -61,14 +61,14 @@ export default /* GraphQL */ `
         longText_not_contains: String
     }
 
-    type Product_Variant {
+    type ProductApiSingular_Variant {
         name: String
         price: Number
         images: [String]
-        category(populate: Boolean = true): Category
-        options: [Product_Variant_Options!]
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
+        options: [ProductApiSingular_Variant_Options!]
     }
-    input Product_VariantWhereInput {
+    input ProductApiSingular_VariantWhereInput {
         name: String
         name_not: String
         name_in: [String]
@@ -91,13 +91,13 @@ export default /* GraphQL */ `
 
         category: RefFieldWhereInput
 
-        options: Product_Variant_OptionsWhereInput
+        options: ProductApiSingular_Variant_OptionsWhereInput
     }
 
-    type Product_FieldsObject {
+    type ProductApiSingular_FieldsObject {
         text: String
     }
-    input Product_FieldsObjectWhereInput {
+    input ProductApiSingular_FieldsObjectWhereInput {
         text: String
         text_not: String
         text_in: [String]
@@ -106,7 +106,7 @@ export default /* GraphQL */ `
         text_not_contains: String
     }
 
-    input ProductGetWhereInput {
+    input ProductApiSingularGetWhereInput {
         id: ID
         entryId: String
         title: String
@@ -118,7 +118,7 @@ export default /* GraphQL */ `
         availableSizes: String
     }
 
-    input ProductListWhereInput {
+    input ProductApiSingularListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -211,13 +211,13 @@ export default /* GraphQL */ `
         availableSizes_contains: String
         availableSizes_not_contains: String
 
-        variant: Product_VariantWhereInput
-        fieldsObject: Product_FieldsObjectWhereInput
-        AND: [ProductListWhereInput!]
-        OR: [ProductListWhereInput!]
+        variant: ProductApiSingular_VariantWhereInput
+        fieldsObject: ProductApiSingular_FieldsObjectWhereInput
+        AND: [ProductApiSingularListWhereInput!]
+        OR: [ProductApiSingularListWhereInput!]
     }
 
-    enum ProductListSorter {
+    enum ProductApiSingularListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -240,25 +240,25 @@ export default /* GraphQL */ `
         availableSizes_DESC
     }
 
-    type ProductResponse {
-        data: Product
+    type ProductApiSingularResponse {
+        data: ProductApiSingular
         error: CmsError
     }
 
-    type ProductListResponse {
-        data: [Product]
+    type ProductApiSingularListResponse {
+        data: [ProductApiSingular]
         meta: CmsListMeta
         error: CmsError
     }
 
     extend type Query {
-        getProduct(where: ProductGetWhereInput!): ProductResponse
+        getProductApiSingular(where: ProductApiSingularGetWhereInput!): ProductApiSingularResponse
 
-        listProducts(
-            where: ProductListWhereInput
-            sort: [ProductListSorter]
+        listProductPluralApiName(
+            where: ProductApiSingularListWhereInput
+            sort: [ProductApiSingularListSorter]
             limit: Int
             after: String
-        ): ProductListResponse
+        ): ProductApiSingularListResponse
     }
 `;

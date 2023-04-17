@@ -18,8 +18,8 @@ import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchInd
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
 import {
-    ElasticsearchQueryBuilderOperatorPlugin,
-    getElasticsearchOperators
+    CompressionPlugin,
+    ElasticsearchQueryBuilderOperatorPlugin
 } from "@webiny/api-elasticsearch";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
@@ -34,6 +34,7 @@ import {
 } from "~/plugins";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
+import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 
 export * from "./plugins";
 
@@ -91,16 +92,9 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     const plugins = new PluginsContainer([
         /**
-         * Plugins of type CmsModelFieldToGraphQLPlugin.
-         */
-        /**
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
-        /**
-         * Elasticsearch operators.
-         */
-        getElasticsearchOperators(),
         /**
          * Field plugins for DynamoDB.
          */
@@ -142,20 +136,23 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * This way we do not need to register plugins in the storage plugins contains.
              */
             const types: string[] = [
+                // Elasticsearch
+                CompressionPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                // Headless CMS
                 "cms-model-field-to-graphql",
                 CmsEntryFilterPlugin.type,
-                ElasticsearchQueryBuilderOperatorPlugin.type,
                 CmsEntryElasticsearchBodyModifierPlugin.type,
                 CmsEntryElasticsearchFullTextSearchPlugin.type,
                 CmsEntryElasticsearchIndexPlugin.type,
                 CmsEntryElasticsearchQueryBuilderValueSearchPlugin.type,
                 CmsEntryElasticsearchQueryModifierPlugin.type,
                 CmsEntryElasticsearchSortModifierPlugin.type,
-                CmsEntryElasticsearchFieldPlugin.type
+                CmsEntryElasticsearchFieldPlugin.type,
+                StorageOperationsCmsModelPlugin.type
             ];
             for (const type of types) {
-                const contextPlugins = context.plugins.byType(type);
-                plugins.register(contextPlugins);
+                plugins.mergeByType(context.plugins, type);
             }
         },
         init: async context => {

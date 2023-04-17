@@ -1,17 +1,21 @@
 import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
+import { CmsModel } from "~/types";
+import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
+
+const singularPageApiName = pageModel.singularApiName;
 
 const pageFields = `
     id
     content {
-        ...on Page_Content_Hero {
+        ...on ${singularPageApiName}_Content_Hero {
             title
             __typename
         }
-        ...on Page_Content_SimpleText {
+        ...on ${singularPageApiName}_Content_SimpleText {
             text
             __typename
         }
-        ...on Page_Content_Objecting {
+        ...on ${singularPageApiName}_Content_Objecting {
             nestedObject {
                 objectTitle
                 objectNestedObject {
@@ -22,18 +26,18 @@ const pageFields = `
         }
     }
     header {
-        ...on Page_Header_TextHeader {
+        ...on ${singularPageApiName}_Header_TextHeader {
             title
             __typename
         }
-        ...on Page_Header_ImageHeader {
+        ...on ${singularPageApiName}_Header_ImageHeader {
             title
             image
             __typename
         }
     }
     objective {
-        ...on Page_Objective_Objecting {
+        ...on ${singularPageApiName}_Objective_Objecting {
             nestedObject {
                 objectTitle
                 objectBody
@@ -54,24 +58,28 @@ const errorFields = `
     }
 `;
 
-const getPageQuery = /* GraphQL */ `
-    query GetPage($where: PageGetWhereInput!) {
-        getPage(where: $where) {
-            data {
-                ${pageFields}
+const getPageQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetPage($where: ${model.singularApiName}GetWhereInput!) {
+            getPage: get${model.singularApiName}(where: $where) {
+                data {
+                    ${pageFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 export const usePageReadHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
+
+    const model = pageModel as CmsModel;
 
     return {
         ...contentHandler,
         async getPage(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getPageQuery, variables },
+                body: { query: getPageQuery(model), variables },
                 headers
             });
         }

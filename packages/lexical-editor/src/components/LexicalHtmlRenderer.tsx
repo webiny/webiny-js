@@ -10,7 +10,7 @@ import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { ClassNames } from "@emotion/core";
+import { ClassNames } from "@emotion/react";
 import { toThemeEmotionMap } from "~/utils/toThemeEmotionMap";
 
 interface LexicalHtmlRendererProps {

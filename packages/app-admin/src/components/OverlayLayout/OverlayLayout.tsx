@@ -6,7 +6,7 @@ import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { IconButton } from "@webiny/ui/Button";
 import noop from "lodash/noop";
 
-import { ReactComponent as CloseIcon } from "./icons/close.svg";
+import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 import { OverlayView } from "~/ui/views/OverlayView";
 import { ExitHandler } from "react-transition-group/Transition";
 
@@ -19,7 +19,7 @@ const OverlayLayoutWrapper = styled("div")({
      * Has to be higher than 5 so it's above advanced settings dialog,
      * and below 20, so the image editor & Dialogs can be displayed above.
      */
-    zIndex: 18,
+    zIndex: 21,
     paddingTop: 65,
     top: 0,
     left: 0

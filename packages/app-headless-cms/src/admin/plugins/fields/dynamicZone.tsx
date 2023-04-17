@@ -58,13 +58,13 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
         },
         graphql: {
             queryField({ model, field }) {
-                const prefix = `${createTypeName(model.modelId)}_${createTypeName(field.fieldId)}`;
+                const prefix = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
                 const templates = field.settings?.templates || [];
 
                 const fragments = templates.map(template => {
                     return `...on ${prefix}_${template.gqlTypeName} {
                         ${createFieldsList({ model, fields: template.fields || [] })}
-                        _templateId 
+                        _templateId
                         __typename
                     }`;
                 });

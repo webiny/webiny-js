@@ -1,18 +1,14 @@
-import { PluginCollection } from "@webiny/plugins/types";
 import { createMailerContext as createMailerContextPlugin } from "~/context";
-import { createDummyTransport, DummyTransport } from "~/transports/createDummyTransport";
-import {
-    createSmtpTransport,
-    SmtpTransport,
-    SmtpTransportConfig
-} from "~/transports/createSmtpTransport";
+import { createDummyTransport } from "~/transports/createDummyTransport";
+import { createSmtpTransport, SmtpTransportConfig } from "~/transports/createSmtpTransport";
 import { createTransport } from "~/plugins";
 import { createSettingsModel } from "~/crud/settings/model";
 import { createGroup } from "~/crud/group";
 import { createGraphQL } from "~/graphql";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export { createDummyTransport, createSmtpTransport, createTransport };
-export type { SmtpTransport, SmtpTransportConfig, DummyTransport };
+export * from "~/plugins";
+export * from "~/transports";
 
 export const createMailerContext = (): PluginCollection => {
     const group = createGroup();
@@ -27,7 +23,7 @@ export const createMailerContext = (): PluginCollection => {
          */
         createTransport(async () => {
             const plugin = await createDummyTransport();
-            plugin.name = "dummy-default";
+            plugin.name = "mailer.dummy-default";
             return plugin;
         }),
         /**
@@ -47,7 +43,7 @@ export const createMailerContext = (): PluginCollection => {
                 };
             }
             const plugin = await createSmtpTransport(config);
-            plugin.name = "smtp-default";
+            plugin.name = "mailer.smtp-default";
             return plugin;
         }),
         createMailerContextPlugin()

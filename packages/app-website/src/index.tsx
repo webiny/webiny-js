@@ -27,5 +27,13 @@ export * from "./Page/MainContent";
 export * from "./Page/WebsiteScripts";
 export * from "./Page/ErrorPage";
 export * from "./Menu";
-export * from "./utils/isPrerendering";
-export * from "./utils/getPrerenderId";
+
+// Exporting chosen utils from `@webiny/app` package.
+export * from "@webiny/app/utils/getApiUrl";
+export * from "@webiny/app/utils/getGqlApiUrl";
+export * from "@webiny/app/utils/getHeadlessCmsGqlApiUrl";
+export * from "@webiny/app/utils/getLocaleCode";
+export * from "@webiny/app/utils/getPrerenderId";
+export * from "@webiny/app/utils/getTenantId";
+export * from "@webiny/app/utils/isLocalhost";
+export * from "@webiny/app/utils/isPrerendering";

@@ -1,5 +1,5 @@
-import { CmsModelPlugin, createCmsModel } from "@webiny/api-headless-cms";
-import { CmsModel, CmsGroup } from "@webiny/api-headless-cms/types";
+import { CmsModelPlugin, CmsPrivateModelFull, createCmsModel } from "@webiny/api-headless-cms";
+import { CmsGroup } from "@webiny/api-headless-cms/types";
 
 interface Params {
     group: Pick<CmsGroup, "id" | "name">;
@@ -10,7 +10,7 @@ interface Params {
      */
     locale?: string;
     tenant?: string;
-    modelDefinition: Omit<CmsModel, "locale" | "tenant" | "webinyVersion" | "group">;
+    modelDefinition: Omit<CmsPrivateModelFull, "noValidate" | "group">;
 }
 
 export const modelFactory = (params: Params): CmsModelPlugin => {
@@ -20,6 +20,7 @@ export const modelFactory = (params: Params): CmsModelPlugin => {
         group,
         locale,
         tenant,
-        ...modelDefinition
+        ...modelDefinition,
+        noValidate: true
     });
 };

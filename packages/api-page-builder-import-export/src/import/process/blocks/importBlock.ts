@@ -69,7 +69,7 @@ export async function importBlock({
             JSON.stringify(Object.fromEntries(fileIdToNewFileMap))
         );
 
-        const settings = await context.fileManager.settings.getSettings();
+        const settings = await context.fileManager.getSettings();
 
         const { srcPrefix = "" } = settings || {};
         updateFilesInData({
@@ -79,7 +79,10 @@ export async function importBlock({
         });
 
         block.preview = updateBlockPreviewImage({
-            file: block.preview || {},
+            /**
+             * Casting as this is only a type error.
+             */
+            file: (block.preview as ImageFile) || {},
             fileIdToNewFileMap,
             srcPrefix
         });

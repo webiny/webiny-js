@@ -200,8 +200,10 @@ describe("Page Blocks Test", () => {
                             data: {
                                 invalidFields: {
                                     blockCategory: {
-                                        code: "VALIDATION_FAILED_INVALID_FIELD",
-                                        data: null,
+                                        code: "custom",
+                                        data: {
+                                            path: ["blockCategory"]
+                                        },
                                         message: "Value is required."
                                     }
                                 }

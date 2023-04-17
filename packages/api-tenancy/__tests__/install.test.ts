@@ -9,7 +9,13 @@ describe(`Test "Tenancy" install`, () => {
     beforeEach(async () => {
         tenancy = await createTenancy({
             tenant: null,
-            storageOperations
+            storageOperations,
+            incrementWcpTenants: async () => {
+                return Promise.resolve();
+            },
+            decrementWcpTenants: async () => {
+                return Promise.resolve();
+            }
         });
     });
 
@@ -34,6 +40,7 @@ describe(`Test "Tenancy" install`, () => {
             id: "root",
             name: "Root",
             description: "The top-level Webiny tenant.",
+            tags: [],
             webinyVersion: process.env.WEBINY_VERSION,
             parent: null,
             createdOn: expect.any(String),

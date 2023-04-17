@@ -11,7 +11,7 @@ export interface PageElement {
     type: "element" | "block";
     category: string;
     content: any;
-    preview: File;
+    preview?: Partial<File>;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -23,7 +23,7 @@ export interface PageElement {
 export interface Menu {
     title: string;
     slug: string;
-    description: string;
+    description?: string;
     items: any[];
     createdOn: string;
     createdBy: CreatedBy;
@@ -54,15 +54,15 @@ export type PageSpecialType = "home" | "notFound";
 
 export interface PageSettings {
     social?: {
-        title: string;
-        description: string;
-        image: File;
-        meta: Array<{ property: string; content: string }>;
+        title?: string | null;
+        description?: string | null;
+        image?: File | null;
+        meta?: Array<{ property: string; content: string }>;
     };
     seo?: {
-        title: string;
-        description: string;
-        meta: Array<{ name: string; content: string }>;
+        title?: string | null;
+        description?: string | null;
+        meta?: Array<{ name: string; content: string }>;
     };
     general?: {
         tags?: string[];
@@ -390,10 +390,10 @@ export interface SystemStorageOperations {
  */
 export interface Settings {
     name: string;
-    websiteUrl: string;
-    websitePreviewUrl: string;
-    favicon: File;
-    logo: File;
+    websiteUrl?: string | null;
+    websitePreviewUrl?: string | null;
+    favicon?: Partial<File>;
+    logo?: Partial<File>;
     prerendering: {
         app: {
             url: string;
@@ -403,19 +403,19 @@ export interface Settings {
         };
         meta: Record<string, any>;
     };
-    social: {
-        facebook: string;
-        twitter: string;
-        instagram: string;
-        image: File;
+    social?: {
+        facebook?: string;
+        twitter?: string;
+        instagram?: string;
+        image?: Partial<File>;
     };
-    htmlTags: {
-        header: string;
-        footer: string;
+    htmlTags?: {
+        header?: string;
+        footer?: string;
     };
-    pages: {
-        home: string;
-        notFound: string;
+    pages?: {
+        home?: string | null;
+        notFound?: string | null;
     };
     tenant: string | undefined | false;
     locale: string | undefined | false;
@@ -794,7 +794,7 @@ export interface PageBlock {
     name: string;
     blockCategory: string;
     content: any;
-    preview: File;
+    preview: Partial<File>;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;

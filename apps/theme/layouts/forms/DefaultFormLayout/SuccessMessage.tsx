@@ -2,11 +2,10 @@ import React from "react";
 import { FbFormModel } from "@webiny/app-form-builder/types";
 import { RichTextRenderer } from "@webiny/react-rich-text-renderer";
 import styled from "@emotion/styled";
-import theme from "./../../../theme";
 
 const DEFAULT_MESSAGE = "Thank you for your submission!";
 
-const CheckmarkIcon = styled(({ className }) => (
+const CheckmarkIcon = styled(({ className }: { className?: string }) => (
     <svg
         aria-hidden="true"
         focusable="false"
@@ -28,8 +27,8 @@ const CheckmarkIcon = styled(({ className }) => (
     height: 100px;
 `;
 
-const Heading = styled.div(theme.styles.typography.headings.byId("heading1"));
-const Message = styled.div(theme.styles.typography.paragraphs.byId("paragraph1"));
+const Heading = styled.div(props => props.theme.styles.typography["heading1"]);
+const Message = styled.div(props => props.theme.styles.typography["paragraph1"]);
 
 const Wrapper = styled.div`
     width: 100%;

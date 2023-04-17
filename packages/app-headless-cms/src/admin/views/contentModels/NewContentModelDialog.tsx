@@ -1,6 +1,4 @@
-import React, { useCallback } from "react";
-import gql from "graphql-tag";
-import get from "lodash/get";
+import React, { useCallback, useMemo } from "react";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
@@ -20,39 +18,19 @@ import {
     CreateCmsModelMutationVariables,
     ListMenuCmsGroupsQueryResponse
 } from "../../viewsGraphql";
-import { CmsGroup } from "~/types";
+import { CmsModel } from "~/types";
 import { CmsGroupOption } from "./types";
-import lodashUpperFirst from "lodash/upperFirst";
-import lodashCamelCase from "lodash/camelCase";
 import { Dialog } from "~/admin/components/Dialog";
+import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator";
+import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
+import { Checkbox } from "@webiny/ui/Checkbox";
+import { IconPicker } from "~/admin/components/IconPicker";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
-
-/**
- * This list is to disallow creating models that might interfere with GraphQL schema creation.
- * Add more if required.
- */
-const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
 
 export interface NewContentModelDialogProps {
     open: boolean;
     onClose: UID.DialogOnClose;
-}
-
-const SCHEMA_TYPES = gql`
-    query ListSchemaTypes {
-        __schema {
-            types {
-                name
-            }
-        }
-    }
-`;
-
-interface SchemaTypes {
-    __schema: {
-        types: { name: string }[];
-    };
 }
 
 interface CmsModelData {
@@ -99,53 +77,34 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         }
     );
 
-    const contentModelGroups = get(listMenuGroupsQuery, "data.listContentModelGroups.data", []).map(
-        (item: CmsGroup): CmsGroupOption => {
+    const groups = useMemo(() => {
+        return listMenuGroupsQuery.data?.listContentModelGroups?.data || [];
+    }, [listMenuGroupsQuery.data]);
+
+    const contentModelGroups = useMemo(() => {
+        return groups.map((item): CmsGroupOption => {
             return {
                 value: item.id,
                 label: item.name
             };
-        }
-    );
+        });
+    }, [groups]);
 
-    const nameValidator = useCallback(
-        async (name: string): Promise<boolean> => {
-            const target = (name || "").trim();
-            if (!target.charAt(0).match(/[a-zA-Z]/)) {
-                throw new Error("Model name can't start with a number.");
-            }
+    const models = useMemo(() => {
+        return groups.reduce<CmsModel[]>((collection, group) => {
+            collection.push(...group.contentModels);
+            return collection;
+        }, []);
+    }, [groups]);
 
-            for (const ending of disallowedModelIdEndingList) {
-                const re = new RegExp(`${ending}$`, "i");
-                const matched = target.match(re);
-                if (matched === null) {
-                    continue;
-                }
-                throw new Error(`Model must not end with "${ending}".`);
-            }
+    const nameValidator = useCallback(createNameValidator({ models }), [models]);
 
-            // Validate GraphQL Schema type
-            const { data } = await client.query<SchemaTypes>({
-                query: SCHEMA_TYPES,
-                fetchPolicy: "network-only"
-            });
+    const apiNameValidator = useCallback(createApiNameValidator({ client, models }), [
+        client,
+        models
+    ]);
 
-            const types = data.__schema.types.map(t => t.name);
-
-            const modelId = lodashUpperFirst(lodashCamelCase(name));
-
-            if (types.includes(modelId)) {
-                throw new Error(
-                    `"${name}" type already exists in the GraphQL schema. Please pick a different name.`
-                );
-            }
-
-            return true;
-        },
-        [client]
-    );
-
-    const group = contentModelGroups?.length > 0 ? contentModelGroups[0].value : null;
+    const group = contentModelGroups.length > 0 ? contentModelGroups[0].value : null;
 
     const onSubmit = async (data: CmsModelData) => {
         setLoading(true);
@@ -182,8 +141,38 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                         >
                                             <Input
                                                 label={t`Name`}
-                                                description={t`The name of the content model. Use the singular form, e.g. Person, not Persons.`}
+                                                description={t`The name of the content model. Use the singular form, e.g. Author Category, not Author Categories.`}
                                                 data-testid="cms.newcontentmodeldialog.name"
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name={"singularApiName"}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                apiNameValidator
+                                            ]}
+                                        >
+                                            <Input
+                                                label={t`Singular API Name`}
+                                                description={t`The API name of the content model. For example: AuthorCategory.`}
+                                                data-testid="cms.newcontentmodeldialog.singularApiName"
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name={"pluralApiName"}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                apiNameValidator
+                                            ]}
+                                        >
+                                            <Input
+                                                label={t`Plural API Name`}
+                                                description={t`The plural API name of the content model. For example: AuthorCategories.`}
+                                                data-testid="cms.newcontentmodeldialog.pluralApiName"
                                             />
                                         </Bind>
                                     </Cell>
@@ -201,6 +190,14 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
+                                        <Bind name="icon">
+                                            <IconPicker
+                                                label={t`Icon`}
+                                                description={t`Choose an icon to represent the model.`}
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
                                         <Bind name="description">
                                             {props => (
                                                 <Input
@@ -212,6 +209,15 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                     data-testid="cms.newcontentmodeldialog.description"
                                                 />
                                             )}
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind name={"defaultFields"} defaultValue={true}>
+                                            <Checkbox
+                                                description={t`Create model with default title (text), description (long text) and image (file) fields`}
+                                                label={t`Create model with default fields`}
+                                                data-testid="cms.newcontentmodeldialog.defaultfields"
+                                            />
                                         </Bind>
                                     </Cell>
                                 </Grid>

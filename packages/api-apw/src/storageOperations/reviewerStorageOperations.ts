@@ -11,27 +11,23 @@ export const createReviewerStorageOperations = ({
     security
 }: CreateApwStorageOperationsParams): ApwReviewerStorageOperations => {
     const getReviewerModel = async () => {
-        security.disableAuthorization();
-        try {
-            const model = await cms.getModel("apwReviewerModelDefinition");
-            if (!model) {
-                throw new WebinyError(
-                    "Could not find `apwReviewerModelDefinition` model.",
-                    "MODEL_NOT_FOUND_ERROR"
-                );
-            }
-            return model;
-        } catch (ex) {
-            throw ex;
-        } finally {
-            security.enableAuthorization();
+        const model = await security.withoutAuthorization(async () => {
+            return cms.getModel("apwReviewerModelDefinition");
+        });
+        if (!model) {
+            throw new WebinyError(
+                "Could not find `apwReviewerModelDefinition` model.",
+                "MODEL_NOT_FOUND_ERROR"
+            );
         }
+        return model;
     };
     const getReviewer: ApwReviewerStorageOperations["getReviewer"] = async ({ id }) => {
         const model = await getReviewerModel();
-        security.disableAuthorization();
-        const entry = await cms.getEntryById(model, id);
-        security.enableAuthorization();
+
+        const entry = await security.withoutAuthorization(async () => {
+            return cms.getEntryById(model, id);
+        });
         return getFieldValues(entry, baseFields);
     };
     return {
@@ -39,21 +35,22 @@ export const createReviewerStorageOperations = ({
         getReviewer,
         async listReviewers(params) {
             const model = await getReviewerModel();
-            security.disableAuthorization();
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...params.where
-                }
+
+            const [entries, meta] = await security.withoutAuthorization(async () => {
+                return cms.listLatestEntries(model, {
+                    ...params,
+                    where: {
+                        ...params.where
+                    }
+                });
             });
-            security.enableAuthorization();
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createReviewer(params) {
             const model = await getReviewerModel();
-            security.disableAuthorization();
-            const entry = await cms.createEntry(model, params.data);
-            security.enableAuthorization();
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.createEntry(model, params.data);
+            });
             return getFieldValues(entry, baseFields);
         },
         async updateReviewer(params) {
@@ -64,19 +61,20 @@ export const createReviewerStorageOperations = ({
              */
             const existingEntry = await getReviewer({ id: params.id });
 
-            security.disableAuthorization();
-            const entry = await cms.updateEntry(model, params.id, {
-                ...existingEntry,
-                ...params.data
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.updateEntry(model, params.id, {
+                    ...existingEntry,
+                    ...params.data
+                });
             });
-            security.enableAuthorization();
             return getFieldValues(entry, baseFields);
         },
         async deleteReviewer(params) {
             const model = await getReviewerModel();
-            security.disableAuthorization();
-            await cms.deleteEntry(model, params.id);
-            security.enableAuthorization();
+
+            await security.withoutAuthorization(async () => {
+                return cms.deleteEntry(model, params.id);
+            });
             return true;
         }
     };

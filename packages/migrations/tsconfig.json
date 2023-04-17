@@ -7,13 +7,21 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
+      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/data-migration": ["../data-migration/src"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/ioc": ["../ioc/src"]
+      "@webiny/ioc": ["../ioc/src"],
+      "@webiny/utils": ["../utils/src"]
     }
   },
   "references": [
+    {
+      "path": "../api-elasticsearch"
+    },
     {
       "path": "../data-migration"
     },
@@ -21,10 +29,16 @@
       "path": "../db-dynamodb"
     },
     {
+      "path": "../error"
+    },
+    {
       "path": "../handler-aws"
     },
     {
       "path": "../ioc"
+    },
+    {
+      "path": "../utils"
     }
   ]
 }

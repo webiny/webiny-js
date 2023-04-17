@@ -14,22 +14,23 @@ import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPl
 import { FileElasticsearchSortModifierPlugin } from "~/plugins/FileElasticsearchSortModifierPlugin";
 import { FileElasticsearchBodyModifierPlugin } from "~/plugins/FileElasticsearchBodyModifierPlugin";
 import { FileElasticsearchQueryModifierPlugin } from "~/plugins/FileElasticsearchQueryModifierPlugin";
-import { FileManagerContext } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface CreateElasticsearchBodyParams {
-    context: FileManagerContext;
+    plugins: PluginsContainer;
     where: FileManagerFilesStorageOperationsListParamsWhere;
     limit: number;
     after?: string | null;
     sort: string[];
+    getTenantId: () => string;
 }
 
 const createElasticsearchQuery = (
     params: CreateElasticsearchBodyParams & {
-        plugins: Record<string, FileElasticsearchFieldPlugin>;
+        fieldPlugins: Record<string, FileElasticsearchFieldPlugin>;
     }
 ) => {
-    const { context, where: initialWhere, plugins: fieldPlugins } = params;
+    const { plugins, where: initialWhere, fieldPlugins, getTenantId } = params;
     const query: ElasticsearchBoolQueryConfig = {
         must: [],
         filter: [],
@@ -39,10 +40,7 @@ const createElasticsearchQuery = (
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(
-        context.plugins,
-        initialWhere.locale
-    );
+    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(plugins, initialWhere.locale);
 
     const where: Partial<FileManagerFilesStorageOperationsListParamsWhere> = {
         ...initialWhere
@@ -54,8 +52,7 @@ const createElasticsearchQuery = (
      */
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
     if (sharedIndex) {
-        const tenant = context.tenancy.getCurrentTenant();
-        query.must.push({ term: { "tenant.keyword": tenant.id } });
+        query.must.push({ term: { "tenant.keyword": getTenantId() } });
     }
     /**
      * Remove so it is not applied again later.
@@ -110,9 +107,9 @@ const createElasticsearchQuery = (
 export const createElasticsearchBody = (
     params: CreateElasticsearchBodyParams
 ): ElasticTsSearchBody => {
-    const { context, sort: initialSort, limit: initialLimit, after, where } = params;
+    const { plugins, sort: initialSort, limit: initialLimit, after, where } = params;
 
-    const fieldPlugins = context.plugins
+    const fieldPlugins = plugins
         .byType<FileElasticsearchFieldPlugin>(FileElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
@@ -123,7 +120,7 @@ export const createElasticsearchBody = (
 
     const query = createElasticsearchQuery({
         ...params,
-        plugins: fieldPlugins
+        fieldPlugins
     });
 
     const sort = createSort({
@@ -131,7 +128,7 @@ export const createElasticsearchBody = (
         fieldPlugins
     });
 
-    const queryModifiers = context.plugins.byType<FileElasticsearchQueryModifierPlugin>(
+    const queryModifiers = plugins.byType<FileElasticsearchQueryModifierPlugin>(
         FileElasticsearchQueryModifierPlugin.type
     );
     for (const plugin of queryModifiers) {
@@ -141,7 +138,7 @@ export const createElasticsearchBody = (
         });
     }
 
-    const sortModifiers = context.plugins.byType<FileElasticsearchSortModifierPlugin>(
+    const sortModifiers = plugins.byType<FileElasticsearchSortModifierPlugin>(
         FileElasticsearchSortModifierPlugin.type
     );
     for (const plugin of sortModifiers) {
@@ -170,9 +167,10 @@ export const createElasticsearchBody = (
         sort
     };
 
-    const bodyModifiers = context.plugins.byType<FileElasticsearchBodyModifierPlugin>(
+    const bodyModifiers = plugins.byType<FileElasticsearchBodyModifierPlugin>(
         FileElasticsearchBodyModifierPlugin.type
     );
+
     for (const plugin of bodyModifiers) {
         plugin.modifyBody({
             body

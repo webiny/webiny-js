@@ -1,5 +1,5 @@
 import { Table } from "dynamodb-toolbox";
-import pick from "lodash.pick";
+import pick from "lodash/pick";
 import { createLegacyEntity, createStandardEntity } from "~/utils";
 
 const attributes: Parameters<typeof createLegacyEntity>[2] = {

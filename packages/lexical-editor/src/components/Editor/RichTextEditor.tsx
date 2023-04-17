@@ -24,7 +24,7 @@ import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNo
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { ClassNames } from "@emotion/core";
+import { ClassNames } from "@emotion/react";
 import { toThemeEmotionMap } from "~/utils/toThemeEmotionMap";
 
 export interface RichTextEditorProps {

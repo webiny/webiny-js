@@ -5,9 +5,10 @@ import S3 from "aws-sdk/clients/s3";
 import { validation } from "@webiny/validation";
 import { PresignedPostPayloadData, PresignedPostPayloadDataResponse } from "~/types";
 import { FileManagerSettings } from "@webiny/api-file-manager/types";
+import { mimeTypes } from "./mimeTypes";
 
 const S3_BUCKET = process.env.S3_BUCKET;
-const UPLOAD_MAX_FILE_SIZE_DEFAULT = 26214400; // 25MB
+const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; // 1TB
 
 const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
     try {
@@ -19,10 +20,10 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
     }
 };
 
-export default async (
+export const getPresignedPostPayload = (
     data: PresignedPostPayloadData,
     settings: FileManagerSettings
-): Promise<PresignedPostPayloadDataResponse> => {
+): PresignedPostPayloadDataResponse => {
     // If type is missing, let's use the default "application/octet-stream" type,
     // which is also the default type that the Amazon S3 would use.
     if (!data.type) {
@@ -34,18 +35,26 @@ export default async (
         throw Error(`File's content type could not be resolved.`);
     }
 
-    const id = mdbid();
-    let key = sanitizeFilename(data.name);
-    if (key) {
+    const id = data.id || mdbid();
+    let key = data.key || sanitizeFilename(data.name);
+
+    // We must prefix file key with file ID.
+    if (!key.startsWith(id)) {
         key = id + "/" + key;
     }
 
     if (data.keyPrefix) {
-        key = `${sanitizeFilename(data.keyPrefix)}${key}`;
+        key = data.keyPrefix + key;
     }
 
     // Replace all whitespace.
     key = key.replace(/\s/g, "");
+
+    // Make sure file key contains a file extension
+    const extensions = mimeTypes[contentType];
+    if (!extensions.some(ext => key.endsWith(`.${ext}`))) {
+        key = key + `.${extensions[0]}`;
+    }
 
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(
@@ -56,7 +65,7 @@ export default async (
     const params = {
         Expires: 60,
         Bucket: S3_BUCKET,
-        Conditions: [["content-length-range", uploadMinFileSize, uploadMaxFileSize]], // 0 Bytes - 25MB
+        Conditions: [["content-length-range", uploadMinFileSize, uploadMaxFileSize]],
         Fields: {
             "Content-Type": contentType,
             key

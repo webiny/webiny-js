@@ -30,9 +30,9 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/pubsub": "0.0.0",
     "@webiny/validation": "0.0.0",
     "aws-sdk": "^2.971.0",
-    "commodo-fields-object": "^1.0.6",
     "object-hash": "^2.1.1"
   },
   "devDependencies": {

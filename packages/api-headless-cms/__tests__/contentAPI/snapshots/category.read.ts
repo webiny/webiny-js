@@ -2,26 +2,26 @@ export default /* GraphQL */ `
     """
     Product category
     """
-    type Category {
+    type CategoryApiNameWhichIsABitDifferentThanModelId {
         id: ID!
         entryId: String!
         modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
         title: String
         slug: String
     }
 
-    input CategoryGetWhereInput {
+    input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInput {
         id: ID
         entryId: String
         title: String
         slug: String
     }
 
-    input CategoryListWhereInput {
+    input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -67,11 +67,11 @@ export default /* GraphQL */ `
         slug_contains: String
         slug_not_contains: String
 
-        AND: [CategoryListWhereInput!]
-        OR: [CategoryListWhereInput!]
+        AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
+        OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
     }
 
-    enum CategoryListSorter {
+    enum CategoryApiNameWhichIsABitDifferentThanModelIdListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -84,25 +84,27 @@ export default /* GraphQL */ `
         slug_DESC
     }
 
-    type CategoryResponse {
-        data: Category
+    type CategoryApiNameWhichIsABitDifferentThanModelIdResponse {
+        data: CategoryApiNameWhichIsABitDifferentThanModelId
         error: CmsError
     }
 
-    type CategoryListResponse {
-        data: [Category]
+    type CategoryApiNameWhichIsABitDifferentThanModelIdListResponse {
+        data: [CategoryApiNameWhichIsABitDifferentThanModelId]
         meta: CmsListMeta
         error: CmsError
     }
 
     extend type Query {
-        getCategory(where: CategoryGetWhereInput!): CategoryResponse
+        getCategoryApiNameWhichIsABitDifferentThanModelId(
+            where: CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInput!
+        ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        listCategories(
-            where: CategoryListWhereInput
-            sort: [CategoryListSorter]
+        listCategoriesApiModel(
+            where: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput
+            sort: [CategoryApiNameWhichIsABitDifferentThanModelIdListSorter]
             limit: Int
             after: String
-        ): CategoryListResponse
+        ): CategoryApiNameWhichIsABitDifferentThanModelIdListResponse
     }
 `;

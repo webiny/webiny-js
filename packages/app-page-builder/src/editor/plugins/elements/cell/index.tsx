@@ -1,5 +1,6 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
+import set from "lodash/set";
 import Cell from "./Cell";
 import {
     DisplayMode,
@@ -19,6 +20,7 @@ import {
     updateElementAction
 } from "~/editor/recoil/actions";
 import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
+import { isLegacyRenderingEngine } from "~/utils";
 
 import lodashGet from "lodash/get";
 
@@ -31,6 +33,13 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         "pb-editor-page-element-style-settings-padding",
         "pb-editor-page-element-style-settings-margin"
     ];
+
+    if (!isLegacyRenderingEngine) {
+        defaultSettings.push(
+            "pb-editor-page-element-style-settings-horizontal-align-flex",
+            "pb-editor-page-element-style-settings-cell-vertical-align"
+        );
+    }
 
     const elementType = kebabCase(args.elementType || "cell");
 
@@ -71,6 +80,15 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
                     }
                 }
             };
+
+            if (!isLegacyRenderingEngine) {
+                set(
+                    defaultValue,
+                    "data.settings.horizontalAlignFlex",
+                    createInitialPerDeviceSettingValue("flex-start", DisplayMode.DESKTOP)
+                );
+            }
+
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         onReceived({ source, position, target, state, meta }) {

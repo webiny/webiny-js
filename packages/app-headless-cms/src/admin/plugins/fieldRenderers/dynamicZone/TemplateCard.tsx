@@ -52,7 +52,7 @@ interface TemplateCardProps {
     onTemplate: (template: CmsDynamicZoneTemplate) => void;
 }
 
-export const TemplateCard = ({ template, onTemplate }: TemplateCardProps) => {
+export const TemplateCard: React.VFC<TemplateCardProps> = ({ template, onTemplate }) => {
     return (
         <CardContainer>
             <CardIcon>
