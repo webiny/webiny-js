@@ -43,7 +43,7 @@ export const Entries: React.VFC<Props> = props => {
     );
 
     if (entries.length === 0) {
-        return null;
+        return <>No entries found.</>;
     }
     return (
         <Container className={"entries"}>
