@@ -23,11 +23,11 @@ To run tests api-file-manager-aco tests with targeted storage operations loaded 
 ### DynamoDB
 
 ```
-yarn test packages/api-file-manager-aco ---keyword=cms:ddb --keyword=aco:base --keyword=fm:ddb --keyword=fm:base --keyword=api-file-manager-aco:base
+yarn test packages/api-file-manager-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=fm:ddb --keyword=fm:base --keyword=api-file-manager-aco:base
 ```
 
-#### Note
+### DynamoDB + ElasticSearch
 
-> All the tests in `@webiny/api-file-manager-aco` package are being tested against ddb-only storage operations because
-current jest setup doesn't allow usage of more than one storage operations at a time with the help of --keyword flag.
-We should revisit these tests once we have the ability to load multiple storage operations in the jest setup.
+```
+yarn test packages/api-file-manager-aco/* --keyword=cms:ddb-es --keyword=aco:base --keyword=fm:ddb-es --keyword=fm:base --keyword=api-file-manager-aco:base
+```

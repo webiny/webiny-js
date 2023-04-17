@@ -1,18 +1,17 @@
 import React from "react";
 import { FormRenderPropParamsSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
-import theme from "./../../../theme";
 
 export const Wrapper = styled.div<{ fullWidth: boolean }>`
-    ${theme.styles.elements["button"]["primary"]}
+    ${props => props.theme.styles.elements["button"]["primary"]}
     .button-body {
         width: ${props => (props.fullWidth ? "100%" : "auto")};
         margin-left: auto;
+
         &:disabled {
             opacity: 0.5;
         }
     }
-]);
 `;
 
 interface Props {

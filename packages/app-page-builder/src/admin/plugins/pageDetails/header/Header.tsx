@@ -1,47 +1,112 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Typography } from "@webiny/ui/Typography";
+import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
+import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
+import { ReactComponent as LinkIcon } from "@material-design-icons/svg/round/link.svg";
 import { PbPageData } from "~/types";
 
-const HeaderTitle = styled("div")({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderBottom: "1px solid var(--mdc-theme-on-background)",
-    color: "var(--mdc-theme-text-primary-on-background)",
-    background: "var(--mdc-theme-surface)",
-    paddingTop: 10,
-    paddingBottom: 9,
-    paddingLeft: 24,
-    paddingRight: 24
-});
+const HeaderTitle = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--mdc-theme-on-background);
+    color: var(--mdc-theme-text-primary-on-background);
+    background: var(--mdc-theme-surface);
+    padding-top: 10px;
+    padding-bottom: 9px;
+    padding-left: 24px;
+    padding-right: 24px;
+`;
 
-const PageTitle = styled("div")({
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis"
-});
+const PageInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+`;
 
-const HeaderActions = styled("div")({
-    justifyContent: "flex-end",
-    marginRight: "-15px",
-    marginLeft: "10px",
-    display: "flex",
-    alignItems: "center"
-});
+const PageTitle = styled.div`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    span {
+        font-weight: bold;
+    }
+`;
+
+const PageLink = styled.div`
+    display: flex;
+    align-items: center;
+    height: 24px;
+
+    span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+
+    svg {
+        display: none;
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        margin-left: 8px;
+        cursor: pointer;
+    }
+
+    :hover svg {
+        display: block;
+    }
+`;
+
+const HeaderActions = styled.div`
+    justify-content: flex-end;
+    margin-right: -15px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+`;
 
 interface HeaderProps {
     page: PbPageData;
 }
 const Header: React.FC<HeaderProps> = props => {
     const { page } = props;
+    const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
+        getWebsiteUrl(),
+        refreshSiteStatus
+    );
+
+    // We must prevent opening in new tab - Cypress doesn't work with new tabs.
+    const target = "Cypress" in window ? "_self" : "_blank";
+    const url = getPageUrl(page);
+
+    const handlePreviewClick = useCallback(() => {
+        if (isSiteRunning) {
+            window.open(url, target, "noopener");
+        } else {
+            showConfigureWebsiteUrlDialog();
+        }
+    }, [url, isSiteRunning]);
+
     return (
         <React.Fragment>
             <HeaderTitle>
-                <PageTitle>
-                    <Typography use="headline5">{page.title}</Typography>
-                </PageTitle>
+                <PageInfo>
+                    <PageTitle>
+                        <Typography use="headline6">{page.title}</Typography>
+                    </PageTitle>
+                    <PageLink>
+                        <Typography use="caption">{url}</Typography>
+                        <LinkIcon onClick={handlePreviewClick} />
+                    </PageLink>
+                </PageInfo>
                 <HeaderActions>
                     {renderPlugins("pb-page-details-header-left", props)}
                     {renderPlugins("pb-page-details-header-right", props)}

@@ -27,6 +27,7 @@ module.exports = async (params, context) => {
             lambdaClient,
             functionName: apiOutput["migrationLambdaArn"],
             payload: {
+                version: process.env.WEBINY_VERSION || context.version,
                 pattern: params.pattern
             },
             statusCallback: ({ status, migrations }) => {
