@@ -112,7 +112,12 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
             ),
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
             meta: meta[folderId] || {},
-            listItems(params: { after?: string; limit?: number; sort?: ListDbSort }) {
+            listItems(params: {
+                after?: string;
+                limit?: number;
+                sort?: ListDbSort;
+                search?: string;
+            }) {
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (params.sort && Object.values(params.sort).length > 0) {
                     setSort(validateOrGetDefaultDbSort(params.sort));

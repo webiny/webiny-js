@@ -151,6 +151,7 @@ export interface ListSearchRecordsQueryVariables {
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
+    search?: string;
 }
 
 export interface ListTagsResponse {

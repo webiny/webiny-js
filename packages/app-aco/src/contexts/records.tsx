@@ -47,6 +47,7 @@ interface SearchRecordsContext {
         limit?: number;
         after?: string;
         sort?: ListDbSort;
+        search?: string;
     }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
@@ -87,7 +88,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         loading,
         meta,
         async listRecords(params) {
-            const { type, folderId, after, limit, sort: sorting } = params;
+            const { type, folderId, after, limit, sort: sorting, search } = params;
 
             /**
              * Both folderId and type are optional to init `useRecords` but required to list records:
@@ -126,7 +127,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { type, location: { folderId }, limit, after, sort },
+                        variables: { type, location: { folderId }, limit, after, sort, search },
                         fetchPolicy: "network-only"
                     })
             );
