@@ -52,7 +52,7 @@ export const getPresignedPostPayload = (
 
     // Make sure file key contains a file extension
     const extensions = mimeTypes[contentType];
-    if (!extensions.some(ext => key.endsWith(`.${ext}`))) {
+    if (extensions && !extensions.some(ext => key.endsWith(`.${ext}`))) {
         key = key + `.${extensions[0]}`;
     }
 
