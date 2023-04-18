@@ -45,6 +45,7 @@ import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 interface Params {
     plugins?: PluginCollection;
+    withFields?: string[];
 }
 
 export const useHandler = (params: Params) => {
@@ -227,15 +228,21 @@ export const useHandler = (params: Params) => {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
         // Pages
-        async getPage(variables: Record<string, any>, fields: string[] = []) {
+        async getPage(variables: Record<string, any>, fields: string[] = params.withFields || []) {
             return invoke({ body: { query: createPageGetGraphQl({ fields }), variables } });
         },
-        async getPublishedPage(variables: Record<string, any>, fields: string[] = []) {
+        async getPublishedPage(
+            variables: Record<string, any>,
+            fields: string[] = params.withFields || []
+        ) {
             return invoke({
                 body: { query: createPageGetPublishedGraphQl({ fields }), variables }
             });
         },
-        async createPage(variables: Record<string, any>, fields: string[] = []) {
+        async createPage(
+            variables: Record<string, any>,
+            fields: string[] = params.withFields || []
+        ) {
             return invoke({
                 body: {
                     query: createPageCreateGraphQl({
@@ -245,7 +252,10 @@ export const useHandler = (params: Params) => {
                 }
             });
         },
-        async updatePage(variables: Record<string, any>, fields: string[] = []) {
+        async updatePage(
+            variables: Record<string, any>,
+            fields: string[] = params.withFields || []
+        ) {
             return invoke({ body: { query: createPageUpdateGraphQl({ fields }), variables } });
         },
         async publishPage(variables: Record<string, any>) {
@@ -257,7 +267,10 @@ export const useHandler = (params: Params) => {
         async deletePage(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
         },
-        async listPages(variables: Record<string, any> = {}, fields: string[] = []) {
+        async listPages(
+            variables: Record<string, any> = {},
+            fields: string[] = params.withFields || []
+        ) {
             return invoke({
                 body: {
                     query: createPageListGraphQl({
