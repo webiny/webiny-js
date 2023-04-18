@@ -172,12 +172,10 @@ export const createPageTemplatesCrud = (
         async createPageTemplate(this: PageBuilderContextObject, input: PageTemplateInput) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const existingPageTemplate = await this.getPageTemplate(
-                { where: { slug: input.slug } },
-                {
-                    auth: false
-                }
-            );
+            const existingPageTemplate = await this.getPageTemplate({
+                where: { slug: input.slug }
+            });
+
             if (existingPageTemplate) {
                 throw new NotFoundError(`Page Template with slug "${input.slug}" already exists.`);
             }
