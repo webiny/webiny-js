@@ -5,7 +5,11 @@ import {
     UpdateSearchRecordParams
 } from "@webiny/api-aco/record/record.types";
 import { Page } from "@webiny/api-page-builder/types";
-import { PbAcoContext, PbPageRecordData } from "~/types";
+import { PbAcoContext, PbPageRecordData, PbCreatePayload, PbUpdatePayload } from "~/types";
+import {
+    PageBuilderAcoModifyCreatePayloadPlugin,
+    PageBuilderAcoModifyUpdatePayloadPlugin
+} from "~/plugins";
 
 export const createPageRecordPayload = async (
     context: PbAcoContext,
@@ -18,7 +22,7 @@ export const createPageRecordPayload = async (
         folderId: meta?.location?.folderId || ROOT_FOLDER
     };
 
-    return {
+    const payload: PbCreatePayload = {
         id: pid,
         type: PB_PAGE_TYPE,
         title,
@@ -37,6 +41,17 @@ export const createPageRecordPayload = async (
             path
         }
     };
+    const plugins = context.plugins.byType<PageBuilderAcoModifyCreatePayloadPlugin>(
+        PageBuilderAcoModifyCreatePayloadPlugin.type
+    );
+    for (const plugin of plugins) {
+        await plugin.modifyPayload({
+            plugins: context.plugins,
+            payload,
+            page
+        });
+    }
+    return payload;
 };
 
 export const updatePageRecordPayload = async (
@@ -46,7 +61,7 @@ export const updatePageRecordPayload = async (
     const { id, pid, title, createdOn, createdBy, savedOn, status, version, locked, path } = page;
     const content = await context.pageBuilderAco.getSearchablePageContent(page);
 
-    return {
+    const payload: PbUpdatePayload = {
         title,
         content,
         data: {
@@ -62,4 +77,15 @@ export const updatePageRecordPayload = async (
             path
         }
     };
+    const plugins = context.plugins.byType<PageBuilderAcoModifyUpdatePayloadPlugin>(
+        PageBuilderAcoModifyUpdatePayloadPlugin.type
+    );
+    for (const plugin of plugins) {
+        await plugin.modifyPayload({
+            plugins: context.plugins,
+            payload,
+            page
+        });
+    }
+    return payload;
 };
