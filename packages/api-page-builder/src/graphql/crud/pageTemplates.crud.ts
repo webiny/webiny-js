@@ -68,6 +68,7 @@ export interface CreatePageTemplatesCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createPageTemplatesCrud = (
     params: CreatePageTemplatesCrudParams
 ): PageTemplatesCrud => {
@@ -399,6 +400,10 @@ export const createPageTemplatesCrud = (
                 throw new NotFoundError(`Page "${pageId}" was not found!`);
             }
 
+            // Here we gather template variables by going through all the blocks in the page and propagating
+            // their variables to "template level" variables (`content.data.template.variables`). Note that
+            // blocks are always located in page content's root. That's why we're not recursively iterating
+            // through all the page content elements.
             const templateVariables: Array<{ blockId: string; variables?: PageBlockVariable[] }> =
                 [];
 
