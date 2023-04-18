@@ -8,7 +8,7 @@ export type AppFileManagerStorageS3 = Plugin & {
         file: File,
         options: {
             apolloClient: ApolloClient<Record<string, any>>;
-            onProgress?: (progress: number) => void;
+            onProgress?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
         }
     ): Promise<any>;
 };

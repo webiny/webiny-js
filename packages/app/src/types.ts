@@ -20,7 +20,7 @@ export interface FileItem {
 
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
-    onProgress?: (progress: number) => void;
+    onProgress?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
 };
 
 export type UiStatePlugin = Plugin & {

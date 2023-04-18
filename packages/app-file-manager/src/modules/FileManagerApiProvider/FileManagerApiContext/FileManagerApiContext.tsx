@@ -51,6 +51,7 @@ export interface FileManagerApiProviderProps {
 
 interface UploadFileOptions {
     tags?: string[];
+    onProgress?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
 }
 
 interface ListTagsOptions {
@@ -189,7 +190,10 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
      * @param File file
      */
     const uploadFile = async (file: File, options: UploadFileOptions = {}) => {
-        const response = await getFileUploader()(file, { apolloClient: client });
+        const response = await getFileUploader()(file, {
+            apolloClient: client,
+            onProgress: options.onProgress
+        });
 
         const tags = options?.tags || [];
 

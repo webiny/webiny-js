@@ -1,44 +1,51 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { CircularProgress } from "@webiny/ui/Progress";
 
-const StatusWrapper = styled("div")({
-    color: "var(--mdc-theme-primary)",
-    position: "absolute",
-    right: 0,
-    bottom: 10,
-    marginRight: 10,
-    display: "flex",
-    alignItems: "center",
-    "> div": {
-        display: "inline-block"
+const StatusWrapper = styled.div`
+    color: var(--mdc-theme-on-surface);
+    background-color: #fff;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    > div {
+        position: relative;
+        width: 100%;
+        height: 100%;
     }
-});
+`;
 
-const CircularProgressHolder = styled("div")({
-    position: "relative",
-    height: 12,
-    width: 12
-});
+const ProgressBar = styled.div<{ width: string }>`
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    height: 100%;
+    background-color: var(--mdc-theme-secondary);
+    width: ${props => props.width || 0}%;
+`;
 
-const UploadingLabel = styled("div")({
-    marginRight: 5
-});
+const UploadingLabel = styled.div`
+    position: absolute;
+    z-index: 2;
+    padding: 10px;
+`;
 
 export interface UploadStatusProps {
-    uploading: boolean;
+    progress: number;
+    numberOfFiles: number;
 }
-const UploadStatus: React.FC<UploadStatusProps> = ({ uploading }) => {
-    if (!uploading) {
-        return null;
-    }
-
+const UploadStatus: React.FC<UploadStatusProps> = ({ numberOfFiles, progress }) => {
     return (
         <StatusWrapper>
-            <UploadingLabel>Uploading...</UploadingLabel>
-            <CircularProgressHolder>
-                <CircularProgress size={10} spinnerWidth={1} />
-            </CircularProgressHolder>
+            <div>
+                <UploadingLabel>
+                    Uploading {numberOfFiles} file(s) ({progress.toFixed()}%)...
+                </UploadingLabel>
+                <ProgressBar width={progress.toFixed()} />
+            </div>
         </StatusWrapper>
     );
 };

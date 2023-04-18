@@ -1,5 +1,6 @@
 import React from "react";
 import mime from "mime/lite";
+import styled from "@emotion/styled";
 
 mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
@@ -18,6 +19,10 @@ const getUniqueFilePlugins = (accept: string[]): string[] => {
     return Object.keys(exts);
 };
 
+const FileTypesLabel = styled.div`
+    padding: 10px;
+`;
+
 export interface SupportedFileTypesProps {
     accept: string[];
 }
@@ -28,13 +33,13 @@ const SupportedFileTypes: React.FC<SupportedFileTypesProps> = ({ accept }) => {
     }
 
     if (accept.length === 0) {
-        return <span>Showing all file extensions.</span>;
+        return <FileTypesLabel>Showing all file extensions.</FileTypesLabel>;
     }
 
     return (
-        <span>
+        <FileTypesLabel>
             Showing the following file extensions: {getUniqueFilePlugins(accept).join(", ")}.
-        </span>
+        </FileTypesLabel>
     );
 };
 

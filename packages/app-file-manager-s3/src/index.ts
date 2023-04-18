@@ -55,9 +55,8 @@ export default () =>
                 xhr.upload.addEventListener(
                     "progress",
                     event => {
-                        const percent = (100 * event.loaded) / event.total;
                         if (onProgress) {
-                            onProgress(percent);
+                            onProgress(event);
                         }
                     },
                     false
