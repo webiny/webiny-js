@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import get from "lodash/get";
 import set from "lodash/set";
@@ -10,6 +10,7 @@ import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { useElementById } from "~/editor/hooks/useElementById";
 // Components
 import Accordion from "../components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -37,7 +38,9 @@ const CellSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = 
 }) => {
     const { displayMode, config } = useDisplayMode();
     const propName = `${DATA_NAMESPACE}.${displayMode}.absolutePositioning`;
+    const gridPropName = `data.settings.height.${displayMode}.value`;
     const [element] = useActiveElement<PbEditorElement>();
+    const [gridElement] = useElementById(element?.parent || null);
     const updateElement = useUpdateElement();
 
     const fallbackValue = useMemo(
@@ -50,10 +53,28 @@ const CellSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = 
 
     const absolutePositioning = get(element, propName, fallbackValue || false);
 
-    const onClick = (value: boolean) => {
-        const newElement = merge({}, element, set({}, propName, value));
-        updateElement(newElement);
-    };
+    const fallbackGridHeightValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(gridElement, `data.settings.height.${mode}.value`)
+            ),
+        [gridElement, displayMode]
+    );
+
+    const gridHeight = get(gridElement, gridPropName, fallbackGridHeightValue || "");
+
+    const onClick = useCallback(
+        (value: boolean) => {
+            const newElement = merge({}, element, set({}, propName, value));
+            updateElement(newElement);
+
+            if (value && !gridHeight?.includes("px")) {
+                const newGridElement = merge({}, gridElement, set({}, gridPropName, "200px"));
+                updateElement(newGridElement);
+            }
+        },
+        [element, gridElement, propName, gridPropName, gridHeight]
+    );
 
     return (
         <Accordion

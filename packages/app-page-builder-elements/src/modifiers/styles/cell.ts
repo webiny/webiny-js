@@ -17,13 +17,17 @@ const cell: ElementStylesModifier = ({ element, theme }) => {
             return {
                 ...returnStyles,
                 [breakpointName]: {
-                    "& > *:not(pb-element-controls-overlay)": {
+                    "& > *:not(pb-eco, pb-eco-border, div)": {
                         position: "absolute",
                         top: "",
                         right: "",
                         bottom: "",
                         left: "",
-                        transform: ""
+                        transform: "",
+                        // Elements without width settings
+                        "&:not(pb-grid, pb-iframe)": {
+                            width: "auto"
+                        }
                     }
                 }
             };
@@ -32,13 +36,17 @@ const cell: ElementStylesModifier = ({ element, theme }) => {
         return {
             ...returnStyles,
             [breakpointName]: {
-                "& > *:not(pb-element-controls-overlay)": {
-                    position: "",
+                "& > *:not(pb-eco, pb-eco-border, div)": {
+                    position: "relative",
                     top: "initial",
                     right: "initial",
                     bottom: "initial",
                     left: "initial",
-                    transform: "initial"
+                    transform: "initial",
+                    // Elements without width settings
+                    "&:not(pb-grid, pb-iframe)": {
+                        width: "100%"
+                    }
                 }
             }
         };
