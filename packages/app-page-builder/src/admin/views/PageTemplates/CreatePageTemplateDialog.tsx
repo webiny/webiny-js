@@ -80,7 +80,7 @@ const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialo
                                             name="description"
                                             validators={[validation.create("required")]}
                                         >
-                                            <Input label="Description" />
+                                            <Input rows={2} label="Description" />
                                         </Bind>
                                     </Cell>
                                 </Grid>
