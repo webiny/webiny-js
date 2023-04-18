@@ -42,6 +42,10 @@ import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { configurations } from "~/configurations";
 import { createContextPlugin } from "@webiny/handler";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 
 interface Params {
     plugins?: PluginCollection;
@@ -125,10 +129,19 @@ export const useHandler = (params: Params) => {
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
+            createHeadlessCmsContext({
+                storageOperations: createHeadlessCmsStorageOperations({
+                    documentClient,
+                    elasticsearch
+                })
+            }),
+            createHeadlessCmsGraphQL(),
             createPageBuilderGraphQL(),
             createPageBuilderContext({
                 storageOperations
             }),
+            createAco(),
+            createAcoPageBuilderContext(),
             prerenderingHookPlugins(),
             prerenderingServicePlugins({
                 handlers: {

@@ -16,16 +16,18 @@
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
     { "path": "../api-file-manager-ddb" },
-    { "path": "../api-file-manager" },
-    { "path": "../api-file-manager-ddb" },
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../api-security-so-ddb" },
     { "path": "../handler" },
     { "path": "../api-wcp" },
+    { "path": "../api-aco" },
     { "path": "../api-i18n" },
     { "path": "../api-i18n-ddb" },
     { "path": "../api-prerendering-service" },
-    { "path": "../api-file-manager" }
+    { "path": "../api-file-manager" },
+    { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-ddb-es" },
+    { "path": "../api-page-builder-aco" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -77,7 +79,15 @@
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
       "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
-      "@webiny/api-prerendering-service": ["../api-prerendering-service/src"]
+      "@webiny/api-prerendering-service": ["../api-prerendering-service/src"],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-page-builder-aco/*": ["../api-page-builder-aco/src/*"],
+      "@webiny/api-page-builder-aco": ["../api-page-builder-aco/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-ddb-es/*": ["../api-headless-cms-ddb-es/src/*"],
+      "@webiny/api-headless-cms-ddb-es": ["../api-headless-cms-ddb-es/src"]
     },
     "baseUrl": "."
   }
