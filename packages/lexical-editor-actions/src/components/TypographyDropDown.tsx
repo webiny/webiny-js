@@ -6,13 +6,13 @@ import {
     useTypographyAction
 } from "@webiny/lexical-editor";
 import { usePageElements } from "@webiny/app-page-builder-elements";
-import { ThemeTypographyHTMLTag, TypographyStyle } from "@webiny/theme/types";
+import { TypographyStyle } from "@webiny/theme/types";
 import { TypographyValue } from "@webiny/lexical-editor/types";
 
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
-    const [styles, setStyles] = useState<TypographyStyle<ThemeTypographyHTMLTag>[]>([]);
+    const [styles, setStyles] = useState<TypographyStyle[]>([]);
     const typographyStyles = theme.styles?.typography;
     const { textBlockSelection } = useRichTextEditor();
     const textType = textBlockSelection?.state?.textType;

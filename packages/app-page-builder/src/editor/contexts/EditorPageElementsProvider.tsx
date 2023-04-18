@@ -27,7 +27,7 @@ import { createAnimationZIndexFix } from "./EditorPageElementsProvider/modifiers
 
 // Other.
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { Theme } from "@webiny/app-theme/types";
+import { DecoratedTheme } from "@webiny/app-theme/types";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "~/types";
 import { ElementControls } from "./EditorPageElementsProvider/ElementControls";
@@ -69,7 +69,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
     // We override all `@media` usages in breakpoints with `@container page-editor-canvas`. This is what
     // enables us responsive design inside the Page Builder's page editor.
     const containerizedTheme = useMemo(() => {
-        const theme = pageBuilder.theme as Theme;
+        const theme = pageBuilder.theme as DecoratedTheme;
 
         return {
             ...pageBuilder.theme,
@@ -80,7 +80,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
                     [breakpointName]: mediaToContainer(breakpoint)
                 };
             }, {})
-        } as Theme;
+        } as DecoratedTheme;
     }, [pageBuilder.theme]);
 
     return (

@@ -2,7 +2,7 @@ import * as React from "react";
 import { plugins } from "@webiny/plugins";
 import { DisplayMode, PbTheme, PbThemePlugin as PbThemePluginType } from "~/types";
 import { isLegacyRenderingEngine } from "~/utils";
-import { Theme } from "@webiny/app-theme/types";
+import { DecoratedTheme } from "@webiny/app-theme/types";
 import { ThemePlugin } from "@webiny/app-theme";
 import { PageElementsProvider } from "./PageElementsProvider";
 import { useCallback, useState } from "react";
@@ -18,7 +18,7 @@ export interface ExportPageData {
 }
 
 export interface PageBuilderContext {
-    theme: Theme | PbTheme | undefined;
+    theme: DecoratedTheme | PbTheme | undefined;
     loadThemeFromPlugins(): void;
     defaults?: {
         pages?: {
@@ -45,7 +45,7 @@ function tryLoadingTheme() {
         themePlugin = firstThemePlugin;
     }
 
-    return themePlugin?.theme as Theme;
+    return themePlugin?.theme as DecoratedTheme;
 }
 
 export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {

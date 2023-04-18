@@ -27,31 +27,22 @@ export type ThemeBreakpoints = {
 
 /*
  * Typography section
- * */
+ */
 export type HeadingHtmlTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type ParagraphHtmlTag = "p";
 export type ListHtmlTag = "ul" | "ol";
 export type QuoteHtmlTag = "quoteblock";
 export type ThemeTypographyHTMLTag = HeadingHtmlTag | ParagraphHtmlTag | ListHtmlTag | QuoteHtmlTag;
-export type TypographyType = "headings" | "paragraphs" | "quotes" | "lists";
-export type TypographyStyle<T extends ThemeTypographyHTMLTag> = {
+export type TypographyType = "headings" | "paragraphs" | "quotes" | "lists" | string;
+export type TypographyStyle = {
     id: string;
     name: string;
-    tag: T;
+    tag: ThemeTypographyHTMLTag;
     css: CSSObject;
 };
 
-export type Typography = {
-    [typeName in TypographyType]: TypographyStyle<ThemeTypographyHTMLTag>[];
-};
-
-export type WithCssById<T extends TypographyStyle<ThemeTypographyHTMLTag>[]> = T & {
-    cssById(id: string): CSSObject;
-};
-
-export type WithById<T extends TypographyStyle<ThemeTypographyHTMLTag>[]> = T & {
-    ById(id: string): TypographyStyle<ThemeTypographyHTMLTag>;
-};
+export type Typography = Record<TypographyType, TypographyStyle[]>;
+export type ThemeTypographyStyleItems = TypographyStyle[];
 
 export interface ThemeStyles {
     colors: Record<string, any>;
@@ -61,16 +52,31 @@ export interface ThemeStyles {
     [key: string]: any;
 }
 
-export type DecoratedThemeStyles<T extends ThemeStyles> = T & {
-    typography: { [K in keyof T["typography"]]: WithCssById<T[TypographyType][K]> }
+/*
+ * Decorated typography types
+ */
+
+export type DecoratedThemeTypographyStyles = ThemeTypographyStyleItems & {
+    cssById: (id: string) => CSSObject | undefined;
+    byId: (id: string) => TypographyStyle | undefined;
 };
+
+export type DecoratedTypography = Record<TypographyType, DecoratedThemeTypographyStyles>;
+
+interface DecoratedThemeStyles extends Omit<ThemeStyles, "typography"> {
+    colors: Record<string, any>;
+    borderRadius?: number;
+    typography: DecoratedTypography;
+    elements: Record<string, Record<string, any> | StylesObject>;
+    [key: string]: any;
+}
 
 export interface Theme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
 
-export type DecoratedTheme = {
+export interface DecoratedTheme {
     breakpoints: ThemeBreakpoints;
-    styles: DecoratedThemeStyles<ThemeStyles>;
-};
+    styles: DecoratedThemeStyles;
+}

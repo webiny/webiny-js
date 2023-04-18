@@ -9,7 +9,7 @@ import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
 import { isLegacyRenderingEngine } from "~/utils";
 import { PbTheme } from "~/types";
-import { Theme } from "@webiny/app-theme/types";
+import { DecoratedTheme } from "@webiny/app-theme/types";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",
@@ -168,7 +168,7 @@ const ColorPicker = ({
         const legacyTheme = theme as PbTheme;
         themeColors = legacyTheme.colors;
     } else {
-        const newTheme = theme as Theme;
+        const newTheme = theme as DecoratedTheme;
         themeColors = newTheme.styles.colors;
     }
 

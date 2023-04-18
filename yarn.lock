@@ -4433,7 +4433,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/core@npm:^10.0.20, @emotion/core@npm:^10.0.27, @emotion/core@npm:^10.0.9":
+"@emotion/core@npm:^10.0.20, @emotion/core@npm:^10.0.9":
   version: 10.3.1
   resolution: "@emotion/core@npm:10.3.1"
   dependencies:
@@ -14831,7 +14831,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
-    "@emotion/core": ^10.0.27
+    "@emotion/react": ^11.10.6
     "@lexical/code": 0.8.1
     "@lexical/hashtag": 0.8.1
     "@lexical/history": 0.8.1
