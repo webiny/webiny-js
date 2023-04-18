@@ -8,7 +8,7 @@ import { useHotkeys } from "react-hotkeyz";
 import { FilesRules } from "react-butterfiles";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
-import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
+import { ButtonPrimary, ButtonIcon, IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -23,14 +23,18 @@ import { FileDetails } from "~/components/FileDetails";
 import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { useFileManagerApi, useFileManagerView } from "~/index";
-import { EmptyView } from "./EmptyView";
 import { useAcoList } from "@webiny/app-aco";
 import { FOLDER_TYPE } from "~/constants/folders";
 import { ListDbSort, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
+import { Grid } from "~/modules/FileManagerRenderer/DefaultRenderer/Grid";
 import { LoadMoreButton } from "~/components/LoadMoreButton";
 import { Title } from "~/components/Title";
+import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/grid_view.svg";
+import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/table_rows.svg";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -145,11 +149,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion } = props;
 
     const {
-        files,
-        loadingFiles,
         loadMore,
-        // selected,
-        // toggleSelected,
+        selected,
+        setSelected,
+        toggleSelected,
         dragging,
         setDragging,
         uploading,
@@ -165,7 +168,9 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         settings,
         currentFolder,
         setCurrentFolder,
-        getFile
+        getFile,
+        listTable,
+        setListTable
     } = useFileManagerView();
 
     const {
@@ -178,7 +183,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         listItems
     } = useAcoList(FOLDER_TYPE, currentFolder);
 
-    const [selected, setSelected] = useState<string[]>([]);
+    const [files, setFiles] = useState<SearchRecordItem<FileItem>[]>([]);
+
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
     const [sort, setSort] = useState<ListDbSort>();
 
@@ -280,6 +286,21 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         }, 500),
         [loadMore]
     );
+
+    useDeepCompareEffect(() => {
+        const recordsFile = records.map(file => {
+            const src = settings?.srcPrefix + file.data.key;
+            return {
+                ...file,
+                data: {
+                    ...file.data,
+                    src
+                }
+            };
+        });
+
+        setFiles(recordsFile as SearchRecordItem<FileItem>[]);
+    }, [{ ...records }, settings]);
 
     const uploadFiles = async (files: File | File[]): Promise<number | null> => {
         setUploading(true);
@@ -408,24 +429,41 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                             </InputSearch>
                         }
                         barRight={
-                            selected.length > 0 ? (
-                                <ButtonPrimary
-                                    disabled={uploading}
-                                    onClick={() => {
-                                        (async () => {
-                                            if (typeof onChange === "function") {
-                                                await onChange(multiple ? selected : selected[0]);
+                            <>
+                                {selected.length > 0 ? (
+                                    <ButtonPrimary
+                                        disabled={uploading}
+                                        onClick={() => {
+                                            (async () => {
+                                                if (typeof onChange === "function") {
+                                                    await onChange(
+                                                        multiple ? selected : selected[0]
+                                                    );
 
-                                                onClose && onClose();
-                                            }
-                                        })();
-                                    }}
+                                                    onClose && onClose();
+                                                }
+                                            })();
+                                        }}
+                                    >
+                                        {t`Select`} {multiple && `(${selected.length})`}
+                                    </ButtonPrimary>
+                                ) : (
+                                    renderUploadFileAction({ browseFiles })
+                                )}
+                                <Tooltip
+                                    content={t`Toggle to {mode} view`({
+                                        mode: listTable ? "grid" : "table"
+                                    })}
+                                    placement={"bottom"}
                                 >
-                                    {t`Select`} {multiple && `(${selected.length})`}
-                                </ButtonPrimary>
-                            ) : (
-                                renderUploadFileAction({ browseFiles })
-                            )
+                                    <IconButton
+                                        icon={listTable ? <GridIcon /> : <TableIcon />}
+                                        onClick={() => setListTable(!listTable)}
+                                    >
+                                        {t`Switch`}
+                                    </IconButton>
+                                </Tooltip>
+                            </>
                         }
                     >
                         <>
@@ -456,22 +494,38 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 <Scrollbar
                                     onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                                 >
-                                    <Table
-                                        ref={tableRef}
-                                        folders={folders}
-                                        records={records as SearchRecordItem<FileItem>[]}
-                                        loading={isListLoading}
-                                        onRecordClick={showFileDetails}
-                                        onFolderClick={id => setCurrentFolder(id)}
-                                        onSelectRow={rows => {
-                                            //@ts-ignore
-                                            const ids = rows.map(row => row.original.pid);
-                                            setSelected(ids);
-                                        }}
-                                        sorting={tableSorting}
-                                        onSortingChange={setTableSorting}
-                                        settings={settings}
-                                    />
+                                    {listTable ? (
+                                        <Table
+                                            ref={tableRef}
+                                            folders={folders}
+                                            records={files}
+                                            loading={isListLoading}
+                                            onRecordClick={showFileDetails}
+                                            onFolderClick={id => setCurrentFolder(id)}
+                                            onSelectRow={rows => {
+                                                const files = rows
+                                                    .filter(row => row.type === "RECORD")
+                                                    .map(row => row.original as FileItem);
+                                                setSelected(files);
+                                            }}
+                                            sorting={tableSorting}
+                                            onSortingChange={setTableSorting}
+                                            settings={settings}
+                                        />
+                                    ) : (
+                                        <Grid
+                                            folders={folders}
+                                            records={files.map(file => file.data)}
+                                            loading={isListLoading}
+                                            onRecordClick={showFileDetails}
+                                            onFolderClick={id => setCurrentFolder(id)}
+                                            selected={selected}
+                                            multiple={multiple}
+                                            toggleSelected={toggleSelected}
+                                            onChange={onChange}
+                                            onClose={onClose}
+                                        />
+                                    )}
                                     <LoadMoreButton
                                         show={!isListLoading && meta.hasMoreItems}
                                         disabled={isListLoadingMore}
@@ -479,32 +533,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                         tableHeight={tableHeight}
                                         onClick={loadMoreOnClick}
                                     />
-                                    {/*<FileList>*/}
-                                    {/*    {files.length ? (*/}
-                                    {/*        files.map(file =>*/}
-                                    {/*            renderFile({*/}
-                                    {/*                file,*/}
-                                    {/*                showFileDetails: () => showFileDetails(file.id),*/}
-                                    {/*                selected: selected.some(*/}
-                                    {/*                    current => current.src === file.src*/}
-                                    {/*                ),*/}
-                                    {/*                onSelect: async () => {*/}
-                                    {/*                    if (typeof onChange === "function") {*/}
-                                    {/*                        if (multiple) {*/}
-                                    {/*                            toggleSelected(file);*/}
-                                    {/*                            return;*/}
-                                    {/*                        }*/}
-
-                                    {/*                        await onChange(file);*/}
-                                    {/*                        onClose && onClose();*/}
-                                    {/*                    }*/}
-                                    {/*                }*/}
-                                    {/*            })*/}
-                                    {/*        )*/}
-                                    {/*    ) : (*/}
-                                    {/*        <EmptyView browseFiles={browseFiles} />*/}
-                                    {/*    )}*/}
-                                    {/*</FileList>*/}
                                 </Scrollbar>
                                 <BottomInfoBar
                                     accept={accept}

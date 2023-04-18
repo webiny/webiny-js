@@ -30,7 +30,6 @@ const styles = css({
     float: "left",
     position: "relative",
     zIndex: 1,
-    margin: 10,
     cursor: "pointer",
     width: "100%",
     maxWidth: COMPONENT_WIDTH,
@@ -105,7 +104,7 @@ export interface FileProps {
     onClick?: (event?: React.MouseEvent) => void;
     options?: Array<{ label: string; onClick: (file: Object) => void }>;
     children: React.ReactNode;
-    showFileDetails: (event?: React.MouseEvent) => void;
+    showFileDetails: (id: string) => void;
 }
 
 const File: React.FC<FileProps> = props => {
@@ -124,7 +123,7 @@ const File: React.FC<FileProps> = props => {
                 <div className={"infoIcon"}>
                     <IconButton
                         icon={<SettingsIcon />}
-                        onClick={showFileDetails}
+                        onClick={() => showFileDetails(file.id)}
                         data-testid={"fm-file-wrapper-file-info-icon"}
                     />
                 </div>

@@ -32,6 +32,10 @@ export type Action =
           file: FileItem;
       }
     | {
+          type: "setSelected";
+          files: FileItem[];
+      }
+    | {
           type: "queryParams";
           queryParams: StateQueryParams;
       }
@@ -100,6 +104,10 @@ export const stateReducer: Reducer = (state: State, action) => {
         ...state
     };
     switch (action.type) {
+        case "setSelected": {
+            next.selected = action.files;
+            break;
+        }
         case "toggleSelected": {
             const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
             if (existingIndex < 0) {

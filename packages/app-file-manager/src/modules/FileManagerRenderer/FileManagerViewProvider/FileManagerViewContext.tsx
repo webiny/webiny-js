@@ -38,6 +38,7 @@ export interface FileManagerViewContextData<TFileItem extends FileItem = FileIte
     tags: string[];
     settings: Settings | undefined;
     selected: TFileItem[];
+    setSelected: (files: TFileItem[]) => void;
     toggleSelected: (file: TFileItem) => void;
     hasPreviouslyUploadedFiles: boolean | null;
     setHasPreviouslyUploadedFiles: (flag: boolean) => void;
@@ -52,6 +53,8 @@ export interface FileManagerViewContextData<TFileItem extends FileItem = FileIte
     hideFileDetails: () => void;
     currentFolder?: string;
     setCurrentFolder: (folderId: string | undefined) => void;
+    listTable: boolean;
+    setListTable: (mode: boolean) => void;
 }
 
 function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
@@ -84,6 +87,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const [settings, setSettings] = useState<Settings | undefined>(undefined);
     const [loadingFiles, setLoading] = useState(false);
     const [currentFolder, setCurrentFolder] = useState<string>();
+    const [listTable, setListTable] = useState<boolean>(true);
 
     const [state, dispatch] = React.useReducer(
         stateReducer,
@@ -105,6 +109,12 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     };
 
     const getFile = async (id: string) => {
+        const fileInState = files.find(file => file.id === id);
+
+        if (fileInState) {
+            return fileInState;
+        }
+
         setLoading(true);
 
         const file = await fileManager.getFile(id);
@@ -351,6 +361,12 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         uploadFile,
         settings,
         selected: state.selected,
+        setSelected(files: FileItem[]) {
+            dispatch({
+                type: "setSelected",
+                files
+            });
+        },
         toggleSelected(file: FileItem) {
             dispatch({
                 type: "toggleSelected",
@@ -385,7 +401,9 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         },
         showingFileDetails: state.showingFileDetails,
         currentFolder,
-        setCurrentFolder
+        setCurrentFolder,
+        listTable,
+        setListTable
     };
 
     return (

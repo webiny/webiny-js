@@ -103,8 +103,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
 
     useDeepCompareEffect(() => {
         const foldersData = createFoldersData(folders);
-        const pagesData = createRecordsData(records);
-        setData([...foldersData, ...pagesData]);
+        const files = createRecordsData(records);
+        setData([...foldersData, ...files]);
     }, [{ ...folders }, { ...records }]);
 
     const columns: Columns<Entry> = {
