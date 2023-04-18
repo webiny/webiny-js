@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { css } from "emotion";
 import { Form } from "@webiny/form";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -37,9 +37,19 @@ type CreatePageTemplateDialogProps = {
 };
 
 const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialogProps) => {
+    const [loading, setLoading] = useState(false);
+    const submitForm = useCallback(
+        async data => {
+            setLoading(true);
+            await onSubmit(data);
+            setLoading(false);
+        },
+        [onSubmit]
+    );
+
     return (
         <Dialog open={true} onClose={onClose} className={narrowDialog}>
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={submitForm}>
                 {({ form, Bind }) => (
                     <>
                         <DialogTitle>Create Page Template</DialogTitle>
@@ -77,12 +87,8 @@ const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialo
                             </SimpleFormContent>
                         </DialogContent>
                         <DialogActions>
-                            <DialogCancel>Cancel</DialogCancel>
-                            <ButtonPrimary
-                                onClick={ev => {
-                                    form.submit(ev);
-                                }}
-                            >
+                            <DialogCancel disabled={loading}>Cancel</DialogCancel>
+                            <ButtonPrimary disabled={loading} onClick={form.submit}>
                                 Create
                             </ButtonPrimary>
                         </DialogActions>
