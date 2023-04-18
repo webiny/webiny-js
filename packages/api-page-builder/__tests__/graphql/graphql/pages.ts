@@ -302,27 +302,35 @@ export const LIST_PAGE_TAGS = /* GraphQL */ `
     }
 `;
 
-export const GET_PAGE = /* GraphQL */ `
-    query GetPage($id: ID!) {
-        pageBuilder {
-            getPage(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
+export const createPageGetGraphQl = (params: CreateDataFieldsParams = {}) => {
+    return /* GraphQL */ `
+        query GetPage($id: ID!) {
+            pageBuilder {
+                getPage(id: $id) {
+                    data ${createDataFields(params)}
+                    error ${ERROR_FIELD}
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-export const GET_PUBLISHED_PAGE = /* GraphQL */ `
-    query GetPublishedPage($id: ID, $path: String, $preview: Boolean, $returnErrorPage: Boolean, $returnNotFoundPage: Boolean) {
-        pageBuilder {
-            getPublishedPage(id: $id, path: $path, preview: $preview, returnErrorPage: $returnErrorPage, returnNotFoundPage: $returnNotFoundPage) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
+export const GET_PAGE = createPageGetGraphQl();
+
+export const createPageGetPublishedGraphQl = (params: CreateDataFieldsParams = {}) => {
+    return /* GraphQL */ `
+        query GetPublishedPage($id: ID, $path: String, $preview: Boolean, $returnErrorPage: Boolean, $returnNotFoundPage: Boolean) {
+            pageBuilder {
+                getPublishedPage(id: $id, path: $path, preview: $preview, returnErrorPage: $returnErrorPage, returnNotFoundPage: $returnNotFoundPage) {
+                    data ${createDataFields(params)}
+                    error ${ERROR_FIELD}
+                }
             }
         }
-    }
-`;
+    `;
+};
+
+export const GET_PUBLISHED_PAGE = createPageGetPublishedGraphQl();
 
 export const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {

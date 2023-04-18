@@ -44,7 +44,12 @@ const createPageGraphQlSchemaPlugin = () => {
         resolvers: {
             PbPage: {
                 customViews: (parent: CustomFieldsPage) => {
-                    return parent.customViews || 0;
+                    return parent.settings?.customViews || 0;
+                }
+            },
+            PbPageListItem: {
+                customViews: (parent: CustomFieldsPage) => {
+                    return parent.settings?.customViews || 0;
                 }
             }
         }

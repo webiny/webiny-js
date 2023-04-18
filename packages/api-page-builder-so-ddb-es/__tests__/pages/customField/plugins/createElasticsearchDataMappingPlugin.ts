@@ -1,10 +1,14 @@
 import { IndexPageDataPlugin } from "~/index";
 import { CustomFieldsPage } from "~tests/types";
+
 export const createElasticsearchDataMappingPlugin = () => {
-    return new IndexPageDataPlugin<CustomFieldsPage>(({ data, input }) => {
-        if (input.customViews === undefined) {
+    return new IndexPageDataPlugin<CustomFieldsPage>(({ data, page }) => {
+        if (page.settings?.customViews === undefined) {
             return;
         }
-        data.customViews = input.customViews || 0;
+        data.settings = {
+            ...(data.settings || {}),
+            customViews: page.settings.customViews || 0
+        };
     });
 };

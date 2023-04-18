@@ -356,7 +356,7 @@ describe("page custom field", () => {
         });
     });
 
-    it("should return a custom field value", async () => {
+    it("should store and output a custom field value", async () => {
         const [createPageResponse] = await handler.createPage(
             {
                 category: categoryData.slug
@@ -384,6 +384,40 @@ describe("page custom field", () => {
                             id,
                             customViews: 10
                         },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getPageResponse] = await handler.getPage({ id }, ["customViews"]);
+
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id,
+                            customViews: 10
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listPagesResponse] = await handler.listPages({}, ["customViews"]);
+
+        expect(listPagesResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                id,
+                                customViews: 10
+                            }
+                        ],
                         error: null
                     }
                 }

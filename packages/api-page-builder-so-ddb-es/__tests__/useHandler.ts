@@ -17,6 +17,8 @@ import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import {
     createPageCreateGraphQl,
+    createPageGetGraphQl,
+    createPageGetPublishedGraphQl,
     createPageListGraphQl,
     createPageUpdateGraphQl,
     DELETE_PAGE,
@@ -28,13 +30,18 @@ import { PluginCollection } from "@webiny/plugins/types";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchHandler } from "@webiny/api-dynamodb-to-elasticsearch";
-import elasticsearchClientContextPlugin, { createGzipCompression } from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin, {
+    createGzipCompression,
+    getElasticsearchOperators
+} from "@webiny/api-elasticsearch";
 /**
  * File does not have types.
  */
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { configurations } from "~/configurations";
+import { createContextPlugin } from "@webiny/handler";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 interface Params {
     plugins?: PluginCollection;
@@ -58,6 +65,26 @@ export const useHandler = (params: Params) => {
 
     const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearch);
 
+    const getIndexName = () => {
+        const { index } = configurations.es({
+            tenant: "root",
+            locale: "en-US"
+        });
+        return index;
+    };
+
+    const refreshIndex = async (): Promise<void> => {
+        const index = getIndexName();
+
+        try {
+            await elasticsearch.indices.refresh({ index });
+        } catch (ex) {
+            console.log(`Could not reindex elasticsearch index: ${index}`);
+            console.log(ex.message);
+            console.log(JSON.stringify(ex));
+        }
+    };
+
     /**
      *
      * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
@@ -75,6 +102,7 @@ export const useHandler = (params: Params) => {
 
     const handler = createHandler({
         plugins: [
+            getElasticsearchOperators(),
             dbPlugins({
                 table: process.env.DB_TABLE,
                 driver: new DynamoDbDriver({
@@ -124,6 +152,26 @@ export const useHandler = (params: Params) => {
                     return;
                 }
             },
+            createContextPlugin<PbContext>(async context => {
+                context.pageBuilder.onPageAfterCreate.subscribe(async () => {
+                    return refreshIndex();
+                });
+                context.pageBuilder.onPageAfterCreateFrom.subscribe(async () => {
+                    return refreshIndex();
+                });
+                context.pageBuilder.onPageAfterUpdate.subscribe(async () => {
+                    return refreshIndex();
+                });
+                context.pageBuilder.onPageAfterDelete.subscribe(async () => {
+                    return refreshIndex();
+                });
+                context.pageBuilder.onPageAfterPublish.subscribe(async () => {
+                    return refreshIndex();
+                });
+                context.pageBuilder.onPageAfterUnpublish.subscribe(async () => {
+                    return refreshIndex();
+                });
+            }),
             ...(params.plugins || [])
         ]
     });
@@ -150,10 +198,7 @@ export const useHandler = (params: Params) => {
     };
 
     const clearElasticsearch = async () => {
-        const { index } = configurations.es({
-            tenant: "root",
-            locale: "en-US"
-        });
+        const index = getIndexName();
         try {
             return await elasticsearch.indices.delete({
                 index,
@@ -182,6 +227,14 @@ export const useHandler = (params: Params) => {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
         // Pages
+        async getPage(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({ body: { query: createPageGetGraphQl({ fields }), variables } });
+        },
+        async getPublishedPage(variables: Record<string, any>, fields: string[] = []) {
+            return invoke({
+                body: { query: createPageGetPublishedGraphQl({ fields }), variables }
+            });
+        },
         async createPage(variables: Record<string, any>, fields: string[] = []) {
             return invoke({
                 body: {
