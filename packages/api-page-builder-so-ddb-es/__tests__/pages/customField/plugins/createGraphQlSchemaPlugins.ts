@@ -1,6 +1,10 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { CustomFieldsPage } from "~tests/types";
 
+/**
+ * This code extends the Page GraphQL schema with the customViews field.
+ * It also adds the sorting via the customViews field.
+ */
 const createPageGraphQlSchemaPlugin = () => {
     return new GraphQLSchemaPlugin({
         typeDefs: `

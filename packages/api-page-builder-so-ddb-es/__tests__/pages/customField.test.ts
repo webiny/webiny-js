@@ -575,4 +575,224 @@ describe("page custom field", () => {
         });
         expect(responseBetweenMiss).toMatchObject(expectedMiss);
     });
+
+    it("should be able to sort by a custom field", async () => {
+        const pageIdList: [string, number][] = [];
+        for (let current = 0; current < 10; current++) {
+            const [createPageResponse] = await handler.createPage({
+                category: categoryData.slug
+            });
+
+            const id = createPageResponse.data.pageBuilder.createPage.data.id;
+            const customViews = current * 5;
+            pageIdList.push([id, customViews]);
+
+            await handler.updatePage({
+                id,
+                data: {
+                    title: `Page ${id}`,
+                    customViews
+                }
+            });
+        }
+
+        const reversedPageIdList = [...pageIdList].reverse();
+
+        const [pagesValidationResponse] = await handler.listPages({
+            sort: ["createdOn_ASC"]
+        });
+        expect(pagesValidationResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: pageIdList.map(([id, customViews]) => {
+                            return {
+                                id,
+                                title: `Page ${id}`,
+                                customViews
+                            };
+                        }),
+                        meta: {
+                            cursor: null,
+                            totalCount: 10,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Sort by the custom field ASC.
+         */
+        const [listPagesAscResponse] = await handler.listPages({
+            sort: ["customViews_ASC"]
+        });
+
+        expect(listPagesAscResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: pageIdList.map(([id, customViews]) => {
+                            return {
+                                id,
+                                title: `Page ${id}`,
+                                customViews
+                            };
+                        }),
+                        meta: {
+                            cursor: null,
+                            totalCount: 10,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Sort by the custom field DESC.
+         */
+        const [listPagesDescResponse] = await handler.listPages({
+            sort: ["customViews_DESC"]
+        });
+
+        expect(listPagesDescResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: reversedPageIdList.map(([id, customViews]) => {
+                            return {
+                                id,
+                                title: `Page ${id}`,
+                                customViews
+                            };
+                        }),
+                        meta: {
+                            cursor: null,
+                            totalCount: 10,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Sort by the custom field ASC, with limit and after
+         */
+        const [listPagesAscLimitResponse] = await handler.listPages({
+            sort: ["customViews_ASC"],
+            limit: 5
+        });
+
+        expect(listPagesAscLimitResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: pageIdList.slice(0, 5).map(([id, customViews]) => {
+                            return {
+                                id,
+                                title: `Page ${id}`,
+                                customViews
+                            };
+                        }),
+                        meta: {
+                            cursor: expect.any(String),
+                            totalCount: 10,
+                            hasMoreItems: true
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listPagesAscLimitAfterResponse] = await handler.listPages({
+            sort: ["customViews_ASC"],
+            limit: 5,
+            after: listPagesAscLimitResponse.data.pageBuilder.listPages.meta.cursor
+        });
+
+        expect(listPagesAscLimitAfterResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: pageIdList.slice(5).map(([id, customViews]) => {
+                            return {
+                                id,
+                                title: `Page ${id}`,
+                                customViews
+                            };
+                        }),
+                        meta: {
+                            cursor: null,
+                            totalCount: 10,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Sort by the custom field DESC, with limit and after
+         */
+        const [listPagesDescLimitResponse] = await handler.listPages({
+            sort: ["customViews_DESC"],
+            limit: 5
+        });
+
+        expect(listPagesDescLimitResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: reversedPageIdList.slice(0, 5).map(([id, customViews]) => {
+                            return {
+                                id,
+                                title: `Page ${id}`,
+                                customViews
+                            };
+                        }),
+                        meta: {
+                            cursor: expect.any(String),
+                            totalCount: 10,
+                            hasMoreItems: true
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listPagesDescLimitAfterResponse] = await handler.listPages({
+            sort: ["customViews_DESC"],
+            limit: 5,
+            after: listPagesDescLimitResponse.data.pageBuilder.listPages.meta.cursor
+        });
+
+        expect(listPagesDescLimitAfterResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: reversedPageIdList.slice(5).map(([id, customViews]) => {
+                            return {
+                                id,
+                                title: `Page ${id}`,
+                                customViews
+                            };
+                        }),
+                        meta: {
+                            cursor: null,
+                            totalCount: 10,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });
