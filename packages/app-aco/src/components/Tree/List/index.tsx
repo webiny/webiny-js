@@ -104,7 +104,7 @@ export const List = ({
 
     return (
         <>
-            <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+            <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
                 <Tree
                     tree={treeData}
                     rootId={ROOT_ID}
