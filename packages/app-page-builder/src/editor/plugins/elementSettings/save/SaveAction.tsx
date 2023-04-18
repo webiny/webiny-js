@@ -85,7 +85,7 @@ const SaveAction: React.FC = ({ children }) => {
         const blob = dataURLtoBlob(formData.preview);
         blob.name = "pb-editor-page-element-" + element.id + ".png";
 
-        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("app-file-manager-storage");
+        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
         /**
          * We break the method because it would break if there is no fileUploaderPlugin.
          */

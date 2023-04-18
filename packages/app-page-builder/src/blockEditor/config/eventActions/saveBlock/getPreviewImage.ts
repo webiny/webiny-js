@@ -68,7 +68,7 @@ export async function getPreviewImage(
     const blob = dataURLtoBlob(dataUrl);
     blob.name = "pb-editor-page-element-" + element.id + ".png";
 
-    const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("app-file-manager-storage");
+    const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
 
     /**
      * We break the method because it would break if there is no fileUploaderPlugin.

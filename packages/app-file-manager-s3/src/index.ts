@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { AppFileManagerStorageS3 } from "./types";
+import { FileUploaderPlugin, UploadOptions } from "@webiny/app/types";
 
 const GET_PRE_SIGNED_POST_PAYLOAD = gql`
     query getPreSignedPostPayload($data: PreSignedPostPayloadInput!) {
@@ -23,11 +23,12 @@ const GET_PRE_SIGNED_POST_PAYLOAD = gql`
     }
 `;
 
-export default () =>
-    ({
-        type: "app-file-manager-storage",
-        name: "app-file-manager-storage",
-        upload: async (file: File, { apolloClient, onProgress }) => {
+export default (): FileUploaderPlugin => {
+    class S3FileUploader implements FileUploaderPlugin {
+        public readonly type = "file-uploader";
+        public readonly name = "file-uploader";
+
+        async upload(file: File, { apolloClient, onProgress }: UploadOptions) {
             // 1. GET PreSignedPostPayload
             const response = await apolloClient.query({
                 query: GET_PRE_SIGNED_POST_PAYLOAD,
@@ -39,11 +40,12 @@ export default () =>
 
             const { getPreSignedPostPayload } = response.data.fileManager;
             if (getPreSignedPostPayload.error) {
-                console.log(getPreSignedPostPayload); // eslint-disable-line
+                console.error(getPreSignedPostPayload);
                 return;
             }
+
             // 2. upload file to S3
-            return await new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 const formData = new window.FormData();
                 Object.keys(getPreSignedPostPayload.data.data.fields).forEach(key => {
                     formData.append(key, getPreSignedPostPayload.data.data.fields[key]);
@@ -73,4 +75,7 @@ export default () =>
                 };
             });
         }
-    } as AppFileManagerStorageS3);
+    }
+
+    return new S3FileUploader();
+};

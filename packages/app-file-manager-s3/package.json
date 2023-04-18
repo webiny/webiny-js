@@ -10,9 +10,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/plugins": "0.0.0",
-    "apollo-client": "^2.6.10",
-    "graphql": "^15.7.2",
+    "@webiny/app": "0.0.0",
     "graphql-tag": "^2.12.6"
   },
   "devDependencies": {

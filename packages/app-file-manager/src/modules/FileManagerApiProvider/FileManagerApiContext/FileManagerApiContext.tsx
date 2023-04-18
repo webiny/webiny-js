@@ -190,7 +190,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
      * @param File file
      */
     const uploadFile = async (file: File, options: UploadFileOptions = {}) => {
-        const response = await getFileUploader()(file, {
+        const response = await getFileUploader().upload(file, {
             apolloClient: client,
             onProgress: options.onProgress
         });
