@@ -103,13 +103,12 @@ export const createPageTemplatesCrud = (
                 }
             };
 
-            if (!auth) {
-                return await storageOperations.pageTemplates.get(params);
+            let permission;
+            if (auth) {
+                permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
             }
-
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
 
             let pageTemplate: PageTemplate | null = null;
             try {
@@ -129,8 +128,10 @@ export const createPageTemplatesCrud = (
                 throw new NotFoundError(`Page template not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageTemplate);
+            if (auth && permission) {
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, pageTemplate);
+            }
 
             return pageTemplate;
         },
