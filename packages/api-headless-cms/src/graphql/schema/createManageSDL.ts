@@ -131,6 +131,11 @@ export const createManageSDL: CreateManageSDL = ({
             ${sortEnumRender}
         }`
         }
+        
+        #type CmsListFieldUniqueValuesResponse {
+        #    data: [String!]
+        #    error: CmsError
+        #}
 
         extend type Query {
             get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
@@ -145,6 +150,8 @@ export const createManageSDL: CreateManageSDL = ({
                 limit: Int
                 after: String
             ): ${singularName}ListResponse
+
+            #list${singularName}FieldUniqueValues(where: ${singularName}ListWhereInput, fieldId: String!): CmsListFieldUniqueValuesResponse!
         }
 
         extend type Mutation {

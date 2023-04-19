@@ -16,6 +16,7 @@ import {
     CmsModel,
     CmsModelField,
     CmsStorageEntry,
+    CONTENT_ENTRY_STATUS,
     CreateCmsEntryInput,
     EntryBeforeListTopicParams,
     HeadlessCms,
@@ -68,9 +69,9 @@ import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entr
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import { I18NLocale } from "@webiny/api-i18n/types";
 
-export const STATUS_DRAFT = "draft";
-export const STATUS_PUBLISHED = "published";
-export const STATUS_UNPUBLISHED = "unpublished";
+export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
+export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
+export const STATUS_UNPUBLISHED = CONTENT_ENTRY_STATUS.UNPUBLISHED;
 
 type DefaultValue = boolean | number | string | null;
 /**
@@ -491,10 +492,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const { where: initialWhere, limit: initialLimit } = params;
         const limit = initialLimit && initialLimit > 0 ? initialLimit : 50;
-        /**
-         * We always assign tenant and locale because we do not allow one model to have content through multiple tenants.
-         */
-        const where: CmsEntryListWhere = {
+
+        const where = {
             ...initialWhere
         };
         /**
@@ -1246,6 +1245,89 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
 
+    const listFieldUniqueValues: CmsEntryContext["listFieldUniqueValues"] = async (
+        model,
+        params
+    ) => {
+        const permission = await checkEntryPermissions({ rwd: "r" });
+        await checkModelAccess(context, model);
+
+        const { where: initialWhere, fieldId } = params;
+
+        const where = {
+            ...initialWhere
+        };
+        /**
+         * Possibly only get records which are owned by current user.
+         * Or if searching for the owner set that value - in the case that user can see other entries than their own.
+         */
+        const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+        if (ownedBy !== undefined) {
+            where.ownedBy = ownedBy;
+        }
+        /**
+         * Where must contain either latest or published keys.
+         * We cannot list entries without one of those
+         */
+        if (where.latest && where.published) {
+            throw new WebinyError(
+                "Cannot list entries that are both published and latest.",
+                "LIST_ENTRIES_ERROR",
+                {
+                    where
+                }
+            );
+        } else if (!where.latest && !where.published) {
+            throw new WebinyError(
+                "Cannot list entries if we do not have latest or published defined.",
+                "LIST_ENTRIES_ERROR",
+                {
+                    where
+                }
+            );
+        }
+        /**
+         * We need to verify that the field in question is searchable.
+         */
+        const fields = getSearchableFields({
+            fields: model.fields,
+            plugins: context.plugins,
+            input: []
+        });
+
+        if (fields.includes(fieldId) === false) {
+            throw new WebinyError(
+                "Cannot list unique entry field values if the field is not searchable.",
+                "LIST_UNIQUE_ENTRY_VALUES_ERROR",
+                {
+                    fieldId
+                }
+            );
+        }
+
+        try {
+            return await storageOperations.entries.listFieldUniqueValues(model, {
+                where,
+                fieldId
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                "Error while fetching unique entry values from storage.",
+                "LIST_UNIQUE_ENTRY_VALUES_ERROR",
+                {
+                    error: {
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.data
+                    },
+                    model,
+                    where,
+                    fieldId
+                }
+            );
+        }
+    };
+
     return {
         /**
          * Deprecated - will be removed in 5.35.0
@@ -1458,6 +1540,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 "headlessCms.crud.entries.unpublishEntry",
                 async () => {
                     return unpublishEntry(model, id);
+                }
+            );
+        },
+        async listFieldUniqueValues(model, params) {
+            return context.benchmark.measure(
+                "headlessCms.crud.entries.listFieldUniqueValues",
+                async () => {
+                    return listFieldUniqueValues(model, params);
                 }
             );
         }

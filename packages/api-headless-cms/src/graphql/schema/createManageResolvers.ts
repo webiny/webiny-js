@@ -7,6 +7,7 @@ import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
 import { resolveCreate } from "./resolvers/manage/resolveCreate";
 import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
+// import { resolveListFieldUniqueValues } from "./resolvers/manage/resolveFieldUniqueValues";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveRepublish } from "./resolvers/manage/resolveRepublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
@@ -66,6 +67,9 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`get${model.singularApiName}Revisions`]: resolveGetRevisions({ model }),
             [`get${model.pluralApiName}ByIds`]: resolveGetByIds({ model }),
             [`list${model.pluralApiName}`]: resolveList({ model })
+            // [`list${model.singularApiName}FieldUniqueValues`]: resolveListFieldUniqueValues({
+            //     model
+            // })
         },
         Mutation: {
             [`create${model.singularApiName}`]: resolveCreate({ model }),
