@@ -139,7 +139,7 @@ export const typography = {
         }
     ],
     lists: [{ id: "list", name: "list 1", tag: "ul", styles: { ...paragraphs, fontSize: 17 } }]
-};
+} as const; // https://github.com/emotion-js/emotion/issues/1373#issuecomment-498059774 ;
 
 // Theme object.
 const theme = createTheme({

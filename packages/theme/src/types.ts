@@ -36,7 +36,7 @@ export type TypographyStyle = {
     styles: CSSObject;
 };
 
-export type Typography = Record<TypographyType, TypographyStyle[]>;
+export type Typography = Record<TypographyType, Readonly<TypographyStyle[]>>;
 export type ThemeTypographyStyleItems = TypographyStyle[];
 
 export interface ThemeStyles {
