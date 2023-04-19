@@ -1,12 +1,16 @@
 import React, { ReactElement } from "react";
-import { FolderList } from "@webiny/app-aco";
+import { FolderGrid } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { FileItem } from "@webiny/app/types";
+import { i18n } from "@webiny/app/i18n";
 import styled from "@emotion/styled";
 import getFileTypePlugin from "~/getFileTypePlugin";
 import FileThumbnail, { FileProps } from "~/modules/FileManagerRenderer/DefaultRenderer/File";
 
 import { EmptyView } from "~/modules/FileManagerRenderer/DefaultRenderer/EmptyView";
+import { CircularProgress } from "@webiny/ui/Progress";
+
+const t = i18n.ns("app-admin/file-manager/file-manager-view/grid-view");
 
 interface GridProps {
     type: string;
@@ -23,18 +27,18 @@ interface GridProps {
 }
 
 const FileList = styled("div")({
-    width: "100%",
     display: "grid",
     /* define the number of grid columns */
     gridTemplateColumns: "repeat( auto-fill, minmax(200px, 1fr) )",
     columnGap: 16,
     rowGap: 16,
+    margin: 16,
     marginBottom: 120
 });
 
-const Container = styled("div")`
-    margin: 16px;
-`;
+const FolderList = styled("div")({
+    margin: 16
+});
 
 interface RenderFileProps extends Omit<FileProps, "children"> {
     file: FileItem;
@@ -66,6 +70,7 @@ export const Grid = (props: GridProps): ReactElement => {
         type,
         folders,
         records,
+        loading,
         onRecordClick,
         onFolderClick,
         selected,
@@ -75,41 +80,39 @@ export const Grid = (props: GridProps): ReactElement => {
         multiple
     } = props;
 
+    if (loading) {
+        return <CircularProgress label={t`Loading Files...`} style={{ opacity: 1 }} />;
+    }
+
     return (
         <>
-            <Container>
-                <FolderList
+            <FolderList>
+                <FolderGrid
                     type={type}
                     folders={folders}
                     onFolderClick={folder => onFolderClick(folder.id)}
                 />
-            </Container>
-            <Container>
-                <FileList>
-                    {records.length ? (
-                        records.map(record =>
-                            renderFile({
-                                file: record,
-                                showFileDetails: onRecordClick,
-                                selected: selected.some(current => current.id === record.id),
-                                onSelect: async () => {
-                                    if (typeof onChange === "function") {
-                                        if (multiple) {
-                                            toggleSelected(record);
-                                            return;
-                                        }
-
-                                        await onChange(record);
-                                        onClose && onClose();
-                                    }
+            </FolderList>
+            <FileList>
+                {records.map(record =>
+                    renderFile({
+                        file: record,
+                        showFileDetails: onRecordClick,
+                        selected: selected.some(current => current.id === record.id),
+                        onSelect: async () => {
+                            if (typeof onChange === "function") {
+                                if (multiple) {
+                                    toggleSelected(record);
+                                    return;
                                 }
-                            })
-                        )
-                    ) : (
-                        <EmptyView browseFiles={() => console.log("demo")} />
-                    )}
-                </FileList>
-            </Container>
+
+                                await onChange(record);
+                                onClose && onClose();
+                            }
+                        }
+                    })
+                )}
+            </FileList>
         </>
     );
 };

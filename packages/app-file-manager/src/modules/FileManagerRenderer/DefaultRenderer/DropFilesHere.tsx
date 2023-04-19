@@ -7,8 +7,8 @@ import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/
 const styles = css({
     margin: "0 auto",
     paddingTop: 0,
-    height: "100%",
-    zIndex: 2,
+    height: "calc(100vh - 95px)",
+    zIndex: 3,
     width: "100%",
     position: "absolute",
     backgroundColor: "var(--mdc-theme-text-hint-on-light)",
@@ -27,7 +27,7 @@ const styles = css({
         position: "absolute",
         left: "50%",
         top: "50%",
-        transform: "translateX(-50%) translateY(-100%)",
+        transform: "translateX(-50%) translateY(-50%)",
         "> div": {
             position: "absolute",
             top: 90,

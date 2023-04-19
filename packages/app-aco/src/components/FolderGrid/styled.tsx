@@ -1,9 +1,6 @@
 import styled from "@emotion/styled";
-import { css } from "emotion";
 
-import { ListItemGraphic as ListItemGraphicBase } from "@webiny/ui/List";
-
-export const List = styled("div")`
+export const Grid = styled("div")`
     width: 100%;
     display: grid;
     /* define the number of grid columns */

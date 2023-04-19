@@ -208,7 +208,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
                     // No record found in the list - must be added by previous operation
                     if (recordIndex === -1) {
-                        return { ...prevRecords, [data.type]: [...prevRecordsByType, data] };
+                        return { ...prevRecords, [data.type]: [data, ...prevRecordsByType] };
                     }
 
                     // Updating record found in the list

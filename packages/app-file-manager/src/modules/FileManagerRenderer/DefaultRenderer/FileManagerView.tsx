@@ -8,10 +8,13 @@ import { useHotkeys } from "react-hotkeyz";
 import { FilesRules } from "react-butterfiles";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
-import { ButtonPrimary, ButtonIcon, IconButton } from "@webiny/ui/Button";
+import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add.svg";
+import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/view_module.svg";
+import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/view_list.svg";
+import { ButtonPrimary, ButtonIcon, IconButton, ButtonSecondary } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-import { CircularProgress } from "@webiny/ui/Progress";
+
 import { i18n } from "@webiny/app/i18n";
 import { FileItem } from "@webiny/app-admin/types";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
@@ -23,7 +26,7 @@ import { FileDetails } from "~/components/FileDetails";
 import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { useFileManagerApi, useFileManagerView } from "~/index";
-import { useAcoList } from "@webiny/app-aco";
+import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
 import { FOLDER_TYPE } from "~/constants/folders";
 import { ListDbSort, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
@@ -31,10 +34,10 @@ import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
 import { Grid } from "~/modules/FileManagerRenderer/DefaultRenderer/Grid";
 import { LoadMoreButton } from "~/components/LoadMoreButton";
 import { Title } from "~/components/Title";
-import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/grid_view.svg";
-import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/table_rows.svg";
+
 import { Tooltip } from "@webiny/ui/Tooltip";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { EmptyView } from "~/modules/FileManagerRenderer/DefaultRenderer/EmptyView";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -74,7 +77,8 @@ const FileListWrapper = styled("div")({
     float: "right",
     display: "inline-block",
     width: "calc(100vw - 270px)",
-    height: "100%",
+    height: "calc(100vh - 64px)",
+    position: "relative",
     ".mdc-data-table": {
         display: "inline-table"
     },
@@ -193,6 +197,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const [tableHeight, setTableHeight] = useState(0);
     const tableRef = useRef<HTMLDivElement>(null);
 
+    const [showFoldersDialog, setFoldersDialog] = useState(false);
+    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
+    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
+
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
 
@@ -300,6 +308,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     );
 
     useDeepCompareEffect(() => {
+        if (!settings) {
+            return;
+        }
+
         const recordsFile = records.map(file => {
             const src = settings?.srcPrefix + file.data.key;
             return {
@@ -378,7 +390,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 return null;
             }
             return (
-                <ButtonPrimary onClick={browseFiles} disabled={uploading}>
+                <ButtonPrimary flat={true} small={true} onClick={browseFiles} disabled={uploading}>
                     <ButtonIcon icon={<UploadIcon />} />
                     {t`Upload...`}
                 </ButtonPrimary>
@@ -423,10 +435,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             >
                 {({ getDropZoneProps, browseFiles }) => (
                     <OverlayLayout
-                        {...getDropZoneProps({
-                            onDragEnter: () => hasPreviouslyUploadedFiles && setDragging(true),
-                            onExited: onClose
-                        })}
                         barLeft={<Title title={listTitle} />}
                         barMiddle={
                             <InputSearch>
@@ -445,6 +453,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 {selected.length > 0 ? (
                                     <ButtonPrimary
                                         disabled={uploading}
+                                        flat={true}
+                                        small={true}
                                         onClick={() => {
                                             (async () => {
                                                 if (typeof onChange === "function") {
@@ -462,9 +472,18 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 ) : (
                                     renderUploadFileAction({ browseFiles })
                                 )}
+                                <ButtonSecondary
+                                    data-testid={"file-manager.create-folder-button"}
+                                    onClick={openFoldersDialog}
+                                    small={true}
+                                    style={{ margin: "0 8px" }}
+                                >
+                                    <ButtonIcon icon={<AddIcon />} />
+                                    {t`New Folder`}
+                                </ButtonSecondary>
                                 <Tooltip
-                                    content={t`Toggle to {mode} view`({
-                                        mode: listTable ? "grid" : "table"
+                                    content={t`{mode} layout`({
+                                        mode: listTable ? "Grid" : "Table"
                                     })}
                                     placement={"bottom"}
                                 >
@@ -490,14 +509,16 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 toggleTag={tag => toggleTag({ tag, queryParams })}
                             />
 
-                            <FileListWrapper data-testid={"fm-list-wrapper"}>
-                                {/*{isListLoading && (*/}
-                                {/*    <CircularProgress*/}
-                                {/*        label={t`Loading Files...`}*/}
-                                {/*        style={{ opacity: 1 }}*/}
-                                {/*    />*/}
-                                {/*)}*/}
-                                {dragging && hasPreviouslyUploadedFiles && (
+                            <FileListWrapper
+                                {...getDropZoneProps({
+                                    onDragEnter: () => {
+                                        records.length > 0 && setDragging(true);
+                                    },
+                                    onExited: onClose
+                                })}
+                                data-testid={"fm-list-wrapper"}
+                            >
+                                {dragging && files.length > 0 && (
                                     <DropFilesHere
                                         onDragLeave={() => setDragging(false)}
                                         onDrop={() => setDragging(false)}
@@ -506,7 +527,11 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 <Scrollbar
                                     onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                                 >
-                                    {listTable ? (
+                                    {records.length === 0 &&
+                                    folders.length === 0 &&
+                                    !isListLoading ? (
+                                        <EmptyView browseFiles={browseFiles} />
+                                    ) : listTable ? (
                                         <Table
                                             ref={tableRef}
                                             folders={!searchValue ? folders : []}
@@ -539,13 +564,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                             onClose={onClose}
                                         />
                                     )}
-                                    <LoadMoreButton
-                                        show={!isListLoading && meta.hasMoreItems}
-                                        disabled={isListLoadingMore}
-                                        windowHeight={windowHeight}
-                                        tableHeight={tableHeight}
-                                        onClick={loadMoreOnClick}
-                                    />
                                 </Scrollbar>
                                 <BottomInfoBar
                                     accept={accept}
@@ -557,6 +575,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                     </OverlayLayout>
                 )}
             </Files>
+            <FolderDialogCreate
+                type={FOLDER_TYPE}
+                open={showFoldersDialog}
+                onClose={closeFoldersDialog}
+                currentParentId={currentFolder || null}
+            />
         </>
     );
 };
