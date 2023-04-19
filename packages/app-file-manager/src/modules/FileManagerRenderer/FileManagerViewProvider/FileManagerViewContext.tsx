@@ -285,11 +285,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     };
 
     const deleteFile = async (id: string) => {
-        const file = files.find(file => file.id === id);
-        if (!file) {
-            return;
-        }
-
         await fileManager.deleteFile(id);
 
         setFiles(files => {
@@ -301,6 +296,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             return [...files.slice(0, index), ...files.slice(index + 1)];
         });
 
+        // Sync ACO record - retrieve the most updated record from network
         await getRecord(id);
     };
 

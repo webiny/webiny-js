@@ -7,6 +7,10 @@ import { FileItem } from "@webiny/app-admin/types";
 import { useFile, useFileManagerApi } from "~/index";
 import { useDeleteFile } from "~/modules/Hooks/useDeleteFile";
 
+interface DeleteImageActionProps {
+    onDelete?: () => void;
+}
+
 const isImage = (file: FileItem) => {
     const fileType = mime.getType(file && file.name);
 
@@ -17,11 +21,12 @@ const isImage = (file: FileItem) => {
     return false;
 };
 
-export const DeleteImageAction = () => {
+export const DeleteImageAction = ({ onDelete }: DeleteImageActionProps) => {
     const { file } = useFile();
     const { canEdit } = useFileManagerApi();
     const { openDialogDeleteFile } = useDeleteFile({
-        file
+        file,
+        onDelete
     });
 
     if (!canEdit(file)) {

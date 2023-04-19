@@ -1,10 +1,11 @@
 import React, { useCallback } from "react";
+
+import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { FileItem } from "@webiny/app-admin/types";
-import { useRecords } from "@webiny/app-aco";
-import styled from "@emotion/styled";
+
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view/hooks/file/delete");
 
@@ -20,7 +21,6 @@ const Filename = styled("span")`
 export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
     const { deleteFile } = useFileManagerView();
     const { showSnackbar } = useSnackbar();
-    const { getRecord } = useRecords();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete file`,
@@ -42,9 +42,6 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
         () =>
             showConfirmation(async () => {
                 await deleteFile(file.id);
-
-                // Sync ACO record - retrieve the most updated record from network
-                await getRecord(file.id);
 
                 showSnackbar(t`File deleted successfully`);
 

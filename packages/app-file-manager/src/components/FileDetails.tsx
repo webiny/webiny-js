@@ -215,7 +215,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
                                         <Component key={index} file={file} />
                                     )
                                 )}
-                                <DeleteImageAction />
+                                <DeleteImageAction onDelete={onClose} />
                                 {/* Render background switcher */}
                                 <Tooltip content={t`Toggle background`} placement={"bottom"}>
                                     <IconButton
