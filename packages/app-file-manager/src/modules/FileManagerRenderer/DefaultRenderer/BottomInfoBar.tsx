@@ -16,7 +16,7 @@ const BottomInfoBarWrapper = styled.div`
     background-color: var(--mdc-theme-surface);
     width: 100%;
     transform: translateZ(0);
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     align-items: center;
     z-index: 1;
