@@ -90,7 +90,7 @@ export type ThemeEmotionMap = {
         id: string;
         tag: TypographyHTMLTag;
         name: string;
-        css: Record<string, any>;
+        styles: Record<string, any>;
         // emotion generated class
         className: string;
     };

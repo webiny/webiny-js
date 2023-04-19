@@ -58,17 +58,17 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     }
 
     addThemeStylesToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
-        let css: Record<string, any> = {};
-        const typographyStyleValue = theme?.emotionMap
+        let styles: Record<string, any> = {};
+        const typographyValue = theme?.emotionMap
             ? theme.emotionMap[this.__themeStyleId]
             : undefined;
-        if (this.__themeStyleId && typographyStyleValue) {
-            css = typographyStyleValue.css;
-            addClassNamesToElement(element, typographyStyleValue?.className);
+        if (this.__themeStyleId && typographyValue) {
+            styles = typographyValue.styles;
+            addClassNamesToElement(element, typographyValue?.className);
         }
 
         element.setAttribute(QuoteNodeAttrName, this.__themeStyleId || "");
-        element.style.cssText = styleObjectToString(css);
+        element.style.cssText = styleObjectToString(styles);
         return element;
     }
 

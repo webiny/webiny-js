@@ -77,7 +77,7 @@ const FooterLogo = styled.div`
     }
 
     .copy {
-        ${props => props.theme.styles.typography.paragraphs.cssById("paragraph2")}
+        ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph2")}
         color: ${props => props.theme.styles.colors["color4"]}
     }
 `;

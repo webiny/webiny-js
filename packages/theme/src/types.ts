@@ -28,17 +28,12 @@ export type ThemeBreakpoints = {
 /*
  * Typography section
  */
-export type HeadingHtmlTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-export type ParagraphHtmlTag = "p";
-export type ListHtmlTag = "ul" | "ol";
-export type QuoteHtmlTag = "quoteblock";
-export type ThemeTypographyHTMLTag = HeadingHtmlTag | ParagraphHtmlTag | ListHtmlTag | QuoteHtmlTag;
 export type TypographyType = "headings" | "paragraphs" | "quotes" | "lists" | string;
 export type TypographyStyle = {
     id: string;
     name: string;
-    tag: ThemeTypographyHTMLTag;
-    css: CSSObject;
+    tag: string;
+    styles: CSSObject;
 };
 
 export type Typography = Record<TypographyType, TypographyStyle[]>;
@@ -57,8 +52,7 @@ export interface ThemeStyles {
  */
 
 export type DecoratedThemeTypographyStyles = ThemeTypographyStyleItems & {
-    cssById: (id: string) => CSSObject | undefined;
-    byId: (id: string) => TypographyStyle | undefined;
+    stylesById: (id: string) => CSSObject | undefined;
 };
 
 export type DecoratedTypography = Record<TypographyType, DecoratedThemeTypographyStyles>;

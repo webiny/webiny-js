@@ -116,7 +116,7 @@ export const TypographyAction: TypographyAction = () => {
                     if (elementStyle) {
                         setTypography({
                             id: elementStyle.id,
-                            css: elementStyle.css,
+                            css: elementStyle.styles,
                             name: elementStyle.name,
                             tag: elementStyle.tag
                         });

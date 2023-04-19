@@ -16,14 +16,14 @@ export const toThemeEmotionMap = (
             id: string;
             tag: TypographyHTMLTag;
             name: string;
-            css: Record<string, any>;
+            styles: Record<string, any>;
         }[];
         if (typographyTypeData) {
             typographyTypeData.forEach(styleItem => {
                 // 'le' is for shorter url generation
                 const le = {
                     ...styleItem,
-                    className: [css(styleItem.css)].filter(Boolean).join(" ")
+                    className: [css(styleItem.styles)].filter(Boolean).join(" ")
                 };
                 map[styleItem.id] = le;
             });

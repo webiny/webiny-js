@@ -27,8 +27,10 @@ const CheckmarkIcon = styled(({ className }: { className?: string }) => (
     height: 100px;
 `;
 
-const Heading = styled.div(props => props.theme.styles.typography.headings.cssById("heading1"));
-const Message = styled.div(props => props.theme.styles.typography.paragraphs.cssById("paragraph1"));
+const Heading = styled.div(props => props.theme.styles.typography.headings.stylesById("heading1"));
+const Message = styled.div(props =>
+    props.theme.styles.typography.paragraphs.stylesById("paragraph1")
+);
 
 const Wrapper = styled.div`
     width: 100%;

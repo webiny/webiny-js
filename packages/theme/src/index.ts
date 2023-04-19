@@ -8,8 +8,8 @@ export const createTheme = (theme: Theme): DecoratedTheme => {
             ...current,
             [item]: new Proxy(theme.styles.typography[item], {
                 get: (target, key) => {
-                    if (key === "cssById") {
-                        return (id: string) => target.find(item => item.id === id)?.css;
+                    if (key === "stylesById") {
+                        return (id: string) => target.find(item => item.id === id)?.styles;
                     }
                     return key in target ? target[key as keyof typeof target] : undefined;
                 }

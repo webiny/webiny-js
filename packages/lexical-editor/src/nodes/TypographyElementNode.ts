@@ -87,7 +87,7 @@ export class TypographyElementNode extends ElementNode {
             ? theme?.emotionMap[this.__styleId]
             : undefined;
         if (typographyStyleValue) {
-            this.__css = typographyStyleValue.css;
+            this.__css = typographyStyleValue.styles;
             addClassNamesToElement(element, typographyStyleValue.className);
         }
         element.setAttribute(TypographyNodeAttrName, this.__styleId);
