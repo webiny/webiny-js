@@ -1011,14 +1011,7 @@ export const createEntriesStorageOperations = (
             limit: MAX_LIST_LIMIT
         });
 
-        return items.reduce<string[]>((collection, item) => {
-            const value = item.values[field.fieldId];
-            if (collection.includes(value)) {
-                return collection;
-            }
-            collection.push(value);
-            return collection;
-        }, []);
+        return Array.from(new Set(items.map(item => item.values[field.fieldId])));
     };
 
     return {
