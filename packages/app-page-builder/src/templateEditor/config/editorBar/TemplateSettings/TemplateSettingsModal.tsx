@@ -119,7 +119,12 @@ const TemplateSettingsModal: React.FC = () => {
                                                 name="slug"
                                                 validators={[validation.create("required")]}
                                             >
-                                                <Input label="Slug" description={"Slug should not be changed if there are already existing pages that are using this template."}/>
+                                                <Input
+                                                    label="Slug"
+                                                    description={
+                                                        "Slug should not be changed if there are already existing pages that are using this template."
+                                                    }
+                                                />
                                             </Bind>
                                         </Cell>
                                         <Cell span={12}>
