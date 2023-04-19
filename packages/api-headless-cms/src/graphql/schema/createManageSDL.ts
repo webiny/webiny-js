@@ -132,7 +132,7 @@ export const createManageSDL: CreateManageSDL = ({
         }`
         }
         
-        #type CmsListFieldUniqueValuesResponse {
+        #type CmsGetUniqueFieldValuesResponse {
         #    data: [String!]
         #    error: CmsError
         #}
@@ -151,7 +151,7 @@ export const createManageSDL: CreateManageSDL = ({
                 after: String
             ): ${singularName}ListResponse
 
-            #list${singularName}FieldUniqueValues(where: ${singularName}ListWhereInput, fieldId: String!): CmsListFieldUniqueValuesResponse!
+            #list${singularName}FieldUniqueValues(where: ${singularName}ListWhereInput, fieldId: String!): CmsGetUniqueFieldValuesResponse!
         }
 
         extend type Mutation {

@@ -6,8 +6,6 @@ import {
 } from "~tests/storageOperations/helpers";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 
-jest.retryTimes(0);
-
 describe("field unique values listing", () => {
     const { storageOperations, until, plugins } = useGraphQLHandler({
         path: "manage/en-US"
@@ -77,7 +75,7 @@ describe("field unique values listing", () => {
          */
         expect(Object.values(results)).toHaveLength(amount * 3);
 
-        const values = await storageOperations.entries.listFieldUniqueValues(personModel, {
+        const values = await storageOperations.entries.getUniqueFieldValues(personModel, {
             where: {
                 latest: true
             },

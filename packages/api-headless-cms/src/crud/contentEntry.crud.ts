@@ -1245,10 +1245,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
 
-    const listFieldUniqueValues: CmsEntryContext["listFieldUniqueValues"] = async (
-        model,
-        params
-    ) => {
+    const getUniqueFieldValues: CmsEntryContext["getUniqueFieldValues"] = async (model, params) => {
         const permission = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
@@ -1306,7 +1303,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
 
         try {
-            return await storageOperations.entries.listFieldUniqueValues(model, {
+            return await storageOperations.entries.getUniqueFieldValues(model, {
                 where,
                 fieldId
             });
@@ -1543,11 +1540,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async listFieldUniqueValues(model, params) {
+        async getUniqueFieldValues(model, params) {
             return context.benchmark.measure(
-                "headlessCms.crud.entries.listFieldUniqueValues",
+                "headlessCms.crud.entries.getUniqueFieldValues",
                 async () => {
-                    return listFieldUniqueValues(model, params);
+                    return getUniqueFieldValues(model, params);
                 }
             );
         }

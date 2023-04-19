@@ -989,7 +989,7 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const listFieldUniqueValues: CmsEntryStorageOperations["listFieldUniqueValues"] = async (
+    const getUniqueFieldValues: CmsEntryStorageOperations["getUniqueFieldValues"] = async (
         model,
         params
     ) => {
@@ -1039,6 +1039,6 @@ export const createEntriesStorageOperations = (
         publish,
         list,
         unpublish,
-        listFieldUniqueValues
+        getUniqueFieldValues
     };
 };

@@ -2193,7 +2193,7 @@ export interface UpdateCmsEntryInput {
  * @category Context
  * @category CmsEntry
  */
-export interface ListFieldUniqueValuesParams {
+export interface GetUniqueFieldValuesParams {
     where: CmsEntryListWhere;
     fieldId: string;
 }
@@ -2297,9 +2297,9 @@ export interface CmsEntryContext {
      *
      * @internal
      */
-    listFieldUniqueValues: (
+    getUniqueFieldValues: (
         model: CmsModel,
-        params: ListFieldUniqueValuesParams
+        params: GetUniqueFieldValuesParams
     ) => Promise<string[]>;
     /**
      * Lifecycle events - deprecated.
@@ -2724,7 +2724,7 @@ export interface CmsEntryStorageOperationsUnpublishParams<
     storageEntry: T;
 }
 
-export interface CmsEntryStorageOperationsListFieldUniqueValuesParams {
+export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
     where: CmsEntryListWhere;
     fieldId: string;
 }
@@ -2896,9 +2896,9 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Simplest use case would be to aggregate tags for some content.
      * @internal
      */
-    listFieldUniqueValues: (
+    getUniqueFieldValues: (
         model: CmsModel,
-        params: CmsEntryStorageOperationsListFieldUniqueValuesParams
+        params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
     ) => Promise<string[]>;
 }
 

@@ -1415,7 +1415,7 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const listFieldUniqueValues: CmsEntryStorageOperations["listFieldUniqueValues"] = async (
+    const getUniqueFieldValues: CmsEntryStorageOperations["getUniqueFieldValues"] = async (
         model,
         params
     ) => {
@@ -1470,7 +1470,7 @@ export const createEntriesStorageOperations = (
              */
             size: 0,
             aggregations: {
-                listFieldUniqueValues: {
+                getUniqueFieldValues: {
                     terms: {
                         field: `values.${field.storageId}.keyword`,
                         size: 1000000
@@ -1499,7 +1499,7 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const values = response.body.aggregations["listFieldUniqueValues"] || { buckets: [] };
+        const values = response.body.aggregations["getUniqueFieldValues"] || { buckets: [] };
 
         return values.buckets.map(item => item.key) || [];
     };
@@ -1522,6 +1522,6 @@ export const createEntriesStorageOperations = (
         getLatestByIds,
         getPublishedByIds,
         getPreviousRevision,
-        listFieldUniqueValues
+        getUniqueFieldValues
     };
 };
