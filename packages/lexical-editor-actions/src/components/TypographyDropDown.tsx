@@ -61,7 +61,12 @@ export const TypographyDropDown = () => {
                             className={`item typography-item ${
                                 value?.id === option.id ? "active dropdown-item-active" : ""
                             }`}
-                            onClick={() => applyTypography(option as TypographyValue)}
+                            onClick={() =>
+                                applyTypography({
+                                    ...option,
+                                    css: option.styles
+                                } as TypographyValue)
+                            }
                             key={option.id}
                         >
                             <span className="text">{option.name}</span>
