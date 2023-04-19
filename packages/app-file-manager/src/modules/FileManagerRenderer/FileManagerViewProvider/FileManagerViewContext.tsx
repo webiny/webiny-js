@@ -87,7 +87,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const [settings, setSettings] = useState<Settings | undefined>(undefined);
     const [loadingFiles, setLoading] = useState(false);
     const [currentFolder, setCurrentFolder] = useState<string>();
-    const [listTable, setListTable] = useState<boolean>(true);
+    const [listTable, setListTable] = useState<boolean>(false);
 
     const [state, dispatch] = React.useReducer(
         stateReducer,

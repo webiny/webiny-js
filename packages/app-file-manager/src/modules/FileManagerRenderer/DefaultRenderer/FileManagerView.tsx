@@ -526,6 +526,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                         />
                                     ) : (
                                         <Grid
+                                            type={FOLDER_TYPE}
                                             folders={!searchValue ? folders : []}
                                             records={files.map(file => file.data)}
                                             loading={isListLoading}

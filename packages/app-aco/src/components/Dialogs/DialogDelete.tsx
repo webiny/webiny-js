@@ -16,7 +16,7 @@ import { useFolders } from "~/hooks";
 
 import { DialogContainer } from "./styled";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
+const t = i18n.ns("app-aco/components/tree/dialog-delete");
 
 import { FolderItem } from "~/types";
 

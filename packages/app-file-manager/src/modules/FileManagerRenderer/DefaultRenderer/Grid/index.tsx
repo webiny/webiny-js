@@ -1,15 +1,15 @@
 import React, { ReactElement } from "react";
-import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
+import { FolderList } from "@webiny/app-aco";
+import { FolderItem } from "@webiny/app-aco/types";
 import { FileItem } from "@webiny/app/types";
-import { Settings } from "~/types";
 import styled from "@emotion/styled";
 import getFileTypePlugin from "~/getFileTypePlugin";
 import FileThumbnail, { FileProps } from "~/modules/FileManagerRenderer/DefaultRenderer/File";
 
 import { EmptyView } from "~/modules/FileManagerRenderer/DefaultRenderer/EmptyView";
-import { Folder } from "~/components/Folder";
 
 interface GridProps {
+    type: string;
     records: FileItem[];
     folders: FolderItem[];
     loading?: boolean;
@@ -22,26 +22,19 @@ interface GridProps {
     onClose?: Function;
 }
 
-const FolderList = styled("div")({
-    width: "100%",
-    display: "grid",
-    /* define the number of grid columns */
-    gridTemplateColumns: "repeat( auto-fill, minmax(220px, 1fr) )",
-    columnGap: 16,
-    rowGap: 16,
-    margin: 16
-});
-
 const FileList = styled("div")({
     width: "100%",
     display: "grid",
     /* define the number of grid columns */
-    gridTemplateColumns: "repeat( auto-fill, minmax(220px, 1fr) )",
+    gridTemplateColumns: "repeat( auto-fill, minmax(200px, 1fr) )",
     columnGap: 16,
     rowGap: 16,
-    margin: 16,
-    marginBottom: 95
+    marginBottom: 120
 });
+
+const Container = styled("div")`
+    margin: 16px;
+`;
 
 interface RenderFileProps extends Omit<FileProps, "children"> {
     file: FileItem;
@@ -70,6 +63,7 @@ const renderFile: React.FC<RenderFileProps> = props => {
 
 export const Grid = (props: GridProps): ReactElement => {
     const {
+        type,
         folders,
         records,
         onRecordClick,
@@ -83,37 +77,39 @@ export const Grid = (props: GridProps): ReactElement => {
 
     return (
         <>
-            {folders.length && (
-                <FolderList>
-                    {folders.map(folder => (
-                        <Folder key={folder.id} folder={folder} onFolderClick={onFolderClick} />
-                    ))}
-                </FolderList>
-            )}
-            <FileList>
-                {records.length ? (
-                    records.map(record =>
-                        renderFile({
-                            file: record,
-                            showFileDetails: onRecordClick,
-                            selected: selected.some(current => current.id === record.id),
-                            onSelect: async () => {
-                                if (typeof onChange === "function") {
-                                    if (multiple) {
-                                        toggleSelected(record);
-                                        return;
-                                    }
+            <Container>
+                <FolderList
+                    type={type}
+                    folders={folders}
+                    onFolderClick={folder => onFolderClick(folder.id)}
+                />
+            </Container>
+            <Container>
+                <FileList>
+                    {records.length ? (
+                        records.map(record =>
+                            renderFile({
+                                file: record,
+                                showFileDetails: onRecordClick,
+                                selected: selected.some(current => current.id === record.id),
+                                onSelect: async () => {
+                                    if (typeof onChange === "function") {
+                                        if (multiple) {
+                                            toggleSelected(record);
+                                            return;
+                                        }
 
-                                    await onChange(record);
-                                    onClose && onClose();
+                                        await onChange(record);
+                                        onClose && onClose();
+                                    }
                                 }
-                            }
-                        })
-                    )
-                ) : (
-                    <EmptyView browseFiles={() => console.log("demo")} />
-                )}
-            </FileList>
+                            })
+                        )
+                    ) : (
+                        <EmptyView browseFiles={() => console.log("demo")} />
+                    )}
+                </FileList>
+            </Container>
         </>
     );
 };
