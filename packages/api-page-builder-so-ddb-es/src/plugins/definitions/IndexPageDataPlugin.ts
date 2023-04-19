@@ -3,6 +3,7 @@ import { Page } from "@webiny/api-page-builder/types";
 
 interface ApplyPageDataParams<TPage, TData = Record<string, any>> {
     data: TData;
+    input: Record<string, any>;
     page: TPage;
     plugins: PluginsContainer;
 }

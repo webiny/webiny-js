@@ -1,26 +1,15 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { SecurityContext } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
-
-interface Config {
-    permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+interface Params {
+    documentClient: DocumentClient;
 }
 
 export const defaultIdentity = {
@@ -29,7 +18,7 @@ export const defaultIdentity = {
     displayName: "John Doe"
 };
 
-export const createTenancyAndSecurity = ({ permissions, identity }: Config = {}) => {
+export const createTenancyAndSecurity = ({ documentClient }: Params) => {
     return [
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
@@ -65,11 +54,11 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
             });
 
             context.security.addAuthenticator(async () => {
-                return identity || defaultIdentity;
+                return defaultIdentity;
             });
 
             context.security.addAuthorizer(async () => {
-                return typeof permissions === "undefined" ? [{ name: "*" }] : permissions;
+                return [{ name: "*" }];
             });
         }),
         new BeforeHandlerPlugin<SecurityContext>(context => {

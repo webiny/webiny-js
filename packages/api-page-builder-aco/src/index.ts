@@ -6,6 +6,8 @@ import { getSearchablePageContent } from "~/utils/getSearchableContent";
 
 import { PageSearchProcessor, PbAcoContext } from "~/types";
 
+export * from "./plugins";
+
 const setupContext = (context: PbAcoContext) => {
     const pageSearchProcessors: PageSearchProcessor[] = [];
 
