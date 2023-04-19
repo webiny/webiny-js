@@ -100,11 +100,13 @@ const createDeleteIndexCallable = (client: Client) => {
 interface ElasticsearchClient extends Client {
     indices: Client["indices"] & {
         deleteAll: () => Promise<any>;
+        registerIndex: (names: string[] | string) => void;
     };
 }
 
 const attachCustomEvents = (client: Client): ElasticsearchClient => {
     const createdIndexes = new Set<string>();
+    const registeredIndexes = new Set<string>();
     const originalCreate = client.indices.create;
 
     // @ts-ignore
@@ -130,9 +132,10 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
     const deleteIndexCallable = createDeleteIndexCallable(client);
 
     (client as ElasticsearchClient).indices.deleteAll = async () => {
-        const indexes = Array.from(createdIndexes.values());
+        const indexes = Array.from(createdIndexes.values()).concat(
+            Array.from(registeredIndexes.values())
+        );
         if (indexes.length === 0) {
-            // console.log("No indexes to delete.");
             return;
         }
         const deletedIndexes: string[] = [];
@@ -147,8 +150,12 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
                 console.log(JSON.stringify(ex));
             }
         }
-        // console.log(`Deleted indexes: ${deletedIndexes}`);
-        // console.log(deletedIndexes.join(", "));
+    };
+    (client as ElasticsearchClient).indices.registerIndex = (input: string[] | string) => {
+        const names = Array.isArray(input) ? input : [input];
+        for (const name of names) {
+            registeredIndexes.add(name);
+        }
     };
 
     return client as ElasticsearchClient;

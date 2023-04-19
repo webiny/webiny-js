@@ -42,6 +42,13 @@ import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { configurations } from "~/configurations";
 import { createContextPlugin } from "@webiny/handler";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
+import { configurations as cmsConfigurations } from "@webiny/api-headless-cms-ddb-es/configurations";
+import { SEARCH_RECORD_MODEL_ID } from "@webiny/api-aco/record/record.model";
+import { FOLDER_MODEL_ID } from "@webiny/api-aco/folder/folder.model";
 
 interface Params {
     plugins?: PluginCollection;
@@ -66,16 +73,36 @@ export const useHandler = (params: Params) => {
 
     const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearch);
 
-    const getIndexName = () => {
+    const getPageBuilderIndexName = () => {
         const { index } = configurations.es({
             tenant: "root",
             locale: "en-US"
         });
         return index;
     };
+    const getAcoRecordsIndexName = () => {
+        const { index } = cmsConfigurations.es({
+            model: {
+                modelId: SEARCH_RECORD_MODEL_ID,
+                tenant: "root",
+                locale: "en-US"
+            }
+        });
+        return index;
+    };
+    const getAcoFoldersIndexName = () => {
+        const { index } = cmsConfigurations.es({
+            model: {
+                modelId: FOLDER_MODEL_ID,
+                tenant: "root",
+                locale: "en-US"
+            }
+        });
+        return index;
+    };
 
     const refreshIndex = async (): Promise<void> => {
-        const index = getIndexName();
+        const index = getPageBuilderIndexName();
 
         try {
             await elasticsearch.indices.refresh({ index });
@@ -110,7 +137,6 @@ export const useHandler = (params: Params) => {
                     documentClient
                 })
             }),
-            // TODO figure out a way to load these automatically
             createWcpContext(),
             createWcpGraphQL(),
             createFileManagerContext({
@@ -125,10 +151,19 @@ export const useHandler = (params: Params) => {
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
+            createHeadlessCmsContext({
+                storageOperations: createHeadlessCmsStorageOperations({
+                    documentClient,
+                    elasticsearch
+                })
+            }),
+            createHeadlessCmsGraphQL(),
             createPageBuilderGraphQL(),
             createPageBuilderContext({
                 storageOperations
             }),
+            createAco(),
+            createAcoPageBuilderContext(),
             prerenderingHookPlugins(),
             prerenderingServicePlugins({
                 handlers: {
@@ -177,7 +212,6 @@ export const useHandler = (params: Params) => {
         ]
     });
 
-    // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }: any) => {
         const response = await handler(
             {
@@ -194,22 +228,17 @@ export const useHandler = (params: Params) => {
             {} as any
         );
 
-        // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
     };
 
+    elasticsearch.indices.registerIndex([
+        getPageBuilderIndexName(),
+        getAcoRecordsIndexName(),
+        getAcoFoldersIndexName()
+    ]);
+
     const clearElasticsearch = async () => {
-        const index = getIndexName();
-        try {
-            return await elasticsearch.indices.delete({
-                index,
-                ignore_unavailable: true
-            });
-        } catch (ex) {
-            console.log(`Could not delete elasticsearch index: ${index}`);
-            console.log(ex.message);
-            console.log(JSON.stringify(ex));
-        }
+        await elasticsearch.indices.deleteAll();
         return null;
     };
 
@@ -219,15 +248,21 @@ export const useHandler = (params: Params) => {
         elasticsearch,
         documentClient,
         clearElasticsearch,
-        // General
+        /**
+         * General
+         */
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },
-        // Categories
+        /**
+         * Categories
+         */
         async createCategory(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
-        // Pages
+        /**
+         * Pages
+         */
         async getPage(variables: Record<string, any>, fields: string[] = params.withFields || []) {
             return invoke({ body: { query: createPageGetGraphQl({ fields }), variables } });
         },

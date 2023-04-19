@@ -10,6 +10,8 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-page-builder-aco/tsconfig.build.json" },
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
@@ -24,7 +26,9 @@
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-i18n-ddb/tsconfig.build.json" },
     { "path": "../api-prerendering-service/tsconfig.build.json" },
-    { "path": "../api-file-manager/tsconfig.build.json" }
+    { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-headless-cms-ddb-es/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
