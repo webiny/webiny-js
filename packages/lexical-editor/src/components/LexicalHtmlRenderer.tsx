@@ -11,7 +11,7 @@ import { Klass, LexicalNode } from "lexical";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { ClassNames } from "@emotion/react";
-import { toThemeEmotionMap } from "~/utils/toThemeEmotionMap";
+import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -64,7 +64,7 @@ export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = props => 
         <ClassNames>
             {({ css }) => {
                 const themeEmotionMap =
-                    props?.themeEmotionMap ?? toThemeEmotionMap(css, props.theme);
+                    props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
                 return <BaseLexicalHtmlRenderer {...props} themeEmotionMap={themeEmotionMap} />;
             }}
         </ClassNames>

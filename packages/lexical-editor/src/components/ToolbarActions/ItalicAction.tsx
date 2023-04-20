@@ -3,9 +3,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
-/**
- * Toolbar action. On toolbar, you can see the button that is italic.
- */
 export const ItalicAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isItalic, setIsItalic] = useState(false);

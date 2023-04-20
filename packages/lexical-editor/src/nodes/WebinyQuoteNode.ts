@@ -13,6 +13,7 @@ import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { styleObjectToString } from "~/utils/styleObjectToString";
 import { QuoteBlockHtmlTag, WebinyThemeNode } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
+import { CSSObject } from "@emotion/react";
 
 function convertBlockquoteElement() {
     const node = $createWebinyQuoteNode();
@@ -58,7 +59,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     }
 
     addThemeStylesToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
-        let styles: Record<string, any> = {};
+        let styles: CSSObject = {};
         const typographyValue = theme?.emotionMap
             ? theme.emotionMap[this.__themeStyleId]
             : undefined;

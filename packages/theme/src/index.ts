@@ -1,5 +1,4 @@
-import { DecoratedTheme, Theme } from "~/types";
-import { DecoratedTypography } from "../../../typings/emotion";
+import { DecoratedTheme, DecoratedTypography, Theme } from "~/types";
 
 export const createTheme = (theme: Theme): DecoratedTheme => {
     // Wrap all typography types into a Proxy instance, adding the `stylesById` method.

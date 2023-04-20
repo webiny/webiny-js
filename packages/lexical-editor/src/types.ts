@@ -1,5 +1,6 @@
 import { ElementNode, LexicalNode, NodeSelection, RangeSelection, TextNode } from "lexical";
 import { ListType } from "@lexical/list";
+import { CSSObject } from "@emotion/react";
 export type ToolbarType = "heading" | "paragraph" | string;
 export type LexicalValue = string;
 export { FontColorPicker } from "~/components/ToolbarActions/FontColorAction";
@@ -42,9 +43,9 @@ export type ToolbarState = {
 };
 
 /*
- * @description Represent set of data from the current selection of the text and nodes selected by the user.
+ * Represent set of data from the current selection of the text and nodes selected by the user.
  * You can access this object through the @see useRichTextEditor context.
- * */
+ */
 export type TextBlockSelection = {
     elementKey?: string;
     selection: RangeSelection | NodeSelection | null;
@@ -67,7 +68,7 @@ export type TypographyHTMLTag = HeadingHtmlTag | ParagraphHtmlTag | ListHtmlTag 
 
 export type TypographyValue = {
     // CSSObject type
-    css: Record<string, any>;
+    css: CSSObject;
     id: string;
     tag: TypographyHTMLTag;
     // Display name
@@ -77,14 +78,14 @@ export type TypographyValue = {
 /* Nodes */
 export interface WebinyThemeNode {
     /*
-     * @desc Get theme style id
-     * */
+     * Get theme style id
+     */
     getStyleId: () => string;
 }
 
 /*
- * Contains ids of the styles and emotion generated classes
- * */
+ * Contains IDs of the styles and Emotion generated classes.
+ */
 export type ThemeEmotionMap = {
     [styleId: string]: {
         id: string;

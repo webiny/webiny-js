@@ -3,10 +3,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
-/**
- * Toolbar action. User can highlight the selected text.
- * - Gray background will be visible on selected text after clicking on the button.
- */
 export const CodeHighlightAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isCode, setIsCode] = useState(false);
