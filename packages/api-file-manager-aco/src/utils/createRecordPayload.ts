@@ -7,11 +7,13 @@ import {
 import { File } from "@webiny/api-file-manager/types";
 import { FmFileRecordData } from "~/types";
 
+export const addMimeTag = (tags: string[], mime: string): string[] => [...tags, `mime:${mime}`];
+
 export const createFileRecordPayload = (
     file: File,
     requestMeta?: Record<string, any>
 ): CreateSearchRecordParams<FmFileRecordData> => {
-    const { id, key, size, type, name, meta, createdOn, createdBy, tags } = file;
+    const { id, key, size, type, name, meta, createdOn, createdBy, tags, aliases } = file;
     const location = {
         folderId: requestMeta?.location?.folderId || ROOT_FOLDER
     };
@@ -21,7 +23,7 @@ export const createFileRecordPayload = (
         type: FM_FILE_TYPE,
         title: name,
         location,
-        tags,
+        tags: addMimeTag(tags, type),
         data: {
             id,
             key,
@@ -30,7 +32,8 @@ export const createFileRecordPayload = (
             name,
             createdOn,
             createdBy,
-            tags,
+            tags: addMimeTag(tags, type),
+            aliases,
             meta
         }
     };
@@ -39,11 +42,11 @@ export const createFileRecordPayload = (
 export const updatePageRecordPayload = async (
     file: File
 ): Promise<UpdateSearchRecordParams<FmFileRecordData>> => {
-    const { id, key, size, type, name, meta, createdOn, createdBy, tags } = file;
+    const { id, key, size, type, name, meta, createdOn, createdBy, tags, aliases } = file;
 
     return {
         title: name,
-        tags,
+        tags: addMimeTag(tags, type),
         data: {
             id,
             key,
@@ -52,7 +55,8 @@ export const updatePageRecordPayload = async (
             name,
             createdOn,
             createdBy,
-            tags,
+            tags: addMimeTag(tags, type),
+            aliases,
             meta
         }
     };
