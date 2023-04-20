@@ -9,6 +9,11 @@ const DATA_FIELD = /* GraphQL */ `
         }
         data
         tags
+        createdBy {
+            id
+            displayName
+            type
+        }
     }
 `;
 

@@ -10,7 +10,7 @@ export const recordMocks = {
         data: {
             any: "data"
         },
-        tags: ["tag1", "tag2"]
+        tags: ["tag1", "tag2", "scope:any"]
     },
     recordB: {
         id: "page-b",
