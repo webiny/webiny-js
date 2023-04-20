@@ -81,7 +81,7 @@ const WebsiteSettings: React.FC = () => {
         <Fragment>
             <Group
                 name={"theme"}
-                label={"DecoratedTheme"}
+                label={"Theme"}
                 querySelection={WebsiteSettingsSelection}
             >
                 <Element>
