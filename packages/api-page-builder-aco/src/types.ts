@@ -2,6 +2,7 @@ import { AcoContext } from "@webiny/api-aco/types";
 import { Page, PbPageElement } from "@webiny/api-page-builder/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { Context as BaseContext } from "@webiny/handler/types";
+import { PB_PAGE_TYPE } from "~/contants";
 
 interface PageSearchProcessorParams {
     page: Page;
@@ -32,4 +33,22 @@ export interface PbAcoContext extends BaseContext, AcoContext, PbContext {
         addPageSearchProcessor(processor: PageSearchProcessor): void;
         getSearchablePageContent(content: Page): Promise<string>;
     };
+}
+
+export interface PbPayloadLocation {
+    folderId: string;
+}
+export interface PbCreatePayload {
+    id: string;
+    type: typeof PB_PAGE_TYPE;
+    title: string;
+    content: string;
+    location: PbPayloadLocation;
+    data: PbPageRecordData;
+}
+
+export interface PbUpdatePayload {
+    title: string;
+    content: string;
+    data: PbPageRecordData;
 }

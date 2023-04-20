@@ -67,7 +67,7 @@ export const createPageStorageOperations = (
     const { entity, esEntity, elasticsearch, plugins } = params;
 
     const create = async (params: PageStorageOperationsCreateParams): Promise<Page> => {
-        const { page } = params;
+        const { page, input } = params;
 
         const versionKeys = {
             PK: createPartitionKey(page),
@@ -90,7 +90,7 @@ export const createPageStorageOperations = (
                 TYPE: createLatestType()
             })
         ];
-        const esData = getESLatestPageData(plugins, page);
+        const esData = getESLatestPageData(plugins, page, input);
         try {
             await batchWriteAll({
                 table: entity.table,
@@ -170,7 +170,7 @@ export const createPageStorageOperations = (
     };
 
     const update = async (params: PageStorageOperationsUpdateParams): Promise<Page> => {
-        const { original, page } = params;
+        const { original, page, input } = params;
 
         const keys = {
             PK: createPartitionKey(page),
@@ -192,7 +192,7 @@ export const createPageStorageOperations = (
             })
         ];
 
-        const esData = getESLatestPageData(plugins, page);
+        const esData = getESLatestPageData(plugins, page, input);
 
         if (latestPage && latestPage.id === page.id) {
             /**
