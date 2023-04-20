@@ -74,10 +74,13 @@ const convertFromStorageEntry = (params: ConvertStorageEntryParams): CmsStorageE
     };
 };
 
+const MAX_LIST_LIMIT = 10000;
+
 export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
@@ -691,7 +694,8 @@ export const createEntriesStorageOperations = (
             fields,
             search
         } = params;
-        const limit = initialLimit <= 0 || initialLimit >= 10000 ? 10000 : initialLimit;
+        const limit =
+            initialLimit <= 0 || initialLimit >= MAX_LIST_LIMIT ? MAX_LIST_LIMIT : initialLimit;
 
         const type = initialWhere.published ? "P" : "L";
 
@@ -985,6 +989,31 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const getUniqueFieldValues: CmsEntryStorageOperations["getUniqueFieldValues"] = async (
+        model,
+        params
+    ) => {
+        const { where, fieldId } = params;
+
+        const field = model.fields.find(f => f.fieldId === fieldId);
+        if (!field) {
+            throw new WebinyError(
+                `Could not find field with given "fieldId" value.`,
+                "FIELD_NOT_FOUND",
+                {
+                    fieldId
+                }
+            );
+        }
+
+        const { items } = await list(model, {
+            where,
+            limit: MAX_LIST_LIMIT
+        });
+
+        return Array.from(new Set(items.map(item => item.values[field.fieldId])));
+    };
+
     return {
         create,
         createRevisionFrom,
@@ -1002,6 +1031,7 @@ export const createEntriesStorageOperations = (
         getRevisions,
         publish,
         list,
-        unpublish
+        unpublish,
+        getUniqueFieldValues
     };
 };

@@ -246,3 +246,37 @@ export const deletePersonModel = async (params: DeletePersonModelParams) => {
         console.log(JSON.stringify(ex));
     }
 };
+
+interface WaitPersonRecordsParams {
+    records: PersonEntriesResult;
+    storageOperations: HeadlessCmsStorageOperations;
+    name: string;
+    until: Function;
+    model: CmsModel;
+}
+
+export const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void> => {
+    const { records, storageOperations, until, model, name } = params;
+    await until(
+        () => {
+            return storageOperations.entries.list(model, {
+                where: {
+                    latest: true
+                },
+                sort: ["version_ASC"],
+                limit: 10000
+            });
+        },
+        ({ items }: any) => {
+            /**
+             * There must be item for each result last revision id.
+             */
+            return Object.values(records).every(record => {
+                return items.some((item: any) => item.id === record.last.id);
+            });
+        },
+        {
+            name
+        }
+    );
+};
