@@ -12,7 +12,7 @@ const lexicalText = JSON.stringify({
                         format: 0,
                         mode: "normal",
                         style: "",
-                        text: "Heading",
+                        text: "Heading", // text that will be rendered inside h1 HTML tag
                         type: "text",
                         version: 1
                     }
@@ -20,8 +20,12 @@ const lexicalText = JSON.stringify({
                 direction: "ltr",
                 format: "",
                 indent: 0,
+                // This prop describes the 'type' of the lexical node.
+                // In this case Lexical will create an instance from Heading node class
+                // that manage the creation of the h1-h6 HTML tags and the content inside.
                 type: "heading",
                 version: 1,
+                // Lexical Heading node will create <h1> HTML tag.
                 tag: "h1"
             }
         ],

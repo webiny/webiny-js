@@ -13,31 +13,29 @@ export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
-    const typographyStyles = theme.styles?.typography;
+    const typographyStyles = theme.styles.typography;
     const { textBlockSelection } = useRichTextEditor();
     const textType = textBlockSelection?.state?.textType;
 
-    const hasTypographyStyles = (): boolean => {
-        return !!typographyStyles;
-    };
+    const hasTypographyStyles = !!typographyStyles;
 
     useEffect(() => {
         if (textType) {
             switch (textType) {
                 case "heading":
-                    setStyles(theme.styles?.typography?.headings || []);
+                    setStyles(theme.styles.typography?.headings || []);
                     break;
                 case "paragraph":
-                    setStyles(theme.styles?.typography?.paragraphs || []);
+                    setStyles(theme.styles.typography?.paragraphs || []);
                     break;
                 case "bullet":
-                    setStyles(theme.styles?.typography?.lists?.filter(x => x.tag === "ul") || []);
+                    setStyles(theme.styles.typography.lists?.filter(x => x.tag === "ul") || []);
                     break;
                 case "number":
-                    setStyles(theme.styles?.typography?.lists?.filter(x => x.tag === "ol") || []);
+                    setStyles(theme.styles.typography?.lists?.filter(x => x.tag === "ol") || []);
                     break;
                 case "quoteblock":
-                    setStyles(theme.styles?.typography?.quotes || []);
+                    setStyles(theme.styles.typography?.quotes || []);
                     break;
                 default:
                     setStyles([]);
@@ -47,10 +45,10 @@ export const TypographyDropDown = () => {
 
     return (
         <>
-            {theme && hasTypographyStyles() ? (
+            {theme && hasTypographyStyles ? (
                 <DropDown
                     buttonClassName="toolbar-item typography-dropdown"
-                    buttonAriaLabel={"Formatting options for font size"}
+                    buttonAriaLabel={"Typography formatting options"}
                     buttonLabel={value?.name || "Normal"}
                     stopCloseOnClickSelf={true}
                     disabled={false}

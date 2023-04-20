@@ -177,7 +177,6 @@ export const getTypographyStyleById = (
         return undefined;
     }
     for (const key in typography) {
-        // @ts-ignore
         const typographyStyles = typography[key] as TypographyStyle[];
         const typographyStyle = typographyStyles.find(x => x.id === typographyId);
         if (typographyStyle) {

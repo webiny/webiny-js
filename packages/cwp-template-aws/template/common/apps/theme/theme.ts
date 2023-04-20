@@ -49,26 +49,51 @@ export const typography = {
             id: "heading1",
             name: "Heading 1",
             tag: "h1",
-            css: { ...headings, fontWeight: "bold", fontSize: 48 }
+            styles: { ...headings, fontWeight: "bold", fontSize: 48 }
         },
-        { id: "heading2", name: "Heading 2", tag: "h2", css: { ...headings, fontSize: 36 } },
-        { id: "heading3", name: "Heading 3", tag: "h3", css: { ...headings, fontSize: 30 } },
-        { id: "heading4", name: "Heading 4", tag: "h4", css: { ...headings, fontSize: 24 } },
-        { id: "heading5", name: "Heading 5", tag: "h5", css: { ...headings, fontSize: 20 } },
+        {
+            id: "heading2",
+            name: "Heading 2",
+            tag: "h2",
+            styles: { ...headings, fontSize: 36 }
+        },
+        {
+            id: "heading3",
+            name: "Heading 3",
+            tag: "h3",
+            styles: { ...headings, fontSize: 30 }
+        },
+        {
+            id: "heading4",
+            name: "Heading 4",
+            tag: "h4",
+            styles: { ...headings, fontSize: 24 }
+        },
+        {
+            id: "heading5",
+            name: "Heading 5",
+            tag: "h5",
+            styles: { ...headings, fontSize: 20 }
+        },
         {
             id: "heading6",
             name: "Heading 6",
             tag: "h6",
-            css: { ...headings, fontSize: 18, lineHeight: "1.75rem" }
+            styles: { ...headings, fontSize: 18, lineHeight: "1.75rem" }
         }
     ],
     paragraphs: [
-        { id: "paragraph1", name: "Paragraph 1", tag: "p", css: { ...paragraphs, fontSize: 16.5 } },
+        {
+            id: "paragraph1",
+            name: "Paragraph 1",
+            tag: "p",
+            styles: { ...paragraphs, fontSize: 16.5 }
+        },
         {
             id: "paragraph2",
             name: "Paragraph 2",
             tag: "p",
-            css: {
+            styles: {
                 ...paragraphs,
                 fontSize: 12.5,
                 letterSpacing: "0.45px",
@@ -78,18 +103,18 @@ export const typography = {
     ],
     quotes: [
         {
-            id: "quote1",
-            name: "Quote1 1",
-            tag: "p",
-            css: {
+            id: "quote",
+            name: "Quote",
+            tag: "quoteblock",
+            styles: {
                 ...paragraphs,
                 fontWeight: "bold",
                 fontSize: 22
             }
         }
     ],
-    lists: [{ id: "list1", name: "list 1", tag: "ul", css: { ...paragraphs, fontSize: 16.5 } }]
-} as const; // https://github.com/emotion-js/emotion/issues/1373#issuecomment-498059774
+    lists: [{ id: "list", name: "list 1", tag: "ul", styles: { ...paragraphs, fontSize: 17 } }]
+} as const; // https://github.com/emotion-js/emotion/issues/1373#issuecomment-498059774 ;
 
 // Buttons.
 const buttons = (overrides: CSSObject) => ({
@@ -121,7 +146,6 @@ const theme = createTheme({
     breakpoints,
     styles: {
         colors,
-        // @ts-ignore
         typography,
         elements: {
             document: {
