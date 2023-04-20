@@ -6,7 +6,7 @@ export const createDefaultFilterPlugin = () => {
         fieldType: CmsEntryFilterPlugin.ALL,
         exec: params => {
             const { applyFiltering, field } = params;
-            if (!params.field.isSearchable) {
+            if (!params.field.searchable) {
                 const identifier = [...field.parents.map(p => p.fieldId), field.field.fieldId].join(
                     "."
                 );
