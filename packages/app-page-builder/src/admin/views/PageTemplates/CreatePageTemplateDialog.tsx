@@ -20,7 +20,7 @@ const narrowDialog = css`
 const slugValidator: Validator = (value: string) => {
     if (!value.match(/^[a-z]+(\-[a-z]+)*$/)) {
         throw new Error(
-            "Page Template slug must consist of only 'a-z' and '-' characters (for example: 'page-template-slug')."
+            "Page template slug must consist of only 'a-z' and '-' characters (for example: 'page-template-slug')."
         );
     }
 
