@@ -2,11 +2,11 @@
  * This is the max limit of the Elasticsearch.
  * Change here if it changes (and if it is necessary).
  */
-const ES_LIMIT_MAX = 10000;
+export const ES_LIMIT_MAX = 10000;
 /**
  * Our system default limit.
  */
-const ES_LIMIT_DEFAULT = 50;
+export const ES_LIMIT_DEFAULT = 50;
 
 export const createLimit = (limit?: number, defaultValue = ES_LIMIT_DEFAULT): number => {
     /**
