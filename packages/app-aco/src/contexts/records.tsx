@@ -226,6 +226,24 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
                     return result;
                 });
+
+                setTags(tags => {
+                    const tagsByRecord = data.tags.map((tag: string) => ({
+                        name: tag,
+                        active: false
+                    }));
+
+                    if (tagsByRecord.length === 0) {
+                        return tags;
+                    }
+
+                    const tagsByType = tags[data.type];
+
+                    return {
+                        ...tags,
+                        [data.type]: unionBy(tagsByType, tagsByRecord, "name")
+                    };
+                });
             }
 
             return data;
@@ -267,6 +285,24 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 }
             }));
 
+            setTags(tags => {
+                const tagsByRecord = record.tags.map((tag: string) => ({
+                    name: tag,
+                    active: false
+                }));
+
+                if (tagsByRecord.length > 0) {
+                    return tags;
+                }
+
+                const tagsByType = tags[data.type];
+
+                return {
+                    ...tags,
+                    [data.type]: Array.from(new Set([...tagsByType, ...tagsByRecord]))
+                };
+            });
+
             return data;
         },
 
@@ -302,6 +338,24 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                     .map(record => (record.id === id ? result : record))
                     .filter(record => record.location.folderId === contextFolderId)
             }));
+
+            setTags(tags => {
+                const tagsByRecord = record.tags.map((tag: string) => ({
+                    name: tag,
+                    active: false
+                }));
+
+                if (tagsByRecord.length > 0) {
+                    return tags;
+                }
+
+                const tagsByType = tags[type];
+
+                return {
+                    ...tags,
+                    [type]: unionBy(tagsByType, tagsByRecord, "name")
+                };
+            });
 
             return result;
         },
@@ -387,10 +441,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                     return tags;
                 }
 
-                const typeTags = tags[type];
-                typeTags[tagIndex] = tag;
+                const tagsByType = tags[type];
+                tagsByType[tagIndex] = tag;
 
-                return { ...tags, [type]: typeTags };
+                return { ...tags, [type]: tagsByType };
             });
 
             return tag;

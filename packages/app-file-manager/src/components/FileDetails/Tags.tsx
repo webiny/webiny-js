@@ -10,6 +10,8 @@ import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/
 import { ReactComponent as LabelIcon } from "@material-design-icons/svg/outlined/label.svg";
 import { useSnackbar } from "@webiny/app-admin";
 import { useFile, useFileManagerApi, useFileManagerView } from "~/index";
+import { useTags } from "@webiny/app-aco";
+import { FOLDER_TYPE } from "~/constants/folders";
 
 const chipsStyle = css({
     "&.mdc-chip-set": {
@@ -47,14 +49,14 @@ interface TagsFormData {
 
 const Tags = () => {
     const { file } = useFile();
+    const { tags } = useTags(FOLDER_TYPE);
     const [editing, setEdit] = useState(false);
     const [updating, setUpdating] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { canEdit } = useFileManagerApi();
-    const { updateFile, tags } = useFileManagerView();
+    const { updateFile } = useFileManagerView();
     const [initialTags, setInitialTags] = useState(file.tags);
     const handleEdit = useCallback(() => setEdit(true), []);
-
     const isEditingAllowed = canEdit(file);
 
     const renderHeaderContent = useCallback(
@@ -69,7 +71,7 @@ const Tags = () => {
                 return (
                     <>
                         <Chips className={classNames("list-item__content", chipsStyle)}>
-                            {tags.map(tag => {
+                            {data.tags.map(tag => {
                                 return <Chip key={tag} label={tag} />;
                             })}
                         </Chips>
@@ -119,7 +121,7 @@ const Tags = () => {
                         <li-content>
                             <Bind name={"tags"}>
                                 <MultiAutoComplete
-                                    options={tags}
+                                    options={tags.map(tag => tag.name)}
                                     placeholder={"homepage asset"}
                                     description={"Type in a new tag or select an existing one."}
                                     unique={true}

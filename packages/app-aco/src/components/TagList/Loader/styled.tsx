@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 export const Container = styled("div")`
-    padding: 42px 4px 0;
+    padding: 8px 4px;
 `;
 
 export const SkeletonWrapper = styled("div")`

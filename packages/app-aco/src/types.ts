@@ -27,6 +27,7 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     content: string;
     location: Location;
     data: TData;
+    tags: string[];
 }
 
 export interface TagItem {
