@@ -19,7 +19,7 @@ import { createAcoFileManagerContext } from "~/index";
 import { createStorageOperations } from "~tests/utils/storageOperations";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
-import { createACO } from "@webiny/api-aco";
+import { createAco } from "@webiny/api-aco";
 import path from "path";
 import fs from "fs";
 
@@ -81,7 +81,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 })
             }),
             createFileManagerGraphQL(),
-            createACO(),
+            createAco(),
             createAcoFileManagerContext(),
             {
                 type: "api-file-manager-storage",

@@ -943,7 +943,7 @@ export interface CmsSettingsContext {
     /**
      * Get the datetime when content model last changed.
      */
-    getModelLastChange: () => Promise<Date>;
+    getModelLastChange: () => Promise<Date | null>;
 }
 
 export interface OnSystemBeforeInstallTopicParams {
@@ -1992,13 +1992,13 @@ export interface CmsEntryMeta {
 export interface OnEntryBeforeCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryAfterCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -2016,14 +2016,14 @@ export interface OnEntryRevisionBeforeCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryRevisionAfterCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -2042,14 +2042,14 @@ export interface OnEntryBeforeUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryAfterUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -2066,19 +2066,19 @@ export interface OnEntryUpdateErrorTopicParams {
 
 export interface OnEntryBeforePublishTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryAfterPublishTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
     storageEntry: CmsEntry;
 }
 
 export interface OnEntryPublishErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 /**
@@ -2086,19 +2086,19 @@ export interface OnEntryPublishErrorTopicParams {
  */
 export interface OnEntryBeforeRepublishTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryAfterRepublishTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
     storageEntry: CmsEntry;
 }
 
 export interface OnEntryRepublishErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 /**
@@ -2107,12 +2107,12 @@ export interface OnEntryRepublishErrorTopicParams {
 
 export interface OnEntryBeforeUnpublishTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryAfterUnpublishTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
     storageEntry: CmsEntry;
 }
 
@@ -2124,44 +2124,44 @@ export interface OnEntryUnpublishErrorTopicParams {
 
 export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryDeleteErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryRevisionBeforeDeleteTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryRevisionAfterDeleteTopicParams {
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryRevisionDeleteErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 export interface OnEntryBeforeGetTopicParams {
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
     where: CmsEntryListWhere;
 }
 
 export interface EntryBeforeListTopicParams {
     where: CmsEntryListWhere;
-    model: StorageOperationsCmsModel;
+    model: CmsModel;
 }
 
 /**
@@ -2773,122 +2773,101 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Get all the entries of the ids.
      */
-    getByIds: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetByIdsParams
-    ) => Promise<T[]>;
+    getByIds: (model: CmsModel, params: CmsEntryStorageOperationsGetByIdsParams) => Promise<T[]>;
     /**
      * Get all the published entries of the ids.
      */
     getPublishedByIds: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedByIdsParams
     ) => Promise<T[]>;
     /**
      * Get all the latest entries of the ids.
      */
     getLatestByIds: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestByIdsParams
     ) => Promise<T[]>;
     /**
      * Get all revisions of the given entry id.
      */
     getRevisions: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
     ) => Promise<T[]>;
     /**
      * Get the entry by the given revision id.
      */
     getRevisionById: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionParams
     ) => Promise<T | null>;
     /**
      * Get the published entry by given entryId.
      */
     getPublishedRevisionByEntryId: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
     ) => Promise<T | null>;
     /**
      * Get the latest entry by given entryId.
      */
     getLatestRevisionByEntryId: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) => Promise<T | null>;
     /**
      * Get the revision of the entry before given one.
      */
     getPreviousRevision: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) => Promise<T | null>;
     /**
      * Gets entry by given params.
      */
-    get: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetParams
-    ) => Promise<T | null>;
+    get: (model: CmsModel, params: CmsEntryStorageOperationsGetParams) => Promise<T | null>;
     /**
      * List all entries. Filterable via params.
      */
     list: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsListParams
     ) => Promise<CmsEntryStorageOperationsListResponse<T>>;
     /**
      * Create a new entry.
      */
-    create: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsCreateParams<T>
-    ) => Promise<T>;
+    create: (model: CmsModel, params: CmsEntryStorageOperationsCreateParams<T>) => Promise<T>;
     /**
      * Create a new entry from existing one.
      */
     createRevisionFrom: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) => Promise<T>;
     /**
      * Update existing entry.
      */
-    update: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsUpdateParams<T>
-    ) => Promise<T>;
+    update: (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams<T>) => Promise<T>;
     /**
      * Delete the entry revision.
      */
     deleteRevision: (
-        model: StorageOperationsCmsModel,
+        model: CmsModel,
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) => Promise<void>;
     /**
      * Delete the entry.
      */
-    delete: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsDeleteParams
-    ) => Promise<void>;
+    delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
     /**
      * Publish the entry.
      */
-    publish: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsPublishParams<T>
-    ) => Promise<T>;
+    publish: (model: CmsModel, params: CmsEntryStorageOperationsPublishParams<T>) => Promise<T>;
     /**
      * Unpublish the entry.
      */
-    unpublish: (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsUnpublishParams<T>
-    ) => Promise<T>;
+    unpublish: (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams<T>) => Promise<T>;
 }
 
 export enum CONTENT_ENTRY_STATUS {
@@ -2971,6 +2950,6 @@ export interface HeadlessCmsStorageOperations<C = CmsContext> {
     /**
      * Either attach something from the storage operations or run something in it.
      */
-    beforeInit?: (context: C) => Promise<void>;
+    beforeInit: (context: C) => Promise<void>;
     init?: (context: C) => Promise<void>;
 }

@@ -54,4 +54,4 @@ export {
     RawEventHandler
 } from "~/raw";
 
-export { ContextPlugin, createContextPlugin } from "@webiny/handler";
+export { ContextPlugin, createContextPlugin, ContextPluginCallable } from "@webiny/handler";
