@@ -38,13 +38,14 @@ export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, 
     const onSubmit = async () => {
         try {
             if (folderId) {
-                const { id, title, type, content, data } = searchRecord;
+                const { id, title, type, content, data, tags } = searchRecord;
                 await updateRecord({
                     id,
                     title,
                     type,
                     content,
                     data,
+                    tags,
                     location: {
                         folderId
                     }
