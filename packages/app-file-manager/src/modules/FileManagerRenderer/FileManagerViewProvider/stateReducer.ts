@@ -1,4 +1,5 @@
 import { FileItem } from "@webiny/app-admin/types";
+import { ListDbSort } from "@webiny/app-aco/types";
 
 export enum ListFilesSort {
     CREATED_ON_ASC,
@@ -12,7 +13,7 @@ export interface StateQueryParams {
     search?: string;
     types?: string[];
     limit?: number;
-    sort?: number;
+    sort?: ListDbSort;
     tags?: string[];
     scope?: string;
 }
@@ -89,7 +90,7 @@ export const initializeState = ({ accept, tags, scope, own, identity }: InitPara
         queryParams: {
             scope,
             limit: 50,
-            sort: ListFilesSort.CREATED_ON_DESC,
+            sort: undefined,
             types: accept?.length ? accept : undefined,
             tags: tags?.length ? tags : undefined,
             createdBy: own ? identity.id : undefined
@@ -123,8 +124,7 @@ export const stateReducer: Reducer = (state: State, action) => {
                 ...state.queryParams,
                 ...action.queryParams,
                 types: state.queryParams.types,
-                limit: 50,
-                sort: ListFilesSort.CREATED_ON_DESC
+                limit: 50
             };
             break;
         }

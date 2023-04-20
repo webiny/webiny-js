@@ -48,6 +48,9 @@ interface SearchRecordsContext {
         after?: string;
         sort?: ListDbSort;
         search?: string;
+        tags_in?: string[];
+        tags_startsWith?: string;
+        tags_not_startsWith?: string;
     }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
@@ -88,7 +91,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         loading,
         meta,
         async listRecords(params) {
-            const { type, folderId, after, limit, sort: sorting, search } = params;
+            const {
+                type,
+                folderId,
+                after,
+                limit,
+                sort: sorting,
+                search,
+                tags_in,
+                tags_startsWith,
+                tags_not_startsWith
+            } = params;
+
+            console.log("params", params);
 
             /**
              * Both folderId and type are optional to init `useRecords` but required to list records:
@@ -127,7 +142,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { type, location: { folderId }, limit, after, sort, search },
+                        variables: {
+                            where: {
+                                type,
+                                location: { folderId },
+                                tags_in,
+                                tags_startsWith,
+                                tags_not_startsWith
+                            },
+                            search,
+                            limit,
+                            after,
+                            sort
+                        },
                         fetchPolicy: "network-only"
                     })
             );

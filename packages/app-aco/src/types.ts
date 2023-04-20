@@ -147,12 +147,17 @@ export interface ListSearchRecordsResponse {
 }
 
 export interface ListSearchRecordsQueryVariables {
-    type: string;
-    location: Location;
+    where: {
+        type: string;
+        location?: Location;
+        tags_in?: string[];
+        tags_startsWith?: string;
+        tags_not_startsWith?: string;
+    };
+    search?: string;
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
-    search?: string;
 }
 
 export interface ListTagsResponse {

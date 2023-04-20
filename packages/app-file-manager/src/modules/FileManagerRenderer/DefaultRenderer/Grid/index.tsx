@@ -7,7 +7,6 @@ import styled from "@emotion/styled";
 import getFileTypePlugin from "~/getFileTypePlugin";
 import FileThumbnail, { FileProps } from "~/modules/FileManagerRenderer/DefaultRenderer/File";
 
-import { EmptyView } from "~/modules/FileManagerRenderer/DefaultRenderer/EmptyView";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view/grid-view");

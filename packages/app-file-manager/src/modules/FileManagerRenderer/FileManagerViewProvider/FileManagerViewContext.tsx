@@ -12,7 +12,6 @@ import { FOLDER_ID_DEFAULT } from "~/constants/folders";
 import { useRecords } from "@webiny/app-aco";
 
 const DEFAULT_SCOPE = "scope:";
-
 export const getWhere = (scope: string | undefined) => {
     if (!scope) {
         return {
@@ -98,6 +97,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const queryParamsToWhereInput = (queryParams: StateQueryParams): ListFilesQueryVariables => {
         return {
             limit: queryParams.limit,
+            sort: queryParams.sort,
             where: {
                 ...getWhere(props.scope),
                 createdBy: queryParams.createdBy,

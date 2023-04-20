@@ -26,7 +26,7 @@ import BottomInfoBar from "./BottomInfoBar";
 import { useFileManagerApi, useFileManagerView } from "~/index";
 import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
 import { FOLDER_TYPE } from "~/constants/folders";
-import { ListDbSort, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
+import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
 import { Grid } from "~/modules/FileManagerRenderer/DefaultRenderer/Grid";
@@ -108,8 +108,20 @@ interface FileError {
     e: Error;
 }
 
+const DEFAULT_SCOPE = "scope:";
+export const getWhere = (scope: string | undefined) => {
+    if (!scope) {
+        return {
+            tags_not_startsWith: DEFAULT_SCOPE
+        };
+    }
+    return {
+        tags_startsWith: scope
+    };
+};
+
 const FileManagerView: React.FC<FileManagerViewProps> = props => {
-    const { onClose, onChange, accept, multiple = false, onUploadCompletion } = props;
+    const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope } = props;
 
     const {
         selected,
@@ -135,6 +147,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         setListTable
     } = useFileManagerView();
 
+    const initialWhere = getWhere(scope);
+
     const {
         records,
         folders,
@@ -143,13 +157,13 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useAcoList(FOLDER_TYPE, currentFolder);
+    } = useAcoList({ type: FOLDER_TYPE, folderId: currentFolder, ...initialWhere });
+
+    const fileManager = useFileManagerApi();
+    const { showSnackbar } = useSnackbar();
 
     const [files, setFiles] = useState<SearchRecordItem<FileItem>[]>([]);
-    const [searchValue, setSearchValue] = useState<string>();
-
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [sort, setSort] = useState<ListDbSort>();
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
@@ -160,28 +174,26 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             return { ...current, [next.id]: next.desc ? "DESC" : "ASC" };
         }, {});
 
-        setSort(sort);
+        setQueryParams({ sort });
     }, [tableSorting]);
 
-    useEffect(() => {
-        const listSortedRecords = async () => {
-            await listItems({ sort });
-        };
+    const searchOnChange = useCallback(
+        // @ts-ignore
+        debounce(search => setQueryParams({ search }), 500),
+        []
+    );
 
-        listSortedRecords();
-    }, [sort]);
-
-    useEffect(() => {
-        const listSearchRecords = async () => {
-            await listItems({ search: searchValue, sort });
-        };
-
-        listSearchRecords();
-    }, [searchValue]);
+    // useEffect(() => {
+    //     const listSearchRecords = async () => {
+    //         await listItems({ ...queryParams });
+    //     };
+    //
+    //     listSearchRecords();
+    // }, [JSON.stringify(queryParams)]);
 
     const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
-            await listItems({ after: cursor, sort });
+            await listItems({ ...queryParams, after: cursor });
         }
     };
 
@@ -193,17 +205,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         }, 200),
         [meta]
     );
-
-    const searchOnChange = useCallback(
-        // @ts-ignore
-        debounce(search => {
-            setSearchValue(search);
-        }, 500),
-        []
-    );
-
-    const fileManager = useFileManagerApi();
-    const { showSnackbar } = useSnackbar();
 
     const toggleTag = useCallback(async ({ tag, queryParams }) => {
         const finalTags = Array.isArray(queryParams.tags) ? [...queryParams.tags] : [];
@@ -466,12 +467,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     folders.length === 0 &&
                                     !isListLoading ? (
                                         <EmptyView
-                                            isSearchResult={!!searchValue}
+                                            isSearchResult={!queryParams.search}
                                             browseFiles={browseFiles}
                                         />
                                     ) : listTable ? (
                                         <Table
-                                            folders={!searchValue ? folders : []}
+                                            folders={!queryParams.search ? folders : []}
                                             records={files}
                                             loading={isListLoading}
                                             onRecordClick={showFileDetails}
@@ -489,7 +490,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     ) : (
                                         <Grid
                                             type={FOLDER_TYPE}
-                                            folders={!searchValue ? folders : []}
+                                            folders={!queryParams.search ? folders : []}
                                             records={files.map(file => file.data)}
                                             loading={isListLoading}
                                             onRecordClick={showFileDetails}

@@ -40,7 +40,14 @@ export const useRecords = (type?: string, folderId?: string) => {
             loading,
             meta: meta[folderId!] || {},
             records,
-            listRecords(params: { after?: string; limit?: number; sort?: ListDbSort }) {
+            listRecords(params: {
+                after?: string;
+                limit?: number;
+                sort?: ListDbSort;
+                tags_in?: string[];
+                tags_startsWith?: string;
+                tags_not_startsWith?: string;
+            }) {
                 return listRecords({ type, folderId, ...params });
             },
             getRecord(id: string) {

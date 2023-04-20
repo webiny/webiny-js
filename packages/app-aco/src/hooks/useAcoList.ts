@@ -8,7 +8,17 @@ import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
 
-export const useAcoList = (type: string, originalFolderId?: string) => {
+interface UseAcoListParams {
+    type: string;
+    folderId?: string;
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
+export const useAcoList = (params: UseAcoListParams) => {
+    const { type, folderId: originalFolderId, ...initialWhere } = params;
+
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
 
@@ -66,7 +76,7 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
             listFolders(type);
         }
 
-        listRecords({ type, folderId, sort });
+        listRecords({ type, folderId, sort, ...initialWhere });
     }, [type, folderId]);
 
     /**
@@ -75,10 +85,10 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
      * - we return the current folder name.
      */
     useDeepCompareEffect(() => {
-        const subFolders = getCurrentFolderList(originalFolders[type], originalFolderId);
+        const subFolders = getCurrentFolderList(originalFolders[type], folderId);
         setFolders(sortTableItems(subFolders, sort));
 
-        const currentFolder = originalFolders[type]?.find(folder => folder.id === originalFolderId);
+        const currentFolder = originalFolders[type]?.find(folder => folder.id === folderId);
         setListTitle(currentFolder?.title || undefined);
     }, [{ ...originalFolders[type] }, folderId]);
 
@@ -117,6 +127,9 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
                 limit?: number;
                 sort?: ListDbSort;
                 search?: string;
+                tags_in?: string[];
+                tags_startsWith?: string;
+                tags_not_startsWith?: string;
             }) {
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (params.sort && Object.values(params.sort).length > 0) {
