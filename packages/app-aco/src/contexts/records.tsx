@@ -275,8 +275,6 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("`folderId` is mandatory");
             }
 
-            console.log("record", record);
-
             const { id, location, data, title, content, type } = record;
 
             const { data: response } = await apolloFetchingHandler(

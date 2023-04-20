@@ -18,8 +18,6 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { i18n } from "@webiny/app/i18n";
 import { FileItem } from "@webiny/app-admin/types";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import FileThumbnail, { FileProps } from "./File";
-import getFileTypePlugin from "~/getFileTypePlugin";
 import { outputFileSelectionError } from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
 import { FileDetails } from "~/components/FileDetails";
@@ -32,7 +30,6 @@ import { ListDbSort, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
 import { Grid } from "~/modules/FileManagerRenderer/DefaultRenderer/Grid";
-import { LoadMoreButton } from "~/components/LoadMoreButton";
 import { Title } from "~/components/Title";
 
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -91,14 +88,6 @@ const FileListWrapper = styled("div")({
     }
 });
 
-const FileList = styled("div")({
-    width: "100%",
-    display: "grid",
-    /* define the number of grid columns */
-    gridTemplateColumns: "repeat( auto-fill, minmax(220px, 1fr) )",
-    marginBottom: 95
-});
-
 export interface FileManagerViewProps {
     onChange?: Function;
     onClose?: Function;
@@ -114,36 +103,6 @@ export interface FileManagerViewProps {
     own?: boolean;
 }
 
-interface RenderFileProps extends Omit<FileProps, "children"> {
-    file: FileItem;
-    children?: React.ReactNode;
-}
-const renderFile: React.FC<RenderFileProps> = props => {
-    const { file } = props;
-    const plugin = getFileTypePlugin(file);
-    if (!plugin) {
-        return null;
-    }
-    return (
-        <FileThumbnail {...props} key={file.id}>
-            {plugin.render({
-                /**
-                 * TODO @ts-refactor
-                 */
-                // @ts-ignore
-                file
-            })}
-        </FileThumbnail>
-    );
-};
-
-interface RefreshOnScrollParams {
-    loadMore: () => void;
-    scrollFrame: {
-        top: number;
-    };
-}
-
 interface FileError {
     file: File;
     e: Error;
@@ -153,7 +112,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion } = props;
 
     const {
-        loadMore,
         selected,
         setSelected,
         toggleSelected,
@@ -193,21 +151,9 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
     const [sort, setSort] = useState<ListDbSort>();
 
-    const { innerHeight: windowHeight } = window;
-    const [tableHeight, setTableHeight] = useState(0);
-    const tableRef = useRef<HTMLDivElement>(null);
-
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
-
-    useEffect(() => {
-        setTableHeight(tableRef?.current?.clientHeight || 0);
-
-        return () => {
-            setTableHeight(0);
-        };
-    });
 
     useEffect(() => {
         const sort = tableSorting.reduce((current, next) => {
@@ -251,15 +197,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const searchOnChange = useCallback(
         // @ts-ignore
         debounce(search => {
-            console.log(search);
             setSearchValue(search);
         }, 500),
         []
     );
-
-    const loadMoreOnClick = useCallback(async () => {
-        await loadMoreRecords(meta);
-    }, [meta]);
 
     const fileManager = useFileManagerApi();
     const { showSnackbar } = useSnackbar();
@@ -298,15 +239,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
 
     const searchInput = useRef<HTMLInputElement>(null);
 
-    const refreshOnScroll = useCallback(
-        debounce(({ scrollFrame, loadMore }: RefreshOnScrollParams) => {
-            if (scrollFrame.top > 0.9) {
-                loadMore();
-            }
-        }, 500),
-        [loadMore]
-    );
-
     useDeepCompareEffect(() => {
         if (!settings) {
             return;
@@ -325,6 +257,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
 
         setFiles(recordsFile as SearchRecordItem<FileItem>[]);
     }, [{ ...records }, settings]);
+
+    useDeepCompareEffect(() => {
+        setHasPreviouslyUploadedFiles(Boolean(records.length > 0 || folders.length > 0));
+    }, [{ ...records }, { ...folders }]);
 
     const uploadFiles = async (files: File | File[]): Promise<number | null> => {
         setUploading(true);
@@ -511,14 +447,13 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
 
                             <FileListWrapper
                                 {...getDropZoneProps({
-                                    onDragEnter: () => {
-                                        records.length > 0 && setDragging(true);
-                                    },
+                                    onDragEnter: () =>
+                                        hasPreviouslyUploadedFiles && setDragging(true),
                                     onExited: onClose
                                 })}
                                 data-testid={"fm-list-wrapper"}
                             >
-                                {dragging && files.length > 0 && (
+                                {dragging && hasPreviouslyUploadedFiles && (
                                     <DropFilesHere
                                         onDragLeave={() => setDragging(false)}
                                         onDrop={() => setDragging(false)}
@@ -530,10 +465,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     {records.length === 0 &&
                                     folders.length === 0 &&
                                     !isListLoading ? (
-                                        <EmptyView browseFiles={browseFiles} />
+                                        <EmptyView
+                                            isSearchResult={!!searchValue}
+                                            browseFiles={browseFiles}
+                                        />
                                     ) : listTable ? (
                                         <Table
-                                            ref={tableRef}
                                             folders={!searchValue ? folders : []}
                                             records={files}
                                             loading={isListLoading}
