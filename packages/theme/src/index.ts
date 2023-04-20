@@ -1,6 +1,6 @@
-import { DecoratedTheme, DecoratedTypography, Theme } from "~/types";
+import { BaseTheme, DecoratedTypography, Theme } from "~/types";
 
-export const createTheme = (theme: Theme): DecoratedTheme => {
+export const createTheme = (theme: BaseTheme): Theme => {
     // Wrap all typography types into a Proxy instance, adding the `stylesById` method.
     const typography = Object.keys(theme.styles.typography).reduce((current, item) => {
         return {
@@ -22,5 +22,5 @@ export const createTheme = (theme: Theme): DecoratedTheme => {
             ...theme.styles,
             typography
         }
-    } as DecoratedTheme;
+    } as Theme;
 };

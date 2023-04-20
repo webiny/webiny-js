@@ -64,14 +64,10 @@ export type DecoratedThemeTypographyStyles = ThemeTypographyStyleItems & {
 export type DecoratedTypography = Record<TypographyType, DecoratedThemeTypographyStyles>;
 
 interface DecoratedThemeStyles extends Omit<ThemeStyles, "typography"> {
-    colors: Record<string, any>;
-    borderRadius?: number;
     typography: DecoratedTypography;
-    elements: Record<string, Record<string, any> | StylesObject>;
-    [key: string]: any;
 }
 
-export interface Theme {
+export interface BaseTheme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
@@ -80,6 +76,8 @@ export interface DecoratedTheme {
     breakpoints: ThemeBreakpoints;
     styles: DecoratedThemeStyles;
 }
+
+export type Theme = DecoratedTheme;
 
 declare module "@emotion/react" {
     // Ignoring "@typescript-eslint/no-empty-interface" rule here.

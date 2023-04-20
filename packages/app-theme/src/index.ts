@@ -1,11 +1,11 @@
 import { Plugin } from "@webiny/plugins";
-import { DecoratedTheme } from "@webiny/theme/types";
+import { Theme } from "@webiny/theme/types";
 
 export class ThemePlugin extends Plugin {
     public static override readonly type: string = "theme";
-    public readonly theme: DecoratedTheme;
+    public readonly theme: Theme;
 
-    public constructor(theme: DecoratedTheme) {
+    public constructor(theme: Theme) {
         super();
         this.theme = theme;
     }

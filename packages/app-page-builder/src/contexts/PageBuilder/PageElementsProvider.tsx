@@ -23,7 +23,7 @@ import { createVisibility } from "@webiny/app-page-builder-elements/modifiers/st
 import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
 
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { DecoratedTheme } from "@webiny/app-theme/types";
+import { Theme } from "@webiny/app-theme/types";
 
 import { plugins } from "@webiny/plugins";
 import { PbRenderElementPlugin } from "~/types";
@@ -68,7 +68,7 @@ export const PageElementsProvider: React.FC = ({ children }) => {
     return (
         <PbPageElementsProvider
             // We can assign `Theme` here because we know at this point we're using the new elements rendering engine.
-            theme={pageBuilder.theme as DecoratedTheme}
+            theme={pageBuilder.theme as Theme}
             renderers={getRenderers}
             modifiers={modifiers}
         >

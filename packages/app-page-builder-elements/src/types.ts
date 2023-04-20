@@ -2,7 +2,7 @@ export * from "@webiny/theme/types";
 
 import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/react";
-import { StylesObject, ThemeBreakpoints, DecoratedTheme } from "@webiny/theme/types";
+import { StylesObject, ThemeBreakpoints, Theme } from "@webiny/theme/types";
 
 export interface Page {
     id: string;
@@ -22,7 +22,7 @@ export interface Element<TElementData = Record<string, any>> {
 }
 
 export interface PageElementsProviderProps {
-    theme: DecoratedTheme;
+    theme: Theme;
     renderers: Record<string, Renderer> | (() => Record<string, Renderer>);
     modifiers: {
         styles: Record<string, ElementStylesModifier>;
@@ -37,9 +37,7 @@ export type AttributesObject = React.ComponentProps<any>;
 export type GetRenderers = () => Record<string, Renderer>;
 export type GetElementAttributes = (element: Element) => AttributesObject;
 export type GetElementStyles = (element: Element) => CSSObject;
-export type GetStyles = (
-    styles: StylesObject | ((theme: DecoratedTheme) => StylesObject)
-) => CSSObject;
+export type GetStyles = (styles: StylesObject | ((theme: Theme) => StylesObject)) => CSSObject;
 
 interface SetAssignAttributesCallbackParams {
     attributes: AttributesObject;
@@ -62,7 +60,7 @@ interface SetElementStylesCallbackParams extends PageElementsProviderProps {
 }
 
 interface SetStylesCallbackParams extends PageElementsProviderProps {
-    styles: StylesObject | ((theme: DecoratedTheme) => StylesObject);
+    styles: StylesObject | ((theme: Theme) => StylesObject);
     assignStyles?: AssignStylesCallback;
 }
 
@@ -130,14 +128,14 @@ export type Renderer<T = {}, TElementData = Record<string, any>> = React.Compone
 
 export type ElementAttributesModifier = (args: {
     element: Element;
-    theme: DecoratedTheme;
+    theme: Theme;
     renderers?: PageElementsProviderProps["renderers"];
     modifiers?: PageElementsProviderProps["modifiers"];
 }) => AttributesObject | null;
 
 export type ElementStylesModifier = (args: {
     element: Element;
-    theme: DecoratedTheme;
+    theme: Theme;
     renderers?: PageElementsProviderProps["renderers"];
     modifiers?: PageElementsProviderProps["modifiers"];
 }) => StylesObject | null;

@@ -65,7 +65,7 @@ interface DecoratedThemeStyles extends Omit<ThemeStyles, "typography"> {
     [key: string]: any;
 }
 
-export interface Theme {
+export interface BaseTheme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
@@ -74,3 +74,5 @@ export interface DecoratedTheme {
     breakpoints: ThemeBreakpoints;
     styles: DecoratedThemeStyles;
 }
+
+export type Theme = DecoratedTheme;

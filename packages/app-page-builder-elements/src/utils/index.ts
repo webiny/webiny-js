@@ -172,7 +172,7 @@ export const elementDataPropsAreEqual = (prevProps: RendererProps, nextProps: Re
 export const getTypographyStyleById = (
     typographyId: string,
     typography?: Typography
-): Record<string, any> | undefined => {
+): CSSObject | undefined => {
     if (!typography) {
         return undefined;
     }

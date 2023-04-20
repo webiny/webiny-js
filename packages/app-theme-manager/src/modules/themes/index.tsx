@@ -79,11 +79,7 @@ const WebsiteSettingsSelection = gql`
 const WebsiteSettings: React.FC = () => {
     return (
         <Fragment>
-            <Group
-                name={"theme"}
-                label={"Theme"}
-                querySelection={WebsiteSettingsSelection}
-            >
+            <Group name={"theme"} label={"Theme"} querySelection={WebsiteSettingsSelection}>
                 <Element>
                     <IsNotRootTenant>
                         <TenantThemes />

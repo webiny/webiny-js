@@ -10,7 +10,7 @@ export const toTypographyEmotionMap = (
     theme: WebinyTheme
 ): ThemeEmotionMap | {} => {
     const map: ThemeEmotionMap = {};
-    const typographyStyles = theme?.styles?.typography;
+    const typographyStyles = theme.styles?.typography;
     if (!typographyStyles) {
         return {};
     }
