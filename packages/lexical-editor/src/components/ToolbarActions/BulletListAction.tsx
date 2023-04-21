@@ -20,7 +20,7 @@ export const BulletListAction = () => {
     const formatBulletList = () => {
         if (!isActive) {
             // will update the active state in the useEffect
-            editor.dispatchCommand(INSERT_UNORDERED_WEBINY_LIST_COMMAND, { themeStyleId: "list1" });
+            editor.dispatchCommand(INSERT_UNORDERED_WEBINY_LIST_COMMAND, { themeStyleId: "list" });
         } else {
             editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
         }
