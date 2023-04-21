@@ -188,7 +188,7 @@ describe("`search` CRUD", () => {
 
         // Let's filter records using `tags_in`
         const [tagsInResponse] = await search.listRecords({
-            where: { type: "page", tags_in: ["tag1"] }
+            where: { type: "page", tags_in: ["page-tag1"] }
         });
 
         expect(tagsInResponse.data.search.listRecords).toEqual(
@@ -363,16 +363,141 @@ describe("`search` CRUD", () => {
         await search.createRecord({ data: recordMocks.recordE });
 
         // Let's search for tags.
-        const [response] = await search.listTags({
-            where: { type: "page" }
-        });
+        const [response] = await search.listTags();
 
         expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
-                data: ["scope:any", "tag1", "tag2", "tag3"],
+                data: [
+                    "page-tag1",
+                    "page-tag2",
+                    "page-tag3",
+                    "post-tag1",
+                    "post-tag2",
+                    "scope:page",
+                    "scope:post"
+                ],
                 meta: expect.objectContaining({
                     cursor: null,
-                    totalCount: 4,
+                    totalCount: 7,
+                    hasMoreItems: false
+                }),
+                error: null
+            })
+        );
+    });
+
+    it("should list existing tags, filtered by search record `type`", async () => {
+        // Let's create some search records.
+        await search.createRecord({ data: recordMocks.recordA });
+        await search.createRecord({ data: recordMocks.recordB });
+        await search.createRecord({ data: recordMocks.recordC });
+        await search.createRecord({ data: recordMocks.recordD });
+        await search.createRecord({ data: recordMocks.recordE });
+
+        // Let's search for tags.
+        const [responseWithNot] = await search.listTags({
+            where: {
+                type: "post"
+            }
+        });
+
+        expect(responseWithNot.data.search.listTags).toEqual(
+            expect.objectContaining({
+                data: ["post-tag1", "post-tag2", "scope:post"],
+                meta: expect.objectContaining({
+                    cursor: null,
+                    totalCount: 3,
+                    hasMoreItems: false
+                }),
+                error: null
+            })
+        );
+    });
+
+    it("should list existing tags, filtered by `tags_in` param", async () => {
+        // Let's create some search records.
+        await search.createRecord({ data: recordMocks.recordA });
+        await search.createRecord({ data: recordMocks.recordB });
+        await search.createRecord({ data: recordMocks.recordC });
+        await search.createRecord({ data: recordMocks.recordD });
+        await search.createRecord({ data: recordMocks.recordE });
+
+        // Let's search for tags.
+        const [responseWithNot] = await search.listTags({
+            where: {
+                tags_in: "scope:page"
+            }
+        });
+
+        expect(responseWithNot.data.search.listTags).toEqual(
+            expect.objectContaining({
+                data: ["page-tag1", "page-tag2", "scope:page"],
+                meta: expect.objectContaining({
+                    cursor: null,
+                    totalCount: 3,
+                    hasMoreItems: false
+                }),
+                error: null
+            })
+        );
+    });
+
+    it("should list existing tags, filtered by `tags_startsWith` param", async () => {
+        // Let's create some search records.
+        await search.createRecord({ data: recordMocks.recordA });
+        await search.createRecord({ data: recordMocks.recordB });
+        await search.createRecord({ data: recordMocks.recordC });
+        await search.createRecord({ data: recordMocks.recordD });
+        await search.createRecord({ data: recordMocks.recordE });
+
+        // Let's search for tags.
+        const [responseWithNot] = await search.listTags({
+            where: {
+                tags_startsWith: "scope:"
+            }
+        });
+
+        expect(responseWithNot.data.search.listTags).toEqual(
+            expect.objectContaining({
+                data: [
+                    "page-tag1",
+                    "page-tag2",
+                    "post-tag1",
+                    "post-tag2",
+                    "scope:page",
+                    "scope:post"
+                ],
+                meta: expect.objectContaining({
+                    cursor: null,
+                    totalCount: 6,
+                    hasMoreItems: false
+                }),
+                error: null
+            })
+        );
+    });
+
+    it("should list existing tags, filtered by `tags_not_startsWith` param", async () => {
+        // Let's create some search records.
+        await search.createRecord({ data: recordMocks.recordA });
+        await search.createRecord({ data: recordMocks.recordB });
+        await search.createRecord({ data: recordMocks.recordC });
+        await search.createRecord({ data: recordMocks.recordD });
+        await search.createRecord({ data: recordMocks.recordE });
+
+        // Let's search for tags.
+        const [responseWithNot] = await search.listTags({
+            where: {
+                tags_not_startsWith: "scope:"
+            }
+        });
+
+        expect(responseWithNot.data.search.listTags).toEqual(
+            expect.objectContaining({
+                data: ["page-tag1", "page-tag3"],
+                meta: expect.objectContaining({
+                    cursor: null,
+                    totalCount: 2,
                     hasMoreItems: false
                 }),
                 error: null

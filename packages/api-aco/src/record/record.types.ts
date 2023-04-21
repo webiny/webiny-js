@@ -60,8 +60,6 @@ export interface ListSearchRecordTagsWhere {
 
 export interface ListSearchRecordTagsParams {
     where?: ListSearchRecordTagsWhere;
-    limit?: number;
-    after?: string;
 }
 
 export interface StorageOperationsGetSearchRecordParams {

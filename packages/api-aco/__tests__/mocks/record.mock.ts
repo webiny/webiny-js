@@ -10,7 +10,7 @@ export const recordMocks = {
         data: {
             any: "data"
         },
-        tags: ["tag1", "tag2", "scope:any"]
+        tags: ["page-tag1", "page-tag2", "scope:page"]
     },
     recordB: {
         id: "page-b",
@@ -23,7 +23,7 @@ export const recordMocks = {
         data: {
             any: 1
         },
-        tags: ["tag1"]
+        tags: ["page-tag1"]
     },
     recordC: {
         id: "page-c",
@@ -36,7 +36,7 @@ export const recordMocks = {
         data: {
             any: "data"
         },
-        tags: ["tag3"]
+        tags: ["page-tag3"]
     },
     recordD: {
         id: "post-d",
@@ -49,7 +49,7 @@ export const recordMocks = {
         data: {
             any: "data"
         },
-        tags: ["tag1", "tag2"]
+        tags: ["post-tag1", "post-tag2", "scope:post"]
     },
     recordE: {
         id: "post-e",
