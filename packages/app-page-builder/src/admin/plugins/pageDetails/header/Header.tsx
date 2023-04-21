@@ -41,7 +41,8 @@ const PageLink = styled.div`
     display: flex;
     align-items: center;
     height: 24px;
-
+    cursor: pointer;
+  
     span {
         white-space: nowrap;
         overflow: hidden;
@@ -102,7 +103,7 @@ const Header: React.FC<HeaderProps> = props => {
                     <PageTitle>
                         <Typography use="headline6">{page.title}</Typography>
                     </PageTitle>
-                    <PageLink>
+                    <PageLink onClick={handlePreviewClick}>
                         <Typography use="caption">{url}</Typography>
                         <OpenInNew />
                     </PageLink>
