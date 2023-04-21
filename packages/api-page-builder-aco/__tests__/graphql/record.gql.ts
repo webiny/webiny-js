@@ -4,6 +4,7 @@ const DATA_FIELD = (extra = "") => /* GraphQL */ `
         type
         title
         content
+        tags
         location {
             folderId
         }

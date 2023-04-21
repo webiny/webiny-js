@@ -39,7 +39,7 @@ export interface ListSearchRecordsParams {
 
 export type CreateSearchRecordParams<TData> = Pick<
     SearchRecord<TData>,
-    "id" | "title" | "content" | "type" | "location" | "data"
+    "id" | "title" | "content" | "type" | "location" | "data" | "tags"
 >;
 
 export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
