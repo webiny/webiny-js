@@ -59,7 +59,11 @@ export const createSearchRecordOperations = (
         },
         createRecord({ data }) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, data);
+                const defaultData = {
+                    data: {},
+                    tags: []
+                };
+                const entry = await cms.createEntry(model, { ...defaultData, ...data });
 
                 return getFieldValues(entry, baseFields, true);
             });
