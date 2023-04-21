@@ -5,7 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
-import { ReactComponent as LinkIcon } from "@material-design-icons/svg/round/link.svg";
+import { ReactComponent as OpenInNew } from "@material-design-icons/svg/round/open_in_new.svg";
 import { PbPageData } from "~/types";
 
 const HeaderTitle = styled.div`
@@ -52,9 +52,9 @@ const PageLink = styled.div`
     svg {
         display: none;
         flex-shrink: 0;
-        width: 20px;
-        height: 20px;
-        margin-left: 8px;
+        width: 14px;
+        height: 14px;
+        margin-left: 2px;
         cursor: pointer;
     }
 
@@ -104,7 +104,7 @@ const Header: React.FC<HeaderProps> = props => {
                     </PageTitle>
                     <PageLink>
                         <Typography use="caption">{url}</Typography>
-                        <LinkIcon onClick={handlePreviewClick} />
+                        <OpenInNew />
                     </PageLink>
                 </PageInfo>
                 <HeaderActions>
