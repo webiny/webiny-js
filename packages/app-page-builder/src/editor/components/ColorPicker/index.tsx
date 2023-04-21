@@ -10,7 +10,6 @@ import { ReactComponent as IconPalette } from "../../assets/icons/round-color_le
 import { isLegacyRenderingEngine } from "~/utils";
 import { PbTheme } from "~/types";
 import { Theme } from "@webiny/app-theme/types";
-
 const ColorPickerStyle = styled("div")({
     display: "flex",
     flexWrap: "wrap",

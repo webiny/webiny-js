@@ -7,8 +7,10 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@emotion/react": "^11.10.6",
     "@lexical/code": "0.8.1",
     "@lexical/hashtag": "0.8.1",
+    "@lexical/history": "0.8.1",
     "@lexical/link": "0.8.1",
     "@lexical/list": "0.8.1",
     "@lexical/mark": "0.8.1",
@@ -20,7 +22,8 @@
     "@webiny/react-composition": "0.0.0",
     "lexical": "0.8.1",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-style-object-to-css": "^1.1.2"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
