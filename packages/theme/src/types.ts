@@ -44,6 +44,7 @@ export interface ThemeStyles {
     borderRadius?: number;
     typography: Typography;
     elements: Record<string, Record<string, any> | StylesObject>;
+
     [key: string]: any;
 }
 
@@ -62,6 +63,7 @@ interface DecoratedThemeStyles extends Omit<ThemeStyles, "typography"> {
     borderRadius?: number;
     typography: DecoratedTypography;
     elements: Record<string, Record<string, any> | StylesObject>;
+
     [key: string]: any;
 }
 
@@ -70,9 +72,7 @@ export interface BaseTheme {
     styles: ThemeStyles;
 }
 
-interface DecoratedTheme {
+export interface Theme {
     breakpoints: ThemeBreakpoints;
     styles: DecoratedThemeStyles;
 }
-
-export type Theme = DecoratedTheme;
