@@ -7,7 +7,6 @@ import {
     LexicalEditor,
     LexicalNode,
     NodeKey,
-    ParagraphNode,
     SerializedElementNode,
     Spread
 } from "lexical";
