@@ -68,7 +68,7 @@ describe("5.35.0-006", () => {
                                 image: null,
                                 layout: "static",
                                 snippet: null,
-                                tags: null
+                                tags: [`tag-${pid}`]
                             },
                             seo: {
                                 description: null,
@@ -201,6 +201,7 @@ describe("5.35.0-006", () => {
                 "object@location": {
                     "text@folderId": ROOT_FOLDER
                 },
+                "text@tags": [`tag-${pid}`],
                 "wby-aco-json@data": {
                     createdBy,
                     createdOn,

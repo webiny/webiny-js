@@ -96,7 +96,7 @@ describe("5.35.0-006", () => {
                                 image: null,
                                 layout: "static",
                                 snippet: null,
-                                tags: null
+                                tags: [`tag-${pid}-1`, `tag-${pid}-2`]
                             },
                             seo: {
                                 description: null,
@@ -303,6 +303,7 @@ describe("5.35.0-006", () => {
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
                     },
+                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
                     "wby-aco-json@data": {
                         createdBy,
                         createdOn,
@@ -328,6 +329,7 @@ describe("5.35.0-006", () => {
                     "text@type": PB_PAGE_TYPE,
                     "text@title": title,
                     "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
                     }
