@@ -1,0 +1,4 @@
+{
+  "name": "API ACO DynamoDB / Elasticsearch",
+  "entryPoints": ["types.ts"]
+}

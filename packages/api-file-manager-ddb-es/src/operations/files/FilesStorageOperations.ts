@@ -8,7 +8,6 @@ import {
     FileManagerFilesStorageOperationsGetParams,
     FileManagerFilesStorageOperationsListParams,
     FileManagerFilesStorageOperationsListResponse,
-    FileManagerFilesStorageOperationsListResponseMeta,
     FileManagerFilesStorageOperationsTagsParams,
     FileManagerFilesStorageOperationsTagsResponse,
     FileManagerFilesStorageOperationsUpdateParams
@@ -18,7 +17,7 @@ import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import { configurations } from "~/configurations";
-import { encodeCursor, compress } from "@webiny/api-elasticsearch";
+import { compress, encodeCursor } from "@webiny/api-elasticsearch";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
@@ -448,7 +447,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
-    ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
+    ): Promise<FileManagerFilesStorageOperationsTagsResponse[]> {
         const { where, limit } = params;
 
         const initialBody = createElasticsearchBody({
@@ -459,12 +458,19 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             after: undefined,
             getTenantId: this.getTenantId
         });
-
+        /**
+         *
+         * Composite aggregation: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-composite-aggregation.html
+         * Term aggregation: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html
+         */
         const body: ElasticsearchSearchBody = {
             ...initialBody,
-            aggs: {
-                listTags: {
+            size: 0,
+            sort: undefined,
+            aggregations: {
+                tags: {
                     terms: {
+                        size: limit,
                         field: "tags.keyword"
                     }
                 }
@@ -483,29 +489,18 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 ex.message || "Error in the Elasticsearch query.",
                 ex.code || "ELASTICSEARCH_ERROR",
                 {
+                    error: ex,
                     body
                 }
             );
         }
 
-        const listTags = response.body.aggregations["listTags"] || { buckets: [] };
-
-        const tags = listTags.buckets.map(item => item.key) || [];
-
-        let hasMoreItems = false;
-        const totalCount = tags.length;
-        if (totalCount > limit + 1) {
-            tags.pop();
-            hasMoreItems = true;
-        }
-
-        const meta: FileManagerFilesStorageOperationsListResponseMeta = {
-            hasMoreItems,
-            totalCount,
-            cursor: null
-        };
-
-        return [tags, meta];
+        return (response.body.aggregations["tags"] || { buckets: [] }).buckets.map(file => {
+            return {
+                tag: file.key,
+                count: file.doc_count
+            };
+        });
     }
 
     private createPartitionKey(params: CreatePartitionKeyParams): string {

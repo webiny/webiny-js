@@ -65,6 +65,7 @@ describe("Pages -> Search records", () => {
             location: {
                 folderId: ROOT_FOLDER
             },
+            tags: [],
             data: {
                 id,
                 pid,
@@ -115,7 +116,12 @@ describe("Pages -> Search records", () => {
             id,
             data: {
                 title: `${title} + update`,
-                content: pageContentMock
+                content: pageContentMock,
+                settings: {
+                    general: {
+                        tags: ["tag1"]
+                    }
+                }
             }
         });
 
@@ -131,6 +137,7 @@ describe("Pages -> Search records", () => {
             id: pid,
             title: updatePage.title,
             content: `${updatePage.title} Demo Heading Demo Content with multiple spaces and new line Demo button Demo Image 1 Demo Image 2 Demo Image 3`,
+            tags: ["tag1"],
             data: {
                 title: updatePage.title,
                 savedOn: updatePage.savedOn

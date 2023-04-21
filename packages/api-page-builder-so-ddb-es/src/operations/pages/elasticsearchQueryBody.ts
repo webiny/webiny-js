@@ -5,7 +5,6 @@ import {
     createLimit,
     createSort,
     decodeCursor,
-    ElasticsearchFieldPlugin,
     getElasticsearchOperatorPluginsByLocale
 } from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
@@ -83,13 +82,10 @@ interface CreateElasticsearchBodyParams {
     limit: number;
     after: string | null;
     sort: string[];
+    fieldPlugins: Record<string, PageElasticsearchFieldPlugin>;
 }
 
-const createElasticsearchQuery = (
-    params: CreateElasticsearchBodyParams & {
-        fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
-    }
-) => {
+const createElasticsearchQuery = (params: CreateElasticsearchBodyParams) => {
     const { plugins, where: initialWhere, fieldPlugins } = params;
     const query = createInitialQueryValue({
         where: initialWhere
@@ -172,7 +168,7 @@ const createElasticsearchQuery = (
 };
 
 export const createElasticsearchQueryBody = (
-    params: CreateElasticsearchBodyParams
+    params: Omit<CreateElasticsearchBodyParams, "fieldPlugins">
 ): esSearchBody & Pick<Required<esSearchBody>, "sort"> => {
     const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 

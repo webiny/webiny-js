@@ -8,7 +8,6 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
-
 import prerenderingHookPlugins from "~/prerendering/hooks";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
