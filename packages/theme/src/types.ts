@@ -70,7 +70,7 @@ export interface BaseTheme {
     styles: ThemeStyles;
 }
 
-export interface DecoratedTheme {
+interface DecoratedTheme {
     breakpoints: ThemeBreakpoints;
     styles: DecoratedThemeStyles;
 }
