@@ -224,7 +224,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             status,
             tenant,
             title,
-            version
+            version,
+            settings
         } = page;
 
         const content = await getSearchablePageContent(page);
@@ -262,6 +263,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 "object@location": {
                     "text@folderId": ROOT_FOLDER
                 },
+                "text@tags": settings.general?.tags || [],
                 "text@type": PB_PAGE_TYPE
             }
         };

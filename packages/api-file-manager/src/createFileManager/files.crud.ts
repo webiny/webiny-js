@@ -351,19 +351,12 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
 
             const params = {
                 where,
-                limit: limit || 100000,
+                limit: limit || 1000000,
                 after
             };
 
             try {
-                const [tags] = await storageOperations.files.tags(params);
-                if (Array.isArray(tags) === false) {
-                    return [];
-                }
-                /**
-                 * just to keep it standardized, sort by the tag ASC
-                 */
-                return tags.sort();
+                return await storageOperations.files.tags(params);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not search for tags.",

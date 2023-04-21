@@ -57,7 +57,9 @@ describe("`search` CRUD", () => {
         expect(recordE).toEqual({
             ...recordMocks.recordE,
             id: recordE.id,
-            tags: null,
+            content: null,
+            data: {},
+            tags: [],
             createdBy: userMock
         });
 
@@ -98,18 +100,24 @@ describe("`search` CRUD", () => {
         );
 
         // List records -> type: "post" / folderId: "folder-1"
-        const [listResponsePostFolder1] = await search.listRecords({
+        const [listResponsePost] = await search.listRecords({
             where: { type: "post" },
             sort: {
                 createdOn: "ASC"
             }
         });
 
-        expect(listResponsePostFolder1.data.search.listRecords).toEqual(
+        expect(listResponsePost.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     expect.objectContaining({ ...recordMocks.recordD, id: recordD.id }),
-                    expect.objectContaining({ ...recordMocks.recordE, id: recordE.id })
+                    expect.objectContaining({
+                        ...recordMocks.recordE,
+                        id: recordE.id,
+                        content: null,
+                        data: {},
+                        tags: []
+                    })
                 ]),
                 error: null
             })

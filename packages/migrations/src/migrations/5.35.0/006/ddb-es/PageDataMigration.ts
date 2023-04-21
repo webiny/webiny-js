@@ -22,8 +22,8 @@ import {
     esCreateIndex,
     esFindOne,
     esGetIndexExist,
-    esQueryAllWithCallback,
     esGetIndexName,
+    esQueryAllWithCallback,
     queryAll,
     queryOne
 } from "~/utils";
@@ -238,7 +238,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 status,
                                 tenant: pageTenant,
                                 title,
-                                version
+                                version,
+                                settings
                             } = ddbPage;
 
                             const entry = await this.createSearchRecordCommonFields(ddbPage);
@@ -254,8 +255,21 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                     "text@type": PB_PAGE_TYPE,
                                     "text@title": title,
                                     "text@content": content,
+                                    "text@tags": settings.general?.tags || [],
                                     "object@location": {
                                         "text@folderId": ROOT_FOLDER
+                                    },
+                                    "wby-aco-json@data": {
+                                        id: `${pid}#0001`,
+                                        pid,
+                                        title,
+                                        createdBy,
+                                        createdOn,
+                                        savedOn,
+                                        status,
+                                        version,
+                                        locked,
+                                        path
                                     }
                                 },
                                 createdBy,
@@ -271,19 +285,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 TYPE: "cms.entry.l",
                                 __type: "cms.entry.l",
                                 rawValues: {
-                                    "object@location": {},
-                                    "wby-aco-json@data": {
-                                        id: `${pid}#0001`,
-                                        pid,
-                                        title,
-                                        createdBy,
-                                        createdOn,
-                                        savedOn,
-                                        status,
-                                        version,
-                                        locked,
-                                        path
-                                    }
+                                    "object@location": {}
                                 }
                             };
 
@@ -405,7 +407,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             status,
             tenant,
             title,
-            version
+            version,
+            settings
         } = page;
 
         const content = await getSearchablePageContent(page);
@@ -443,6 +446,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 "object@location": {
                     "text@folderId": ROOT_FOLDER
                 },
+                "text@tags": settings.general?.tags || [],
                 "text@type": PB_PAGE_TYPE
             }
         };

@@ -5,7 +5,7 @@ const jsonField: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-json",
     type: "cms-model-field-to-graphql",
     fieldType: "wby-aco-json",
-    isSortable: false,
+    isSortable: true,
     isSearchable: true,
     read: {
         createTypeField({ field }) {

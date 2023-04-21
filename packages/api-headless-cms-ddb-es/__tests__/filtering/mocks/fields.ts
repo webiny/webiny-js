@@ -13,6 +13,8 @@ export const createModel = (): CmsModel => {
     return {
         modelId: "testModel",
         name: "Test Model",
+        singularApiName: "TestModel",
+        pluralApiName: "TestModels",
         fields: [
             {
                 id: "age",
@@ -80,9 +82,9 @@ export const createFields = (): Fields => {
                 storageId: "id",
                 label: "Id"
             },
-            isSearchable: true,
-            isSortable: true,
-            isSystemField: true,
+            searchable: true,
+            sortable: true,
+            systemField: true,
             type: "string",
             parents: []
         },
@@ -94,9 +96,9 @@ export const createFields = (): Fields => {
                 storageId: "age",
                 label: "Age"
             },
-            isSearchable: true,
-            isSortable: true,
-            isSystemField: false,
+            searchable: true,
+            sortable: true,
+            systemField: false,
             type: "number",
             parents: []
         },
@@ -108,9 +110,9 @@ export const createFields = (): Fields => {
                 storageId: "title",
                 label: "Title"
             },
-            isSearchable: true,
-            isSortable: true,
-            isSystemField: false,
+            searchable: true,
+            sortable: true,
+            systemField: false,
             type: "text",
             parents: []
         },
@@ -122,9 +124,9 @@ export const createFields = (): Fields => {
                 storageId: "date",
                 label: "Date"
             },
-            isSearchable: true,
-            isSortable: true,
-            isSystemField: false,
+            searchable: true,
+            sortable: true,
+            systemField: false,
             type: "datetime",
             parents: []
         },
@@ -136,9 +138,9 @@ export const createFields = (): Fields => {
                 storageId: "isMarried",
                 label: "Is Married"
             },
-            isSearchable: true,
-            isSortable: true,
-            isSystemField: false,
+            searchable: true,
+            sortable: true,
+            systemField: false,
             type: "date",
             parents: []
         },
@@ -150,9 +152,9 @@ export const createFields = (): Fields => {
                 storageId: "price",
                 label: "Price"
             },
-            isSearchable: true,
-            isSortable: true,
-            isSystemField: false,
+            searchable: true,
+            sortable: true,
+            systemField: false,
             type: "number",
             parents: []
         },
@@ -164,9 +166,9 @@ export const createFields = (): Fields => {
                 storageId: "availableOn",
                 label: "Available On"
             },
-            isSearchable: true,
-            isSortable: true,
-            isSystemField: false,
+            searchable: true,
+            sortable: true,
+            systemField: false,
             type: "date",
             parents: []
         }

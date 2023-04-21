@@ -79,7 +79,7 @@ export interface Page {
     content: Record<string, any> | null;
     publishedOn: string | null;
     version: number;
-    settings: Record<string, any>;
+    settings: PageSettings;
     locked: boolean;
     status: string;
     createdOn: string;

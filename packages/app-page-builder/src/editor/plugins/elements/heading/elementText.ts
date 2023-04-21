@@ -20,8 +20,9 @@ const lexicalText = JSON.stringify({
                 direction: "ltr",
                 format: "",
                 indent: 0,
-                type: "paragraph",
-                version: 1
+                type: "heading",
+                version: 1,
+                tag: "h1"
             }
         ],
         direction: "ltr",

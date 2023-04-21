@@ -74,10 +74,14 @@ interface FilesCrudListTagsParams {
     after?: string;
 }
 
+export interface ListTagsResponse {
+    tag: string;
+    count: number;
+}
 export interface FilesCRUD extends FileLifecycleEvents {
     getFile(id: string): Promise<File>;
     listFiles(opts?: FilesListOpts): Promise<[File[], FileListMeta]>;
-    listTags(params: FilesCrudListTagsParams): Promise<string[]>;
+    listTags(params: FilesCrudListTagsParams): Promise<ListTagsResponse[]>;
     createFile(data: FileInput, meta?: Record<string, any>): Promise<File>;
     updateFile(id: string, data: Partial<FileInput>): Promise<File>;
     deleteFile(id: string): Promise<boolean>;
@@ -323,10 +327,10 @@ export type FileManagerFilesStorageOperationsListResponse = [
     FileManagerFilesStorageOperationsListResponseMeta
 ];
 
-export type FileManagerFilesStorageOperationsTagsResponse = [
-    string[],
-    FileManagerFilesStorageOperationsListResponseMeta
-];
+export interface FileManagerFilesStorageOperationsTagsResponse {
+    tag: string;
+    count: number;
+}
 
 export interface FileManagerFilesStorageOperationsTagsParamsWhere extends FilesCrudListTagsWhere {
     locale: string;
@@ -378,7 +382,7 @@ export interface FileManagerFilesStorageOperations {
      */
     tags: (
         params: FileManagerFilesStorageOperationsTagsParams
-    ) => Promise<FileManagerFilesStorageOperationsTagsResponse>;
+    ) => Promise<FileManagerFilesStorageOperationsTagsResponse[]>;
 }
 
 export interface FileManagerStorageOperations<TContext = FileManagerContext> {

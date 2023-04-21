@@ -12,11 +12,11 @@ export interface Location {
 export interface SearchRecord<TData extends GenericSearchData = GenericSearchData>
     extends AcoBaseFields {
     type: string;
-    title?: string;
+    title: string;
     content?: string;
-    location?: Location;
-    data?: TData;
-    tags?: string[];
+    location: Location;
+    data: TData;
+    tags: string[];
 }
 
 export type SearchRecordTag = string;
@@ -27,6 +27,8 @@ export interface ListSearchRecordsWhere {
         folderId: string;
     };
     tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
 }
 
 export interface ListSearchRecordsParams {

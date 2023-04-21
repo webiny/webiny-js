@@ -11,9 +11,6 @@ import {
 } from "lexical";
 import { DropDown, DropDownItem } from "../../ui/DropDown";
 
-/**
- * Toolbar action. Allow user to change font size for selected text.
- */
 const FONT_SIZE_OPTIONS: string[] = [
     "8px",
     "9px",
