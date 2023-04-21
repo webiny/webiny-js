@@ -8,6 +8,7 @@ import {
     DELETE_FILE,
     DeleteFileMutationResponse,
     DeleteFileMutationVariables,
+    GET_FILE_SETTINGS,
     GetFileManagerSettingsQueryResponse,
     LIST_FILES,
     LIST_TAGS,
@@ -18,12 +19,16 @@ import {
     ListFileTagsQueryVariables,
     UPDATE_FILE,
     UpdateFileMutationResponse,
-    UpdateFileMutationVariables,
-    GET_FILE_SETTINGS
+    UpdateFileMutationVariables
 } from "../graphql";
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
+
+export interface ListTagsResponseItem {
+    tag: string;
+    count: number;
+}
 
 export interface FileManagerApiContextData<TFileItem extends FileItem = FileItem> {
     canRead: boolean;
@@ -37,7 +42,7 @@ export interface FileManagerApiContextData<TFileItem extends FileItem = FileItem
     listFiles: (
         params?: ListFilesQueryVariables
     ) => Promise<{ files: TFileItem[]; meta: ListFilesListFilesResponse["meta"] }>;
-    listTags: (params?: ListTagsOptions) => Promise<string[]>;
+    listTags: (params?: ListTagsOptions) => Promise<ListTagsResponseItem[]>;
     getSettings(): Promise<Settings>;
 }
 
@@ -174,13 +179,13 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         return { files, meta };
     };
 
-    const listTags: FileManagerApiContextData["listTags"] = async (params = {}) => {
+    const listTags = async (params = {}) => {
         const { data } = await client.query<ListFileTagsQueryResponse>({
             query: LIST_TAGS,
             variables: params
         });
 
-        return data.fileManager.listTags;
+        return data.fileManager.listTags.data;
     };
 
     /**
