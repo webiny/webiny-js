@@ -130,8 +130,13 @@ export class TypographyElementNode extends ElementNode {
         return false;
     }
 
-    override insertNewAfter(): ParagraphNode {
-        const newElement = $createParagraphNode();
+    override insertNewAfter(): TypographyElementNode {
+        const newElement = $createTypographyNode({
+            tag: this.__tag,
+            name: this.__name,
+            css: this.__css,
+            id: this.__styleId
+        });
         const direction = this.getDirection();
         newElement.setDirection(direction);
         this.insertAfter(newElement);
