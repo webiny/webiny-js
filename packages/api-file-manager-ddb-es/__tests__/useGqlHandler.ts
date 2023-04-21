@@ -29,7 +29,8 @@ import {
     UPDATE_FILE,
     DELETE_FILE,
     GET_FILE,
-    LIST_FILES
+    LIST_FILES,
+    LIST_TAGS
 } from "../../api-file-manager/__tests__/graphql/file";
 import {
     INSTALL,
@@ -70,7 +71,7 @@ interface ElasticsearchIndiceParams {
 export default (params?: UseGqlHandlerParams) => {
     const { permissions, identity } = params || {};
 
-    const elasticsearchClient = createElasticsearchClient();
+    const elasticsearch = createElasticsearchClient();
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
@@ -79,7 +80,7 @@ export default (params?: UseGqlHandlerParams) => {
         accessKeyId: "test",
         secretAccessKey: "test"
     });
-    const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
+    const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearch);
 
     const getIndexName = (params: ElasticsearchIndiceParams): string => {
         const cfg = configurations.es(params);
@@ -90,7 +91,7 @@ export default (params?: UseGqlHandlerParams) => {
     const clearElasticsearch = async (params: ElasticsearchIndiceParams) => {
         const index = getIndexName(params);
         try {
-            return await elasticsearchClient.indices.delete({
+            return await elasticsearch.indices.delete({
                 index,
                 ignore_unavailable: true
             });
@@ -103,7 +104,7 @@ export default (params?: UseGqlHandlerParams) => {
     };
 
     const createElasticsearchIndice = async (params: ElasticsearchIndiceParams) => {
-        return elasticsearchClient.indices.create({
+        return elasticsearch.indices.create({
             index: getIndexName(params),
             body: getBaseConfiguration()
         });
@@ -146,7 +147,7 @@ export default (params?: UseGqlHandlerParams) => {
             createFileManagerContext({
                 storageOperations: createFileManagerStorageOperations({
                     documentClient,
-                    elasticsearchClient,
+                    elasticsearchClient: elasticsearch,
                     plugins: richTextFieldStoragePlugins()
                 })
             }),
@@ -190,6 +191,7 @@ export default (params?: UseGqlHandlerParams) => {
         until,
         handler,
         invoke,
+        elasticsearch,
         clearElasticsearch,
         createElasticsearchIndice,
         getIndexName,
@@ -211,6 +213,9 @@ export default (params?: UseGqlHandlerParams) => {
         },
         async listFiles(variables: Variables = {}, fields: string[] = []) {
             return invoke({ body: { query: LIST_FILES(fields), variables } });
+        },
+        async listTags() {
+            return invoke({ body: { query: LIST_TAGS } });
         },
         // File Manager settings
         async isInstalled(variables: Variables) {
