@@ -24,7 +24,13 @@ describe("`search` CRUD", () => {
 
         const [responseE] = await search.createRecord({ data: recordMocks.recordE });
         const recordE = responseE.data.search.createRecord.data;
-        expect(recordE).toEqual({ ...recordMocks.recordE, id: recordE.id });
+        expect(recordE).toEqual({
+            ...recordMocks.recordE,
+            id: recordE.id,
+            content: null,
+            data: {},
+            tags: []
+        });
 
         // Let's check whether both of the record exists, listing them by `type` and `location`.
         // List records -> type: "page" / folderId: "folder-1"
@@ -63,18 +69,24 @@ describe("`search` CRUD", () => {
         );
 
         // List records -> type: "post" / folderId: "folder-1"
-        const [listResponsePostFolder1] = await search.listRecords({
+        const [listResponsePost] = await search.listRecords({
             where: { type: "post" },
             sort: {
                 createdOn: "ASC"
             }
         });
 
-        expect(listResponsePostFolder1.data.search.listRecords).toEqual(
+        expect(listResponsePost.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     expect.objectContaining({ ...recordMocks.recordD, id: recordD.id }),
-                    expect.objectContaining({ ...recordMocks.recordE, id: recordE.id })
+                    expect.objectContaining({
+                        ...recordMocks.recordE,
+                        id: recordE.id,
+                        content: null,
+                        data: {},
+                        tags: []
+                    })
                 ]),
                 error: null
             })
@@ -146,6 +158,49 @@ describe("`search` CRUD", () => {
                 data: expect.arrayContaining([
                     expect.objectContaining({ ...recordMocks.recordB, id: recordB.id }),
                     expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
+                ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using `tags_in`
+        const [tagsInResponse] = await search.listRecords({
+            where: { type: "page", tags_in: ["page-tag1"] }
+        });
+
+        expect(tagsInResponse.data.search.listRecords).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
+                ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using `tags_startsWith`
+        const [tagsStartsWithResponse] = await search.listRecords({
+            where: { type: "page", tags_startsWith: "scope:" }
+        });
+
+        expect(tagsStartsWithResponse.data.search.listRecords).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id })
+                ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using `tags_not_startsWith`
+        const [tagsNotStartsWithResponse] = await search.listRecords({
+            where: { type: "page", tags_not_startsWith: "scope:" }
+        });
+
+        expect(tagsNotStartsWithResponse.data.search.listRecords).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
                 ]),
                 error: null
             })

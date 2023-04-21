@@ -44,11 +44,13 @@ export interface PbCreatePayload {
     title: string;
     content: string;
     location: PbPayloadLocation;
+    tags: string[];
     data: PbPageRecordData;
 }
 
 export interface PbUpdatePayload {
     title: string;
     content: string;
+    tags: string[];
     data: PbPageRecordData;
 }

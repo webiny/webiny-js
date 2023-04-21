@@ -12,10 +12,11 @@ export interface Location {
 export interface SearchRecord<TData extends GenericSearchData = GenericSearchData>
     extends AcoBaseFields {
     type: string;
-    title?: string;
+    title: string;
     content?: string;
-    location?: Location;
-    data?: TData;
+    location: Location;
+    data: TData;
+    tags: string[];
 }
 
 export interface ListSearchRecordsWhere {
@@ -23,6 +24,9 @@ export interface ListSearchRecordsWhere {
     location?: {
         folderId: string;
     };
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
 }
 
 export interface ListSearchRecordsParams {
@@ -35,7 +39,7 @@ export interface ListSearchRecordsParams {
 
 export type CreateSearchRecordParams<TData> = Pick<
     SearchRecord<TData>,
-    "id" | "title" | "content" | "type" | "location" | "data"
+    "id" | "title" | "content" | "type" | "location" | "data" | "tags"
 >;
 
 export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
@@ -43,6 +47,7 @@ export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
     content?: string;
     location?: Location;
     data?: TData;
+    tags?: string[];
 }
 
 export interface DeleteSearchRecordParams {

@@ -57,9 +57,10 @@ export const createSearchRecordOperations = (
                 return [entries.map(entry => getFieldValues(entry, baseFields, true)), meta];
             });
         },
-        createRecord({ data }) {
+        createRecord({ data: SearchRecordData }) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, data);
+                const { tags = [], data = {}, ...rest } = SearchRecordData;
+                const entry = await cms.createEntry(model, { tags, data, ...rest });
 
                 return getFieldValues(entry, baseFields, true);
             });

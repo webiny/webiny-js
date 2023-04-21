@@ -8,8 +8,9 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            tags: ["tag1", "tag2"]
-        }
+            any: "data"
+        },
+        tags: ["page-tag1", "page-tag2", "scope:page"]
     },
     recordB: {
         id: "page-b",
@@ -20,8 +21,9 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            tags: ["tag1"]
-        }
+            any: 1
+        },
+        tags: ["page-tag1"]
     },
     recordC: {
         id: "page-c",
@@ -32,8 +34,9 @@ export const recordMocks = {
             folderId: "folder-2"
         },
         data: {
-            tags: ["tag1"]
-        }
+            any: "data"
+        },
+        tags: ["page-tag3"]
     },
     recordD: {
         id: "post-d",
@@ -44,19 +47,16 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            any: "string"
-        }
+            any: "data"
+        },
+        tags: ["post-tag1", "post-tag2", "scope:post"]
     },
     recordE: {
         id: "post-e",
         type: "post",
         title: "Post e",
-        content: "Lorem ipsum docet",
         location: {
             folderId: "folder-1"
-        },
-        data: {
-            any: 1
         }
     }
 };
