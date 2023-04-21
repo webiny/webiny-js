@@ -97,18 +97,17 @@ const createDeleteIndexCallable = client => {
 
 const attachCustomEvents = client => {
     const createdIndexes = new Set();
+    const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
 
     const deleteIndexCallable = createDeleteIndexCallable(client);
 
-    // @ts-ignore
     client.indices.create = async (params, options = {}) => {
         /**
          * First we always delete existing index, if any.
          */
         await deleteIndexCallable(params.index);
 
-        // @ts-ignore
         const response = await originalCreate.apply(client.indices, [params, options]);
 
         if (createdIndexes.has(params.index) === false) {
@@ -123,7 +122,9 @@ const attachCustomEvents = client => {
     };
 
     client.indices.deleteAll = async () => {
-        const indexes = Array.from(createdIndexes.values());
+        const indexes = Array.from(createdIndexes.values()).concat(
+            Array.from(registeredIndexes.values())
+        );
         if (indexes.length === 0) {
             // console.log("No indexes to delete.");
             return;
@@ -142,6 +143,12 @@ const attachCustomEvents = client => {
         createdIndexes.clear();
         //console.log(`Deleted indexes: ${deletedIndexes}`);
         //console.log(deletedIndexes.join(", "));
+    };
+    client.indices.registerIndex = input => {
+        const names = Array.isArray(input) ? input : [input];
+        for (const name of names) {
+            registeredIndexes.add(name);
+        }
     };
 
     return client;

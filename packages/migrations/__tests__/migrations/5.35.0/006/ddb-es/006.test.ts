@@ -16,7 +16,7 @@ import {
 
 import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
 
-import { createTenantsData, createLocalesData, createdBy } from "./006.data";
+import { createdBy, createLocalesData, createTenantsData } from "./006.data";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedData";
@@ -96,7 +96,7 @@ describe("5.35.0-006", () => {
                                 image: null,
                                 layout: "static",
                                 snippet: null,
-                                tags: null
+                                tags: [`tag-${pid}-1`, `tag-${pid}-2`]
                             },
                             seo: {
                                 description: null,
@@ -303,6 +303,7 @@ describe("5.35.0-006", () => {
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
                     },
+                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
                     "wby-aco-json@data": {
                         createdBy,
                         createdOn,
@@ -328,8 +329,21 @@ describe("5.35.0-006", () => {
                     "text@type": PB_PAGE_TYPE,
                     "text@title": title,
                     "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
+                    },
+                    "wby-aco-json@data": {
+                        id: `${pid}#0001`,
+                        pid,
+                        title,
+                        createdBy,
+                        createdOn,
+                        savedOn,
+                        status,
+                        version,
+                        locked,
+                        path
                     }
                 },
                 createdBy,
@@ -345,19 +359,7 @@ describe("5.35.0-006", () => {
                 TYPE: "cms.entry.l",
                 __type: "cms.entry.l",
                 rawValues: {
-                    "object@location": {},
-                    "wby-aco-json@data": {
-                        id: `${pid}#0001`,
-                        pid,
-                        title,
-                        createdBy,
-                        createdOn,
-                        savedOn,
-                        status,
-                        version,
-                        locked,
-                        path
-                    }
+                    "object@location": {}
                 }
             });
 

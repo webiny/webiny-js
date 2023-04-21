@@ -10,7 +10,7 @@ export const recordMocks = {
         data: {
             any: "data"
         },
-        tags: ["tag1", "tag2"]
+        tags: ["page-tag1", "page-tag2", "scope:page"]
     },
     recordB: {
         id: "page-b",
@@ -23,7 +23,7 @@ export const recordMocks = {
         data: {
             any: 1
         },
-        tags: ["tag1"]
+        tags: ["page-tag1"]
     },
     recordC: {
         id: "page-c",
@@ -36,7 +36,7 @@ export const recordMocks = {
         data: {
             any: "data"
         },
-        tags: ["tag3"]
+        tags: ["page-tag3"]
     },
     recordD: {
         id: "post-d",
@@ -49,18 +49,56 @@ export const recordMocks = {
         data: {
             any: "data"
         },
-        tags: ["tag1", "tag2"]
+        tags: ["post-tag1", "post-tag2", "scope:post"]
     },
     recordE: {
         id: "post-e",
         type: "post",
         title: "Post e",
+        location: {
+            folderId: "folder-1"
+        }
+    },
+    recordF: {
+        id: "post-f",
+        type: "post",
+        title: "Post f",
         content: "Lorem ipsum docet",
         location: {
             folderId: "folder-1"
         },
         data: {
-            any: 1
+            any: 1,
+            something: "yes",
+            num: 1
+        }
+    },
+    recordG: {
+        id: "post-g",
+        type: "post",
+        title: "Post g",
+        content: "Lorem ipsum docet",
+        location: {
+            folderId: "folder-1"
+        },
+        data: {
+            any: 1,
+            something: "no",
+            num: 3
+        }
+    },
+    recordH: {
+        id: "post-h",
+        type: "post",
+        title: "Post h",
+        content: "Lorem ipsum docet",
+        location: {
+            folderId: "folder-1"
+        },
+        data: {
+            any: 1,
+            something: "yes",
+            num: 5
         }
     }
 };

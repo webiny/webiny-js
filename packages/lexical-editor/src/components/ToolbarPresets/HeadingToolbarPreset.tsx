@@ -8,12 +8,14 @@ import { LinkAction } from "~/components/ToolbarActions/LinkAction";
 import { FontSizeAction } from "~/components/ToolbarActions/FontSizeAction";
 import { Divider } from "~/ui/Divider";
 import { FontColorAction } from "~/components/ToolbarActions/FontColorAction";
+import { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
 
 export const HeadingToolbarPreset = () => {
     return (
         <>
             <AddToolbarAction element={<FontSizeAction />} type={"heading"} />
             <AddToolbarAction element={<FontColorAction />} type={"heading"} />
+            <AddToolbarAction element={<TypographyAction />} type={"heading"} />
             <AddToolbarAction element={<Divider />} type={"heading"} />
             <AddToolbarAction element={<BoldAction />} type={"heading"} />
             <AddToolbarAction element={<ItalicAction />} type={"heading"} />

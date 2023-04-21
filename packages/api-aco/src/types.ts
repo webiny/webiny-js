@@ -6,6 +6,9 @@ import { CmsContext } from "@webiny/api-headless-cms/types";
 import { AcoSearchRecordCrud, AcoSearchRecordStorageOperations } from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
 
+export * from "./folder/folder.types";
+export * from "./record/record.types";
+
 export interface User {
     id: string;
     type: string;

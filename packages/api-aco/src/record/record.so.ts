@@ -64,33 +64,18 @@ export const createSearchRecordOperations = (
             return withModel(async model => {
                 const { where } = params;
 
-                const [entries] = await cms.listLatestEntries(model, {
-                    ...params,
+                const allTags = await cms.getUniqueFieldValues(model, {
                     where: {
-                        ...(where || {})
-                    }
+                        ...(where || {}),
+                        latest: true
+                    },
+                    fieldId: "tags"
                 });
 
-                const entryValues = entries.map(entry =>
-                    getFieldValues(entry, ["id", "tags"], true)
-                );
-
-                const tags = entryValues
-                    .reduce((collection, item) => {
-                        const tags = Array.isArray(item.tags) ? item.tags : [];
-
-                        for (const tag of tags) {
-                            if (collection.find((item: string) => item === tag)) {
-                                continue;
-                            }
-                            collection.push(tag);
-                        }
-
-                        return collection;
-                    }, [] as string[])
-                    .sort();
-
-                //const tags: string[] = Object.keys(tagsObject).sort();
+                const tags = allTags
+                    .flatMap(item => (Array.isArray(item) ? item : [item])) // flatten the nested arrays
+                    .filter((item, index, array) => item && array.indexOf(item) === index) // remove duplicates and falsy values
+                    .sort(); // sort the values
 
                 const meta = {
                     hasMoreItems: false,
@@ -101,9 +86,10 @@ export const createSearchRecordOperations = (
                 return [tags, meta];
             });
         },
-        createRecord({ data }) {
+        createRecord({ data: SearchRecordData }) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, data);
+                const { tags = [], data = {}, ...rest } = SearchRecordData;
+                const entry = await cms.createEntry(model, { tags, data, ...rest });
 
                 return getFieldValues(entry, baseFields, true);
             });

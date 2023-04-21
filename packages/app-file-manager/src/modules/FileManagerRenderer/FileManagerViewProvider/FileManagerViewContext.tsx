@@ -173,7 +173,11 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             where: getWhere(props.scope)
         });
 
-        setTags(tags);
+        setTags(
+            tags.map(tag => {
+                return tag.tag;
+            })
+        );
     };
 
     const getSettings = async () => {

@@ -3,6 +3,7 @@ import { File } from "@webiny/api-file-manager/types";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { assignPageLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { FM_FILE_TYPE, ROOT_FOLDER } from "~/contants";
+import { addMimeTag } from "~/utils/createRecordPayload";
 
 const id = "any-id";
 
@@ -12,8 +13,7 @@ const fileData = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["file", "webiny"],
-    aliases: []
+    tags: ["file", "webiny"]
 };
 
 describe("Files -> Search records", () => {
@@ -52,6 +52,8 @@ describe("Files -> Search records", () => {
         const [searchResponse] = await search.getRecord({ id });
         const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
+        console.log(searchRecord);
+
         expect(searchRecord).toMatchObject({
             id,
             type: FM_FILE_TYPE,
@@ -59,6 +61,7 @@ describe("Files -> Search records", () => {
             location: {
                 folderId: ROOT_FOLDER
             },
+            tags: addMimeTag(tags, fileData.type),
             data: {
                 id,
                 key,
@@ -67,7 +70,7 @@ describe("Files -> Search records", () => {
                 name,
                 createdOn,
                 createdBy,
-                tags,
+                tags: addMimeTag(tags, fileData.type),
                 meta
             }
         });
@@ -112,13 +115,14 @@ describe("Files -> Search records", () => {
             location: {
                 folderId: ROOT_FOLDER
             },
+            tags: addMimeTag(file1.tags, file1.type),
             data: {
                 id: file1.id,
                 key: file1.key,
                 size: file1.size,
                 type: file1.type,
                 name: file1.name,
-                tags: file1.tags
+                tags: addMimeTag(file1.tags, file1.type)
             }
         });
 
@@ -132,13 +136,14 @@ describe("Files -> Search records", () => {
             location: {
                 folderId: ROOT_FOLDER
             },
+            tags: addMimeTag(file2.tags, file2.type),
             data: {
                 id: file2.id,
                 key: file2.key,
                 size: file2.size,
                 type: file2.type,
                 name: file2.name,
-                tags: file2.tags,
+                tags: addMimeTag(file2.tags, file2.type),
                 meta: file2.meta
             }
         });
@@ -165,8 +170,9 @@ describe("Files -> Search records", () => {
         expect(searchRecord).toMatchObject({
             id,
             title: updateFile.name,
+            tags: addMimeTag(updateFile.tags, updateFile.type),
             data: {
-                tags: updateFile.tags
+                tags: addMimeTag(updateFile.tags, updateFile.type)
             }
         });
     });

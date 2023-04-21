@@ -25,16 +25,54 @@ export type ThemeBreakpoints = {
     [key: string]: string;
 };
 
+/*
+ * Typography section
+ */
+export type TypographyType = "headings" | "paragraphs" | "quotes" | "lists" | string;
+export type TypographyStyle = {
+    id: string;
+    name: string;
+    tag: string;
+    styles: CSSObject;
+};
+
+export type Typography = Record<TypographyType, Readonly<TypographyStyle[]>>;
+export type ThemeTypographyStyleItems = TypographyStyle[];
+
 export interface ThemeStyles {
     colors: Record<string, any>;
     borderRadius?: number;
-    typography: Record<string, StylesObject>;
+    typography: Typography;
     elements: Record<string, Record<string, any> | StylesObject>;
-
     [key: string]: any;
 }
 
-export interface Theme {
+/*
+ * Decorated typography types
+ */
+
+export type DecoratedThemeTypographyStyles = ThemeTypographyStyleItems & {
+    stylesById: (id: string) => CSSObject | undefined;
+};
+
+export type DecoratedTypography = Record<TypographyType, DecoratedThemeTypographyStyles>;
+
+interface DecoratedThemeStyles extends Omit<ThemeStyles, "typography"> {
+    colors: Record<string, any>;
+    borderRadius?: number;
+    typography: DecoratedTypography;
+    elements: Record<string, Record<string, any> | StylesObject>;
+    [key: string]: any;
+}
+
+export interface BaseTheme {
     breakpoints: ThemeBreakpoints;
     styles: ThemeStyles;
 }
+
+interface DecoratedTheme {
+    breakpoints: ThemeBreakpoints;
+    styles: DecoratedThemeStyles;
+}
+
+export type Theme = DecoratedTheme;

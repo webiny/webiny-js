@@ -4,7 +4,16 @@ import { Context as BaseContext } from "@webiny/handler/types";
 
 export type FmFileRecordData = Pick<
     File,
-    "id" | "key" | "size" | "type" | "name" | "meta" | "createdOn" | "createdBy" | "tags"
+    | "id"
+    | "key"
+    | "size"
+    | "type"
+    | "name"
+    | "meta"
+    | "createdOn"
+    | "createdBy"
+    | "tags"
+    | "aliases"
 >;
 
 export interface FmAcoContext extends BaseContext, AcoContext, FileManagerContext {}

@@ -1,6 +1,7 @@
 import { FileItem } from "@webiny/app-admin/types";
 import gql from "graphql-tag";
 import { Settings } from "~/types";
+import { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext";
 import { ListDbSort } from "@webiny/app-aco/types";
 
 const FILE_FIELDS = /* GraphQL */ `
@@ -106,7 +107,10 @@ export const GET_FILE = gql`
 
 export interface ListFileTagsQueryResponse {
     fileManager: {
-        listTags: string[];
+        listTags: {
+            data: ListTagsResponseItem[];
+            error: Error | null;
+        };
     };
 }
 
@@ -120,7 +124,13 @@ export interface ListFileTagsQueryVariables {
 export const LIST_TAGS = gql`
     query ListTags($where: TagWhereInput) {
         fileManager {
-            listTags(where: $where)
+            listTags(where: $where) {
+                data {
+                    tag
+                    count
+                }
+                error ${ERROR_FIELDS}
+            }
         }
     }
 `;

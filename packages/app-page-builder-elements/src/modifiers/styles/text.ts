@@ -1,5 +1,6 @@
 import { ElementStylesModifier } from "~/types";
 import { type CSSObject } from "@emotion/react";
+import { getTypographyStyleById } from "~/utils";
 
 const text: ElementStylesModifier = ({ element, theme }) => {
     const { text } = element.data || {};
@@ -17,7 +18,10 @@ const text: ElementStylesModifier = ({ element, theme }) => {
 
         let breakpointStyles: CSSObject = {};
 
-        const typographyStyles = theme?.styles?.typography?.[values.typography];
+        const typographyStyles = getTypographyStyleById(
+            values.typography,
+            theme?.styles?.typography
+        );
         if (typographyStyles) {
             breakpointStyles = { ...typographyStyles };
         }
