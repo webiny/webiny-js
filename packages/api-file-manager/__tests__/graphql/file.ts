@@ -121,7 +121,13 @@ export const LIST_FILES = (fields: string[]) => {
 export const LIST_TAGS = /* GraphQL */ `
     query ListTags($where: TagWhereInput) {
         fileManager {
-            listTags(where: $where)
+            listTags(where: $where) {
+                data {
+                    tag
+                    count
+                }
+                error ${ERROR_FIELD}
+            }
         }
     }
 `;

@@ -151,6 +151,16 @@ export const createGraphQLSchemaPlugin = () => {
                 tag_not_startsWith: String
             }
 
+            type ListTagResponseItem {
+                tag: String!
+                count: Number!
+            }
+
+            type ListTagsResponse {
+                data: [ListTagResponseItem!]
+                error: FileError
+            }
+
             type FmQuery {
                 getFile(id: ID, where: JSON, sort: String): FileResponse
 
@@ -164,7 +174,7 @@ export const createGraphQLSchemaPlugin = () => {
                     where: FileWhereInput
                 ): FileListResponse
 
-                listTags(where: TagWhereInput): [String]
+                listTags(where: TagWhereInput): ListTagsResponse!
 
                 # Get installed version
                 version: String
@@ -225,7 +235,9 @@ export const createGraphQLSchemaPlugin = () => {
                 },
                 async listTags(_, args: any, context) {
                     try {
-                        return await context.fileManager.listTags(args || {});
+                        const tags = await context.fileManager.listTags(args || {});
+
+                        return new Response(tags);
                     } catch (error) {
                         return new ErrorResponse(error);
                     }
