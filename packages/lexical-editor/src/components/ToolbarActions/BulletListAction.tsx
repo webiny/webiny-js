@@ -6,9 +6,6 @@ import {
 } from "~/commands/webiny-list";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
-/**
- * Toolbar button action. On click will wrap the content in bullet list style.
- */
 export const BulletListAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isActive, setIsActive] = useState<boolean>(false);

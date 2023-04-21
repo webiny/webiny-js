@@ -5,11 +5,6 @@ import { $getSelection, $isRangeSelection } from "lexical";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
-/**
- * Toolbar action. User can convert selected text in clickble link.
- * - Small size popup will be opened with input so user can enter the link.
- * - To remove the link, user need to select the already added link and click again in the action button.
- */
 export const LinkAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isLink, setIsLink] = useState(false);

@@ -6,10 +6,6 @@ import { FontColorActionContext } from "~/context/FontColorActionContext";
 import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 
-/*
- * Composable Color Picker component that is mounted on toolbar action.
- * Note: Toa add custom component access trough @see LexicalEditorConfig API
- * */
 export const FontColorPicker = makeComposable("FontColorPicker", (): JSX.Element | null => {
     useEffect(() => {
         console.log("Default FontColorPicker, please add your own component");

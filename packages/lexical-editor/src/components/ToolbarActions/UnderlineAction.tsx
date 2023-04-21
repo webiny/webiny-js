@@ -3,9 +3,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
-/**
- * Toolbar action. On toolbar, you can see the button that is underline.
- */
 export const UnderlineAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isUnderline, setIsUnderline] = useState(false);
