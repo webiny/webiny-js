@@ -42,7 +42,7 @@ const PageLink = styled.div`
     align-items: center;
     height: 24px;
     cursor: pointer;
-  
+
     span {
         white-space: nowrap;
         overflow: hidden;
