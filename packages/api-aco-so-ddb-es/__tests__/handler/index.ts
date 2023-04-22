@@ -78,10 +78,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const elasticsearch = createElasticsearchClient();
 
-    // elasticsearch.indices.register([
-    //
-    // ]);
-
     const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearch);
 
     /**
@@ -100,14 +96,14 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         })
     );
 
-    const createIndexName = (model: CmsModel) => {
+    const createIndexName = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">) => {
         const { index } = configurations.es({
             model
         });
         return index;
     };
 
-    const refreshIndex = (model: CmsModel) => {
+    const refreshIndex = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">) => {
         const index = createIndexName(model);
         return elasticsearch.indices.refresh({
             index
@@ -136,6 +132,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 })
             }),
             new ContextPlugin<CmsContext>(async context => {
+                context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
+                    elasticsearch.indices.registerIndex(createIndexName(model));
+                });
                 context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
