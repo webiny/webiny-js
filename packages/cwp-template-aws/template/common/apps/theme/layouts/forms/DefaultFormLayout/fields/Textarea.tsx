@@ -19,7 +19,7 @@ const StyledTextarea = styled.textarea`
     border-radius: ${props => props.theme.styles.borderRadius};
     box-sizing: border-box;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
+    ${props => props.theme.styles.typography["paragraphs"].stylesById("paragraph1")};
 
     &:focus {
         border-color: ${props => props.theme.styles.colors["color2"]};

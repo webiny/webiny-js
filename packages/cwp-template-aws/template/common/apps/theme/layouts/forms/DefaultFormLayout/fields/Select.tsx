@@ -12,7 +12,7 @@ interface SelectProps {
 }
 
 const StyledSelect = styled.select`
-    ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
+    ${props => props.theme.styles.typography["paragraphs"].stylesById("paragraph1")};
     border: 1px solid ${props => props.theme.styles.colors["color5"]};
     background-color: ${props => props.theme.styles.colors["color5"]};
     width: 100%;
