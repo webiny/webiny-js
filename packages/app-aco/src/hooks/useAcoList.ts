@@ -85,10 +85,10 @@ export const useAcoList = (params: UseAcoListParams) => {
      * - we return the current folder name.
      */
     useDeepCompareEffect(() => {
-        const subFolders = getCurrentFolderList(originalFolders[type], folderId);
+        const subFolders = getCurrentFolderList(originalFolders[type], originalFolderId);
         setFolders(sortTableItems(subFolders, sort));
 
-        const currentFolder = originalFolders[type]?.find(folder => folder.id === folderId);
+        const currentFolder = originalFolders[type]?.find(folder => folder.id === originalFolderId);
         setListTitle(currentFolder?.title || undefined);
     }, [{ ...originalFolders[type] }, folderId]);
 
