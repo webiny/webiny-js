@@ -64,6 +64,7 @@ export const getInitialWhere = (scope: string | undefined) => {
         AND: [{ tags_not_startsWith: "mime:" }, scopeFilter]
     };
 };
+
 const Tags = () => {
     const { file } = useFile();
     const { tags } = useTags({ type: ACO_TYPE, ...getInitialWhere });

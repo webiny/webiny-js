@@ -53,9 +53,6 @@ const getInitialWhere = (scope: string | undefined) => {
     };
 };
 
-const getShowTags = (tags: TagItem[]) =>
-    tags.filter(tag => !tag.name.startsWith("scope:") && !tag.name.startsWith("mime:"));
-
 const LeftSidebar = ({
     title,
     toggleTag,
@@ -63,6 +60,24 @@ const LeftSidebar = ({
     scope,
     onFolderClick
 }: LeftSidebarProps) => {
+    const tagsModifier = (tags: TagItem[]) => {
+        const tagsWithoutMime = tags.filter(tag => !tag.name.startsWith("mime:"));
+        if (scope) {
+            return tagsWithoutMime;
+        }
+
+        return tagsWithoutMime
+            .filter(tag => tag.name !== scope)
+            .map(tag => {
+                return scope
+                    ? {
+                          ...tag,
+                          name: tag.name.replace(`${scope}:`, "")
+                      }
+                    : tag;
+            });
+    };
+
     return (
         <div className={style.leftDrawer}>
             <FolderTree
@@ -78,7 +93,7 @@ const LeftSidebar = ({
             <TagList
                 type={ACO_TYPE}
                 initialWhere={getInitialWhere(scope)}
-                showTags={getShowTags}
+                tagsModifier={tagsModifier}
                 emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}
             />

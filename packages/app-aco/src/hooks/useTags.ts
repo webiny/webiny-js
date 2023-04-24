@@ -4,6 +4,7 @@ import { ListTagsWhereQueryVariables, TagItem } from "~/types";
 
 interface UseTagsParams {
     type: string;
+    tagsModifier?: (tags: TagItem[]) => TagItem[];
     initialWhere?: ListTagsWhereQueryVariables & {
         type: string;
         AND?: ListTagsWhereQueryVariables;
@@ -12,7 +13,7 @@ interface UseTagsParams {
 }
 
 export const useTags = (params: UseTagsParams) => {
-    const { type, ...initialWhere } = params;
+    const { type, tagsModifier, ...initialWhere } = params;
 
     const context = useContext(SearchRecordsContext);
 
@@ -21,6 +22,8 @@ export const useTags = (params: UseTagsParams) => {
     }
 
     const { tags, loading, listTags, updateTag } = context;
+
+    const tagsByType = tags[type] || [];
 
     useEffect(() => {
         /**
@@ -39,7 +42,10 @@ export const useTags = (params: UseTagsParams) => {
              * As soon as you call `useTags()`, you'll initiate fetching of `tags`, which is managed by the `SearchRecordContext`.
              */
             loading,
-            tags: tags[type],
+            tags:
+                tagsModifier && typeof tagsModifier === "function"
+                    ? tagsModifier(tagsByType)
+                    : tagsByType,
             updateTag(tag: TagItem) {
                 return updateTag(tag, type);
             }

@@ -13,7 +13,7 @@ type TagListProps = {
         AND?: ListTagsWhereQueryVariables;
         OR?: ListTagsWhereQueryVariables;
     };
-    showTags: (tags: TagItem[]) => TagItem[];
+    tagsModifier?: (tags: TagItem[]) => TagItem[];
     onTagClick: (tag: TagItem) => void;
     emptyDisclaimer: string;
 };
@@ -23,20 +23,18 @@ export const TagList: React.FC<TagListProps> = ({
     initialWhere,
     onTagClick,
     emptyDisclaimer,
-    showTags
+    tagsModifier
 }) => {
-    const { tags, loading, updateTag } = useTags({ type, ...initialWhere });
+    const { tags, loading, updateTag } = useTags({ type, ...initialWhere, tagsModifier });
 
     if (!tags && (loading.INIT || loading.LIST)) {
         return <Loader />;
     }
 
     if (tags.length > 0) {
-        const tagsToShow = showTags && typeof showTags === "function" ? showTags(tags) : tags;
-
         return (
             <>
-                {tagsToShow.map((tag, index) => (
+                {tags.map((tag, index) => (
                     <Tag
                         key={`tag-${index}`}
                         tag={tag}
