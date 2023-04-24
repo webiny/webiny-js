@@ -5,11 +5,15 @@ import { useTags } from "~/hooks";
 import { Loader } from "./Loader";
 import { Empty } from "./Empty";
 import { Tag } from "~/components/TagList/Tag";
-import { TagItem } from "~/types";
+import { ListTagsWhereQueryVariables, TagItem } from "~/types";
 
 type TagListProps = {
     type: string;
-    initialWhere: Record<string, any>;
+    initialWhere?: ListTagsWhereQueryVariables & {
+        AND?: ListTagsWhereQueryVariables;
+        OR?: ListTagsWhereQueryVariables;
+    };
+    hideTags: (tags: TagItem[]) => TagItem[];
     onTagClick: (tag: TagItem) => void;
     emptyDisclaimer: string;
 };
@@ -18,7 +22,8 @@ export const TagList: React.FC<TagListProps> = ({
     type,
     initialWhere,
     onTagClick,
-    emptyDisclaimer
+    emptyDisclaimer,
+    hideTags
 }) => {
     const { tags, loading, updateTag } = useTags({ type, ...initialWhere });
 
@@ -27,9 +32,12 @@ export const TagList: React.FC<TagListProps> = ({
     }
 
     if (tags.length > 0) {
+        const tagsToShow = hideTags && typeof hideTags === "function" ? hideTags(tags) : tags;
+        console.log(tagsToShow);
+
         return (
             <>
-                {tags.map((tag, index) => (
+                {tagsToShow.map((tag, index) => (
                     <Tag
                         key={`tag-${index}`}
                         tag={tag}

@@ -1,10 +1,14 @@
 import { useContext, useEffect, useMemo } from "react";
 import { SearchRecordsContext } from "~/contexts/records";
-import { TagItem } from "~/types";
+import { ListTagsWhereQueryVariables, TagItem } from "~/types";
 
 interface UseTagsParams {
     type: string;
-    initialWhere?: Record<string, any>;
+    initialWhere?: ListTagsWhereQueryVariables & {
+        type: string;
+        AND?: ListTagsWhereQueryVariables;
+        OR?: ListTagsWhereQueryVariables;
+    };
 }
 
 export const useTags = (params: UseTagsParams) => {

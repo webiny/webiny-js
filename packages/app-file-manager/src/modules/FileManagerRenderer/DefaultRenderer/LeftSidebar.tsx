@@ -35,7 +35,7 @@ interface LeftSidebarProps {
     onFolderClick: (folderId: string | undefined) => void;
 }
 
-export const getInitialWhere = (scope: string | undefined) => {
+const getInitialWhere = (scope: string | undefined) => {
     let scopeFilter = {};
 
     if (!scope) {
@@ -51,6 +51,10 @@ export const getInitialWhere = (scope: string | undefined) => {
     return {
         AND: [{ tags_not_startsWith: "mime:" }, scopeFilter]
     };
+};
+
+const getHideTags = (tags: TagItem[]) => {
+    return tags.filter(tag => !tag.name.startsWith("scope:") || !tag.name.startsWith("mime:"));
 };
 
 const LeftSidebar = ({
@@ -75,6 +79,7 @@ const LeftSidebar = ({
             <TagList
                 type={ACO_TYPE}
                 initialWhere={getInitialWhere(scope)}
+                hideTags={getHideTags}
                 emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}
             />
