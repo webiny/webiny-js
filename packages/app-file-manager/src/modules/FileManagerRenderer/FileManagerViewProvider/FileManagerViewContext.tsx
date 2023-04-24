@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { UploadOptions } from "@webiny/app/types";
 import { FileItem } from "@webiny/app-admin/types";
 import { useSecurity } from "@webiny/app-security";
 import { Settings } from "~/types";
@@ -67,9 +68,7 @@ export interface FileManagerViewProviderProps {
     children: React.ReactNode;
 }
 
-interface UploadFileOptions {
-    onProgress?: (progress: ProgressEvent<XMLHttpRequestEventTarget>) => void;
-}
+type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 
 export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
     const { identity } = useSecurity();

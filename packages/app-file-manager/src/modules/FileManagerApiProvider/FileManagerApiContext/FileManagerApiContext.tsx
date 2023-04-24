@@ -19,7 +19,8 @@ import {
     UPDATE_FILE,
     UpdateFileMutationResponse,
     UpdateFileMutationVariables,
-    GET_FILE_SETTINGS
+    GET_FILE_SETTINGS,
+    FileInput
 } from "../graphql";
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
@@ -51,7 +52,7 @@ export interface FileManagerApiProviderProps {
 
 interface UploadFileOptions {
     tags?: string[];
-    onProgress?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
+    onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
 }
 
 interface ListTagsOptions {
@@ -132,7 +133,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         [fmFilePermission]
     );
 
-    const createFile = async (data: FileItem) => {
+    const createFile = async (data: FileInput) => {
         const response = await client.mutate<
             CreateFileMutationResponse,
             CreateFileMutationVariables

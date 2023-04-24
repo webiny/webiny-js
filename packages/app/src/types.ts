@@ -20,7 +20,7 @@ export interface FileItem {
 
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
-    onProgress?: (event: ProgressEvent<XMLHttpRequestEventTarget>) => void;
+    onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
 };
 
 export type UiStatePlugin = Plugin & {
@@ -28,10 +28,18 @@ export type UiStatePlugin = Plugin & {
     render(): React.ReactElement;
 };
 
+export interface UploadedFile {
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    key: string;
+}
+
 export type FileUploaderPlugin = Plugin & {
     type: "file-uploader";
     name: "file-uploader";
-    upload(file: File, options: UploadOptions): Promise<any>;
+    upload(file: File, options: UploadOptions): Promise<UploadedFile>;
 };
 
 export { Plugin };

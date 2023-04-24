@@ -5,7 +5,7 @@ import { keyframes } from "@emotion/react";
 const animateShow = keyframes`
     0% { 
         opacity: 0;
-        top: 0px;
+        top: 0;
     }
     60% { 
         opacity: 1; 
@@ -17,21 +17,18 @@ const animateShow = keyframes`
     }
 `;
 
-import loadingIcon from './assets/loading.svg';
-import checkIcon from './assets/check.svg';
+import loadingIcon from "./assets/loading.svg";
+import checkIcon from "./assets/check.svg";
 
 const StatusWrapper = styled.div`
     border-radius: 28px;
-    display: block;
-    background: #fff;
     width: 320px;
     transform: translate(-50%, -50%);
     position: absolute;
     box-shadow: 0 2px 6px rgba(170, 185, 200, 0.4);
-
     color: var(--mdc-theme-on-surface);
     background-color: #fff;
-    left: 50%;
+    left: calc(50vw - 160px);
     top: -50px;
     display: flex;
     align-items: center;
@@ -48,7 +45,6 @@ const ProgressWrapper = styled.div`
     justify-content: center;
     margin-left: 15px;
     margin-top: -5px;
-}
 `;
 
 const ProgressBar = styled.div`
@@ -103,7 +99,7 @@ const Icon = styled.img`
     top: 50%;
     margin: -15px 0 0 -15px;
     fill: #fff;
-    &.loading{
+    &.loading {
         width: 75px;
         left: 5px;
         top: 5px;
@@ -118,7 +114,11 @@ const UploadStatus: React.FC<UploadStatusProps> = ({ numberOfFiles, progress }) 
     return (
         <StatusWrapper>
             <StatusIndicator>
-                {Number(progress.toFixed()) <= 98 ? <Icon className="loading" src={loadingIcon} alt="Loading" /> : <Icon src={checkIcon} alt="Done" />}
+                {Number(progress.toFixed()) <= 98 ? (
+                    <Icon className="loading" src={loadingIcon} alt="Loading" />
+                ) : (
+                    <Icon src={checkIcon} alt="Done" />
+                )}
                 {Number(progress.toFixed()) <= 98 && <Percentage>{progress.toFixed()}%</Percentage>}
             </StatusIndicator>
             <ProgressWrapper>

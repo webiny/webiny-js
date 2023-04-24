@@ -89,7 +89,7 @@ export class BatchFileUploader {
             try {
                 const newFile = await this.uploader(fileJob.file, {
                     onProgress: action("BatchFileUploader.onProgress", event => {
-                        this.uploadStatus.set(fileJob.id, event.loaded);
+                        this.uploadStatus.set(fileJob.id, event.sent);
                     })
                 });
 
@@ -97,6 +97,10 @@ export class BatchFileUploader {
                     uploaded.push(newFile);
                 }
             } catch (e) {
+                runInAction(() => {
+                    this.uploadStatus.set(fileJob.id, -1);
+                });
+
                 errors.push({ file: fileJob.file, e });
             }
         }

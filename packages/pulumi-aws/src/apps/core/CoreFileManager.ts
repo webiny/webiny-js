@@ -18,7 +18,7 @@ export const CoreFileManger = createAppModule({
                 corsRules: [
                     {
                         allowedHeaders: ["*"],
-                        allowedMethods: ["POST", "GET"],
+                        allowedMethods: ["POST", "GET", "PUT"],
                         allowedOrigins: ["*"],
                         maxAgeSeconds: 3000
                     }

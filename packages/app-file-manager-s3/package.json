@@ -11,7 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/app": "0.0.0",
-    "graphql-tag": "^2.12.6"
+    "graphql-tag": "^2.12.6",
+    "p-retry": "^4.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
