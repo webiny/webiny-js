@@ -32,8 +32,18 @@ interface LeftSidebarProps {
     toggleTag: (tag: TagItem) => void;
     currentFolder?: string;
     onFolderClick: (folderId: string | undefined) => void;
+    initialWhere: {
+        tags_startsWith?: string;
+        tags_not_startsWith?: string;
+    };
 }
-const LeftSidebar = ({ title, toggleTag, currentFolder, onFolderClick }: LeftSidebarProps) => {
+const LeftSidebar = ({
+    title,
+    toggleTag,
+    currentFolder,
+    initialWhere,
+    onFolderClick
+}: LeftSidebarProps) => {
     return (
         <div className={style.leftDrawer}>
             <FolderTree
@@ -48,6 +58,8 @@ const LeftSidebar = ({ title, toggleTag, currentFolder, onFolderClick }: LeftSid
             <div className={style.divider} />
             <TagList
                 type={FOLDER_TYPE}
+                tags_startsWith={initialWhere?.tags_startsWith}
+                tags_not_startsWith={initialWhere?.tags_not_startsWith}
                 emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}
             />

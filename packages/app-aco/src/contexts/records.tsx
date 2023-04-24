@@ -56,7 +56,12 @@ interface SearchRecordsContext {
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
     deleteRecord(record: SearchRecordItem): Promise<true>;
-    listTags: (params: { type: string }) => Promise<TagItem[]>;
+    listTags: (params: {
+        type: string;
+        tags_in?: string[];
+        tags_startsWith?: string;
+        tags_not_startsWith?: string;
+    }) => Promise<TagItem[]>;
     updateTag: (tag: TagItem, type: string) => TagItem;
 }
 
@@ -102,8 +107,6 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 tags_startsWith,
                 tags_not_startsWith
             } = params;
-
-            console.log("params", params);
 
             /**
              * Both folderId and type are optional to init `useRecords` but required to list records:
@@ -429,6 +432,8 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         async listTags(params) {
             const { type } = params;
 
+            console.log("listTags", params);
+
             if (!type) {
                 throw new Error("`type` is mandatory");
             }
@@ -438,7 +443,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListTagsResponse, ListTagsQueryVariables>({
                         query: LIST_TAGS,
-                        variables: { type }
+                        variables: {
+                            where: params
+                        }
                     })
             );
 

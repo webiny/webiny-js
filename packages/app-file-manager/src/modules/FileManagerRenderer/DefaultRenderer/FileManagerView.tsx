@@ -443,6 +443,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 title={defaultFolderName}
                                 currentFolder={currentFolder}
                                 onFolderClick={setCurrentFolder}
+                                initialWhere={initialWhere}
                                 toggleTag={tag => toggleTag({ tag, queryParams })}
                             />
 

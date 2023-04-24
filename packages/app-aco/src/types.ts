@@ -170,7 +170,13 @@ export interface ListTagsResponse {
 }
 
 export interface ListTagsQueryVariables {
-    type: string;
+    where: {
+        type: string;
+        location?: Location;
+        tags_in?: string[];
+        tags_startsWith?: string;
+        tags_not_startsWith?: string;
+    };
 }
 
 export interface GetSearchRecordResponse {

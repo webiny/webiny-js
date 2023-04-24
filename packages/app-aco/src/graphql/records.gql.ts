@@ -88,9 +88,9 @@ export const DELETE_RECORD = gql`
 `;
 
 export const LIST_TAGS = gql`
-    query ListTags($type: String!) {
+    query ListTags($where: SearchRecordTagListWhereInput) {
         search {
-            listTags(where: { type: $type }) {
+            listTags(where: $where) {
                 data
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}

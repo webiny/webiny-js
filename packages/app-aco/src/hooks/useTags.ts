@@ -2,7 +2,15 @@ import { useContext, useEffect, useMemo } from "react";
 import { SearchRecordsContext } from "~/contexts/records";
 import { TagItem } from "~/types";
 
-export const useTags = (type: string) => {
+interface UseTagsParams {
+    type: string;
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
+export const useTags = (params: UseTagsParams) => {
+    const { type, ...initialWhere } = params;
+
     const context = useContext(SearchRecordsContext);
 
     if (!context) {
@@ -13,20 +21,19 @@ export const useTags = (type: string) => {
 
     useEffect(() => {
         /**
-         * On first mount, call `listRecords`, which will either issue a network request, or load links from cache.
+         * On first mount, call `listTags`, which will either issue a network request, or load tags from cache.
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
         if (type) {
-            listTags({ type });
+            listTags({ type, ...initialWhere });
         }
     }, [type]);
 
     return useMemo(
         () => ({
             /**
-             * NOTE: you do NOT need to call `listRecords` from this hook on component mount, because you already have folders in the `listRecords` property.
-             * As soon as you call `useRecords()`, you'll initiate fetching of `records`, which is managed by the `SearchRecordContext`.
-             * Since this method lists records with pagination, you might need to call it multiple times passing the `after` param.
+             * NOTE: you do NOT need to call `listTags` from this hook on component mount, because you already have tags in the `listTags` property.
+             * As soon as you call `useTags()`, you'll initiate fetching of `tags`, which is managed by the `SearchRecordContext`.
              */
             loading,
             tags: tags[type],
