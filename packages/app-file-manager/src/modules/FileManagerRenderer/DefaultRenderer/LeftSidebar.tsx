@@ -53,9 +53,8 @@ const getInitialWhere = (scope: string | undefined) => {
     };
 };
 
-const getHideTags = (tags: TagItem[]) => {
-    return tags.filter(tag => !tag.name.startsWith("scope:") || !tag.name.startsWith("mime:"));
-};
+const getShowTags = (tags: TagItem[]) =>
+    tags.filter(tag => !tag.name.startsWith("scope:") && !tag.name.startsWith("mime:"));
 
 const LeftSidebar = ({
     title,
@@ -79,7 +78,7 @@ const LeftSidebar = ({
             <TagList
                 type={ACO_TYPE}
                 initialWhere={getInitialWhere(scope)}
-                hideTags={getHideTags}
+                showTags={getShowTags}
                 emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}
             />

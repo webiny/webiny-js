@@ -13,7 +13,7 @@ type TagListProps = {
         AND?: ListTagsWhereQueryVariables;
         OR?: ListTagsWhereQueryVariables;
     };
-    hideTags: (tags: TagItem[]) => TagItem[];
+    showTags: (tags: TagItem[]) => TagItem[];
     onTagClick: (tag: TagItem) => void;
     emptyDisclaimer: string;
 };
@@ -23,7 +23,7 @@ export const TagList: React.FC<TagListProps> = ({
     initialWhere,
     onTagClick,
     emptyDisclaimer,
-    hideTags
+    showTags
 }) => {
     const { tags, loading, updateTag } = useTags({ type, ...initialWhere });
 
@@ -32,8 +32,7 @@ export const TagList: React.FC<TagListProps> = ({
     }
 
     if (tags.length > 0) {
-        const tagsToShow = hideTags && typeof hideTags === "function" ? hideTags(tags) : tags;
-        console.log(tagsToShow);
+        const tagsToShow = showTags && typeof showTags === "function" ? showTags(tags) : tags;
 
         return (
             <>
