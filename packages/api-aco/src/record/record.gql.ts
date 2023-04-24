@@ -89,6 +89,9 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             id: async parent => {
                 const { id } = parseIdentifier(parent.id);
                 return removeAcoRecordPrefix(id);
+            },
+            entryId: async parent => {
+                return removeAcoRecordPrefix(parent.entryId);
             }
         },
         SearchQuery: {

@@ -1,3 +1,10 @@
+/**
+ * !!! DO NOT CHANGE THIS !!!
+ * If this is changed, you will need to create new migration which changes the IDs for the users.
+ *
+ * packages/migrations/src/migrations/5.35.0/006/ddb/PageDataMigration.ts:236
+ * packages/migrations/src/migrations/5.35.0/006/ddb-es/PageDataMigration.ts:419
+ */
 const WBY_ACO_PREFIX = "wby-aco-";
 /**
  * 006
