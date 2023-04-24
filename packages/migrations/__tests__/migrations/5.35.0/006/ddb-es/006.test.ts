@@ -41,6 +41,11 @@ describe("5.35.0-006", () => {
     beforeEach(() => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+
+        elasticsearchClient.indices.deleteAll();
+    });
+    afterEach(async () => {
+        await elasticsearchClient.indices.deleteAll();
     });
 
     const insertTestPages = async (numberOfPages = NUMBER_OF_PAGES) => {

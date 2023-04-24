@@ -20,7 +20,7 @@ interface Props {
 
 const RteFieldLabel = styled(FieldLabelStyled)`
     .rte-block-paragraph {
-        ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
+        ${props => props.theme.styles.typography["paragraphs"].stylesById("paragraph1")};
         margin: 0;
     }
 `;
