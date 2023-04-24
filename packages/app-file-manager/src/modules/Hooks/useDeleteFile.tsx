@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
 
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
+import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view/hooks/file/delete");
 
@@ -19,7 +19,7 @@ const Filename = styled("span")`
 `;
 
 export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
-    const { deleteFile } = useFileManagerView();
+    const { deleteFile } = useFileManagerAcoView();
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({

@@ -11,7 +11,7 @@ import { ReactComponent as LinkIcon } from "@material-design-icons/svg/outlined/
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { useSnackbar } from "@webiny/app-admin";
-import { useFile, useFileManagerApi, useFileManagerView } from "~/index";
+import { useFile, useFileManagerApi, useFileManagerAcoView } from "~/index";
 
 const Fieldset = styled("div")({
     position: "relative",
@@ -142,7 +142,7 @@ interface AliasesFormData {
 
 export const Aliases = () => {
     const { canEdit } = useFileManagerApi();
-    const { updateFile } = useFileManagerView();
+    const { updateFile } = useFileManagerAcoView();
     const { file } = useFile();
     const [isEditing, setIsEditing] = useState(false);
     const { showSnackbar } = useSnackbar();

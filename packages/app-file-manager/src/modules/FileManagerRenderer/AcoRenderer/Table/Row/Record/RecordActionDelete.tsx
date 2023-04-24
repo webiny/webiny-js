@@ -9,7 +9,7 @@ import { MenuItem } from "@webiny/ui/Menu";
 
 import { useDeleteFile } from "~/modules/Hooks/useDeleteFile";
 
-import { ListItemGraphic } from "~/modules/FileManagerRenderer/DefaultRenderer/Table/styled";
+import { ListItemGraphic } from "~/modules/FileManagerRenderer/AcoRenderer/Table/styled";
 
 import { FileItem } from "@webiny/app/types";
 import { SearchRecordItem } from "@webiny/app-aco/types";

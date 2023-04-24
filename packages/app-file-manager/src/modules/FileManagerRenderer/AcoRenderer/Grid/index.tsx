@@ -5,7 +5,7 @@ import { FileItem } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
 import styled from "@emotion/styled";
 import getFileTypePlugin from "~/getFileTypePlugin";
-import FileThumbnail, { FileProps } from "~/modules/FileManagerRenderer/DefaultRenderer/File";
+import FileThumbnail, { FileProps } from "~/modules/FileManagerRenderer/AcoRenderer/File";
 
 import { CircularProgress } from "@webiny/ui/Progress";
 

@@ -9,7 +9,7 @@ import { Form, FormOnSubmit } from "@webiny/form";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as LabelIcon } from "@material-design-icons/svg/outlined/label.svg";
 import { useSnackbar } from "@webiny/app-admin";
-import { useFile, useFileManagerApi, useFileManagerView } from "~/index";
+import { useFile, useFileManagerApi, useFileManagerAcoView } from "~/index";
 import { useTags } from "@webiny/app-aco";
 import { ACO_TYPE, DEFAULT_SCOPE } from "~/constants";
 
@@ -72,7 +72,7 @@ const Tags = () => {
     const [updating, setUpdating] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { canEdit } = useFileManagerApi();
-    const { updateFile } = useFileManagerView();
+    const { updateFile } = useFileManagerAcoView();
     const [initialTags, setInitialTags] = useState(file.tags);
     const handleEdit = useCallback(() => setEdit(true), []);
     const isEditingAllowed = canEdit(file);

@@ -37,18 +37,12 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
     uploadFile: (file: File) => Promise<TFileItem | undefined>;
-    files: TFileItem[];
-    loadingFiles: boolean;
-    loadMore: () => void;
-    tags: string[];
     settings: Settings | undefined;
     selected: TFileItem[];
     setSelected: (files: TFileItem[]) => void;
     toggleSelected: (file: TFileItem) => void;
     hasPreviouslyUploadedFiles: boolean | null;
     setHasPreviouslyUploadedFiles: (flag: boolean) => void;
-    queryParams: StateQueryParams;
-    setQueryParams: (queryParams: StateQueryParams) => void;
     listParams: StateListParams;
     setListParams: (listParams: StateListParams) => void;
     dragging: boolean;
@@ -91,10 +85,8 @@ export const FileManagerAcoViewProvider = ({
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
     const { getRecord } = useRecords();
-    const [files, setFiles] = useState<FileItem[]>([]);
-    const [tags, setTags] = useState<string[]>([]);
-    const [meta, setMeta] = useState<ListFilesListFilesResponse["meta"]>();
     const [settings, setSettings] = useState<Settings | undefined>(undefined);
+    const [files, setFiles] = useState<FileItem[]>([]);
     const [loadingFiles, setLoading] = useState(false);
     const [currentFolder, setCurrentFolder] = useState<string>();
     const [listTable, setListTable] = useState<boolean>(false);
@@ -104,20 +96,6 @@ export const FileManagerAcoViewProvider = ({
         { ...props, identity },
         initializeState
     );
-
-    const queryParamsToWhereInput = (queryParams: StateQueryParams): ListFilesQueryVariables => {
-        return {
-            limit: queryParams.limit,
-            sort: queryParams.sort,
-            where: {
-                ...getWhere(props.scope),
-                createdBy: queryParams.createdBy,
-                search: queryParams.search,
-                tag_in: nonEmptyArray(addScopePrefix(queryParams.tags)),
-                type_in: nonEmptyArray(queryParams.types)
-            }
-        };
-    };
 
     const getFile = async (id: string) => {
         const fileInState = files.find(file => file.id === id);
@@ -161,77 +139,19 @@ export const FileManagerAcoViewProvider = ({
         return file;
     };
 
-    const listFiles = async () => {
-        setLoading(true);
-        const { files, meta } = await fileManager.listFiles(
-            queryParamsToWhereInput(state.queryParams)
-        );
-        setLoading(false);
-        setFiles(
-            files.map(file => {
-                file.tags = removeScopePrefix(file.tags || []);
-                return file;
-            })
-        );
-        setMeta(meta);
-        if (state.hasPreviouslyUploadedFiles === null) {
-            setHasPreviouslyUploadedFiles(files.length > 0);
-        }
-    };
-
-    const listTags = async () => {
-        const tags = await fileManager.listTags({
-            where: getWhere(props.scope)
-        });
-
-        setTags(
-            tags.map(tag => {
-                return tag.tag;
-            })
-        );
-    };
-
     const getSettings = async () => {
         const settings = await fileManager.getSettings();
-
         setSettings(settings);
     };
 
     useEffect(() => {
-        //listTags();
         getSettings();
     }, []);
-
-    useEffect(() => {
-        //listFiles();
-    }, [JSON.stringify(state.queryParams)]);
 
     const setHasPreviouslyUploadedFiles: FileManagerAcoViewContextData["setHasPreviouslyUploadedFiles"] =
         state => {
             dispatch({ type: "hasPreviouslyUploadedFiles", state });
         };
-
-    const loadMore = async () => {
-        if (!meta?.cursor) {
-            return;
-        }
-
-        const response = await fileManager.listFiles({
-            ...queryParamsToWhereInput(state.queryParams),
-            after: meta?.cursor
-        });
-
-        setFiles(files => {
-            return [
-                ...files,
-                ...response.files.map(file => {
-                    file.tags = removeScopePrefix(file.tags || []);
-                    return file;
-                })
-            ];
-        });
-        setMeta(response.meta);
-    };
 
     const createFile = async (data: FileItem) => {
         if (data.tags) {
@@ -252,6 +172,8 @@ export const FileManagerAcoViewProvider = ({
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags || []);
             setFiles(files => [newFile, ...files]);
+
+            // Sync ACO record - retrieve the most updated record from network
             await getRecord(newFile.id);
         }
         return newFile;
@@ -291,11 +213,7 @@ export const FileManagerAcoViewProvider = ({
             ];
         });
 
-        setTags(tags => {
-            // Create an array of unique tags
-            return Array.from(new Set([...tags, ...(data.tags || [])]));
-        });
-
+        // Sync ACO record - retrieve the most updated record from network
         await getRecord(id);
     };
 
@@ -333,6 +251,8 @@ export const FileManagerAcoViewProvider = ({
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags);
             setFiles(files => [newFile, ...files]);
+
+            // Sync ACO record - retrieve the most updated record from network
             await getRecord(newFile.id);
         }
         return newFile;
@@ -361,10 +281,6 @@ export const FileManagerAcoViewProvider = ({
     const value: FileManagerAcoViewContextData = {
         state,
         dispatch,
-        files,
-        loadingFiles,
-        loadMore,
-        tags: removeScopePrefix(tags),
         getFile,
         createFile,
         updateFile,
@@ -386,10 +302,6 @@ export const FileManagerAcoViewProvider = ({
         },
         hasPreviouslyUploadedFiles: state.hasPreviouslyUploadedFiles,
         setHasPreviouslyUploadedFiles,
-        queryParams: state.queryParams,
-        setQueryParams(queryParams: StateQueryParams) {
-            dispatch({ type: "queryParams", queryParams });
-        },
         listParams: state.listParams,
         setListParams(listParams: StateListParams) {
             dispatch({ type: "listParams", listParams });
