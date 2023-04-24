@@ -432,8 +432,6 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         async listTags(params) {
             const { type } = params;
 
-            console.log("listTags", params);
-
             if (!type) {
                 throw new Error("`type` is mandatory");
             }
