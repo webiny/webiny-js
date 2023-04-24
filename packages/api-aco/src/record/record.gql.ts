@@ -60,6 +60,8 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             tags_in: [String!]
             tags_startsWith: String
             tags_not_startsWith: String
+            AND: [SearchRecordTagListWhereInput!]
+            OR: [SearchRecordTagListWhereInput!]
         }
 
         type SearchRecordResponse {

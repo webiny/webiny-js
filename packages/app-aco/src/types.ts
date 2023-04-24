@@ -169,13 +169,17 @@ export interface ListTagsResponse {
     };
 }
 
+export interface ListTagsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
 export interface ListTagsQueryVariables {
-    where: {
+    where: ListTagsWhereQueryVariables & {
         type: string;
-        location?: Location;
-        tags_in?: string[];
-        tags_startsWith?: string;
-        tags_not_startsWith?: string;
+        AND?: ListTagsWhereQueryVariables;
+        OR?: ListTagsWhereQueryVariables;
     };
 }
 

@@ -25,7 +25,6 @@ import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { useFileManagerApi, useFileManagerView } from "~/index";
 import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
-import { FOLDER_TYPE } from "~/constants/folders";
 import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
@@ -35,6 +34,7 @@ import { Title } from "~/components/Title";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { EmptyView } from "~/modules/FileManagerRenderer/DefaultRenderer/EmptyView";
+import { ACO_TYPE } from "~/constants";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -109,7 +109,7 @@ interface FileError {
 }
 
 const DEFAULT_SCOPE = "scope:";
-export const getWhere = (scope: string | undefined) => {
+export const getInitialWhere = (scope: string | undefined) => {
     if (!scope) {
         return {
             tags_not_startsWith: DEFAULT_SCOPE
@@ -147,7 +147,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         setListTable
     } = useFileManagerView();
 
-    const initialWhere = getWhere(scope);
+    const initialWhere = getInitialWhere(scope);
 
     const {
         records,
@@ -157,7 +157,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useAcoList({ type: FOLDER_TYPE, folderId: currentFolder, ...initialWhere });
+    } = useAcoList({ type: ACO_TYPE, folderId: currentFolder, ...initialWhere });
 
     const fileManager = useFileManagerApi();
     const { showSnackbar } = useSnackbar();
@@ -443,7 +443,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 title={defaultFolderName}
                                 currentFolder={currentFolder}
                                 onFolderClick={setCurrentFolder}
-                                initialWhere={initialWhere}
+                                scope={scope}
                                 toggleTag={tag => toggleTag({ tag, queryParams })}
                             />
 
@@ -490,7 +490,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                         />
                                     ) : (
                                         <Grid
-                                            type={FOLDER_TYPE}
+                                            type={ACO_TYPE}
                                             folders={!queryParams.search ? folders : []}
                                             records={files.map(file => file.data)}
                                             loading={isListLoading}
@@ -515,7 +515,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 )}
             </Files>
             <FolderDialogCreate
-                type={FOLDER_TYPE}
+                type={ACO_TYPE}
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
                 currentParentId={currentFolder || null}

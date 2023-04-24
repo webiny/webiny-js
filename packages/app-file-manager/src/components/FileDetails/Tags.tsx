@@ -11,7 +11,7 @@ import { ReactComponent as LabelIcon } from "@material-design-icons/svg/outlined
 import { useSnackbar } from "@webiny/app-admin";
 import { useFile, useFileManagerApi, useFileManagerView } from "~/index";
 import { useTags } from "@webiny/app-aco";
-import { FOLDER_TYPE } from "~/constants/folders";
+import { ACO_TYPE } from "~/constants";
 
 const chipsStyle = css({
     "&.mdc-chip-set": {
@@ -49,7 +49,7 @@ interface TagsFormData {
 
 const Tags = () => {
     const { file } = useFile();
-    const { tags } = useTags(FOLDER_TYPE);
+    const { tags } = useTags({ type: ACO_TYPE });
     const [editing, setEdit] = useState(false);
     const [updating, setUpdating] = useState(false);
     const { showSnackbar } = useSnackbar();

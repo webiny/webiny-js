@@ -61,6 +61,8 @@ interface SearchRecordsContext {
         tags_in?: string[];
         tags_startsWith?: string;
         tags_not_startsWith?: string;
+        AND?: ListTagsQueryVariables;
+        OR?: ListTagsQueryVariables;
     }) => Promise<TagItem[]>;
     updateTag: (tag: TagItem, type: string) => TagItem;
 }

@@ -4,8 +4,7 @@ import { TagItem } from "~/types";
 
 interface UseTagsParams {
     type: string;
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
+    initialWhere?: Record<string, any>;
 }
 
 export const useTags = (params: UseTagsParams) => {

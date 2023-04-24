@@ -9,22 +9,20 @@ import { TagItem } from "~/types";
 
 type TagListProps = {
     type: string;
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
+    initialWhere: Record<string, any>;
     onTagClick: (tag: TagItem) => void;
     emptyDisclaimer: string;
 };
 
 export const TagList: React.FC<TagListProps> = ({
     type,
-    tags_startsWith,
-    tags_not_startsWith,
+    initialWhere,
     onTagClick,
     emptyDisclaimer
 }) => {
-    const { tags, updateTag } = useTags({ type, tags_startsWith, tags_not_startsWith });
+    const { tags, loading, updateTag } = useTags({ type, ...initialWhere });
 
-    if (!tags) {
+    if (loading.INIT || loading.LIST) {
         return <Loader />;
     }
 

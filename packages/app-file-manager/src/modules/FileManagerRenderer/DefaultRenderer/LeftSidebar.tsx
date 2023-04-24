@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { FolderTree, TagList } from "@webiny/app-aco";
 import { css } from "emotion";
 
-import { FOLDER_TYPE } from "~/constants/folders";
+import { ACO_TYPE, DEFAULT_SCOPE } from "~/constants";
 
 import { TagItem } from "@webiny/app-aco/types";
 
@@ -31,23 +31,39 @@ interface LeftSidebarProps {
     title: string;
     toggleTag: (tag: TagItem) => void;
     currentFolder?: string;
+    scope?: string;
     onFolderClick: (folderId: string | undefined) => void;
-    initialWhere: {
-        tags_startsWith?: string;
-        tags_not_startsWith?: string;
-    };
 }
+
+export const getInitialWhere = (scope: string | undefined) => {
+    let scopeFilter = {};
+
+    if (!scope) {
+        scopeFilter = {
+            tags_not_startsWith: DEFAULT_SCOPE
+        };
+    } else {
+        scopeFilter = {
+            tags_startsWith: scope
+        };
+    }
+
+    return {
+        AND: [{ tags_not_startsWith: "mime:" }, scopeFilter]
+    };
+};
+
 const LeftSidebar = ({
     title,
     toggleTag,
     currentFolder,
-    initialWhere,
+    scope,
     onFolderClick
 }: LeftSidebarProps) => {
     return (
         <div className={style.leftDrawer}>
             <FolderTree
-                type={FOLDER_TYPE}
+                type={ACO_TYPE}
                 title={title}
                 focusedFolderId={currentFolder}
                 onTitleClick={() => onFolderClick(undefined)}
@@ -57,9 +73,8 @@ const LeftSidebar = ({
             />
             <div className={style.divider} />
             <TagList
-                type={FOLDER_TYPE}
-                tags_startsWith={initialWhere?.tags_startsWith}
-                tags_not_startsWith={initialWhere?.tags_not_startsWith}
+                type={ACO_TYPE}
+                initialWhere={getInitialWhere(scope)}
                 emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}
             />

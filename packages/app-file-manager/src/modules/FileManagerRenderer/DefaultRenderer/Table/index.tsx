@@ -22,7 +22,7 @@ import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
 
-import { FOLDER_TYPE } from "~/constants/folders";
+import { ACO_TYPE } from "~/constants";
 
 import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
 import { menuStyles } from "./styled";
@@ -227,7 +227,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             )}
             {selectedSearchRecord && (
                 <EntryDialogMove
-                    type={FOLDER_TYPE}
+                    type={ACO_TYPE}
                     searchRecord={selectedSearchRecord}
                     open={moveSearchRecordDialogOpen}
                     onClose={() => setMoveSearchRecordDialogOpen(false)}
