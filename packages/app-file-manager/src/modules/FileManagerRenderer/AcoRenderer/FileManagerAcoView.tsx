@@ -23,18 +23,19 @@ import DropFilesHere from "./DropFilesHere";
 import { FileDetails } from "~/components/FileDetails";
 import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
-import { useFileManagerApi, useFileManagerView } from "~/index";
+import { useFileManagerApi } from "~/index";
 import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
 import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
-import { Table } from "~/modules/FileManagerRenderer/DefaultRenderer/Table";
-import { Grid } from "~/modules/FileManagerRenderer/DefaultRenderer/Grid";
+import { Table } from "~/modules/FileManagerRenderer/AcoRenderer/Table";
+import { Grid } from "~/modules/FileManagerRenderer/AcoRenderer/Grid";
 import { Title } from "~/components/Title";
 
 import { Tooltip } from "@webiny/ui/Tooltip";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { EmptyView } from "~/modules/FileManagerRenderer/DefaultRenderer/EmptyView";
+import { EmptyView } from "~/modules/FileManagerRenderer/AcoRenderer/EmptyView";
 import { ACO_TYPE } from "~/constants";
+import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -88,7 +89,7 @@ const FileListWrapper = styled("div")({
     }
 });
 
-export interface FileManagerViewProps {
+export interface FileManagerAcoViewProps {
     onChange?: Function;
     onClose?: Function;
     files?: FilesRules;
@@ -120,7 +121,7 @@ export const getInitialWhere = (scope: string | undefined) => {
     };
 };
 
-const FileManagerView: React.FC<FileManagerViewProps> = props => {
+const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope } = props;
 
     const {
@@ -134,8 +135,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         showFileDetails,
         hideFileDetails,
         showingFileDetails,
-        queryParams,
-        setQueryParams,
         hasPreviouslyUploadedFiles,
         setHasPreviouslyUploadedFiles,
         uploadFile,
@@ -144,8 +143,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         setCurrentFolder,
         getFile,
         listTable,
-        setListTable
-    } = useFileManagerView();
+        setListTable,
+        listParams,
+        setListParams
+    } = useFileManagerAcoView();
 
     const initialWhere = getInitialWhere(scope);
 
@@ -174,26 +175,26 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             return { ...current, [next.id]: next.desc ? "DESC" : "ASC" };
         }, {});
 
-        setQueryParams({ sort });
+        setListParams({ sort });
     }, [tableSorting]);
 
     const searchOnChange = useCallback(
         // @ts-ignore
-        debounce(search => setQueryParams({ search }), 500),
+        debounce(search => setListParams({ search, folderId: undefined }), 500),
         []
     );
 
-    // useEffect(() => {
-    //     const listSearchRecords = async () => {
-    //         await listItems({ ...queryParams });
-    //     };
-    //
-    //     listSearchRecords();
-    // }, [JSON.stringify(queryParams)]);
+    useEffect(() => {
+        const listSearchRecords = async () => {
+            await listItems({ ...listParams });
+        };
+
+        listSearchRecords();
+    }, [JSON.stringify(listParams)]);
 
     const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
-            await listItems({ ...queryParams, after: cursor });
+            await listItems({ ...listParams, after: cursor });
         }
     };
 
@@ -206,8 +207,9 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         [meta]
     );
 
-    const toggleTag = useCallback(async ({ tag, queryParams }) => {
-        const finalTags = Array.isArray(queryParams.tags) ? [...queryParams.tags] : [];
+    const toggleTag = useCallback(async ({ tag, listParams }) => {
+        const finalTags =
+            listParams.tags_in && Array.isArray(listParams.tags_in) ? [...listParams.tags_in] : [];
 
         if (finalTags.includes(tag.name)) {
             finalTags.splice(finalTags.indexOf(tag.name), 1);
@@ -215,7 +217,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             finalTags.push(tag.name);
         }
 
-        setQueryParams({ ...queryParams, tags: finalTags });
+        setListParams({ ...listParams, tags_in: finalTags });
     }, []);
 
     const getFileUploadErrorMessage = useCallback(e => {
@@ -444,7 +446,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 currentFolder={currentFolder}
                                 onFolderClick={setCurrentFolder}
                                 scope={scope}
-                                toggleTag={tag => toggleTag({ tag, queryParams })}
+                                toggleTag={tag => toggleTag({ tag, listParams })}
                             />
 
                             <FileListWrapper
@@ -468,12 +470,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     folders.length === 0 &&
                                     !isListLoading ? (
                                         <EmptyView
-                                            isSearchResult={!queryParams.search}
+                                            isSearchResult={!listParams.search}
                                             browseFiles={browseFiles}
                                         />
                                     ) : listTable ? (
                                         <Table
-                                            folders={!queryParams.search ? folders : []}
+                                            folders={!listParams.search ? folders : []}
                                             records={files}
                                             loading={isListLoading}
                                             onRecordClick={showFileDetails}
@@ -491,7 +493,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     ) : (
                                         <Grid
                                             type={ACO_TYPE}
-                                            folders={!queryParams.search ? folders : []}
+                                            folders={!listParams.search ? folders : []}
                                             records={files.map(file => file.data)}
                                             loading={isListLoading}
                                             onRecordClick={showFileDetails}
@@ -524,8 +526,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     );
 };
 
-FileManagerView.defaultProps = {
+FileManagerAcoView.defaultProps = {
     multiple: false
 };
 
-export default FileManagerView;
+export default FileManagerAcoView;

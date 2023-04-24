@@ -123,6 +123,7 @@ export const useAcoList = (params: UseAcoListParams) => {
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
             meta: meta[folderId] || {},
             listItems(params: {
+                folderId?: string;
                 after?: string;
                 limit?: number;
                 sort?: ListDbSort;
@@ -136,7 +137,7 @@ export const useAcoList = (params: UseAcoListParams) => {
                     setSort(validateOrGetDefaultDbSort(params.sort));
                 }
 
-                return listRecords({ ...params, type, folderId });
+                return listRecords({ type, folderId, ...params });
             }
         }),
         [folders, records, foldersLoading, recordsLoading, meta]

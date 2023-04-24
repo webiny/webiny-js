@@ -29,7 +29,7 @@ export const getWhere = (scope: string | undefined) => {
     };
 };
 
-export interface FileManagerViewContextData<TFileItem extends FileItem = FileItem> {
+export interface FileManagerAcoViewContextData<TFileItem extends FileItem = FileItem> {
     state: State;
     dispatch: React.Dispatch<Action>;
     getFile: (id: string) => Promise<TFileItem | undefined>;
@@ -72,9 +72,9 @@ function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefin
     return fallback;
 }
 
-export const FileManagerViewContext = React.createContext<FileManagerViewContextData | undefined>(
-    undefined
-);
+export const FileManagerAcoViewContext = React.createContext<
+    FileManagerAcoViewContextData | undefined
+>(undefined);
 
 export interface FileManagerViewProviderProps {
     accept: string[];
@@ -84,7 +84,10 @@ export interface FileManagerViewProviderProps {
     children: React.ReactNode;
 }
 
-export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
+export const FileManagerAcoViewProvider = ({
+    children,
+    ...props
+}: FileManagerViewProviderProps) => {
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
     const { getRecord } = useRecords();
@@ -203,7 +206,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         //listFiles();
     }, [JSON.stringify(state.queryParams)]);
 
-    const setHasPreviouslyUploadedFiles: FileManagerViewContextData["setHasPreviouslyUploadedFiles"] =
+    const setHasPreviouslyUploadedFiles: FileManagerAcoViewContextData["setHasPreviouslyUploadedFiles"] =
         state => {
             dispatch({ type: "hasPreviouslyUploadedFiles", state });
         };
@@ -355,7 +358,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             });
     };
 
-    const value: FileManagerViewContextData = {
+    const value: FileManagerAcoViewContextData = {
         state,
         dispatch,
         files,
@@ -419,6 +422,8 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     };
 
     return (
-        <FileManagerViewContext.Provider value={value}>{children}</FileManagerViewContext.Provider>
+        <FileManagerAcoViewContext.Provider value={value}>
+            {children}
+        </FileManagerAcoViewContext.Provider>
     );
 };

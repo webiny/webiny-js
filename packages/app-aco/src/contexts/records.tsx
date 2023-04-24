@@ -115,8 +115,8 @@ export const SearchRecordsProvider = ({ children }: Props) => {
              * this allows us to use `useRecords` methods like `getRecord` without passing useless params.
              * But still, we need these params to list records.
              */
-            if (!folderId || !type) {
-                throw new Error("`folderId` and `type` are mandatory");
+            if (!type) {
+                throw new Error("`type` are mandatory");
             }
 
             /**
@@ -126,7 +126,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             const recordsCount =
                 records[type] &&
                 records[type].filter(record => record.location.folderId === folderId).length;
-            const totalCount = meta[folderId]?.totalCount || 0;
+            const totalCount = meta[folderId || "search"]?.totalCount || 0;
             if (after && recordsCount === totalCount) {
                 return;
             }
@@ -150,10 +150,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                         variables: {
                             where: {
                                 type,
-                                location: { folderId },
                                 tags_in,
                                 tags_startsWith,
-                                tags_not_startsWith
+                                tags_not_startsWith,
+                                ...(folderId && { location: { folderId } })
                             },
                             search,
                             limit,
@@ -178,7 +178,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             setMeta(meta => ({
                 ...meta,
-                [folderId]: responseMeta
+                [folderId || "search"]: responseMeta
             }));
 
             setLoading(prev => {

@@ -6,8 +6,8 @@ import {
     FileManagerRenderer as BaseFileManagerRenderer
 } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
-import FileManagerView, { FileManagerViewProps } from "./FileManagerView";
-import { FileManagerViewProvider } from "../FileManagerViewProvider";
+import FileManagerAcoView, { FileManagerAcoViewProps } from "./FileManagerAcoView";
+import { FileManagerAcoViewProvider } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
@@ -37,7 +37,7 @@ const imagesAccept = [
     "image/svg+xml"
 ];
 
-export const DefaultRenderer = createComponentPlugin(BaseFileManagerRenderer, () => {
+export const AcoRenderer = createComponentPlugin(BaseFileManagerRenderer, () => {
     return function FileManagerRenderer(props) {
         const { onChange, images, accept, ...forwardProps } = props;
 
@@ -55,21 +55,21 @@ export const DefaultRenderer = createComponentPlugin(BaseFileManagerRenderer, ()
             (onChange as FileManagerOnChange<FileManagerFileItem>)(formatFileItem(value));
         };
 
-        const viewProps: FileManagerViewProps = {
+        const viewProps: FileManagerAcoViewProps = {
             ...forwardProps,
             onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
             accept: images ? accept || imagesAccept : accept || []
         };
 
         return (
-            <FileManagerViewProvider
+            <FileManagerAcoViewProvider
                 accept={viewProps.accept || []}
                 tags={viewProps.tags || []}
                 scope={viewProps.scope}
                 own={viewProps.own}
             >
-                <FileManagerView {...viewProps} />
-            </FileManagerViewProvider>
+                <FileManagerAcoView {...viewProps} />
+            </FileManagerAcoViewProvider>
         );
     };
 });
