@@ -72,7 +72,7 @@ const createPackageFilter = (args = []) => {
         .map(arg => {
             return arg.replace("--keyword=", "");
         });
-    return (packageKeywords = []) => {
+    const fn = (packageKeywords = []) => {
         if (
             !packageKeywords ||
             filters.length === 0 ||
@@ -89,6 +89,10 @@ const createPackageFilter = (args = []) => {
         }
         return false;
     };
+
+    fn.filters = filters;
+
+    return fn;
 };
 
 const isPackageAllowed = createPackageFilter(process.argv);
@@ -166,6 +170,7 @@ const projects = allWorkspaces()
 
 if (projects.length === 0) {
     console.log(`There are no packages found. Please check the filters if you are using those.`);
+    console.log(`Filters: ${isPackageAllowed.filters.join(", ")}`);
     process.exit(1);
 }
 
