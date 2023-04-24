@@ -8,10 +8,9 @@ import {
     ListFilesListFilesResponse,
     ListFilesQueryVariables
 } from "~/modules/FileManagerApiProvider/graphql";
-import { FOLDER_ID_DEFAULT } from "~/constants/folders";
+import { FOLDER_ID_DEFAULT, DEFAULT_SCOPE } from "~/constants";
 import { useRecords } from "@webiny/app-aco";
 
-const DEFAULT_SCOPE = "scope:";
 export const getWhere = (scope: string | undefined) => {
     if (!scope) {
         return {
