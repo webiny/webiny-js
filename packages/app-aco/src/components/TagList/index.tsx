@@ -27,7 +27,7 @@ export const TagList: React.FC<TagListProps> = ({
 }) => {
     const { tags, loading, updateTag } = useTags({ type, ...initialWhere });
 
-    if (loading.INIT || loading.LIST) {
+    if (!tags && (loading.INIT || loading.LIST)) {
         return <Loader />;
     }
 
