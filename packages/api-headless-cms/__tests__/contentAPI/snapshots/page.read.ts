@@ -13,6 +13,7 @@ export default `
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective
+        reference: PageModelApiName_Reference
     }
 
     union PageModelApiName_Content = PageModelApiName_Content_Hero | PageModelApiName_Content_SimpleText | PageModelApiName_Content_Objecting
@@ -99,6 +100,12 @@ export default `
     
     type PageModelApiName_Objective_Objecting {
         nestedObject: PageModelApiName_Objective_Objecting_NestedObject
+    }
+    
+    union PageModelApiName_Reference = PageModelApiName_Reference_Author
+    
+    type PageModelApiName_Reference_Author {
+        author(populate: Boolean = true): AuthorApiModel
     }
     
     input PageModelApiNameGetWhereInput {

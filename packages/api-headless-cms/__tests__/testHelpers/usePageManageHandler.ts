@@ -6,44 +6,12 @@ const singularPageApiName = pageModel.singularApiName;
 
 const pageFields = `
     id
-    content {
-        ...on ${singularPageApiName}_Content_Hero {
-            title
-            __typename
-        }
-        ...on ${singularPageApiName}_Content_SimpleText {
-            text
-            __typename
-        }
-        ...on ${singularPageApiName}_Content_Objecting {
-            nestedObject {
-                objectTitle
-                objectNestedObject {
-                    nestedObjectNestedTitle
-                }
-            }
-            __typename
-        }
-    }
-    header {
-        ...on ${singularPageApiName}_Header_TextHeader {
-            title
-            __typename
-        }
-        ...on ${singularPageApiName}_Header_ImageHeader {
-            title
-            image
-            __typename
-        }
-    }
-    objective {
-        ...on ${singularPageApiName}_Objective_Objecting {
-            nestedObject {
-                objectTitle
-                objectBody
-                objectNestedObject {
-                    nestedObjectNestedTitle
-                }
+    reference {
+        ...on ${singularPageApiName}_Reference_Author {
+            author {
+                id
+                modelId
+                __typename
             }
             __typename
         }

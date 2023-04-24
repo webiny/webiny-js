@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import {
     ApiEndpoint,
     CmsDynamicZoneTemplate,
@@ -12,6 +11,7 @@ import {
 import { createTypeName } from "~/utils/createTypeName";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 import { createGraphQLInputField } from "../helpers";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
     return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
@@ -80,23 +80,53 @@ const remapTemplateValue = (value: any, typeName: string) => {
     return { ...value[templateType], __typename: `${typeName}_${templateType}` };
 };
 
-const createResolver: CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> = ({
-    model,
-    field
-}) => {
-    return parent => {
-        const value = parent[field.fieldId];
-        if (!value) {
-            return value;
-        }
+const createResolver = (
+    endpointType: ApiEndpoint
+): CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> => {
+    return ({ model, models, field, fieldTypePlugins, createFieldResolvers }) => {
+        const resolver = (parent: any) => {
+            const value = parent[field.fieldId];
+            if (!value) {
+                return value;
+            }
 
-        const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
+            const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
-        if (field.multipleValues && Array.isArray(value)) {
-            return value.map(v => remapTemplateValue(v, typeName));
-        }
+            if (field.multipleValues && Array.isArray(value)) {
+                return value.map(v => remapTemplateValue(v, typeName));
+            }
 
-        return remapTemplateValue(value, typeName);
+            return remapTemplateValue(value, typeName);
+        };
+
+        const templates = getFieldTemplates(field);
+
+        const { templateTypes } = createTypeDefsForTemplates({
+            models,
+            field,
+            type: endpointType,
+            typeOfType: "type",
+            model,
+            fieldTypePlugins,
+            templates
+        });
+
+        const typeResolvers = templateTypes.reduce<
+            Record<string, Record<string, GraphQLFieldResolver>>
+        >((typeResolvers, templateType, index) => {
+            return {
+                ...typeResolvers,
+                ...createFieldResolvers({
+                    graphQLType: templateType,
+                    fields: field.settings.templates[index].fields
+                })
+            };
+        }, {});
+
+        return {
+            resolver,
+            typeResolvers
+        };
     };
 };
 
@@ -111,20 +141,20 @@ export const createDynamicZoneField =
             validateChildFields: params => {
                 const { validate, originalField, field } = params;
 
-                const hasRefField = (field.settings?.templates || []).some(template => {
-                    return template.fields.some(field => field.type === "ref");
-                });
-                if (hasRefField) {
-                    throw new WebinyError(
-                        "Reference field cannot be used inside of an Dynamic Zone field.",
-                        "REFERENCE_FIELD_INSIDE_DYNAMIC_ZONE",
-                        {
-                            id: field.id,
-                            fieldId: field.fieldId,
-                            fieldLabel: field.label
-                        }
-                    );
-                }
+                // const hasRefField = (field.settings?.templates || []).some(template => {
+                //     return template.fields.some(field => field.type === "ref");
+                // });
+                // if (hasRefField) {
+                //     throw new WebinyError(
+                //         "Reference field cannot be used inside of an Dynamic Zone field.",
+                //         "REFERENCE_FIELD_INSIDE_DYNAMIC_ZONE",
+                //         {
+                //             id: field.id,
+                //             fieldId: field.fieldId,
+                //             fieldLabel: field.label
+                //         }
+                //     );
+                // }
 
                 const getOriginalTemplateFields = (templateId: string) => {
                     if (!originalField?.settings?.templates) {
@@ -167,7 +197,7 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.join("\n")
                     };
                 },
-                createResolver
+                createResolver: createResolver("read")
             },
             manage: {
                 createTypeField({ models, model, field, fieldTypePlugins }) {
@@ -242,7 +272,7 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.join("\n")
                     };
                 },
-                createResolver
+                createResolver: createResolver("manage")
             }
         };
     };
