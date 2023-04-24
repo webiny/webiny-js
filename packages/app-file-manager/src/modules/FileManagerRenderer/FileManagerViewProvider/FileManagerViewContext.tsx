@@ -3,20 +3,13 @@ import { FileItem } from "@webiny/app-admin/types";
 import { useSecurity } from "@webiny/app-security";
 import { Settings } from "~/types";
 import { useFileManagerApi } from "~/index";
-import {
-    Action,
-    initializeState,
-    State,
-    StateListParams,
-    StateQueryParams,
-    stateReducer
-} from "./stateReducer";
+import { Action, initializeState, State, StateQueryParams, stateReducer } from "./stateReducer";
 import {
     ListFilesListFilesResponse,
     ListFilesQueryVariables
 } from "~/modules/FileManagerApiProvider/graphql";
-import { FOLDER_ID_DEFAULT, DEFAULT_SCOPE } from "~/constants";
-import { useRecords } from "@webiny/app-aco";
+
+const DEFAULT_SCOPE = "scope:";
 
 export const getWhere = (scope: string | undefined) => {
     if (!scope) {
@@ -32,7 +25,6 @@ export const getWhere = (scope: string | undefined) => {
 export interface FileManagerViewContextData<TFileItem extends FileItem = FileItem> {
     state: State;
     dispatch: React.Dispatch<Action>;
-    getFile: (id: string) => Promise<TFileItem | undefined>;
     createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
@@ -43,14 +35,11 @@ export interface FileManagerViewContextData<TFileItem extends FileItem = FileIte
     tags: string[];
     settings: Settings | undefined;
     selected: TFileItem[];
-    setSelected: (files: TFileItem[]) => void;
     toggleSelected: (file: TFileItem) => void;
     hasPreviouslyUploadedFiles: boolean | null;
     setHasPreviouslyUploadedFiles: (flag: boolean) => void;
     queryParams: StateQueryParams;
     setQueryParams: (queryParams: StateQueryParams) => void;
-    listParams: StateListParams;
-    setListParams: (listParams: StateListParams) => void;
     dragging: boolean;
     setDragging: (state: boolean) => void;
     uploading: boolean;
@@ -58,10 +47,6 @@ export interface FileManagerViewContextData<TFileItem extends FileItem = FileIte
     showFileDetails: (id: string) => void;
     showingFileDetails: string | null;
     hideFileDetails: () => void;
-    currentFolder?: string;
-    setCurrentFolder: (folderId: string | undefined) => void;
-    listTable: boolean;
-    setListTable: (mode: boolean) => void;
 }
 
 function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
@@ -87,14 +72,11 @@ export interface FileManagerViewProviderProps {
 export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
-    const { getRecord } = useRecords();
     const [files, setFiles] = useState<FileItem[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [meta, setMeta] = useState<ListFilesListFilesResponse["meta"]>();
     const [settings, setSettings] = useState<Settings | undefined>(undefined);
     const [loadingFiles, setLoading] = useState(false);
-    const [currentFolder, setCurrentFolder] = useState<string>();
-    const [listTable, setListTable] = useState<boolean>(false);
 
     const [state, dispatch] = React.useReducer(
         stateReducer,
@@ -105,7 +87,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const queryParamsToWhereInput = (queryParams: StateQueryParams): ListFilesQueryVariables => {
         return {
             limit: queryParams.limit,
-            sort: queryParams.sort,
             where: {
                 ...getWhere(props.scope),
                 createdBy: queryParams.createdBy,
@@ -114,48 +95,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
                 type_in: nonEmptyArray(queryParams.types)
             }
         };
-    };
-
-    const getFile = async (id: string) => {
-        const fileInState = files.find(file => file.id === id);
-
-        if (fileInState) {
-            return fileInState;
-        }
-
-        setLoading(true);
-
-        const file = await fileManager.getFile(id);
-
-        if (!file) {
-            // No file found - must be deleted by previous operation
-            setFiles(files => files.filter(file => file.id !== id));
-        } else {
-            setFiles(prevFiles => {
-                const fileIndex = prevFiles.findIndex(file => file.id === id);
-
-                // No record found in the list - must be added by previous operation
-                if (fileIndex === -1) {
-                    return [...prevFiles, file];
-                }
-
-                // Updating record found in the list
-                const result = [
-                    ...prevFiles.slice(0, fileIndex),
-                    {
-                        ...prevFiles[fileIndex],
-                        ...file
-                    },
-                    ...prevFiles.slice(fileIndex + 1)
-                ];
-
-                return result;
-            });
-        }
-
-        setLoading(false);
-
-        return file;
     };
 
     const listFiles = async () => {
@@ -195,12 +134,12 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     };
 
     useEffect(() => {
-        //listTags();
+        listTags();
         getSettings();
     }, []);
 
     useEffect(() => {
-        //listFiles();
+        listFiles();
     }, [JSON.stringify(state.queryParams)]);
 
     const setHasPreviouslyUploadedFiles: FileManagerViewContextData["setHasPreviouslyUploadedFiles"] =
@@ -239,17 +178,10 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             data.tags = [...(data.tags || []), props.scope];
         }
 
-        const meta = {
-            location: {
-                folderId: currentFolder || FOLDER_ID_DEFAULT
-            }
-        };
-
-        const newFile = await fileManager.createFile(data, meta);
+        const newFile = await fileManager.createFile(data);
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags || []);
             setFiles(files => [newFile, ...files]);
-            await getRecord(newFile.id);
         }
         return newFile;
     };
@@ -292,11 +224,14 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             // Create an array of unique tags
             return Array.from(new Set([...tags, ...(data.tags || [])]));
         });
-
-        await getRecord(id);
     };
 
     const deleteFile = async (id: string) => {
+        const file = files.find(file => file.id === id);
+        if (!file) {
+            return;
+        }
+
         await fileManager.deleteFile(id);
 
         setFiles(files => {
@@ -307,9 +242,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
 
             return [...files.slice(0, index), ...files.slice(index + 1)];
         });
-
-        // Sync ACO record - retrieve the most updated record from network
-        await getRecord(id);
     };
 
     /**
@@ -320,17 +252,10 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const uploadFile = async (file: File) => {
         const tags = props.scope ? [props.scope] : [];
 
-        const meta = {
-            location: {
-                folderId: currentFolder || FOLDER_ID_DEFAULT
-            }
-        };
-
-        const newFile = await fileManager.uploadFile(file, meta, { tags });
+        const newFile = await fileManager.uploadFile(file, { tags });
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags);
             setFiles(files => [newFile, ...files]);
-            await getRecord(newFile.id);
         }
         return newFile;
     };
@@ -362,19 +287,12 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         loadingFiles,
         loadMore,
         tags: removeScopePrefix(tags),
-        getFile,
         createFile,
         updateFile,
         deleteFile,
         uploadFile,
         settings,
         selected: state.selected,
-        setSelected(files: FileItem[]) {
-            dispatch({
-                type: "setSelected",
-                files
-            });
-        },
         toggleSelected(file: FileItem) {
             dispatch({
                 type: "toggleSelected",
@@ -386,10 +304,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         queryParams: state.queryParams,
         setQueryParams(queryParams: StateQueryParams) {
             dispatch({ type: "queryParams", queryParams });
-        },
-        listParams: state.listParams,
-        setListParams(listParams: StateListParams) {
-            dispatch({ type: "listParams", listParams });
         },
         setDragging(state = true) {
             dispatch({
@@ -411,11 +325,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
         hideFileDetails() {
             dispatch({ type: "showFileDetails", id: null });
         },
-        showingFileDetails: state.showingFileDetails,
-        currentFolder,
-        setCurrentFolder,
-        listTable,
-        setListTable
+        showingFileDetails: state.showingFileDetails
     };
 
     return (

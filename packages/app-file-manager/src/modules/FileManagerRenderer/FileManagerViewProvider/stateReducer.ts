@@ -1,5 +1,4 @@
 import { FileItem } from "@webiny/app-admin/types";
-import { ListDbSort } from "@webiny/app-aco/types";
 
 export enum ListFilesSort {
     CREATED_ON_ASC,
@@ -13,18 +12,9 @@ export interface StateQueryParams {
     search?: string;
     types?: string[];
     limit?: number;
-    sort?: ListDbSort;
+    sort?: number;
     tags?: string[];
     scope?: string;
-}
-
-export interface StateListParams {
-    folderId?: string;
-    search?: string;
-    createdBy?: string;
-    sort?: ListDbSort;
-    limit?: number;
-    tags_in?: string[];
 }
 
 export interface State {
@@ -32,7 +22,6 @@ export interface State {
     selected: FileItem[];
     hasPreviouslyUploadedFiles: boolean | null;
     queryParams: StateQueryParams;
-    listParams: StateListParams;
     dragging: boolean;
     uploading: boolean;
 }
@@ -43,16 +32,8 @@ export type Action =
           file: FileItem;
       }
     | {
-          type: "setSelected";
-          files: FileItem[];
-      }
-    | {
           type: "queryParams";
           queryParams: StateQueryParams;
-      }
-    | {
-          type: "listParams";
-          listParams: StateListParams;
       }
     | {
           type: "showFileDetails";
@@ -104,16 +85,10 @@ export const initializeState = ({ accept, tags, scope, own, identity }: InitPara
         queryParams: {
             scope,
             limit: 50,
-            sort: undefined,
+            sort: ListFilesSort.CREATED_ON_DESC,
             types: accept?.length ? accept : undefined,
             tags: tags?.length ? tags : undefined,
             createdBy: own ? identity.id : undefined
-        },
-        listParams: {
-            limit: 50,
-            sort: undefined,
-            createdBy: own ? identity.id : undefined,
-            tags_in: tags?.length ? tags : undefined
         },
         dragging: false,
         uploading: false
@@ -125,10 +100,6 @@ export const stateReducer: Reducer = (state: State, action) => {
         ...state
     };
     switch (action.type) {
-        case "setSelected": {
-            next.selected = action.files;
-            break;
-        }
         case "toggleSelected": {
             const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
             if (existingIndex < 0) {
@@ -144,16 +115,8 @@ export const stateReducer: Reducer = (state: State, action) => {
                 ...state.queryParams,
                 ...action.queryParams,
                 types: state.queryParams.types,
-                limit: 50
-            };
-            break;
-        }
-        case "listParams": {
-            next.selected = [];
-            next.listParams = {
-                ...state.listParams,
-                ...action.listParams,
-                limit: 50
+                limit: 50,
+                sort: ListFilesSort.CREATED_ON_DESC
             };
             break;
         }
