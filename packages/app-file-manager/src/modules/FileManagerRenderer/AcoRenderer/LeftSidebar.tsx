@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { FolderTree, TagList } from "@webiny/app-aco";
 import { css } from "emotion";
 
-import { ACO_TYPE, DEFAULT_SCOPE } from "~/constants";
+import { ACO_TYPE, DEFAULT_SCOPE, FOLDER_ID_DEFAULT } from "~/constants";
 
 import { TagItem } from "@webiny/app-aco/types";
 
@@ -84,7 +84,7 @@ const LeftSidebar = ({
                 type={ACO_TYPE}
                 title={title}
                 focusedFolderId={currentFolder}
-                onTitleClick={() => onFolderClick(undefined)}
+                onTitleClick={() => onFolderClick(FOLDER_ID_DEFAULT)}
                 onFolderClick={data => data?.id && onFolderClick(data?.id)}
                 enableActions={true}
                 enableCreate={true}

@@ -3,20 +3,10 @@ import { FileItem } from "@webiny/app-admin/types";
 import { useSecurity } from "@webiny/app-security";
 import { Settings } from "~/types";
 import { useFileManagerApi } from "~/index";
-import {
-    Action,
-    initializeState,
-    State,
-    StateListParams,
-    StateQueryParams,
-    stateReducer
-} from "./stateReducer";
-import {
-    ListFilesListFilesResponse,
-    ListFilesQueryVariables
-} from "~/modules/FileManagerApiProvider/graphql";
+import { Action, initializeState, State, StateListWhere, stateReducer } from "./stateReducer";
 import { FOLDER_ID_DEFAULT, DEFAULT_SCOPE } from "~/constants";
 import { useRecords } from "@webiny/app-aco";
+import { ListDbSort } from "@webiny/app-aco/types";
 
 export const getWhere = (scope: string | undefined) => {
     if (!scope) {
@@ -43,8 +33,10 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     toggleSelected: (file: TFileItem) => void;
     hasPreviouslyUploadedFiles: boolean | null;
     setHasPreviouslyUploadedFiles: (flag: boolean) => void;
-    listParams: StateListParams;
-    setListParams: (listParams: StateListParams) => void;
+    listWhere: StateListWhere;
+    setListWhere: (state: StateListWhere) => void;
+    listSort: ListDbSort | undefined;
+    setListSort: (state: ListDbSort) => void;
     dragging: boolean;
     setDragging: (state: boolean) => void;
     uploading: boolean;
@@ -52,8 +44,8 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     showFileDetails: (id: string) => void;
     showingFileDetails: string | null;
     hideFileDetails: () => void;
-    currentFolder?: string;
-    setCurrentFolder: (folderId: string | undefined) => void;
+    folderId?: string;
+    setFolderId: (folderId: string | undefined) => void;
     listTable: boolean;
     setListTable: (mode: boolean) => void;
 }
@@ -88,13 +80,10 @@ export const FileManagerAcoViewProvider = ({
     const [settings, setSettings] = useState<Settings | undefined>(undefined);
     const [files, setFiles] = useState<FileItem[]>([]);
     const [loadingFiles, setLoading] = useState(false);
-    const [currentFolder, setCurrentFolder] = useState<string>();
     const [listTable, setListTable] = useState<boolean>(false);
 
-    const [state, dispatch] = React.useReducer(
-        stateReducer,
-        { ...props, identity },
-        initializeState
+    const [state, dispatch] = React.useReducer(stateReducer, null, () =>
+        initializeState({ ...props, identity })
     );
 
     const getFile = async (id: string) => {
@@ -164,7 +153,7 @@ export const FileManagerAcoViewProvider = ({
 
         const meta = {
             location: {
-                folderId: currentFolder || FOLDER_ID_DEFAULT
+                folderId: state.folderId || FOLDER_ID_DEFAULT
             }
         };
 
@@ -243,7 +232,7 @@ export const FileManagerAcoViewProvider = ({
 
         const meta = {
             location: {
-                folderId: currentFolder || FOLDER_ID_DEFAULT
+                folderId: state.folderId || FOLDER_ID_DEFAULT
             }
         };
 
@@ -302,9 +291,13 @@ export const FileManagerAcoViewProvider = ({
         },
         hasPreviouslyUploadedFiles: state.hasPreviouslyUploadedFiles,
         setHasPreviouslyUploadedFiles,
-        listParams: state.listParams,
-        setListParams(listParams: StateListParams) {
-            dispatch({ type: "listParams", listParams });
+        listWhere: state.listWhere,
+        setListWhere(state: StateListWhere) {
+            dispatch({ type: "listWhere", state });
+        },
+        listSort: state.listSort,
+        setListSort(state: ListDbSort) {
+            dispatch({ type: "listSort", state });
         },
         setDragging(state = true) {
             dispatch({
@@ -327,8 +320,13 @@ export const FileManagerAcoViewProvider = ({
             dispatch({ type: "showFileDetails", id: null });
         },
         showingFileDetails: state.showingFileDetails,
-        currentFolder,
-        setCurrentFolder,
+        folderId: state.folderId,
+        setFolderId(state = undefined) {
+            dispatch({
+                type: "setFolderId",
+                state
+            });
+        },
         listTable,
         setListTable
     };

@@ -146,13 +146,19 @@ export interface ListSearchRecordsResponse {
     };
 }
 
+export interface ListSearchRecordsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
 export interface ListSearchRecordsQueryVariables {
-    where: {
+    where: ListSearchRecordsWhereQueryVariables & {
         type: string;
         location?: Location;
-        tags_in?: string[];
-        tags_startsWith?: string;
-        tags_not_startsWith?: string;
+        createdBy?: string;
+        AND?: ListSearchRecordsWhereQueryVariables[];
+        OR?: ListSearchRecordsWhereQueryVariables[];
     };
     search?: string;
     limit?: number;
@@ -178,8 +184,8 @@ export interface ListTagsWhereQueryVariables {
 export interface ListTagsQueryVariables {
     where: ListTagsWhereQueryVariables & {
         type: string;
-        AND?: ListTagsWhereQueryVariables;
-        OR?: ListTagsWhereQueryVariables;
+        AND?: [ListTagsWhereQueryVariables];
+        OR?: [ListTagsWhereQueryVariables];
     };
 }
 

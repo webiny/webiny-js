@@ -6,7 +6,12 @@ import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
-import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
+import {
+    FolderItem,
+    ListDbSort,
+    ListSearchRecordsWhereQueryVariables,
+    SearchRecordItem
+} from "~/types";
 
 interface UseAcoListParams {
     type: string;
@@ -17,7 +22,7 @@ interface UseAcoListParams {
 }
 
 export const useAcoList = (params: UseAcoListParams) => {
-    const { type, folderId: originalFolderId, ...initialWhere } = params;
+    const { type, folderId, ...initialWhere } = params;
 
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
@@ -34,8 +39,6 @@ export const useAcoList = (params: UseAcoListParams) => {
     const { folders: originalFolders, loading: foldersLoading, listFolders } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
 
-    const folderId = originalFolderId || "ROOT";
-
     const getCurrentFolderList = (
         folders: FolderItem[],
         currentFolderId?: string
@@ -43,10 +46,10 @@ export const useAcoList = (params: UseAcoListParams) => {
         if (!folders) {
             return [];
         }
-        if (currentFolderId) {
-            return folders.filter(folder => folder.parentId === currentFolderId);
-        } else {
+        if (!folderId || folderId === "ROOT") {
             return folders.filter(folder => !folder.parentId);
+        } else {
+            return folders.filter(folder => folder.parentId === currentFolderId);
         }
     };
 
@@ -56,6 +59,10 @@ export const useAcoList = (params: UseAcoListParams) => {
     ): SearchRecordItem[] | [] => {
         if (!records) {
             return [];
+        }
+
+        if (!currentFolderId) {
+            return records;
         }
 
         return records.filter(record => record.location.folderId === currentFolderId);
@@ -85,10 +92,10 @@ export const useAcoList = (params: UseAcoListParams) => {
      * - we return the current folder name.
      */
     useDeepCompareEffect(() => {
-        const subFolders = getCurrentFolderList(originalFolders[type], originalFolderId);
+        const subFolders = getCurrentFolderList(originalFolders[type], folderId);
         setFolders(sortTableItems(subFolders, sort));
 
-        const currentFolder = originalFolders[type]?.find(folder => folder.id === originalFolderId);
+        const currentFolder = originalFolders[type]?.find(folder => folder.id === folderId);
         setListTitle(currentFolder?.title || undefined);
     }, [{ ...originalFolders[type] }, folderId]);
 
@@ -121,7 +128,7 @@ export const useAcoList = (params: UseAcoListParams) => {
                     foldersLoading.LIST
             ),
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
-            meta: meta[folderId] || {},
+            meta: meta[folderId || "search"] || {},
             listItems(params: {
                 folderId?: string;
                 after?: string;
@@ -131,6 +138,8 @@ export const useAcoList = (params: UseAcoListParams) => {
                 tags_in?: string[];
                 tags_startsWith?: string;
                 tags_not_startsWith?: string;
+                AND?: ListSearchRecordsWhereQueryVariables[];
+                OR?: ListSearchRecordsWhereQueryVariables[];
             }) {
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (params.sort && Object.values(params.sort).length > 0) {

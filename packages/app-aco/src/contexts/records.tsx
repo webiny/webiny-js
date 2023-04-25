@@ -32,7 +32,9 @@ import {
     ListDbSort,
     ListTagsResponse,
     ListTagsQueryVariables,
-    TagItem
+    TagItem,
+    ListSearchRecordsWhereQueryVariables,
+    ListTagsWhereQueryVariables
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
@@ -48,22 +50,24 @@ interface SearchRecordsContext {
         after?: string;
         sort?: ListDbSort;
         search?: string;
+        createdBy?: string;
         tags_in?: string[];
         tags_startsWith?: string;
         tags_not_startsWith?: string;
+        AND?: ListSearchRecordsWhereQueryVariables[];
+        OR?: ListSearchRecordsWhereQueryVariables[];
     }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
     deleteRecord(record: SearchRecordItem): Promise<true>;
-    listTags: (params: {
-        type: string;
-        tags_in?: string[];
-        tags_startsWith?: string;
-        tags_not_startsWith?: string;
-        AND?: ListTagsQueryVariables;
-        OR?: ListTagsQueryVariables;
-    }) => Promise<TagItem[]>;
+    listTags: (
+        params: ListTagsWhereQueryVariables & {
+            type: string;
+            AND?: [ListTagsWhereQueryVariables];
+            OR?: [ListTagsWhereQueryVariables];
+        }
+    ) => Promise<TagItem[]>;
     updateTag: (tag: TagItem, type: string) => TagItem;
 }
 
@@ -105,9 +109,12 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 limit,
                 sort: sorting,
                 search,
+                createdBy,
                 tags_in,
                 tags_startsWith,
-                tags_not_startsWith
+                tags_not_startsWith,
+                AND,
+                OR
             } = params;
 
             /**
@@ -150,10 +157,13 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                         variables: {
                             where: {
                                 type,
+                                ...(folderId && { location: { folderId } }),
                                 tags_in,
                                 tags_startsWith,
                                 tags_not_startsWith,
-                                ...(folderId && { location: { folderId } })
+                                createdBy,
+                                AND,
+                                OR
                             },
                             search,
                             limit,

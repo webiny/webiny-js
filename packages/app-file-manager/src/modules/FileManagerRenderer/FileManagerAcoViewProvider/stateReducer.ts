@@ -1,43 +1,37 @@
 import { FileItem } from "@webiny/app-admin/types";
 import { ListDbSort } from "@webiny/app-aco/types";
+import { FOLDER_ID_DEFAULT } from "~/constants";
+import isEqual from "lodash/isEqual";
 
-export enum ListFilesSort {
-    CREATED_ON_ASC,
-    CREATED_ON_DESC,
-    SIZE_ASC,
-    SIZE_DESC
+interface BaseStateListWhere {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
 }
 
-export interface StateQueryParams {
-    createdBy?: string;
-    search?: string;
-    types?: string[];
-    limit?: number;
-    sort?: ListDbSort;
-    tags?: string[];
-    scope?: string;
-}
-
-export interface StateListParams {
+export interface StateListWhere extends BaseStateListWhere {
     folderId?: string;
     search?: string;
     createdBy?: string;
-    sort?: ListDbSort;
-    limit?: number;
-    tags_in?: string[];
+    AND?: BaseStateListWhere[];
 }
 
 export interface State {
+    folderId: string | undefined;
     showingFileDetails: string | null;
     selected: FileItem[];
     hasPreviouslyUploadedFiles: boolean | null;
-    queryParams: StateQueryParams;
-    listParams: StateListParams;
+    listWhere: StateListWhere;
+    listSort?: ListDbSort;
     dragging: boolean;
     uploading: boolean;
 }
 
 export type Action =
+    | {
+          type: "setFolderId";
+          state: string | undefined;
+      }
     | {
           type: "toggleSelected";
           file: FileItem;
@@ -47,12 +41,12 @@ export type Action =
           files: FileItem[];
       }
     | {
-          type: "queryParams";
-          queryParams: StateQueryParams;
+          type: "listWhere";
+          state: StateListWhere;
       }
     | {
-          type: "listParams";
-          listParams: StateListParams;
+          type: "listSort";
+          state: ListDbSort;
       }
     | {
           type: "showFileDetails";
@@ -85,36 +79,41 @@ interface InitParams {
 
 const DEFAULT_SCOPE = "scope:";
 
-export const getWhere = (scope: string | undefined) => {
+export const getScopeWhereParams = (scope: string | undefined) => {
     if (!scope) {
         return {
-            tag_not_startsWith: DEFAULT_SCOPE
+            tags_not_startsWith: DEFAULT_SCOPE
         };
     }
     return {
-        tag_startsWith: scope
+        tags_startsWith: scope
+    };
+};
+
+export const getMimeTypeWhereParams = (mimes: string[] | undefined) => {
+    if (!mimes || !mimes.length) {
+        return;
+    }
+
+    return {
+        tags_in: mimes.map(mime => `mime:${mime}`)
     };
 };
 
 export const initializeState = ({ accept, tags, scope, own, identity }: InitParams): State => {
     return {
+        folderId: FOLDER_ID_DEFAULT,
         showingFileDetails: null,
         selected: [],
         hasPreviouslyUploadedFiles: null,
-        queryParams: {
-            scope,
-            limit: 50,
-            sort: undefined,
-            types: accept?.length ? accept : undefined,
-            tags: tags?.length ? tags : undefined,
-            createdBy: own ? identity.id : undefined
-        },
-        listParams: {
-            limit: 50,
-            sort: undefined,
+        listWhere: {
+            ...getScopeWhereParams(scope),
+            ...getMimeTypeWhereParams(accept),
+            search: undefined,
             createdBy: own ? identity.id : undefined,
-            tags_in: tags?.length ? tags : undefined
+            AND: undefined
         },
+        listSort: {},
         dragging: false,
         uploading: false
     };
@@ -125,6 +124,14 @@ export const stateReducer: Reducer = (state: State, action) => {
         ...state
     };
     switch (action.type) {
+        case "setFolderId": {
+            next.folderId = action.state;
+            next.listWhere = {
+                ...state.listWhere,
+                folderId: action.state
+            };
+            break;
+        }
         case "setSelected": {
             next.selected = action.files;
             break;
@@ -138,23 +145,18 @@ export const stateReducer: Reducer = (state: State, action) => {
             }
             break;
         }
-        case "queryParams": {
+        case "listWhere": {
             next.selected = [];
-            next.queryParams = {
-                ...state.queryParams,
-                ...action.queryParams,
-                types: state.queryParams.types,
-                limit: 50
+            next.listWhere = {
+                ...state.listWhere,
+                ...action.state
             };
             break;
         }
-        case "listParams": {
-            next.selected = [];
-            next.listParams = {
-                ...state.listParams,
-                ...action.listParams,
-                limit: 50
-            };
+        case "listSort": {
+            if (!isEqual(state.listSort, action.state)) {
+                next.listSort = action.state;
+            }
             break;
         }
         case "showFileDetails": {
