@@ -28,7 +28,6 @@ import { i18n } from "@webiny/app/i18n";
 import { FileProvider } from "./FileDetails/FileProvider";
 import { DeleteImageAction } from "./FileDetails/DeleteImageAction";
 import { FileItem } from "@webiny/app-admin/types";
-import { useSnackbar } from "@webiny/app-admin";
 import getFileTypePlugin from "~/getFileTypePlugin";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
@@ -151,9 +150,10 @@ const style: any = {
 export interface FileDetailsProps {
     file: FileItem;
     onClose: () => void;
+    scope?: string;
 }
 
-export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
+export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose, scope }) => {
     const filePlugin = getFileTypePlugin(file);
 
     const [darkImageBackground, setDarkImageBackground] = useState(false);
@@ -261,7 +261,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose }) => {
                                     </li-title>
                                 </li>
                                 <li>
-                                    <Tags />
+                                    <Tags scope={scope} />
                                 </li>
                                 <li>
                                     <Aliases />

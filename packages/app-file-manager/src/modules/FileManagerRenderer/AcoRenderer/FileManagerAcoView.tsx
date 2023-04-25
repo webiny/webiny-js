@@ -34,7 +34,7 @@ import { Title } from "~/components/Title";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { EmptyView } from "~/modules/FileManagerRenderer/AcoRenderer/EmptyView";
-import { ACO_TYPE, FOLDER_ID_DEFAULT } from "~/constants";
+import { ACO_TYPE } from "~/constants";
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
@@ -444,7 +444,11 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                     >
                         <>
                             {currentFile ? (
-                                <FileDetails file={currentFile} onClose={hideFileDetails} />
+                                <FileDetails
+                                    file={currentFile}
+                                    onClose={hideFileDetails}
+                                    scope={scope}
+                                />
                             ) : null}
 
                             <LeftSidebar

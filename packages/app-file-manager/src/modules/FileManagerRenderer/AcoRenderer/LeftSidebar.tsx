@@ -4,7 +4,8 @@ import { i18n } from "@webiny/app/i18n";
 import { FolderTree, TagList } from "@webiny/app-aco";
 import { css } from "emotion";
 
-import { ACO_TYPE, DEFAULT_SCOPE, FOLDER_ID_DEFAULT } from "~/constants";
+import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
+import { ACO_TYPE, FOLDER_ID_DEFAULT } from "~/constants";
 
 import { TagItem } from "@webiny/app-aco/types";
 
@@ -35,24 +36,6 @@ interface LeftSidebarProps {
     onFolderClick: (folderId: string | undefined) => void;
 }
 
-const getInitialWhere = (scope: string | undefined) => {
-    let scopeFilter = {};
-
-    if (!scope) {
-        scopeFilter = {
-            tags_not_startsWith: DEFAULT_SCOPE
-        };
-    } else {
-        scopeFilter = {
-            tags_startsWith: scope
-        };
-    }
-
-    return {
-        AND: [{ tags_not_startsWith: "mime:" }, scopeFilter]
-    };
-};
-
 const LeftSidebar = ({
     title,
     toggleTag,
@@ -60,24 +43,6 @@ const LeftSidebar = ({
     scope,
     onFolderClick
 }: LeftSidebarProps) => {
-    const tagsModifier = (tags: TagItem[]) => {
-        const tagsWithoutMime = tags.filter(tag => !tag.name.startsWith("mime:"));
-        if (scope) {
-            return tagsWithoutMime;
-        }
-
-        return tagsWithoutMime
-            .filter(tag => tag.name !== scope)
-            .map(tag => {
-                return scope
-                    ? {
-                          ...tag,
-                          name: tag.name.replace(`${scope}:`, "")
-                      }
-                    : tag;
-            });
-    };
-
     return (
         <div className={style.leftDrawer}>
             <FolderTree
@@ -92,8 +57,8 @@ const LeftSidebar = ({
             <div className={style.divider} />
             <TagList
                 type={ACO_TYPE}
-                initialWhere={getInitialWhere(scope)}
-                tagsModifier={tagsModifier}
+                initialWhere={getTagsInitialParams(scope)}
+                tagsModifier={tagsModifier(scope)}
                 emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}
             />

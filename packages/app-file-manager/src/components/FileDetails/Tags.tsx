@@ -11,7 +11,8 @@ import { ReactComponent as LabelIcon } from "@material-design-icons/svg/outlined
 import { useSnackbar } from "@webiny/app-admin";
 import { useFile, useFileManagerApi, useFileManagerAcoView } from "~/index";
 import { useTags } from "@webiny/app-aco";
-import { ACO_TYPE, DEFAULT_SCOPE } from "~/constants";
+import { ACO_TYPE } from "~/constants";
+import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
 
 const chipsStyle = css({
     "&.mdc-chip-set": {
@@ -47,27 +48,17 @@ interface TagsFormData {
     tags: string[];
 }
 
-export const getInitialWhere = (scope: string | undefined) => {
-    let scopeFilter = {};
+interface TagsProps {
+    scope?: string;
+}
 
-    if (!scope) {
-        scopeFilter = {
-            tags_not_startsWith: DEFAULT_SCOPE
-        };
-    } else {
-        scopeFilter = {
-            tags_startsWith: scope
-        };
-    }
-
-    return {
-        AND: [{ tags_not_startsWith: "mime:" }, scopeFilter]
-    };
-};
-
-const Tags = () => {
+const Tags = ({ scope }: TagsProps) => {
     const { file } = useFile();
-    const { tags } = useTags({ type: ACO_TYPE, ...getInitialWhere });
+    const { tags } = useTags({
+        type: ACO_TYPE,
+        tagsModifier: tagsModifier(scope),
+        ...getTagsInitialParams(scope)
+    });
     const [editing, setEdit] = useState(false);
     const [updating, setUpdating] = useState(false);
     const { showSnackbar } = useSnackbar();
