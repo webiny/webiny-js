@@ -14,6 +14,7 @@ export default `
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective
         reference: PageModelApiName_Reference
+        references: [PageModelApiName_References!]
     }
 
     union PageModelApiName_Content = PageModelApiName_Content_Hero | PageModelApiName_Content_SimpleText | PageModelApiName_Content_Objecting
@@ -107,6 +108,13 @@ export default `
     type PageModelApiName_Reference_Author {
         author(populate: Boolean = true): AuthorApiModel
     }
+    
+    union PageModelApiName_References = PageModelApiName_References_Author
+    
+    type PageModelApiName_References_Author {
+       author(populate: Boolean = true): AuthorApiModel
+    }
+
     
     input PageModelApiNameGetWhereInput {
         id: ID

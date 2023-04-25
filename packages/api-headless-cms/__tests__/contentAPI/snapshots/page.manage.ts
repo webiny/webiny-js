@@ -17,6 +17,7 @@ export default /* GraphQL */ `
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective
         reference: PageModelApiName_Reference
+        references: [PageModelApiName_References!]
     }
 
     type PageModelApiNameMeta {
@@ -159,6 +160,17 @@ export default /* GraphQL */ `
         _templateId: ID!
     }
 
+    union PageModelApiName_References = PageModelApiName_References_Author
+    
+    type PageModelApiName_References_Author {
+      author: RefField
+    }
+    
+    extend type PageModelApiName_References_Author {
+      _templateId: ID!
+    }
+
+
     input PageModelApiName_Content_HeroInput {
         title: String!
     }
@@ -226,12 +238,22 @@ export default /* GraphQL */ `
         Author: PageModelApiName_Reference_AuthorInput
     }
 
+    input PageModelApiName_References_AuthorInput {
+        author: RefFieldInput
+    }
+    
+    input PageModelApiName_ReferencesInput {
+        Author: PageModelApiName_References_AuthorInput
+    }
+
+
     input PageModelApiNameInput {
         id: ID
         content: [PageModelApiName_ContentInput]
         header: PageModelApiName_HeaderInput
         objective: PageModelApiName_ObjectiveInput
         reference: PageModelApiName_ReferenceInput
+        references: [PageModelApiName_ReferencesInput]
     }
 
     input PageModelApiNameGetWhereInput {
