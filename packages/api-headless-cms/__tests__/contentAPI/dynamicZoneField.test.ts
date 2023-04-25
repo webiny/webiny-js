@@ -7,68 +7,68 @@ import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandle
 const singularPageApiName = pageModel.singularApiName;
 
 const contentEntryQueryData = {
-    // content: [
-    //     {
-    //         text: "Simple Text #1",
-    //         __typename: `${singularPageApiName}_Content_SimpleText`
-    //     },
-    //     {
-    //         title: "Hero Title #1",
-    //         __typename: `${singularPageApiName}_Content_Hero`
-    //     },
-    //     {
-    //         title: "Hero Title #2",
-    //         __typename: `${singularPageApiName}_Content_Hero`
-    //     },
-    //     {
-    //         __typename: `${singularPageApiName}_Content_Objecting`,
-    //         nestedObject: {
-    //             objectNestedObject: [
-    //                 {
-    //                     nestedObjectNestedTitle: "Objective nested title #1"
-    //                 },
-    //                 {
-    //                     nestedObjectNestedTitle: "Objective nested title #2"
-    //                 }
-    //             ],
-    //             objectTitle: "Objective title #1"
-    //         }
-    //     }
-    // ],
-    // header: {
-    //     title: "Header #1",
-    //     image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
-    //     __typename: `${singularPageApiName}_Header_ImageHeader`
-    // },
-    // objective: {
-    //     nestedObject: {
-    //         objectNestedObject: [
-    //             {
-    //                 nestedObjectNestedTitle: "Objective nested title #1"
-    //             },
-    //             {
-    //                 nestedObjectNestedTitle: "Objective nested title #2"
-    //             }
-    //         ],
-    //         objectTitle: "Objective title #1",
-    //         objectBody: [
-    //             {
-    //                 tag: "h1",
-    //                 content: "Rich Text"
-    //             },
-    //             {
-    //                 tag: "div",
-    //                 children: [
-    //                     {
-    //                         tag: "p",
-    //                         content: "Testing the rich text storage"
-    //                     }
-    //                 ]
-    //             }
-    //         ]
-    //     },
-    //     __typename: `${singularPageApiName}_Objective_Objecting`
-    // },
+    content: [
+        {
+            text: "Simple Text #1",
+            __typename: `${singularPageApiName}_Content_SimpleText`
+        },
+        {
+            title: "Hero Title #1",
+            __typename: `${singularPageApiName}_Content_Hero`
+        },
+        {
+            title: "Hero Title #2",
+            __typename: `${singularPageApiName}_Content_Hero`
+        },
+        {
+            __typename: `${singularPageApiName}_Content_Objecting`,
+            nestedObject: {
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2"
+                    }
+                ],
+                objectTitle: "Objective title #1"
+            }
+        }
+    ],
+    header: {
+        title: "Header #1",
+        image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
+        __typename: `${singularPageApiName}_Header_ImageHeader`
+    },
+    objective: {
+        nestedObject: {
+            objectNestedObject: [
+                {
+                    nestedObjectNestedTitle: "Objective nested title #1"
+                },
+                {
+                    nestedObjectNestedTitle: "Objective nested title #2"
+                }
+            ],
+            objectTitle: "Objective title #1",
+            objectBody: [
+                {
+                    tag: "h1",
+                    content: "Rich Text"
+                },
+                {
+                    tag: "div",
+                    children: [
+                        {
+                            tag: "p",
+                            content: "Testing the rich text storage"
+                        }
+                    ]
+                }
+            ]
+        },
+        __typename: `${singularPageApiName}_Objective_Objecting`
+    },
     reference: {
         author: {
             id: "john-doe#0001",
@@ -76,72 +76,82 @@ const contentEntryQueryData = {
             __typename: "RefField"
         },
         __typename: `${singularPageApiName}_Reference_Author`
-    }
+    },
+    references: [
+        {
+            author: {
+                id: "john-doe#0001",
+                modelId: "author",
+                __typename: "RefField"
+            },
+            __typename: `${singularPageApiName}_References_Author`
+        }
+    ]
 };
 
 const contentEntryMutationData = {
-    // content: [
-    //     {
-    //         SimpleText: { text: "Simple Text #1" }
-    //     },
-    //     {
-    //         Hero: { title: "Hero Title #1" }
-    //     },
-    //     {
-    //         Hero: { title: "Hero Title #2" }
-    //     },
-    //     {
-    //         Objecting: {
-    //             nestedObject: {
-    //                 objectTitle: "Objective title #1",
-    //                 objectNestedObject: [
-    //                     {
-    //                         nestedObjectNestedTitle: "Objective nested title #1"
-    //                     },
-    //                     {
-    //                         nestedObjectNestedTitle: "Objective nested title #2"
-    //                     }
-    //                 ]
-    //             }
-    //         }
-    //     }
-    // ],
-    // header: {
-    //     ImageHeader: {
-    //         title: "Header #1",
-    //         image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png"
-    //     }
-    // },
-    // objective: {
-    //     Objecting: {
-    //         nestedObject: {
-    //             objectTitle: "Objective title #1",
-    //             objectBody: [
-    //                 {
-    //                     tag: "h1",
-    //                     content: "Rich Text"
-    //                 },
-    //                 {
-    //                     tag: "div",
-    //                     children: [
-    //                         {
-    //                             tag: "p",
-    //                             content: "Testing the rich text storage"
-    //                         }
-    //                     ]
-    //                 }
-    //             ],
-    //             objectNestedObject: [
-    //                 {
-    //                     nestedObjectNestedTitle: "Objective nested title #1"
-    //                 },
-    //                 {
-    //                     nestedObjectNestedTitle: "Objective nested title #2"
-    //                 }
-    //             ]
-    //         }
-    //     }
-    // },
+    content: [
+        {
+            SimpleText: { text: "Simple Text #1" }
+        },
+        {
+            Hero: { title: "Hero Title #1" }
+        },
+        {
+            Hero: { title: "Hero Title #2" }
+        },
+        {
+            Objecting: {
+                nestedObject: {
+                    objectTitle: "Objective title #1",
+                    objectNestedObject: [
+                        {
+                            nestedObjectNestedTitle: "Objective nested title #1"
+                        },
+                        {
+                            nestedObjectNestedTitle: "Objective nested title #2"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    header: {
+        ImageHeader: {
+            title: "Header #1",
+            image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png"
+        }
+    },
+    objective: {
+        Objecting: {
+            nestedObject: {
+                objectTitle: "Objective title #1",
+                objectBody: [
+                    {
+                        tag: "h1",
+                        content: "Rich Text"
+                    },
+                    {
+                        tag: "div",
+                        children: [
+                            {
+                                tag: "p",
+                                content: "Testing the rich text storage"
+                            }
+                        ]
+                    }
+                ],
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2"
+                    }
+                ]
+            }
+        }
+    },
     reference: {
         Author: {
             author: {
@@ -149,7 +159,17 @@ const contentEntryMutationData = {
                 modelId: "author"
             }
         }
-    }
+    },
+    references: [
+        {
+            Author: {
+                author: {
+                    id: "john-doe#0001",
+                    modelId: "author"
+                }
+            }
+        }
+    ]
 };
 
 interface SetupAuthorParams {
@@ -268,7 +288,17 @@ describe("dynamicZone field", () => {
                                 id: contentEntryQueryData.reference.author.id,
                                 modelId: contentEntryQueryData.reference.author.modelId
                             }
-                        }
+                        },
+                        references: [
+                            {
+                                author: {
+                                    entryId: "john-doe",
+                                    fullName: "John Doe",
+                                    id: contentEntryQueryData.references[0].author.id,
+                                    modelId: contentEntryQueryData.references[0].author.modelId
+                                }
+                            }
+                        ]
                     },
                     error: null
                 }

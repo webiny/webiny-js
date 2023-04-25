@@ -5,9 +5,61 @@ import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 const singularPageApiName = pageModel.singularApiName;
 
 const pageFields = `
-    id
+    id   
+    content {
+        ...on ${singularPageApiName}_Content_Hero {
+            title
+            __typename
+        }
+        ...on ${singularPageApiName}_Content_SimpleText {
+            text
+            __typename
+        }
+        ...on ${singularPageApiName}_Content_Objecting {
+            nestedObject {
+                objectTitle
+                objectNestedObject {
+                    nestedObjectNestedTitle
+                }
+            }
+            __typename
+        }
+    }
+    header {
+        ...on ${singularPageApiName}_Header_TextHeader {
+            title
+            __typename
+        }
+        ...on ${singularPageApiName}_Header_ImageHeader {
+            title
+            image
+            __typename
+        }
+    }
+    objective {
+        ...on ${singularPageApiName}_Objective_Objecting {
+            nestedObject {
+                objectTitle
+                objectBody
+                objectNestedObject {
+                    nestedObjectNestedTitle
+                }
+            }
+            __typename
+        }
+    }
     reference {
         ...on ${singularPageApiName}_Reference_Author {
+            __typename
+            author {
+                id
+                modelId
+                __typename
+            }
+        }
+    }
+    references {
+        ...on ${singularPageApiName}_References_Author {
             author {
                 id
                 modelId
