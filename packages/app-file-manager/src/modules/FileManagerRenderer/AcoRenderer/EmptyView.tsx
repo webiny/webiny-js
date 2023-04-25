@@ -13,6 +13,9 @@ interface EmptyViewProps {
 export const EmptyView = ({ browseFiles, isSearchResult }: EmptyViewProps) => {
     const { canRead } = useFileManagerApi();
 
+    console.log("canReaad", canRead);
+    console.log("isSearchResult", isSearchResult);
+
     if (!canRead) {
         return <NoPermissionView />;
     }

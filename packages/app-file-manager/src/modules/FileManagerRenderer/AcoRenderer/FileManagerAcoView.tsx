@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
-import Files from "react-butterfiles";
+import Files, { BrowseFilesParams } from "react-butterfiles";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
@@ -359,6 +359,53 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         fetchFileDetails();
     }, [showingFileDetails]);
 
+    const renderList = (browseFiles: (params?: BrowseFilesParams | undefined) => void) => {
+        if (!isListLoading && listWhere.search && records.length === 0) {
+            return <EmptyView isSearchResult={true} browseFiles={browseFiles} />;
+        }
+
+        if (!isListLoading && records.length === 0 && folders.length === 0) {
+            return <EmptyView isSearchResult={false} browseFiles={browseFiles} />;
+        }
+
+        if (listTable) {
+            return (
+                <Table
+                    folders={!listWhere.search ? folders : []}
+                    records={files}
+                    loading={isListLoading}
+                    onRecordClick={showFileDetails}
+                    onFolderClick={id => setFolderId(id)}
+                    onSelectRow={rows => {
+                        const files = rows
+                            .filter(row => row.type === "RECORD")
+                            .map(row => row.original as FileItem);
+                        setSelected(files);
+                    }}
+                    sorting={tableSorting}
+                    onSortingChange={setTableSorting}
+                    settings={settings}
+                />
+            );
+        }
+
+        return (
+            <Grid
+                type={ACO_TYPE}
+                folders={!listWhere.search ? folders : []}
+                records={files.map(file => file.data)}
+                loading={isListLoading}
+                onRecordClick={showFileDetails}
+                onFolderClick={id => setFolderId(id)}
+                selected={selected}
+                multiple={multiple}
+                toggleSelected={toggleSelected}
+                onChange={onChange}
+                onClose={onClose}
+            />
+        );
+    };
+
     return (
         <>
             <Files
@@ -476,45 +523,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                 <Scrollbar
                                     onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                                 >
-                                    {records.length === 0 &&
-                                    folders.length === 0 &&
-                                    !isListLoading ? (
-                                        <EmptyView
-                                            isSearchResult={!listWhere.search}
-                                            browseFiles={browseFiles}
-                                        />
-                                    ) : listTable ? (
-                                        <Table
-                                            folders={!listWhere.search ? folders : []}
-                                            records={files}
-                                            loading={isListLoading}
-                                            onRecordClick={showFileDetails}
-                                            onFolderClick={id => setFolderId(id)}
-                                            onSelectRow={rows => {
-                                                const files = rows
-                                                    .filter(row => row.type === "RECORD")
-                                                    .map(row => row.original as FileItem);
-                                                setSelected(files);
-                                            }}
-                                            sorting={tableSorting}
-                                            onSortingChange={setTableSorting}
-                                            settings={settings}
-                                        />
-                                    ) : (
-                                        <Grid
-                                            type={ACO_TYPE}
-                                            folders={!listWhere.search ? folders : []}
-                                            records={files.map(file => file.data)}
-                                            loading={isListLoading}
-                                            onRecordClick={showFileDetails}
-                                            onFolderClick={id => setFolderId(id)}
-                                            selected={selected}
-                                            multiple={multiple}
-                                            toggleSelected={toggleSelected}
-                                            onChange={onChange}
-                                            onClose={onClose}
-                                        />
-                                    )}
+                                    {renderList(browseFiles)}
                                 </Scrollbar>
                                 <BottomInfoBar
                                     accept={accept}
