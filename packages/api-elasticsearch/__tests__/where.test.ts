@@ -45,7 +45,10 @@ describe("where", () => {
         }
     );
 
-    test("should throw error when malformed field is parsed out", () => {
+    /**
+     * Skipped because fields can contain numbers.
+     */
+    test.skip("should throw error when malformed field is parsed out", () => {
         const key = "a0_in";
         expect(() => {
             parseWhereKey(key);
