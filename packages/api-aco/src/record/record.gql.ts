@@ -4,6 +4,8 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import { resolve } from "~/utils/resolve";
 
 import { AcoContext } from "~/types";
+import { parseIdentifier } from "@webiny/utils";
+import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
 
 export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
@@ -100,6 +102,12 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
     `,
     resolvers: {
+        SearchRecord: {
+            id: async parent => {
+                const { id } = parseIdentifier(parent.id);
+                return removeAcoRecordPrefix(id);
+            }
+        },
         SearchQuery: {
             getRecord: async (_, { id }, context) => {
                 return resolve(() => context.aco.search.get(id));
