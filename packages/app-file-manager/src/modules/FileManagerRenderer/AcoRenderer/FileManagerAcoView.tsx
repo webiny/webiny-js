@@ -371,7 +371,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         if (listTable) {
             return (
                 <Table
-                    folders={!listWhere.search ? folders : []}
+                    folders={folders}
                     records={files}
                     loading={isListLoading}
                     onRecordClick={showFileDetails}
@@ -392,7 +392,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         return (
             <Grid
                 type={ACO_TYPE}
-                folders={!listWhere.search ? folders : []}
+                folders={folders}
                 records={files.map(file => file.data)}
                 loading={isListLoading}
                 onRecordClick={showFileDetails}
