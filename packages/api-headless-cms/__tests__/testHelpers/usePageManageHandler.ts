@@ -5,7 +5,7 @@ import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 const singularPageApiName = pageModel.singularApiName;
 
 const pageFields = `
-    id
+    id   
     content {
         ...on ${singularPageApiName}_Content_Hero {
             title
@@ -44,6 +44,26 @@ const pageFields = `
                 objectNestedObject {
                     nestedObjectNestedTitle
                 }
+            }
+            __typename
+        }
+    }
+    reference {
+        ...on ${singularPageApiName}_Reference_Author {
+            __typename
+            author {
+                id
+                modelId
+                __typename
+            }
+        }
+    }
+    references {
+        ...on ${singularPageApiName}_References_Author {
+            author {
+                id
+                modelId
+                __typename
             }
             __typename
         }
