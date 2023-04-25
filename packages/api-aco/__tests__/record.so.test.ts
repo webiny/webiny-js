@@ -1,5 +1,5 @@
 import { recordMocks } from "./mocks/record.mock";
-import { userMock } from "~tests/mocks/userMock";
+import { userMock } from "~tests/mocks/user.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
 jest.retryTimes(0);
