@@ -75,6 +75,13 @@ const CUSTOM_HANDLERS = {
             "packages/api-page-builder-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base",
             "packages/api-page-builder-aco/* --keyword=cms:ddb-es --keyword=aco:base --keyword=pb:ddb-es --keyword=pb:base --keyword=api-page-builder-aco:base"
         ];
+    },
+    // Setup "api-headless-cms-aco" tests.
+    "api-headless-cms-aco": () => {
+        return [
+            "packages/api-headless-cms-aco/* --keyword=cms:ddb --keyword=cms:base --keyword=cms-aco:base",
+            "packages/api-headless-cms-aco/* --keyword=cms:ddb-es --keyword=cms:base --keyword=cms-aco:base"
+        ];
     }
 };
 
