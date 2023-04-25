@@ -72,7 +72,14 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
 
             let resolver: any;
             const fieldResolver = createResolver
-                ? createResolver({ graphQLType, models, model, field, createFieldResolvers, fieldTypePlugins })
+                ? createResolver({
+                      graphQLType,
+                      models,
+                      model,
+                      field,
+                      createFieldResolvers,
+                      fieldTypePlugins
+                  })
                 : null;
 
             /**
