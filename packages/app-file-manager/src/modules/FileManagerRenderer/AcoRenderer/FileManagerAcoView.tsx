@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
-import Files, { BrowseFilesParams } from "react-butterfiles";
+import Files, { BrowseFilesParams, FilesRenderChildren } from "react-butterfiles";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
@@ -359,7 +359,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         fetchFileDetails();
     }, [showingFileDetails]);
 
-    const renderList = (browseFiles: (params?: BrowseFilesParams | undefined) => void) => {
+    const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!isListLoading && listWhere.search && records.length === 0) {
             return <EmptyView isSearchResult={true} browseFiles={browseFiles} />;
         }
