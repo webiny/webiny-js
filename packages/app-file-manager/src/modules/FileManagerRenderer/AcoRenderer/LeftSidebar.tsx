@@ -33,6 +33,7 @@ interface LeftSidebarProps {
     toggleTag: (tag: TagItem) => void;
     currentFolder?: string;
     scope?: string;
+    own?: boolean;
     onFolderClick: (folderId: string | undefined) => void;
 }
 
@@ -41,6 +42,7 @@ const LeftSidebar = ({
     toggleTag,
     currentFolder,
     scope,
+    own,
     onFolderClick
 }: LeftSidebarProps) => {
     return (
@@ -57,7 +59,7 @@ const LeftSidebar = ({
             <div className={style.divider} />
             <TagList
                 type={ACO_TYPE}
-                initialWhere={getTagsInitialParams(scope)}
+                initialWhere={getTagsInitialParams({ scope, own })}
                 tagsModifier={tagsModifier(scope)}
                 emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
                 onTagClick={tag => toggleTag(tag)}

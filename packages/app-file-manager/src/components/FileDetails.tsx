@@ -151,9 +151,10 @@ export interface FileDetailsProps {
     file: FileItem;
     onClose: () => void;
     scope?: string;
+    own?: boolean;
 }
 
-export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose, scope }) => {
+export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose, scope, own }) => {
     const filePlugin = getFileTypePlugin(file);
 
     const [darkImageBackground, setDarkImageBackground] = useState(false);
@@ -261,7 +262,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ file, onClose, scope }
                                     </li-title>
                                 </li>
                                 <li>
-                                    <Tags scope={scope} />
+                                    <Tags scope={scope} own={own} />
                                 </li>
                                 <li>
                                     <Aliases />

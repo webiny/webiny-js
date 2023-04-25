@@ -68,6 +68,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             tags_in: [String!]
             tags_startsWith: String
             tags_not_startsWith: String
+            createdBy: ID
             AND: [SearchRecordTagListWhereInput!]
             OR: [SearchRecordTagListWhereInput!]
         }

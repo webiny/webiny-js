@@ -330,6 +330,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             setTags(tags => {
                 const tagsByRecord = record.tags.map((tag: string) => ({
                     name: tag,
+                    value: tag,
                     active: false
                 }));
 
@@ -384,6 +385,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             setTags(tags => {
                 const tagsByRecord = record.tags.map((tag: string) => ({
                     name: tag,
+                    value: tag,
                     active: false
                 }));
 
@@ -469,6 +471,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 ...tags,
                 [type]: data.map((tag: string) => ({
                     name: tag,
+                    value: tag,
                     active: false
                 }))
             }));
@@ -477,10 +480,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         },
 
         updateTag(tag, type) {
-            const { name } = tag;
+            const { value } = tag;
 
             setTags(tags => {
-                const tagIndex = tags[type].findIndex(t => t.name === name);
+                const tagIndex = tags[type].findIndex(t => t.value === value);
                 if (tagIndex === -1) {
                     return tags;
                 }

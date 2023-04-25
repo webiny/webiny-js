@@ -6,13 +6,8 @@ import { Typography } from "@webiny/ui/Typography";
 import { TagContainer, Icon } from "./styled";
 import { TagItem } from "~/types";
 
-type Tag = {
-    name: string;
-    active: boolean;
-};
-
 type TagProps = {
-    tag: Tag;
+    tag: TagItem;
     onTagClick: (tag: TagItem) => void;
 };
 

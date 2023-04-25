@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
-import Files, { BrowseFilesParams, FilesRenderChildren } from "react-butterfiles";
+import Files, { FilesRenderChildren } from "react-butterfiles";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
@@ -89,7 +89,7 @@ const FileListWrapper = styled("div")({
 
 export interface FileManagerAcoViewProps {
     onChange?: Function;
-    onClose?: Function;
+    onClose?: () => void;
     files?: FilesRules;
     multiple?: boolean; // Does not affect <Files> component, it always allows multiple selection.
     accept: Array<string>;
@@ -110,7 +110,7 @@ interface FileError {
 const defaultFolderName = t`All files`;
 
 const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
-    const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope } = props;
+    const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope, own } = props;
 
     const {
         selected,
@@ -214,10 +214,10 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                 ? listWhere.AND[0].tags_in
                 : [];
 
-        if (finalTags.includes(tag.name)) {
-            finalTags.splice(finalTags.indexOf(tag.name), 1);
+        if (finalTags.includes(tag.value)) {
+            finalTags.splice(finalTags.indexOf(tag.value), 1);
         } else {
-            finalTags.push(tag.name);
+            finalTags.push(tag.value);
         }
 
         setListWhere({
@@ -427,6 +427,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
             >
                 {({ getDropZoneProps, browseFiles }) => (
                     <OverlayLayout
+                        onExited={onClose}
                         barLeft={<Title title={listTitle} />}
                         barMiddle={
                             <InputSearch>
@@ -495,6 +496,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                     file={currentFile}
                                     onClose={hideFileDetails}
                                     scope={scope}
+                                    own={own}
                                 />
                             ) : null}
 
@@ -503,14 +505,14 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                 currentFolder={folderId}
                                 onFolderClick={setFolderId}
                                 scope={scope}
+                                own={own}
                                 toggleTag={tag => toggleTag({ tag, listWhere })}
                             />
 
                             <FileListWrapper
                                 {...getDropZoneProps({
                                     onDragEnter: () =>
-                                        hasPreviouslyUploadedFiles && setDragging(true),
-                                    onExited: onClose
+                                        hasPreviouslyUploadedFiles && setDragging(true)
                                 })}
                                 data-testid={"fm-list-wrapper"}
                             >

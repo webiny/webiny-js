@@ -32,6 +32,7 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
 
 export interface TagItem {
     name: string;
+    value: string;
     active: boolean;
 }
 

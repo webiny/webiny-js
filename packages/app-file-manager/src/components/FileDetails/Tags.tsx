@@ -50,14 +50,15 @@ interface TagsFormData {
 
 interface TagsProps {
     scope?: string;
+    own?: boolean;
 }
 
-const Tags = ({ scope }: TagsProps) => {
+const Tags = ({ scope, own }: TagsProps) => {
     const { file } = useFile();
     const { tags } = useTags({
         type: ACO_TYPE,
         tagsModifier: tagsModifier(scope),
-        ...getTagsInitialParams(scope)
+        ...getTagsInitialParams({ scope, own })
     });
     const [editing, setEdit] = useState(false);
     const [updating, setUpdating] = useState(false);

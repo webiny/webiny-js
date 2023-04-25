@@ -100,7 +100,7 @@ export const getMimeTypeWhereParams = (mimes: string[] | undefined) => {
     };
 };
 
-export const initializeState = ({ accept, tags, scope, own, identity }: InitParams): State => {
+export const initializeState = ({ accept, scope, own, identity }: InitParams): State => {
     return {
         folderId: FOLDER_ID_DEFAULT,
         showingFileDetails: null,
