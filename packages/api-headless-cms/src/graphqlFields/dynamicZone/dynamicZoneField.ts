@@ -141,21 +141,6 @@ export const createDynamicZoneField =
             validateChildFields: params => {
                 const { validate, originalField, field } = params;
 
-                // const hasRefField = (field.settings?.templates || []).some(template => {
-                //     return template.fields.some(field => field.type === "ref");
-                // });
-                // if (hasRefField) {
-                //     throw new WebinyError(
-                //         "Reference field cannot be used inside of an Dynamic Zone field.",
-                //         "REFERENCE_FIELD_INSIDE_DYNAMIC_ZONE",
-                //         {
-                //             id: field.id,
-                //             fieldId: field.fieldId,
-                //             fieldLabel: field.label
-                //         }
-                //     );
-                // }
-
                 const getOriginalTemplateFields = (templateId: string) => {
                     if (!originalField?.settings?.templates) {
                         return [];
