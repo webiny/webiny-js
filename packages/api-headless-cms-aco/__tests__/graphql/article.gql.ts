@@ -7,6 +7,10 @@ const getDataFields = () => {
             smallText
             bigText
             photo
+            meta {
+                version
+                status
+            }
         }
     `;
 };
@@ -31,19 +35,30 @@ export const CREATE_ARTICLE = () => {
         }
     `;
 };
+export const CREATE_ARTICLE_FROM = () => {
+    return /* GraphQL */ `
+        mutation CreateArticleFrom($id: ID!) {
+            createArticleFrom(revision: $id) {
+                ${getDataFields()}
+                ${getErrorFields()}
+            }
+        }
+    `;
+};
 export const DELETE_ARTICLE = () => {
     return /* GraphQL */ `
         mutation DeleteArticle($id: ID!) {
-            deleteArticle(id: $id) {
-                ${getDataFields()}
+            deleteArticle(revision: $id) {
+                data
                 ${getErrorFields()}
+            }
         }
     `;
 };
 export const PUBLISH_ARTICLE = () => {
     return /* GraphQL */ `
-        mutation DeleteArticle($id: ID!) {
-            deleteArticle(id: $id) {
+        mutation PublishArticle($id: ID!) {
+            publishArticle(revision: $id) {
                 ${getDataFields()}
                 ${getErrorFields()}
             }
@@ -53,7 +68,7 @@ export const PUBLISH_ARTICLE = () => {
 export const UNPUBLISH_ARTICLE = () => {
     return /* GraphQL */ `
         mutation UnpublishArticle($id: ID!) {
-            unpublishArticle(id: $id) {
+            unpublishArticle(revision: $id) {
                 ${getDataFields()}
                 ${getErrorFields()}
             }

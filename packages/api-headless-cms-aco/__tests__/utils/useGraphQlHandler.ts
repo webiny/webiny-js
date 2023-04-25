@@ -11,6 +11,7 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 
 import {
     CREATE_ARTICLE,
+    CREATE_ARTICLE_FROM,
     DELETE_ARTICLE,
     PUBLISH_ARTICLE,
     UNPUBLISH_ARTICLE,
@@ -115,6 +116,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         async createArticle(variables = {}) {
             return invoke({ body: { query: CREATE_ARTICLE(), variables } });
         },
+        async createArticleFrom(variables = {}) {
+            return invoke({ body: { query: CREATE_ARTICLE_FROM(), variables } });
+        },
+
         async updateArticle(variables = {}) {
             return invoke({ body: { query: UPDATE_ARTICLE(), variables } });
         },
