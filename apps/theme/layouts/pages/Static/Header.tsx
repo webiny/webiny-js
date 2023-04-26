@@ -15,7 +15,7 @@ export const Header: React.FC = () => {
 };
 
 const HeaderWrapper = styled.header`
-    background-color: #fff;
+    background-color: ${colors.color7};
     box-shadow: 0 0 1px 1px rgb(34 45 57 / 15%);
     height: 40px;
     padding: 10px 0 5px;
