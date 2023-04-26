@@ -16,16 +16,8 @@ export const getTagsInitialParams = ({ scope, own }: GetTagsInitialParams) => {
 };
 
 export const tagsModifier = (scope?: string) => (tags: TagItem[]) => {
-    const tagsWithoutMimeAndScope = tags
-        .filter(tag => tag.name !== scope)
-        .filter(tag => !tag.name.startsWith("mime:"));
-
-    return tagsWithoutMimeAndScope.map(tag => {
-        return scope
-            ? {
-                  ...tag,
-                  name: tag.name.replace(`${scope}:`, "")
-              }
-            : tag;
-    });
+    return tags
+        .filter(tag => tag !== scope)
+        .filter(tag => !tag.startsWith("mime:"))
+        .map(tag => (scope ? tag.replace(`${scope}:`, "") : tag));
 };

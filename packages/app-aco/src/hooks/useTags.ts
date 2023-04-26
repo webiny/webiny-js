@@ -21,7 +21,7 @@ export const useTags = (params: UseTagsParams) => {
         throw new Error("useTags must be used within a SearchRecordsContext");
     }
 
-    const { tags, loading, listTags, updateTag } = context;
+    const { tags, loading, listTags } = context;
 
     const tagsByType = tags[type] || [];
 
@@ -45,10 +45,7 @@ export const useTags = (params: UseTagsParams) => {
             tags:
                 tagsModifier && typeof tagsModifier === "function"
                     ? tagsModifier(tagsByType)
-                    : tagsByType,
-            updateTag(tag: TagItem) {
-                return updateTag(tag, type);
-            }
+                    : tagsByType
         }),
         [tags, loading]
     );

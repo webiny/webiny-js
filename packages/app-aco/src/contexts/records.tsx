@@ -68,7 +68,6 @@ interface SearchRecordsContext {
             OR?: [ListTagsWhereQueryVariables];
         }
     ) => Promise<TagItem[]>;
-    updateTag: (tag: TagItem, type: string) => TagItem;
 }
 
 export const SearchRecordsContext = React.createContext<SearchRecordsContext | undefined>(
@@ -270,10 +269,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 });
 
                 setTags(tags => {
-                    const tagsByRecord = data.tags.map((tag: string) => ({
-                        name: tag,
-                        active: false
-                    }));
+                    const tagsByRecord = data.tags;
 
                     if (tagsByRecord.length === 0) {
                         return tags;
@@ -283,7 +279,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
                     return {
                         ...tags,
-                        [data.type]: unionBy(tagsByType, tagsByRecord, "name")
+                        [data.type]: Array.from(new Set([...tagsByType, ...tagsByRecord])).sort()
                     };
                 });
             }
@@ -328,13 +324,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             setTags(tags => {
-                const tagsByRecord = record.tags.map((tag: string) => ({
-                    name: tag,
-                    value: tag,
-                    active: false
-                }));
+                const tagsByRecord = record.tags;
 
-                if (tagsByRecord.length > 0) {
+                if (tagsByRecord.length === 0) {
                     return tags;
                 }
 
@@ -342,7 +334,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
                 return {
                     ...tags,
-                    [data.type]: Array.from(new Set([...tagsByType, ...tagsByRecord]))
+                    [data.type]: Array.from(new Set([...tagsByType, ...tagsByRecord])).sort()
                 };
             });
 
@@ -383,13 +375,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             setTags(tags => {
-                const tagsByRecord = record.tags.map((tag: string) => ({
-                    name: tag,
-                    value: tag,
-                    active: false
-                }));
+                const tagsByRecord = record.tags;
 
-                if (tagsByRecord.length > 0) {
+                if (tagsByRecord.length === 0) {
                     return tags;
                 }
 
@@ -397,7 +385,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
                 return {
                     ...tags,
-                    [type]: unionBy(tagsByType, tagsByRecord, "name")
+                    [type]: Array.from(new Set([...tagsByType, ...tagsByRecord])).sort()
                 };
             });
 
@@ -469,32 +457,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             setTags(tags => ({
                 ...tags,
-                [type]: data.map((tag: string) => ({
-                    name: tag,
-                    value: tag,
-                    active: false
-                }))
+                [type]: data
             }));
 
             return data;
-        },
-
-        updateTag(tag, type) {
-            const { value } = tag;
-
-            setTags(tags => {
-                const tagIndex = tags[type].findIndex(t => t.value === value);
-                if (tagIndex === -1) {
-                    return tags;
-                }
-
-                const tagsByType = tags[type];
-                tagsByType[tagIndex] = tag;
-
-                return { ...tags, [type]: tagsByType };
-            });
-
-            return tag;
         }
     };
 

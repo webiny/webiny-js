@@ -30,11 +30,7 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     tags: string[];
 }
 
-export interface TagItem {
-    name: string;
-    value: string;
-    active: boolean;
-}
+export type TagItem = string;
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 

@@ -214,10 +214,10 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                 ? listWhere.AND[0].tags_in
                 : [];
 
-        if (finalTags.includes(tag.value)) {
-            finalTags.splice(finalTags.indexOf(tag.value), 1);
+        if (finalTags.includes(tag)) {
+            finalTags.splice(finalTags.indexOf(tag), 1);
         } else {
-            finalTags.push(tag.value);
+            finalTags.push(tag);
         }
 
         setListWhere({

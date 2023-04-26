@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 import { useTags } from "~/hooks";
 
@@ -26,7 +26,23 @@ export const TagList: React.FC<TagListProps> = ({
     emptyDisclaimer,
     tagsModifier
 }) => {
-    const { tags, loading, updateTag } = useTags({ type, ...initialWhere, tagsModifier });
+    const { tags, loading } = useTags({ type, ...initialWhere, tagsModifier });
+    const [activeTags, setActiveTags] = useState<TagItem[]>([]);
+
+    const toggleTag = useCallback(
+        (tag: TagItem) => {
+            const finalTags = Array.isArray(activeTags) ? [...activeTags] : [];
+
+            if (finalTags.includes(tag)) {
+                finalTags.splice(finalTags.indexOf(tag), 1);
+            } else {
+                finalTags.push(tag);
+            }
+
+            setActiveTags(finalTags);
+        },
+        [activeTags]
+    );
 
     if (!tags.length && (loading.INIT || loading.LIST)) {
         return <Loader />;
@@ -39,8 +55,9 @@ export const TagList: React.FC<TagListProps> = ({
                     <Tag
                         key={`tag-${index}`}
                         tag={tag}
+                        active={activeTags.includes(tag)}
                         onTagClick={tag => {
-                            updateTag({ ...tag, active: !tag.active });
+                            toggleTag(tag);
                             onTagClick(tag);
                         }}
                     />

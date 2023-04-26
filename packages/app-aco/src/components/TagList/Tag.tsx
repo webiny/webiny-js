@@ -8,18 +8,18 @@ import { TagItem } from "~/types";
 
 type TagProps = {
     tag: TagItem;
+    active: boolean;
     onTagClick: (tag: TagItem) => void;
 };
 
-export const Tag = ({ tag, onTagClick }: TagProps) => {
-    const { name, active } = tag;
+export const Tag = ({ tag, active, onTagClick }: TagProps) => {
     return (
         <TagContainer onClick={() => onTagClick(tag)}>
             <Icon active={active}>
                 <TagIcon />
             </Icon>
             <Typography use={"body2"} tag={"div"}>
-                {name}
+                {tag}
             </Typography>
         </TagContainer>
     );

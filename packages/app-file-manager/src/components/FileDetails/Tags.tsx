@@ -131,7 +131,7 @@ const Tags = ({ scope, own }: TagsProps) => {
                         <li-content>
                             <Bind name={"tags"}>
                                 <MultiAutoComplete
-                                    options={tags.map(tag => tag.name)}
+                                    options={tags}
                                     placeholder={"homepage asset"}
                                     description={"Type in a new tag or select an existing one."}
                                     unique={true}
