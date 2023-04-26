@@ -5,7 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 
 import { EmptyContainer } from "./styled";
 
-const t = i18n.ns("app-aco/components/tag-list/empty");
+const t = i18n.ns("app-aco/tag-list/empty");
 
 type EmptyProps = {
     disclaimer?: string;
