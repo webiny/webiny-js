@@ -48,9 +48,7 @@ export const handler = createHandler({
     plugins: [
         new ContextPlugin<Context>(async context => {
             context.benchmark.enableOn(async () => {
-                if (debug) {
-                    return true;
-                } else if (process.env.BENCHMARK_ENABLE === "true") {
+                if (process.env.BENCHMARK_ENABLE === "true") {
                     return true;
                 }
                 return context.request.headers["x-benchmark"] === "true";

@@ -188,10 +188,10 @@ describe("5.35.0-006", () => {
             } = page;
 
             const latestSearchRecord = searchRecords.find(
-                record => record.id === `${pid}#0001` && record.SK === "L"
+                record => record.id === `wby-aco-${pid}#0001` && record.SK === "L"
             );
             const revisionSearchRecord = searchRecords.find(
-                record => record.id === `${pid}#0001` && record.SK === "REV#0001"
+                record => record.id === `wby-aco-${pid}#0001` && record.SK === "REV#0001"
             );
 
             const values = {
@@ -218,12 +218,12 @@ describe("5.35.0-006", () => {
 
             // Checking latest ACO search record
             expect(latestSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
+                PK: `T#${tenant}#L#${locale}#CMS#CME#CME#wby-aco-${pid}`,
                 SK: "L",
-                entryId: pid,
+                id: `wby-aco-${pid}#0001`,
+                entryId: `wby-aco-${pid}`,
                 GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#L`,
-                GSI1_SK: `${pid}#0001`,
-                id: `${pid}#0001`,
+                GSI1_SK: `wby-aco-${pid}#0001`,
                 locale,
                 locked: false,
                 modelId: ACO_SEARCH_MODEL_ID,
@@ -235,12 +235,12 @@ describe("5.35.0-006", () => {
 
             // Checking revision 1 ACO search record
             expect(revisionSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
+                PK: `T#${tenant}#L#${locale}#CMS#CME#CME#wby-aco-${pid}`,
                 SK: "REV#0001",
-                entryId: pid,
+                id: `wby-aco-${pid}#0001`,
+                entryId: `wby-aco-${pid}`,
                 GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#A`,
-                GSI1_SK: `${pid}#0001`,
-                id: `${pid}#0001`,
+                GSI1_SK: `wby-aco-${pid}#0001`,
                 locale,
                 locked: false,
                 modelId: ACO_SEARCH_MODEL_ID,

@@ -1,5 +1,5 @@
 import { recordMocks } from "./mocks/record.mock";
-import { userMock } from "~tests/mocks/userMock";
+import { userMock } from "~tests/mocks/user.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
 jest.retryTimes(0);
@@ -7,32 +7,6 @@ jest.setTimeout(900000);
 
 describe("`search` CRUD", () => {
     const { search } = useGraphQlHandler();
-
-    const insertTestRecords = async (numberOfRecords = 10, type = "test", numberOfTags = 1) => {
-        try {
-            for (let index = 0; index < numberOfRecords; index++) {
-                const data = {
-                    id: `record-${index}`,
-                    type,
-                    title: `Record ${index}`,
-                    content: `Content ${index}`,
-                    location: {
-                        folderId: "folderId"
-                    },
-                    data: {
-                        any: "data"
-                    },
-                    tags: Array(numberOfTags)
-                        .fill(null)
-                        .map((_, i) => `tag-${i}`)
-                };
-
-                await search.createRecord({ data });
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
 
     it("should be able to create, read, update and delete `records`", async () => {
         // Let's create some search records.
@@ -272,8 +246,7 @@ describe("`search` CRUD", () => {
                         data: {
                             ...recordMocks.recordB,
                             id: recordB.id,
-                            title: updatedTitle,
-                            createdBy: userMock
+                            title: updatedTitle
                         },
                         error: null
                     }
@@ -338,7 +311,7 @@ describe("`search` CRUD", () => {
         // Creating a record with same "id"
         const [response] = await search.createRecord({ data: recordMocks.recordA });
         const record = response.data.search.createRecord.data;
-        expect(record).toEqual({ ...recordMocks.recordA, id: record.id, createdBy: userMock });
+        expect(record).toEqual({ ...recordMocks.recordA, id: record.id });
     });
 
     it("should not allow updating a non-existing `record`", async () => {

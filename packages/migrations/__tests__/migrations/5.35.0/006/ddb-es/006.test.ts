@@ -38,9 +38,14 @@ describe("5.35.0-006", () => {
     const ddbEsPages: Record<string, any>[] = [];
     const esPages: any[] = [];
 
-    beforeEach(() => {
+    beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+
+        await elasticsearchClient.indices.deleteAll();
+    });
+    afterEach(async () => {
+        await elasticsearchClient.indices.deleteAll();
     });
 
     const insertTestPages = async (numberOfPages = NUMBER_OF_PAGES) => {
@@ -280,18 +285,20 @@ describe("5.35.0-006", () => {
                 webinyVersion
             } = page;
 
-            const ddbSearchRecord = ddbSearchRecords.find(record => record.id === `${pid}#0001`);
+            const ddbSearchRecord = ddbSearchRecords.find(
+                record => record.id === `wby-aco-${pid}#0001`
+            );
             const ddbEsSearchRecord = ddbEsSearchRecords.find(
-                record => record.PK === `T#${tenant}#L#${locale}#CMS#CME#${pid}`
+                record => record.PK === `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`
             );
 
             // Checking DDB ACO search record
             expect(ddbSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
                 SK: "L",
                 TYPE: "L",
-                entryId: pid,
-                id: `${pid}#0001`,
+                entryId: `wby-aco-${pid}`,
+                id: `wby-aco-${pid}#0001`,
                 locale,
                 tenant,
                 version: 1,
@@ -347,13 +354,13 @@ describe("5.35.0-006", () => {
                     }
                 },
                 createdBy,
-                entryId: pid,
+                entryId: `wby-aco-${pid}`,
                 tenant,
                 createdOn,
                 locked: false,
                 ownedBy: createdBy,
                 webinyVersion: process.env.WEBINY_VERSION,
-                id: `${pid}#0001`,
+                id: `wby-aco-${pid}#0001`,
                 modifiedBy: createdBy,
                 latest: true,
                 TYPE: "cms.entry.l",
@@ -365,7 +372,7 @@ describe("5.35.0-006", () => {
 
             // Checking DDB + ES ACO search record
             expect(ddbEsSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
                 SK: "L",
                 index: esGetIndexName({
                     tenant,
