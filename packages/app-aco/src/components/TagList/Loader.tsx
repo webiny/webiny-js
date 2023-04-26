@@ -2,12 +2,12 @@ import React from "react";
 
 import { Skeleton } from "@webiny/ui/Skeleton";
 
-import { Container, SkeletonWrapper } from "./styled";
+import { LoaderContainer, SkeletonWrapper } from "./styled";
 
 export const Loader = () => {
     return (
-        <Container>
+        <LoaderContainer>
             <Skeleton count={4} inline={true} height={"100%"} wrapper={SkeletonWrapper} />
-        </Container>
+        </LoaderContainer>
     );
 };

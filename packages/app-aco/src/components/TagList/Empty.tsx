@@ -1,11 +1,11 @@
 import React from "react";
 
 import { i18n } from "@webiny/app/i18n";
-
-import { Container } from "./styled";
 import { Typography } from "@webiny/ui/Typography";
 
-const t = i18n.ns("app-aco/components/tags/empty");
+import { EmptyContainer } from "./styled";
+
+const t = i18n.ns("app-aco/components/tag-list/empty");
 
 type EmptyProps = {
     disclaimer?: string;
@@ -13,8 +13,8 @@ type EmptyProps = {
 
 export const Empty = ({ disclaimer = t`No tags found...` }: EmptyProps) => {
     return (
-        <Container>
+        <EmptyContainer>
             <Typography use={"body2"}>{disclaimer}</Typography>
-        </Container>
+        </EmptyContainer>
     );
 };

@@ -16,7 +16,7 @@ import { useFolders } from "~/hooks";
 
 import { DialogContainer } from "./styled";
 
-const t = i18n.ns("app-aco/components/tree/dialog-delete");
+const t = i18n.ns("app-aco/dialogs/dialog-delete");
 
 import { FolderItem } from "~/types";
 

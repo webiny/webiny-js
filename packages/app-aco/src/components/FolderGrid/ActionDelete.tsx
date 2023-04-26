@@ -1,24 +1,24 @@
 import React, { ReactElement } from "react";
 
-import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
+import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 
 import { ListItemGraphic } from "./styled";
 
-const t = i18n.ns("app-aco/components/folder-list/actions/folder-action-edit");
+const t = i18n.ns("app-aco/folder-grid/action-delete");
 
 interface Props {
     onClick: () => void;
 }
-export const FolderActionEdit = ({ onClick }: Props): ReactElement => {
+export const ActionDelete = ({ onClick }: Props): ReactElement => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>
-                <Icon icon={<Edit />} />
+                <Icon icon={<Delete />} />
             </ListItemGraphic>
-            {t`Edit`}
+            {t`Delete`}
         </MenuItem>
     );
 };

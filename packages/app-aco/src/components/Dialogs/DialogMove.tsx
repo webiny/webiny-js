@@ -27,7 +27,7 @@ type Props = {
     onClose: DialogOnClose;
 };
 
-const t = i18n.ns("app-aco/components/tree/dialog-move");
+const t = i18n.ns("app-aco/dialogs/dialog-move");
 
 export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, open }) => {
     const { updateRecord, loading } = useRecords(type, searchRecord.location.folderId || "ROOT");

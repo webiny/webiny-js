@@ -1,8 +1,8 @@
 import React from "react";
 
 import { ReactComponent as TagIcon } from "@material-design-icons/svg/outlined/label.svg";
-
 import { Typography } from "@webiny/ui/Typography";
+
 import { TagContainer, Icon } from "./styled";
 import { TagItem } from "~/types";
 

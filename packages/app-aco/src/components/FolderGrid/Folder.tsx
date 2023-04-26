@@ -4,8 +4,8 @@ import { ReactComponent as FolderIcon } from "@material-design-icons/svg/outline
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
 import { IconButton } from "@webiny/ui/Button";
 
-import { FolderActionEdit } from "../Actions/FolderActionEdit";
-import { FolderActionDelete } from "../Actions/FolderActionDelete";
+import { ActionEdit } from "./ActionEdit";
+import { ActionDelete } from "./ActionDelete";
 
 import { Actions, FolderContainer, FolderContent, Text } from "./styled";
 
@@ -38,8 +38,8 @@ export const Folder = ({
                 <Text use={"subtitle2"}>{title}</Text>
             </FolderContent>
             <Actions handle={<IconButton icon={<MoreIcon />} />}>
-                <FolderActionEdit onClick={() => onMenuEditClick(folder)} />
-                <FolderActionDelete onClick={() => onMenuDeleteClick(folder)} />
+                <ActionEdit onClick={() => onMenuEditClick(folder)} />
+                <ActionDelete onClick={() => onMenuDeleteClick(folder)} />
             </Actions>
         </FolderContainer>
     );

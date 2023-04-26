@@ -26,7 +26,7 @@ type Props = {
     currentParentId?: string | null;
 };
 
-const t = i18n.ns("app-aco/components/tree/dialog-create");
+const t = i18n.ns("app-aco/dialogs/dialog-create");
 
 type SubmitData = Omit<FolderItem, "id">;
 

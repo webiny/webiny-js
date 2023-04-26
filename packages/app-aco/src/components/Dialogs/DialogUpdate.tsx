@@ -32,7 +32,7 @@ type Props = {
 
 type SubmitData = Pick<FolderItem, "title" | "slug">;
 
-const t = i18n.ns("app-aco/components/tree/dialog-update");
+const t = i18n.ns("app-aco/dialogs/dialog-update");
 
 export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) => {
     const { loading, updateFolder } = useFolders(folder.type);
