@@ -16,7 +16,8 @@ export const colors = {
     color3: "#0a0a0a", // Text primary.
     color4: "#616161", // Text secondary.
     color5: "#eaecec", // Background.
-    color6: "#ffffff" // White background.
+    color6: "#ffffff", // White background.
+    color7: "#ffffff" // Header Color"
 };
 
 // Fonts.
