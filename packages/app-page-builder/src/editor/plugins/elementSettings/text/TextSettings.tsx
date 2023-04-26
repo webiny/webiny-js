@@ -30,7 +30,7 @@ import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { isLegacyRenderingEngine } from "~/utils";
-import { TypographyStyle } from "@webiny/theme/types";
+import { TypographyStyle } from "@webiny/app-theme/types";
 
 const classes = {
     grid: css({
