@@ -6,7 +6,14 @@ import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
-import { FolderItem, GenericSearchData, ListDbSort, SearchRecordItem } from "~/types";
+import { FolderItem, GenericSearchData, ListDbSort, ListDbWhere, SearchRecordItem } from "~/types";
+
+interface ListItemsParams {
+    after?: string;
+    limit?: number;
+    sort?: ListDbSort;
+    where?: ListDbWhere;
+}
 
 const getCurrentFolderList = (
     folders: FolderItem[],
@@ -105,7 +112,7 @@ export const useAcoList = <T extends GenericSearchData = GenericSearchData>(
                 foldersLoading.LIST,
             isListLoadingMore: recordsLoading.LIST_MORE,
             meta: meta[folderId] || {},
-            listItems(params: { after?: string; limit?: number; sort?: ListDbSort }) {
+            listItems(params: ListItemsParams) {
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (params.sort && Object.values(params.sort).length > 0) {
                     setSort(validateOrGetDefaultDbSort(params.sort));

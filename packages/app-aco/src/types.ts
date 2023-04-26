@@ -58,6 +58,11 @@ export interface ListTableSort {
     orders: ListTableSortDirection[];
 }
 
+export type ListDbWhere<T = Record<string, any>> = T & {
+    AND?: ListDbWhere[];
+    OR?: ListDbWhere[];
+};
+
 export interface ListMeta {
     cursor: string | null;
     totalCount: number;
@@ -141,11 +146,10 @@ export interface ListSearchRecordsResponse {
 }
 
 export interface ListSearchRecordsQueryVariables {
-    type: string;
-    location: Location;
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
+    where?: ListDbWhere;
 }
 
 export interface GetSearchRecordResponse {

@@ -28,7 +28,8 @@ import {
     Meta,
     UpdateSearchRecordResponse,
     UpdateSearchRecordVariables,
-    ListDbSort
+    ListDbSort,
+    ListDbWhere
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
@@ -42,6 +43,7 @@ interface SearchRecordsContext {
         limit?: number;
         after?: string;
         sort?: ListDbSort;
+        where?: ListDbWhere;
     }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
@@ -78,7 +80,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
         loading,
         meta,
         async listRecords(params) {
-            const { type, folderId, after, limit, sort: sorting } = params;
+            const { type, folderId, after, limit, sort: sorting, where: inputWhere } = params;
 
             /**
              * Both folderId and type are optional to init `useRecords` but required to list records:
@@ -108,13 +110,28 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             const action = after ? "LIST_MORE" : "LIST";
             const sort = validateOrGetDefaultDbSort(sorting);
+            const where: ListDbWhere = {
+                ...inputWhere,
+                /**
+                 * We always add the type and the location to the where clause.
+                 */
+                type,
+                location: {
+                    folderId
+                }
+            };
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler(action, setLoading),
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { type, location: { folderId }, limit, after, sort },
+                        variables: {
+                            where,
+                            limit,
+                            after,
+                            sort
+                        },
                         fetchPolicy: "network-only"
                     })
             );
