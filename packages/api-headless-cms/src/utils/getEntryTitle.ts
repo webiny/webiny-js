@@ -1,6 +1,9 @@
 import { CmsEntry, CmsModel } from "~/types";
 
-export function getEntryTitle(model: CmsModel, entry: CmsEntry): string {
+export function getEntryTitle(
+    model: Pick<CmsModel, "titleFieldId" | "fields">,
+    entry: Pick<CmsEntry, "id" | "values">
+): string {
     if (!model.titleFieldId) {
         return entry.id;
     }
