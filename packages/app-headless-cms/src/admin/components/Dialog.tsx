@@ -10,7 +10,7 @@ export const Dialog = styled(BaseDialog)`
     }
 
     .mdc-dialog__content {
-        overflow: initial !important;
+        overflow: auto;
         .mdc-list:first-of-type {
             padding: 0;
         }
