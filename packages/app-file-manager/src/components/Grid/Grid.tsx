@@ -13,7 +13,6 @@ import { FileItem } from "@webiny/app/types";
 const t = i18n.ns("app-admin/file-manager/components/grid");
 
 interface GridProps {
-    type: string;
     records: FileItem[];
     folders: FolderItem[];
     loading?: boolean;
@@ -53,7 +52,6 @@ const renderFile: React.FC<RenderFileProps> = props => {
 
 export const Grid = (props: GridProps): ReactElement => {
     const {
-        type,
         folders,
         records,
         loading,
@@ -73,11 +71,7 @@ export const Grid = (props: GridProps): ReactElement => {
     return (
         <>
             <FolderList>
-                <FolderGrid
-                    type={type}
-                    folders={folders}
-                    onFolderClick={folder => onFolderClick(folder.id)}
-                />
+                <FolderGrid folders={folders} onFolderClick={folder => onFolderClick(folder.id)} />
             </FolderList>
             <FileList>
                 {records.map(record =>

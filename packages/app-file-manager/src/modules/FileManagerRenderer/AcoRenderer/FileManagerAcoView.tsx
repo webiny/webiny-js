@@ -391,7 +391,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
 
         return (
             <Grid
-                type={ACO_TYPE}
                 folders={folders}
                 records={files.map(file => file.data)}
                 loading={isListLoading}
