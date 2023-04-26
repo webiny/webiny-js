@@ -30,6 +30,7 @@ import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createCmsAcoContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 /**
@@ -112,6 +113,7 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
+        createCmsAcoContext(),
         scaffoldsPlugins()
     ],
     http: { debug }
