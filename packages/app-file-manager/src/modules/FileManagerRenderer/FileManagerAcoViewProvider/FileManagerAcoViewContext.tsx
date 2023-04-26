@@ -50,14 +50,6 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     setListTable: (mode: boolean) => void;
 }
 
-function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
-    if (Array.isArray(value)) {
-        return value.length ? value : undefined;
-    }
-
-    return fallback;
-}
-
 export const FileManagerAcoViewContext = React.createContext<
     FileManagerAcoViewContextData | undefined
 >(undefined);
@@ -79,7 +71,6 @@ export const FileManagerAcoViewProvider = ({
     const { getRecord } = useRecords();
     const [settings, setSettings] = useState<Settings | undefined>(undefined);
     const [files, setFiles] = useState<FileItem[]>([]);
-    const [loadingFiles, setLoading] = useState(false);
     const [listTable, setListTable] = useState<boolean>(false);
 
     const [state, dispatch] = React.useReducer(stateReducer, null, () =>
@@ -92,8 +83,6 @@ export const FileManagerAcoViewProvider = ({
         if (fileInState) {
             return fileInState;
         }
-
-        setLoading(true);
 
         const file = await fileManager.getFile(id);
 
@@ -122,8 +111,6 @@ export const FileManagerAcoViewProvider = ({
                 return result;
             });
         }
-
-        setLoading(false);
 
         return file;
     };
