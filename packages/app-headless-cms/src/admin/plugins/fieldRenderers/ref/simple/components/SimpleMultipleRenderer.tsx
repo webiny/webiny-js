@@ -4,7 +4,6 @@ import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components
 import { useContentModels } from "./useContentModels";
 import { useReferences } from "./useReferences";
 import { AddItemParams, RemoveItemParams, SimpleItems } from "./SimpleItems";
-import { parseIdentifier } from "@webiny/utils";
 
 interface Props {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
@@ -33,11 +32,13 @@ export const SimpleMultipleRenderer: React.VFC<Props> = props => {
         [bind, values]
     );
     const removeItem = useCallback(
-        (params: RemoveItemParams) => {
+        ({ entryId }: RemoveItemParams) => {
             bind.onChange(
                 values.filter(value => {
-                    const { id: valueId } = parseIdentifier(value.id);
-                    return valueId !== params.entryId;
+                    if (!value?.id) {
+                        return false;
+                    }
+                    return value.id.substring(0, entryId.length) !== entryId;
                 })
             );
         },
@@ -46,6 +47,7 @@ export const SimpleMultipleRenderer: React.VFC<Props> = props => {
 
     return (
         <SimpleItems
+            field={field}
             values={values}
             items={references.entries}
             addItem={addItem}

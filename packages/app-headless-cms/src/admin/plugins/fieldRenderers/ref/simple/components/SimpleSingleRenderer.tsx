@@ -37,6 +37,7 @@ export const SimpleSingleRenderer: React.VFC<Props> = props => {
 
     return (
         <SimpleItems
+            field={field}
             values={value ? [value] : []}
             items={references.entries}
             addItem={addItem}

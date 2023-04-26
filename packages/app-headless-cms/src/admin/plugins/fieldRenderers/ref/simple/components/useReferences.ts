@@ -65,11 +65,7 @@ export const useReferences = ({ models }: UseReferencesParams) => {
             models,
             setLoading,
             setError,
-            setEntries: items => {
-                setEntries(prev => {
-                    return [...prev, ...items];
-                });
-            }
+            setEntries
         });
     }, [models]);
 

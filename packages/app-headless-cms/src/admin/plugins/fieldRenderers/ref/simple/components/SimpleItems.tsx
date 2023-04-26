@@ -6,7 +6,11 @@ import {
 } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { parseIdentifier } from "@webiny/utils";
 import styled from "@emotion/styled";
+import { CmsModelField } from "~/types";
 
+const Title = styled("h5")({
+    display: "block"
+});
 const Item = styled("div")({
     display: "block"
 });
@@ -22,6 +26,7 @@ export interface RemoveItemParams {
 }
 
 interface Props {
+    field: CmsModelField;
     items?: CmsReferenceContentEntry[];
     values?: CmsReferenceValue[];
     addItem: (params: AddItemParams) => void;
@@ -29,20 +34,21 @@ interface Props {
 }
 
 export const SimpleItems: React.VFC<Props> = props => {
-    const { items, values, addItem, removeItem } = props;
+    const { field, items, values, addItem, removeItem } = props;
 
     if (!items || items.length === 0) {
         return null;
     }
     return (
-        <div>
+        <>
+            <Title>{field.label}</Title>
             {items.map(item => {
                 const checked = (values || []).some(value => {
                     const { id: entryId } = parseIdentifier(value.id);
                     return entryId === item.entryId;
                 });
                 return (
-                    <Item>
+                    <Item key={`item-${item.entryId}`}>
                         <Checkbox
                             value={checked ? item.entryId : null}
                             onChange={checked => {
@@ -63,6 +69,6 @@ export const SimpleItems: React.VFC<Props> = props => {
                     </Item>
                 );
             })}
-        </div>
+        </>
     );
 };
