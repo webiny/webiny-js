@@ -2,11 +2,11 @@ import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import mime from "mime/lite";
 
-const t = i18n.ns("app-admin/file-manager/file-manager-view/bottom-info-bar/supported-files");
-
 mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
 mime.define({ "image/vnd.microsoft.icon": ["ico"] }, true);
+
+const t = i18n.ns("app-admin/file-manager/components/bottom-info-bar/supported-files");
 
 const getUniqueFilePlugins = (accept: string[]): string[] => {
     const exts: Record<string, boolean> = {};

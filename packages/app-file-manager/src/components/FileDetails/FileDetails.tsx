@@ -1,6 +1,6 @@
 import { useCopyFile } from "~/modules/Hooks/useCopyFile";
 
-export { useFile } from "./FileDetails/FileProvider";
+export { useFile } from "./FileProvider";
 import React, { useMemo, useState } from "react";
 import bytes from "bytes";
 import classNames from "classnames";
@@ -10,9 +10,9 @@ import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { IconButton } from "@webiny/ui/Button";
 import dayjs from "dayjs";
 import get from "lodash/get";
-import Tags from "./FileDetails/Tags";
-import Name from "./FileDetails/Name";
-import { Aliases } from "./FileDetails/Aliases";
+import Tags from "./Tags";
+import Name from "./Name";
+import { Aliases } from "./Aliases";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
@@ -25,8 +25,8 @@ import { ReactComponent as FileIcon } from "@material-design-icons/svg/outlined/
 import { ReactComponent as CalendarIcon } from "@material-design-icons/svg/outlined/today.svg";
 import { ReactComponent as HighlightIcon } from "@material-design-icons/svg/outlined/highlight.svg";
 import { i18n } from "@webiny/app/i18n";
-import { FileProvider } from "./FileDetails/FileProvider";
-import { DeleteImageAction } from "./FileDetails/DeleteImageAction";
+import { FileProvider } from "./FileProvider";
+import { DeleteImageAction } from "./DeleteImageAction";
 import { FileItem } from "@webiny/app-admin/types";
 import getFileTypePlugin from "~/getFileTypePlugin";
 

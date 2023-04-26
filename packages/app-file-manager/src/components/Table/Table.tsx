@@ -14,13 +14,13 @@ import bytes from "bytes";
 import TimeAgo from "timeago-react";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
-import { FileName, FolderName } from "./Row/Name";
-import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
-import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
-import { RecordActionCopy } from "./Row/Record/RecordActionCopy";
-import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
-import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
-import { RecordActionMove } from "./Row/Record/RecordActionMove";
+import { FileName, FolderName } from "./Name";
+import { FolderActionDelete } from "./FolderActionDelete";
+import { FolderActionEdit } from "./FolderActionEdit";
+import { RecordActionCopy } from "./RecordActionCopy";
+import { RecordActionDelete } from "./RecordActionDelete";
+import { RecordActionEdit } from "./RecordActionEdit";
+import { RecordActionMove } from "./RecordActionMove";
 
 import { ACO_TYPE } from "~/constants";
 

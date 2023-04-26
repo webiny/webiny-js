@@ -1,20 +1,21 @@
 import React from "react";
 import { FilesRenderChildren } from "react-butterfiles";
-import NoPermissionView from "./NoPermissionView";
-import NoResults from "./NoResults";
-import DropFilesHere from "./DropFilesHere";
+
 import { useFileManagerApi } from "~/index";
+import { NoPermission } from "~/components/NoPermission";
+import { NoResults } from "~/components/NoResults";
+import { DropFilesHere } from "~/components/DropFilesHere";
 
 interface EmptyViewProps {
     browseFiles: FilesRenderChildren["browseFiles"];
     isSearchResult?: boolean;
 }
 
-export const EmptyView = ({ browseFiles, isSearchResult }: EmptyViewProps) => {
+export const Empty = ({ browseFiles, isSearchResult }: EmptyViewProps) => {
     const { canRead } = useFileManagerApi();
 
     if (!canRead) {
-        return <NoPermissionView />;
+        return <NoPermission />;
     }
     if (isSearchResult) {
         return <NoResults />;

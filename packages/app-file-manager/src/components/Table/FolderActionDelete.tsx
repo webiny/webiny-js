@@ -5,8 +5,9 @@ import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 
-import { ListItemGraphic } from "../../styled";
-const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/folder/delete");
+import { ListItemGraphic } from "./styled";
+
+const t = i18n.ns("app-admin/file-manager/components/table/folder-action-delete");
 
 interface Props {
     onClick: () => void;

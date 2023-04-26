@@ -5,9 +5,9 @@ import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 
-import { ListItemGraphic } from "~/modules/FileManagerRenderer/AcoRenderer/Table/styled";
+import { ListItemGraphic } from "./styled";
 
-const t = i18n.ns("app-admin/file-manager/file-manager-view/actions/file/edit");
+const t = i18n.ns("app-admin/file-manager/components/table/record-action-edit");
 
 interface RecordActionEditProps {
     id: string;

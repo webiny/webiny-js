@@ -5,13 +5,14 @@ import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 
-import { ListItemGraphic } from "~/modules/FileManagerRenderer/AcoRenderer/Table/styled";
 import { useCopyFile } from "~/modules/Hooks/useCopyFile";
 
 import { SearchRecordItem } from "@webiny/app-aco/types";
 import { FileItem } from "@webiny/app/types";
 
-const t = i18n.ns("app-admin/file-manager/file-manager-view/actions/file/copy");
+import { ListItemGraphic } from "./styled";
+
+const t = i18n.ns("app-admin/file-manager/components/table/record-action-copy");
 
 interface RecordActionCopyProps {
     record: SearchRecordItem<FileItem>["data"];

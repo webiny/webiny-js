@@ -1,41 +1,41 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
-import Files, { FilesRenderChildren } from "react-butterfiles";
+import Files, { FilesRenderChildren, FilesRules } from "react-butterfiles";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
-import { FilesRules } from "react-butterfiles";
+import useDeepCompareEffect from "use-deep-compare-effect";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add.svg";
 import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/view_module.svg";
 import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/view_list.svg";
+import { i18n } from "@webiny/app/i18n";
+import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
+import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
 import { ButtonPrimary, ButtonIcon, IconButton, ButtonSecondary } from "@webiny/ui/Button";
+import { Sorting } from "@webiny/ui/DataTable";
 import { Icon } from "@webiny/ui/Icon";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-
-import { i18n } from "@webiny/app/i18n";
-import { FileItem } from "@webiny/app-admin/types";
-import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import { outputFileSelectionError } from "./outputFileSelectionError";
-import DropFilesHere from "./DropFilesHere";
-import { FileDetails } from "~/components/FileDetails";
-import LeftSidebar from "./LeftSidebar";
-import BottomInfoBar from "./BottomInfoBar";
-import { useFileManagerApi } from "~/index";
-import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
-import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
-import { Sorting } from "@webiny/ui/DataTable";
-import { Table } from "~/modules/FileManagerRenderer/AcoRenderer/Table";
-import { Grid } from "~/modules/FileManagerRenderer/AcoRenderer/Grid";
-import { Title } from "~/components/Title";
-
 import { Tooltip } from "@webiny/ui/Tooltip";
-import useDeepCompareEffect from "use-deep-compare-effect";
-import { EmptyView } from "~/modules/FileManagerRenderer/AcoRenderer/EmptyView";
-import { ACO_TYPE } from "~/constants";
+
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { outputFileSelectionError } from "./outputFileSelectionError";
+import LeftSidebar from "./LeftSidebar";
+import { useFileManagerApi } from "~/index";
+import { FileItem } from "@webiny/app-admin/types";
+import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
+
+import { ACO_TYPE } from "~/constants";
+
+import { FileDetails } from "~/components/FileDetails";
+import { BottomInfoBar } from "~/components/BottomInfoBar";
+import { DropFilesHere } from "~/components/DropFilesHere";
+import { Empty } from "~/components/Empty";
+import { Table } from "~/components/Table";
+import { Grid } from "~/components/Grid";
+import { Title } from "~/components/Title";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -361,11 +361,11 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!isListLoading && listWhere.search && records.length === 0) {
-            return <EmptyView isSearchResult={true} browseFiles={browseFiles} />;
+            return <Empty isSearchResult={true} browseFiles={browseFiles} />;
         }
 
         if (!isListLoading && records.length === 0 && folders.length === 0) {
-            return <EmptyView isSearchResult={false} browseFiles={browseFiles} />;
+            return <Empty isSearchResult={false} browseFiles={browseFiles} />;
         }
 
         if (listTable) {

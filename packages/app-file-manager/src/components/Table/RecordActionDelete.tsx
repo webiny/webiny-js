@@ -9,12 +9,12 @@ import { MenuItem } from "@webiny/ui/Menu";
 
 import { useDeleteFile } from "~/modules/Hooks/useDeleteFile";
 
-import { ListItemGraphic } from "~/modules/FileManagerRenderer/AcoRenderer/Table/styled";
-
 import { FileItem } from "@webiny/app/types";
 import { SearchRecordItem } from "@webiny/app-aco/types";
 
-const t = i18n.ns("app-admin/file-manager/file-manager-view/actions/file/delete");
+import { ListItemGraphic } from "./styled";
+
+const t = i18n.ns("app-admin/file-manager/components/table/record-action-delete");
 
 interface RecordActionDeleteProps {
     record: SearchRecordItem<FileItem>["data"];

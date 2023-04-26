@@ -1,15 +1,16 @@
 import React, { ReactElement } from "react";
 import { FolderGrid } from "@webiny/app-aco";
+import { i18n } from "@webiny/app/i18n";
+import { CircularProgress } from "@webiny/ui/Progress";
+import getFileTypePlugin from "~/getFileTypePlugin";
+import FileThumbnail, { FileProps } from "./File";
+
+import { FileList, FolderList } from "./styled";
+
 import { FolderItem } from "@webiny/app-aco/types";
 import { FileItem } from "@webiny/app/types";
-import { i18n } from "@webiny/app/i18n";
-import styled from "@emotion/styled";
-import getFileTypePlugin from "~/getFileTypePlugin";
-import FileThumbnail, { FileProps } from "~/modules/FileManagerRenderer/AcoRenderer/File";
 
-import { CircularProgress } from "@webiny/ui/Progress";
-
-const t = i18n.ns("app-admin/file-manager/file-manager-view/grid-view");
+const t = i18n.ns("app-admin/file-manager/components/grid");
 
 interface GridProps {
     type: string;
@@ -24,20 +25,6 @@ interface GridProps {
     onChange?: Function;
     onClose?: Function;
 }
-
-const FileList = styled("div")({
-    display: "grid",
-    /* define the number of grid columns */
-    gridTemplateColumns: "repeat( auto-fill, minmax(200px, 1fr) )",
-    columnGap: 16,
-    rowGap: 16,
-    margin: 16,
-    marginBottom: 120
-});
-
-const FolderList = styled("div")({
-    margin: 16
-});
 
 interface RenderFileProps extends Omit<FileProps, "children"> {
     file: FileItem;
