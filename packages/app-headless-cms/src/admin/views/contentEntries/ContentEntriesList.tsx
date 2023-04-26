@@ -1,3 +1,4 @@
+// TODO delete
 import React, { useMemo } from "react";
 import debounce from "lodash/debounce";
 import { css } from "emotion";
@@ -20,7 +21,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import statusLabels from "../../constants/statusLabels";
+import { statusLabels } from "~/admin/constants/statusLabels";
 import { useCallback } from "react";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/useContentEntriesList";
 import { positionValues as PositionValues } from "react-custom-scrollbars";

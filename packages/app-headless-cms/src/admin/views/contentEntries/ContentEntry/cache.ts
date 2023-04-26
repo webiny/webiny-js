@@ -1,6 +1,6 @@
 import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
-import { CmsContentEntryRevision, CmsEditorContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsContentEntryRevision, CmsModel } from "~/types";
 import * as GQL from "~/admin/graphql/contentEntries";
 import { parseIdentifier } from "@webiny/utils";
 import { DataProxy } from "apollo-cache";
@@ -17,10 +17,7 @@ import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
  * */
-const sortEntries = (
-    list: CmsEditorContentEntry[],
-    sort?: string[] | null
-): CmsEditorContentEntry[] => {
+const sortEntries = (list: CmsContentEntry[], sort?: string[] | null): CmsContentEntry[] => {
     if (!sort) {
         return list;
     } else if (Array.isArray(sort) === false) {
@@ -38,7 +35,7 @@ const sortEntries = (
 export const addEntryToListCache = (
     model: CmsModel,
     cache: DataProxy,
-    entry: CmsEditorContentEntry,
+    entry: CmsContentEntry,
     variables: CmsEntriesListQueryVariables
 ): void => {
     const gqlParams = { query: GQL.createListQuery(model), variables };
@@ -67,7 +64,7 @@ export const addEntryToListCache = (
                             "ownedBy",
                             "meta",
                             "__typename"
-                        ]) as CmsEditorContentEntry,
+                        ]) as CmsContentEntry,
                         ...content.data
                     ],
                     variables.sort
@@ -110,7 +107,7 @@ export const updateLatestRevisionInListCache = (
 export const removeEntryFromListCache = (
     model: CmsModel,
     cache: DataProxy,
-    revision: CmsContentEntryRevision,
+    revision: Pick<CmsContentEntryRevision, "id">,
     variables: CmsEntriesListQueryVariables
 ): void => {
     // Delete the item from list cache
@@ -139,7 +136,7 @@ export const removeEntryFromListCache = (
 export const removeRevisionFromEntryCache = (
     model: CmsModel,
     cache: DataProxy,
-    revision: CmsContentEntryRevision
+    revision: Pick<CmsContentEntryRevision, "id">
 ): CmsContentEntryRevision[] => {
     const { id } = parseIdentifier(revision.id);
     const gqlParams = {

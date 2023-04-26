@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import get from "lodash/get";
+import CmsAcoTable from "./Table";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { Provider as ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 import {
     GET_CONTENT_MODEL,
@@ -12,9 +11,6 @@ import {
     GetCmsModelQueryVariables
 } from "~/admin/graphql/contentModels";
 import { useQuery } from "../../hooks";
-import ContentEntriesList from "~/admin/views/contentEntries/ContentEntriesList";
-import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
-import { Provider as ContentEntryProvider } from "./ContentEntry/ContentEntryContext";
 import { CmsModel } from "~/types";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 
@@ -35,7 +31,7 @@ const ContentEntries: React.FC = () => {
                 modelId
             },
             onCompleted: data => {
-                const contentModel = get(data, "getContentModel.data", null);
+                const contentModel = data.getContentModel?.data;
                 if (contentModel) {
                     return setContentModel(contentModel);
                 }
@@ -60,16 +56,7 @@ const ContentEntries: React.FC = () => {
     return (
         <ModelProvider model={contentModel}>
             <ContentEntriesProvider contentModel={contentModel} key={contentModel.modelId}>
-                <SplitView>
-                    <LeftPanel span={4}>
-                        <ContentEntriesList />
-                    </LeftPanel>
-                    <RightPanel span={8}>
-                        <ContentEntryProvider>
-                            <ContentEntry />
-                        </ContentEntryProvider>
-                    </RightPanel>
-                </SplitView>
+                <CmsAcoTable />
             </ContentEntriesProvider>
         </ModelProvider>
     );

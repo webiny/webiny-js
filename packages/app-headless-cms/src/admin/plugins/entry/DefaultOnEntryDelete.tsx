@@ -89,7 +89,6 @@ const OnEntryDelete: React.FC = () => {
 
         // We have other revisions, update entry's cache
         const revisions = GQLCache.removeRevisionFromEntryCache(model, client.cache, {
-            ...entry,
             id
         });
 

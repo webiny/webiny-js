@@ -308,7 +308,15 @@ export interface CmsDynamicZoneTemplate {
     validation: CmsModelFieldValidator[];
 }
 
-export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
+export type CmsEntryStatus = "draft" | "published" | "unpublished";
+/**
+ * Use CmsEntryStatus instead.
+ *
+ * @see CmsEntryStatus
+ *
+ * @deprecated
+ */
+export type CmsContentEntryStatusType = CmsEntryStatus;
 
 /**
  * @deprecated Use `CmsContentEntry`.

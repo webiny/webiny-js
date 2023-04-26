@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { ReactComponent as DownButton } from "~/admin/icons/round-arrow_drop_down-24px.svg";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
-import statusLabels from "~/admin/constants/statusLabels";
+import { statusLabels } from "~/admin/constants/statusLabels";
 import { CmsContentEntryRevision } from "~/types";
 
 const buttonStyle = css({
