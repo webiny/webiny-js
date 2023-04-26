@@ -11949,7 +11949,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-aco@workspace:packages/api-headless-cms-aco":
+"@webiny/api-headless-cms-aco@0.0.0, @webiny/api-headless-cms-aco@workspace:packages/api-headless-cms-aco":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-aco@workspace:packages/api-headless-cms-aco"
   dependencies:
@@ -11975,7 +11975,6 @@ __metadata:
     "@webiny/handler-graphql": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    lodash: ^4.17.11
     ttypescript: ^1.5.13
     typescript: ^4.7.4
   languageName: unknown
@@ -13413,7 +13412,9 @@ __metadata:
     "@material-design-icons/svg": ^0.14.2
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
+    "@types/store": ^2.0.2
     "@webiny/app": 0.0.0
+    "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-graphql-playground": 0.0.0
     "@webiny/app-i18n": 0.0.0
@@ -13454,6 +13455,7 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
     rimraf: ^3.0.2
+    store: ^2.0.12
     timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -16389,6 +16391,7 @@ __metadata:
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-form-builder-so-ddb": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-aco": 0.0.0
     "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0

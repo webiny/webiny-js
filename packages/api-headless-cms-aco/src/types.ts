@@ -4,6 +4,9 @@ import { CmsContext, CmsEntryStatus, CmsIdentity } from "@webiny/api-headless-cm
 export interface CmsAcoContext extends AcoContext, CmsContext {}
 
 export interface CmsEntryRecordData {
+    id: string;
+    entryId: string;
+    modelId: string;
     image?: string | null;
     createdBy: CmsIdentity;
     createdOn: string;

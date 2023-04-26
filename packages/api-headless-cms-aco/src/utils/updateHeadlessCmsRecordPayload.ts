@@ -9,7 +9,7 @@ import {
 import { getEntryImage } from "@webiny/api-headless-cms/utils/getEntryImage";
 
 interface Params {
-    context: CmsAcoContext;
+    context: Pick<CmsAcoContext, "plugins">;
     model: CmsModel;
     entry: CmsEntry;
 }
@@ -25,8 +25,11 @@ export const updateHeadlessCmsRecordPayload = async (
     const payload: CmsEntryAcoModifyUpdatePayloadPluginPayload = {
         title,
         content: description,
-        tags: [`model:${model.modelId}`],
+        tags: [],
         data: {
+            id: entry.id,
+            entryId: entry.entryId,
+            modelId: model.modelId,
             image,
             createdBy: entry.createdBy,
             createdOn: entry.createdOn,

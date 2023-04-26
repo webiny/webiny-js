@@ -3,7 +3,9 @@ import { isAcoModel } from "~/utils/isAcoModel";
 import { updateHeadlessCmsRecordPayload } from "~/utils/updateHeadlessCmsRecordPayload";
 import { CmsEntryRecordData, CmsAcoContext } from "~/types";
 
-export const attachOnEntryAfterUnpublish = (context: CmsAcoContext): void => {
+export const attachOnEntryAfterUnpublish = (
+    context: Pick<CmsAcoContext, "cms" | "plugins" | "aco">
+): void => {
     context.cms.onEntryAfterUnpublish.subscribe(async ({ entry, model }) => {
         if (isAcoModel(model)) {
             return;
