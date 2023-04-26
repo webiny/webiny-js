@@ -31,6 +31,7 @@ import { createStorageOperations as createApwSaStorageOperations } from "@webiny
 
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createCmsAcoContext } from "@webiny/api-headless-cms-aco";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -103,6 +104,7 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
+        createCmsAcoContext(),
         scaffoldsPlugins()
     ],
     http: { debug }
