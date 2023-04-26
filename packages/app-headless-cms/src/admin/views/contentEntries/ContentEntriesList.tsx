@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import debounce from "lodash/debounce";
 import { css } from "emotion";
 /**
@@ -6,7 +6,6 @@ import { css } from "emotion";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
-import pluralize from "pluralize";
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
@@ -21,13 +20,12 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import statusLabels from "../../constants/statusLabels";
-import { useCallback } from "react";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/useContentEntriesList";
 import { positionValues as PositionValues } from "react-custom-scrollbars";
 import { CmsEditorContentEntry } from "~/types";
 import {
-    useContentEntriesViewConfig,
-    ContentEntriesViewConfigFilter
+    ContentEntriesViewConfigFilter,
+    useContentEntriesViewConfig
 } from "./experiment/ContentEntriesViewConfig";
 import { Link } from "@webiny/react-router";
 
@@ -153,7 +151,7 @@ const ContentEntriesList: React.FC = () => {
             data={data}
             title={
                 <span>
-                    {pluralize(contentModel.name)}
+                    {contentModel.name}
                     <br />
                     <Typography use={"subtitle1"}>
                         <ModelId>
@@ -189,7 +187,7 @@ const ContentEntriesList: React.FC = () => {
                 <SearchUI
                     value={filter}
                     onChange={setFilter}
-                    inputPlaceholder={t`Search {title}`({ title: pluralize(contentModel.name) })}
+                    inputPlaceholder={t`Search {title}`({ title: contentModel.name })}
                 />
             }
             modalOverlay={entriesDataListModalOverlay}

@@ -51,7 +51,6 @@
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.10",
-    "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "raw.macro": "^0.4.2",
     "react": "17.0.2",
