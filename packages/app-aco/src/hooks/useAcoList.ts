@@ -6,9 +6,26 @@ import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
-import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
+import { FolderItem, GenericSearchData, ListDbSort, SearchRecordItem } from "~/types";
 
-export const useAcoList = (type: string, originalFolderId?: string) => {
+const getCurrentFolderList = (
+    folders: FolderItem[],
+    currentFolderId?: string
+): FolderItem[] | [] => {
+    if (!folders) {
+        return [];
+    }
+    if (currentFolderId) {
+        return folders.filter(folder => folder.parentId === currentFolderId);
+    } else {
+        return folders.filter(folder => !folder.parentId);
+    }
+};
+
+export const useAcoList = <T extends GenericSearchData = GenericSearchData>(
+    type: string,
+    originalFolderId?: string
+) => {
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
 
@@ -17,7 +34,7 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
     }
 
     const [folders, setFolders] = useState<FolderItem[]>([]);
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
+    const [records, setRecords] = useState<SearchRecordItem<T>[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
     const [sort, setSort] = useState<ListDbSort>();
 
@@ -25,20 +42,6 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
 
     const folderId = originalFolderId || "ROOT";
-
-    const getCurrentFolderList = (
-        folders: FolderItem[],
-        currentFolderId?: string
-    ): FolderItem[] | [] => {
-        if (!folders) {
-            return [];
-        }
-        if (currentFolderId) {
-            return folders.filter(folder => folder.parentId === currentFolderId);
-        } else {
-            return folders.filter(folder => !folder.parentId);
-        }
-    };
 
     /**
      * On first mount, call `listFolders` and `listRecords`, which will either issue a network request, or load folders and records from cache.
@@ -76,7 +79,9 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
      * - we return the `records` list filtered by the current `folderId`.
      */
     useDeepCompareEffect(() => {
-        const subRecords = originalRecords.filter(record => record.location.folderId === folderId);
+        const subRecords = originalRecords.filter(
+            (record): record is SearchRecordItem<T> => record.location.folderId === folderId
+        );
         setRecords(subRecords);
     }, [{ ...originalRecords }, folderId]);
 
@@ -109,6 +114,6 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
                 return listRecords({ ...params, type, folderId });
             }
         }),
-        [folders, records, foldersLoading, recordsLoading, meta]
+        [folders, records, foldersLoading, recordsLoading, meta, listTitle]
     );
 };
