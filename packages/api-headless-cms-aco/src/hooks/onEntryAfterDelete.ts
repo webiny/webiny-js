@@ -1,7 +1,9 @@
 import WebinyError from "@webiny/error";
 import { CmsAcoContext } from "~/types";
 
-export const attachOnEntryAfterDelete = (context: CmsAcoContext): void => {
+export const attachOnEntryAfterDelete = (
+    context: Pick<CmsAcoContext, "cms" | "plugins" | "aco">
+): void => {
     context.cms.onEntryAfterDelete.subscribe(async ({ entry }) => {
         try {
             await context.aco.search.delete(entry.entryId);

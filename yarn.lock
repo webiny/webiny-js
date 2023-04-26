@@ -11975,7 +11975,6 @@ __metadata:
     "@webiny/handler-graphql": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    lodash: ^4.17.11
     ttypescript: ^1.5.13
     typescript: ^4.7.4
   languageName: unknown
@@ -13413,6 +13412,7 @@ __metadata:
     "@material-design-icons/svg": ^0.14.2
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
+    "@types/store": ^2.0.2
     "@webiny/app": 0.0.0
     "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
@@ -13455,6 +13455,7 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
     rimraf: ^3.0.2
+    store: ^2.0.12
     timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
