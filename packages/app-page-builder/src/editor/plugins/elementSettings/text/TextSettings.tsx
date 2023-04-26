@@ -29,8 +29,8 @@ import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import startCase from "lodash/startCase";
 import { isLegacyRenderingEngine } from "~/utils";
+import { TypographyStyle } from "@webiny/theme/types";
 
 const classes = {
     grid: css({
@@ -96,10 +96,18 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
 
     const themeTypographyOptions = useMemo(() => {
         if (!isLegacyRenderingEngine) {
-            const peThemeTypography = Object.keys(pageElements.theme.styles?.typography || {});
-            return peThemeTypography.map(key => (
-                <option value={key} key={key}>
-                    {startCase(key)}
+            const allTypographyVariants: TypographyStyle[] = [];
+
+            const typography = pageElements.theme.styles?.typography;
+            if (typography) {
+                for (const typographyCategory in typography) {
+                    allTypographyVariants.push(...typography[typographyCategory]);
+                }
+            }
+
+            return allTypographyVariants.map(variant => (
+                <option value={variant.id} key={variant.id}>
+                    {variant.name}
                 </option>
             ));
         }
