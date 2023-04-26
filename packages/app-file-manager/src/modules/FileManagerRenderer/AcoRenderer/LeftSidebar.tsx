@@ -14,12 +14,15 @@ const t = i18n.ns("app-file-manager/modules/renderer/left-sidebar");
 const style = {
     leftDrawer: css({
         float: "left",
-        display: "inline-block",
-        width: 249,
-        height: "100%",
+        display: "block",
+        width: 269,
+        height: "calc(100vh - 64px)",
         backgroundColor: "var(--mdc-theme-surface)",
-        padding: 10,
-        borderRight: "1px solid var(--mdc-theme-on-background)"
+        borderRight: "1px solid var(--mdc-theme-on-background)",
+        overflowY: "scroll"
+    }),
+    wrapper: css({
+        padding: " 16px 8px"
     }),
     divider: css({
         height: "1px",
@@ -47,23 +50,25 @@ const LeftSidebar = ({
 }: LeftSidebarProps) => {
     return (
         <div className={style.leftDrawer}>
-            <FolderTree
-                type={ACO_TYPE}
-                title={title}
-                focusedFolderId={currentFolder}
-                onTitleClick={() => onFolderClick(FOLDER_ID_DEFAULT)}
-                onFolderClick={data => data?.id && onFolderClick(data?.id)}
-                enableActions={true}
-                enableCreate={true}
-            />
-            <div className={style.divider} />
-            <TagList
-                type={ACO_TYPE}
-                initialWhere={getTagsInitialParams({ scope, own })}
-                tagsModifier={tagsModifier(scope)}
-                emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
-                onTagClick={tag => toggleTag(tag)}
-            />
+            <div className={style.wrapper}>
+                <FolderTree
+                    type={ACO_TYPE}
+                    title={title}
+                    focusedFolderId={currentFolder}
+                    onTitleClick={() => onFolderClick(FOLDER_ID_DEFAULT)}
+                    onFolderClick={data => data?.id && onFolderClick(data?.id)}
+                    enableActions={true}
+                    enableCreate={true}
+                />
+                <div className={style.divider} />
+                <TagList
+                    type={ACO_TYPE}
+                    initialWhere={getTagsInitialParams({ scope, own })}
+                    tagsModifier={tagsModifier(scope)}
+                    emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
+                    onTagClick={tag => toggleTag(tag)}
+                />
+            </div>
         </div>
     );
 };
