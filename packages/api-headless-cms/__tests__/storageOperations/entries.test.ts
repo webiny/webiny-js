@@ -2,45 +2,11 @@ import {
     createPersonEntries,
     createPersonModel,
     deletePersonModel,
-    PersonEntriesResult
+    waitPersonRecords
 } from "./helpers";
-import { StorageOperationsCmsModel, HeadlessCmsStorageOperations } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 jest.setTimeout(60000);
-
-interface WaitPersonRecordsParams {
-    records: PersonEntriesResult;
-    storageOperations: HeadlessCmsStorageOperations;
-    name: string;
-    until: Function;
-    model: StorageOperationsCmsModel;
-}
-const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void> => {
-    const { records, storageOperations, until, model, name } = params;
-    await until(
-        () => {
-            return storageOperations.entries.list(model, {
-                where: {
-                    latest: true
-                },
-                sort: ["version_ASC"],
-                limit: 10000
-            });
-        },
-        ({ items }: any) => {
-            /**
-             * There must be item for each result last revision id.
-             */
-            return Object.values(records).every(record => {
-                return items.some((item: any) => item.id === record.last.id);
-            });
-        },
-        {
-            name
-        }
-    );
-};
 
 describe("Entries storage operations", () => {
     const { storageOperations, until, plugins } = useGraphQLHandler({
@@ -53,9 +19,6 @@ describe("Entries storage operations", () => {
      * Some others might not need them...
      */
     beforeAll(async () => {
-        if (!storageOperations.beforeInit) {
-            return;
-        }
         await storageOperations.beforeInit({
             plugins
         } as any);
@@ -63,20 +26,18 @@ describe("Entries storage operations", () => {
 
     beforeEach(async () => {
         await deletePersonModel({
-            storageOperations,
-            plugins
+            storageOperations
         });
     });
 
     afterEach(async () => {
         await deletePersonModel({
-            storageOperations,
-            plugins
+            storageOperations
         });
     });
 
     it("getRevisions - should get revisions of all the entries", async () => {
-        const personModel = createPersonModel(plugins);
+        const personModel = createPersonModel();
         const amount = 102;
         const results = await createPersonEntries({
             amount,
@@ -139,7 +100,7 @@ describe("Entries storage operations", () => {
     });
 
     it("should list all entries", async () => {
-        const personModel = createPersonModel(plugins);
+        const personModel = createPersonModel();
         const amount = 10;
         const results = await createPersonEntries({
             amount,
@@ -172,7 +133,7 @@ describe("Entries storage operations", () => {
     });
 
     it("getByIds - should get all entries by id list", async () => {
-        const personModel = createPersonModel(plugins);
+        const personModel = createPersonModel();
         const amount = 202;
         const results = await createPersonEntries({
             amount,

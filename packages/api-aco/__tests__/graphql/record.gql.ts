@@ -9,6 +9,11 @@ const DATA_FIELD = /* GraphQL */ `
         }
         data
         tags
+        createdBy {
+            id
+            displayName
+            type
+        }
     }
 `;
 
@@ -78,6 +83,18 @@ export const GET_RECORD = /* GraphQL */ `
         search {
             getRecord(id: $id ) {
                 data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_TAGS = /* GraphQL */ `
+    query ListTags($where: SearchRecordTagListWhereInput) {
+        search {
+            listTags(where: $where) {
+                data
+                meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
         }
