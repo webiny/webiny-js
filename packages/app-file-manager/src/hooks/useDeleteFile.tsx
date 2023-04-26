@@ -7,7 +7,7 @@ import { FileItem } from "@webiny/app-admin/types";
 
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 
-const t = i18n.ns("app-admin/file-manager/file-manager-view/hooks/file/delete");
+const t = i18n.ns("app-admin/file-manager/hooks/use-delete-file");
 
 interface UseDeleteFileParams {
     file: Pick<FileItem, "id" | "name">;

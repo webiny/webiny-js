@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 
-import { useDeleteFile } from "~/modules/Hooks/useDeleteFile";
+import { useDeleteFile } from "~/hooks/useDeleteFile";
 
 import { FileItem } from "@webiny/app/types";
 import { SearchRecordItem } from "@webiny/app-aco/types";

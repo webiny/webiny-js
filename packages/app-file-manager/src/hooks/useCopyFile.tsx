@@ -4,7 +4,7 @@ import { useSnackbar } from "@webiny/app-admin";
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 import { FileItem } from "@webiny/app-admin/types";
 
-const t = i18n.ns("app-admin/file-manager/file-manager-view/hooks/file/copy");
+const t = i18n.ns("app-admin/file-manager/hooks/use-copy-file");
 
 interface UseCopyFileParams {
     file: {

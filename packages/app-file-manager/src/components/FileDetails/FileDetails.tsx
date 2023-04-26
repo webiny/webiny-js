@@ -1,5 +1,3 @@
-import { useCopyFile } from "~/modules/Hooks/useCopyFile";
-
 export { useFile } from "./FileProvider";
 import React, { useMemo, useState } from "react";
 import bytes from "bytes";
@@ -29,6 +27,7 @@ import { FileProvider } from "./FileProvider";
 import { DeleteImageAction } from "./DeleteImageAction";
 import { FileItem } from "@webiny/app-admin/types";
 import getFileTypePlugin from "~/getFileTypePlugin";
+import { useCopyFile } from "~/hooks/useCopyFile";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
 

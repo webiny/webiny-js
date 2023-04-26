@@ -5,7 +5,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { FileItem } from "@webiny/app-admin/types";
 import { useFile, useFileManagerApi } from "~/index";
-import { useDeleteFile } from "~/modules/Hooks/useDeleteFile";
+import { useDeleteFile } from "~/hooks/useDeleteFile";
 
 interface DeleteImageActionProps {
     onDelete?: () => void;
