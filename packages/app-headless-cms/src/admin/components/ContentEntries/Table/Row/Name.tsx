@@ -3,8 +3,8 @@ import styled from "@emotion/styled";
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 import { Typography } from "@webiny/ui/Typography";
-import { useRouter } from "@webiny/react-router";
 import { useContentEntriesViewNavigation } from "~/admin/views/contentEntries/Table/hooks/useContentEntriesViewNavigation";
+import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
 
 const Title = styled("div")`
     display: flex;
@@ -23,44 +23,34 @@ const Text = styled(Typography)`
     text-overflow: ellipsis;
 `;
 
-interface Props {
-    name: string;
-    id: string;
+interface FolderNameProps {
+    record: FolderEntry;
 }
 
-interface CmsContentEntryProps extends Props {
-    onClick: () => void;
-}
-
-export const FolderName: React.VFC<Props> = ({ name, id }) => {
+export const FolderName: React.VFC<FolderNameProps> = ({ record }) => {
     const { navigateToFolder } = useContentEntriesViewNavigation();
 
     return (
-        <Title onClick={() => navigateToFolder(id)}>
+        <Title onClick={() => navigateToFolder(record.id)}>
             <Icon>
                 <Folder />
             </Icon>
-            <Text use={"subtitle2"}>{name}</Text>
+            <Text use={"subtitle2"}>{record.title}</Text>
         </Title>
     );
 };
 
-export const EntryName: React.VFC<CmsContentEntryProps> = ({ name, id, onClick }) => {
-    const { history } = useRouter();
-    const query = new URLSearchParams(location.search);
-
+interface EntryNameProps {
+    record: RecordEntry;
+    onClick?: () => void;
+}
+export const EntryName: React.VFC<EntryNameProps> = ({ record, onClick }) => {
     return (
-        <Title
-            onClick={() => {
-                query.set("id", id);
-                history.push({ search: query.toString() });
-                onClick();
-            }}
-        >
+        <Title onClick={onClick}>
             <Icon>
                 <File />
             </Icon>
-            <Text use={"subtitle2"}>{name}</Text>
+            <Text use={"subtitle2"}>{record.title}</Text>
         </Title>
     );
 };

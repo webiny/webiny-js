@@ -1,21 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
-import { useHistory, useLocation } from "@webiny/react-router";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
 import { Header } from "~/admin/components/ContentEntries/Header";
 import { LoadingMore } from "~/admin/components/ContentEntries/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/ContentEntries/LoadMoreButton";
-import { Preview } from "~/admin/components/ContentEntries/Preview";
 import { Table } from "~/admin/components/ContentEntries/Table";
 import { CmsContentEntryRecord } from "~/admin/components/ContentEntries/Table/types";
 import { FOLDER_TYPE } from "~/admin/constants/folders";
 import { MainContainer, Wrapper } from "./styled";
-import { ListDbSort, ListMeta } from "@webiny/app-aco/types";
+import { ListDbSort, ListDbSortDirection, ListDbWhere, ListMeta } from "@webiny/app-aco/types";
 import { Sorting } from "@webiny/ui/DataTable";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
+import { Header as ContentEntryHeader } from "./Header";
 
 interface Props {
     folderId?: string;
@@ -23,9 +22,6 @@ interface Props {
 }
 
 export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
-    const location = useLocation();
-    const history = useHistory();
-
     const {
         records,
         folders,
@@ -40,17 +36,17 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
 
-    const [showPreviewDrawer, setPreviewDrawer] = useState(false);
-    const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
-    const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
-
     const { canCreate, createEntry } = useContentEntry();
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
     const tableRef = useRef<HTMLDivElement>(null);
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [sort, setSort] = useState<ListDbSort>();
+    const [sort, setSort] = useState<ListDbSort>({
+        createdOn: ListDbSortDirection.DESC
+    });
+    const [limit] = useState<number>(20);
+    const [where] = useState<ListDbWhere>({});
 
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
@@ -70,17 +66,21 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
 
     useEffect(() => {
         const listSortedRecords = async () => {
-            await listItems({ sort });
+            await listItems({ sort, where, limit });
         };
-
         listSortedRecords();
-    }, [sort]);
+    }, [sort, where]);
 
-    const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
-        if (hasMoreItems && cursor) {
-            await listItems({ after: cursor, sort });
-        }
-    };
+    const loadMoreRecords = useCallback(
+        async ({ hasMoreItems, cursor }: ListMeta) => {
+            if (!hasMoreItems || !cursor) {
+                return;
+            }
+
+            await listItems({ after: cursor, sort, where, limit });
+        },
+        [listItems, sort]
+    );
 
     const loadMoreOnScroll = useCallback(
         debounce(async ({ scrollFrame }) => {
@@ -95,20 +95,15 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
         await loadMoreRecords(meta);
     }, [meta]);
 
-    useEffect(() => {
-        if (!showPreviewDrawer) {
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.delete("id");
-            history.push({
-                search: queryParams.toString()
-            });
-        }
-    }, [showPreviewDrawer]);
-
     const { showEmptyView } = useContentEntry();
 
     if (!showEmptyView) {
-        return <ContentEntry />;
+        return (
+            <>
+                <ContentEntryHeader />
+                <ContentEntry />
+            </>
+        );
     }
 
     return (
@@ -129,12 +124,6 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
                         />
                     ) : (
                         <>
-                            <Preview
-                                open={showPreviewDrawer}
-                                onClose={() => closePreviewDrawer()}
-                                canCreate={canCreate}
-                                onCreateEntry={createEntry}
-                            />
                             <Scrollbar
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
@@ -144,7 +133,6 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
                                     folders={folders}
                                     records={records}
                                     loading={isListLoading}
-                                    openPreviewDrawer={openPreviewDrawer}
                                     sorting={tableSorting}
                                     onSortingChange={setTableSorting}
                                 />

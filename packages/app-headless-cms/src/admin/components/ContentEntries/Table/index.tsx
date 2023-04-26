@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useCallback, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
@@ -25,12 +25,14 @@ import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
 import { menuStyles } from "./styled";
 import { parseIdentifier } from "@webiny/utils";
 import { CmsContentEntryRecord, Entry, FolderEntry, RecordEntry } from "./types";
+import { useRouter } from "@webiny/react-router";
+import { usePermission } from "~/admin/hooks";
+import { CreatableItem } from "~/admin/hooks/usePermission";
 
 interface Props {
     records: SearchRecordItem<CmsContentEntryRecord>[];
     folders: FolderItem[];
     loading?: boolean;
-    openPreviewDrawer: () => void;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
@@ -69,7 +71,10 @@ const createFolders = (items: FolderItem[]): FolderEntry[] => {
 };
 
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, records, loading, openPreviewDrawer, sorting, onSortingChange } = props;
+    const { folders, records, loading, sorting, onSortingChange } = props;
+
+    const { history } = useRouter();
+    const { canEdit: baseCanEdit } = usePermission();
 
     const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -85,15 +90,35 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         setData([...foldersData, ...entryData]);
     }, [folders, records]);
 
+    const canEdit = useCallback(
+        (entry: CreatableItem) => {
+            return baseCanEdit(entry, "cms.contentEntry");
+        },
+        [baseCanEdit]
+    );
+    const createEditEntry = useCallback(
+        (entry: CmsContentEntryRecord) => {
+            if (!canEdit(entry)) {
+                return undefined;
+            }
+            return () => {
+                history.push(
+                    `/cms/content-entries/${entry.modelId}?id=${encodeURIComponent(entry.id)}`
+                );
+            };
+        },
+        [canEdit]
+    );
+
     const columns: Columns<Entry> = {
         title: {
             header: "Name",
             cell: (record: Entry) => {
-                const { id, title, type } = record;
+                const { type } = record;
                 if (type === "RECORD") {
-                    return <EntryName name={title} id={id} onClick={openPreviewDrawer} />;
+                    return <EntryName record={record} onClick={createEditEntry(record.original)} />;
                 } else {
-                    return <FolderName name={title} id={id} />;
+                    return <FolderName record={record} />;
                 }
             },
             enableSorting: true
@@ -130,7 +155,11 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 if (type === "RECORD") {
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
-                            <RecordActionEdit record={record} />
+                            <RecordActionEdit
+                                record={record}
+                                onClick={createEditEntry(record.original)}
+                                canEdit={canEdit}
+                            />
                             <RecordActionPublish record={record} />
                             <RecordActionMove
                                 onClick={() => {

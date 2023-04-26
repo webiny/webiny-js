@@ -6,8 +6,9 @@ import { i18n } from "@webiny/app/i18n";
 import { MenuItem } from "@webiny/ui/Menu";
 import { Icon } from "@webiny/ui/Icon";
 import { ListItemGraphic } from "@webiny/ui/List";
-import { useContentEntries, usePermission } from "~/admin/hooks";
+import { usePermission } from "~/admin/hooks";
 import { RecordEntry } from "../../types";
+import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
 
 const t = i18n.ns("app-headless-cms/pages-table/actions/page/publish");
 
@@ -18,8 +19,14 @@ interface Props {
 export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
     const { canPublish, canUnpublish } = usePermission();
 
-    // @ts-ignore
-    const { publishRevision, unpublishRevision } = useContentEntries();
+    const { unpublishRevision, publishRevision } = useRevision({
+        revision: {
+            id: record.original.id,
+            meta: {
+                version: record.original.version
+            }
+        }
+    });
 
     const { showConfirmation: showPublishConfirmation } = useConfirmationDialog({
         title: t`Publish CMS Entry`,
@@ -52,7 +59,7 @@ export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
             <MenuItem
                 onClick={() =>
                     showUnpublishConfirmation(async () => {
-                        await unpublishRevision(record);
+                        await unpublishRevision(record.original.id);
                     })
                 }
             >
@@ -72,7 +79,7 @@ export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
         <MenuItem
             onClick={() =>
                 showPublishConfirmation(async () => {
-                    await publishRevision(record);
+                    await publishRevision(record.original.id);
                 })
             }
         >

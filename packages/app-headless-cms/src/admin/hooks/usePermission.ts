@@ -4,11 +4,11 @@ import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
 
-interface CreatableItem {
+export interface CreatableItem {
     createdBy: Pick<CmsIdentity, "id">;
 }
 
-interface CanReadEntriesCallableParams {
+export interface CanReadEntriesCallableParams {
     contentModelGroup: CmsGroup;
     contentModel: CmsModel;
 }
