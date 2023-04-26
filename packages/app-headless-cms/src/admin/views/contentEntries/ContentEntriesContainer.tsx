@@ -4,7 +4,6 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Provider as ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 import {
     GET_CONTENT_MODEL,
     GetCmsModelQueryResponse,
@@ -53,11 +52,5 @@ export const ContentEntriesContainer = ({ children }: { children: React.ReactNod
         return null;
     }
 
-    return (
-        <ModelProvider model={contentModel}>
-            <ContentEntriesProvider contentModel={contentModel} key={contentModel.modelId}>
-                {children}
-            </ContentEntriesProvider>
-        </ModelProvider>
-    );
+    return <ModelProvider model={contentModel}>{children}</ModelProvider>;
 };
