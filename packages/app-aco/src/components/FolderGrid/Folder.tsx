@@ -18,10 +18,6 @@ export interface FolderProps {
     onMenuDeleteClick: (folder: FolderItem) => void;
 }
 
-export interface CreateFolderProps {
-    onClick: () => void;
-}
-
 export const Folder = ({
     folder,
     onFolderClick,
