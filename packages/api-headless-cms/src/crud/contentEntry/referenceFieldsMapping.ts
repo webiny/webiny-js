@@ -1,4 +1,4 @@
-import { CmsContext, CmsModel, CmsModelField } from "~/types";
+import { CmsContext, CmsDynamicZoneTemplate, CmsModel, CmsModelField } from "~/types";
 import WebinyError from "@webiny/error";
 import dotProp from "dot-prop";
 import { parseIdentifier } from "@webiny/utils";
@@ -36,7 +36,7 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
     const isMultipleValues = Array.isArray(input);
 
     return fields
-        .filter(field => ["object", "ref"].includes(getBaseFieldType(field)))
+        .filter(field => ["object", "ref", "dynamicZone"].includes(getBaseFieldType(field)))
         .reduce((collection, field) => {
             /**
              * First we check the ref field
@@ -68,6 +68,42 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
 
                 return collection;
             }
+
+            if (baseType === "dynamicZone") {
+                const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];
+                for (const template of templates) {
+                    if (field.multipleValues) {
+                        const inputValue = dotProp.get(input, `${field.fieldId}`, []);
+                        if (Array.isArray(inputValue) === false) {
+                            return collection;
+                        }
+
+                        for (const key in inputValue) {
+                            const result = buildReferenceFieldPaths({
+                                fields: template.fields,
+                                input: inputValue[key],
+                                parentPaths: parentPaths.concat([
+                                    field.fieldId,
+                                    key,
+                                    template.gqlTypeName
+                                ])
+                            });
+                            collection.push(...result);
+                        }
+                        continue;
+                    }
+
+                    const result = buildReferenceFieldPaths({
+                        fields: template.fields,
+                        input,
+                        parentPaths: parentPaths.concat([field.fieldId, template.gqlTypeName])
+                    });
+                    collection.push(...result);
+                }
+
+                return collection;
+            }
+
             /**
              * Then we move onto the object field
              */

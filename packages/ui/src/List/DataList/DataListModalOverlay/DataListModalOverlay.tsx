@@ -28,7 +28,7 @@ export const DataListModalWrapper = styled.div<DataListModalWrapperProps>(({ sho
     height: "auto",
     maxWidth: "426px",
     maxHeight: "520px",
-    overflow: "auto",
+    overflow: "visible",
     backgroundColor: "var(--mdc-theme-surface)",
     boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.12)",
     borderRadius: "0px 0px 4px 4px",
@@ -88,7 +88,9 @@ export const DataListModalOverlay: React.VFC<DataListModalOverlayProps> = ({
                 }}
                 showOverlay={isOpen}
             />
-            <DataListModalWrapper showOverlay={isOpen}>{children}</DataListModalWrapper>
+            <DataListModalWrapper showOverlay={isOpen} data-id={"data-list-modal-wrapper"}>
+                {children}
+            </DataListModalWrapper>
         </React.Fragment>
     );
 };

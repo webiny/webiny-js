@@ -1,16 +1,17 @@
 import {
-    CmsModelFieldToGraphQLPlugin,
-    CmsModel,
-    CmsModelField,
-    CmsModelDynamicZoneField,
-    CmsDynamicZoneTemplate,
     ApiEndpoint,
+    CmsDynamicZoneTemplate,
     CmsFieldTypePlugins,
-    CmsModelFieldToGraphQLCreateResolver
+    CmsModel,
+    CmsModelDynamicZoneField,
+    CmsModelField,
+    CmsModelFieldToGraphQLCreateResolver,
+    CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import { createTypeName } from "~/utils/createTypeName";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 import { createGraphQLInputField } from "../helpers";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
     return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
@@ -79,23 +80,53 @@ const remapTemplateValue = (value: any, typeName: string) => {
     return { ...value[templateType], __typename: `${typeName}_${templateType}` };
 };
 
-const createResolver: CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> = ({
-    model,
-    field
-}) => {
-    return parent => {
-        const value = parent[field.fieldId];
-        if (!value) {
-            return value;
-        }
+const createResolver = (
+    endpointType: ApiEndpoint
+): CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> => {
+    return ({ model, models, field, fieldTypePlugins, createFieldResolvers }) => {
+        const resolver = (parent: any) => {
+            const value = parent[field.fieldId];
+            if (!value) {
+                return value;
+            }
 
-        const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
+            const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
-        if (field.multipleValues && Array.isArray(value)) {
-            return value.map(v => remapTemplateValue(v, typeName));
-        }
+            if (field.multipleValues && Array.isArray(value)) {
+                return value.map(v => remapTemplateValue(v, typeName));
+            }
 
-        return remapTemplateValue(value, typeName);
+            return remapTemplateValue(value, typeName);
+        };
+
+        const templates = getFieldTemplates(field);
+
+        const { templateTypes } = createTypeDefsForTemplates({
+            models,
+            field,
+            type: endpointType,
+            typeOfType: "type",
+            model,
+            fieldTypePlugins,
+            templates
+        });
+
+        const typeResolvers = templateTypes.reduce<
+            Record<string, Record<string, GraphQLFieldResolver>>
+        >((typeResolvers, templateType, index) => {
+            return {
+                ...typeResolvers,
+                ...createFieldResolvers({
+                    graphQLType: templateType,
+                    fields: field.settings.templates[index].fields
+                })
+            };
+        }, {});
+
+        return {
+            resolver,
+            typeResolvers
+        };
     };
 };
 
@@ -151,7 +182,7 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.join("\n")
                     };
                 },
-                createResolver
+                createResolver: createResolver("read")
             },
             manage: {
                 createTypeField({ models, model, field, fieldTypePlugins }) {
@@ -226,7 +257,7 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.join("\n")
                     };
                 },
-                createResolver
+                createResolver: createResolver("manage")
             }
         };
     };

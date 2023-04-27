@@ -69,7 +69,7 @@ export const Page: React.VFC = () => {
     // Here we get all site data like website name, favicon image, social links etc.
     const getSettingsQuery = useQuery<SettingsQueryResponse>(GET_SETTINGS);
 
-    const { data: page = null, error = null } =
+    const { data: page = null, error = getPublishedPageQuery.error || null } =
         getPublishedPageQuery.data?.pageBuilder?.getPublishedPage || {};
     const settings =
         getSettingsQuery.data?.pageBuilder?.getSettings?.data || ({} as SettingsQueryResponseData);

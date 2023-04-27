@@ -1,6 +1,6 @@
-import { makeComposable, Compose, HigherOrderComponent } from "@webiny/app-admin";
 import React, { useContext, useState } from "react";
-import { Property, PropertyContainer, toObject } from "./Property";
+import { makeComposable, Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { Property, Properties, toObject } from "@webiny/react-properties";
 
 interface ContentEntriesViewConfig extends React.VFC<{ children: React.ReactNode }> {
     Filter: React.VFC<ContentEntriesViewConfigFilterProps>;
@@ -36,19 +36,35 @@ export interface ContentEntriesViewConfigFilterProps {
     element?: React.ReactElement<unknown>;
     modelIds?: string[];
     remove?: boolean;
+    before?: string;
+    after?: string;
 }
 
 const Filter: React.VFC<ContentEntriesViewConfigFilterProps> = ({
     name,
     element,
     modelIds = [],
+    after = undefined,
+    before = undefined,
     remove = false
 }) => {
+    const placeBefore = before !== undefined ? `filter:${before}` : undefined;
+    const placeAfter = after !== undefined ? `filter:${after}` : undefined;
+
     return (
-        <Property id={name} name={"filter"} merge={true} remove={remove}>
-            <Property id={"name"} name={"name"} value={name} />
-            <Property id={"modelIds"} name={"modelIds"} value={modelIds} />
-            {element ? <Property id={"element"} name={"element"} value={element} /> : null}
+        <Property
+            id={`filter:${name}`}
+            name={"filters"}
+            remove={remove}
+            array={true}
+            before={placeBefore}
+            after={placeAfter}
+        >
+            <Property id={`filter:${name}:name`} name={"name"} value={name} />
+            <Property id={`filter:${name}:modelIds`} name={"modelIds"} value={modelIds} />
+            {element ? (
+                <Property id={`filter:${name}:element`} name={"element"} value={element} />
+            ) : null}
         </Property>
     );
 };
@@ -67,10 +83,10 @@ const Sorter: React.VFC<ContentEntriesViewConfigSorterProps> = ({
     remove = false
 }) => {
     return (
-        <Property id={name} name={"sorter"} merge={true} remove={remove}>
-            <Property id={"name"} name={"name"} value={name} />
-            <Property id={"label"} name={"label"} value={label} />
-            <Property id={"modelIds"} name={"modelIds"} value={modelIds} />
+        <Property id={`sorter:${name}`} name={"sorters"} remove={remove} array={true}>
+            <Property id={`sorter:${name}:name`} name={"name"} value={name} />
+            <Property id={`sorter:${name}:label`} name={"label"} value={label} />
+            <Property id={`sorter:${name}:modelIds`} name={"modelIds"} value={modelIds} />
         </Property>
     );
 };
@@ -96,19 +112,15 @@ export const ContentEntriesView = makeComposable("ContentEntriesView", () => {
 
     return (
         <ViewContext.Provider value={context}>
-            <PropertyContainer name={"view"} onChange={stateUpdater}>
+            <Properties onChange={stateUpdater}>
                 <ContentEntriesViewConfigApply />
                 <ContentEntriesViewRenderer />
-            </PropertyContainer>
+            </Properties>
         </ViewContext.Provider>
     );
 });
 
 export const ContentEntriesViewRenderer = makeComposable("ContentEntriesViewRenderer");
-
-function byName(name: string) {
-    return (obj: Property) => obj.name === name;
-}
 
 export interface ContentEntriesViewConfigFilter {
     name: string;
@@ -122,22 +134,18 @@ export interface ContentEntriesViewConfigSorter {
     modelIds: string[];
 }
 
-export function useContentEntriesViewConfig(): {
+interface ContentEntriesViewConfigData {
     filters: ContentEntriesViewConfigFilter[];
     sorters: ContentEntriesViewConfigSorter[];
-} {
+}
+
+export function useContentEntriesViewConfig() {
     const { properties } = useContext(ViewContext);
 
-    const filters = properties
-        .filter(byName("filter"))
-        .map(f => toObject<ContentEntriesViewConfigFilter>(f));
-
-    const sorters = properties
-        .filter(byName("sorter"))
-        .map(f => toObject<ContentEntriesViewConfigSorter>(f));
+    const config = toObject<ContentEntriesViewConfigData>(properties);
 
     return {
-        filters,
-        sorters
+        filters: config.filters || [],
+        sorters: config.sorters || []
     };
 }

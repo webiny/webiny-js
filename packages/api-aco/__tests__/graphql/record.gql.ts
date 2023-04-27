@@ -8,6 +8,7 @@ const DATA_FIELD = /* GraphQL */ `
             folderId
         }
         data
+        tags
     }
 `;
 

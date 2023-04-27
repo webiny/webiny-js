@@ -1,6 +1,5 @@
 import React from "react";
 import get from "lodash/get";
-import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     LIST_MENU_CONTENT_GROUPS_MODELS,
@@ -89,7 +88,7 @@ export const ContentGroupsMenuItems: React.VFC = () => {
                                     >
                                         <Menu
                                             name={contentModel.modelId}
-                                            label={pluralize(contentModel.name)}
+                                            label={contentModel.name}
                                             path={`/cms/content-entries/${contentModel.modelId}`}
                                         />
                                     </HasContentEntryPermissions>

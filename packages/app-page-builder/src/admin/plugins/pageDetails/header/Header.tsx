@@ -5,7 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
-import { ReactComponent as LinkIcon } from "@material-design-icons/svg/round/link.svg";
+import { ReactComponent as OpenInNew } from "@material-design-icons/svg/round/open_in_new.svg";
 import { PbPageData } from "~/types";
 
 const HeaderTitle = styled.div`
@@ -41,6 +41,7 @@ const PageLink = styled.div`
     display: flex;
     align-items: center;
     height: 24px;
+    cursor: pointer;
 
     span {
         white-space: nowrap;
@@ -52,9 +53,9 @@ const PageLink = styled.div`
     svg {
         display: none;
         flex-shrink: 0;
-        width: 20px;
-        height: 20px;
-        margin-left: 8px;
+        width: 14px;
+        height: 14px;
+        margin-left: 2px;
         cursor: pointer;
     }
 
@@ -102,9 +103,9 @@ const Header: React.VFC<HeaderProps> = props => {
                     <PageTitle>
                         <Typography use="headline6">{page.title}</Typography>
                     </PageTitle>
-                    <PageLink>
+                    <PageLink onClick={handlePreviewClick}>
                         <Typography use="caption">{url}</Typography>
-                        <LinkIcon onClick={handlePreviewClick} />
+                        <OpenInNew />
                     </PageLink>
                 </PageInfo>
                 <HeaderActions>

@@ -41,9 +41,12 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
     settings?: CmsModelFieldSettings;
 }
 
-export interface CmsApiModel extends Omit<CmsModel, "isPrivate" | "fields"> {
+export interface CmsApiModel
+    extends Omit<CmsModel, "isPrivate" | "fields" | "singularApiName" | "pluralApiName"> {
     isPrivate?: never;
     noValidate?: never;
+    singularApiName?: string;
+    pluralApiName?: string;
     fields: CmsModelFieldInput[];
 }
 

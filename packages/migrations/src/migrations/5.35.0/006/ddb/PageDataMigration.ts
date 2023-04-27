@@ -9,7 +9,7 @@ import { createDdbPageEntity } from "../entities/createPageEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
 import { getSearchablePageContent } from "../utils/getSearchableContent";
 
-import { I18NLocale, Page, Tenant, ListLocalesParams } from "../types";
+import { I18NLocale, ListLocalesParams, Page, Tenant } from "../types";
 import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
 import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
 
@@ -73,7 +73,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
 
                 const lastSearchRecord = await queryOne<{ id: string }>({
                     entity: this.entryEntity,
-                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#CME#${lastPage.pid}`,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#CME#wby-aco-${lastPage.pid}`,
                     options: {
                         eq: "L"
                     }
@@ -129,19 +129,19 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 const entry = await this.createSearchRecordCommonFields(current);
 
                                 const latestEntry = {
-                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
+                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#wby-aco-${pid}`,
                                     SK: "L",
                                     GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#L`,
-                                    GSI1_SK: `${pid}#0001`,
+                                    GSI1_SK: `wby-aco-${pid}#0001`,
                                     TYPE: "cms.entry.l",
                                     ...entry
                                 };
 
                                 const revisionEntry = {
-                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${pid}`,
+                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#wby-aco-${pid}`,
                                     SK: "REV#0001",
                                     GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#acoSearchRecord#A`,
-                                    GSI1_SK: `${pid}#0001`,
+                                    GSI1_SK: `wby-aco-${pid}#0001`,
                                     TYPE: "cms.entry",
                                     ...entry
                                 };
@@ -224,7 +224,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             status,
             tenant,
             title,
-            version
+            version,
+            settings
         } = page;
 
         const content = await getSearchablePageContent(page);
@@ -232,8 +233,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
         return {
             createdBy,
             createdOn,
-            entryId: pid,
-            id: `${pid}#0001`,
+            entryId: `wby-aco-${pid}`,
+            id: `wby-aco-${pid}#0001`,
             locale,
             locked: false,
             modelId: ACO_SEARCH_MODEL_ID,
@@ -262,6 +263,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 "object@location": {
                     "text@folderId": ROOT_FOLDER
                 },
+                "text@tags": settings.general?.tags || [],
                 "text@type": PB_PAGE_TYPE
             }
         };

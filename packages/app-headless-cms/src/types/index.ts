@@ -1,23 +1,22 @@
 import * as React from "react";
-import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
+import { Plugin } from "@webiny/plugins/types";
 import {
-    FormAPI,
     BindComponent as BaseBindComponent,
+    BindComponentProps as BaseBindComponentProps,
     BindComponentRenderProp as BaseBindComponentRenderProp,
-    BindComponentProps as BaseBindComponentProps
+    FormAPI
 } from "@webiny/form";
-import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
+import { IconName, IconPrefix } from "@fortawesome/fontawesome-svg-core";
 import Label from "~/admin/components/ContentEntryForm/Label";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 import {
     CmsModelFieldValidator,
-    CmsModelFieldValidatorsGroup,
-    CmsModelFieldValidatorsFactory
+    CmsModelFieldValidatorsFactory,
+    CmsModelFieldValidatorsGroup
 } from "./validation";
-
-import { CmsModelField, CmsModel } from "./model";
+import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
 
 export * from "./validation";
@@ -212,6 +211,11 @@ export interface CmsModelFieldRendererProps {
     getBind: (index?: number, key?: string) => BindComponent;
     contentModel: CmsModel;
 }
+
+/**
+ * @deprecated Use `CmsModelFieldRendererProps`.
+ */
+export type CmsEditorFieldRendererProps = CmsModelFieldRendererProps;
 
 /**
  * @deprecated Use `CmsModelFieldRendererPlugin`.

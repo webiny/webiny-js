@@ -24,7 +24,7 @@ const HeaderWrapper = styled.header`
     top: 0;
 
     a {
-        ${props => props.theme.styles.typography["paragraph1"]}
+        ${props => props.theme.styles.typography["paragraphs"].stylesById("paragraph1")}
         color: ${props => props.theme.styles.colors["color1"]};
         text-decoration: none;
     }

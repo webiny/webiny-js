@@ -14,7 +14,7 @@ import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 
 export const ADD_FONT_COLOR_COMMAND: LexicalCommand<FontColorPayload> =
     createCommand("ADD_FONT_COLOR_COMMAND");
-const FontColorNodeAttrName = "font-color-theme";
+const FontColorNodeAttrName = "data-theme-font-color-name";
 
 export interface FontColorPayload {
     // This color can be hex string

@@ -96,24 +96,20 @@ const createDeleteIndexCallable = client => {
 };
 
 const attachCustomEvents = client => {
-    const createdIndexes = new Set();
+    const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
 
     const deleteIndexCallable = createDeleteIndexCallable(client);
 
-    // @ts-ignore
     client.indices.create = async (params, options = {}) => {
         /**
          * First we always delete existing index, if any.
          */
         await deleteIndexCallable(params.index);
 
-        // @ts-ignore
         const response = await originalCreate.apply(client.indices, [params, options]);
 
-        if (createdIndexes.has(params.index) === false) {
-            createdIndexes.add(params.index);
-        }
+        registeredIndexes.add(params.index);
 
         await client.indices.refresh({
             index: params.index
@@ -123,25 +119,24 @@ const attachCustomEvents = client => {
     };
 
     client.indices.deleteAll = async () => {
-        const indexes = Array.from(createdIndexes.values());
+        const indexes = Array.from(registeredIndexes.values());
         if (indexes.length === 0) {
-            // console.log("No indexes to delete.");
             return;
         }
-        const deletedIndexes = [];
         for (const index of indexes) {
             try {
                 await deleteIndexCallable(index);
-                createdIndexes.delete(index);
-                deletedIndexes.push(index);
             } catch (ex) {
                 console.log(`Could not delete index "${index}".`);
                 console.log(JSON.stringify(ex));
             }
         }
-        createdIndexes.clear();
-        //console.log(`Deleted indexes: ${deletedIndexes}`);
-        //console.log(deletedIndexes.join(", "));
+    };
+    client.indices.registerIndex = input => {
+        const names = Array.isArray(input) ? input : [input];
+        for (const name of names) {
+            registeredIndexes.add(name);
+        }
     };
 
     return client;

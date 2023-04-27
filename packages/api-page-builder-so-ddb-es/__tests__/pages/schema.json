@@ -1,0 +1,124 @@
+{
+  "data": {
+    "__schema": {
+      "queryType": {
+        "name": "Query"
+      },
+      "mutationType": {
+        "name": "Mutation"
+      },
+      "subscriptionType": null,
+      "types": [
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "PbListPublishedPagesWhereInput",
+          "description": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "category",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "tags",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "PbListPagesWhereTagsInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "customViews",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Number",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "customViews_gt",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Number",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "customViews_gte",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Number",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "customViews_lt",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Number",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "customViews_lte",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Number",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "customViews_not",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Number",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "customViews_between",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Number",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        }
+      ]
+    }
+  }
+}

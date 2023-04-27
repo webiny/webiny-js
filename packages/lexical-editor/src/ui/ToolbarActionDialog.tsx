@@ -69,7 +69,6 @@ export const ToolbarActionDialog: React.VFC<ToolbarActionDialogProps> = ({
     const [showDropDown, setShowDropDown] = useState(false);
 
     const handleClose = () => {
-        debugger;
         if (menuWindowRef && menuWindowRef.current) {
             setShowDropDown(false);
             menuWindowRef.current.focus();

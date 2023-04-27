@@ -90,36 +90,36 @@ const Content: React.VFC = () => {
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
     const pagePreviewRef = useRef<HTMLDivElement>(null);
 
-    if (isLegacyRenderingEngine) {
-        const setPagePreviewDimension = useCallback(
-            pagePreviewDimension => {
-                setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
-            },
-            [uiAtom]
-        );
+    const setPagePreviewDimension = useCallback(
+        pagePreviewDimension => {
+            setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
+        },
+        [uiAtom]
+    );
 
-        const resizeObserver = useMemo(() => {
-            return new ResizeObserver((entries: ResizeObserverEntry[]) => {
-                for (const entry of entries) {
-                    const { width, height } = entry.contentRect;
-                    setPagePreviewDimension({ width, height });
-                }
-            });
-        }, []);
-
-        // Set resize observer
-        useEffect(() => {
-            if (pagePreviewRef.current) {
-                // Add resize observer
-                resizeObserver.observe(pagePreviewRef.current);
+    const resizeObserver = useMemo(() => {
+        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                setPagePreviewDimension({ width, height });
             }
+        });
+    }, []);
 
-            // Cleanup
-            return () => {
-                resizeObserver.disconnect();
-            };
-        }, []);
+    // Set resize observer
+    useEffect(() => {
+        if (pagePreviewRef.current) {
+            // Add resize observer
+            resizeObserver.observe(pagePreviewRef.current);
+        }
 
+        // Cleanup
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, []);
+
+    if (isLegacyRenderingEngine) {
         const { theme } = usePageBuilder();
         return (
             <Elevation className={contentContainerWrapper} z={0}>

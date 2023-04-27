@@ -4,6 +4,8 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import { resolve } from "~/utils/resolve";
 
 import { AcoContext } from "~/types";
+import { parseIdentifier } from "@webiny/utils";
+import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
 
 export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
@@ -13,7 +15,8 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             location: SearchLocationType!
             title: String!
             content: String
-            data: JSON
+            data: JSON!
+            tags: [String!]!
             savedOn: DateTime
             createdOn: DateTime
             createdBy: AcoUser
@@ -34,6 +37,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             content: String
             location: SearchLocationInput!
             data: JSON
+            tags: [String!]
         }
 
         input SearchRecordUpdateInput {
@@ -41,11 +45,15 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             content: String
             location: SearchLocationInput
             data: JSON
+            tags: [String!]
         }
 
         input SearchRecordListWhereInput {
             type: String!
             location: SearchLocationInput
+            tags_in: [String!]
+            tags_startsWith: String
+            tags_not_startsWith: String
         }
 
         type SearchRecordResponse {
@@ -77,6 +85,12 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
     `,
     resolvers: {
+        SearchRecord: {
+            id: async parent => {
+                const { id } = parseIdentifier(parent.id);
+                return removeAcoRecordPrefix(id);
+            }
+        },
         SearchQuery: {
             getRecord: async (_, { id }, context) => {
                 return resolve(() => context.aco.search.get(id));

@@ -13,6 +13,7 @@ import { WebsiteScripts } from "./WebsiteScripts";
 import { MainContent } from "./MainContent";
 import { Layout } from "./Layout";
 import { PageProvider } from "@webiny/app-page-builder-elements";
+import { ApolloError } from "apollo-client";
 
 interface Head {
     favicon?: {
@@ -28,7 +29,7 @@ interface Head {
  */
 interface PageRendererProps {
     page: PbPageData | null;
-    error: PbErrorResponse | null;
+    error: ApolloError | PbErrorResponse | null;
     settings: SettingsQueryResponseData;
 }
 

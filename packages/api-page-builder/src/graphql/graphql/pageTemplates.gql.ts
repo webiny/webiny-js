@@ -47,6 +47,12 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
             tags: [String!]
         }
 
+        input PbCreateTemplateFromPageInput {
+            title: String!
+            slug: String!
+            description: String!
+        }
+
         # Response types
         type PbPageTemplateResponse {
             data: PbPageTemplate
@@ -66,6 +72,10 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
         extend type PbMutation {
             createPageTemplate(data: PbCreatePageTemplateInput!): PbPageTemplateResponse
             createPageFromTemplate(templateId: ID, meta: JSON): PbPageResponse
+            createTemplateFromPage(
+                pageId: ID!
+                data: PbCreateTemplateFromPageInput
+            ): PbPageTemplateResponse
             updatePageTemplate(id: ID!, data: PbUpdatePageTemplateInput!): PbPageTemplateResponse
             deletePageTemplate(id: ID!): PbPageTemplateResponse
         }
@@ -110,6 +120,11 @@ export const createPageTemplateGraphQL = new GraphQLSchemaPlugin<PbContext>({
                         id: templateId,
                         meta
                     });
+                });
+            },
+            createTemplateFromPage: async (_, args: any, context) => {
+                return resolve(() => {
+                    return context.pageBuilder.createTemplateFromPage(args.pageId, args.data);
                 });
             },
             updatePageTemplate: async (_, args: any, context) => {
