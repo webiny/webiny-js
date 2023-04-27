@@ -47,14 +47,16 @@ const File: React.FC<FileProps> = props => {
                 </FileInfoIcon>
                 <LazyLoad height={200} offsetVertical={300}>
                     <Ripple>
-                        <FilePreview>
+                        <FilePreview data-testid={"fm-file-wrapper-file-preview"}>
                             <FileClickable onClick={onSelect} />
                             {children}
                         </FilePreview>
                     </Ripple>
                 </LazyLoad>
             </FileBody>
-            <FileLabel onClick={onSelect}>{file.name}</FileLabel>
+            <FileLabel onClick={onSelect} data-testid={"fm-file-wrapper-file-label"}>
+                {file.name}
+            </FileLabel>
         </FileWrapper>
     );
 };

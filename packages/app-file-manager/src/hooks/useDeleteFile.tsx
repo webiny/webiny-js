@@ -43,9 +43,9 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
             showConfirmation(async () => {
                 await deleteFile(file.id);
 
-                showSnackbar(t`File deleted successfully`);
+                showSnackbar(t`File deleted successfully.`);
 
-                if (typeof onDelete === "function") {
+                if (onDelete && typeof onDelete === "function") {
                     onDelete();
                 }
             }),
