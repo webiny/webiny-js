@@ -13426,6 +13426,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
+    "@webiny/react-properties": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/utils": 0.0.0
@@ -13443,7 +13444,6 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: ^4.17.10
-    pluralize: ^8.0.0
     prop-types: ^15.7.2
     raw.macro: ^0.4.2
     react: 17.0.2
