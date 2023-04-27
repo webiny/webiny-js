@@ -73,7 +73,10 @@ export const createSearchRecordOperations = (
                 const tags = allTags
                     .flatMap(item => (Array.isArray(item) ? item : [item])) // flatten the nested arrays
                     .filter((item, index, array) => item && array.indexOf(item) === index) // remove duplicates and falsy values
-                    .sort(); // sort the values
+                    .sort() // sort the values
+                    .map(tag => ({
+                        tag
+                    })); // create tag item object
 
                 const meta = {
                     hasMoreItems: false,

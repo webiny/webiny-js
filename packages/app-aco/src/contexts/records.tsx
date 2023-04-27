@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
@@ -86,6 +87,17 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     CREATE: false,
     UPDATE: false,
     DELETE: false
+};
+
+const mergeAndSortTags = (oldTagItems: TagItem[], newTags: string[]): TagItem[] => {
+    if (!newTags.length) {
+        return oldTagItems;
+    }
+
+    const newTagItems = newTags.map((tag: string) => ({ tag })); // create TagItem[] from array of strings
+    const mergedTagItems = unionBy(oldTagItems, newTagItems, "tag"); // merge the two arrays
+
+    return sortBy(mergedTagItems, ["tag"]);
 };
 
 export const SearchRecordsProvider = ({ children }: Props) => {
@@ -269,17 +281,15 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 });
 
                 setTags(tags => {
-                    const tagsByRecord = data.tags;
-
-                    if (tagsByRecord.length === 0) {
+                    if (data.tags.length === 0) {
                         return tags;
                     }
 
-                    const tagsByType = tags[data.type];
+                    const tagsByType = tags[data.type]; // get existing tags
 
                     return {
                         ...tags,
-                        [data.type]: Array.from(new Set([...tagsByType, ...tagsByRecord])).sort()
+                        [data.type]: mergeAndSortTags(tagsByType, data.tags)
                     };
                 });
             }
@@ -324,17 +334,15 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             setTags(tags => {
-                const tagsByRecord = record.tags;
-
-                if (tagsByRecord.length === 0) {
+                if (data.tags.length === 0) {
                     return tags;
                 }
 
-                const tagsByType = tags[data.type];
+                const tagsByType = tags[data.type]; // get existing tags
 
                 return {
                     ...tags,
-                    [data.type]: Array.from(new Set([...tagsByType, ...tagsByRecord])).sort()
+                    [data.type]: mergeAndSortTags(tagsByType, data.tags)
                 };
             });
 
@@ -375,17 +383,15 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             setTags(tags => {
-                const tagsByRecord = record.tags;
-
-                if (tagsByRecord.length === 0) {
+                if (data.tags.length === 0) {
                     return tags;
                 }
 
-                const tagsByType = tags[type];
+                const tagsByType = tags[data.type]; // get existing tags
 
                 return {
                     ...tags,
-                    [type]: Array.from(new Set([...tagsByType, ...tagsByRecord])).sort()
+                    [data.type]: mergeAndSortTags(tagsByType, data.tags)
                 };
             });
 

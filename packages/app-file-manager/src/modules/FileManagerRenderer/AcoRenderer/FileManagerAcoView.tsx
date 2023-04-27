@@ -209,15 +209,17 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     );
 
     const toggleTag = useCallback(async ({ tag, listWhere }) => {
+        const { tag: tagName } = tag;
+
         const finalTags =
             listWhere.AND && listWhere.AND[0]?.tags_in && Array.isArray(listWhere.AND[0]?.tags_in)
                 ? listWhere.AND[0].tags_in
                 : [];
 
-        if (finalTags.includes(tag)) {
-            finalTags.splice(finalTags.indexOf(tag), 1);
+        if (finalTags.includes(tagName)) {
+            finalTags.splice(finalTags.indexOf(tagName), 1);
         } else {
-            finalTags.push(tag);
+            finalTags.push(tagName);
         }
 
         setListWhere({

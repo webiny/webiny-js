@@ -91,7 +91,9 @@ export const LIST_TAGS = gql`
     query ListTags($where: SearchRecordTagListWhereInput) {
         search {
             listTags(where: $where) {
-                data
+                data {
+                    tag
+                }
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }

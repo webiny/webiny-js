@@ -27,13 +27,13 @@ export const TagList: React.FC<TagListProps> = ({
     tagsModifier
 }) => {
     const { tags, loading } = useTags({ type, ...initialWhere, tagsModifier });
-    const [activeTags, setActiveTags] = useState<TagItem[]>([]);
+    const [activeTags, setActiveTags] = useState<TagItem["tag"][]>([]);
 
     const toggleTag = useCallback(
-        (tag: TagItem) => {
+        (tag: TagItem["tag"]) => {
             const finalTags = Array.isArray(activeTags) ? [...activeTags] : [];
 
-            if (finalTags.includes(tag)) {
+            if (finalTags.find(item => tag === item)) {
                 finalTags.splice(finalTags.indexOf(tag), 1);
             } else {
                 finalTags.push(tag);
@@ -51,14 +51,14 @@ export const TagList: React.FC<TagListProps> = ({
     if (tags.length > 0) {
         return (
             <>
-                {tags.map((tag, index) => (
+                {tags.map((tagItem, index) => (
                     <Tag
                         key={`tag-${index}`}
-                        tag={tag}
-                        active={activeTags.includes(tag)}
-                        onTagClick={tag => {
-                            toggleTag(tag);
-                            onTagClick(tag);
+                        tagItem={tagItem}
+                        active={activeTags.includes(tagItem.tag)}
+                        onTagClick={tagItem => {
+                            toggleTag(tagItem.tag);
+                            onTagClick(tagItem);
                         }}
                     />
                 ))}

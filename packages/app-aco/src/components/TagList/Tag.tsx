@@ -7,19 +7,19 @@ import { TagContainer, Icon } from "./styled";
 import { TagItem } from "~/types";
 
 type TagProps = {
-    tag: TagItem;
+    tagItem: TagItem;
     active: boolean;
-    onTagClick: (tag: TagItem) => void;
+    onTagClick: (tagItem: TagItem) => void;
 };
 
-export const Tag = ({ tag, active, onTagClick }: TagProps) => {
+export const Tag: React.VFC<TagProps> = ({ tagItem, active, onTagClick }) => {
     return (
-        <TagContainer onClick={() => onTagClick(tag)}>
+        <TagContainer onClick={() => onTagClick(tagItem)}>
             <Icon active={active}>
                 <TagIcon />
             </Icon>
             <Typography use={"body2"} tag={"div"}>
-                {tag}
+                {tagItem.tag}
             </Typography>
         </TagContainer>
     );

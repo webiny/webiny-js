@@ -22,6 +22,10 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             createdBy: AcoUser
         }
 
+        type TagItem {
+            tag: String!
+        }
+
         type SearchLocationType {
             folderId: ID!
         }
@@ -87,7 +91,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
 
         type SearchRecordTagListResponse {
-            data: [String!]
+            data: [TagItem!]
             error: AcoError
             meta: AcoMeta
         }
