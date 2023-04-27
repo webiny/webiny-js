@@ -21,7 +21,7 @@ const isImage = (file: FileItem) => {
     return false;
 };
 
-export const DeleteImageAction = ({ onDelete }: DeleteImageActionProps) => {
+export const DeleteImageAction: React.VFC<DeleteImageActionProps> = ({ onDelete }) => {
     const { file } = useFile();
     const { canEdit } = useFileManagerApi();
     const { openDialogDeleteFile } = useDeleteFile({

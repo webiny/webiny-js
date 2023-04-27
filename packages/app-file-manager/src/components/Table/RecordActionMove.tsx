@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 import { ReactComponent as Move } from "@material-design-icons/svg/outlined/drive_file_move.svg";
 import { i18n } from "@webiny/app/i18n";
@@ -12,7 +12,7 @@ const t = i18n.ns("app-admin/file-manager/components/table/record-action-move");
 interface RecordActionMoveProps {
     onClick: () => void;
 }
-export const RecordActionMove = ({ onClick }: RecordActionMoveProps): ReactElement => {
+export const RecordActionMove: React.FC<RecordActionMoveProps> = ({ onClick }) => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>

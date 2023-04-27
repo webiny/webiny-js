@@ -20,7 +20,7 @@ import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { SearchRecordItem } from "~/types";
 
-type Props = {
+type EntryDialogMoveProps = {
     type: string;
     searchRecord: SearchRecordItem;
     open: boolean;
@@ -29,7 +29,12 @@ type Props = {
 
 const t = i18n.ns("app-aco/dialogs/dialog-move");
 
-export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, open }) => {
+export const EntryDialogMove: React.VFC<EntryDialogMoveProps> = ({
+    type,
+    searchRecord,
+    onClose,
+    open
+}) => {
     const { updateRecord, loading } = useRecords(type, searchRecord.location.folderId || "ROOT");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [folderId, setFolderId] = useState<string>();

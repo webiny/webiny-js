@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
 import { i18n } from "@webiny/app/i18n";
@@ -9,10 +9,10 @@ import { ListItemGraphic } from "./styled";
 
 const t = i18n.ns("app-admin/file-manager/components/table/folder-action-edit");
 
-interface Props {
+interface FolderActionEditProps {
     onClick: () => void;
 }
-export const FolderActionEdit = ({ onClick }: Props): ReactElement => {
+export const FolderActionEdit: React.FC<FolderActionEditProps> = ({ onClick }) => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>

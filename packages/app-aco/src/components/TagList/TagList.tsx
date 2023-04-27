@@ -19,7 +19,7 @@ type TagListProps = {
     emptyDisclaimer: string;
 };
 
-export const TagList: React.FC<TagListProps> = ({
+export const TagList: React.VFC<TagListProps> = ({
     type,
     initialWhere,
     onTagClick,

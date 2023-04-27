@@ -12,10 +12,7 @@ interface FolderGridProps {
     onFolderClick: (folder: FolderItem) => void;
 }
 
-export const FolderGrid: ({ folders, onFolderClick }: FolderGridProps) => null | JSX.Element = ({
-    folders,
-    onFolderClick
-}) => {
+export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick }) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);

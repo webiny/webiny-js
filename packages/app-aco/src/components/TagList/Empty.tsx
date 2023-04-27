@@ -11,7 +11,7 @@ type EmptyProps = {
     disclaimer?: string;
 };
 
-export const Empty = ({ disclaimer = t`No tags found...` }: EmptyProps) => {
+export const Empty: React.VFC<EmptyProps> = ({ disclaimer = t`No tags found...` }) => {
     return (
         <EmptyContainer>
             <Typography use={"body2"}>{disclaimer}</Typography>

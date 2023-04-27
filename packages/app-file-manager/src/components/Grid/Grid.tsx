@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { FolderGrid } from "@webiny/app-aco";
 import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -50,20 +50,18 @@ const renderFile: React.FC<RenderFileProps> = props => {
     );
 };
 
-export const Grid = (props: GridProps): ReactElement => {
-    const {
-        folders,
-        records,
-        loading,
-        onRecordClick,
-        onFolderClick,
-        selected,
-        onChange,
-        onClose,
-        toggleSelected,
-        multiple
-    } = props;
-
+export const Grid: React.FC<GridProps> = ({
+    folders,
+    records,
+    loading,
+    onRecordClick,
+    onFolderClick,
+    selected,
+    onChange,
+    onClose,
+    toggleSelected,
+    multiple
+}) => {
     if (loading) {
         return <CircularProgress label={t`Loading Files...`} style={{ opacity: 1 }} />;
     }

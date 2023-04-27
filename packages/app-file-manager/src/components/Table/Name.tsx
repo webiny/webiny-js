@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as Image } from "@material-design-icons/svg/outlined/insert_photo.svg";
@@ -16,7 +16,7 @@ interface FileProps extends DefaultProps {
     type?: string;
 }
 
-export const FolderName = ({ name, id, onClick }: DefaultProps): ReactElement => {
+export const FolderName: React.FC<DefaultProps> = ({ name, id, onClick }) => {
     return (
         <RowTitle onClick={() => onClick(id)}>
             <RowIcon>
@@ -27,7 +27,7 @@ export const FolderName = ({ name, id, onClick }: DefaultProps): ReactElement =>
     );
 };
 
-export const FileName = ({ name, id, type, onClick }: FileProps): ReactElement => {
+export const FileName: React.FC<FileProps> = ({ name, id, type, onClick }) => {
     return (
         <RowTitle onClick={() => onClick(id)}>
             <RowIcon>{type && type.includes("image") ? <Image /> : <File />}</RowIcon>

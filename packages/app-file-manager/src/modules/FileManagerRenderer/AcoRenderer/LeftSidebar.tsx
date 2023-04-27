@@ -40,14 +40,14 @@ interface LeftSidebarProps {
     onFolderClick: (folderId: string | undefined) => void;
 }
 
-const LeftSidebar = ({
+const LeftSidebar: React.FC<LeftSidebarProps> = ({
     title,
     toggleTag,
     currentFolder,
     scope,
     own,
     onFolderClick
-}: LeftSidebarProps) => {
+}) => {
     return (
         <div className={style.leftDrawer}>
             <div className={style.wrapper}>

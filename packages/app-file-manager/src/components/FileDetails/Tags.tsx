@@ -53,7 +53,7 @@ interface TagsProps {
     own?: boolean;
 }
 
-const Tags = ({ scope, own }: TagsProps) => {
+const Tags: React.VFC<TagsProps> = ({ scope, own }) => {
     const { file } = useFile();
     const { tags } = useTags({
         type: ACO_TYPE,

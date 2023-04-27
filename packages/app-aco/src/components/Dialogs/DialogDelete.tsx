@@ -20,13 +20,17 @@ const t = i18n.ns("app-aco/dialogs/dialog-delete");
 
 import { FolderItem } from "~/types";
 
-type Props = {
+type FolderDialogDeleteProps = {
     folder: FolderItem;
     open: boolean;
     onClose: DialogOnClose;
 };
 
-export const FolderDialogDelete = ({ folder, open, onClose }: Props) => {
+export const FolderDialogDelete: React.VFC<FolderDialogDeleteProps> = ({
+    folder,
+    open,
+    onClose
+}) => {
     const { deleteFolder, loading } = useFolders(folder.type);
     const { showSnackbar } = useSnackbar();
     const [dialogOpen, setDialogOpen] = useState(false);

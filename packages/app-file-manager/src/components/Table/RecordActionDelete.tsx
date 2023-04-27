@@ -1,6 +1,6 @@
-import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
+import React from "react";
 
-import React, { ReactElement } from "react";
+import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
 
 import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
 import { i18n } from "@webiny/app/i18n";
@@ -20,7 +20,7 @@ interface RecordActionDeleteProps {
     record: SearchRecordItem<FileItem>["data"];
 }
 
-export const RecordActionDelete = ({ record }: RecordActionDeleteProps): ReactElement | null => {
+export const RecordActionDelete: React.VFC<RecordActionDeleteProps> = ({ record }) => {
     const { canEdit } = useFileManagerApi();
     const { openDialogDeleteFile } = useDeleteFile({
         file: record

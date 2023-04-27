@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 import { ReactComponent as Copy } from "@material-design-icons/svg/outlined/content_copy.svg";
 import { i18n } from "@webiny/app/i18n";
@@ -17,7 +17,7 @@ const t = i18n.ns("app-admin/file-manager/components/table/record-action-copy");
 interface RecordActionCopyProps {
     record: SearchRecordItem<FileItem>["data"];
 }
-export const RecordActionCopy = ({ record }: RecordActionCopyProps): ReactElement => {
+export const RecordActionCopy: React.FC<RecordActionCopyProps> = ({ record }) => {
     const { copyFileUrl } = useCopyFile({ file: record });
     return (
         <MenuItem onClick={copyFileUrl}>

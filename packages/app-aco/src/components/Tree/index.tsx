@@ -15,7 +15,7 @@ import { Container } from "./styled";
 
 import { DndItemData } from "~/types";
 
-type Props = {
+type FolderTreeProps = {
     type: string;
     title: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
@@ -26,7 +26,7 @@ type Props = {
     hiddenFolderIds?: string[];
 };
 
-export const FolderTree: React.FC<Props> = ({
+export const FolderTree: React.VFC<FolderTreeProps> = ({
     type,
     title,
     focusedFolderId,

@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
 import { i18n } from "@webiny/app/i18n";
@@ -9,10 +9,10 @@ import { ListItemGraphic } from "./styled";
 
 const t = i18n.ns("app-aco/folder-grid/action-edit");
 
-interface Props {
+interface ActionEditProps {
     onClick: () => void;
 }
-export const ActionEdit = ({ onClick }: Props): ReactElement => {
+export const ActionEdit: React.VFC<ActionEditProps> = ({ onClick }) => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>

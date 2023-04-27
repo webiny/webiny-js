@@ -10,7 +10,7 @@ import { Container, ArrowIcon, FolderIcon, Text, Content } from "./styled";
 
 import { DndItemData } from "~/types";
 
-type Props = {
+type NodeProps = {
     node: NodeModel<DndItemData>;
     depth: number;
     isOpen: boolean;
@@ -27,7 +27,7 @@ type FolderProps = {
     isFocused?: boolean;
 };
 
-export const FolderNode = ({ isOpen, isFocused, text }: FolderProps) => {
+export const FolderNode: React.VFC<FolderProps> = ({ isOpen, isFocused, text }) => {
     return (
         <>
             <FolderIcon>{isOpen ? <FolderOpen /> : <Folder />}</FolderIcon>
@@ -38,7 +38,7 @@ export const FolderNode = ({ isOpen, isFocused, text }: FolderProps) => {
     );
 };
 
-export const Node = ({
+export const Node: React.VFC<NodeProps> = ({
     node,
     depth,
     isOpen,
@@ -47,7 +47,7 @@ export const Node = ({
     onClick,
     onUpdateFolder,
     onDeleteFolder
-}: Props) => {
+}) => {
     // Move the placeholder line to the left based on the element depth within the tree.
     // Let's add some pixels so that the element is detached from the container but takes up the whole length while it's highlighted during dnd.
     const indent = depth * 24 + 8;

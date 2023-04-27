@@ -19,7 +19,7 @@ import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
 
-type Props = {
+type FolderDialogCreateProps = {
     type: string;
     open: boolean;
     onClose: DialogOnClose;
@@ -30,7 +30,12 @@ const t = i18n.ns("app-aco/dialogs/dialog-create");
 
 type SubmitData = Omit<FolderItem, "id">;
 
-export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, currentParentId }) => {
+export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
+    type,
+    onClose,
+    open,
+    currentParentId
+}) => {
     const { loading, createFolder } = useFolders(type);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();

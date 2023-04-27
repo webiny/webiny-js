@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
 import { i18n } from "@webiny/app/i18n";
@@ -14,7 +14,7 @@ interface RecordActionEditProps {
     onClick: (id: string) => void;
 }
 
-export const RecordActionEdit = ({ id, onClick }: RecordActionEditProps): ReactElement => {
+export const RecordActionEdit: React.FC<RecordActionEditProps> = ({ id, onClick }) => {
     return (
         <MenuItem onClick={() => onClick(id)}>
             <ListItemGraphic>

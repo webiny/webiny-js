@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
 import { i18n } from "@webiny/app/i18n";
@@ -9,10 +9,10 @@ import { ListItemGraphic } from "./styled";
 
 const t = i18n.ns("app-aco/folder-grid/action-delete");
 
-interface Props {
+interface ActionDeleteProps {
     onClick: () => void;
 }
-export const ActionDelete = ({ onClick }: Props): ReactElement => {
+export const ActionDelete: React.VFC<ActionDeleteProps> = ({ onClick }) => {
     return (
         <MenuItem onClick={onClick}>
             <ListItemGraphic>

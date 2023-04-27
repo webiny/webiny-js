@@ -24,7 +24,7 @@ import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
 
-type Props = {
+type FolderDialogUpdateProps = {
     folder: FolderItem;
     open: boolean;
     onClose: DialogOnClose;
@@ -34,7 +34,11 @@ type SubmitData = Pick<FolderItem, "title" | "slug">;
 
 const t = i18n.ns("app-aco/dialogs/dialog-update");
 
-export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) => {
+export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
+    folder,
+    onClose,
+    open
+}) => {
     const { loading, updateFolder } = useFolders(folder.type);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();

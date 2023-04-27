@@ -28,9 +28,7 @@ export interface FileProps {
     showFileDetails: (id: string) => void;
 }
 
-const File: React.FC<FileProps> = props => {
-    const { file, selected, onSelect, children, showFileDetails } = props;
-
+const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFileDetails }) => {
     return (
         <FileWrapper
             selected={selected}
