@@ -64,11 +64,14 @@ describe("cms aco entry hooks", () => {
                             type: "CmsEntry",
                             title: article.title,
                             content: article.smallText,
-                            tags: [`model:article`],
+                            tags: [],
                             location: {
                                 folderId: "ROOT"
                             },
                             data: {
+                                id: article.id,
+                                entryId: article.entryId,
+                                modelId: "article",
                                 image: article.photo,
                                 createdBy: {
                                     id: "12345678",
@@ -124,11 +127,14 @@ describe("cms aco entry hooks", () => {
                             type: "CmsEntry",
                             title: article.title,
                             content: article.smallText,
-                            tags: [`model:article`],
+                            tags: [],
                             location: {
                                 folderId: "ROOT"
                             },
                             data: {
+                                id: `${article.entryId}#0002`,
+                                entryId: article.entryId,
+                                modelId: "article",
                                 image: article.photo,
                                 createdBy: {
                                     id: "12345678",
@@ -188,11 +194,14 @@ describe("cms aco entry hooks", () => {
                             type: "CmsEntry",
                             title: updatedData.title,
                             content: updatedData.smallText,
-                            tags: [`model:article`],
+                            tags: [],
                             location: {
                                 folderId: "ROOT"
                             },
                             data: {
+                                id: article.id,
+                                entryId: article.entryId,
+                                modelId: "article",
                                 image: updatedData.photo,
                                 createdBy: {
                                     id: "12345678",
@@ -246,11 +255,14 @@ describe("cms aco entry hooks", () => {
                             type: "CmsEntry",
                             title: article.title,
                             content: article.smallText,
-                            tags: [`model:article`],
+                            tags: [],
                             location: {
                                 folderId: "ROOT"
                             },
                             data: {
+                                id: article.id,
+                                entryId: article.entryId,
+                                modelId: "article",
                                 image: article.photo,
                                 createdBy: {
                                     id: "12345678",
@@ -309,11 +321,14 @@ describe("cms aco entry hooks", () => {
                             type: "CmsEntry",
                             title: article.title,
                             content: article.smallText,
-                            tags: [`model:article`],
+                            tags: [],
                             location: {
                                 folderId: "ROOT"
                             },
                             data: {
+                                id: article.id,
+                                entryId: article.entryId,
+                                modelId: "article",
                                 image: article.photo,
                                 createdBy: {
                                     id: "12345678",
