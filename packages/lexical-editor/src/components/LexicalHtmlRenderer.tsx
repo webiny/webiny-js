@@ -23,7 +23,7 @@ interface LexicalHtmlRendererProps {
     themeEmotionMap?: ThemeEmotionMap;
 }
 
-export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
+export const BaseLexicalHtmlRenderer: React.VFC<LexicalHtmlRendererProps> = ({
     nodes,
     value,
     theme,
@@ -59,7 +59,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
 /**
  * @description Main editor container
  */
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = props => {
+export const LexicalHtmlRenderer: React.VFC<LexicalHtmlRendererProps> = props => {
     return (
         <ClassNames>
             {({ css }) => {

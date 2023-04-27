@@ -37,13 +37,13 @@ interface TypographyActionDropdownProps {
     element: JSX.Element;
 }
 
-const TypographyActionDropDown: React.FC<TypographyActionDropdownProps> = ({
+const TypographyActionDropDown: React.VFC<TypographyActionDropdownProps> = ({
     element
 }): JSX.Element => {
     return <Compose component={BaseTypographyActionDropDown} with={() => () => element} />;
 };
 
-export interface TypographyAction extends React.FC<unknown> {
+export interface TypographyAction extends React.VFC<unknown> {
     TypographyDropDown: typeof TypographyActionDropDown;
 }
 

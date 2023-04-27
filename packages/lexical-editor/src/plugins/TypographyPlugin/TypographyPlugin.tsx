@@ -8,7 +8,7 @@ import {
 } from "~/nodes/TypographyElementNode";
 import { $wrapNodes } from "@lexical/selection";
 
-export const TypographyPlugin: React.FC = () => {
+export const TypographyPlugin: React.VFC = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {

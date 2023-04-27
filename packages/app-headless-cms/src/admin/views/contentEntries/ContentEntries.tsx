@@ -6,7 +6,7 @@ import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/
 import { useModel } from "~/admin/components/ModelProvider";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 
-const ContentEntries: React.FC = () => {
+const ContentEntries: React.VFC = () => {
     const { model } = useModel();
 
     return (
