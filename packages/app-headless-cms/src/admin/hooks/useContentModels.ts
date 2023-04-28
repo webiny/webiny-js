@@ -4,6 +4,9 @@ import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import { useMemo } from "react";
 import { CmsModel } from "~/types";
 
+/**
+ * @deprecated Use `useModels` hook instead.
+ */
 export const useContentModels = () => {
     const {
         data,
@@ -27,4 +30,8 @@ export const useContentModels = () => {
         loading,
         error
     };
+};
+
+export const useModels = () => {
+    return useContentModels();
 };

@@ -562,6 +562,7 @@ interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     graphQLType: string;
     field: TField;
     createFieldResolvers: any;
+    fieldTypePlugins: CmsFieldTypePlugins;
 }
 
 export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {

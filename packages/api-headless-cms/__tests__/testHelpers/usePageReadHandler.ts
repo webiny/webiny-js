@@ -48,6 +48,26 @@ const pageFields = `
             __typename
         }
     }
+    reference {
+        ...on ${singularPageApiName}_Reference_Author {
+            author(populate: true) {
+                id
+                entryId
+                modelId
+                fullName
+            }
+        }
+    }
+    references {
+        ...on ${singularPageApiName}_References_Author {
+            author(populate: true) {
+                id
+                entryId
+                modelId
+                fullName
+            }
+        }
+    }
 `;
 
 const errorFields = `
