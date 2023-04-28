@@ -2,6 +2,7 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { createCmsAcoContext } from "~/index";
 import { createGroup } from "./mocks/group";
 import { createArticleModel } from "./mocks/article.model";
+import { CMS_ENTRY_FOLDER_GRAPHQL_SCHEMA_FIELD, CMS_ENTRY_TYPE, ROOT_FOLDER } from "~/contants";
 
 jest.retryTimes(0);
 
@@ -379,6 +380,112 @@ describe("cms aco entry hooks", () => {
                             },
                             message: "Record not found."
                         }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should create a record in a folder which was sent via the custom field", async () => {
+        const data = {
+            title: "Child Folder",
+            slug: "child-folder",
+            parentId: ROOT_FOLDER,
+            type: "cms"
+        };
+        const [createFolderResponse] = await handler.aco.createFolder({
+            data
+        });
+        expect(createFolderResponse).toEqual({
+            data: {
+                aco: {
+                    createFolder: {
+                        data: {
+                            ...data,
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const folderId = createFolderResponse.data.aco.createFolder.data.id;
+
+        const [listEntriesResponse] = await handler.search.listRecords({
+            where: {
+                type: "cms",
+                location: {
+                    folderId
+                }
+            }
+        });
+        expect(listEntriesResponse).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [],
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 0
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const anotherArticleData = {
+            ...createArticleData(),
+            title: "My Another Article",
+            smallText: "My Another article description"
+        };
+        const [createArticleResponse] = await handler.cms.createArticle({
+            data: {
+                ...anotherArticleData,
+                [CMS_ENTRY_FOLDER_GRAPHQL_SCHEMA_FIELD]: folderId
+            }
+        });
+
+        expect(createArticleResponse).toMatchObject({
+            data: {
+                createArticle: {
+                    data: {
+                        ...anotherArticleData
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listEntriesAfterCreateResponse] = await handler.search.listRecords({
+            where: {
+                type: CMS_ENTRY_TYPE,
+                location: {
+                    folderId
+                }
+            }
+        });
+        expect(listEntriesAfterCreateResponse).toMatchObject({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                title: "My Another Article",
+                                content: "My Another article description",
+                                location: {
+                                    folderId
+                                },
+                                type: CMS_ENTRY_TYPE
+                            }
+                        ],
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 1
+                        },
+                        error: null
                     }
                 }
             }

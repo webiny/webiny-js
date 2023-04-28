@@ -31,3 +31,19 @@ export const GET_RECORD = /* GraphQL */ `
         }
     }
 `;
+
+export const LIST_RECORDS = /* GraphQL */ `
+    query ListRecords($where: SearchRecordListWhereInput!, $search: String, $limit: Int, $after: String, $sort: AcoSort) {
+        search {
+            listRecords(where: $where, search: $search, limit: $limit, after: $after, sort: $sort) {
+                data ${DATA_FIELD()}
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;

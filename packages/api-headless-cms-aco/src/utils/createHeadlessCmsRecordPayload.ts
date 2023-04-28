@@ -13,12 +13,13 @@ interface Params {
     context: Pick<CmsAcoContext, "plugins">;
     model: CmsModel;
     entry: CmsEntry;
+    folderId?: string;
 }
 
 export const createHeadlessCmsRecordPayload = async (
     params: Params
 ): Promise<CmsEntryAcoModifyCreatePayloadPluginPayload> => {
-    const { context, model, entry } = params;
+    const { context, model, entry, folderId } = params;
     const title = getEntryTitle(model, entry);
     const description = getEntryDescription(model, entry);
     const image = getEntryImage(model, entry);
@@ -29,7 +30,7 @@ export const createHeadlessCmsRecordPayload = async (
         title,
         content: description,
         location: {
-            folderId: ROOT_FOLDER
+            folderId: folderId || ROOT_FOLDER
         },
         tags: [],
         data: {

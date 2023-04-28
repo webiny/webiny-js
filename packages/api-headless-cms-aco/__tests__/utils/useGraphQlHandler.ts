@@ -17,8 +17,8 @@ import {
     UNPUBLISH_ARTICLE,
     UPDATE_ARTICLE
 } from "../graphql/article.gql";
-import { GET_RECORD } from "../graphql/record.gql";
-
+import { GET_RECORD, LIST_RECORDS } from "../graphql/record.gql";
+import { CREATE_FOLDER } from "../graphql/folder.gql";
 import { createCmsAcoContext } from "~/index";
 import { createStorageOperations } from "./storageOperations";
 import { createAco } from "@webiny/api-aco";
@@ -134,9 +134,17 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         }
     };
 
+    const aco = {
+        async createFolder(variables = {}) {
+            return invoke({ path: "/graphql", body: { query: CREATE_FOLDER, variables } });
+        }
+    };
     const search = {
         async getRecord(variables = {}) {
             return invoke({ path: "/graphql", body: { query: GET_RECORD, variables } });
+        },
+        async listRecords(variables = {}) {
+            return invoke({ path: "/graphql", body: { query: LIST_RECORDS, variables } });
         }
     };
 
@@ -145,6 +153,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         handler,
         invoke,
         cms,
+        aco,
         search
     };
 };
