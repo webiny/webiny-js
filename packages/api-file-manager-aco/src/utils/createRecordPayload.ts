@@ -32,7 +32,6 @@ export const createFileRecordPayload = (
             name,
             createdOn,
             createdBy,
-            tags: addMimeTag(tags, type),
             aliases,
             meta
         }
@@ -55,7 +54,6 @@ export const updatePageRecordPayload = async (
             name,
             createdOn,
             createdBy,
-            tags: addMimeTag(tags, type),
             aliases,
             meta
         }

@@ -13,6 +13,7 @@ const fileData = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
+    aliases: ["alias-1.jpg", "alias-2.jpg"],
     tags: ["file", "webiny"]
 };
 
@@ -43,7 +44,7 @@ describe("Files -> Search records", () => {
     });
 
     it("should create a search record on file creation", async () => {
-        const { id, key, size, type, name, createdOn, createdBy, tags, meta } =
+        const { id, key, size, type, name, createdOn, createdBy, tags, meta, aliases } =
             await createDummyFile();
 
         expect(tracker.isExecutedOnce("file:beforeCreate")).toEqual(true);
@@ -51,8 +52,6 @@ describe("Files -> Search records", () => {
 
         const [searchResponse] = await search.getRecord({ id });
         const searchRecord = searchResponse.data?.search?.getRecord?.data;
-
-        console.log(searchRecord);
 
         expect(searchRecord).toMatchObject({
             id,
@@ -70,7 +69,7 @@ describe("Files -> Search records", () => {
                 name,
                 createdOn,
                 createdBy,
-                tags: addMimeTag(tags, fileData.type),
+                aliases,
                 meta
             }
         });
@@ -122,7 +121,7 @@ describe("Files -> Search records", () => {
                 size: file1.size,
                 type: file1.type,
                 name: file1.name,
-                tags: addMimeTag(file1.tags, file1.type)
+                aliases: file1.aliases
             }
         });
 
@@ -143,8 +142,8 @@ describe("Files -> Search records", () => {
                 size: file2.size,
                 type: file2.type,
                 name: file2.name,
-                tags: addMimeTag(file2.tags, file2.type),
-                meta: file2.meta
+                meta: file2.meta,
+                aliases: file2.aliases
             }
         });
     });
@@ -170,10 +169,7 @@ describe("Files -> Search records", () => {
         expect(searchRecord).toMatchObject({
             id,
             title: updateFile.name,
-            tags: addMimeTag(updateFile.tags, updateFile.type),
-            data: {
-                tags: addMimeTag(updateFile.tags, updateFile.type)
-            }
+            tags: addMimeTag(updateFile.tags, updateFile.type)
         });
     });
 
