@@ -140,6 +140,18 @@ export interface CmsModelFieldSettings {
     [key: string]: any;
 }
 
+export type CmsModelFieldType =
+    | "boolean"
+    | "datetime"
+    | "file"
+    | "long-text"
+    | "number"
+    | "object"
+    | "ref"
+    | "rich-text"
+    | "text"
+    | "dynamicZone"
+    | string;
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -160,18 +172,7 @@ export interface CmsModelField {
      * A type of the field.
      * We are defining our built-in fields, so people know which are available by the default.
      */
-    type:
-        | "boolean"
-        | "datetime"
-        | "file"
-        | "long-text"
-        | "number"
-        | "object"
-        | "ref"
-        | "rich-text"
-        | "text"
-        | "dynamicZone"
-        | string;
+    type: CmsModelFieldType;
     /**
      * A unique storage ID for storing actual values.
      * Must in form of a-zA-Z0-9@a-zA-Z0-9
@@ -561,6 +562,7 @@ interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     graphQLType: string;
     field: TField;
     createFieldResolvers: any;
+    fieldTypePlugins: CmsFieldTypePlugins;
 }
 
 export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {

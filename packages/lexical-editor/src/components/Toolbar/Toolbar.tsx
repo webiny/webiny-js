@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
     $getSelection,
     $isRangeSelection,
@@ -19,6 +19,7 @@ import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 
 interface FloatingToolbarProps {
     type: ToolbarType;
@@ -27,8 +28,16 @@ interface FloatingToolbarProps {
     editor: LexicalEditor;
 }
 
-const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, editor }) => {
+const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem, editor }) => {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
+    const { toolbarType, setToolbarType, setTextBlockSelection } = useRichTextEditor();
+    const [activeEditor, setActiveEditor] = useState(editor);
+
+    useEffect(() => {
+        if (toolbarType !== type) {
+            setToolbarType(type);
+        }
+    }, [type]);
 
     const updateTextFormatFloatingToolbar = useCallback(() => {
         const selection = $getSelection();
@@ -42,6 +51,10 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, edito
 
         let isLink = false;
         if ($isRangeSelection(selection)) {
+            const selectionState = getLexicalTextSelectionState(activeEditor, selection);
+            if (selectionState) {
+                setTextBlockSelection(selectionState);
+            }
             const node = getSelectedNode(selection);
             // Update links
             const parent = node.getParent();
@@ -97,11 +110,11 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, anchorElem, edito
                     updateTextFormatFloatingToolbar();
                 });
             }),
-
             editor.registerCommand(
                 SELECTION_CHANGE_COMMAND,
-                () => {
+                (_payload, newEditor) => {
                     updateTextFormatFloatingToolbar();
+                    setActiveEditor(newEditor);
                     return false;
                 },
                 COMMAND_PRIORITY_LOW
@@ -156,7 +169,6 @@ const useToolbar: FC<useToolbarProps> = ({
             }
 
             const node = getSelectedNode(selection);
-
             if (
                 !$isCodeHighlightNode(selection.anchor.getNode()) &&
                 selection.getTextContent() !== ""

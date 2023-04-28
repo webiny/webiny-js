@@ -4394,6 +4394,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/babel-plugin@npm:^11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/babel-plugin@npm:11.10.8"
+  dependencies:
+    "@babel/helper-module-imports": ^7.16.7
+    "@babel/runtime": ^7.18.3
+    "@emotion/hash": ^0.9.0
+    "@emotion/memoize": ^0.8.0
+    "@emotion/serialize": ^1.1.1
+    babel-plugin-macros: ^3.1.0
+    convert-source-map: ^1.5.0
+    escape-string-regexp: ^4.0.0
+    find-root: ^1.1.0
+    source-map: ^0.5.7
+    stylis: 4.1.4
+  checksum: b8e2ed0c68a2ea423c5c2efdcf37e0b482dcb74caba042d2987a058f151819f0574fb2298fba4f76fa23265e1975dcf337f1f59ad6f35a33db2f9bf1afe03ee0
+  languageName: node
+  linkType: hard
+
 "@emotion/babel-utils@npm:^0.6.4":
   version: 0.6.10
   resolution: "@emotion/babel-utils@npm:0.6.10"
@@ -4430,6 +4449,19 @@ __metadata:
     "@emotion/weak-memoize": ^0.3.0
     stylis: 4.1.3
   checksum: 1dd2d9af2d3ecbd3d4469ecdf91a335eef6034c851b57a474471b2d2280613eb35bbed98c0368cc4625f188619fbdaf04cf07e8107aaffce94b2178444c0fe7b
+  languageName: node
+  linkType: hard
+
+"@emotion/cache@npm:^11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/cache@npm:11.10.8"
+  dependencies:
+    "@emotion/memoize": ^0.8.0
+    "@emotion/sheet": ^1.2.1
+    "@emotion/utils": ^1.2.0
+    "@emotion/weak-memoize": ^0.3.0
+    stylis: 4.1.4
+  checksum: a67751db54077813ee3a011f255ee5c79eb375284cec8404866d44da904d69b037566047ca52549772b8038f8cd00ebd092c628ddc764fe89d6932c16afd71e3
   languageName: node
   linkType: hard
 
@@ -4520,13 +4552,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:^11.10.6":
-  version: 11.10.6
-  resolution: "@emotion/react@npm:11.10.6"
+"@emotion/react@npm:11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/react@npm:11.10.8"
   dependencies:
     "@babel/runtime": ^7.18.3
-    "@emotion/babel-plugin": ^11.10.6
-    "@emotion/cache": ^11.10.5
+    "@emotion/babel-plugin": ^11.10.8
+    "@emotion/cache": ^11.10.8
     "@emotion/serialize": ^1.1.1
     "@emotion/use-insertion-effect-with-fallbacks": ^1.0.0
     "@emotion/utils": ^1.2.0
@@ -4537,7 +4569,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 4762042e39126ffaffe76052dc65c9bb0ba6b8893013687ba3cc13ed4dd834c31597f1230684c3c078e90aecc13ab6cd0e3cde0dec8b7761affd2571f4d80019
+  checksum: ac56ef6375fa3bc7acd5a62eb5b2cf9eb4b1586a6a06cb05caab11a516700cf2f7857e0ad65bac57abd74e1141388e01fe65238f2de0075a912e129271c658b8
   languageName: node
   linkType: hard
 
@@ -11364,6 +11396,42 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-aco-so-ddb-es@workspace:packages/api-aco-so-ddb-es":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-aco-so-ddb-es@workspace:packages/api-aco-so-ddb-es"
+  dependencies:
+    "@babel/cli": ^7.19.3
+    "@babel/core": ^7.19.3
+    "@babel/preset-env": ^7.19.4
+    "@babel/runtime": ^7.19.0
+    "@webiny/api": 0.0.0
+    "@webiny/api-aco": 0.0.0
+    "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
+    "@webiny/api-elasticsearch": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb-es": 0.0.0
+    "@webiny/api-i18n": 0.0.0
+    "@webiny/api-i18n-ddb": 0.0.0
+    "@webiny/api-security": 0.0.0
+    "@webiny/api-security-so-ddb": 0.0.0
+    "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-tenancy-so-ddb": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/db-dynamodb": 0.0.0
+    "@webiny/handler": 0.0.0
+    "@webiny/handler-aws": 0.0.0
+    "@webiny/handler-db": 0.0.0
+    "@webiny/handler-graphql": 0.0.0
+    "@webiny/plugins": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    jest-dynalite: ^3.6.1
+    rimraf: ^3.0.2
+    sinon: ^9.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-aco@0.0.0, @webiny/api-aco@workspace:packages/api-aco":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
@@ -11913,7 +11981,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
+"@webiny/api-headless-cms-ddb-es@0.0.0, @webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
@@ -12299,14 +12367,27 @@ __metadata:
     "@elastic/elasticsearch": 7.12.0
     "@elastic/elasticsearch-mock": 0.3.0
     "@webiny/api": 0.0.0
+    "@webiny/api-aco": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
+    "@webiny/api-file-manager": 0.0.0
+    "@webiny/api-file-manager-ddb": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb-es": 0.0.0
+    "@webiny/api-i18n": 0.0.0
+    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-page-builder": 0.0.0
+    "@webiny/api-page-builder-aco": 0.0.0
+    "@webiny/api-prerendering-service": 0.0.0
     "@webiny/api-security": 0.0.0
+    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-tenancy-so-ddb": 0.0.0
+    "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/error": 0.0.0
+    "@webiny/handler": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-db": 0.0.0
     "@webiny/handler-graphql": 0.0.0
@@ -12316,6 +12397,7 @@ __metadata:
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.5
     elastic-ts: ^0.8.0
+    graphql: ^15.8.0
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
@@ -13345,6 +13427,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
+    "@webiny/react-properties": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/utils": 0.0.0
@@ -13362,7 +13445,6 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: ^4.17.10
-    pluralize: ^8.0.0
     prop-types: ^15.7.2
     raw.macro: ^0.4.2
     react: 17.0.2
@@ -14800,6 +14882,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/theme": 0.0.0
     classnames: ^2.3.1
     emotion: ^10.0.27
     react: ^17.0.2
@@ -14832,8 +14915,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
+    "@emotion/react": ^11.10.6
     "@lexical/code": 0.8.1
     "@lexical/hashtag": 0.8.1
+    "@lexical/history": 0.8.1
     "@lexical/link": 0.8.1
     "@lexical/list": 0.8.1
     "@lexical/mark": 0.8.1
@@ -14848,6 +14933,7 @@ __metadata:
     lexical: 0.8.1
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-style-object-to-css: ^1.1.2
   languageName: unknown
   linkType: soft
 
@@ -25881,7 +25967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.7.2":
+"graphql@npm:^15.7.2, graphql@npm:^15.8.0":
   version: 15.8.0
   resolution: "graphql@npm:15.8.0"
   checksum: 423325271db8858428641b9aca01699283d1fe5b40ef6d4ac622569ecca927019fce8196208b91dd1d8eb8114f00263fe661d241d0eb40c10e5bfd650f86ec5e
@@ -36483,6 +36569,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-style-object-to-css@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "react-style-object-to-css@npm:1.1.2"
+  checksum: 1f854bf5c7fabcc0be3db3e35e4b346dd0d3cb2b09079f100380ab299d2db94ba75ab225254446958d820933c7be67b609219746610a14cda2c42e708711cc78
+  languageName: node
+  linkType: hard
+
 "react-syntax-highlighter@npm:^11.0.2":
   version: 11.0.3
   resolution: "react-syntax-highlighter@npm:11.0.3"
@@ -39624,6 +39717,13 @@ __metadata:
   version: 4.1.3
   resolution: "stylis@npm:4.1.3"
   checksum: d04dbffcb9bf2c5ca8d8dc09534203c75df3bf711d33973ea22038a99cc475412a350b661ebd99cbc01daa50d7eedcf0d130d121800eb7318759a197023442a6
+  languageName: node
+  linkType: hard
+
+"stylis@npm:4.1.4":
+  version: 4.1.4
+  resolution: "stylis@npm:4.1.4"
+  checksum: cd929bd89709def13b47e6c16b11317bf996a09b4e987fc45a235549c3adf49d41531e017d7df511daa095bc9468c923ae9094a934fe9c62440b7351874dafb7
   languageName: node
   linkType: hard
 

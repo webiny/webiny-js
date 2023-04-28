@@ -4,7 +4,7 @@ import { FOLDER_MODEL_ID } from "./folder.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFieldValues } from "~/utils/getFieldValues";
+import { getFolderFieldValues } from "~/utils/getFieldValues";
 
 import { AcoFolderStorageOperations } from "./folder.types";
 
@@ -48,7 +48,7 @@ export const createFolderOperations = (
                 });
             }
 
-            return getFieldValues(entry, baseFields);
+            return getFolderFieldValues(entry, baseFields);
         });
     };
 
@@ -95,7 +95,7 @@ export const createFolderOperations = (
                     }
                 });
 
-                return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+                return [entries.map(entry => getFolderFieldValues(entry, baseFields)), meta];
             });
         },
         createFolder({ data }) {
@@ -113,7 +113,7 @@ export const createFolderOperations = (
                     parentId: data.parentId || null
                 });
 
-                return getFieldValues(entry, baseFields);
+                return getFolderFieldValues(entry, baseFields);
             });
         },
         updateFolder({ id, data }) {
@@ -137,7 +137,7 @@ export const createFolderOperations = (
                 };
 
                 const entry = await cms.updateEntry(model, id, input);
-                return getFieldValues(entry, baseFields);
+                return getFolderFieldValues(entry, baseFields);
             });
         },
         deleteFolder({ id }) {

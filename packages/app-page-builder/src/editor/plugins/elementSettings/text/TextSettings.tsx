@@ -29,8 +29,8 @@ import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import startCase from "lodash/startCase";
 import { isLegacyRenderingEngine } from "~/utils";
+import { TypographyStyle } from "@webiny/app-theme/types";
 
 const classes = {
     grid: css({
@@ -96,10 +96,18 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
 
     const themeTypographyOptions = useMemo(() => {
         if (!isLegacyRenderingEngine) {
-            const peThemeTypography = Object.keys(pageElements.theme.styles?.typography || {});
-            return peThemeTypography.map(key => (
-                <option value={key} key={key}>
-                    {startCase(key)}
+            const allTypographyVariants: TypographyStyle[] = [];
+
+            const typography = pageElements.theme.styles?.typography;
+            if (typography) {
+                for (const typographyCategory in typography) {
+                    allTypographyVariants.push(...typography[typographyCategory]);
+                }
+            }
+
+            return allTypographyVariants.map(variant => (
+                <option value={variant.id} key={variant.id}>
+                    {variant.name}
                 </option>
             ));
         }
@@ -171,6 +179,22 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
         return null;
     }
 
+    // For the new editor, we only want to show text alignment options. We check if the editor is new by
+    // examining the text data. If it's JSON, then it's the new editor. Otherwise, it's the old editor.
+    const textData = element.data?.text?.data?.text;
+    const usingLexicalEditor = useMemo(() => {
+        if (!textData) {
+            return false;
+        }
+
+        try {
+            JSON.parse(textData);
+            return true;
+        } catch {
+            return false;
+        }
+    }, [textData]);
+
     return (
         <Accordion
             title={"Text"}
@@ -182,43 +206,48 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
             }
         >
             <>
-                <Wrapper containerClassName={classes.grid} label={"Color"}>
-                    <BaseColorPicker
-                        value={text.color}
-                        updateValue={updateColor}
-                        updatePreview={updateColorPreview}
-                    />
-                </Wrapper>
-                {options.useCustomTag && (
-                    <Wrapper
-                        containerClassName={classes.grid}
-                        label={"Heading Type"}
-                        leftCellSpan={5}
-                        rightCellSpan={7}
-                    >
-                        <SelectField value={text.tag} onChange={updateTag}>
-                            {options.tags.map(tag => (
-                                <option value={tag} key={tag}>
-                                    {tag.toUpperCase()}
-                                </option>
-                            ))}
-                        </SelectField>
-                    </Wrapper>
+                {!usingLexicalEditor && (
+                    <>
+                        <Wrapper containerClassName={classes.grid} label={"Color"}>
+                            <BaseColorPicker
+                                value={text.color}
+                                updateValue={updateColor}
+                                updatePreview={updateColorPreview}
+                            />
+                        </Wrapper>
+                        {options.useCustomTag && (
+                            <Wrapper
+                                containerClassName={classes.grid}
+                                label={"Heading Type"}
+                                leftCellSpan={5}
+                                rightCellSpan={7}
+                            >
+                                <SelectField value={text.tag} onChange={updateTag}>
+                                    {options.tags.map(tag => (
+                                        <option value={tag} key={tag}>
+                                            {tag.toUpperCase()}
+                                        </option>
+                                    ))}
+                                </SelectField>
+                            </Wrapper>
+                        )}
+                        <Wrapper
+                            containerClassName={classes.grid}
+                            label={"Typography"}
+                            leftCellSpan={5}
+                            rightCellSpan={7}
+                        >
+                            <SelectField
+                                value={text.typography}
+                                onChange={updateTypography}
+                                disabled={themeTypographyOptions.length === 0}
+                            >
+                                {themeTypographyOptions}
+                            </SelectField>
+                        </Wrapper>
+                    </>
                 )}
-                <Wrapper
-                    containerClassName={classes.grid}
-                    label={"Typography"}
-                    leftCellSpan={5}
-                    rightCellSpan={7}
-                >
-                    <SelectField
-                        value={text.typography}
-                        onChange={updateTypography}
-                        disabled={themeTypographyOptions.length === 0}
-                    >
-                        {themeTypographyOptions}
-                    </SelectField>
-                </Wrapper>
+
                 {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
                     <Grid className={classes.warningMessageGrid}>
                         <Cell span={12}>

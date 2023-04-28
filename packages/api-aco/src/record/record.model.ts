@@ -54,6 +54,13 @@ const dataField = () =>
         type: "wby-aco-json"
     });
 
+const tagsField = () =>
+    createModelField({
+        label: "Tags",
+        type: "text",
+        multipleValues: true
+    });
+
 export const SEARCH_RECORD_MODEL_ID = "acoSearchRecord";
 
 export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
@@ -61,13 +68,14 @@ export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
         titleFieldId: "title",
-        layout: [["type"], ["title"], ["content"], ["location"], ["data"]],
+        layout: [["type"], ["title"], ["content"], ["location"], ["data"], ["tags"]],
         fields: [
             typeField(),
             titleField(),
             contentField(),
             locationField([locationFolderIdField()]),
-            dataField()
+            dataField(),
+            tagsField()
         ],
         description: "ACO - Search record model",
         isPrivate: true

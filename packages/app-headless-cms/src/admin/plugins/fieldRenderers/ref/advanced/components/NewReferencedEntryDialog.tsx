@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Provider as ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
+import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
 import { DialogActions, DialogCancel, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
-import { Provider as ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
+import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsModel } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
@@ -19,7 +19,7 @@ import { FullWidthDialog } from "./dialog/Dialog";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 interface EntryFormProps {
-    onCreate: (entry: CmsEditorContentEntry) => void;
+    onCreate: (entry: CmsContentEntry) => void;
 }
 
 const EntryForm: React.VFC<EntryFormProps> = ({ onCreate }) => {
@@ -30,9 +30,9 @@ const EntryForm: React.VFC<EntryFormProps> = ({ onCreate }) => {
             <ContentEntryForm
                 onSubmit={data => {
                     /**
-                     * We know that data is CmsEditorContentEntry.
+                     * We know that data is CmsContentEntry.
                      */
-                    return onCreate(data as unknown as CmsEditorContentEntry);
+                    return onCreate(data as unknown as CmsContentEntry);
                 }}
                 onForm={form => setFormRef(form)}
                 entry={{}}
@@ -87,7 +87,7 @@ export const NewReferencedEntryDialog: React.VFC<Props> = ({
     }, [baseModel.modelId]);
 
     const onCreate = useCallback(
-        (entry: CmsEditorContentEntry) => {
+        (entry: CmsContentEntry) => {
             if (!model) {
                 onClose();
                 return;
