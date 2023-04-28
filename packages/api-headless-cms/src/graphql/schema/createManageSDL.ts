@@ -84,29 +84,19 @@ export const createManageSDL: CreateManageSDL = ({
             .filter(Boolean)
             .join("\n")}
 
-        ${
-            inputFields &&
-            `input ${singularName}Input {
-                id: ID
+        input ${singularName}Input {
+            id: ID
             ${inputFields.map(f => f.fields).join("\n")}
-        }`
         }
 
-        ${
-            getFilterFieldsRender &&
-            `input ${singularName}GetWhereInput {
+        input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`
         }
-
-
-        ${
-            listFilterFieldsRender &&
-            `input ${singularName}ListWhereInput {
-                ${listFilterFieldsRender}
-                AND: [${singularName}ListWhereInput!]
-                OR: [${singularName}ListWhereInput!]
-        }`
+        
+        input ${singularName}ListWhereInput {
+            ${listFilterFieldsRender}
+            AND: [${singularName}ListWhereInput!]
+            OR: [${singularName}ListWhereInput!]
         }
 
         type ${singularName}Response {
@@ -125,11 +115,8 @@ export const createManageSDL: CreateManageSDL = ({
             error: CmsError
         }
 
-        ${
-            sortEnumRender &&
-            `enum ${singularName}ListSorter {
+        enum ${singularName}ListSorter {
             ${sortEnumRender}
-        }`
         }
 
         extend type Query {

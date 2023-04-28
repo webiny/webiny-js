@@ -627,9 +627,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         let storageEntry: CmsStorageEntry | null = null;
         try {
             await onEntryBeforeCreate.publish({
+                model,
                 entry,
                 input,
-                model
+                rawInput: inputData
             });
 
             storageEntry = await entryToStorageTransform(context, model, entry);
@@ -639,10 +640,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             await onEntryAfterCreate.publish({
+                model,
                 entry,
                 storageEntry: result,
-                model,
-                input
+                input,
+                rawInput: inputData
             });
 
             return result;
@@ -651,7 +653,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 error: ex,
                 entry,
                 model,
-                input
+                input,
+                rawInput: inputData
             });
             throw new WebinyError(
                 ex.message || "Could not create content entry.",

@@ -71,29 +71,20 @@ export const createReadSDL: CreateReadSDL = ({
             .filter(Boolean)
             .join("\n")}
         
-        ${
-            getFilterFieldsRender &&
-            `input ${singularName}GetWhereInput {
+        input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`
         }
         
         
-        ${
-            listFilterFieldsRender &&
-            `input ${singularName}ListWhereInput {
-                ${listFilterFieldsRender}
-                AND: [${singularName}ListWhereInput!]
-                OR: [${singularName}ListWhereInput!]
-        }`
+        input ${singularName}ListWhereInput {
+            ${listFilterFieldsRender}
+            AND: [${singularName}ListWhereInput!]
+            OR: [${singularName}ListWhereInput!]
         }
         
         
-        ${
-            sortEnumRender &&
-            `enum ${singularName}ListSorter {
+        enum ${singularName}ListSorter {
             ${sortEnumRender}
-        }`
         }
         
         type ${singularName}Response {

@@ -1992,22 +1992,25 @@ export interface CmsEntryMeta {
  */
 export interface OnEntryBeforeCreateTopicParams {
     input: CreateCmsEntryInput;
+    rawInput: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
 
 export interface OnEntryAfterCreateTopicParams {
-    input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
+    input: CreateCmsEntryInput;
+    rawInput: CreateCmsEntryInput;
 }
 
 export interface OnEntryCreateErrorTopicParams {
-    error: Error;
-    input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
+    error: Error;
+    input: CreateCmsEntryInput;
+    rawInput: CreateCmsEntryInput;
 }
 
 /**
