@@ -9,7 +9,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/app/*": ["../app/src/*"]
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"]
     },
     "baseUrl": "."
   }
