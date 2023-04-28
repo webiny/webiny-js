@@ -7,6 +7,10 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-i18n-ddb/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
@@ -14,10 +18,6 @@
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
