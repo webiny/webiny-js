@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -100,10 +100,52 @@ export const useAcoList = <T extends GenericSearchData = GenericSearchData>(
         setFolders(folders => sortTableItems(folders, sort));
     }, [sort]);
 
+    /**
+     * This method updates the records state so we do not need to load data again.
+     * The example usage is changing the record state (published/draft/unpublished).
+     */
+    const updateRecordCache = useCallback(
+        (id: string, data: Partial<T>) => {
+            const index = records.findIndex(record => record.id === id);
+            if (index === -1) {
+                return;
+            }
+            setRecords(prev => {
+                const list = [...prev];
+                list[index].data = {
+                    ...list[index].data,
+                    ...data
+                };
+                return list;
+            });
+        },
+        [records, setRecords]
+    );
+
+    /**
+     * This methods deletes the record from the records state.
+     */
+    const deleteRecordCache = useCallback(
+        (id: string) => {
+            const index = records.findIndex(record => record.id === id);
+            if (index === -1) {
+                return;
+            }
+            setRecords(prev => {
+                const list = [...prev];
+                list.splice(Number(index), 1);
+                return list;
+            });
+        },
+        [records, setRecords]
+    );
+
     return useMemo(
         () => ({
             folders,
             records,
+            updateRecordCache,
+            deleteRecordCache,
             listTitle,
             isListLoading:
                 recordsLoading.INIT ||
