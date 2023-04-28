@@ -27,7 +27,7 @@ import { useFileManagerApi, useFileManagerView } from "~/index";
 import { EmptyView } from "./EmptyView";
 import UploadStatus from "~/modules/FileManagerRenderer/DefaultRenderer/BottomInfoBar/UploadStatus";
 import SupportedFileTypes from "~/modules/FileManagerRenderer/DefaultRenderer/BottomInfoBar/SupportedFileTypes";
-import { BatchFileUploader } from "~/modules/FileManagerRenderer/DefaultRenderer/BatchFileUploader";
+import { BatchFileUploader } from "~/BatchFileUploader";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
