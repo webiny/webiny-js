@@ -6,11 +6,11 @@ import { Container } from "./styled";
 
 import { DndItemData } from "~/types";
 
-type Props = {
+type NodePreviewProps = {
     monitorProps: DragLayerMonitorProps<DndItemData>;
 };
 
-export const NodePreview: React.FC<Props> = props => {
+export const NodePreview: React.VFC<NodePreviewProps> = props => {
     const item = props.monitorProps.item;
 
     return (

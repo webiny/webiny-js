@@ -16,17 +16,21 @@ import { useFolders } from "~/hooks";
 
 import { DialogContainer } from "./styled";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
+const t = i18n.ns("app-aco/dialogs/dialog-delete");
 
 import { FolderItem } from "~/types";
 
-type Props = {
+type FolderDialogDeleteProps = {
     folder: FolderItem;
     open: boolean;
     onClose: DialogOnClose;
 };
 
-export const FolderDialogDelete = ({ folder, open, onClose }: Props) => {
+export const FolderDialogDelete: React.VFC<FolderDialogDeleteProps> = ({
+    folder,
+    open,
+    onClose
+}) => {
     const { deleteFolder, loading } = useFolders(folder.type);
     const { showSnackbar } = useSnackbar();
     const [dialogOpen, setDialogOpen] = useState(false);

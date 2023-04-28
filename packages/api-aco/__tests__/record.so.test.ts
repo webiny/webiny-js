@@ -376,13 +376,13 @@ describe("`search` CRUD", () => {
         expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
                 data: [
-                    "page-tag1",
-                    "page-tag2",
-                    "page-tag3",
-                    "post-tag1",
-                    "post-tag2",
-                    "scope:page",
-                    "scope:post"
+                    { tag: "page-tag1" },
+                    { tag: "page-tag2" },
+                    { tag: "page-tag3" },
+                    { tag: "post-tag1" },
+                    { tag: "post-tag2" },
+                    { tag: "scope:page" },
+                    { tag: "scope:post" }
                 ],
                 meta: expect.objectContaining({
                     cursor: null,
@@ -411,7 +411,7 @@ describe("`search` CRUD", () => {
 
         expect(responseWithNot.data.search.listTags).toEqual(
             expect.objectContaining({
-                data: ["post-tag1", "post-tag2", "scope:post"],
+                data: [{ tag: "post-tag1" }, { tag: "post-tag2" }, { tag: "scope:post" }],
                 meta: expect.objectContaining({
                     cursor: null,
                     totalCount: 3,
@@ -439,7 +439,7 @@ describe("`search` CRUD", () => {
 
         expect(responseWithNot.data.search.listTags).toEqual(
             expect.objectContaining({
-                data: ["page-tag1", "page-tag2", "scope:page"],
+                data: [{ tag: "page-tag1" }, { tag: "page-tag2" }, { tag: "scope:page" }],
                 meta: expect.objectContaining({
                     cursor: null,
                     totalCount: 3,
@@ -468,12 +468,12 @@ describe("`search` CRUD", () => {
         expect(responseWithNot.data.search.listTags).toEqual(
             expect.objectContaining({
                 data: [
-                    "page-tag1",
-                    "page-tag2",
-                    "post-tag1",
-                    "post-tag2",
-                    "scope:page",
-                    "scope:post"
+                    { tag: "page-tag1" },
+                    { tag: "page-tag2" },
+                    { tag: "post-tag1" },
+                    { tag: "post-tag2" },
+                    { tag: "scope:page" },
+                    { tag: "scope:post" }
                 ],
                 meta: expect.objectContaining({
                     cursor: null,
@@ -502,7 +502,7 @@ describe("`search` CRUD", () => {
 
         expect(responseWithNot.data.search.listTags).toEqual(
             expect.objectContaining({
-                data: ["page-tag1", "page-tag3"],
+                data: [{ tag: "page-tag1" }, { tag: "page-tag3" }],
                 meta: expect.objectContaining({
                     cursor: null,
                     totalCount: 2,

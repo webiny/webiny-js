@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-aco/components/tree/empty");
 
-export const Empty = () => {
+export const Empty: React.VFC = () => {
     return (
         <Container>
             <Typography use={"body2"}>{t`No folders found...`}</Typography>

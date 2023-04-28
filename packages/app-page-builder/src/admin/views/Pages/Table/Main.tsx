@@ -47,7 +47,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useAcoList(FOLDER_TYPE, folderId);
+    } = useAcoList({ type: FOLDER_TYPE, folderId });
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);

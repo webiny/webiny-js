@@ -5,13 +5,13 @@ import { Typography } from "@webiny/ui/Typography";
 
 import { Button, Icon, IconContainer } from "./styled";
 
-type Props = {
+type CreateButtonProps = {
     onClick: () => void;
 };
 
 const t = i18n.ns("app-aco/components/tree/button-create");
 
-export const CreateButton: React.FC<Props> = ({ onClick }) => {
+export const CreateButton: React.VFC<CreateButtonProps> = ({ onClick }) => {
     return (
         <Button onClick={onClick}>
             <IconContainer>

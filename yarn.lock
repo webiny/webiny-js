@@ -13255,6 +13255,7 @@ __metadata:
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@webiny/app": 0.0.0
+    "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
@@ -13285,8 +13286,10 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-lazy-load: ^3.1.14
     rimraf: ^3.0.2
+    timeago-react: ^2.0.0
     ttypescript: ^1.5.13
     typescript: 4.7.4
+    use-deep-compare-effect: ^1.6.1
   languageName: unknown
   linkType: soft
 

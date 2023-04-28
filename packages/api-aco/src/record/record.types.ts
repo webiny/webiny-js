@@ -19,7 +19,9 @@ export interface SearchRecord<TData extends GenericSearchData = GenericSearchDat
     tags: string[];
 }
 
-export type SearchRecordTag = string;
+export type SearchRecordTag = {
+    tag: string;
+};
 
 export interface ListSearchRecordsWhere {
     type: string;
