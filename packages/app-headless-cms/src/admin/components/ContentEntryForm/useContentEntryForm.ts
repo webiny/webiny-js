@@ -1,26 +1,27 @@
-import { Dispatch, SetStateAction, useCallback, useMemo, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FormOnSubmit } from "@webiny/form";
 import {
-    createCreateFromMutation,
-    createCreateMutation,
-    createUpdateMutation,
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables,
     CmsEntryCreateMutationResponse,
     CmsEntryCreateMutationVariables,
     CmsEntryUpdateMutationResponse,
     CmsEntryUpdateMutationVariables,
-    CmsEntryCreateFromMutationResponse,
-    CmsEntryCreateFromMutationVariables
+    createCreateFromMutation,
+    createCreateMutation,
+    createUpdateMutation
 } from "~/admin/graphql/contentEntries";
 import { useApolloClient, useCms, useModel, useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
+import { CMS_ENTRY_FOLDER_GRAPHQL_SCHEMA_FIELD } from "~/admin/constants/schemaFolderField";
 
 /**
  * Used for some fields to convert their values.
@@ -85,7 +86,7 @@ function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
     const { listQueryVariables } = useContentEntry();
     const { model } = useModel();
-    const { history } = useRouter();
+    const { history, query } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
@@ -145,7 +146,12 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         async (formData, form) => {
             setLoading(true);
             const response = await createMutation({
-                variables: { data: formData },
+                variables: {
+                    data: {
+                        ...formData,
+                        [CMS_ENTRY_FOLDER_GRAPHQL_SCHEMA_FIELD]: query["folderId"] || undefined
+                    }
+                },
                 fetchPolicy: getFetchPolicy(model)
             });
 
@@ -178,7 +184,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             }
             return entry;
         },
-        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
+        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache, query]
     );
 
     const updateContent = useCallback(

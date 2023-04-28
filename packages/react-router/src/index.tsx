@@ -1,14 +1,20 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import {
     BrowserRouter as RBrowserRouter,
     BrowserRouterProps,
+    Location,
     UNSAFE_RouteContext as __RouterContext,
     useLocation,
-    useParams,
-    Location
+    useParams
 } from "react-router-dom";
 import { StaticRouter as RStaticRouter, StaticRouterProps } from "react-router-dom/server";
-import { RouterContext, ReactRouterContext } from "./context/RouterContext";
+import { ReactRouterContext, RouterContext } from "./context/RouterContext";
+/**
+ * Webiny enhancements and backwards compatibility with react-router v5.
+ */
+import enhancer from "./routerEnhancer";
+import { useHistory, UseHistory } from "~/useHistory";
+import { RouteProps } from "./Route";
 
 /**
  * Re-export types from react-router-dom.
@@ -40,19 +46,12 @@ export type {
     URLSearchParamsInit
 } from "react-router-dom";
 
-/**
- * Webiny enhancements and backwards compatibility with react-router v5.
- */
-import enhancer from "./routerEnhancer";
-import { useHistory, UseHistory } from "~/useHistory";
-
 export * from "react-router-dom";
 
 export { Link } from "./Link";
 export type { LinkProps } from "./Link";
 
 export { Route } from "./Route";
-import { RouteProps } from "./Route";
 export type { RouteProps } from "./Route";
 
 export { Prompt } from "./Prompt";
@@ -72,16 +71,30 @@ export type UseRouter = RouteProps &
         history: UseHistory;
         location: Location;
         params: Record<string, any>;
+        query: Record<string, any>;
     };
 
+const getLocationQuery = (location: Location) => {
+    const params = new URLSearchParams(location.search);
+    return Array.from(params.entries()).reduce<Record<string, any>>((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+    }, {});
+};
 export function useRouter(): UseRouter {
     const location = useLocation();
+
+    const query = useMemo(() => {
+        return getLocationQuery(location);
+    }, [location]);
+
     return {
         ...useContext(RouterContext),
         ...useContext(__RouterContext),
         history: useHistory(),
         location,
-        params: useParams()
+        params: useParams(),
+        query
     };
 }
 

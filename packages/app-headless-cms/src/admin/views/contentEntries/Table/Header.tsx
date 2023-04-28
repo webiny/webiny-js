@@ -7,7 +7,7 @@ const Wrapper = styled("div")({
     display: "flex",
     alignItems: "center",
     background: "var(--mdc-theme-surface)",
-    "border-bottom": "1px solid var(--mdc-theme-on-background)",
+    borderBottom: "1px solid var(--mdc-theme-on-background)",
     padding: "8px 0 8px 12px",
     boxSizing: "border-box",
     height: "65px",

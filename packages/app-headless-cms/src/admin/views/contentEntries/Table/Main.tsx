@@ -15,6 +15,7 @@ import { Sorting } from "@webiny/ui/DataTable";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { Header as ContentEntryHeader } from "./Header";
+import { useRouter } from "@webiny/react-router";
 
 interface Props {
     folderId?: string;
@@ -29,14 +30,22 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
         meta,
         isListLoading,
         isListLoadingMore,
-        listItems
+        listItems,
+        deleteRecordCache,
+        updateRecordCache
     } = useAcoList<CmsContentEntryRecord>(FOLDER_TYPE, folderId);
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
 
-    const { canCreate, createEntry } = useContentEntry();
+    const { history } = useRouter();
+    const { canCreate, contentModel } = useContentEntry();
+
+    const createEntry = useCallback(() => {
+        const folder = folderId ? `&folderId=${folderId}` : "";
+        history.push(`/cms/content-entries/${contentModel.modelId}?new=true${folder}`);
+    }, [canCreate, contentModel, folderId]);
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
