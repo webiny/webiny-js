@@ -4394,6 +4394,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/babel-plugin@npm:^11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/babel-plugin@npm:11.10.8"
+  dependencies:
+    "@babel/helper-module-imports": ^7.16.7
+    "@babel/runtime": ^7.18.3
+    "@emotion/hash": ^0.9.0
+    "@emotion/memoize": ^0.8.0
+    "@emotion/serialize": ^1.1.1
+    babel-plugin-macros: ^3.1.0
+    convert-source-map: ^1.5.0
+    escape-string-regexp: ^4.0.0
+    find-root: ^1.1.0
+    source-map: ^0.5.7
+    stylis: 4.1.4
+  checksum: b8e2ed0c68a2ea423c5c2efdcf37e0b482dcb74caba042d2987a058f151819f0574fb2298fba4f76fa23265e1975dcf337f1f59ad6f35a33db2f9bf1afe03ee0
+  languageName: node
+  linkType: hard
+
 "@emotion/babel-utils@npm:^0.6.4":
   version: 0.6.10
   resolution: "@emotion/babel-utils@npm:0.6.10"
@@ -4430,6 +4449,19 @@ __metadata:
     "@emotion/weak-memoize": ^0.3.0
     stylis: 4.1.3
   checksum: 1dd2d9af2d3ecbd3d4469ecdf91a335eef6034c851b57a474471b2d2280613eb35bbed98c0368cc4625f188619fbdaf04cf07e8107aaffce94b2178444c0fe7b
+  languageName: node
+  linkType: hard
+
+"@emotion/cache@npm:^11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/cache@npm:11.10.8"
+  dependencies:
+    "@emotion/memoize": ^0.8.0
+    "@emotion/sheet": ^1.2.1
+    "@emotion/utils": ^1.2.0
+    "@emotion/weak-memoize": ^0.3.0
+    stylis: 4.1.4
+  checksum: a67751db54077813ee3a011f255ee5c79eb375284cec8404866d44da904d69b037566047ca52549772b8038f8cd00ebd092c628ddc764fe89d6932c16afd71e3
   languageName: node
   linkType: hard
 
@@ -4520,13 +4552,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:^11.10.6":
-  version: 11.10.6
-  resolution: "@emotion/react@npm:11.10.6"
+"@emotion/react@npm:11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/react@npm:11.10.8"
   dependencies:
     "@babel/runtime": ^7.18.3
-    "@emotion/babel-plugin": ^11.10.6
-    "@emotion/cache": ^11.10.5
+    "@emotion/babel-plugin": ^11.10.8
+    "@emotion/cache": ^11.10.8
     "@emotion/serialize": ^1.1.1
     "@emotion/use-insertion-effect-with-fallbacks": ^1.0.0
     "@emotion/utils": ^1.2.0
@@ -4537,7 +4569,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 4762042e39126ffaffe76052dc65c9bb0ba6b8893013687ba3cc13ed4dd834c31597f1230684c3c078e90aecc13ab6cd0e3cde0dec8b7761affd2571f4d80019
+  checksum: ac56ef6375fa3bc7acd5a62eb5b2cf9eb4b1586a6a06cb05caab11a516700cf2f7857e0ad65bac57abd74e1141388e01fe65238f2de0075a912e129271c658b8
   languageName: node
   linkType: hard
 
@@ -39652,6 +39684,13 @@ __metadata:
   version: 4.1.3
   resolution: "stylis@npm:4.1.3"
   checksum: d04dbffcb9bf2c5ca8d8dc09534203c75df3bf711d33973ea22038a99cc475412a350b661ebd99cbc01daa50d7eedcf0d130d121800eb7318759a197023442a6
+  languageName: node
+  linkType: hard
+
+"stylis@npm:4.1.4":
+  version: 4.1.4
+  resolution: "stylis@npm:4.1.4"
+  checksum: cd929bd89709def13b47e6c16b11317bf996a09b4e987fc45a235549c3adf49d41531e017d7df511daa095bc9468c923ae9094a934fe9c62440b7351874dafb7
   languageName: node
   linkType: hard
 
