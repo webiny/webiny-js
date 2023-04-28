@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-apw" },
     { "path": "../api-apw-scheduler-so-ddb" },
@@ -33,11 +33,11 @@
     { "path": "../handler-aws" },
     { "path": "../handler-db" },
     { "path": "../handler-logs" },
-    { "path": "../migrations" },
     { "path": "../plugins" },
     { "path": "../pulumi" },
     { "path": "../pulumi-aws" },
-    { "path": "../wcp" }
+    { "path": "../wcp" },
+    { "path": "../migrations" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -112,8 +112,6 @@
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-logs/*": ["../handler-logs/src/*"],
       "@webiny/handler-logs": ["../handler-logs/src"],
-      "@webiny/migrations": ["../migrations/src"],
-      "@webiny/migrations/*": ["../migrations/src/*"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
@@ -121,7 +119,9 @@
       "@webiny/pulumi-aws/*": ["../pulumi-aws/src/*"],
       "@webiny/pulumi-aws": ["../pulumi-aws/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/wcp": ["../wcp/src"],
+      "@webiny/migrations/*": ["../migrations/src/*"],
+      "@webiny/migrations": ["../migrations/src"]
     },
     "baseUrl": "."
   }
