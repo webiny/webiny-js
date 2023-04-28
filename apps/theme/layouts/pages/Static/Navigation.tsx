@@ -54,28 +54,28 @@ const NavigationUl = styled.ul`
         position: relative;
         transition: background-color 0.2s;
 
-        ul{
-          display: none;
+        ul {
+            display: none;
         }
-        
+
         &:hover {
             background-color: ${colors.color5};
             border-radius: ${borderRadius};
 
-            ul{
-              background-color: ${colors.color7};
-              display: block;
-              position: absolute;
-              top: 35px;
-              left: 0;
-              width: 150px;
-              
-              li{
-                padding: 10px;
-                margin: 0;
-                width: 100%;
-                box-sizing: border-box;
-              }
+            ul {
+                background-color: ${colors.color7};
+                display: block;
+                position: absolute;
+                top: 35px;
+                left: 0;
+                width: 150px;
+
+                li {
+                    padding: 10px;
+                    margin: 0;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
             }
         }
     }
@@ -95,8 +95,8 @@ const NavigationUl = styled.ul`
             }
 
             ul {
-              display: block;
-              margin: 10px 0 0 25px;
+                display: block;
+                margin: 10px 0 0 25px;
             }
         }
     }
