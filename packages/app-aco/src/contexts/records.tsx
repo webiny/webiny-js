@@ -191,11 +191,21 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not fetch records");
             }
 
-            // Adjusting sorting while merging records with data received from the server.
-            setRecords(records => ({
-                ...records,
-                [type]: sortTableItems(unionBy(data, records[type], "id"), sort)
-            }));
+            setRecords(records => {
+                // In case of paginated request, we merge the fetched records with the existing ones, after sorting them.
+                if (after) {
+                    return {
+                        ...records,
+                        [type]: sortTableItems(unionBy(data, records[type], "id"), sort)
+                    };
+                }
+
+                // Otherwise, we return the fetched records after sorting them.
+                return {
+                    ...records,
+                    [type]: sortTableItems(data, sort)
+                };
+            });
 
             setMeta(meta => ({
                 ...meta,
