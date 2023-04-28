@@ -188,12 +188,7 @@ export const UPDATE_FILE = gql`
     mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
         fileManager {
             updateFile(id: $id, data: $data) {
-                data {
-                    id
-                    src
-                    name
-                    tags
-                }
+                data ${FILE_FIELDS}
                 error ${ERROR_FIELDS}
             }
         }

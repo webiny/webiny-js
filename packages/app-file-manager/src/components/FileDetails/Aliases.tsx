@@ -147,6 +147,7 @@ export const Aliases = () => {
     const [isEditing, setIsEditing] = useState(false);
     const { showSnackbar } = useSnackbar();
     const [updating, setUpdating] = useState(false);
+    const [aliases, setAliases] = useState<string[]>(file.aliases || []);
     const isEditingAllowed = canEdit(file);
 
     const getUrlWithAlias = (alias: string) => {
@@ -161,12 +162,11 @@ export const Aliases = () => {
     const onSubmit: FormOnSubmit<AliasesFormData> = async ({ aliases }) => {
         setUpdating(true);
         await updateFile(file.id, { aliases });
+        setAliases(aliases);
         setUpdating(false);
         setIsEditing(false);
         showSnackbar("Aliases successfully updated.");
     };
-
-    const aliases = file.aliases || [];
 
     return (
         <Form<AliasesFormData>
