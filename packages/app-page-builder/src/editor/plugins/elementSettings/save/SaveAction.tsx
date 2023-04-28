@@ -7,13 +7,13 @@ import dataURLtoBlob from "dataurl-to-blob";
 import SaveDialog from "./SaveDialog";
 import pick from "lodash/pick";
 import get from "lodash/get";
-import createElementPlugin from "../../../../admin/utils/createElementPlugin";
-import createBlockPlugin from "../../../../admin/utils/createBlockPlugin";
-import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
+import createElementPlugin from "~/admin/utils/createElementPlugin";
+import createBlockPlugin from "~/admin/utils/createBlockPlugin";
+import { activeElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useKeyHandler } from "../../../hooks/useKeyHandler";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "~/admin/graphql/pages";
 import {
     CREATE_PAGE_BLOCK,
@@ -30,8 +30,9 @@ import {
     PbElement,
     PbEditorElement
 } from "~/types";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { removeElementId } from "~/editor/helpers";
+import { FileInput } from "@webiny/app-file-manager/types";
 
 interface ImageDimensionsType {
     width: number;
@@ -85,7 +86,7 @@ const SaveAction: React.FC = ({ children }) => {
         const blob = dataURLtoBlob(formData.preview);
         blob.name = "pb-editor-page-element-" + element.id + ".png";
 
-        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("app-file-manager-storage");
+        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
         /**
          * We break the method because it would break if there is no fileUploaderPlugin.
          */
@@ -93,13 +94,20 @@ const SaveAction: React.FC = ({ children }) => {
             return;
         }
         const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
-        previewImage.meta = meta;
-        previewImage.meta.private = true;
+
+        const createFile: FileInput = {
+            ...previewImage,
+            tags: [],
+            meta: {
+                ...meta,
+                private: true
+            }
+        };
 
         const createdImageResponse = await client.mutate({
             mutation: CREATE_FILE,
             variables: {
-                data: previewImage
+                data: createFile
             }
         });
 

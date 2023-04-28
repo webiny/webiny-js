@@ -1,3 +1,4 @@
+import S3 from "aws-sdk/clients/s3";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
@@ -5,6 +6,8 @@ import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload";
 import WebinyError from "@webiny/error";
 import { checkPermission } from "~/plugins/checkPermission";
 import { PresignedPostPayloadData } from "~/types";
+import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase";
+import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase";
 
 const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     type: "graphql-schema",
@@ -36,6 +39,22 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 data: GetPreSignedPostPayloadResponseData
             }
 
+            type MultiPartUploadFilePart {
+                partNumber: Int!
+                url: String!
+            }
+
+            type CreateMultiPartUploadResponseData {
+                file: GetPreSignedPostPayloadResponseDataFile!
+                uploadId: String!
+                parts: [MultiPartUploadFilePart!]!
+            }
+
+            type CompleteMultiPartUploadResponse {
+                data: Boolean
+                error: FileError
+            }
+
             type GetPreSignedPostPayloadsResponse {
                 error: FileError
                 data: [GetPreSignedPostPayloadResponseData!]!
@@ -48,6 +67,28 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 getPreSignedPostPayloads(
                     data: [PreSignedPostPayloadInput]!
                 ): GetPreSignedPostPayloadsResponse
+            }
+
+            type CreateMultiPartUploadResponse {
+                data: CreateMultiPartUploadResponseData
+                error: FileError
+            }
+
+            input MultiPartUploadFilePartInput {
+                partNumber: Int!
+                etag: String!
+            }
+
+            extend type FmMutation {
+                createMultiPartUpload(
+                    data: PreSignedPostPayloadInput!
+                    numberOfParts: Number!
+                ): CreateMultiPartUploadResponse
+
+                completeMultiPartUpload(
+                    fileKey: String!
+                    uploadId: String!
+                ): CompleteMultiPartUploadResponse
             }
         `,
         resolvers: {
@@ -96,6 +137,64 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         });
 
                         return new Response(presignedPayloads);
+                    } catch (e) {
+                        return new ErrorResponse({
+                            message: e.message,
+                            code: e.code,
+                            data: e.data
+                        });
+                    }
+                }
+            },
+            FmMutation: {
+                createMultiPartUpload: async (_, args, context) => {
+                    await checkPermission(context, { rwd: "w" });
+
+                    const s3Client = new S3({
+                        region: process.env.AWS_REGION,
+                        signatureVersion: "v4"
+                    });
+
+                    try {
+                        const useCase = new CreateMultiPartUploadUseCase(
+                            String(process.env.S3_BUCKET),
+                            s3Client
+                        );
+
+                        const multiPartUpload = await useCase.execute({
+                            file: args.data,
+                            numberOfParts: args.numberOfParts
+                        });
+
+                        return new Response(multiPartUpload);
+                    } catch (e) {
+                        return new ErrorResponse({
+                            message: e.message,
+                            code: e.code,
+                            data: e.data
+                        });
+                    }
+                },
+                completeMultiPartUpload: async (_, args, context) => {
+                    await checkPermission(context, { rwd: "w" });
+
+                    const s3Client = new S3({
+                        region: process.env.AWS_REGION,
+                        signatureVersion: "v4"
+                    });
+
+                    try {
+                        const useCase = new CompleteMultiPartUploadUseCase(
+                            String(process.env.S3_BUCKET),
+                            s3Client
+                        );
+
+                        await useCase.execute({
+                            fileKey: args.fileKey,
+                            uploadId: args.uploadId
+                        });
+
+                        return new Response(true);
                     } catch (e) {
                         return new ErrorResponse({
                             message: e.message,
