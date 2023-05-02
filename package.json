@@ -213,6 +213,7 @@
     ]
   },
   "resolutions": {
+    "@emotion/react": "11.10.8",
     "@types/react": "17.0.39",
     "@types/jsdom": "link:./typings/void",
     "@typescript/lib-dom": "npm:@types/web@*",

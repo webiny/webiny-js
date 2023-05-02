@@ -1,5 +1,6 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useState } from "react";
 import Files from "react-butterfiles";
+import { observer } from "mobx-react-lite";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
@@ -24,6 +25,9 @@ import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { useFileManagerApi, useFileManagerView } from "~/index";
 import { EmptyView } from "./EmptyView";
+import UploadStatus from "~/modules/FileManagerRenderer/DefaultRenderer/BottomInfoBar/UploadStatus";
+import SupportedFileTypes from "~/modules/FileManagerRenderer/DefaultRenderer/BottomInfoBar/SupportedFileTypes";
+import { BatchFileUploader } from "~/BatchFileUploader";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -91,6 +95,7 @@ interface RenderFileProps extends Omit<FileProps, "children"> {
     file: FileItem;
     children?: React.ReactNode;
 }
+
 const renderFile: React.FC<RenderFileProps> = props => {
     const { file } = props;
     const plugin = getFileTypePlugin(file);
@@ -117,11 +122,6 @@ interface RefreshOnScrollParams {
     };
 }
 
-interface FileError {
-    file: File;
-    e: Error;
-}
-
 const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion } = props;
 
@@ -133,8 +133,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         toggleSelected,
         dragging,
         setDragging,
-        uploading,
-        setUploading,
         showFileDetails,
         hideFileDetails,
         showingFileDetails,
@@ -146,6 +144,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         settings
     } = useFileManagerView();
 
+    const [uploader] = useState<BatchFileUploader>(() => new BatchFileUploader(uploadFile));
     const fileManager = useFileManagerApi();
     const { showSnackbar } = useSnackbar();
 
@@ -198,62 +197,47 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         [loadMore]
     );
 
-    const uploadFiles = async (files: File | File[]): Promise<number | null> => {
-        setUploading(true);
-        const list: File[] = Array.isArray(files) ? files : [files];
+    const uploadFiles = async (files: File[]) => {
+        uploader.addFiles(files);
 
-        const errors: FileError[] = [];
-        const uploadedFiles: FileItem[] = [];
-        await Promise.all(
-            list.map(async file => {
-                try {
-                    const newFile = await uploadFile(file);
+        uploader.onUploadFinished(({ uploaded, errors }) => {
+            uploader.reset();
 
-                    if (newFile) {
-                        uploadedFiles.push(newFile);
-                    }
-                } catch (e) {
-                    errors.push({ file, e });
-                }
-            })
-        );
+            if (!hasPreviouslyUploadedFiles) {
+                setHasPreviouslyUploadedFiles(true);
+            }
 
-        if (!hasPreviouslyUploadedFiles) {
-            setHasPreviouslyUploadedFiles(true);
-        }
+            if (errors.length > 0) {
+                // We wait 750ms, just for everything to settle down a bit.
+                setTimeout(() => {
+                    showSnackbar(
+                        <>
+                            {t`One or more files were not uploaded successfully:`}
+                            <ol>
+                                {errors.map(({ file, e }) => (
+                                    <li key={file.name}>
+                                        <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
+                                    </li>
+                                ))}
+                            </ol>
+                        </>
+                    );
+                }, 750);
 
-        setUploading(false);
+                return;
+            }
 
-        if (errors.length > 0) {
             // We wait 750ms, just for everything to settle down a bit.
-            return setTimeout(() => {
-                showSnackbar(
-                    <>
-                        {t`One or more files were not uploaded successfully:`}
-                        <ol>
-                            {errors.map(({ file, e }) => (
-                                <li key={file.name}>
-                                    <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
-                                </li>
-                            ))}
-                        </ol>
-                    </>
-                );
-                // TODO @ts-refactor
-            }, 750) as unknown as number;
-        }
+            setTimeout(() => showSnackbar(t`File upload complete.`), 750);
 
-        // We wait 750ms, just for everything to settle down a bit.
-        setTimeout(() => showSnackbar(t`File upload complete.`), 750);
-        if (typeof onUploadCompletion === "function") {
-            // We wait 750ms, just for everything to settle down a bit.
-            return setTimeout(() => {
-                onUploadCompletion(uploadedFiles);
-                onClose && onClose();
-                // TODO @ts-refactor
-            }, 750) as unknown as number;
-        }
-        return null;
+            if (typeof onUploadCompletion === "function") {
+                // We wait 750ms, just for everything to settle down a bit.
+                setTimeout(() => {
+                    onUploadCompletion(uploaded);
+                    onClose && onClose();
+                }, 750);
+            }
+        });
     };
 
     const renderUploadFileAction = useCallback(
@@ -262,14 +246,17 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 return null;
             }
             return (
-                <ButtonPrimary onClick={browseFiles} disabled={uploading}>
+                <ButtonPrimary onClick={browseFiles}>
                     <ButtonIcon icon={<UploadIcon />} />
                     {t`Upload...`}
                 </ButtonPrimary>
             );
         },
-        [uploading, fileManager.canCreate]
+        [fileManager.canCreate]
     );
+
+    const filesBeingUploaded = uploader.getJobs().length;
+    const progress = uploader.progress;
 
     return (
         <Files
@@ -308,7 +295,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                     barRight={
                         selected.length > 0 ? (
                             <ButtonPrimary
-                                disabled={uploading}
                                 onClick={() => {
                                     (async () => {
                                         if (typeof onChange === "function") {
@@ -382,7 +368,15 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     )}
                                 </FileList>
                             </Scrollbar>
-                            <BottomInfoBar accept={accept} uploading={uploading} />
+                            <BottomInfoBar>
+                                <SupportedFileTypes accept={accept} />
+                                {filesBeingUploaded > 0 && (
+                                    <UploadStatus
+                                        numberOfFiles={filesBeingUploaded}
+                                        progress={progress}
+                                    />
+                                )}
+                            </BottomInfoBar>
                         </FileListWrapper>
                     </>
                 </OverlayLayout>
@@ -395,4 +389,4 @@ FileManagerView.defaultProps = {
     multiple: false
 };
 
-export default FileManagerView;
+export default observer(FileManagerView);

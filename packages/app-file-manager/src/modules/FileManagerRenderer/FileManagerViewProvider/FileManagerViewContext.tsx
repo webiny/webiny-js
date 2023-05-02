@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { UploadOptions } from "@webiny/app/types";
 import { FileItem } from "@webiny/app-admin/types";
 import { useSecurity } from "@webiny/app-security";
 import { Settings } from "~/types";
@@ -29,7 +30,7 @@ export interface FileManagerViewContextData<TFileItem extends FileItem = FileIte
     createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
-    uploadFile: (file: File) => Promise<TFileItem | undefined>;
+    uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
     files: TFileItem[];
     loadingFiles: boolean;
     loadMore: () => void;
@@ -43,8 +44,6 @@ export interface FileManagerViewContextData<TFileItem extends FileItem = FileIte
     setQueryParams: (queryParams: StateQueryParams) => void;
     dragging: boolean;
     setDragging: (state: boolean) => void;
-    uploading: boolean;
-    setUploading: (state: boolean) => void;
     showFileDetails: (id: string) => void;
     showingFileDetails: string | null;
     hideFileDetails: () => void;
@@ -69,6 +68,8 @@ export interface FileManagerViewProviderProps {
     own?: boolean;
     children: React.ReactNode;
 }
+
+type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 
 export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
     const { identity } = useSecurity();
@@ -254,12 +255,17 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     /**
      * Upload native browser File
      * @see https://developer.mozilla.org/en-US/docs/Web/API/File
-     * @param File file
+     * @param file
+     * @param options
      */
-    const uploadFile = async (file: File) => {
+    const uploadFile: FileManagerViewContextData["uploadFile"] = async (file, options = {}) => {
         const tags = props.scope ? [props.scope] : [];
 
-        const newFile = await fileManager.uploadFile(file, { tags });
+        const newFile = await fileManager.uploadFile(file, {
+            tags,
+            onProgress: options.onProgress
+        });
+
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags);
             setFiles(files => [newFile, ...files]);
@@ -319,13 +325,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             });
         },
         dragging: state.dragging,
-        setUploading(state = true) {
-            dispatch({
-                type: "uploading",
-                state
-            });
-        },
-        uploading: state.uploading,
         showFileDetails(id: string) {
             dispatch({ type: "showFileDetails", id });
         },

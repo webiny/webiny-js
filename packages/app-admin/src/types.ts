@@ -90,6 +90,7 @@ export interface FileItem {
         id: string;
         displayName: string;
     };
+    meta?: Record<string, any>;
 }
 
 export interface FileManagerSecurityPermission extends SecurityPermission {
