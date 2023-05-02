@@ -20,6 +20,7 @@ import {
 } from "~/operations/entry/keys";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import {
+    DbItem,
     queryAll,
     QueryAllParams,
     queryOne,
@@ -371,12 +372,13 @@ export const createEntriesStorageOperations = (
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createPartitionKey({
-                id: entry.id,
+                id,
                 locale: model.locale,
                 tenant: model.tenant
             }),
@@ -385,7 +387,7 @@ export const createEntriesStorageOperations = (
             }
         };
 
-        let records = [];
+        let records: DbItem<CmsEntry>[] = [];
         try {
             records = await queryAll(queryAllParams);
         } catch (ex) {
@@ -394,7 +396,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "LOAD_ALL_RECORDS_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -420,7 +422,7 @@ export const createEntriesStorageOperations = (
                 {
                     error: ex,
                     partitionKey: queryAllParams.partitionKey,
-                    entry
+                    id
                 }
             );
         }
