@@ -7,20 +7,17 @@ import { CircularProgressHolder, StatusWrapper, UploadingLabel } from "./styled"
 const t = i18n.ns("app-admin/file-manager/components/bottom-info-bar/list-status");
 
 export interface ListStatusProps {
-    uploading: boolean;
     listing: boolean;
 }
 
-const ListStatus: React.FC<ListStatusProps> = ({ uploading, listing }) => {
-    if (!uploading && !listing) {
+const ListStatus: React.FC<ListStatusProps> = ({ listing }) => {
+    if (!listing) {
         return null;
     }
 
-    const label = listing ? t`Loading more files...` : t`Uploading...`;
-
     return (
         <StatusWrapper>
-            <UploadingLabel>{label}</UploadingLabel>
+            <UploadingLabel>{t`Loading more files...`}</UploadingLabel>
             <CircularProgressHolder>
                 <CircularProgress size={10} spinnerWidth={1} />
             </CircularProgressHolder>

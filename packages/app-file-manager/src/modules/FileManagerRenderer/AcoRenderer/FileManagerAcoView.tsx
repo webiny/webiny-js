@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState, useEffect } from "react";
+import React, { useRef, useCallback, useState, useEffect, useMemo } from "react";
 import Files, { FilesRenderChildren, FilesRules } from "react-butterfiles";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
@@ -6,6 +6,7 @@ import styled from "@emotion/styled";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { observer } from "mobx-react-lite";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add.svg";
@@ -29,13 +30,16 @@ import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 
 import { ACO_TYPE } from "~/constants";
 
-import { FileDetails } from "~/components/FileDetails";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { DropFilesHere } from "~/components/DropFilesHere";
 import { Empty } from "~/components/Empty";
-import { Table } from "~/components/Table";
+import { FileDetails } from "~/components/FileDetails";
 import { Grid } from "~/components/Grid";
+import { Table } from "~/components/Table";
 import { Title } from "~/components/Title";
+import { UploadStatus } from "~/components/UploadStatus";
+
+import { BatchFileUploader } from "~/BatchFileUploader";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -102,11 +106,6 @@ export interface FileManagerAcoViewProps {
     own?: boolean;
 }
 
-interface FileError {
-    file: File;
-    e: Error;
-}
-
 const defaultFolderName = t`All files`;
 
 const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
@@ -118,8 +117,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         toggleSelected,
         dragging,
         setDragging,
-        uploading,
-        setUploading,
         showFileDetails,
         hideFileDetails,
         showingFileDetails,
@@ -147,6 +144,11 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         isListLoadingMore,
         listItems
     } = useAcoList({ type: ACO_TYPE, folderId, ...listWhere });
+
+    const uploader = useMemo<BatchFileUploader>(
+        () => new BatchFileUploader(uploadFile),
+        [folderId]
+    );
 
     const fileManager = useFileManagerApi();
     const { showSnackbar } = useSnackbar();
@@ -273,62 +275,47 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         setHasPreviouslyUploadedFiles(Boolean(records.length > 0 || folders.length > 0));
     }, [{ ...records }, { ...folders }]);
 
-    const uploadFiles = async (files: File | File[]): Promise<number | null> => {
-        setUploading(true);
-        const list: File[] = Array.isArray(files) ? files : [files];
+    const uploadFiles = async (files: File[]) => {
+        uploader.addFiles(files);
 
-        const errors: FileError[] = [];
-        const uploadedFiles: FileItem[] = [];
-        await Promise.all(
-            list.map(async file => {
-                try {
-                    const newFile = await uploadFile(file);
+        uploader.onUploadFinished(({ uploaded, errors }) => {
+            uploader.reset();
 
-                    if (newFile) {
-                        uploadedFiles.push(newFile);
-                    }
-                } catch (e) {
-                    errors.push({ file, e });
-                }
-            })
-        );
+            if (!hasPreviouslyUploadedFiles) {
+                setHasPreviouslyUploadedFiles(true);
+            }
 
-        if (!hasPreviouslyUploadedFiles) {
-            setHasPreviouslyUploadedFiles(true);
-        }
+            if (errors.length > 0) {
+                // We wait 750ms, just for everything to settle down a bit.
+                setTimeout(() => {
+                    showSnackbar(
+                        <>
+                            {t`One or more files were not uploaded successfully:`}
+                            <ol>
+                                {errors.map(({ file, e }) => (
+                                    <li key={file.name}>
+                                        <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
+                                    </li>
+                                ))}
+                            </ol>
+                        </>
+                    );
+                }, 750);
 
-        setUploading(false);
+                return;
+            }
 
-        if (errors.length > 0) {
             // We wait 750ms, just for everything to settle down a bit.
-            return setTimeout(() => {
-                showSnackbar(
-                    <>
-                        {t`One or more files were not uploaded successfully:`}
-                        <ol>
-                            {errors.map(({ file, e }) => (
-                                <li key={file.name}>
-                                    <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
-                                </li>
-                            ))}
-                        </ol>
-                    </>
-                );
-                // TODO @ts-refactor
-            }, 750) as unknown as number;
-        }
+            setTimeout(() => showSnackbar(t`File upload complete.`), 750);
 
-        // We wait 750ms, just for everything to settle down a bit.
-        setTimeout(() => showSnackbar(t`File upload complete.`), 750);
-        if (typeof onUploadCompletion === "function") {
-            // We wait 750ms, just for everything to settle down a bit.
-            return setTimeout(() => {
-                onUploadCompletion(uploadedFiles);
-                onClose && onClose();
-                // TODO @ts-refactor
-            }, 750) as unknown as number;
-        }
-        return null;
+            if (typeof onUploadCompletion === "function") {
+                // We wait 750ms, just for everything to settle down a bit.
+                setTimeout(() => {
+                    onUploadCompletion(uploaded);
+                    onClose && onClose();
+                }, 750);
+            }
+        });
     };
 
     const renderUploadFileAction = useCallback(
@@ -337,13 +324,13 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                 return null;
             }
             return (
-                <ButtonPrimary flat={true} small={true} onClick={browseFiles} disabled={uploading}>
+                <ButtonPrimary flat={true} small={true} onClick={browseFiles}>
                     <ButtonIcon icon={<UploadIcon />} />
                     {t`Upload...`}
                 </ButtonPrimary>
             );
         },
-        [uploading, fileManager.canCreate]
+        [fileManager.canCreate]
     );
 
     const [currentFile, setCurrentFile] = useState<FileItem>();
@@ -360,6 +347,9 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         // call the function
         fetchFileDetails();
     }, [showingFileDetails]);
+
+    const filesBeingUploaded = uploader.getJobs().length;
+    const progress = uploader.progress;
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!isListLoading && listWhere.search && records.length === 0) {
@@ -446,7 +436,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                             <>
                                 {selected.length > 0 ? (
                                     <ButtonPrimary
-                                        disabled={uploading}
                                         flat={true}
                                         small={true}
                                         onClick={() => {
@@ -528,10 +517,10 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                 >
                                     {renderList(browseFiles)}
                                 </Scrollbar>
-                                <BottomInfoBar
-                                    accept={accept}
-                                    uploading={uploading}
-                                    listing={isListLoadingMore}
+                                <BottomInfoBar accept={accept} listing={isListLoadingMore} />
+                                <UploadStatus
+                                    numberOfFiles={filesBeingUploaded}
+                                    progress={progress}
                                 />
                             </FileListWrapper>
                         </>
@@ -552,4 +541,4 @@ FileManagerAcoView.defaultProps = {
     multiple: false
 };
 
-export default FileManagerAcoView;
+export default observer(FileManagerAcoView);

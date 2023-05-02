@@ -7,6 +7,8 @@ import { Action, initializeState, State, StateListWhere, stateReducer } from "./
 import { FOLDER_ID_DEFAULT, DEFAULT_SCOPE } from "~/constants";
 import { useRecords } from "@webiny/app-aco";
 import { ListDbSort } from "@webiny/app-aco/types";
+import { FileManagerViewContextData } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
+import { UploadOptions } from "@webiny/app/types";
 
 export const getWhere = (scope: string | undefined) => {
     if (!scope) {
@@ -26,7 +28,7 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     deleteFile: (id: string) => Promise<void>;
-    uploadFile: (file: File) => Promise<TFileItem | undefined>;
+    uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
     settings: Settings | undefined;
     selected: TFileItem[];
     setSelected: (files: TFileItem[]) => void;
@@ -39,8 +41,6 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     setListSort: (state: ListDbSort) => void;
     dragging: boolean;
     setDragging: (state: boolean) => void;
-    uploading: boolean;
-    setUploading: (state: boolean) => void;
     showFileDetails: (id: string) => void;
     showingFileDetails: string | null;
     hideFileDetails: () => void;
@@ -61,6 +61,8 @@ export interface FileManagerViewProviderProps {
     own?: boolean;
     children: React.ReactNode;
 }
+
+type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 
 export const FileManagerAcoViewProvider = ({
     children,
@@ -212,18 +214,21 @@ export const FileManagerAcoViewProvider = ({
     /**
      * Upload native browser File
      * @see https://developer.mozilla.org/en-US/docs/Web/API/File
-     * @param File file
+     * @param file
+     * @param options
      */
-    const uploadFile = async (file: File) => {
+    const uploadFile: FileManagerViewContextData["uploadFile"] = async (file, options = {}) => {
         const tags = props.scope ? [props.scope] : [];
-
         const meta = {
             location: {
                 folderId: state.folderId || FOLDER_ID_DEFAULT
             }
         };
 
-        const newFile = await fileManager.uploadFile(file, meta, { tags });
+        const newFile = await fileManager.uploadFile(file, meta, {
+            tags,
+            onProgress: options.onProgress
+        });
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags);
             setFiles(files => [newFile, ...files]);
@@ -293,13 +298,6 @@ export const FileManagerAcoViewProvider = ({
             });
         },
         dragging: state.dragging,
-        setUploading(state = true) {
-            dispatch({
-                type: "uploading",
-                state
-            });
-        },
-        uploading: state.uploading,
         showFileDetails(id: string) {
             dispatch({ type: "showFileDetails", id });
         },

@@ -8,20 +8,20 @@ import {
     DELETE_FILE,
     DeleteFileMutationResponse,
     DeleteFileMutationVariables,
+    FileInput,
+    GET_FILE,
+    GET_FILE_SETTINGS,
     GetFileManagerSettingsQueryResponse,
     LIST_FILES,
     LIST_TAGS,
+    ListFileTagsQueryResponse,
+    ListFileTagsQueryVariables,
     ListFilesListFilesResponse,
     ListFilesQueryResponse,
     ListFilesQueryVariables,
-    ListFileTagsQueryResponse,
-    ListFileTagsQueryVariables,
     UPDATE_FILE,
     UpdateFileMutationResponse,
-    UpdateFileMutationVariables,
-    GET_FILE_SETTINGS,
-    GET_FILE,
-    FileInput
+    UpdateFileMutationVariables
 } from "../graphql";
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";

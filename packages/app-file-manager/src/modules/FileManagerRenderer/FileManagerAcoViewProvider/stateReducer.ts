@@ -24,7 +24,6 @@ export interface State {
     listWhere: StateListWhere;
     listSort?: ListDbSort;
     dragging: boolean;
-    uploading: boolean;
 }
 
 export type Action =
@@ -58,10 +57,6 @@ export type Action =
       }
     | {
           type: "hasPreviouslyUploadedFiles";
-          state: boolean;
-      }
-    | {
-          type: "uploading";
           state: boolean;
       };
 
@@ -114,8 +109,7 @@ export const initializeState = ({ accept, scope, own, identity }: InitParams): S
             AND: undefined
         },
         listSort: {},
-        dragging: false,
-        uploading: false
+        dragging: false
     };
 };
 
@@ -169,10 +163,6 @@ export const stateReducer: Reducer = (state: State, action) => {
         }
         case "hasPreviouslyUploadedFiles": {
             next.hasPreviouslyUploadedFiles = action.state;
-            break;
-        }
-        case "uploading": {
-            next.uploading = action.state;
             break;
         }
     }
