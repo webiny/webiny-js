@@ -14,10 +14,11 @@ export const BottomInfoBarWrapper = styled("div")`
     display: flex;
     align-items: center;
     z-index: 1;
-    > div {
-        padding: 0 10px;
-        width: 100%;
-    }
+`;
+
+export const BottomInfoBarInner = styled("div")`
+    padding: 0 10px;
+    width: 100%;
 `;
 
 export const StatusWrapper = styled("div")`
