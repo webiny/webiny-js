@@ -112,37 +112,37 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope, own } = props;
 
     const {
-        selected,
-        setSelected,
-        toggleSelected,
         dragging,
         setDragging,
-        showFileDetails,
-        hideFileDetails,
-        showingFileDetails,
-        hasPreviouslyUploadedFiles,
-        setHasPreviouslyUploadedFiles,
-        uploadFile,
-        settings,
         folderId,
         setFolderId,
         getFile,
+        hasPreviouslyUploadedFiles,
+        setHasPreviouslyUploadedFiles,
+        hideFileDetails,
+        listSort,
+        setListSort,
         listTable,
         setListTable,
         listWhere,
         setListWhere,
-        listSort,
-        setListSort
+        selected,
+        setSelected,
+        settings,
+        showFileDetails,
+        showingFileDetails,
+        toggleSelected,
+        uploadFile
     } = useFileManagerAcoView();
 
     const {
-        records,
         folders,
-        listTitle = defaultFolderName,
-        meta,
         isListLoading,
         isListLoadingMore,
-        listItems
+        listItems,
+        listTitle = defaultFolderName,
+        meta,
+        records
     } = useAcoList({ type: ACO_TYPE, folderId, ...listWhere });
 
     const uploader = useMemo<BatchFileUploader>(
