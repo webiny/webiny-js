@@ -582,10 +582,11 @@ export const createEntriesStorageOperations = (
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
-            id: entry.id,
+            id,
             locale: model.locale,
             tenant: model.tenant
         });
@@ -634,7 +635,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -650,7 +651,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
