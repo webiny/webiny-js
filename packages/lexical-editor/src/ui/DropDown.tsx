@@ -200,9 +200,8 @@ export function DropDown({
     }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
 
     const displayContainer = (): CSSProperties => {
-        // shows the container only when dropdown position is calculated to prevent
-        // blinking and visibility of the element visibility first on left and
-        // after on the right position
+        // shows the container only when dropdown position is calculated to prevent blinking.
+        // without this, window will be visible first on left (0px) and after a millisecond on the right position
         return positionIsCalculated ? { display: "block" } : { display: "none" };
     };
 
