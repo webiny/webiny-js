@@ -16,7 +16,7 @@ import {
 import loadingIcon from "./assets/loading.svg";
 import checkIcon from "./assets/check.svg";
 
-const t = i18n.ns("app-admin/file-manager/components/bottom-info-bar/upload-status");
+const t = i18n.ns("app-admin/file-manager/components/upload-status");
 
 export interface UploadStatusProps {
     progress: number;
