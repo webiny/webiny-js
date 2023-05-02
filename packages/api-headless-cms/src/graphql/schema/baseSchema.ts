@@ -28,6 +28,15 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
                 error: CmsError
             }
 
+            type CmsDeleteMultipleDataResponse {
+                id: ID!
+            }
+
+            type CmsDeleteMultipleResponse {
+                data: [CmsDeleteMultipleDataResponse!]
+                error: CmsError
+            }
+
             type CmsBooleanResponse {
                 data: Boolean
                 error: CmsError

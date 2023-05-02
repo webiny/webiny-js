@@ -2156,6 +2156,25 @@ export interface OnEntryRevisionDeleteErrorTopicParams {
     model: CmsModel;
 }
 
+export interface OnEntryBeforeDeleteMultipleTopicParams {
+    model: CmsModel;
+    entries: CmsEntry[];
+    ids: string[];
+}
+
+export interface OnEntryAfterDeleteMultipleTopicParams {
+    model: CmsModel;
+    entries: CmsEntry[];
+    ids: string[];
+}
+
+export interface OnEntryDeleteMultipleErrorTopicParams {
+    model: CmsModel;
+    entries: CmsEntry[];
+    ids: string[];
+    error: Error;
+}
+
 export interface OnEntryBeforeGetTopicParams {
     model: CmsModel;
     where: CmsEntryListWhere;
@@ -2190,6 +2209,16 @@ export interface CreateFromCmsEntryInput {
 export interface UpdateCmsEntryInput {
     [key: string]: any;
 }
+
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface DeleteMultipleEntriesParams {
+    entries: string[];
+}
+
+export type DeleteMultipleEntriesResponse = { id: string }[];
 
 /**
  * Cms Entry CRUD methods in the context.
@@ -2273,6 +2302,13 @@ export interface CmsEntryContext {
      * Delete entry with all its revisions.
      */
     deleteEntry: (model: CmsModel, id: string) => Promise<void>;
+    /**
+     * Delete multiple entries
+     */
+    deleteMultipleEntries: (
+        model: CmsModel,
+        params: DeleteMultipleEntriesParams
+    ) => Promise<DeleteMultipleEntriesResponse>;
     /**
      * Publish entry.
      */
@@ -2681,6 +2717,10 @@ export interface CmsEntryStorageOperationsDeleteParams {
     entry: CmsEntry;
 }
 
+export interface CmsEntryStorageOperationsDeleteEntriesParams {
+    entries: string[];
+}
+
 export interface CmsEntryStorageOperationsPublishParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
@@ -2862,6 +2902,13 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Delete the entry.
      */
     delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
+    /**
+     * Delete multiple entries, with a limit on how much can be deleted in one call.
+     */
+    deleteMultipleEntries: (
+        model: CmsModel,
+        params: CmsEntryStorageOperationsDeleteEntriesParams
+    ) => Promise<void>;
     /**
      * Publish the entry.
      */
