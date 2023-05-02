@@ -132,10 +132,11 @@ describe("delete multiple entries", () => {
         }
         /**
          * Next thing is we will get each of the revisions and check that the API throws not found error.
+         * The manage API.
          */
         const revisions = results.map(r => r.revisions).flat();
-        for (const id of revisions) {
-            const [result] = await manager.getCategory({ revision: id.id });
+        for (const revision of revisions) {
+            const [result] = await manager.getCategory({ revision: revision.id });
             expect(result).toMatchObject({
                 data: {
                     getCategory: {
@@ -148,5 +149,38 @@ describe("delete multiple entries", () => {
                 }
             });
         }
+        /**
+         * ... then the read API.
+         */
+        for (const revision of revisions) {
+            const [result] = await reader.getCategory({
+                where: {
+                    id: revision.id
+                }
+            });
+            expect(result).toMatchObject({
+                data: {
+                    getCategory: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            message: expect.any(String)
+                        }
+                    }
+                }
+            });
+        }
+        /**
+         * Then let's check that nothing is in the latest list.
+         */
+        const [latestResponse] = await manager.listCategories();
+        expect(latestResponse.data.listCategories.data).toHaveLength(0);
+        expect(latestResponse.data.listCategories.error).toBeNull();
+        /**
+         * And finally,  let's check that nothing is in the published list.
+         */
+        const [publishedResponse] = await reader.listCategories();
+        expect(publishedResponse.data.listCategories.data).toHaveLength(0);
+        expect(publishedResponse.data.listCategories.error).toBeNull();
     });
 });
