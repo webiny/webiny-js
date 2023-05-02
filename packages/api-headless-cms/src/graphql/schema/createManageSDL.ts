@@ -155,6 +155,8 @@ export const createManageSDL: CreateManageSDL = ({
             update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
     
             delete${singularName}(revision: ID!): CmsDeleteResponse
+
+            deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     
             publish${singularName}(revision: ID!): ${singularName}Response
     

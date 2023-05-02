@@ -21,12 +21,14 @@ import {
     HeadlessCms,
     HeadlessCmsStorageOperations,
     OnEntryAfterCreateTopicParams,
+    OnEntryAfterDeleteMultipleTopicParams,
     OnEntryAfterDeleteTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
+    OnEntryBeforeDeleteMultipleTopicParams,
     OnEntryBeforeDeleteTopicParams,
     OnEntryBeforeGetTopicParams,
     OnEntryBeforePublishTopicParams,
@@ -36,6 +38,7 @@ import {
     OnEntryCreateErrorTopicParams,
     OnEntryCreateRevisionErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
+    OnEntryDeleteMultipleErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
@@ -67,6 +70,7 @@ import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import { I18NLocale } from "@webiny/api-i18n/types";
+import { filterAsync } from "~/utils/filterAsync";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -334,6 +338,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     );
     const onEntryRevisionDeleteError = createTopic<OnEntryRevisionDeleteErrorTopicParams>(
         "cms.onEntryRevisionDeleteError"
+    );
+    /**
+     * Delete multiple entries
+     */
+    const onEntryBeforeDeleteMultiple = createTopic<OnEntryBeforeDeleteMultipleTopicParams>(
+        "cms.onEntryBeforeDeleteMultiple"
+    );
+    const onEntryAfterDeleteMultiple = createTopic<OnEntryAfterDeleteMultipleTopicParams>(
+        "cms.onEntryAfterDeleteMultiple"
+    );
+    const onEntryDeleteMultipleError = createTopic<OnEntryDeleteMultipleErrorTopicParams>(
+        "cms.onEntryDeleteMultipleError"
     );
 
     /**
@@ -1089,6 +1105,81 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
     };
+    const deleteMultipleEntries: CmsEntryContext["deleteMultipleEntries"] = async (
+        model,
+        params
+    ) => {
+        const { entries: input } = params;
+        const maxDeletableEntries = 50;
+
+        const entryIdList = new Set<string>();
+        for (const id of input) {
+            const { id: entryId } = parseIdentifier(id);
+            entryIdList.add(entryId);
+        }
+        const ids = Array.from(entryIdList);
+
+        if (ids.length > maxDeletableEntries) {
+            throw new WebinyError(
+                "Cannot delete more than 50 entries at once.",
+                "DELETE_ENTRIES_MAX",
+                {
+                    entries: ids
+                }
+            );
+        }
+        const permission = await checkEntryPermissions({ rwd: "d" });
+        await checkModelAccess(context, model);
+
+        const { items: entries } = await storageOperations.entries.list(model, {
+            where: {
+                latest: true,
+                entryId_in: ids
+            },
+            limit: maxDeletableEntries + 1
+        });
+        /**
+         * We do not want to allow deleting entries that user does not own or cannot access.
+         */
+        const items = (
+            await filterAsync(entries, async entry => {
+                return validateOwnership(context, permission, entry);
+            })
+        ).map(entry => entry.id);
+
+        try {
+            await onEntryBeforeDeleteMultiple.publish({
+                entries,
+                ids,
+                model
+            });
+            await storageOperations.entries.deleteMultipleEntries(model, {
+                entries: items
+            });
+            await onEntryAfterDeleteMultiple.publish({
+                entries,
+                ids,
+                model
+            });
+            return items.map(id => {
+                return {
+                    id
+                };
+            });
+        } catch (ex) {
+            await onEntryDeleteMultipleError.publish({
+                entries,
+                ids,
+                model,
+                error: ex
+            });
+            throw new WebinyError(ex.message, ex.code || "DELETE_ENTRIES_MULTIPLE_ERROR", {
+                error: ex,
+                entries
+            });
+        }
+    };
+
     const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, entryId) => {
         const permission = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
@@ -1447,6 +1538,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
                 return deleteEntry(model, entryId);
             });
+        },
+        async deleteMultipleEntries(model, ids) {
+            return context.benchmark.measure(
+                "headlessCms.crud.entries.deleteMultipleEntries",
+                async () => {
+                    return deleteMultipleEntries(model, ids);
+                }
+            );
         },
         async publishEntry(model, id) {
             return context.benchmark.measure("headlessCms.crud.entries.publishEntry", async () => {
