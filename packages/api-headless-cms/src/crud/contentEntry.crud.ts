@@ -10,9 +10,12 @@ import {
     CmsContext,
     CmsEntry,
     CmsEntryContext,
+    CmsEntryListParams,
     CmsEntryListWhere,
+    CmsEntryMeta,
     CmsEntryPermission,
     CmsEntryStatus,
+    CmsEntryValues,
     CmsModel,
     CmsModelField,
     CmsStorageEntry,
@@ -485,7 +488,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id: entryId
         });
     };
-    const listEntries: CmsEntryContext["listEntries"] = async (model, params) => {
+
+    const listEntries = async <T = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryListParams
+    ): Promise<[CmsEntry<T>[], CmsEntryMeta]> => {
         const permission = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
@@ -557,7 +564,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 cursor: hasMoreItems ? cursor : null
             };
 
-            return [items, meta];
+            return [items as CmsEntry<T>[], meta];
         } catch (ex) {
             throw new WebinyError(
                 "Error while fetching entries from storage.",
@@ -1089,16 +1096,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
     };
-    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, entryId) => {
+    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, entryId, force) => {
         const permission = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
 
-        const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
+        const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
             id: entryId
-        });
+        })) as CmsEntry;
 
-        if (!storageEntry) {
+        if (!storageEntry && !force) {
             throw new NotFoundError(`Entry "${entryId}" was not found!`);
+        } else if (force) {
+            return await deleteEntryHelper({
+                model,
+                entry: {
+                    id: entryId
+                } as CmsEntry
+            });
         }
 
         checkOwnership(context, permission, storageEntry);
@@ -1376,12 +1390,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        async listEntries(model, params) {
+        async listEntries<T = CmsEntryValues>(
+            model: CmsModel,
+            params: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             return context.benchmark.measure("headlessCms.crud.entries.listEntries", async () => {
                 return listEntries(model, params);
             });
         },
-        async listLatestEntries(this: HeadlessCms, model, params) {
+        async listLatestEntries<T = CmsEntryValues>(
+            this: HeadlessCms,
+            model: CmsModel,
+            params?: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             const where = params?.where || ({} as CmsEntryListWhere);
 
             return this.listEntries(model, {
@@ -1393,7 +1414,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        async listPublishedEntries(model, params) {
+        async listPublishedEntries<T = CmsEntryValues>(
+            model: CmsModel,
+            params?: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             const where = params?.where || ({} as CmsEntryListWhere);
 
             return this.listEntries(model, {

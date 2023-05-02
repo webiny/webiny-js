@@ -54,7 +54,12 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
 
     const core = createHandlerCore(params);
 
-    const plugins = new PluginsContainer(core.plugins.concat([acceptIncomingChanges()]));
+    const plugins = new PluginsContainer(
+        core.plugins.concat([
+            // createOutputBenchmarkLogs(),
+            acceptIncomingChanges()
+        ])
+    );
 
     const storageOperationsCmsModelPlugin = new StorageOperationsCmsModelPlugin(
         createCmsModelFieldConvertersAttachFactory(plugins)
