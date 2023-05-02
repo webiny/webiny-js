@@ -6,7 +6,7 @@
  *
  */
 
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as React from "react";
 
 type DropDownContextType = {
@@ -43,7 +43,7 @@ export function DropDownItem({
     }, [ref, registerItem]);
 
     return (
-        <button className={className} onClick={onClick} ref={ref} title={title}>
+        <button className={className} onClick={onClick} ref={ref} title={title} type="button">
             {children}
         </button>
     );
@@ -122,7 +122,7 @@ function DropDownItems({
         <DropDownContext.Provider value={contextValue}>
             <div
                 className={`lexical-dropdown ${showScroll ? "" : "no-scroll"}`}
-                ref={dropDownRef ?? null}
+                ref={dropDownRef}
                 onKeyDown={handleKeyDown}
             >
                 {children}
@@ -150,10 +150,14 @@ export function DropDown({
     stopCloseOnClickSelf?: boolean;
     showScroll?: boolean;
 }): JSX.Element {
+    const dropDownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    // Prevent blinking pre- / post-calculation of the position of the dropdown
+    const [positionIsCalculated, setPositionIsCalculated] = useState(false);
     const [showDropDown, setShowDropDown] = useState(false);
 
     const handleClose = () => {
+        setPositionIsCalculated(false);
         setShowDropDown(false);
         if (buttonRef && buttonRef.current) {
             buttonRef.current.focus();
@@ -162,42 +166,71 @@ export function DropDown({
 
     useEffect(() => {
         const button = buttonRef.current;
-        if (button === null || !showDropDown) {
-            return;
+        const dropDown = dropDownRef.current;
+
+        if (showDropDown && button !== null && dropDown !== null) {
+            dropDown.style.top = "44px";
+            dropDown.style.left = `${button.offsetLeft}px`;
+            setPositionIsCalculated(true);
         }
+    }, [dropDownRef, buttonRef, showDropDown]);
 
-        const handle = (event: MouseEvent) => {
-            const target = event.target;
-            if (!button.contains(target as Node)) {
-                setShowDropDown(false);
-            }
-        };
-        document.addEventListener("click", handle);
+    // @ts-ignore - keeping the original logic from lexical that works
+    useEffect(() => {
+        const button = buttonRef.current;
 
-        return () => {
-            document.removeEventListener("click", handle);
-        };
-    }, [buttonRef, showDropDown, stopCloseOnClickSelf]);
+        if (button !== null && showDropDown) {
+            const handle = (event: MouseEvent) => {
+                const target = event.target;
+                if (stopCloseOnClickSelf) {
+                    if (dropDownRef.current && dropDownRef.current.contains(target as Node)) {
+                        return;
+                    }
+                }
+                if (!button.contains(target as Node)) {
+                    setShowDropDown(false);
+                }
+            };
+            document.addEventListener("click", handle);
+
+            return () => {
+                document.removeEventListener("click", handle);
+            };
+        }
+    }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
+
+    const displayContainer = (): CSSProperties => {
+        // shows the container only when dropdown position is calculated to prevent
+        // blinking and visibility of the element visibility first on left and
+        // after on the right position
+        return positionIsCalculated ? { display: "block" } : { display: "none" };
+    };
 
     return (
-        <button
-            style={{ position: "relative" }}
-            disabled={disabled}
-            aria-label={buttonAriaLabel || buttonLabel}
-            className={buttonClassName}
-            onClick={() => setShowDropDown(!showDropDown)}
-            ref={buttonRef}
-        >
-            {buttonIconClassName && <span className={buttonIconClassName} />}
-            {buttonLabel && <span className="text dropdown-button-text">{buttonLabel}</span>}
-            <i className="chevron-down" />
+        <>
+            <button
+                style={{ position: "relative" }}
+                disabled={disabled}
+                aria-label={buttonAriaLabel || buttonLabel}
+                className={buttonClassName}
+                onClick={() => setShowDropDown(!showDropDown)}
+                ref={buttonRef}
+            >
+                {buttonIconClassName && <span className={buttonIconClassName} />}
+                {buttonLabel && <span className="text dropdown-button-text">{buttonLabel}</span>}
+                <i className="chevron-down" />
+            </button>
             {showDropDown && (
-                <div className={"lexical-dropdown-container"}>
-                    <DropDownItems showScroll={showScroll} onClose={handleClose}>
+                <div className={"lexical-dropdown-container"} style={displayContainer()}>
+                    <DropDownItems
+                        showScroll={showScroll}
+                        dropDownRef={dropDownRef}
+                        onClose={handleClose}
+                    >
                         {children}
                     </DropDownItems>
                 </div>
             )}
-        </button>
+        </>
     );
 }
