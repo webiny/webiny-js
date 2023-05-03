@@ -19,6 +19,8 @@ import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/c
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
+import carousel from "@webiny/app-page-builder/editor/plugins/elements/carousel";
+import carouselElement from "@webiny/app-page-builder/editor/plugins/elements/carouselElement";
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -54,6 +56,9 @@ import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSetting
 import cellSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/cell";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import property from "@webiny/app-page-builder/editor/plugins/elementSettings/property";
+import carouselSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carousel";
+import carouselElementSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselElement";
+import carouselStylesSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselStyles";
 // Responsive editor mode
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
@@ -84,6 +89,8 @@ export default [
     twitter(),
     codesandbox(),
     pagesList(),
+    carousel(),
+    carouselElement(),
     // grid presets
     ...gridPresets,
     // Element groups
@@ -120,6 +127,9 @@ export default [
     cellSettings,
     textSettings,
     property,
+    carouselSettings,
+    carouselElementSettings,
+    carouselStylesSettings,
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings
