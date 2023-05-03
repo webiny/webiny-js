@@ -357,7 +357,7 @@ export default /* GraphQL */ `
             data: PageModelApiNameInput!
         ): PageModelApiNameResponse
 
-        deletePageModelApiName(revision: ID!): CmsDeleteResponse
+        deletePageModelApiName(revision: ID!, force: Boolean): CmsDeleteResponse
 
         publishPageModelApiName(revision: ID!): PageModelApiNameResponse
 

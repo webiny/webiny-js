@@ -1096,21 +1096,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
     };
-    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, entryId, force) => {
+    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, force) => {
         const permission = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
 
         const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
-            id: entryId
+            id
         })) as CmsEntry;
 
         if (!storageEntry && !force) {
-            throw new NotFoundError(`Entry "${entryId}" was not found!`);
+            throw new NotFoundError(`Entry "${id}" was not found!`);
         } else if (force) {
+            const { id: entryId } = parseIdentifier(id);
             return await deleteEntryHelper({
                 model,
                 entry: {
-                    id: entryId
+                    id,
+                    entryId
                 } as CmsEntry
             });
         }

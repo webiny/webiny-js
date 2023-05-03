@@ -341,7 +341,7 @@ export default /* GraphQL */ `
 
         updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!): ProductApiSingularResponse
 
-        deleteProductApiSingular(revision: ID!): CmsDeleteResponse
+        deleteProductApiSingular(revision: ID!, force: Boolean): CmsDeleteResponse
 
         publishProductApiSingular(revision: ID!): ProductApiSingularResponse
     

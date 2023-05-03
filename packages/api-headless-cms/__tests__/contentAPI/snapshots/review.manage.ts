@@ -164,7 +164,7 @@ export default /* GraphQL */ `
 
         updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!): ReviewApiModelResponse
 
-        deleteReviewApiModel(revision: ID!): CmsDeleteResponse
+        deleteReviewApiModel(revision: ID!, force: Boolean): CmsDeleteResponse
 
         publishReviewApiModel(revision: ID!): ReviewApiModelResponse
     
