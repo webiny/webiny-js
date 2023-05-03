@@ -10,11 +10,11 @@ interface CarouselProps {
 
 const Carousel: React.FC<CarouselProps> = props => {
     if (isLegacyRenderingEngine) {
-        return <></>
+        return <></>;
     }
 
     const { element, ...rest } = props;
-    return <PeCarousel element={element as Element} {...rest} />
-}
+    return <PeCarousel element={element as Element} {...rest} />;
+};
 
 export default Carousel;

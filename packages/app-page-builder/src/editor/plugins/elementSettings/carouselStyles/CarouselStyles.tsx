@@ -23,15 +23,15 @@ const CheckboxWrapper = styled.div`
     top: -8px;
 `;
 
-const CarouselStylesSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({ 
-    defaultAccordionValue 
+const CarouselStylesSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
 }) => {
     const [element] = useActiveElement<PbEditorElement>();
 
     const { getUpdateValue: getUpdateUniversal } = useUpdateHandlers({
         element,
         dataNamespace: NAMESPACE
-    })
+    });
 
     return (
         <Accordion title={"Slider Styles"} defaultValue={defaultAccordionValue}>
@@ -64,7 +64,7 @@ const CarouselStylesSettings: React.FC<PbEditorPageElementSettingsRenderComponen
                 </Wrapper>
             </ContentWrapper>
         </Accordion>
-    )
-}
+    );
+};
 
 export default React.memo(CarouselStylesSettings);

@@ -13,12 +13,12 @@ export const initializeSwiper = async () => {
                     resolve();
                 }
             }, 333);
-        })
+        });
     }
 
     await pbCarouselCheck;
 
-    const register = await import('swiper/element/bundle');
+    const register = await import("swiper/element/bundle");
 
     register.register();
-}
+};

@@ -4,7 +4,9 @@ import { isLegacyRenderingEngine } from "~/utils";
 import React from "react";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
-const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine ? () => <></> : createCarouselElement();
+const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
+    ? () => <></>
+    : createCarouselElement();
 
 export default (): PbRenderElementPlugin => {
     return {
