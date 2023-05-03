@@ -50,8 +50,6 @@ export const createAcoModels = (context: CmsContext) => {
     const cmsModelPlugins = modelDefinitions.map(modelDefinition => {
         return modelFactory({
             group: cmsGroupPlugin.contentModelGroup,
-            tenant: context.tenancy.getCurrentTenant().id,
-            locale: locale.code,
             modelDefinition
         });
     });
