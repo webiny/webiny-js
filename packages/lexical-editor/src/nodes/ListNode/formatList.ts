@@ -27,7 +27,7 @@ import {
     $createWebinyListItemNode,
     $isWebinyListItemNode,
     WebinyListItemNode
-} from "~/nodes/list-node/WebinyListItemNode";
+} from "~/nodes/ListNode/WebinyListItemNode";
 import { ListType } from "@lexical/list";
 
 const DEFAULT_LIST_START_NUMBER = 1;

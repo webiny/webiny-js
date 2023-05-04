@@ -14,7 +14,7 @@ import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/ut
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
 import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
 import { ListType } from "@lexical/list";
-import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/ListNode/WebinyListItemNode";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 const TypographyStyleAttrName = "data-theme-list-style-id";

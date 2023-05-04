@@ -21,14 +21,14 @@ import {
     $createWebinyListNode,
     $isWebinyListNode,
     WebinyListNode
-} from "~/nodes/list-node/WebinyListNode";
+} from "~/nodes/ListNode/WebinyListNode";
 import { $createListNode } from "@lexical/list";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import {
     $handleIndent,
     $handleOutdent,
     updateChildrenListItemValue
-} from "~/nodes/list-node/formatList";
+} from "~/nodes/ListNode/formatList";
 
 export type SerializedWebinyListItemNode = Spread<
     {
