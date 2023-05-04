@@ -83,16 +83,18 @@ export interface WebinyThemeNode {
     getStyleId: () => string;
 }
 
+export type ThemeEmotionStyle = {
+    id: string;
+    tag: TypographyHTMLTag;
+    name: string;
+    styles: Record<string, any>;
+    // emotion generated class
+    className: string;
+};
+
 /*
  * Contains IDs of the styles and Emotion generated classes.
  */
 export type ThemeEmotionMap = {
-    [styleId: string]: {
-        id: string;
-        tag: TypographyHTMLTag;
-        name: string;
-        styles: Record<string, any>;
-        // emotion generated class
-        className: string;
-    };
+    [styleId: string]: ThemeEmotionStyle;
 };

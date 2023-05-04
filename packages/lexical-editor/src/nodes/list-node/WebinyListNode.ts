@@ -9,12 +9,13 @@ import {
     SerializedElementNode,
     Spread
 } from "lexical";
-import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
+import { WebinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
 import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
 import { ListType } from "@lexical/list";
 import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 const TypographyStyleAttrName = "data-theme-list-style-id";
 
@@ -59,6 +60,11 @@ export class WebinyListNode extends ElementNode {
 
         if (this.__start !== 1) {
             dom.setAttribute("start", String(this.__start));
+        }
+
+        // update styles for different tag styles
+        if (!this.hasThemeStyle()) {
+            this.setDefaultThemeListStyleByTag(this.__tag, config.theme as WebinyTheme);
         }
 
         // @ts-expect-error Internal field.
@@ -120,6 +126,7 @@ export class WebinyListNode extends ElementNode {
     }
 
     static importDomConversionMap(): DOMConversion<HTMLElement> | null {
+        debugger;
         return {
             conversion: convertWebinyListNode,
             priority: 0
@@ -137,11 +144,36 @@ export class WebinyListNode extends ElementNode {
         };
     }
 
+    setDefaultThemeListStyleByTag(tag: string, theme: WebinyTheme) {
+        if (!tag) {
+            return;
+        }
+
+        const themeEmotionMap = theme.emotionMap;
+        if (!themeEmotionMap) {
+            return;
+        }
+
+        const style = findTypographyStyleByHtmlTag(tag, themeEmotionMap);
+        if (style) {
+            this.__themeStyleId = style.id;
+        }
+    }
+
+    hasThemeStyle(): boolean {
+        return this.__themeStyleId !== undefined && this.__themeStyleId.length > 0;
+    }
+
     override updateDOM(prevNode: WebinyListNode, dom: HTMLElement, config: EditorConfig): boolean {
         if (prevNode.__tag !== this.__tag) {
             return true;
         }
+
         // update styles for different tag styles
+        if (!this.hasThemeStyle()) {
+            this.setDefaultThemeListStyleByTag(this.__tag, config.theme as WebinyTheme);
+        }
+
         setListThemeClassNames(dom, config.theme, this, this.__themeStyleId);
         dom.setAttribute(TypographyStyleAttrName, this.__themeStyleId);
         return false;
