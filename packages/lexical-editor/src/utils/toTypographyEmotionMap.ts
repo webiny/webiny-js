@@ -27,11 +27,11 @@ export const toTypographyEmotionMap = (
                 // 'lx' (abbreviation of lexical) variable will lead to generate shorter class names.
                 // for example: instead of default 'css-181qz4b-453f345f'
                 // the last segment will always end with 'lx' or 'css-181qz4b-lx'
-                const lx = {
+                const lx_typo = {
                     ...styleItem,
                     className: [css(styleItem.styles)].filter(Boolean).join(" ")
                 };
-                map[styleItem.id] = lx;
+                map[styleItem.id] = lx_typo;
             });
         }
     }

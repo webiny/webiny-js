@@ -12,7 +12,7 @@ import {
     $insertNodes,
     $isRangeSelection,
     $isRootOrShadowRoot,
-    COMMAND_PRIORITY_EDITOR
+    COMMAND_PRIORITY_EDITOR,
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
 
@@ -26,13 +26,13 @@ export const FontColorPlugin: React.FC = () => {
                 editor.update(() => {
                     const { color, themeColorName } = payload;
                     const selection = $getSelection();
-
                     if ($isRangeSelection(selection)) {
                         const fontColorNode = $createFontColorNode(
                             selection.getTextContent(),
                             color,
                             themeColorName
-                        );
+                        ).toggleFormat("bold");
+                        fontColorNode.toggleFormat("bold");
                         $applyStylesToNode(fontColorNode, selection);
                         $insertNodes([fontColorNode]);
                         if ($isRootOrShadowRoot(fontColorNode.getParentOrThrow())) {
