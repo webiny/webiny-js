@@ -129,4 +129,6 @@ export function applyTenantRouter(
             ]
         };
     });
+
+    return { originLambda };
 }
