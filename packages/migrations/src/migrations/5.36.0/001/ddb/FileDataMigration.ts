@@ -5,7 +5,7 @@ import { executeWithRetry } from "@webiny/utils";
 
 import { createDdbEntryEntity } from "../entities/createEntryEntity";
 import { createLocaleEntity } from "../entities/createLocaleEntity";
-import { createFileEntity } from "../entities/createFileEntity";
+import { createDdbFileEntity } from "../entities/createFileEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
 
 import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
@@ -26,13 +26,13 @@ export type FileDataMigrationCheckpoint = Record<string, string | boolean | unde
 export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMigrationCheckpoint> {
     private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
-    private readonly fileEntity: ReturnType<typeof createFileEntity>;
+    private readonly fileEntity: ReturnType<typeof createDdbFileEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
     constructor(table: Table) {
         this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
-        this.fileEntity = createFileEntity(table);
+        this.fileEntity = createDdbFileEntity(table);
         this.tenantEntity = createTenantEntity(table);
     }
 

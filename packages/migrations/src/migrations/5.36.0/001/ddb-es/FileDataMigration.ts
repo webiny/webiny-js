@@ -1,0 +1,431 @@
+import { Table } from "dynamodb-toolbox";
+import { Client } from "@elastic/elasticsearch";
+import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
+import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
+import { executeWithRetry } from "@webiny/utils";
+
+import { createLocaleEntity } from "../entities/createLocaleEntity";
+import { createTenantEntity } from "../entities/createTenantEntity";
+import {
+    createDdbEntryEntity,
+    createDdbEsEntryEntity
+} from "~/migrations/5.36.0/001/entities/createEntryEntity";
+import {
+    createDdbFileEntity,
+    createDdbEsFileEntity
+} from "~/migrations/5.36.0/001/entities/createFileEntity";
+import { getCompressedData } from "~/migrations/5.36.0/001/utils/getCompressedData";
+
+import {
+    batchWriteAll,
+    esCreateIndex,
+    esFindOne,
+    esGetIndexExist,
+    esGetIndexName,
+    esQueryAllWithCallback,
+    queryAll,
+    queryOne
+} from "~/utils";
+
+import { I18NLocale, ListLocalesParams, File, FileItem, Tenant } from "../types";
+
+import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "../constants";
+import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
+
+const isGroupMigrationCompleted = (
+    status: PrimitiveValue[] | boolean | undefined
+): status is boolean => {
+    return typeof status === "boolean";
+};
+
+export type FileDataMigrationCheckpoint = Record<string, PrimitiveValue[] | boolean | undefined>;
+
+export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMigrationCheckpoint> {
+    private readonly elasticsearchClient: Client;
+    private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
+    private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
+    private readonly ddbFileEntity: ReturnType<typeof createDdbFileEntity>;
+    private readonly ddbEsFileEntity: ReturnType<typeof createDdbEsFileEntity>;
+    private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
+    private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
+
+    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+        this.elasticsearchClient = elasticsearchClient;
+        this.ddbEntryEntity = createDdbEntryEntity(table);
+        this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
+        this.ddbFileEntity = createDdbFileEntity(table);
+        this.ddbEsFileEntity = createDdbEsFileEntity(esTable);
+        this.localeEntity = createLocaleEntity(table);
+        this.tenantEntity = createTenantEntity(table);
+    }
+
+    getId() {
+        return "FileData";
+    }
+
+    getDescription() {
+        return "Migrate FmFile Data -> Create ACO Search Records";
+    }
+
+    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+        const tenants = await this.listTenants();
+        if (tenants.length === 0) {
+            logger.info(`No tenants found in the system; skipping migration.`);
+            return false;
+        }
+
+        for (const tenant of tenants) {
+            const locales = await this.listLocales({ tenant });
+            if (locales.length === 0) {
+                logger.info(`No locales found in tenant "${tenant.data.id}".`);
+                continue;
+            }
+
+            for (const locale of locales) {
+                // there is an index? NO -> skip
+                const indexExists = await esGetIndexExist({
+                    elasticsearchClient: this.elasticsearchClient,
+                    tenant: tenant.data.id,
+                    locale: locale.code,
+                    type: "file-manager",
+                    isHeadlessCmsModel: false
+                });
+
+                if (!indexExists) {
+                    logger.info(
+                        `No elastic search index found for files in tenant "${tenant.data.id}" and locale "${locale.code}".`
+                    );
+                    continue;
+                }
+
+                // Fetch latest file record from ES
+                const latestFile = await esFindOne<File>({
+                    elasticsearchClient: this.elasticsearchClient,
+                    index: esGetIndexName({
+                        tenant: tenant.data.id,
+                        locale: locale.code,
+                        type: "file-manager"
+                    }),
+                    body: {
+                        query: {
+                            bool: {
+                                filter: [
+                                    { term: { "tenant.keyword": tenant.data.id } },
+                                    { term: { "locale.keyword": locale.code } }
+                                ]
+                            }
+                        },
+                        sort: [
+                            {
+                                "id.keyword": "asc"
+                            }
+                        ]
+                    }
+                });
+
+                if (!latestFile) {
+                    logger.info(
+                        `No files found in tenant "${tenant.data.id}" and locale "${locale.code}".`
+                    );
+                    continue;
+                }
+
+                // Fetch latest aco search record from DDB using latest file "id"
+                const latestSearchRecord = await queryOne<{ id: string }>({
+                    entity: this.ddbEntryEntity,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#wby-aco-${latestFile.id}`,
+                    options: {
+                        eq: "L"
+                    }
+                });
+
+                if (latestSearchRecord) {
+                    logger.info(
+                        `Files already migrated to Search Records in tenant "${tenant.data.id}" and locale "${locale.code}".`
+                    );
+                    continue;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    async execute({
+        logger,
+        ...context
+    }: DataMigrationContext<FileDataMigrationCheckpoint>): Promise<void> {
+        const tenants = await this.listTenants();
+
+        const migrationStatus: FileDataMigrationCheckpoint = context.checkpoint || {};
+
+        for (const tenant of tenants) {
+            const locales = await this.listLocales({ tenant });
+
+            for (const locale of locales) {
+                const groupId = `${tenant.data.id}:${locale.code}`;
+                const status = migrationStatus[groupId];
+
+                if (isGroupMigrationCompleted(status)) {
+                    continue;
+                }
+
+                let batch = 0;
+
+                // Since it's the first time we add an ACO record, we also need to create the index
+                await esCreateIndex({
+                    elasticsearchClient: this.elasticsearchClient,
+                    tenant: tenant.data.id,
+                    locale: locale.code,
+                    type: "acosearchrecord",
+                    isHeadlessCmsModel: true
+                });
+
+                await esQueryAllWithCallback<File>({
+                    elasticsearchClient: this.elasticsearchClient,
+                    index: esGetIndexName({
+                        tenant: tenant.data.id,
+                        locale: locale.code,
+                        type: "file-manager"
+                    }),
+                    body: {
+                        query: {
+                            bool: {
+                                filter: [
+                                    { term: { "tenant.keyword": tenant.data.id } },
+                                    { term: { "locale.keyword": locale.code } }
+                                ]
+                            }
+                        },
+                        size: 1000,
+                        sort: [
+                            {
+                                "id.keyword": "asc"
+                            }
+                        ],
+                        search_after: status
+                    },
+                    callback: async (files, cursor) => {
+                        batch++;
+                        logger.info(
+                            `Processing batch #${batch} in group ${groupId} (${files.length} files).`
+                        );
+
+                        const ddbItems = [] as any;
+                        const ddbEsItems = [] as any;
+
+                        for (const file of files) {
+                            const ddbFile = await queryOne<FileItem>({
+                                entity: this.ddbFileEntity,
+                                partitionKey: `T#${tenant.data.id}#L#${locale.code}#FM#F${file.id}`,
+                                options: {
+                                    eq: "A"
+                                }
+                            });
+
+                            const data = ddbFile?.data;
+
+                            const entry = await this.createSearchRecordCommonFields(data);
+
+                            const rawDatas = {
+                                modelId: ACO_SEARCH_MODEL_ID,
+                                version: 1,
+                                savedOn,
+                                locale: pageLocale,
+                                status: "draft",
+                                values: {
+                                    "text@type": FM_FILE_TYPE,
+                                    "text@title": title,
+                                    "text@content": content,
+                                    "text@tags": settings.general?.tags || [],
+                                    "object@location": {
+                                        "text@folderId": ROOT_FOLDER
+                                    },
+                                    "wby-aco-json@data": {
+                                        id: `${pid}#0001`,
+                                        pid,
+                                        title,
+                                        createdBy,
+                                        createdOn,
+                                        savedOn,
+                                        status,
+                                        version,
+                                        locked,
+                                        path
+                                    }
+                                },
+                                createdBy,
+                                entryId: `wby-aco-${pid}`,
+                                tenant: pageTenant,
+                                createdOn,
+                                locked: false,
+                                ownedBy: createdBy,
+                                webinyVersion: process.env.WEBINY_VERSION,
+                                id: `wby-aco-${pid}#0001`,
+                                modifiedBy: createdBy,
+                                latest: true,
+                                TYPE: "cms.entry.l",
+                                __type: "cms.entry.l",
+                                rawValues: {
+                                    "object@location": {}
+                                }
+                            };
+
+                            const latestDdb = {
+                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
+                                SK: "L",
+                                TYPE: "L",
+                                ...entry
+                            };
+
+                            const revisionDdb = {
+                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
+                                SK: "REV#0001",
+                                TYPE: "cms.entry",
+                                ...entry
+                            };
+
+                            const latestDdbEs = {
+                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
+                                SK: "L",
+                                data: await getCompressedData(rawDatas),
+                                index: esGetIndexName({
+                                    tenant: pageTenant,
+                                    locale: pageLocale,
+                                    type: "acosearchrecord",
+                                    isHeadlessCmsModel: true
+                                })
+                            };
+
+                            ddbItems.push(
+                                this.ddbEntryEntity.putBatch(latestDdb),
+                                this.ddbEntryEntity.putBatch(revisionDdb)
+                            );
+
+                            ddbEsItems.push(this.ddbEsEntryEntity.putBatch(latestDdbEs));
+                        }
+
+                        const executeDdb = () => {
+                            return batchWriteAll({
+                                table: this.ddbEntryEntity.table,
+                                items: ddbItems
+                            });
+                        };
+
+                        const executeDdbEs = () => {
+                            return batchWriteAll({
+                                table: this.ddbEsEntryEntity.table,
+                                items: ddbEsItems
+                            });
+                        };
+
+                        await executeWithRetry(executeDdb, {
+                            onFailedAttempt: error => {
+                                logger.error(
+                                    `"batchWriteAll ddb" attempt #${error.attemptNumber} failed.`
+                                );
+                                logger.error(error.message);
+                            }
+                        });
+
+                        await executeWithRetry(executeDdbEs, {
+                            onFailedAttempt: error => {
+                                logger.error(
+                                    `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed.`
+                                );
+                                logger.error(error.message);
+                            }
+                        });
+
+                        // Update checkpoint after every batch
+                        migrationStatus[groupId] = cursor;
+
+                        // Check if we should store checkpoint and exit.
+                        if (context.runningOutOfTime()) {
+                            await context.createCheckpointAndExit(migrationStatus);
+                        } else {
+                            await context.createCheckpoint(migrationStatus);
+                        }
+                    }
+                });
+
+                migrationStatus[groupId] = true;
+                await context.createCheckpoint(migrationStatus);
+            }
+        }
+    }
+
+    private async listTenants(): Promise<Tenant[]> {
+        return await queryAll<Tenant>({
+            entity: this.tenantEntity,
+            partitionKey: "TENANTS",
+            options: {
+                index: "GSI1",
+                gte: " "
+            }
+        });
+    }
+
+    private async listLocales({ tenant }: ListLocalesParams): Promise<I18NLocale[]> {
+        return await queryAll<I18NLocale>({
+            entity: this.localeEntity,
+            partitionKey: `T#${tenant.data.id}#I18N#L`,
+            options: {
+                gte: " "
+            }
+        });
+    }
+
+    private async createSearchRecordCommonFields(file: File) {
+        const {
+            tenant,
+            id,
+            key,
+            size,
+            type,
+            name,
+            meta,
+            createdOn,
+            createdBy,
+            tags,
+            aliases,
+            locale
+        } = file;
+
+        return {
+            createdBy,
+            createdOn,
+            entryId: `wby-aco-${id}`,
+            id: `wby-aco-${id}#0001`,
+            locked: false,
+            locale,
+            modelId: ACO_SEARCH_MODEL_ID,
+            modifiedBy: createdBy,
+            ownedBy: createdBy,
+            savedOn: createdOn,
+            status: "draft",
+            tenant,
+            version: 1,
+            webinyVersion: process.env.WEBINY_VERSION,
+            values: {
+                "text@title": name,
+                "wby-aco-json@data": {
+                    id,
+                    key,
+                    size,
+                    type,
+                    name,
+                    createdOn,
+                    createdBy,
+                    aliases,
+                    meta
+                },
+                "object@location": {
+                    "text@folderId": ROOT_FOLDER
+                },
+                "text@tags": addMimeTag(tags, type),
+                "text@type": FM_FILE_TYPE
+            }
+        };
+    }
+}
