@@ -25,7 +25,7 @@ import { ROOT_ID } from "./constants";
 
 import { DndItemData, FolderItem } from "~/types";
 
-type Props = {
+type ListProps = {
     type: string;
     folders: FolderItem[];
     focusedFolderId?: string;
@@ -36,7 +36,7 @@ type Props = {
     onDragEnd: () => void;
 };
 
-export const List = ({
+export const List: React.VFC<ListProps> = ({
     type,
     folders,
     onFolderClick,
@@ -45,7 +45,7 @@ export const List = ({
     enableActions,
     onDragStart,
     onDragEnd
-}: Props) => {
+}) => {
     const { updateFolder } = useFolders(type);
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
@@ -104,7 +104,7 @@ export const List = ({
 
     return (
         <>
-            <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+            <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
                 <Tree
                     tree={treeData}
                     rootId={ROOT_ID}

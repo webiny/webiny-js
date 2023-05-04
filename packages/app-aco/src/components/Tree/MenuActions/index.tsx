@@ -13,13 +13,17 @@ import { FolderItem } from "~/types";
 
 const t = i18n.ns("app-aco/components/tree/menu-actions");
 
-interface Props {
+interface MenuActionsProps {
     folder: FolderItem;
     onUpdateFolder: (data: FolderItem) => void;
     onDeleteFolder: (data: FolderItem) => void;
 }
 
-export const MenuActions = ({ folder, onUpdateFolder, onDeleteFolder }: Props) => {
+export const MenuActions: React.VFC<MenuActionsProps> = ({
+    folder,
+    onUpdateFolder,
+    onDeleteFolder
+}) => {
     if (folder) {
         return (
             <Container className={"folder-tree-menu-action"}>

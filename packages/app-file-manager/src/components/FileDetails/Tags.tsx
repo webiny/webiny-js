@@ -9,7 +9,10 @@ import { Form, FormOnSubmit } from "@webiny/form";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as LabelIcon } from "@material-design-icons/svg/outlined/label.svg";
 import { useSnackbar } from "@webiny/app-admin";
-import { useFile, useFileManagerApi, useFileManagerView } from "~/index";
+import { useFile, useFileManagerApi, useFileManagerAcoView } from "~/index";
+import { useTags } from "@webiny/app-aco";
+import { ACO_TYPE } from "~/constants";
+import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
 
 const chipsStyle = css({
     "&.mdc-chip-set": {
@@ -45,16 +48,25 @@ interface TagsFormData {
     tags: string[];
 }
 
-const Tags = () => {
+interface TagsProps {
+    scope?: string;
+    own?: boolean;
+}
+
+const Tags: React.VFC<TagsProps> = ({ scope, own }) => {
     const { file } = useFile();
+    const { tags } = useTags({
+        type: ACO_TYPE,
+        tagsModifier: tagsModifier(scope),
+        ...getTagsInitialParams({ scope, own })
+    });
     const [editing, setEdit] = useState(false);
     const [updating, setUpdating] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { canEdit } = useFileManagerApi();
-    const { updateFile, tags } = useFileManagerView();
+    const { updateFile } = useFileManagerAcoView();
     const [initialTags, setInitialTags] = useState(file.tags);
     const handleEdit = useCallback(() => setEdit(true), []);
-
     const isEditingAllowed = canEdit(file);
 
     const renderHeaderContent = useCallback(
@@ -69,7 +81,7 @@ const Tags = () => {
                 return (
                     <>
                         <Chips className={classNames("list-item__content", chipsStyle)}>
-                            {tags.map(tag => {
+                            {data.tags.map(tag => {
                                 return <Chip key={tag} label={tag} />;
                             })}
                         </Chips>
@@ -119,7 +131,7 @@ const Tags = () => {
                         <li-content>
                             <Bind name={"tags"}>
                                 <MultiAutoComplete
-                                    options={tags}
+                                    options={tags.map(tagItem => tagItem.tag)}
                                     placeholder={"homepage asset"}
                                     description={"Type in a new tag or select an existing one."}
                                     unique={true}

@@ -5,13 +5,13 @@ import { ReactComponent as Dashboard } from "@material-design-icons/svg/filled/h
 import { Container, IconContainer } from "./styled";
 import { Typography } from "@webiny/ui/Typography";
 
-type Props = {
+type TitleProps = {
     title: string;
     isDragging: boolean;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-export const Title: React.FC<Props> = ({ title, onClick, isDragging }) => {
+export const Title: React.VFC<TitleProps> = ({ title, onClick, isDragging }) => {
     return (
         <Container onClick={onClick} hasClickAction={Boolean(onClick)} isDragging={isDragging}>
             <IconContainer>

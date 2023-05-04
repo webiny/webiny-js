@@ -1,4 +1,4 @@
-const DATA_FIELD = /* GraphQL */ `
+const SEARCH_DATA_FIELD = /* GraphQL */ `
     {
         id
         type
@@ -9,6 +9,17 @@ const DATA_FIELD = /* GraphQL */ `
         }
         data
         tags
+        createdBy {
+            id
+            displayName
+            type
+        }
+    }
+`;
+
+const TAG_DATA_FIELD = /* GraphQL */ `
+    {
+        tag
     }
 `;
 
@@ -32,7 +43,7 @@ export const CREATE_RECORD = /* GraphQL */ `
     mutation CreateRecord($data: SearchRecordCreateInput!) {
         search {
             createRecord(data: $data) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -43,7 +54,7 @@ export const UPDATE_RECORD = /* GraphQL */ `
     mutation UpdateRecord($id: ID!, $data: SearchRecordUpdateInput!) {
         search {
             updateRecord(id: $id, data: $data) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -65,7 +76,7 @@ export const LIST_RECORDS = /* GraphQL */ `
     query ListRecords($where: SearchRecordListWhereInput, $search: String, $limit: Int, $after: String, $sort: AcoSort) {
         search {
             listRecords(where: $where, search: $search, limit: $limit, after: $after, sort: $sort) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -77,7 +88,19 @@ export const GET_RECORD = /* GraphQL */ `
     query GetRecord($id: ID!) {
         search {
             getRecord(id: $id ) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_TAGS = /* GraphQL */ `
+    query ListTags($where: SearchRecordTagListWhereInput) {
+        search {
+            listTags(where: $where) {
+                data ${TAG_DATA_FIELD}
+                meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
         }

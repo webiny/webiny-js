@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
@@ -9,6 +10,7 @@ import {
     DELETE_RECORD,
     GET_RECORD,
     LIST_RECORDS,
+    LIST_TAGS,
     UPDATE_RECORD
 } from "~/graphql/records.gql";
 
@@ -28,12 +30,18 @@ import {
     Meta,
     UpdateSearchRecordResponse,
     UpdateSearchRecordVariables,
-    ListDbSort
+    ListDbSort,
+    ListTagsResponse,
+    ListTagsQueryVariables,
+    TagItem,
+    ListSearchRecordsWhereQueryVariables,
+    ListTagsWhereQueryVariables
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 interface SearchRecordsContext {
-    records: SearchRecordItem[];
+    records: Record<string, SearchRecordItem[]>;
+    tags: Record<string, TagItem[]>;
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
     listRecords: (params: {
@@ -42,11 +50,25 @@ interface SearchRecordsContext {
         limit?: number;
         after?: string;
         sort?: ListDbSort;
+        search?: string;
+        createdBy?: string;
+        tags_in?: string[];
+        tags_startsWith?: string;
+        tags_not_startsWith?: string;
+        AND?: ListSearchRecordsWhereQueryVariables[];
+        OR?: ListSearchRecordsWhereQueryVariables[];
     }) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
     deleteRecord(record: SearchRecordItem): Promise<true>;
+    listTags: (
+        params: ListTagsWhereQueryVariables & {
+            type: string;
+            AND?: [ListTagsWhereQueryVariables];
+            OR?: [ListTagsWhereQueryVariables];
+        }
+    ) => Promise<TagItem[]>;
 }
 
 export const SearchRecordsContext = React.createContext<SearchRecordsContext | undefined>(
@@ -67,43 +89,72 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
+const mergeAndSortTags = (oldTagItems: TagItem[], newTags: string[]): TagItem[] => {
+    if (!newTags.length) {
+        return oldTagItems;
+    }
+
+    const newTagItems = newTags.map((tag: string) => ({ tag })); // create TagItem[] from array of strings
+    const mergedTagItems = unionBy(oldTagItems, newTagItems, "tag"); // merge the two arrays
+
+    return sortBy(mergedTagItems, ["tag"]);
+};
+
 export const SearchRecordsProvider = ({ children }: Props) => {
     const client = useApolloClient();
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
+    const [records, setRecords] = useState<Record<string, SearchRecordItem[]>>(Object.create(null));
+    const [tags, setTags] = useState<Record<string, TagItem[]>>(Object.create(null));
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
 
     const context: SearchRecordsContext = {
         records,
+        tags,
         loading,
         meta,
         async listRecords(params) {
-            const { type, folderId, after, limit, sort: sorting } = params;
+            const {
+                type,
+                folderId,
+                after,
+                limit,
+                sort: sorting,
+                search,
+                createdBy,
+                tags_in,
+                tags_startsWith,
+                tags_not_startsWith,
+                AND,
+                OR
+            } = params;
 
             /**
              * Both folderId and type are optional to init `useRecords` but required to list records:
              * this allows us to use `useRecords` methods like `getRecord` without passing useless params.
              * But still, we need these params to list records.
              */
-            if (!folderId || !type) {
-                throw new Error("`folderId` and `type` are mandatory");
+            if (!type) {
+                throw new Error("`type` are mandatory");
             }
 
             /**
              * Avoiding to fetch records in case they have already been fetched.
              * This happens when visiting a list with all records loaded and receives "after" param.
              */
-            const recordsCount = records.filter(
-                record => record.location.folderId === folderId
-            ).length;
-            const totalCount = meta[folderId]?.totalCount || 0;
+            const recordsCount =
+                records[type] &&
+                records[type].filter(record => record.location.folderId === folderId).length;
+            const totalCount = meta[folderId || "search"]?.totalCount || 0;
             if (after && recordsCount === totalCount) {
                 return;
             }
 
             // Remove records in case of sorting change and not a paginated request.
             if (sorting && !after) {
-                setRecords([]);
+                setRecords(records => ({
+                    ...records,
+                    [type]: []
+                }));
             }
 
             const action = after ? "LIST_MORE" : "LIST";
@@ -114,7 +165,22 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                         query: LIST_RECORDS,
-                        variables: { type, location: { folderId }, limit, after, sort },
+                        variables: {
+                            where: {
+                                type,
+                                ...(folderId && { location: { folderId } }),
+                                tags_in,
+                                tags_startsWith,
+                                tags_not_startsWith,
+                                createdBy,
+                                AND,
+                                OR
+                            },
+                            search,
+                            limit,
+                            after,
+                            sort
+                        },
                         fetchPolicy: "network-only"
                     })
             );
@@ -125,12 +191,25 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not fetch records");
             }
 
-            // Adjusting sorting while merging records with data received from the server.
-            setRecords(records => sortTableItems(unionBy(data, records, "id"), sort));
+            setRecords(records => {
+                // In case of paginated request, we merge the fetched records with the existing ones, after sorting them.
+                if (after) {
+                    return {
+                        ...records,
+                        [type]: sortTableItems(unionBy(data, records[type], "id"), sort)
+                    };
+                }
+
+                // Otherwise, we return the fetched records after sorting them.
+                return {
+                    ...records,
+                    [type]: sortTableItems(data, sort)
+                };
+            });
 
             setMeta(meta => ({
                 ...meta,
-                [folderId]: responseMeta
+                [folderId || "search"]: responseMeta
             }));
 
             setLoading(prev => {
@@ -166,27 +245,62 @@ export const SearchRecordsProvider = ({ children }: Props) => {
 
             if (!data) {
                 // No record found - must be deleted by previous operation
-                setRecords(records => records.filter(record => record.id !== id));
+                setRecords(records => {
+                    const currentRecord = Object.keys(records)
+                        .reduce((accumulator, current) => {
+                            return [...accumulator, ...records[current]];
+                        }, [] as SearchRecordItem[])
+                        .find(record => record.id === id);
+
+                    if (!currentRecord) {
+                        return records;
+                    }
+
+                    return {
+                        ...records,
+                        [currentRecord.type]: records[currentRecord.type].filter(
+                            record => record.id !== id
+                        )
+                    };
+                });
             } else {
                 setRecords(prevRecords => {
-                    const recordIndex = prevRecords.findIndex(record => record.id === id);
+                    const prevRecordsByType = prevRecords[data.type];
+
+                    const recordIndex = prevRecordsByType.findIndex(record => record.id === id);
 
                     // No record found in the list - must be added by previous operation
                     if (recordIndex === -1) {
-                        return [...prevRecords, data];
+                        return { ...prevRecords, [data.type]: [data, ...prevRecordsByType] };
                     }
 
                     // Updating record found in the list
-                    const result = [
-                        ...prevRecords.slice(0, recordIndex),
-                        {
-                            ...prevRecords[recordIndex],
-                            ...data
-                        },
-                        ...prevRecords.slice(recordIndex + 1)
-                    ];
+                    const result = {
+                        ...prevRecords,
+                        [data.type]: [
+                            ...prevRecordsByType.slice(0, recordIndex),
+                            {
+                                ...prevRecordsByType[recordIndex],
+                                ...data
+                            },
+                            ...prevRecordsByType.slice(recordIndex + 1)
+                        ]
+                    };
 
                     return result;
+                });
+
+                setTags(tags => {
+                    if (data.tags.length === 0) {
+                        return tags;
+                    }
+
+                    const tagsByType = tags[data.type]; // get existing tags
+
+                    return {
+                        ...tags,
+                        [data.type]: mergeAndSortTags(tagsByType, data.tags)
+                    };
                 });
             }
 
@@ -216,7 +330,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not create record");
             }
 
-            setRecords(records => [...records, data]);
+            setRecords(records => ({
+                ...records,
+                [data.type]: [...records[data.type], data]
+            }));
 
             setMeta(meta => ({
                 ...meta,
@@ -226,6 +343,19 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 }
             }));
 
+            setTags(tags => {
+                if (data.tags.length === 0) {
+                    return tags;
+                }
+
+                const tagsByType = tags[data.type]; // get existing tags
+
+                return {
+                    ...tags,
+                    [data.type]: mergeAndSortTags(tagsByType, data.tags)
+                };
+            });
+
             return data;
         },
 
@@ -234,7 +364,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error("`folderId` is mandatory");
             }
 
-            const { id, location, data, title, content } = record;
+            const { id, location, data, title, content, type } = record;
 
             const { data: response } = await apolloFetchingHandler(
                 loadingHandler("UPDATE", setLoading),
@@ -255,17 +385,31 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not update record");
             }
 
-            setRecords(records =>
-                records
+            setRecords(records => ({
+                ...records,
+                [type]: records[type]
                     .map(record => (record.id === id ? result : record))
                     .filter(record => record.location.folderId === contextFolderId)
-            );
+            }));
+
+            setTags(tags => {
+                if (data.tags.length === 0) {
+                    return tags;
+                }
+
+                const tagsByType = tags[data.type]; // get existing tags
+
+                return {
+                    ...tags,
+                    [data.type]: mergeAndSortTags(tagsByType, data.tags)
+                };
+            });
 
             return result;
         },
 
         async deleteRecord(record) {
-            const { id, location } = record;
+            const { id, location, type } = record;
             const { folderId } = location;
 
             const { data: response } = await apolloFetchingHandler(
@@ -287,7 +431,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 throw new Error(error?.message || "Could not delete record");
             }
 
-            setRecords(records => records.filter(record => record.id !== id));
+            setRecords(records => ({
+                ...records,
+                [type]: records[type].filter(record => record.id !== id)
+            }));
 
             setMeta(meta => ({
                 ...meta,
@@ -298,6 +445,38 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             return true;
+        },
+
+        async listTags(params) {
+            const { type } = params;
+
+            if (!type) {
+                throw new Error("`type` is mandatory");
+            }
+
+            const { data: response } = await apolloFetchingHandler(
+                loadingHandler("LIST", setLoading),
+                () =>
+                    client.query<ListTagsResponse, ListTagsQueryVariables>({
+                        query: LIST_TAGS,
+                        variables: {
+                            where: params
+                        }
+                    })
+            );
+
+            const { data, error } = response.search.listTags;
+
+            if (!data) {
+                throw new Error(error?.message || "Could not fetch tags");
+            }
+
+            setTags(tags => ({
+                ...tags,
+                [type]: data
+            }));
+
+            return data;
         }
     };
 

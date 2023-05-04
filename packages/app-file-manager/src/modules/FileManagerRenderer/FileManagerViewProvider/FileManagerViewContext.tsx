@@ -9,6 +9,7 @@ import {
     ListFilesListFilesResponse,
     ListFilesQueryVariables
 } from "~/modules/FileManagerApiProvider/graphql";
+import { FOLDER_ID_DEFAULT } from "~/constants";
 
 const DEFAULT_SCOPE = "scope:";
 
@@ -179,7 +180,13 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             data.tags = [...(data.tags || []), props.scope];
         }
 
-        const newFile = await fileManager.createFile(data);
+        const meta = {
+            location: {
+                folderId: FOLDER_ID_DEFAULT
+            }
+        };
+
+        const newFile = await fileManager.createFile(data, meta);
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags || []);
             setFiles(files => [newFile, ...files]);
