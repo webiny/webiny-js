@@ -140,7 +140,7 @@ export const typography = {
     ],
     lists: [
         { id: "list", name: "List 1", tag: "ul", styles: { ...paragraphs, fontSize: 17 } },
-        { id: "list1", name: "Bullet List 1", tag: "ol", styles: { ...paragraphs, fontSize: 17 } }
+        { id: "list1", name: "Numbered List 1", tag: "ol", styles: { ...paragraphs, fontSize: 17 } }
     ]
 } as const; // https://github.com/emotion-js/emotion/issues/1373#issuecomment-498059774 ;
 

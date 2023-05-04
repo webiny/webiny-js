@@ -126,7 +126,6 @@ export class WebinyListNode extends ElementNode {
     }
 
     static importDomConversionMap(): DOMConversion<HTMLElement> | null {
-        debugger;
         return {
             conversion: convertWebinyListNode,
             priority: 0
@@ -149,7 +148,7 @@ export class WebinyListNode extends ElementNode {
             return;
         }
 
-        const themeEmotionMap = theme.emotionMap;
+        const themeEmotionMap = theme?.emotionMap;
         if (!themeEmotionMap) {
             return;
         }
@@ -169,7 +168,6 @@ export class WebinyListNode extends ElementNode {
             return true;
         }
 
-        // update styles for different tag styles
         if (!this.hasThemeStyle()) {
             this.setDefaultThemeListStyleByTag(this.__tag, config.theme as WebinyTheme);
         }

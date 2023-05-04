@@ -1,5 +1,6 @@
 import {
     $createParagraphNode,
+    DOMConversion,
     DOMConversionMap,
     EditorConfig,
     ElementNode,
@@ -9,20 +10,10 @@ import {
     SerializedElementNode,
     Spread
 } from "lexical";
-import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
-import { styleObjectToString } from "~/utils/styleObjectToString";
+import { WebinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { QuoteBlockHtmlTag, WebinyThemeNode } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
-import { CSSObject } from "@emotion/react";
-
-function convertBlockquoteElement() {
-    const node = $createWebinyQuoteNode();
-    return {
-        node
-    };
-}
-
-const QuoteNodeAttrName = "data-quote-style-id";
+import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 export type SerializedWebinyQuoteNode = Spread<
     {
@@ -59,37 +50,63 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     }
 
     addThemeStylesToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
-        let styles: CSSObject = {};
         const typographyValue = theme?.emotionMap
             ? theme.emotionMap[this.__themeStyleId]
             : undefined;
+
         if (this.__themeStyleId && typographyValue) {
-            styles = typographyValue.styles;
             addClassNamesToElement(element, typographyValue?.className);
         }
 
-        element.setAttribute(QuoteNodeAttrName, this.__themeStyleId || "");
-        element.style.cssText = styleObjectToString(styles);
         return element;
+    }
+
+    hasThemeStyle(): boolean {
+        return this.__themeStyleId !== undefined && this.__themeStyleId.length > 0;
+    }
+
+    setDefaultQuoteThemeStyle(theme: WebinyTheme) {
+        const themeEmotionMap = theme?.emotionMap;
+        if (!themeEmotionMap) {
+            return;
+        }
+
+        const style = findTypographyStyleByHtmlTag("quoteblock", themeEmotionMap);
+        if (style) {
+            this.__themeStyleId = style.id;
+        }
     }
 
     // View
     override createDOM(config: EditorConfig): HTMLElement {
         const element = document.createElement("blockquote");
+        if (!this.hasThemeStyle()) {
+            this.setDefaultQuoteThemeStyle(config.theme as WebinyTheme);
+        }
+
         addClassNamesToElement(element, config.theme.quote);
         this.addThemeStylesToHTMLElement(element, config.theme);
         return element;
     }
-    override updateDOM(): boolean {
+    override updateDOM(config: EditorConfig): boolean {
+        if (!this.hasThemeStyle()) {
+            this.setDefaultQuoteThemeStyle(config.theme as WebinyTheme);
+        }
         return false;
+    }
+
+    static importDomConversionMap(): DOMConversion<HTMLElement> | null {
+        return {
+            conversion: convertBlockquoteElement,
+            priority: 0
+        };
     }
 
     static importDOM(): DOMConversionMap | null {
         return {
-            blockquote: () => ({
-                conversion: convertBlockquoteElement,
-                priority: 0
-            })
+            blockquote: () => {
+                return this.importDomConversionMap();
+            }
         };
     }
 
@@ -128,6 +145,13 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
         this.replace(paragraph);
         return true;
     }
+}
+
+function convertBlockquoteElement() {
+    const node = $createWebinyQuoteNode();
+    return {
+        node
+    };
 }
 
 export function $createWebinyQuoteNode(themeStyleId?: string, key?: NodeKey): WebinyQuoteNode {
