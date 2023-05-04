@@ -1,6 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
@@ -51,15 +49,6 @@ const defaultIdentity: SecurityIdentity = {
     displayName: "John Doe"
 };
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
-
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [], storageOperationPlugins } = params;
 
@@ -76,9 +65,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: createHeadlessCmsStorageOperations({
-                    documentClient
-                })
+                storageOperations: ops.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createAco(),
