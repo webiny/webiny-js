@@ -12,7 +12,7 @@ import {
     $insertNodes,
     $isRangeSelection,
     $isRootOrShadowRoot,
-    COMMAND_PRIORITY_EDITOR,
+    COMMAND_PRIORITY_EDITOR
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
 
