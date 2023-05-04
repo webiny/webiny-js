@@ -1,12 +1,11 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+import createGraphQLHandler from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws/gateway";
-import createGraphQLHandler from "@webiny/handler-graphql";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 
 import { createTenancyAndSecurity } from "./tenancySecurity";
@@ -14,9 +13,9 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import {
     CREATE_PAGE,
     DELETE_PAGE,
-    UPDATE_PAGE,
     PUBLISH_PAGE,
-    UNPUBLISH_PAGE
+    UNPUBLISH_PAGE,
+    UPDATE_PAGE
 } from "~tests/graphql/page.gql";
 import { CREATE_CATEGORY } from "~tests/graphql/categories.gql";
 
@@ -78,9 +77,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: createHeadlessCmsStorageOperations({
-                    documentClient
-                })
+                storageOperations: ops.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createPageBuilderContext({
