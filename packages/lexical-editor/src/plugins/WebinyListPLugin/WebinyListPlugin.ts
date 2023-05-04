@@ -1,7 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
-import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
-import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { WebinyListNode } from "~/nodes/ListNode/WebinyListNode";
+import { WebinyListItemNode } from "~/nodes/ListNode/WebinyListItemNode";
 import { useWebinyList } from "~/hooks/useWebinyList";
 
 export function WebinyListPlugin(): null {

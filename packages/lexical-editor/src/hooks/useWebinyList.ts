@@ -13,7 +13,7 @@ import {
     insertList,
     outdentList,
     removeList
-} from "~/nodes/list-node/formatList";
+} from "~/nodes/ListNode/formatList";
 import {
     INSERT_ORDERED_WEBINY_LIST_COMMAND,
     INSERT_UNORDERED_WEBINY_LIST_COMMAND,

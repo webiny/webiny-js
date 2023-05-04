@@ -21,7 +21,7 @@ import {
     findNearestWebinyListItemNode,
     getUniqueWebinyListItemNodes,
     isNestedListNode
-} from "~/utils/nodes/list-node";
+} from "~/utils/nodes/listNode";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import {
     $createWebinyListItemNode,

@@ -12,7 +12,7 @@ import {
 import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isLinkNode } from "@lexical/link";
-import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
+import { $isWebinyListNode, WebinyListNode } from "~/nodes/ListNode/WebinyListNode";
 import { $isHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";

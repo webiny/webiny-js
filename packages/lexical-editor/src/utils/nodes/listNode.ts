@@ -1,11 +1,11 @@
 import type { LexicalNode } from "lexical";
 
-import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
+import { $isWebinyListNode, WebinyListNode } from "~/nodes/ListNode/WebinyListNode";
 import {
     $createWebinyListItemNode,
     $isWebinyListItemNode,
     WebinyListItemNode
-} from "~/nodes/list-node/WebinyListItemNode";
+} from "~/nodes/ListNode/WebinyListItemNode";
 
 export function $getListDepth(listNode: WebinyListNode): number {
     let depth = 1;

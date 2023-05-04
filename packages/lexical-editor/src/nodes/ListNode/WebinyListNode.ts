@@ -12,7 +12,7 @@ import {
 import { WebinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
-import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
+import { $getListDepth, wrapInListItem } from "~/utils/nodes/listNode";
 import { ListType } from "@lexical/list";
 import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/ListNode/WebinyListItemNode";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
