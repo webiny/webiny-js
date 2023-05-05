@@ -27,7 +27,7 @@ import {
     queryOne
 } from "~/utils";
 
-import { I18NLocale, ListLocalesParams, File, FileItem, Tenant } from "../types";
+import { I18NLocale, ListLocalesParams, File, Tenant } from "../types";
 
 import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "../constants";
 import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
@@ -215,53 +215,63 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                         const ddbEsItems = [] as any;
 
                         for (const file of files) {
-                            const ddbFile = await queryOne<FileItem>({
-                                entity: this.ddbFileEntity,
-                                partitionKey: `T#${tenant.data.id}#L#${locale.code}#FM#F${file.id}`,
-                                options: {
-                                    eq: "A"
-                                }
-                            });
+                            // const { data } = await queryOne<any>({
+                            //     entity: this.ddbFileEntity,
+                            //     partitionKey: `T#${tenant.data.id}#L#${locale.code}#FM#F${file.id}`,
+                            //     options: {
+                            //         eq: "A"
+                            //     }
+                            // });
 
-                            const data = ddbFile?.data;
+                            const {
+                                tenant: fileTenant,
+                                id,
+                                key,
+                                size,
+                                type,
+                                name,
+                                meta,
+                                createdOn,
+                                createdBy,
+                                tags,
+                                aliases,
+                                locale: fileLocale
+                            } = file;
 
-                            const entry = await this.createSearchRecordCommonFields(data);
+                            const entry = await this.createSearchRecordCommonFields(file);
 
                             const rawDatas = {
                                 modelId: ACO_SEARCH_MODEL_ID,
                                 version: 1,
-                                savedOn,
-                                locale: pageLocale,
+                                locale: fileLocale,
                                 status: "draft",
                                 values: {
                                     "text@type": FM_FILE_TYPE,
-                                    "text@title": title,
-                                    "text@content": content,
-                                    "text@tags": settings.general?.tags || [],
+                                    "text@title": name,
+                                    "text@tags": addMimeTag(tags, type),
                                     "object@location": {
                                         "text@folderId": ROOT_FOLDER
                                     },
                                     "wby-aco-json@data": {
-                                        id: `${pid}#0001`,
-                                        pid,
-                                        title,
-                                        createdBy,
+                                        id,
+                                        key,
+                                        size,
+                                        type,
+                                        name,
                                         createdOn,
-                                        savedOn,
-                                        status,
-                                        version,
-                                        locked,
-                                        path
+                                        createdBy,
+                                        aliases,
+                                        meta
                                     }
                                 },
                                 createdBy,
-                                entryId: `wby-aco-${pid}`,
-                                tenant: pageTenant,
+                                entryId: `wby-aco-${id}`,
+                                tenant: fileTenant,
                                 createdOn,
                                 locked: false,
                                 ownedBy: createdBy,
                                 webinyVersion: process.env.WEBINY_VERSION,
-                                id: `wby-aco-${pid}#0001`,
+                                id: `wby-aco-${id}#0001`,
                                 modifiedBy: createdBy,
                                 latest: true,
                                 TYPE: "cms.entry.l",
@@ -272,26 +282,26 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                             };
 
                             const latestDdb = {
-                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
+                                PK: `T#${fileTenant}#L#${fileLocale}#CMS#CME#wby-aco-${id}`,
                                 SK: "L",
                                 TYPE: "L",
                                 ...entry
                             };
 
                             const revisionDdb = {
-                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
+                                PK: `T#${fileTenant}#L#${fileLocale}#CMS#CME#wby-aco-${id}`,
                                 SK: "REV#0001",
                                 TYPE: "cms.entry",
                                 ...entry
                             };
 
                             const latestDdbEs = {
-                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
+                                PK: `T#${fileTenant}#L#${fileLocale}#CMS#CME#wby-aco-${id}`,
                                 SK: "L",
                                 data: await getCompressedData(rawDatas),
                                 index: esGetIndexName({
-                                    tenant: pageTenant,
-                                    locale: pageLocale,
+                                    tenant: fileTenant,
+                                    locale: fileLocale,
                                     type: "acosearchrecord",
                                     isHeadlessCmsModel: true
                                 })

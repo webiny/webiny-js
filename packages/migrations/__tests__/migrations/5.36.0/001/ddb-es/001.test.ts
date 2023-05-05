@@ -21,6 +21,7 @@ import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTes
 import { esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.36.0/001/utils/getCompressedData";
 import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "~/migrations/5.36.0/001/constants";
+import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -92,7 +93,7 @@ describe("5.36.0-001", () => {
                         _ct: new Date().toISOString(),
                         _et: "FM.File",
                         _md: new Date().toISOString(),
-                        ...file
+                        data: file
                     });
 
                     ddbEsFiles.push({
@@ -165,7 +166,7 @@ describe("5.36.0-001", () => {
         expect(grouped.notApplicable.length).toBe(0);
     });
 
-    it("should not run if no pages found", async () => {
+    it("should not run if no files found", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
 
         const handler = createDdbEsMigrationHandler({
@@ -242,7 +243,8 @@ describe("5.36.0-001", () => {
                 size,
                 tags,
                 tenant,
-                type
+                type,
+                webinyVersion
             } = file.data;
 
             const ddbSearchRecord = ddbSearchRecords.find(
@@ -252,56 +254,34 @@ describe("5.36.0-001", () => {
                 record => record.PK === `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${id}`
             );
 
-            const values = {
-                "text@title": name,
-                "text@type": FM_FILE_TYPE,
-                "object@location": {
-                    "text@folderId": ROOT_FOLDER
-                },
-                "text@tags": [...tags, "mime:image/png"],
-                "wby-aco-json@data": {
-                    id,
-                    key,
-                    size,
-                    type,
-                    name,
-                    createdOn,
-                    createdBy,
-                    aliases,
-                    meta
-                }
-            };
-
             // Checking DDB ACO search record
             expect(ddbSearchRecord).toMatchObject({
                 PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${id}`,
                 SK: "L",
                 TYPE: "L",
-                entryId: `wby-aco-${pid}`,
-                id: `wby-aco-${pid}#0001`,
+                entryId: `wby-aco-${id}`,
+                id: `wby-aco-${id}#0001`,
                 locale,
                 tenant,
                 version: 1,
                 webinyVersion,
                 values: {
-                    "text@title": title,
-                    "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                    "text@title": name,
                     "text@type": FM_FILE_TYPE,
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
                     },
-                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
+                    "text@tags": addMimeTag(tags, type),
                     "wby-aco-json@data": {
+                        aliases,
                         createdBy,
                         createdOn,
                         id,
-                        locked,
-                        path,
-                        pid,
-                        savedOn,
-                        status,
-                        title,
-                        version
+                        key,
+                        meta,
+                        name,
+                        size,
+                        type
                     }
                 }
             });
@@ -309,45 +289,40 @@ describe("5.36.0-001", () => {
             const data = await getCompressedData({
                 modelId: ACO_SEARCH_MODEL_ID,
                 version: 1,
-                savedOn,
                 locale,
                 status: "draft",
                 values: {
                     "text@type": FM_FILE_TYPE,
-                    "text@title": title,
-                    "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
-                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
+                    "text@title": name,
+                    "text@tags": addMimeTag(tags, type),
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
                     },
                     "wby-aco-json@data": {
-                        id: `${pid}#0001`,
-                        pid,
-                        title,
-                        createdBy,
+                        id,
+                        key,
+                        size,
+                        type,
+                        name,
                         createdOn,
-                        savedOn,
-                        status,
-                        version,
-                        locked,
-                        path
+                        createdBy,
+                        aliases,
+                        meta
                     }
                 },
                 createdBy,
-                entryId: `wby-aco-${pid}`,
+                entryId: `wby-aco-${id}`,
                 tenant,
                 createdOn,
                 locked: false,
                 ownedBy: createdBy,
                 webinyVersion: process.env.WEBINY_VERSION,
-                id: `wby-aco-${pid}#0001`,
+                id: `wby-aco-${id}#0001`,
                 modifiedBy: createdBy,
                 latest: true,
                 TYPE: "cms.entry.l",
                 __type: "cms.entry.l",
-                rawValues: {
-                    "object@location": {}
-                }
+                rawValues: { "object@location": {} }
             });
 
             // Checking DDB + ES ACO search record
