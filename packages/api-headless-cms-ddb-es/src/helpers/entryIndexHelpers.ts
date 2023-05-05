@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import { CmsEntry, CmsModel, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { CmsIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
+import { getFieldIdentifier, getFieldIdentifiers } from "~/helpers/fieldIdentifier";
 
 interface SetupEntriesIndexHelpersParams {
     plugins: PluginsContainer;
@@ -41,7 +42,8 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
 
     // We're only interested in current model fields.
     for (const field of model.fields) {
-        if (storageEntry.values.hasOwnProperty(field.storageId) === false) {
+        const identifier = getFieldIdentifier(storageEntry.values, field);
+        if (!identifier) {
             continue;
         }
 
@@ -56,18 +58,18 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
             plugins,
             model,
             field,
-            rawValue: entry.values[field.storageId],
-            value: storageEntry.values[field.storageId],
+            rawValue: entry.values[identifier],
+            value: storageEntry.values[identifier],
             getFieldIndexPlugin,
             getFieldTypePlugin
         });
 
         if (typeof value !== "undefined") {
-            values[field.storageId] = value;
+            values[identifier] = value;
         }
 
         if (typeof rawValue !== "undefined") {
-            rawValues[field.storageId] = rawValue;
+            rawValues[identifier] = rawValue;
         }
     }
     return {
@@ -141,18 +143,32 @@ export const extractEntriesFromIndex = ({
             if (!targetFieldPlugin || !targetFieldPlugin.fromIndex) {
                 continue;
             }
+            /**
+             * We can safely cast as the code will not continue in case of no identifiers.
+             */
+            const identifiers = getFieldIdentifiers(entry.values, entry.rawValues, field);
+            if (!identifiers) {
+                continue;
+            }
+
             try {
-                indexValues[field.storageId] = targetFieldPlugin.fromIndex({
+                indexValues[identifiers.valueIdentifier] = targetFieldPlugin.fromIndex({
                     plugins,
                     model,
                     field,
                     getFieldIndexPlugin,
                     getFieldTypePlugin,
-                    value: entry.values[field.storageId],
+                    value: entry.values[
+                        identifiers.valueIdentifier || identifiers.rawValueIdentifier
+                    ],
                     /**
                      * Possibly no rawValues so we must check for the existence of the field.
                      */
-                    rawValue: entry.rawValues ? entry.rawValues[field.storageId] : null
+                    rawValue: entry.rawValues
+                        ? entry.rawValues[
+                              identifiers.rawValueIdentifier || identifiers.valueIdentifier
+                          ]
+                        : null
                 });
             } catch (ex) {
                 throw new WebinyError(
