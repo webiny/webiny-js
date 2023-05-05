@@ -83,14 +83,14 @@ export interface WebinyThemeNode {
     getStyleId: () => string;
 }
 
-export type ThemeEmotionStyle = {
+export interface ThemeEmotionStyle {
     id: string;
     tag: TypographyHTMLTag;
     name: string;
     styles: Record<string, any>;
     // emotion generated class
     className: string;
-};
+}
 
 /*
  * Contains IDs of the styles and Emotion generated classes.

@@ -62,7 +62,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     }
 
     hasThemeStyle(): boolean {
-        return this.__themeStyleId !== undefined && this.__themeStyleId.length > 0;
+        return !!this.__themeStyleId;
     }
 
     setDefaultQuoteThemeStyle(theme: WebinyTheme) {

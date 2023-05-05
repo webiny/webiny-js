@@ -41,13 +41,13 @@ export class WebinyListNode extends ElementNode {
 
     __themeStyleId: string;
 
-    constructor(listType: ListType, themeStyleId: string, start: number, key?: NodeKey) {
+    constructor(listType: ListType, themeStyleId?: string, start?: number, key?: NodeKey) {
         super(key);
-        this.__themeStyleId = themeStyleId;
+        this.__themeStyleId = themeStyleId || "";
         const _listType = TAG_TO_WEBINY_LIST_TYPE[listType] || listType;
         this.__listType = _listType;
         this.__tag = _listType === "number" ? "ol" : "ul";
-        this.__start = start;
+        this.__start = start || 1;
     }
 
     static override getType() {
@@ -62,7 +62,6 @@ export class WebinyListNode extends ElementNode {
             dom.setAttribute("start", String(this.__start));
         }
 
-        // update styles for different tag styles
         if (!this.hasThemeStyle()) {
             this.setDefaultThemeListStyleByTag(this.__tag, config.theme as WebinyTheme);
         }
@@ -154,13 +153,14 @@ export class WebinyListNode extends ElementNode {
         }
 
         const style = findTypographyStyleByHtmlTag(tag, themeEmotionMap);
+
         if (style) {
             this.__themeStyleId = style.id;
         }
     }
 
     hasThemeStyle(): boolean {
-        return this.__themeStyleId !== undefined && this.__themeStyleId.length > 0;
+        return !!this.__themeStyleId;
     }
 
     override updateDOM(prevNode: WebinyListNode, dom: HTMLElement, config: EditorConfig): boolean {
@@ -208,7 +208,7 @@ function setListThemeClassNames(
             nestedListClassName = nestedListTheme.list;
         }
 
-        if (listClassName !== undefined) {
+        if (listClassName) {
             classesToAdd.push(listClassName);
         }
 
@@ -270,9 +270,9 @@ function convertWebinyListNode(domNode: Node): DOMConversionOutput {
     let node = null;
 
     if (nodeName === "ol") {
-        node = $createWebinyListNode("number", "");
+        node = $createWebinyListNode("number");
     } else if (nodeName === "ul") {
-        node = $createWebinyListNode("bullet", "");
+        node = $createWebinyListNode("bullet");
     }
 
     return {
@@ -289,7 +289,7 @@ const TAG_TO_WEBINY_LIST_TYPE: Record<string, ListType> = {
 
 export function $createWebinyListNode(
     listType: ListType,
-    themeStyleId: string,
+    themeStyleId?: string,
     start = 1
 ): WebinyListNode {
     return new WebinyListNode(listType, themeStyleId, start);

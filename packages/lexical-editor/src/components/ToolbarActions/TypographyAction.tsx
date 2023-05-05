@@ -127,14 +127,16 @@ export const TypographyAction: TypographyAction = () => {
     }, [isTypographySelected, textType]);
 
     return (
-        <TypographyActionContext.Provider
-            value={{
-                value: typography,
-                applyTypography: onTypographySelect
-            }}
-        >
-            <BaseTypographyActionDropDown />
-        </TypographyActionContext.Provider>
+        <>
+            <TypographyActionContext.Provider
+                value={{
+                    value: typography,
+                    applyTypography: onTypographySelect
+                }}
+            >
+                <BaseTypographyActionDropDown />
+            </TypographyActionContext.Provider>
+        </>
     );
 };
 

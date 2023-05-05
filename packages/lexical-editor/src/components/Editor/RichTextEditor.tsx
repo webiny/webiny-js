@@ -26,7 +26,6 @@ import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedH
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { ClassNames } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
-import { PastePlugin } from "~/plugins/PastePlugin/PastePlugin";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -122,7 +121,6 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                 {focus && <AutoFocusPlugin />}
-                <PastePlugin />
                 {/* External plugins and components */}
                 {children}
                 <RichTextPlugin

@@ -13,11 +13,8 @@ export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
-    const typographyStyles = theme.styles.typography;
     const { textBlockSelection } = useRichTextEditor();
     const textType = textBlockSelection?.state?.textType;
-
-    const hasTypographyStyles = !!typographyStyles;
 
     useEffect(() => {
         if (textType) {
@@ -45,7 +42,7 @@ export const TypographyDropDown = () => {
 
     return (
         <>
-            {theme && hasTypographyStyles ? (
+            {theme && value?.name ? (
                 <DropDown
                     buttonClassName="toolbar-item typography-dropdown"
                     buttonAriaLabel={"Typography formatting options"}
