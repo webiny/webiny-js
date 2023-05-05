@@ -1,27 +1,22 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+import createGraphQLHandler from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import path from "path";
+import fs from "fs";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws/gateway";
-import createGraphQLHandler from "@webiny/handler-graphql";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-
 import { createTenancyAndSecurity } from "./tenancySecurity";
-
 import { CREATE_FILE, CREATE_FILES, DELETE_FILE, UPDATE_FILE } from "~tests/graphql/file.gql";
-
 import { GET_RECORD } from "~tests/graphql/record.gql";
-
 import { createAcoFileManagerContext } from "~/index";
 import { createStorageOperations } from "~tests/utils/storageOperations";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import { createAco } from "@webiny/api-aco";
-import path from "path";
-import fs from "fs";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -70,9 +65,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: createHeadlessCmsStorageOperations({
-                    documentClient
-                })
+                storageOperations: ops.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createFileManagerContext({
