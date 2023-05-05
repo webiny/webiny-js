@@ -19,7 +19,7 @@ import {
 } from "~tests/graphql/page.gql";
 import { CREATE_CATEGORY } from "~tests/graphql/categories.gql";
 
-import { GET_RECORD } from "~tests/graphql/record.gql";
+import { GET_RECORD, LIST_RECORDS } from "~tests/graphql/record.gql";
 
 import { createAcoPageBuilderContext } from "~/index";
 import { createStorageOperations } from "~tests/utils/storageOperations";
@@ -143,6 +143,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const search = {
         async getRecord(variables = {}) {
             return invoke({ body: { query: GET_RECORD, variables } });
+        },
+        async listRecords(variables = {}) {
+            return invoke({ body: { query: LIST_RECORDS, variables } });
         }
     };
 

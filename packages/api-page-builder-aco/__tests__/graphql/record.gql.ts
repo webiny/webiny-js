@@ -31,3 +31,19 @@ export const GET_RECORD = /* GraphQL */ `
         }
     }
 `;
+
+export const LIST_RECORDS = /* GraphQL */ `
+    query ListRecords {
+        search {
+            listRecords {
+                data  ${DATA_FIELD()}
+                error ${ERROR_FIELD}
+                meta {
+                    hasMoreItems
+                    totalCount
+                    cursor
+                }
+            }
+        }
+    }
+`;
