@@ -6,7 +6,7 @@
  *
  */
 
-import { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as React from "react";
 
 type DropDownContextType = {
@@ -152,7 +152,7 @@ export function DropDown({
 }): JSX.Element {
     const dropDownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
-    // Prevent blinking pre- / post-calculation of the position of the dropdown
+    // Used to prevent flickering of the dropdown while calculating the dropdown position.
     const [positionIsCalculated, setPositionIsCalculated] = useState(false);
     const [showDropDown, setShowDropDown] = useState(false);
 
@@ -168,18 +168,18 @@ export function DropDown({
         const button = buttonRef.current;
         const dropDown = dropDownRef.current;
 
-        if (showDropDown && button !== null && dropDown !== null) {
+        if (showDropDown && button && dropDown) {
             dropDown.style.top = "44px";
             dropDown.style.left = `${button.offsetLeft}px`;
             setPositionIsCalculated(true);
         }
     }, [dropDownRef, buttonRef, showDropDown]);
 
-    // @ts-ignore - keeping the original logic from lexical that works
+    // @ts-ignore - it's ok that all paths do not return value
     useEffect(() => {
         const button = buttonRef.current;
 
-        if (button !== null && showDropDown) {
+        if (button && showDropDown) {
             const handle = (event: MouseEvent) => {
                 const target = event.target;
                 if (stopCloseOnClickSelf) {
@@ -199,11 +199,11 @@ export function DropDown({
         }
     }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
 
-    const displayContainer = (): CSSProperties => {
-        // shows the container only when dropdown position is calculated to prevent blinking.
-        // without this, window will be visible first on left (0px) and after a millisecond on the right position
+    const displayContainer = useMemo(() => {
+        // To prevent blinking, we show the container only when the dropdown position is calculated.
+        // Without this, window would be visible first on left (0px), and after a millisecond on the right side.
         return positionIsCalculated ? { display: "block" } : { display: "none" };
-    };
+    }, [positionIsCalculated]);
 
     return (
         <>
@@ -220,7 +220,7 @@ export function DropDown({
                 <i className="chevron-down" />
             </button>
             {showDropDown && (
-                <div className={"lexical-dropdown-container"} style={displayContainer()}>
+                <div className={"lexical-dropdown-container"} style={displayContainer}>
                     <DropDownItems
                         showScroll={showScroll}
                         dropDownRef={dropDownRef}
