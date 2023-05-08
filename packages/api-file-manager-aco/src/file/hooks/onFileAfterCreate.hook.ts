@@ -10,6 +10,12 @@ export const onFileAfterCreateHook = ({ fileManager, aco }: FmAcoContext) => {
      */
     fileManager.onFileAfterCreate.subscribe(async ({ file, meta }) => {
         try {
+            if (file.meta.private) {
+                console.log(
+                    `Skipping ACO search record, the file ${file.name} is marked as "private"`
+                );
+                return;
+            }
             const payload = createFileRecordPayload(file, meta);
             await aco.search.create<FmFileRecordData>(payload);
         } catch (error) {

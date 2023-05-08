@@ -11,6 +11,12 @@ export const onFileAfterBatchCreateHook = ({ fileManager, aco }: FmAcoContext) =
     fileManager.onFileAfterBatchCreate.subscribe(async ({ files, meta }) => {
         try {
             for (const file of files) {
+                if (file.meta.private) {
+                    console.log(
+                        `Skipping ACO search record, the file ${file.name} is marked as "private"`
+                    );
+                    continue;
+                }
                 const payload = createFileRecordPayload(file, meta);
                 await aco.search.create<FmFileRecordData>(payload);
             }
