@@ -18,7 +18,6 @@ import { getCompressedData } from "~/migrations/5.36.0/001/utils/getCompressedDa
 
 import {
     batchWriteAll,
-    esCreateIndex,
     esFindOne,
     esGetIndexExist,
     esGetIndexName,
@@ -172,15 +171,6 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
 
                 let batch = 0;
 
-                // Since it's the first time we add an ACO record, we also need to create the index
-                await esCreateIndex({
-                    elasticsearchClient: this.elasticsearchClient,
-                    tenant: tenant.data.id,
-                    locale: locale.code,
-                    type: "acosearchrecord",
-                    isHeadlessCmsModel: true
-                });
-
                 await esQueryAllWithCallback<File>({
                     elasticsearchClient: this.elasticsearchClient,
                     index: esGetIndexName({
@@ -197,7 +187,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                                 ]
                             }
                         },
-                        size: 1000,
+                        size: 10000,
                         sort: [
                             {
                                 "id.keyword": "asc"
@@ -215,14 +205,6 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                         const ddbEsItems = [] as any;
 
                         for (const file of files) {
-                            // const { data } = await queryOne<any>({
-                            //     entity: this.ddbFileEntity,
-                            //     partitionKey: `T#${tenant.data.id}#L#${locale.code}#FM#F${file.id}`,
-                            //     options: {
-                            //         eq: "A"
-                            //     }
-                            // });
-
                             const {
                                 tenant: fileTenant,
                                 id,
