@@ -377,6 +377,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
                     settings={settings}
+                    selectableItems={Boolean(typeof onChange === "function")}
                 />
             );
         }

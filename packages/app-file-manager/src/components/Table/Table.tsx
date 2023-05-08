@@ -38,6 +38,7 @@ interface TableProps {
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
+    selectableItems: boolean;
 }
 
 interface Entry {
@@ -61,7 +62,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         onFolderClick,
         onSelectRow,
         sorting,
-        onSortingChange
+        onSortingChange,
+        selectableItems
     } = props;
 
     const [data, setData] = useState<Entry[]>([]);
@@ -83,7 +85,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 fileType: data.type,
                 size: data.size,
                 original: data || {},
-                selectable: true
+                selectable: selectableItems
             }));
     }, [records]);
 
