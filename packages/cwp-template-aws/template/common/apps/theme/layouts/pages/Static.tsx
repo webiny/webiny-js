@@ -1,8 +1,8 @@
 import React from "react";
-import { Header } from "./Static/Header";
-import { Footer } from "./Static/Footer";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
+import { Header } from "./Static/Header";
+import { Footer } from "./Static/Footer";
 
 const globalStyles = css`
     html {
