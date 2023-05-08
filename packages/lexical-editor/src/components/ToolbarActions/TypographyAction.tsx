@@ -18,6 +18,7 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
+import { $isBaseParagraphNode, BaseParagraphNode } from "~/nodes/BaseParagraphNode";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -52,6 +53,7 @@ export const TypographyAction: TypographyAction = () => {
     const [typography, setTypography] = useState<TypographyValue>();
     const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
+    const isBaseParagraphSelected = textBlockSelection?.state?.baseParagraph.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
@@ -102,12 +104,35 @@ export const TypographyAction: TypographyAction = () => {
 
     useEffect(() => {
         if (textBlockSelection) {
+            debugger;
             // header and paragraph elements inserted with typography node
             if ($isTypographyElementNode(textBlockSelection?.element)) {
                 const el = textBlockSelection.element as TypographyElementNode;
                 setTypography(el.getTypographyValue());
                 return;
             }
+
+            if ($isBaseParagraphNode(textBlockSelection?.element)) {
+                debugger;
+                const el = textBlockSelection.element as BaseParagraphNode;
+                const styleId = el.getTypographyStyleId();
+                if (!styleId) {
+                    return;
+                }
+                if (!themeEmotionMap) {
+                    return;
+                }
+
+                const style = themeEmotionMap[styleId];
+                setTypography({
+                    name: style.name,
+                    id: style.id,
+                    css: style.styles,
+                    tag: style.tag
+                });
+                return;
+            }
+
             // list and quote element
             if (themeEmotionMap && textBlockSelection?.element?.getStyleId) {
                 const themeStyleId = textBlockSelection?.element?.getStyleId() || undefined;
@@ -124,7 +149,7 @@ export const TypographyAction: TypographyAction = () => {
                 }
             }
         }
-    }, [isTypographySelected, textType]);
+    }, [isTypographySelected, textType, isBaseParagraphSelected]);
 
     return (
         <TypographyActionContext.Provider

@@ -11,6 +11,7 @@ import { TypographyElementNode } from "~/nodes/TypographyElementNode";
 import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
 import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
 import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
+import { BaseParagraphNode } from "~/nodes/BaseParagraphNode";
 
 export const WebinyNodes: ReadonlyArray<
     | Klass<LexicalNode>
@@ -21,6 +22,7 @@ export const WebinyNodes: ReadonlyArray<
 > = [
     HeadingNode,
     // Don't forget to register your custom node separately!
+    BaseParagraphNode,
     WebinyListNode,
     WebinyListItemNode,
     WebinyQuoteNode,

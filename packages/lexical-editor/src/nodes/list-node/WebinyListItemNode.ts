@@ -1,5 +1,4 @@
 import {
-    $createParagraphNode,
     $isElementNode,
     $isParagraphNode,
     $isRangeSelection,
@@ -29,6 +28,7 @@ import {
     $handleOutdent,
     updateChildrenListItemValue
 } from "~/nodes/list-node/formatList";
+import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
 
 export type SerializedWebinyListItemNode = Spread<
     {
@@ -247,7 +247,7 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override collapseAtStart(selection: RangeSelection): true {
-        const paragraph = $createParagraphNode();
+        const paragraph = $createBaseParagraphNode();
         const children = this.getChildren();
         children.forEach(child => paragraph.append(child));
         const listNode = this.getParentOrThrow();
