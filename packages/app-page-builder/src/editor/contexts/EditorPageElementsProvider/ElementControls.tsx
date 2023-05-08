@@ -28,10 +28,17 @@ export const ElementControls = () => {
         return null;
     }
 
-    // If the current element is a child of a pre-made block (via the Blocks module),
+    // If the current element is a child of a pre-made block,
     // then we don't want to render any controls for any child elements.
     const isBlockChild = meta?.parentBlockElement;
     if (isBlockChild) {
+        return null;
+    }
+
+    // If the current element is a child of a pre-made template block,
+    // then we don't want to render any controls for any child elements.
+    const isTemplateBlockChild = meta?.parentTemplateBlockElement;
+    if (isTemplateBlockChild) {
         return null;
     }
 
