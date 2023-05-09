@@ -1096,17 +1096,28 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
     };
-    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, force) => {
+    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
         const permission = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
+        const { force } = options || {};
 
         const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
             id
         })) as CmsEntry;
-
+        /**
+         * If there is no entry, and we do not force the deletion, just throw an error.
+         */
         if (!storageEntry && !force) {
             throw new NotFoundError(`Entry "${id}" was not found!`);
-        } else if (force) {
+        }
+        /**
+         * In the case we are forcing the deletion, we do not need the storageEntry to exist as it might be an error when loading single database record.
+         *
+         * This happens, sometimes, in the Elasticsearch system as the entry might get deleted from the DynamoDB but not from the Elasticsearch.
+         * This is due to high load on the Elasticsearch at the time of the deletion.
+         */
+        //
+        else if (!storageEntry && force) {
             const { id: entryId } = parseIdentifier(id);
             return await deleteEntryHelper({
                 model,

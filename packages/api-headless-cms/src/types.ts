@@ -2192,6 +2192,16 @@ export interface UpdateCmsEntryInput {
 }
 
 /**
+ * @category CmsEntry
+ */
+export interface CmsDeleteEntryOptions {
+    /**
+     * Runs the delete commands even if the entry is not found in the DynamoDB.
+     * This is to force clean the entry records that might have been left behind a failed delete.
+     */
+    force?: boolean;
+}
+/**
  * Cms Entry CRUD methods in the context.
  *
  * @category Context
@@ -2272,7 +2282,7 @@ export interface CmsEntryContext {
     /**
      * Delete entry with all its revisions.
      */
-    deleteEntry: (model: CmsModel, id: string, force?: boolean) => Promise<void>;
+    deleteEntry: (model: CmsModel, id: string, options?: CmsDeleteEntryOptions) => Promise<void>;
     /**
      * Publish entry.
      */
