@@ -1,5 +1,4 @@
 import {
-    $createParagraphNode,
     $getSelection,
     $isElementNode,
     $isLeafNode,
@@ -29,6 +28,7 @@ import {
     WebinyListItemNode
 } from "~/nodes/list-node/WebinyListItemNode";
 import { ListType } from "@lexical/list";
+import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
 
 const DEFAULT_LIST_START_NUMBER = 1;
 
@@ -212,7 +212,7 @@ export function removeList(editor: LexicalEditor): void {
                 const listItems = $getAllListItems(listNode);
 
                 for (const WebinyListItemNode of listItems) {
-                    const paragraph = $createParagraphNode();
+                    const paragraph = $createBaseParagraphNode();
 
                     append(paragraph, WebinyListItemNode.getChildren());
 
@@ -469,7 +469,7 @@ export function $handleListInsertParagraph(): boolean {
     let replacementNode;
 
     if ($isRootOrShadowRoot(grandparent)) {
-        replacementNode = $createParagraphNode();
+        replacementNode = $createBaseParagraphNode();
         topListNode.insertAfter(replacementNode);
     } else if ($isWebinyListItemNode(grandparent)) {
         replacementNode = $createWebinyListItemNode();

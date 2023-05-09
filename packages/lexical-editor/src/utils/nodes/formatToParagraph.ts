@@ -1,18 +1,17 @@
 import {
-    $createParagraphNode,
     $getSelection,
     $isRangeSelection,
     DEPRECATED_$isGridSelection,
     LexicalEditor
 } from "lexical";
-import { $wrapNodes } from "@lexical/selection";
+import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
+import { $setBlocksType } from "@lexical/selection";
 
-export const formatToParagraph = (editor: LexicalEditor) => {
+export const formatToParagraph = (editor: LexicalEditor, typographyStyleId?: string) => {
     editor.update(() => {
         const selection = $getSelection();
-
         if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
-            $wrapNodes(selection, () => $createParagraphNode());
+            $setBlocksType(selection, () => $createBaseParagraphNode(typographyStyleId));
         }
     });
 };

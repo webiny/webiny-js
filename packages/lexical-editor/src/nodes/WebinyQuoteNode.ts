@@ -1,5 +1,4 @@
 import {
-    $createParagraphNode,
     DOMConversionMap,
     EditorConfig,
     ElementNode,
@@ -14,6 +13,7 @@ import { styleObjectToString } from "~/utils/styleObjectToString";
 import { QuoteBlockHtmlTag, WebinyThemeNode } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
 import { CSSObject } from "@emotion/react";
+import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
 
 function convertBlockquoteElement() {
     const node = $createWebinyQuoteNode();
@@ -114,7 +114,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     // Mutation
 
     override insertNewAfter(): ParagraphNode {
-        const newBlock = $createParagraphNode();
+        const newBlock = $createBaseParagraphNode();
         const direction = this.getDirection();
         newBlock.setDirection(direction);
         this.insertAfter(newBlock);
@@ -122,7 +122,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     }
 
     override collapseAtStart(): true {
-        const paragraph = $createParagraphNode();
+        const paragraph = $createBaseParagraphNode();
         const children = this.getChildren();
         children.forEach(child => paragraph.append(child));
         this.replace(paragraph);
