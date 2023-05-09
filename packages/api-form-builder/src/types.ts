@@ -12,6 +12,9 @@ interface FbFormTriggerData {
 interface FbSubmissionData {
     [key: string]: any;
 }
+interface FbSubmissionMeta {
+    [key: string]: any;
+}
 
 interface FbFormFieldValidator {
     name: string;
@@ -54,7 +57,7 @@ export interface FbFormTriggerHandlerParams {
     addLog: (log: Record<string, any>) => void;
     trigger: FbFormTriggerData;
     data: FbSubmissionData;
-    meta: Record<string, any>;
+    meta: FbSubmissionMeta;
     form: FbForm;
 }
 

@@ -7,7 +7,7 @@ import {
     Response
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { sanitizeFormSubmissionData, flattenObj } from "~/plugins/crud/utils";
+import { sanitizeFormSubmissionData, flattenSubmissionMeta } from "~/plugins/crud/utils";
 import { FormBuilderContext, FbFormField } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
@@ -211,10 +211,15 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 form: FbSubmissionFormData
             }
 
+            type FbSubmissionMetaUrl {
+                location: String
+                query: JSON
+            }
+
             type FbSubmissionMeta {
                 ip: String
                 submittedOn: DateTime
-                url: JSON
+                url: FbSubmissionMetaUrl
             }
 
             type FbListSubmissionsMeta {
@@ -558,7 +563,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                          * Add meta fields.
                          */
                         for (let i = 0; i < submissions.length; i++) {
-                            const flattenExportMeta = flattenObj(
+                            const flattenExportMeta = flattenSubmissionMeta(
                                 submissions[i].meta.url || {},
                                 "meta_url"
                             );
@@ -579,7 +584,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                                 submissions[i].data
                             );
 
-                            const flattenExportMeta = flattenObj(
+                            const flattenExportMeta = flattenSubmissionMeta(
                                 submissions[i].meta.url || {},
                                 "meta_url"
                             );

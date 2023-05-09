@@ -67,11 +67,18 @@ const renderFieldValueLabel = (field: FbFormModelField, value: string): string =
     return getFieldValueLabel(field, value);
 };
 
-const flattenObj = (obj: Record<string, any>, parent: string, res: Record<string, string> = {}) => {
+/**
+ * Converts deep submission meta object into flat object suitable for CSV.
+ */
+const flattenSubmissionMeta = (
+    obj: Record<string, any>,
+    parent: string,
+    res: Record<string, string> = {}
+) => {
     for (const key in obj) {
         const propName = parent ? parent + "_" + key : key;
         if (typeof obj[key] == "object") {
-            flattenObj(obj[key], propName, res);
+            flattenSubmissionMeta(obj[key], propName, res);
         } else {
             res[propName] = obj[key];
         }
@@ -118,7 +125,7 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
                                         navigator.clipboard.writeText(
                                             parse({
                                                 ...formSubmission.data,
-                                                ...flattenObj(exportMeta, "meta")
+                                                ...flattenSubmissionMeta(exportMeta, "meta")
                                             })
                                         );
                                         showSnackbar("CSV data copied to clipboard.");
