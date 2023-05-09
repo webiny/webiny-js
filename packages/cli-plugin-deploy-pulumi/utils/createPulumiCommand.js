@@ -62,9 +62,7 @@ const createPulumiCommand = ({
         const cwd = path.join(process.cwd(), inputs.folder);
 
         // Get project application metadata.
-        const projectApplication = getProjectApplication({
-            cwd: path.join(cwd, inputs.folder)
-        });
+        const projectApplication = getProjectApplication({ cwd });
 
         if (projectApplication.type === "v5-workspaces") {
             // If needed, let's create a project application workspace.
