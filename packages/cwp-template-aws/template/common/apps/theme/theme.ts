@@ -156,7 +156,7 @@ const theme = createTheme({
                     background: colors.color1,
                     border: `1px solid ${colors.color1}`,
                     borderRadius: 4,
-                    color: colors.color6,
+                    color: colors.color6
                 }
             },
             button: {
