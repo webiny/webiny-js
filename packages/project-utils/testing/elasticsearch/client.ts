@@ -107,12 +107,23 @@ interface ElasticsearchClient extends Client {
 const attachCustomEvents = (client: Client): ElasticsearchClient => {
     const registeredIndexes = new Set<string>();
     const originalCreate = client.indices.create;
+    const originalExists = client.indices.exists;
 
     const registerIndex = (input: string[] | string) => {
         const names = Array.isArray(input) ? input : [input];
         for (const name of names) {
             registeredIndexes.add(name);
         }
+    };
+
+    // @ts-ignore
+    client.indices.exists = async (
+        params: RequestParams.IndicesExists,
+        options: TransportRequestOptions = {}
+    ) => {
+        registerIndex(params.index);
+        // @ts-ignore
+        return originalExists.apply(client.indices, [params, options]);
     };
 
     // @ts-ignore
