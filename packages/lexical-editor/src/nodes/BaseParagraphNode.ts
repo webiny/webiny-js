@@ -22,8 +22,8 @@ import { ThemeEmotionMap } from "~/types";
 
 export type SerializeBaseParagraphNode = Spread<
     {
-        type: "base-paragraph-node";
         styles: ThemeStyleValue[];
+        type: "base-paragraph-node";
         version: 1;
     },
     SerializedElementNode
@@ -37,6 +37,7 @@ export class BaseParagraphNode
 
     constructor(typographyStyleId?: string, key?: NodeKey) {
         super(key);
+        debugger;
         if (typographyStyleId) {
             this.__styles.push({ styleId: typographyStyleId, type: "typography" });
         }
@@ -83,6 +84,7 @@ export class BaseParagraphNode
     }
 
     protected addThemeStyleToElement(element: HTMLElement, theme: WebinyTheme): HTMLElement {
+        debugger;
         if (!this.hasTypographyStyle() && theme?.emotionMap) {
             this.setDefaultTypography(theme.emotionMap);
             const styleId = this.getTypographyStyleId();
@@ -100,7 +102,6 @@ export class BaseParagraphNode
     }
 
     protected updateElementThemeStyle(element: HTMLElement, theme: WebinyTheme): HTMLElement {
-        debugger;
         if (!this.hasTypographyStyle()) {
             return this.addThemeStyleToElement(element, theme);
         }
@@ -123,6 +124,7 @@ export class BaseParagraphNode
     // View
     override createDOM(config: EditorConfig): HTMLElement {
         const element = document.createElement("p");
+        debugger;
         if (!this.hasTypographyStyle()) {
             return this.addThemeStyleToElement(element, config.theme as WebinyTheme);
         }
@@ -134,12 +136,12 @@ export class BaseParagraphNode
         dom: HTMLElement,
         config: EditorConfig
     ): boolean {
+        debugger;
         this.updateElementThemeStyle(dom, config.theme as WebinyTheme);
         return true;
     }
 
     static importDOM(): DOMConversionMap | null {
-        debugger;
         return {
             p: () => ({
                 conversion: convertParagraphElement,
@@ -234,6 +236,7 @@ export class BaseParagraphNode
 }
 
 function convertParagraphElement(element: HTMLElement): DOMConversionOutput {
+    debugger;
     const node = $createBaseParagraphNode();
     if (element.style) {
         node.setFormat(element.style.textAlign as ElementFormatType);

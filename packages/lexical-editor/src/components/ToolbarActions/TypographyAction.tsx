@@ -55,6 +55,7 @@ export const TypographyAction: TypographyAction = () => {
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
     const isBaseParagraphSelected = textBlockSelection?.state?.baseParagraph.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
+
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -104,7 +105,6 @@ export const TypographyAction: TypographyAction = () => {
 
     useEffect(() => {
         if (textBlockSelection) {
-            debugger;
             // header and paragraph elements inserted with typography node
             if ($isTypographyElementNode(textBlockSelection?.element)) {
                 const el = textBlockSelection.element as TypographyElementNode;
@@ -113,12 +113,12 @@ export const TypographyAction: TypographyAction = () => {
             }
 
             if ($isBaseParagraphNode(textBlockSelection?.element)) {
-                debugger;
                 const el = textBlockSelection.element as BaseParagraphNode;
                 const styleId = el.getTypographyStyleId();
                 if (!styleId) {
                     return;
                 }
+
                 if (!themeEmotionMap) {
                     return;
                 }

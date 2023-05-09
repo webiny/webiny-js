@@ -32,7 +32,8 @@ export const toTypographyEmotionMap = (
                     ...styleItem,
                     className:
                         [css(styleItem.styles)].filter(Boolean).join(" ") +
-                        `-${createThemeStyleClassSuffixName(styleItem.tag, "typography")}`
+                        " " +
+                        createThemeStyleClassSuffixName(styleItem.tag, "typography")
                 };
                 map[styleItem.id] = lx;
             });
