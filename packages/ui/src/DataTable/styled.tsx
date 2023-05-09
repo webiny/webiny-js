@@ -18,7 +18,8 @@ export const Table = styled(RmwcDataTable)<TableProps>`
     }
 
     .datatable-select-column {
-        width: 56px;
+        width: 56px !important;
+        max-width: 56px !important;
     }
 `;
 
@@ -27,7 +28,7 @@ interface ColumnHeaderWrapperProps {
 }
 
 export const ColumnHeaderWrapper = styled("div")<ColumnHeaderWrapperProps>`
-    cursor: ${props => (props.sortable ? "pointer" : "cursort")};
+    cursor: ${props => (props.sortable ? "pointer" : "cursor")};
     display: flex;
     align-items: center;
     justify-content: start;

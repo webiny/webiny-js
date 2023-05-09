@@ -24,7 +24,7 @@ import { RecordActionMove } from "./RecordActionMove";
 
 import { ACO_TYPE } from "~/constants";
 
-import { menuStyles } from "./styled";
+import { menuStyles, actionsColumnStyles } from "./styled";
 import { FileItem } from "@webiny/app/types";
 import { Settings } from "~/types";
 
@@ -150,12 +150,12 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         createdBy: {
             header: "Author"
         },
-
         original: {
             header: "",
             meta: {
                 alignEnd: true
             },
+            className: actionsColumnStyles,
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;

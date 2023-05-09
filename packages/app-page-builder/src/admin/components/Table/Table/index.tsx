@@ -26,7 +26,7 @@ import statusLabels from "~/admin/constants/pageStatusesLabels";
 import { FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { PbPageDataItem } from "~/types";
-import { menuStyles } from "./styled";
+import { actionsColumnStyles, menuStyles } from "./styled";
 
 interface Props {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -131,6 +131,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             meta: {
                 alignEnd: true
             },
+            className: actionsColumnStyles,
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;
