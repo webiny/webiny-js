@@ -8,7 +8,7 @@ export const initializeSwiper = async () => {
     if (!pbCarouselCheck) {
         pbCarouselCheck = new Promise<void>(resolve => {
             const interval = setInterval(() => {
-                if (document.querySelector("pb-carousel")) {
+                if (document.querySelector("swiper-container")) {
                     clearInterval(interval);
                     resolve();
                 }

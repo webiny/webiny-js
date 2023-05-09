@@ -13,6 +13,8 @@ const CarouselWrapper = styled.div`
     justify-content: center;
     --swiper-navigation-color: var(--mdc-theme-primary);
     --swiper-pagination-color: var(--mdc-theme-primary);
+    --swiper-pagination-bottom: 0;
+
     & swiper-slide {
         text-align: center;
         font-size: 18px;
@@ -21,6 +23,25 @@ const CarouselWrapper = styled.div`
         justify-content: center;
         align-items: center;
     }
+
+    // We need to apply these styles because scripts for swiper js are being loaded with the delay
+    // So after they were loaded carousel is being shifted because of the applied styles from swiper js
+    // In order to fix that behaviour we have to manually apply styles for carousel so it won't shift on the page if the script is not loaded
+    & swiper-container:not(.swiper-initialized) {
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        overflow: hidden;
+        padding: 0;
+        display: block;
+    }
+
+    & swiper-container:not(.swiper-initialized) {
+        & swiper-slide:not(swiper-slide:first-of-type) {
+            display: none;
+        }
+    }
+
     & .carousel-element-wrapper {
         max-width: calc(95% - 41px);
     }
@@ -35,6 +56,7 @@ declare global {
         }
     }
 }
+
 export const createCarousel = () => {
     registerCarousel();
     return createRenderer(() => {
@@ -50,6 +72,7 @@ export const createCarousel = () => {
             "swiper-container": {
                 "--swiper-navigation-color": `${theme.styles.colors.color1}`,
                 "--swiper-pagination-color": `${theme.styles.colors.color1}`,
+                "--swiper-pagination-bottom": "0",
                 maxWidth: "1100px"
             }
         };

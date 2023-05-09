@@ -31,6 +31,7 @@ const PeCarouselWrapper = styled.div`
     }
     & swiper-container {
         max-width: 1100px;
+        --swiper-pagination-bottom: 0;
     }
     & .carousel-element-wrapper {
         max-width: calc(95% - 41px);
