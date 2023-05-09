@@ -34,6 +34,7 @@ import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny
 import { FilterItemFromStorage } from "./filtering/types";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 const createType = (): string => {
     return "cms.entry";
@@ -493,6 +494,75 @@ export const createEntriesStorageOperations = (
                 latestEntry
             });
         }
+    };
+
+    const deleteMultipleEntries: CmsEntryStorageOperations["deleteMultipleEntries"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entries } = params;
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need all the revisions of the entries we want to delete.
+         */
+        const revisions = await dataLoaders.getAllEntryRevisions({
+            model,
+            ids: entries
+        });
+        /**
+         * Then we need to construct the queries for all the revisions and entries.
+         */
+        const items: Record<string, DocumentClient.WriteRequest>[] = [];
+        for (const id of entries) {
+            /**
+             * Latest item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            /**
+             * Published item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
+        }
+        /**
+         * Exact revisions of all the entries
+         */
+        for (const revision of revisions) {
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id: revision.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: createRevisionSortKey({
+                        version: revision.version
+                    })
+                })
+            );
+        }
+
+        await batchWriteAll({
+            table: entity.table,
+            items
+        });
     };
 
     const getLatestRevisionByEntryId: CmsEntryStorageOperations["getLatestRevisionByEntryId"] =
@@ -993,6 +1063,7 @@ export const createEntriesStorageOperations = (
         update,
         delete: deleteEntry,
         deleteRevision,
+        deleteMultipleEntries,
         getPreviousRevision,
         getPublishedByIds,
         getLatestByIds,
