@@ -13,8 +13,6 @@ export interface TypographyStylesNode {
 }
 
 export interface TextNodeThemeStyles {
-    /*
-     * Clear all theme styles
-     */
     getThemeStyles: () => ThemeStyleValue[];
+    setThemeStyles: (styles: ThemeStyleValue[]) => void;
 }

@@ -1,16 +1,12 @@
 import {
     $applyNodeReplacement,
-    $isTextNode,
     DOMConversionMap,
     DOMConversionOutput,
-    DOMExportOutput,
     ElementFormatType,
-    ElementNode,
-    LexicalEditor,
     LexicalNode,
     NodeKey,
-    RangeSelection,
-    SerializedElementNode,
+    ParagraphNode,
+    SerializedParagraphNode,
     Spread
 } from "lexical";
 import { EditorConfig } from "lexical";
@@ -24,20 +20,19 @@ export type SerializeBaseParagraphNode = Spread<
     {
         styles: ThemeStyleValue[];
         type: "base-paragraph-node";
-        version: 1;
     },
-    SerializedElementNode
+    SerializedParagraphNode
 >;
 
 export class BaseParagraphNode
-    extends ElementNode
+    extends ParagraphNode
     implements TextNodeThemeStyles, TypographyStylesNode
 {
     __styles: ThemeStyleValue[] = [];
 
     constructor(typographyStyleId?: string, key?: NodeKey) {
         super(key);
-        debugger;
+
         if (typographyStyleId) {
             this.__styles.push({ styleId: typographyStyleId, type: "typography" });
         }
@@ -75,6 +70,17 @@ export class BaseParagraphNode
         return !!this.getTypographyStyleId();
     }
 
+    getThemeStyles(): ThemeStyleValue[] {
+        const self = super.getLatest();
+        return self.__styles;
+    }
+
+    setThemeStyles(styles: ThemeStyleValue[]) {
+        const self = super.getWritable();
+        self.__styles = [...styles];
+        return self;
+    }
+
     static override getType(): string {
         return "base-paragraph-node";
     }
@@ -83,52 +89,38 @@ export class BaseParagraphNode
         return new BaseParagraphNode(node.getTypographyStyleId(), node.__key);
     }
 
-    protected addThemeStyleToElement(element: HTMLElement, theme: WebinyTheme): HTMLElement {
-        debugger;
-        if (!this.hasTypographyStyle() && theme?.emotionMap) {
-            this.setDefaultTypography(theme.emotionMap);
-            const styleId = this.getTypographyStyleId();
-            // in this case default style can't be found for paragraph node
-            if (!styleId) {
-                return element;
-            }
-            const typographyStyle = theme.emotionMap[styleId];
-            if (typographyStyle) {
-                addClassNamesToElement(element, typographyStyle.className);
-            }
+    protected updateElementWithThemeClasses(element: HTMLElement, theme: WebinyTheme): HTMLElement {
+        if (!theme?.emotionMap) {
+            return element;
         }
 
-        return element;
-    }
-
-    protected updateElementThemeStyle(element: HTMLElement, theme: WebinyTheme): HTMLElement {
         if (!this.hasTypographyStyle()) {
-            return this.addThemeStyleToElement(element, theme);
+            this.setDefaultTypography(theme.emotionMap);
         }
 
-        if (theme?.emotionMap) {
-            const styleId = this.getTypographyStyleId();
-            // in this case default style can't be found for paragraph node
-            if (!styleId) {
-                return element;
-            }
+        const typoStyleId = this.getTypographyStyleId();
 
-            const typographyStyle = theme.emotionMap[styleId];
+        let themeClasses;
+
+        // Typography css class
+        if (typoStyleId) {
+            const typographyStyle = theme.emotionMap[typoStyleId];
             if (typographyStyle) {
-                addClassNamesToElement(element, typographyStyle.className);
+                themeClasses = typographyStyle.className;
             }
         }
+
+        if (themeClasses) {
+            addClassNamesToElement(element, themeClasses);
+        }
+
         return element;
     }
 
     // View
     override createDOM(config: EditorConfig): HTMLElement {
-        const element = document.createElement("p");
-        debugger;
-        if (!this.hasTypographyStyle()) {
-            return this.addThemeStyleToElement(element, config.theme as WebinyTheme);
-        }
-        return this.updateElementThemeStyle(element, config.theme as WebinyTheme);
+        const element = super.createDOM(config);
+        return this.updateElementWithThemeClasses(element, config.theme as WebinyTheme);
     }
 
     override updateDOM(
@@ -136,12 +128,21 @@ export class BaseParagraphNode
         dom: HTMLElement,
         config: EditorConfig
     ): boolean {
-        debugger;
-        this.updateElementThemeStyle(dom, config.theme as WebinyTheme);
-        return true;
+        const prevTypoStyleId = prevNode.getTypographyStyleId();
+        const nextTypoStyleId = this.getTypographyStyleId();
+
+        if (!nextTypoStyleId) {
+            this.updateElementWithThemeClasses(dom, config.theme as WebinyTheme);
+            return false;
+        }
+
+        if (prevTypoStyleId !== nextTypoStyleId && nextTypoStyleId) {
+            this.updateElementWithThemeClasses(dom, config.theme as WebinyTheme);
+        }
+        return false;
     }
 
-    static importDOM(): DOMConversionMap | null {
+    static override importDOM(): DOMConversionMap | null {
         return {
             p: () => ({
                 conversion: convertParagraphElement,
@@ -150,42 +151,12 @@ export class BaseParagraphNode
         };
     }
 
-    override exportDOM(editor: LexicalEditor): DOMExportOutput {
-        const { element } = super.exportDOM(editor);
-
-        if (element && this.isEmpty()) {
-            element.append(document.createElement("br"));
-        }
-        if (element) {
-            const formatType = this.getFormatType();
-            element.style.textAlign = formatType;
-
-            const direction = this.getDirection();
-            if (direction) {
-                element.dir = direction;
-            }
-            const indent = this.getIndent();
-            if (indent > 0) {
-                // padding-inline-start is not widely supported in email HTML, but
-                // Lexical Reconciler uses padding-inline-start. Using text-indent instead.
-                element.style.textIndent = `${indent * 20}px`;
-            }
-        }
-
-        return {
-            element
-        };
-    }
-
     static override importJSON(serializedNode: SerializeBaseParagraphNode): BaseParagraphNode {
-        const styleValue = serializedNode.styles.find(s => s.type === "typography");
-        const node = styleValue
-            ? $createBaseParagraphNode(styleValue.styleId)
-            : $createBaseParagraphNode();
+        const node = $createBaseParagraphNode();
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
         node.setDirection(serializedNode.direction);
-        node.styles = serializedNode.styles;
+        node.setThemeStyles(serializedNode.styles);
         return node;
     }
 
@@ -197,50 +168,14 @@ export class BaseParagraphNode
             version: 1
         };
     }
-
-    override insertNewAfter(_: RangeSelection, restoreSelection: boolean): BaseParagraphNode {
-        const newElement = $createBaseParagraphNode();
-        const direction = this.getDirection();
-        newElement.setDirection(direction);
-        this.insertAfter(newElement, restoreSelection);
-        return newElement;
-    }
-
-    override collapseAtStart(): boolean {
-        const children = this.getChildren();
-        // If we have an empty (trimmed) first paragraph and try and remove it,
-        // delete the paragraph as long as we have another sibling to go to
-        if (
-            children.length === 0 ||
-            ($isTextNode(children[0]) && children[0].getTextContent().trim() === "")
-        ) {
-            const nextSibling = this.getNextSibling();
-            if (nextSibling !== null) {
-                this.selectNext();
-                this.remove();
-                return true;
-            }
-            const prevSibling = this.getPreviousSibling();
-            if (prevSibling !== null) {
-                this.selectPrevious();
-                this.remove();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    getThemeStyles(): ThemeStyleValue[] {
-        return this.__styles;
-    }
 }
 
 function convertParagraphElement(element: HTMLElement): DOMConversionOutput {
-    debugger;
     const node = $createBaseParagraphNode();
     if (element.style) {
         node.setFormat(element.style.textAlign as ElementFormatType);
     }
+
     return { node };
 }
 

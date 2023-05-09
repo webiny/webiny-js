@@ -1,6 +1,5 @@
 import { ThemeEmotionMap, TypographyHTMLTag } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { createThemeStyleClassSuffixName } from "~/utils/createThemeStyleClassSuffixName";
 
 /*
  *  Creates a map of style key ID's and typography style objects that include 'className' property which contains the
@@ -30,10 +29,7 @@ export const toTypographyEmotionMap = (
                 // the last segment will always end with 'lx' or 'css-181qz4b-lx'
                 const lx = {
                     ...styleItem,
-                    className:
-                        [css(styleItem.styles)].filter(Boolean).join(" ") +
-                        " " +
-                        createThemeStyleClassSuffixName(styleItem.tag, "typography")
+                    className: [css(styleItem.styles)].filter(Boolean).join(" ")
                 };
                 map[styleItem.id] = lx;
             });
