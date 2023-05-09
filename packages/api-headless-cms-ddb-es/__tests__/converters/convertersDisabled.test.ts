@@ -4,7 +4,7 @@ import { createMockPlugins } from "./mocks";
 import { createEntryRawData } from "./mocks/data";
 import { configurations } from "~/configurations";
 import { CmsModel } from "@webiny/api-headless-cms/types";
-import { get } from "@webiny/db-dynamodb/utils";
+import { get } from "@webiny/db-dynamodb";
 import { createPartitionKey } from "~/operations/entry/keys";
 
 jest.retryTimes(0);

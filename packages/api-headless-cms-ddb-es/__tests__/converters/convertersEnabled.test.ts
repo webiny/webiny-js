@@ -4,7 +4,7 @@ import { createMockPlugins } from "./mocks";
 import { createElasticsearchEntryConvertedData, createEntryRawData } from "./mocks/data";
 import { configurations } from "~/configurations";
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
-import { get } from "@webiny/db-dynamodb/utils";
+import { get } from "@webiny/db-dynamodb";
 import { createPartitionKey } from "~/operations/entry/keys";
 import lodashMerge from "lodash/merge";
 
