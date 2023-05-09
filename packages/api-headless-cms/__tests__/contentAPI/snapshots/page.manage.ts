@@ -357,7 +357,10 @@ export default /* GraphQL */ `
             data: PageModelApiNameInput!
         ): PageModelApiNameResponse
 
-        deletePageModelApiName(revision: ID!, force: Boolean): CmsDeleteResponse
+        deletePageModelApiName(
+            revision: ID!
+            options: CmsDeleteEntryOptions
+        ): CmsDeleteResponse
 
         deleteMultiplePagesModelApiName(entries: [ID!]!): CmsDeleteMultipleResponse!
 
