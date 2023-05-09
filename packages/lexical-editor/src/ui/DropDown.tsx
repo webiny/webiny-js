@@ -175,10 +175,8 @@ export function DropDown({
         }
     }, [dropDownRef, buttonRef, showDropDown]);
 
-    // @ts-ignore - it's ok that all paths do not return value
     useEffect(() => {
         const button = buttonRef.current;
-
         if (button && showDropDown) {
             const handle = (event: MouseEvent) => {
                 const target = event.target;
@@ -187,16 +185,17 @@ export function DropDown({
                         return;
                     }
                 }
+
                 if (!button.contains(target as Node)) {
                     setShowDropDown(false);
                 }
             };
             document.addEventListener("click", handle);
-
             return () => {
                 document.removeEventListener("click", handle);
             };
         }
+        return;
     }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
 
     const displayContainer = useMemo(() => {
