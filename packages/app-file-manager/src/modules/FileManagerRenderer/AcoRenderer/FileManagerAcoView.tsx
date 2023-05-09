@@ -121,6 +121,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         setHasPreviouslyUploadedFiles,
         hideFileDetails,
         listSort,
+        loadingFileDetails,
         setListSort,
         listTable,
         setListTable,
@@ -482,14 +483,16 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                         }
                     >
                         <>
-                            {currentFile ? (
+                            {showingFileDetails && (
                                 <FileDetails
+                                    loading={loadingFileDetails}
                                     file={currentFile}
+                                    open={Boolean(showingFileDetails)}
                                     onClose={hideFileDetails}
                                     scope={scope}
                                     own={own}
                                 />
-                            ) : null}
+                            )}
 
                             <LeftSidebar
                                 title={defaultFolderName}
