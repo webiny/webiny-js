@@ -2,18 +2,29 @@ import dbPlugins from "@webiny/handler-db";
 import { PluginCollection } from "@webiny/plugins/types";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import { createRawHandler, createRawEventHandler } from "@webiny/handler-aws";
+import { createContextPlugin, createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createStorageOperations } from "~/index";
 import { CmsContext } from "~/types";
-
 import { createDummyLocales } from "~tests/graphql/dummyLocales";
 import { createSecurity } from "~tests/graphql/security";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
+// @ts-ignore
+import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
+import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
+import { ContextPlugin } from "@webiny/api";
+import elasticsearchClientContextPlugin, {
+    getElasticsearchOperators
+} from "@webiny/api-elasticsearch";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
+import { configurations } from "~/configurations";
+import { createTable } from "~/definitions/table";
+import { createEntryEntity } from "~/definitions/entry";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -30,6 +41,26 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         region: "local",
         accessKeyId: "test",
         secretAccessKey: "test"
+    });
+    const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearch);
+
+    const simulationContext = new ContextPlugin<ElasticsearchContext>(async context => {
+        await elasticsearchClientContext.apply(context);
+    });
+    simulateStream(
+        documentClient,
+        createDynamoDBHandler({
+            plugins: [simulationContext, createDynamoDBToElasticsearchEventHandler()]
+        })
+    );
+
+    const table = createTable({
+        documentClient
+    });
+    const entryEntity = createEntryEntity({
+        table,
+        entityName: "CmsEntries",
+        attributes: {}
     });
 
     const handler = createRawHandler<any, CmsContext>({
@@ -63,6 +94,17 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),
+            createContextPlugin<CmsContext>(async context => {
+                context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
+                    const { index } = configurations.es({ model });
+                    elasticsearch.indices.registerIndex([index]);
+                });
+                context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
+                    const { index } = configurations.es({ model });
+                    await elasticsearch.indices.refresh({ index });
+                });
+            }),
+            getElasticsearchOperators(),
             ...plugins
         ]
     });
@@ -83,6 +125,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             return handler(payload, {} as any);
         },
         elasticsearch,
-        documentClient
+        documentClient,
+        table,
+        entryEntity
     };
 };
