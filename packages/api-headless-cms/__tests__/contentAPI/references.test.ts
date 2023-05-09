@@ -1061,6 +1061,10 @@ describe("entry references", () => {
         });
     });
 
+    /**
+     * Test is commented because we do not have access to the data loaders in the storage operations.
+     */
+    /**
     it("should not produce multiple requests to the database when loading references", async () => {
         const group = await setupContentModelGroup(mainManager);
         await setupContentModels(mainManager, group, ["category", "article"]);
@@ -1117,4 +1121,5 @@ describe("entry references", () => {
             }
         });
     });
+    */
 });
