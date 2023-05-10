@@ -1,6 +1,9 @@
 import { CmsEntry, CmsModel } from "~/types";
 
-export function getEntryImage(model: CmsModel, entry: CmsEntry): string | null {
+export function getEntryImage(
+    model: Pick<CmsModel, "imageFieldId" | "fields">,
+    entry: CmsEntry
+): string | null {
     if (!model.imageFieldId) {
         return null;
     }
