@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import React, { FC, useEffect } from "react";
+import React, { useEffect } from "react";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { LexicalValue } from "~/types";
@@ -12,7 +12,7 @@ interface LexicalUpdateStatePlugin {
 /*
  * Updates the lexical state if new value is provided to the lexical editor trough props
  */
-export const LexicalUpdateStatePlugin: FC<LexicalUpdateStatePlugin> = ({
+export const LexicalUpdateStatePlugin: React.VFC<LexicalUpdateStatePlugin> = ({
     value
 }): React.ReactElement => {
     const [editor] = useLexicalComposerContext();

@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     $getSelection,
     $isRangeSelection,
@@ -28,7 +28,12 @@ interface FloatingToolbarProps {
     editor: LexicalEditor;
 }
 
-const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem, editor }) => {
+const FloatingToolbar: React.VFC<FloatingToolbarProps> = ({
+    children,
+    type,
+    anchorElem,
+    editor
+}) => {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
     const { toolbarType, setToolbarType, setTextBlockSelection } = useRichTextEditor();
     const [activeEditor, setActiveEditor] = useState(editor);
@@ -136,7 +141,7 @@ interface useToolbarProps {
     children?: React.ReactNode;
 }
 
-const useToolbar: FC<useToolbarProps> = ({
+const useToolbar: React.VFC<useToolbarProps> = ({
     editor,
     anchorElem = document.body,
     type,

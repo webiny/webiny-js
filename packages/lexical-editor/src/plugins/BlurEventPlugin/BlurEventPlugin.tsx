@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { BLUR_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
 import { LexicalValue } from "~/types";
@@ -7,7 +7,7 @@ interface BlurEventPlugin {
     onBlur?: (editorState: LexicalValue) => void;
 }
 
-export const BlurEventPlugin: FC<BlurEventPlugin> = ({ onBlur }) => {
+export const BlurEventPlugin: React.VFC<BlurEventPlugin> = ({ onBlur }) => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(

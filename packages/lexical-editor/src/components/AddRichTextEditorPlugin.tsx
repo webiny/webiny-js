@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { createComponentPlugin } from "@webiny/react-composition";
 import { RichTextEditor } from "~/components/Editor/RichTextEditor";
 import { LexicalValue } from "~/types";
@@ -15,7 +15,7 @@ interface AddRichTextEditorProps {
     theme: WebinyTheme;
 }
 
-export const AddRichTextEditorPlugin: FC<AddRichTextEditorProps> = ({
+export const AddRichTextEditorPlugin: React.VFC<AddRichTextEditorProps> = ({
     toolbar,
     placeholder,
     children

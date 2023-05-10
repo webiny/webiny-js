@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
 
 interface ParagraphToolbarProps {
@@ -10,6 +10,8 @@ interface ParagraphToolbarProps {
  * @param anchorElem
  * @constructor
  */
-export const ParagraphToolbar: FC<ParagraphToolbarProps> = ({ anchorElem = document.body }) => {
+export const ParagraphToolbar: React.VFC<ParagraphToolbarProps> = ({
+    anchorElem = document.body
+}) => {
     return <Toolbar type={"paragraph"} anchorElem={anchorElem} />;
 };

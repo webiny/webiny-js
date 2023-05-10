@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { createComponentPlugin } from "@webiny/react-composition";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
 interface AddToolbarActionProps {
@@ -6,7 +6,10 @@ interface AddToolbarActionProps {
     element: JSX.Element;
 }
 
-export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: targetType }) => {
+export const AddToolbarAction: React.VFC<AddToolbarActionProps> = ({
+    element,
+    type: targetType
+}) => {
     const ToolbarPlugin = React.memo(
         createComponentPlugin(Toolbar, Original => {
             return function Toolbar({ type, children, anchorElem }): JSX.Element {

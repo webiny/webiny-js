@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
 
 interface HeadingToolbarProps {
@@ -10,6 +10,6 @@ interface HeadingToolbarProps {
  * @param anchorElem
  * @constructor
  */
-export const HeadingToolbar: FC<HeadingToolbarProps> = ({ anchorElem = document.body }) => {
+export const HeadingToolbar: React.VFC<HeadingToolbarProps> = ({ anchorElem = document.body }) => {
     return <Toolbar type={"heading"} anchorElem={anchorElem} />;
 };
