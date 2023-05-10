@@ -11396,6 +11396,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly":
+  version: 0.0.0-use.local
+  resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
+  dependencies:
+    chalk: ^4.1.0
+    find-up: 5.0.0
+    fs-extra: ^7.0.1
+    get-yarn-workspaces: 1.0.2
+    load-json-file: ^6.2.0
+    lodash.get: ^4.4.2
+    ts-node: ^10.5.0
+    type-fest: ^3.10.0
+    write-json-file: ^4.3.0
+  bin:
+    prepublish-only: ./src/index.js
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-aco-so-ddb-es@workspace:packages/api-aco-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-so-ddb-es@workspace:packages/api-aco-so-ddb-es"
@@ -40884,6 +40902,15 @@ __metadata:
   version: 0.8.1
   resolution: "type-fest@npm:0.8.1"
   checksum: d61c4b2eba24009033ae4500d7d818a94fd6d1b481a8111612ee141400d5f1db46f199c014766b9fa9b31a6a7374d96fc748c6d688a78a3ce5a33123839becb7
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "type-fest@npm:3.10.0"
+  peerDependencies:
+    typescript: ">=4.7.0"
+  checksum: df3bd25809ea79ac7712da7c11648251118c23f65b226eba263797e42be60ba34085874ec492202b8ecf2e5a2273b27ddcbfe3be2c275dfcef3f0e2ee90ea179
   languageName: node
   linkType: hard
 
