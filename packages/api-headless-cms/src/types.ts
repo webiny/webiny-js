@@ -689,7 +689,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createListFilters?(params: {
-            model: CmsModel;
+            model: Pick<CmsModel, "singularApiName">;
             field: TField;
             plugins: CmsFieldTypePlugins;
         }): string;
@@ -768,7 +768,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createListFilters?: (params: {
-            model: CmsModel;
+            model: Pick<CmsModel, "singularApiName">;
             field: TField;
             plugins: CmsFieldTypePlugins;
         }) => string;
