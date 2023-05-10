@@ -1,4 +1,4 @@
-import React, { createContext, FC, Fragment, memo, useContext, useEffect, useMemo } from "react";
+import React, { createContext, Fragment, memo, useContext, useEffect, useMemo } from "react";
 import {
     Compose,
     useViewComposition,
@@ -75,9 +75,10 @@ export interface GroupProps {
     name: string;
     querySelection?: DocumentNode;
     label?: string;
+    children: React.ReactNode;
 }
 
-const Group: FC<GroupProps> = ({ name, label, querySelection, children }) => {
+const Group: React.VFC<GroupProps> = ({ name, label, querySelection, children }) => {
     const viewComposition = useViewComposition();
 
     const context = useMemo(
