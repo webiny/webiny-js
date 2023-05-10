@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import get from "lodash/get";
 import { LoginScreenRenderer, useTenancy, createComponentPlugin } from "@webiny/app-serverless-cms";
 import {
@@ -14,6 +14,7 @@ import gql from "graphql-tag";
 interface AppClientIdLoaderProps {
     auth0: Auth0Options;
     rootAppClientId: string;
+    children: React.ReactNode;
 }
 
 const GET_CLIENT_ID = gql`
@@ -24,7 +25,11 @@ const GET_CLIENT_ID = gql`
     }
 `;
 
-const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({ auth0, rootAppClientId, children }) => {
+const AppClientIdLoader: React.VFC<AppClientIdLoaderProps> = ({
+    auth0,
+    rootAppClientId,
+    children
+}) => {
     const [loaded, setState] = useState<boolean>(false);
     const authRef = useRef<React.VFC<AuthenticationComponent> | null>(null);
     const client = useApolloClient();
