@@ -139,7 +139,7 @@ export const Input: React.FC<InputProps> = props => {
                 return rest.onKeyDown(e);
             }
         },
-        [rest.onKeyDown]
+        [rest.onKeyDown, onEnter]
     );
 
     return (
