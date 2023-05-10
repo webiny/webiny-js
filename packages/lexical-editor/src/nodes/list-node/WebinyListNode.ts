@@ -9,12 +9,13 @@ import {
     SerializedElementNode,
     Spread
 } from "lexical";
-import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
+import { WebinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
 import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
 import { ListType } from "@lexical/list";
 import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 const TypographyStyleAttrName = "data-theme-list-style-id";
 
@@ -40,25 +41,38 @@ export class WebinyListNode extends ElementNode {
 
     __themeStyleId: string;
 
-    constructor(listType: ListType, themeStyleId: string, start: number, key?: NodeKey) {
+    constructor(listType: ListType, themeStyleId?: string, start?: number, key?: NodeKey) {
         super(key);
-        this.__themeStyleId = themeStyleId;
+        this.__themeStyleId = themeStyleId || "";
         const _listType = TAG_TO_WEBINY_LIST_TYPE[listType] || listType;
         this.__listType = _listType;
         this.__tag = _listType === "number" ? "ol" : "ul";
-        this.__start = start;
+        this.__start = start || 1;
     }
 
     static override getType() {
         return "webiny-list";
     }
 
+    /*
+     *
+     * */
+    isStyleExistInTheme(theme: WebinyTheme): boolean {
+        return theme?.emotionMap ? !!theme?.emotionMap[this.__themeStyleId] : false;
+    }
+
     override createDOM(config: EditorConfig): HTMLElement {
         const tag = this.__tag;
         const dom = document.createElement(tag);
+        const wTheme = config.theme as WebinyTheme;
 
         if (this.__start !== 1) {
             dom.setAttribute("start", String(this.__start));
+        }
+
+        // if styleId is not set or user removed from theme, set default style.
+        if (!this.hasThemeStyle() || !this.isStyleExistInTheme(wTheme)) {
+            this.setDefaultThemeListStyleByTag(this.__tag, wTheme);
         }
 
         // @ts-expect-error Internal field.
@@ -137,11 +151,42 @@ export class WebinyListNode extends ElementNode {
         };
     }
 
+    /*
+     * Set default styleId from first style that is found in the theme that contains current ul or ol tag
+     */
+    setDefaultThemeListStyleByTag(tag: string, theme: WebinyTheme) {
+        if (!tag) {
+            return;
+        }
+
+        const themeEmotionMap = theme?.emotionMap;
+        if (!themeEmotionMap) {
+            return;
+        }
+
+        const style = findTypographyStyleByHtmlTag(tag, themeEmotionMap);
+
+        if (style) {
+            this.__themeStyleId = style.id;
+        }
+    }
+
+    hasThemeStyle(): boolean {
+        return !!this.__themeStyleId;
+    }
+
     override updateDOM(prevNode: WebinyListNode, dom: HTMLElement, config: EditorConfig): boolean {
+        const wTheme = config.theme as WebinyTheme;
+
         if (prevNode.__tag !== this.__tag) {
             return true;
         }
-        // update styles for different tag styles
+
+        // if styleId is not set or user removed from theme, set default style.
+        if (!this.hasThemeStyle() || !this.isStyleExistInTheme(wTheme)) {
+            this.setDefaultThemeListStyleByTag(this.__tag, wTheme);
+        }
+
         setListThemeClassNames(dom, config.theme, this, this.__themeStyleId);
         dom.setAttribute(TypographyStyleAttrName, this.__themeStyleId);
         return false;
@@ -178,7 +223,7 @@ function setListThemeClassNames(
             nestedListClassName = nestedListTheme.list;
         }
 
-        if (listClassName !== undefined) {
+        if (listClassName) {
             classesToAdd.push(listClassName);
         }
 
@@ -240,9 +285,9 @@ function convertWebinyListNode(domNode: Node): DOMConversionOutput {
     let node = null;
 
     if (nodeName === "ol") {
-        node = $createWebinyListNode("number", "");
+        node = $createWebinyListNode("number");
     } else if (nodeName === "ul") {
-        node = $createWebinyListNode("bullet", "");
+        node = $createWebinyListNode("bullet");
     }
 
     return {
@@ -259,7 +304,7 @@ const TAG_TO_WEBINY_LIST_TYPE: Record<string, ListType> = {
 
 export function $createWebinyListNode(
     listType: ListType,
-    themeStyleId: string,
+    themeStyleId?: string,
     start = 1
 ): WebinyListNode {
     return new WebinyListNode(listType, themeStyleId, start);
