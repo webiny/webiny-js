@@ -5,6 +5,9 @@ export interface ThemeStyleValue {
     type: ThemeStyleType;
 }
 
+/*
+ * Indicates that the node is implementing the typography styles
+ */
 export interface TypographyStylesNode {
     setTypography: (typographyStyleId: string) => void;
     getTypographyStyleId: () => string | undefined;
@@ -12,6 +15,9 @@ export interface TypographyStylesNode {
     hasTypographyStyle: () => boolean;
 }
 
+/*
+ * Indicates that the node implements webiny theme styles.
+ */
 export interface TextNodeThemeStyles {
     getThemeStyles: () => ThemeStyleValue[];
     setThemeStyles: (styles: ThemeStyleValue[]) => void;

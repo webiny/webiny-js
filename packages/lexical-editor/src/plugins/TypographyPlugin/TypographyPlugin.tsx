@@ -3,6 +3,8 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
 import { ADD_TYPOGRAPHY_ELEMENT_COMMAND, TypographyPayload } from "~/nodes/TypographyElementNode";
 import { formatToParagraph } from "~/utils/nodes/formatToParagraph";
+import { formatToBaseHeading } from "~/utils/nodes/formatToBaseHeading";
+import { HeadingTagType } from "@lexical/rich-text";
 
 export const TypographyPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
@@ -12,8 +14,21 @@ export const TypographyPlugin: React.FC = () => {
             ADD_TYPOGRAPHY_ELEMENT_COMMAND,
             payload => {
                 const selection = $getSelection();
+                // paragraph
                 if ($isRangeSelection(selection) && payload.value.id && payload.value.tag === "p") {
                     formatToParagraph(editor, payload.value.id);
+                }
+                // heading
+                if (
+                    $isRangeSelection(selection) &&
+                    payload.value.id &&
+                    payload.value.tag.includes("h")
+                ) {
+                    formatToBaseHeading(
+                        editor,
+                        payload.value.tag as HeadingTagType,
+                        payload.value.id
+                    );
                 }
                 return true;
             },

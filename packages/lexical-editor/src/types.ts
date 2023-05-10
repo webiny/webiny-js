@@ -41,6 +41,7 @@ export type ToolbarState = {
     quote: NodeState;
     textType: LexicalTextType;
     baseParagraph: NodeState;
+    baseHeading: NodeState;
 };
 
 /*

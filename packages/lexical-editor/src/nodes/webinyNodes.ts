@@ -13,6 +13,7 @@ import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
 import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
 import { BaseParagraphNode } from "~/nodes/BaseParagraphNode";
 import { ParagraphNode } from "lexical";
+import { BaseHeadingNode } from "~/nodes/BaseHeadingNode";
 
 export const WebinyNodes: ReadonlyArray<
     | Klass<LexicalNode>
@@ -21,7 +22,6 @@ export const WebinyNodes: ReadonlyArray<
           with: <T extends { new (...args: any): any }>(node: InstanceType<T>) => LexicalNode;
       }
 > = [
-    HeadingNode,
     WebinyListNode,
     WebinyListItemNode,
     WebinyQuoteNode,
@@ -39,6 +39,17 @@ export const WebinyNodes: ReadonlyArray<
         replace: ParagraphNode,
         with: () => {
             return new BaseParagraphNode();
+        }
+    },
+    /*
+     * We inherit and replace the native HeadingNode, so we can take advantage from the native lexical processing
+     * of the node, copy/paste (html cleaning) and provide custom theme styling and behavior to the custom hading node.
+     * */
+    BaseHeadingNode,
+    {
+        replace: HeadingNode,
+        with: (node: HeadingNode) => {
+            return new BaseHeadingNode(node.getTag());
         }
     }
 ];
