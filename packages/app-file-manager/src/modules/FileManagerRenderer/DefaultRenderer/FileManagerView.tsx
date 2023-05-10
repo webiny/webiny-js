@@ -96,7 +96,7 @@ interface RenderFileProps extends Omit<FileProps, "children"> {
     children?: React.ReactNode;
 }
 
-const renderFile: React.FC<RenderFileProps> = props => {
+const renderFile: React.VFC<RenderFileProps> = props => {
     const { file } = props;
     const plugin = getFileTypePlugin(file);
     if (!plugin) {
@@ -122,7 +122,7 @@ interface RefreshOnScrollParams {
     };
 }
 
-const FileManagerView: React.FC<FileManagerViewProps> = props => {
+const FileManagerView: React.VFC<FileManagerViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion } = props;
 
     const {

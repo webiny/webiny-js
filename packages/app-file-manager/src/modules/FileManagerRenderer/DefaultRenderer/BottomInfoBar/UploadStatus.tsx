@@ -3,16 +3,16 @@ import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 
 const animateShow = keyframes`
-    0% { 
+    0% {
         opacity: 0;
         top: 0;
     }
-    60% { 
-        opacity: 1; 
+    60% {
+        opacity: 1;
         top: -55px;
     }
-    100% { 
-        opacity: 1; 
+    100% {
+        opacity: 1;
         top: -50px;
     }
 `;
@@ -110,7 +110,7 @@ export interface UploadStatusProps {
     progress: number;
     numberOfFiles: number;
 }
-const UploadStatus: React.FC<UploadStatusProps> = ({ numberOfFiles, progress }) => {
+const UploadStatus: React.VFC<UploadStatusProps> = ({ numberOfFiles, progress }) => {
     return (
         <StatusWrapper>
             <StatusIndicator>
