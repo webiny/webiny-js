@@ -12,7 +12,7 @@ import { $createBaseQuoteNode } from "~/nodes/BaseQuoteNode";
  * For example if the selection is paragraph <p> with content inside after formatting the root tag
  * will be quoteblock with same content inside.
  * */
-export const formatBaseToQuote = (editor: LexicalEditor, themeStyleId?: string) => {
+export const formatToBaseQuote = (editor: LexicalEditor, themeStyleId?: string) => {
     editor.update(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
