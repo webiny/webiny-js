@@ -66,8 +66,12 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     resolvers: {
         AcoQuery: {
             getFolder: async (_, { id }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.folder.get(id));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.folder.get(id));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             },
             listFolders: async (_, args: any, context) => {
                 try {
@@ -81,16 +85,28 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         AcoMutation: {
             createFolder: async (_, { data }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.folder.create(data));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.folder.create(data));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             },
             updateFolder: async (_, { id, data }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.folder.update(id, data));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.folder.update(id, data));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             },
             deleteFolder: async (_, { id }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.folder.delete(id));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.folder.delete(id));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         }
     }

@@ -310,4 +310,71 @@ describe("`search` CRUD", () => {
             }
         });
     });
+
+    it("should enforce security rules", async () => {
+        const { search: anonymousSearch } = useGraphQlHandler({ identity: null });
+        const { search } = useGraphQlHandler();
+
+        const notAuthorizedResponse = {
+            data: null,
+            error: {
+                code: "SECURITY_NOT_AUTHORIZED",
+                message: "Not authorized!",
+                data: null
+            }
+        };
+
+        // Create with anonymous identity
+        {
+            const [responseA] = await anonymousSearch.createRecord({ data: recordMocks.recordA });
+            const recordA = responseA.data.search.createRecord;
+            expect(recordA).toEqual(notAuthorizedResponse);
+        }
+
+        // Let's create some a dummy record
+        const [responseA] = await search.createRecord({ data: recordMocks.recordA });
+        const recordA = responseA.data.search.createRecord.data;
+        expect(recordA).toEqual({ ...recordMocks.recordA, id: recordA.id });
+
+        // List with anonymous identity
+        {
+            const [listResponse] = await anonymousSearch.listRecords({
+                where: { type: "page", location: { folderId: "folder-1" } }
+            });
+            expect(listResponse.data.search.listRecords).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Get with anonymous identity
+        {
+            const [getResponse] = await anonymousSearch.getRecord({
+                id: recordA.id
+            });
+            expect(getResponse.data.search.getRecord).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Update with anonymous identity
+        {
+            const [updateResponse] = await anonymousSearch.updateRecord({
+                id: recordA.id,
+                data: { title: `${recordA.title} + update` }
+            });
+            expect(updateResponse.data.search.updateRecord).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Delete with anonymous identity
+        {
+            const [deleteResponse] = await anonymousSearch.deleteRecord({
+                id: recordA.id
+            });
+            expect(deleteResponse.data.search.deleteRecord).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+    });
 });

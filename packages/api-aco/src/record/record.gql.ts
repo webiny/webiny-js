@@ -94,8 +94,12 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         SearchQuery: {
             getRecord: async (_, { id }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.search.get(id));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.search.get(id));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             },
             listRecords: async (_, args: any, context) => {
                 try {
@@ -109,16 +113,28 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         SearchMutation: {
             createRecord: async (_, { data }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.search.create(data));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.search.create(data));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             },
             updateRecord: async (_, { id, data }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.search.update(id, data));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.search.update(id, data));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             },
             deleteRecord: async (_, { id }, context) => {
-                await checkPermissions(context);
-                return resolve(() => context.aco.search.delete(id));
+                try {
+                    await checkPermissions(context);
+                    return resolve(() => context.aco.search.delete(id));
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         }
     }
