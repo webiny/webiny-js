@@ -1,8 +1,15 @@
-import { ApiEndpoint, CmsFieldTypePlugins, CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
+import {
+    ApiEndpoint,
+    CmsFieldTypePlugins,
+    CmsModel,
+    CmsModelField,
+    CmsModelFieldToGraphQLPlugin
+} from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
+    fields: CmsModelField[];
     type: ApiEndpoint;
     fieldTypePlugins: CmsFieldTypePlugins;
 }
@@ -13,27 +20,10 @@ interface RenderListFilterFields {
 type CreateListFiltersType =
     | CmsModelFieldToGraphQLPlugin["read"]["createListFilters"]
     | CmsModelFieldToGraphQLPlugin["manage"]["createListFilters"];
-/**
- * We cast as read type, because input and output of read and manage are same. This way we ease things.
- * Internal stuff so it should be ok.
- * TODO note that if changing read/manage types, change this as well.
- */
-const getCreateListFilters = (
-    plugins: CmsFieldTypePlugins,
-    fieldType: string,
-    type: ApiEndpoint
-): CreateListFiltersType | null => {
-    if (!plugins[fieldType]) {
-        return null;
-    } else if (!plugins[fieldType][type]) {
-        return null;
-    }
-    return plugins[fieldType][type].createListFilters;
-};
 
 export const renderListFilterFields: RenderListFilterFields = (params): string => {
-    const { model, type, fieldTypePlugins } = params;
-    const fields: string[] = [
+    const { model, fields, type, fieldTypePlugins } = params;
+    const result: string[] = [
         [
             "id: ID",
             "id_not: ID",
@@ -71,33 +61,28 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
      * We can find different statuses only in the manage API endpoint.
      */
     if (type === "manage") {
-        fields.push(
-            ...[
-                "status: String",
-                "status_not: String",
-                "status_in: [String!]",
-                "status_not_in: [String!]"
-            ]
+        result.push(
+            "status: String",
+            "status_not: String",
+            "status_in: [String!]",
+            "status_not_in: [String!]"
         );
     }
 
-    for (const field of model.fields) {
+    for (const field of fields) {
         // Every time a client updates content model's fields, we check the type of each field. If a field plugin
         // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
         // want to be careful when accessing the field plugin here too. It is still possible to have a content model
         // that contains a field, for which we don't have a plugin registered on the backend. For example, user
         // could've just removed the plugin from the backend.
-
-        const createListFilters = getCreateListFilters(
-            fieldTypePlugins,
-            getBaseFieldType(field),
-            type
-        );
+        const baseType = getBaseFieldType(field);
+        const createListFilters: CreateListFiltersType | undefined =
+            fieldTypePlugins[baseType]?.[type]?.createListFilters;
         if (typeof createListFilters !== "function") {
             continue;
         }
-        fields.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
+        result.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
     }
 
-    return fields.filter(Boolean).join("\n");
+    return result.filter(Boolean).join("\n");
 };
