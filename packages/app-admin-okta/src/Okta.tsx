@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { OktaAuth } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import get from "lodash.get";
@@ -12,6 +12,7 @@ import gql from "graphql-tag";
 interface AppClientIdLoaderProps {
     oktaFactory: OktaFactory;
     rootAppClientId: string;
+    children?: React.ReactNode;
 }
 
 const GET_CLIENT_ID = gql`
@@ -22,7 +23,7 @@ const GET_CLIENT_ID = gql`
     }
 `;
 
-const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
+const AppClientIdLoader: React.VFC<AppClientIdLoaderProps> = ({
     oktaFactory,
     rootAppClientId,
     children
