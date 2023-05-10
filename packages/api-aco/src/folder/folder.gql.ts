@@ -66,12 +66,10 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     resolvers: {
         AcoQuery: {
             getFolder: async (_, { id }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.folder.get(id));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.get(id);
+                });
             },
             listFolders: async (_, args: any, context) => {
                 try {
@@ -85,28 +83,22 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         AcoMutation: {
             createFolder: async (_, { data }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.folder.create(data));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.create(data);
+                });
             },
             updateFolder: async (_, { id, data }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.folder.update(id, data));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.update(id, data);
+                });
             },
             deleteFolder: async (_, { id }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.folder.delete(id));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.delete(id);
+                });
             }
         }
     }

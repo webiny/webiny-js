@@ -94,12 +94,10 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         SearchQuery: {
             getRecord: async (_, { id }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.search.get(id));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.get(id);
+                });
             },
             listRecords: async (_, args: any, context) => {
                 try {
@@ -113,28 +111,22 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         SearchMutation: {
             createRecord: async (_, { data }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.search.create(data));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.create(data);
+                });
             },
             updateRecord: async (_, { id, data }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.search.update(id, data));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.update(id, data);
+                });
             },
             deleteRecord: async (_, { id }, context) => {
-                try {
-                    await checkPermissions(context);
-                    return resolve(() => context.aco.search.delete(id));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.delete(id);
+                });
             }
         }
     }
