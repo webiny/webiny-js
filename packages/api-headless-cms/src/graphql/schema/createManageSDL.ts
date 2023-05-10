@@ -23,20 +23,41 @@ export const createManageSDL: CreateManageSDL = ({
     fieldTypePlugins,
     sorterPlugins
 }): string => {
+    const inputFields = renderInputFields({
+        models,
+        model,
+        fields: model.fields,
+        fieldTypePlugins
+    });
+    if (inputFields.length === 0) {
+        return "";
+    }
     const listFilterFieldsRender = renderListFilterFields({
         model,
+        fields: model.fields,
         type: "manage",
         fieldTypePlugins
     });
 
-    const sortEnumRender = renderSortEnum({ model, fieldTypePlugins, sorterPlugins });
-    const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-    const inputFields = renderInputFields({ models, model, fieldTypePlugins });
-    const fields = renderFields({ models, model, type: "manage", fieldTypePlugins });
+    const sortEnumRender = renderSortEnum({
+        model,
+        fields: model.fields,
+        fieldTypePlugins,
+        sorterPlugins
+    });
+    const getFilterFieldsRender = renderGetFilterFields({
+        model,
+        fields: model.fields,
+        fieldTypePlugins
+    });
 
-    if (inputFields.length === 0) {
-        return "";
-    }
+    const fields = renderFields({
+        models,
+        model,
+        fields: model.fields,
+        type: "manage",
+        fieldTypePlugins
+    });
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
@@ -55,102 +76,87 @@ export const createManageSDL: CreateManageSDL = ({
         }
 
         type ${singularName}Meta {
-            modelId: String
-            version: Int
-            locked: Boolean
-            publishedOn: DateTime
-            status: String
-            """
-            CAUTION: this field is resolved by making an extra query to DB.
-            RECOMMENDATION: Use it only with "get" queries (avoid in "list")
-            """
-            revisions: [${singularName}!]
-            title: String
-            description: String
-            image: String
-            """
-            Custom meta data stored in the root of the entry object.
-            """
-            data: JSON
+        modelId: String
+        version: Int
+        locked: Boolean
+        publishedOn: DateTime
+        status: String
+        """
+        CAUTION: this field is resolved by making an extra query to DB.
+        RECOMMENDATION: Use it only with "get" queries (avoid in "list")
+        """
+        revisions: [${singularName}!]
+        title: String
+        description: String
+        image: String
+        """
+        Custom meta data stored in the root of the entry object.
+        """
+        data: JSON
         }
 
-        ${fields
-            .map(f => f.typeDefs)
-            .filter(Boolean)
-            .join("\n")}
+        ${fields.map(f => f.typeDefs).join("\n")}
 
-        ${inputFields
-            .map(f => f.typeDefs)
-            .filter(Boolean)
-            .join("\n")}
+        ${inputFields.map(f => f.typeDefs).join("\n")}
 
-        ${
-            inputFields &&
-            `input ${singularName}Input {
-                id: ID
-            ${inputFields.map(f => f.fields).join("\n")}
-        }`
+
+        input ${singularName}Input {
+        id: ID
+        ${inputFields.map(f => f.fields).join("\n")}
+
         }
 
-        ${
-            getFilterFieldsRender &&
-            `input ${singularName}GetWhereInput {
-            ${getFilterFieldsRender}
-        }`
+        input ${singularName}GetWhereInput {
+        ${getFilterFieldsRender}
         }
 
-
-        ${
-            listFilterFieldsRender &&
-            `input ${singularName}ListWhereInput {
-                ${listFilterFieldsRender}
-                AND: [${singularName}ListWhereInput!]
-                OR: [${singularName}ListWhereInput!]
-        }`
+        input ${singularName}ListWhereInput {
+        ${listFilterFieldsRender}
+        AND: [${singularName}ListWhereInput!]
+        OR: [${singularName}ListWhereInput!]
         }
+
 
         type ${singularName}Response {
-            data: ${singularName}
-            error: CmsError
+        data: ${singularName}
+        error: CmsError
         }
 
         type ${singularName}ArrayResponse {
-            data: [${singularName}]
-            error: CmsError
+        data: [${singularName}]
+        error: CmsError
         }
 
         type ${singularName}ListResponse {
-            data: [${singularName}]
-            meta: CmsListMeta
-            error: CmsError
+        data: [${singularName}]
+        meta: CmsListMeta
+        error: CmsError
         }
 
-        ${
-            sortEnumRender &&
-            `enum ${singularName}ListSorter {
-            ${sortEnumRender}
-        }`
+
+        enum ${singularName}ListSorter {
+        ${sortEnumRender}
         }
 
         extend type Query {
-            get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
-    
-            get${singularName}Revisions(id: ID!): ${singularName}ArrayResponse
-    
-            get${pluralName}ByIds(revisions: [ID!]!): ${singularName}ArrayResponse
-    
-            list${pluralName} (
-                where: ${singularName}ListWhereInput
-                sort: [${singularName}ListSorter]
-                limit: Int
-                after: String
-            ): ${singularName}ListResponse
+        get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
+
+        get${singularName}Revisions(id: ID!): ${singularName}ArrayResponse
+
+        get${pluralName}ByIds(revisions: [ID!]!): ${singularName}ArrayResponse
+
+        list${pluralName} (
+        where: ${singularName}ListWhereInput
+        sort: [${singularName}ListSorter]
+        limit: Int
+        after: String
+        ): ${singularName}ListResponse
         }
 
         extend type Mutation {
-            create${singularName}(data: ${singularName}Input!): ${singularName}Response
-    
-            create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
+        create${singularName}(data: ${singularName}Input!): ${singularName}Response
+
+        create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
     
             update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
     

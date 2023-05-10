@@ -23,24 +23,10 @@ export const createReadSDL: CreateReadSDL = ({
 }): string => {
     const type: ApiEndpoint = "read";
 
-    const listFilterFieldsRender = renderListFilterFields({
-        model,
-        type,
-        fieldTypePlugins
-    });
-
-    const sortEnumRender = renderSortEnum({
-        model,
-        fieldTypePlugins,
-        sorterPlugins
-    });
-    const getFilterFieldsRender = renderGetFilterFields({
-        model,
-        fieldTypePlugins
-    });
     const fieldsRender = renderFields({
         models,
         model,
+        fields: model.fields,
         type,
         fieldTypePlugins
     });
@@ -48,6 +34,23 @@ export const createReadSDL: CreateReadSDL = ({
     if (fieldsRender.length === 0) {
         return "";
     }
+    const listFilterFieldsRender = renderListFilterFields({
+        model,
+        fields: model.fields,
+        type,
+        fieldTypePlugins
+    });
+    const sortEnumRender = renderSortEnum({
+        model,
+        fields: model.fields,
+        fieldTypePlugins,
+        sorterPlugins
+    });
+    const getFilterFieldsRender = renderGetFilterFields({
+        model,
+        fields: model.fields,
+        fieldTypePlugins
+    });
 
     const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");
 
@@ -71,29 +74,20 @@ export const createReadSDL: CreateReadSDL = ({
             .filter(Boolean)
             .join("\n")}
         
-        ${
-            getFilterFieldsRender &&
-            `input ${singularName}GetWhereInput {
+        input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`
         }
         
         
-        ${
-            listFilterFieldsRender &&
-            `input ${singularName}ListWhereInput {
-                ${listFilterFieldsRender}
-                AND: [${singularName}ListWhereInput!]
-                OR: [${singularName}ListWhereInput!]
-        }`
+        input ${singularName}ListWhereInput {
+            ${listFilterFieldsRender}
+            AND: [${singularName}ListWhereInput!]
+            OR: [${singularName}ListWhereInput!]
         }
         
         
-        ${
-            sortEnumRender &&
-            `enum ${singularName}ListSorter {
+        enum ${singularName}ListSorter {
             ${sortEnumRender}
-        }`
         }
         
         type ${singularName}Response {
