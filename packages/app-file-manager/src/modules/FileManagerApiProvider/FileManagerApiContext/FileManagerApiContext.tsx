@@ -19,7 +19,8 @@ import {
     ListFileTagsQueryVariables,
     UPDATE_FILE,
     UpdateFileMutationResponse,
-    UpdateFileMutationVariables
+    UpdateFileMutationVariables,
+    FileInput
 } from "../graphql";
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
@@ -56,6 +57,7 @@ export interface FileManagerApiProviderProps {
 
 interface UploadFileOptions {
     tags?: string[];
+    onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
 }
 
 interface ListTagsOptions {
@@ -136,7 +138,7 @@ const FileManagerApiProvider: React.VFC<FileManagerApiProviderProps> = ({ childr
         [fmFilePermission]
     );
 
-    const createFile = async (data: FileItem) => {
+    const createFile = async (data: FileInput) => {
         const response = await client.mutate<
             CreateFileMutationResponse,
             CreateFileMutationVariables
@@ -194,7 +196,10 @@ const FileManagerApiProvider: React.VFC<FileManagerApiProviderProps> = ({ childr
      * @param File file
      */
     const uploadFile = async (file: File, options: UploadFileOptions = {}) => {
-        const response = await getFileUploader()(file, { apolloClient: client });
+        const response = await getFileUploader().upload(file, {
+            apolloClient: client,
+            onProgress: options.onProgress
+        });
 
         const tags = options?.tags || [];
 

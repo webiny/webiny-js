@@ -89,7 +89,11 @@ class Menu extends React.Component<MenuProps, MenuState> {
     private readonly renderCustomContent = () => {
         const { children } = this.props;
         return (
-            <MenuSurface open={this.state.menuIsOpen} onClose={this.closeMenu}>
+            <MenuSurface
+                open={this.state.menuIsOpen}
+                onClose={this.closeMenu}
+                renderToPortal={this.props.renderToPortal}
+            >
                 {typeof children === "function"
                     ? children({ closeMenu: this.closeMenu })
                     : children}

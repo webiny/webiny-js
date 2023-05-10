@@ -2,6 +2,8 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { SecurityPermission } from "@webiny/app-security/types";
 
+export { FileInput } from "./modules/FileManagerApiProvider/graphql";
+
 export type PermissionRendererPluginRenderFunctionType = (props: {
     value: SecurityPermission;
     setValue: (newValue: SecurityPermission) => void;

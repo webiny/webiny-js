@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { css } from "emotion";
+import { Global, css as reactCss } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
@@ -17,6 +18,12 @@ import { GridCellProps } from "react-virtualized/dist/es/Grid";
  * @type {string}
  */
 const iconPickerLabel = css({ marginBottom: 5, marginLeft: 2 });
+
+const globalStyles = reactCss`
+    #rmwcPortal > .mdc-menu-surface {
+        z-index: 1000;
+    }
+`;
 
 const MenuWrapper = css`
     color: var(--mdc-theme-text-secondary-on-background);
@@ -90,8 +97,6 @@ const searchInput = css({
         padding: "20px 12px 20px"
     }
 });
-
-const { useState, useCallback, useMemo } = React;
 
 export interface IconPickerProps extends FormComponentProps {
     label?: React.ReactNode;
@@ -174,6 +179,7 @@ export const IconPicker: React.VFC<IconPickerProps> = ({
         ({ closeMenu }) => {
             return (
                 <>
+                    <Global styles={globalStyles} />
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
                         {({ value, onChange }) => (
                             <Input
@@ -223,6 +229,7 @@ export const IconPicker: React.VFC<IconPickerProps> = ({
             <Menu
                 onOpen={() => setMustRenderGrid(true)}
                 onClose={() => setMustRenderGrid(false)}
+                renderToPortal={true}
                 handle={
                     <div className={MenuWrapper}>
                         <div className={pickIcon}>
