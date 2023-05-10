@@ -1,8 +1,7 @@
-import { CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
+import { CmsFieldTypePlugins, CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderGetFilterFieldsParams {
-    model: CmsModel;
     fields: CmsModelField[];
     fieldTypePlugins: CmsFieldTypePlugins;
 }
@@ -10,11 +9,7 @@ interface RenderGetFilterFields {
     (params: RenderGetFilterFieldsParams): string;
 }
 
-export const renderGetFilterFields: RenderGetFilterFields = ({
-    model,
-    fields,
-    fieldTypePlugins
-}) => {
+export const renderGetFilterFields: RenderGetFilterFields = ({ fields, fieldTypePlugins }) => {
     const filters: string[] = ["id: ID", "entryId: String"];
 
     for (const field of fields) {
@@ -32,7 +27,7 @@ export const renderGetFilterFields: RenderGetFilterFields = ({
         if (typeof createGetFilters !== "function") {
             continue;
         }
-        filters.push(createGetFilters({ model, field }));
+        filters.push(createGetFilters({ field }));
     }
 
     return filters.filter(Boolean).join("\n");

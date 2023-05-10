@@ -47,7 +47,6 @@ export const createReadSDL: CreateReadSDL = ({
         sorterPlugins
     });
     const getFilterFieldsRender = renderGetFilterFields({
-        model,
         fields: model.fields,
         fieldTypePlugins
     });

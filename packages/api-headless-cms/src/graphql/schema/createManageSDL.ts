@@ -46,7 +46,6 @@ export const createManageSDL: CreateManageSDL = ({
         sorterPlugins
     });
     const getFilterFieldsRender = renderGetFilterFields({
-        model,
         fields: model.fields,
         fieldTypePlugins
     });
@@ -76,23 +75,23 @@ export const createManageSDL: CreateManageSDL = ({
         }
 
         type ${singularName}Meta {
-        modelId: String
-        version: Int
-        locked: Boolean
-        publishedOn: DateTime
-        status: String
-        """
-        CAUTION: this field is resolved by making an extra query to DB.
-        RECOMMENDATION: Use it only with "get" queries (avoid in "list")
-        """
-        revisions: [${singularName}!]
-        title: String
-        description: String
-        image: String
-        """
-        Custom meta data stored in the root of the entry object.
-        """
-        data: JSON
+            modelId: String
+            version: Int
+            locked: Boolean
+            publishedOn: DateTime
+            status: String
+            """
+            CAUTION: this field is resolved by making an extra query to DB.
+            RECOMMENDATION: Use it only with "get" queries (avoid in "list")
+            """
+            revisions: [${singularName}!]
+            title: String
+            description: String
+            image: String
+            """
+            Custom meta data stored in the root of the entry object.
+            """
+            data: JSON
         }
 
         ${fields.map(f => f.typeDefs).join("\n")}
@@ -101,62 +100,61 @@ export const createManageSDL: CreateManageSDL = ({
 
 
         input ${singularName}Input {
-        id: ID
-        ${inputFields.map(f => f.fields).join("\n")}
-
+            id: ID
+            ${inputFields.map(f => f.fields).join("\n")}
         }
 
         input ${singularName}GetWhereInput {
-        ${getFilterFieldsRender}
+            ${getFilterFieldsRender}
         }
 
         input ${singularName}ListWhereInput {
-        ${listFilterFieldsRender}
-        AND: [${singularName}ListWhereInput!]
-        OR: [${singularName}ListWhereInput!]
+            ${listFilterFieldsRender}
+            AND: [${singularName}ListWhereInput!]
+            OR: [${singularName}ListWhereInput!]
         }
 
 
         type ${singularName}Response {
-        data: ${singularName}
-        error: CmsError
+            data: ${singularName}
+            error: CmsError
         }
 
         type ${singularName}ArrayResponse {
-        data: [${singularName}]
-        error: CmsError
+            data: [${singularName}]
+            error: CmsError
         }
 
         type ${singularName}ListResponse {
-        data: [${singularName}]
-        meta: CmsListMeta
-        error: CmsError
+            data: [${singularName}]
+            meta: CmsListMeta
+            error: CmsError
         }
 
 
         enum ${singularName}ListSorter {
-        ${sortEnumRender}
+            ${sortEnumRender}
         }
 
         extend type Query {
-        get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
-
-        get${singularName}Revisions(id: ID!): ${singularName}ArrayResponse
-
-        get${pluralName}ByIds(revisions: [ID!]!): ${singularName}ArrayResponse
-
-        list${pluralName} (
-        where: ${singularName}ListWhereInput
-        sort: [${singularName}ListSorter]
-        limit: Int
-        after: String
-        ): ${singularName}ListResponse
+            get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
+    
+            get${singularName}Revisions(id: ID!): ${singularName}ArrayResponse
+    
+            get${pluralName}ByIds(revisions: [ID!]!): ${singularName}ArrayResponse
+    
+            list${pluralName} (
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
+                limit: Int
+                after: String
+            ): ${singularName}ListResponse
         }
 
         extend type Mutation {
-        create${singularName}(data: ${singularName}Input!): ${singularName}Response
+            create${singularName}(data: ${singularName}Input!): ${singularName}Response
 
-        create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
+            create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
     
             update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
     
