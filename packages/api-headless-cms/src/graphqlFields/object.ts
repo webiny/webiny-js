@@ -11,7 +11,7 @@ import lodashUpperFirst from "lodash/upperFirst";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 
 interface AttachTypeDefinitionsParams {
-    model: CmsModel;
+    model: Pick<CmsModel, "singularApiName">;
     field: CmsModelField;
     plugins: CmsFieldTypePlugins;
     endpointType: "manage" | "read";
@@ -57,7 +57,7 @@ const createChildTypeDefs = (params: AttachTypeDefinitionsParams): string => {
 };
 
 interface CreateTypeNameParams {
-    model: CmsModel;
+    model: Pick<CmsModel, "singularApiName">;
     parents?: string[];
     field: CmsModelField;
 }
@@ -75,7 +75,7 @@ const createTypeName = (params: CreateTypeNameParams): string => {
 
 interface CreateListFiltersParams {
     field: CmsModelField;
-    model: CmsModel;
+    model: Pick<CmsModel, "singularApiName">;
 }
 const createListFilters = ({ field, model }: CreateListFiltersParams) => {
     const typeName = createTypeName({

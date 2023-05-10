@@ -642,21 +642,6 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      */
     isSortable: boolean;
     /**
-     * Optional method which creates the storageId.
-     * Primary use is for the datetime field, but if users has some specific fields, they can customize the storageId to their needs.
-     *
-     * ```ts
-     * createStorageId: ({field}) => {
-     *     if (field.settings.type === "time) {
-     *         return `${field.type}_time@${field.id}`
-     *     }
-     *     // use default method
-     *     return undefined;
-     * }
-     * ```
-     */
-    createStorageId?: (params: { model: CmsModel; field: TField }) => string | null | undefined;
-    /**
      * Read API methods.
      */
     read: {
@@ -671,7 +656,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * }
          * ```
          */
-        createGetFilters?(params: { model: CmsModel; field: TField }): string;
+        createGetFilters?(params: { field: TField }): string;
         /**
          * Definition for list filtering for GraphQL.
          *
@@ -689,7 +674,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createListFilters?(params: {
-            model: CmsModel;
+            model: Pick<CmsModel, "singularApiName">;
             field: TField;
             plugins: CmsFieldTypePlugins;
         }): string;
@@ -768,7 +753,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createListFilters?: (params: {
-            model: CmsModel;
+            model: Pick<CmsModel, "singularApiName">;
             field: TField;
             plugins: CmsFieldTypePlugins;
         }) => string;
