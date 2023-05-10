@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { formatToQuote } from "~/utils/nodes/formatToQuote";
+import { formatBaseToQuote } from "~/utils/nodes/formatBaseToQuote";
 import { formatToParagraph } from "~/utils/nodes/formatToParagraph";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 export const QuoteAction = () => {
@@ -15,7 +15,7 @@ export const QuoteAction = () => {
             const DEFAULT_QUOTE_ID = "quote";
             const hasQuoteStyles = themeEmotionMap && themeEmotionMap[DEFAULT_QUOTE_ID];
 
-            formatToQuote(editor, hasQuoteStyles ? DEFAULT_QUOTE_ID : undefined);
+            formatBaseToQuote(editor, hasQuoteStyles ? DEFAULT_QUOTE_ID : undefined);
             setIsActive(true);
             return;
         }

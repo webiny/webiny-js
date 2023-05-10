@@ -6,7 +6,7 @@ import {
     ADD_TYPOGRAPHY_ELEMENT_COMMAND,
     TypographyPayload
 } from "~/nodes/TypographyElementNode";
-import { $wrapNodes } from "@lexical/selection";
+import { $setBlocksType } from "@lexical/selection";
 
 export const TypographyPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
@@ -17,7 +17,7 @@ export const TypographyPlugin: React.FC = () => {
             payload => {
                 const selection = $getSelection();
                 if ($isRangeSelection(selection)) {
-                    $wrapNodes(selection, () => $createTypographyNode(payload.value));
+                    $setBlocksType(selection, () => $createTypographyNode(payload.value));
                 }
                 return true;
             },

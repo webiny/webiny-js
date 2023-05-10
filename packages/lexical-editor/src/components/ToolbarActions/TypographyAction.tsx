@@ -18,6 +18,7 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
+import { $isBaseQuoteNode, BaseQuoteNode } from "~/nodes/BaseQuoteNode";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -53,6 +54,7 @@ export const TypographyAction: TypographyAction = () => {
     const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
+    const isQuoteSelected = textBlockSelection?.state?.quote.isSelected || false;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -108,6 +110,7 @@ export const TypographyAction: TypographyAction = () => {
                 setTypography(el.getTypographyValue());
                 return;
             }
+
             // list and quote element
             if (themeEmotionMap && textBlockSelection?.element?.getStyleId) {
                 const themeStyleId = textBlockSelection?.element?.getStyleId() || undefined;
@@ -123,8 +126,24 @@ export const TypographyAction: TypographyAction = () => {
                     }
                 }
             }
+
+            if (themeEmotionMap && $isBaseQuoteNode(textBlockSelection?.element)) {
+                const quoteElement = textBlockSelection?.element as BaseQuoteNode;
+                const quoteTypoId = quoteElement.getTypographyStyleId();
+                if (quoteTypoId) {
+                    const elementStyle = themeEmotionMap[quoteTypoId];
+                    if (elementStyle) {
+                        setTypography({
+                            id: elementStyle.id,
+                            css: elementStyle.styles,
+                            name: elementStyle.name,
+                            tag: elementStyle.tag
+                        });
+                    }
+                }
+            }
         }
-    }, [isTypographySelected, textType]);
+    }, [isQuoteSelected, isTypographySelected, textType]);
 
     return (
         <TypographyActionContext.Provider
