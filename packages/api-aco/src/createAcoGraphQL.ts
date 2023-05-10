@@ -62,6 +62,13 @@ const baseSchema = new GraphQLSchemaPlugin({
             title: AcoSortDirection
         }
 
+        type AcoSearchLocationType {
+            folderId: ID!
+        }
+        input AcoSearchLocationInput {
+            folderId: ID!
+        }
+
         extend type Query {
             aco: AcoQuery
             search: SearchQuery

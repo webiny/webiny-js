@@ -1,13 +1,15 @@
-import { Tenant, TenancyContext } from "@webiny/api-tenancy/types";
+import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { AcoSearchRecordCrud, AcoSearchRecordStorageOperations } from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
+import { IAcoApp, IAcoApps, IAcoAppRegisterParams } from "~/apps/types";
 
 export * from "./folder/folder.types";
 export * from "./record/record.types";
+export * from "./apps/types";
 
 export interface User {
     id: string;
@@ -39,6 +41,9 @@ export interface AcoBaseFields {
 export interface AdvancedContentOrganisation {
     folder: AcoFolderCrud;
     search: AcoSearchRecordCrud;
+    apps: IAcoApps;
+    registerApp: (params: IAcoAppRegisterParams) => Promise<IAcoApp>;
+    getApp: (name: string) => IAcoApp;
 }
 
 export interface CreateAcoParams {

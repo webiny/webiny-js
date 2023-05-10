@@ -1,8 +1,6 @@
 import WebinyError from "@webiny/error";
-import { SEARCH_RECORD_MODEL_ID } from "./record.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
-import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getRecordFieldValues } from "~/utils/getFieldValues";
 import { AcoSearchRecordStorageOperations } from "./record.types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
@@ -11,12 +9,7 @@ import { attachAcoRecordPrefix } from "~/utils/acoRecordId";
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoSearchRecordStorageOperations => {
-    const { cms } = params;
-
-    const { withModel } = createOperationsWrapper({
-        ...params,
-        modelName: SEARCH_RECORD_MODEL_ID
-    });
+    const { cms, security } = params;
 
     const getRecord = async (model: CmsModel, id: string) => {
         /**
@@ -37,14 +30,14 @@ export const createSearchRecordOperations = (
     };
 
     return {
-        async getRecord({ id }) {
-            return withModel(async model => {
+        async getRecord(model, { id }) {
+            return security.withoutAuthorization(async () => {
                 const record = await getRecord(model, id);
                 return getRecordFieldValues(record, baseFields);
             });
         },
-        listRecords(params) {
-            return withModel(async model => {
+        listRecords(model, params) {
+            return security.withoutAuthorization(async () => {
                 const { sort, where } = params;
 
                 const [entries, meta] = await cms.listLatestEntries(model, {
@@ -58,8 +51,8 @@ export const createSearchRecordOperations = (
                 return [entries.map(entry => getRecordFieldValues(entry, baseFields)), meta];
             });
         },
-        createRecord({ data: SearchRecordData }) {
-            return withModel(async model => {
+        createRecord(model, { data: SearchRecordData }) {
+            return security.withoutAuthorization(async () => {
                 const { tags = [], data = {}, ...rest } = SearchRecordData;
                 const entry = await cms.createEntry(model, {
                     tags,
@@ -71,9 +64,9 @@ export const createSearchRecordOperations = (
                 return getRecordFieldValues(entry, baseFields);
             });
         },
-        updateRecord(this: AcoSearchRecordStorageOperations, { id, data }) {
-            return withModel(async model => {
-                const original = await this.getRecord({ id });
+        updateRecord(this: AcoSearchRecordStorageOperations, model, { id, data }) {
+            return security.withoutAuthorization(async () => {
+                const original = await this.getRecord(model, { id });
 
                 const input = {
                     ...original,
@@ -89,8 +82,8 @@ export const createSearchRecordOperations = (
                 return getRecordFieldValues(entry, baseFields);
             });
         },
-        deleteRecord({ id }) {
-            return withModel(async model => {
+        deleteRecord(model, { id }) {
+            return security.withoutAuthorization(async () => {
                 await cms.deleteEntry(model, attachAcoRecordPrefix(id));
                 return true;
             });

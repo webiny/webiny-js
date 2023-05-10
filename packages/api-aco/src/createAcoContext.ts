@@ -2,15 +2,17 @@ import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import WebinyError from "@webiny/error";
-
-import { createAcoCrud } from "~/createAcoCrud";
 import { createAcoHooks } from "~/createAcoHooks";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
+import { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types";
+import { createFolderCrudMethods } from "~/folder/folder.crud";
+import { createSearchRecordCrudMethods } from "~/record/record.crud";
+import { AcoApps } from "./apps/AcoApps";
+import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
+import { AcoAppModifierPlugin } from "~/apps/AcoAppModifierPlugin";
 
-import { AcoContext } from "~/types";
-
-const setupAcoContext = (context: AcoContext) => {
+const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
 
     if (isInstallationPending({ tenancy, i18n })) {
@@ -35,7 +37,7 @@ const setupAcoContext = (context: AcoContext) => {
 
     const getIdentity = () => security.getIdentity();
 
-    context.aco = createAcoCrud({
+    const params: CreateAcoParams = {
         getLocale,
         getIdentity,
         getTenant,
@@ -50,7 +52,27 @@ const setupAcoContext = (context: AcoContext) => {
             getCmsContext: () => context,
             security
         })
-    });
+    };
+
+    const defaultRecordModel = await context.cms.getModel(SEARCH_RECORD_MODEL_ID);
+    if (!defaultRecordModel) {
+        throw new WebinyError(`There is no default record model in ${SEARCH_RECORD_MODEL_ID}`);
+    }
+
+    const apps = new AcoApps(context, params);
+
+    context.aco = {
+        folder: createFolderCrudMethods(params),
+        search: createSearchRecordCrudMethods(params),
+        apps,
+        getApp: (name: string) => apps.get(name),
+        registerApp: async (params: IAcoAppRegisterParams) => {
+            return apps.register({
+                model: defaultRecordModel,
+                ...params
+            });
+        }
+    };
 };
 
 export const createAcoContext = () => {

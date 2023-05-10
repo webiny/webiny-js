@@ -1,5 +1,6 @@
 import { AcoBaseFields, ListMeta, ListSort } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export type GenericSearchData = {
     [key: string]: any;
@@ -76,18 +77,21 @@ export type StorageOperationsDeleteSearchRecordParams = DeleteSearchRecordParams
 export interface OnSearchRecordBeforeCreateTopicParams<
     TData extends GenericSearchData = GenericSearchData
 > {
+    model: CmsModel;
     input: CreateSearchRecordParams<TData>;
 }
 
 export interface OnSearchRecordAfterCreateTopicParams<
     TData extends GenericSearchData = GenericSearchData
 > {
+    model: CmsModel;
     record: SearchRecord<TData>;
 }
 
 export interface OnSearchRecordBeforeUpdateTopicParams<
     TData extends GenericSearchData = GenericSearchData
 > {
+    model: CmsModel;
     original: SearchRecord<TData>;
     input: Record<string, any>;
 }
@@ -95,6 +99,7 @@ export interface OnSearchRecordBeforeUpdateTopicParams<
 export interface OnSearchRecordAfterUpdateTopicParams<
     TData extends GenericSearchData = GenericSearchData
 > {
+    model: CmsModel;
     original: SearchRecord<TData>;
     record: SearchRecord<TData>;
     input: Record<string, any>;
@@ -103,21 +108,42 @@ export interface OnSearchRecordAfterUpdateTopicParams<
 export interface OnSearchRecordBeforeDeleteTopicParams<
     TData extends GenericSearchData = GenericSearchData
 > {
+    model: CmsModel;
     record: SearchRecord<TData>;
 }
 
 export interface OnSearchRecordAfterDeleteTopicParams<
     TData extends GenericSearchData = GenericSearchData
 > {
+    model: CmsModel;
     record: SearchRecord<TData>;
 }
 
-export interface AcoSearchRecordCrud {
+export interface AcoSearchRecordCrudBase<TData extends GenericSearchData = GenericSearchData> {
     get<TData>(id: string): Promise<SearchRecord<TData>>;
     list<TData>(params: ListSearchRecordsParams): Promise<[SearchRecord<TData>[], ListMeta]>;
     create<TData>(data: CreateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
     update<TData>(id: string, data: UpdateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
     delete(id: string): Promise<Boolean>;
+}
+
+export interface AcoSearchRecordCrud
+    extends Omit<AcoSearchRecordCrudBase, "get" | "list" | "create" | "update" | "delete"> {
+    get<TData>(model: CmsModel, id: string): Promise<SearchRecord<TData>>;
+    list<TData>(
+        model: CmsModel,
+        params: ListSearchRecordsParams
+    ): Promise<[SearchRecord<TData>[], ListMeta]>;
+    create<TData>(
+        model: CmsModel,
+        data: CreateSearchRecordParams<TData>
+    ): Promise<SearchRecord<TData>>;
+    update<TData>(
+        model: CmsModel,
+        id: string,
+        data: UpdateSearchRecordParams<TData>
+    ): Promise<SearchRecord<TData>>;
+    delete(model: CmsModel, id: string): Promise<Boolean>;
     onSearchRecordBeforeCreate: Topic<OnSearchRecordBeforeCreateTopicParams>;
     onSearchRecordAfterCreate: Topic<OnSearchRecordAfterCreateTopicParams>;
     onSearchRecordBeforeUpdate: Topic<OnSearchRecordBeforeUpdateTopicParams>;
@@ -125,18 +151,26 @@ export interface AcoSearchRecordCrud {
     onSearchRecordBeforeDelete: Topic<OnSearchRecordBeforeDeleteTopicParams>;
     onSearchRecordAfterDelete: Topic<OnSearchRecordAfterDeleteTopicParams>;
 }
+
 export interface AcoSearchRecordStorageOperations {
     getRecord<TData extends GenericSearchData = GenericSearchData>(
+        model: CmsModel,
         params: StorageOperationsGetSearchRecordParams
     ): Promise<SearchRecord<TData>>;
     listRecords<TData extends GenericSearchData = GenericSearchData>(
+        model: CmsModel,
         params: StorageOperationsListSearchRecordsParams
     ): Promise<[SearchRecord<TData>[], ListMeta]>;
     createRecord<TData extends GenericSearchData = GenericSearchData>(
+        model: CmsModel,
         params: StorageOperationsCreateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
     updateRecord<TData extends GenericSearchData = GenericSearchData>(
+        model: CmsModel,
         params: StorageOperationsUpdateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
-    deleteRecord(params: StorageOperationsDeleteSearchRecordParams): Promise<boolean>;
+    deleteRecord(
+        model: CmsModel,
+        params: StorageOperationsDeleteSearchRecordParams
+    ): Promise<boolean>;
 }

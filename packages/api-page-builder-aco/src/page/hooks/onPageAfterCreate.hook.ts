@@ -3,10 +3,11 @@ import WebinyError from "@webiny/error";
 import { createPageRecordPayload } from "~/utils/createRecordPayload";
 
 import { PbAcoContext, PbPageRecordData } from "~/types";
+import { PB_APP_NAME } from "~/contants";
 
 export const onPageAfterCreateHook = (context: PbAcoContext) => {
     const { aco, pageBuilder } = context;
-
+    const app = aco.getApp(PB_APP_NAME);
     /**
      * Intercept page creation and create a new search record.
      * The `location.folderId` info is coming from transient `meta` data.
@@ -14,7 +15,7 @@ export const onPageAfterCreateHook = (context: PbAcoContext) => {
     pageBuilder.onPageAfterCreate.subscribe(async ({ page, meta }) => {
         try {
             const payload = await createPageRecordPayload(context, page, meta);
-            await aco.search.create<PbPageRecordData>(payload);
+            await app.search.create<PbPageRecordData>(payload);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPageAfterCreateHook hook",
