@@ -146,11 +146,7 @@ function append(node: ElementNode, nodesToAppend: Array<LexicalNode>) {
     node.splice(node.getChildrenSize(), 0, nodesToAppend);
 }
 
-function createListOrMerge(
-    node: ElementNode,
-    listType: ListType,
-    styleId?: string
-): BaseListNode {
+function createListOrMerge(node: ElementNode, listType: ListType, styleId?: string): BaseListNode {
     if ($isWebinyListNode(node)) {
         return node;
     }

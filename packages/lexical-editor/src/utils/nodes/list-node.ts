@@ -52,9 +52,7 @@ export function $getTopListNode(listItem: LexicalNode): BaseListNode {
 
 export function $getAllListItems(node: BaseListNode): Array<BaseListItemNode> {
     let listItemNodes: Array<BaseListItemNode> = [];
-    const listChildren: Array<BaseListItemNode> = node
-        .getChildren()
-        .filter($isWebinyListItemNode);
+    const listChildren: Array<BaseListItemNode> = node.getChildren().filter($isWebinyListItemNode);
 
     for (let i = 0; i < listChildren.length; i++) {
         const listItemNode = listChildren[i];

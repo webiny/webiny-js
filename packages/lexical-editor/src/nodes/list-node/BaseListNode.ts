@@ -84,12 +84,7 @@ export class BaseListNode extends ElementNode {
     }
 
     static override clone(node: BaseListNode): BaseListNode {
-        return new BaseListNode(
-            node.getListType(),
-            node.getStyleId(),
-            node.getStart(),
-            node.__key
-        );
+        return new BaseListNode(node.getListType(), node.getStyleId(), node.getStart(), node.__key);
     }
 
     getTag(): ListNodeTagType {
