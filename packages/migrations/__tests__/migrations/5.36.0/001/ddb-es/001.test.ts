@@ -200,6 +200,8 @@ describe("5.36.0-001", () => {
 
         const { data, error } = await handler();
 
+        console.log(JSON.stringify(data, null, 2));
+
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);
 
@@ -314,6 +316,7 @@ describe("5.36.0-001", () => {
                 entryId: `wby-aco-${id}`,
                 tenant,
                 createdOn,
+                savedOn: createdOn,
                 locked: false,
                 ownedBy: createdBy,
                 webinyVersion: process.env.WEBINY_VERSION,
