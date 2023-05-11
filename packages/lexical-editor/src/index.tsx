@@ -21,6 +21,7 @@ export { NumberedListAction } from "~/components/ToolbarActions/NumberedListActi
 export { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
 export { UnderlineAction } from "~/components/ToolbarActions/UnderlineAction";
 export { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
+export { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction";
 // toolbars
 export { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
 export { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";

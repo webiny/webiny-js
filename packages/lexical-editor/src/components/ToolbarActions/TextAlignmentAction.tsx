@@ -41,16 +41,22 @@ export const TextAlignmentAction: TextAlignmentAction = () => {
     const { activeEditor } = useRichTextEditor();
     const [alignmentValue, setAlignmentValue] = useState<ElementFormatType>("");
     const applyTextAlignment = (value: ElementFormatType) => {
-        activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, value);
-        setAlignmentValue(value);
+        if (activeEditor) {
+            activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, value);
+            setAlignmentValue(value);
+        }
     };
 
     const outdentText = () => {
-        activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
+        if (activeEditor) {
+            activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
+        }
     };
 
     const indentText = () => {
-        activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
+        if (activeEditor) {
+            activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
+        }
     };
 
     return (

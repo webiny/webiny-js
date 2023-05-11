@@ -7,7 +7,6 @@ interface LexicalEditorConfig extends React.FC<unknown> {
     FontColorAction: typeof FontColorAction;
     TypographyAction: typeof TypographyAction;
     TextAlignmentAction: typeof TextAlignmentAction;
-
 }
 
 export const LexicalEditorConfig: LexicalEditorConfig = ({ children }) => {

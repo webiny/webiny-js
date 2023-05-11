@@ -17,6 +17,7 @@ import { $isHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";
 import { $isWebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
+import { $isParentElementRTL } from "@lexical/selection";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -40,6 +41,7 @@ const getDefaultToolbarState = (): ToolbarState => {
         italic: false,
         underline: false,
         code: false,
+        isRTL: false,
         link: { isSelected: false },
         list: { isSelected: false },
         typography: { isSelected: false },
@@ -66,11 +68,14 @@ export const getToolbarState = (
         code: textFormat.code
     };
 
+    state.isRTL = $isParentElementRTL(selection);
+
     // link
     state.link.isSelected = $isLinkNode(parent) || $isLinkNode(node);
     if (state.link.isSelected) {
         state.textType = "link";
     }
+
     // font color
     if ($isFontColorNode(node)) {
         state.fontColor.isSelected = true;

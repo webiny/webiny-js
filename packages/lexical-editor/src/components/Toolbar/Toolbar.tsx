@@ -3,6 +3,7 @@ import {
     $getSelection,
     $isRangeSelection,
     $isTextNode,
+    COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
     LexicalEditor,
     SELECTION_CHANGE_COMMAND
@@ -30,14 +31,10 @@ interface FloatingToolbarProps {
 
 const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem, editor }) => {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
-    const {
-        toolbarType,
-        setToolbarType,
-        setTextBlockSelection,
-        activeEditor,
-        setActiveEditor,
-        setIsEditable
-    } = useRichTextEditor();
+    const { toolbarType, setToolbarType, setIsEditable, setActiveEditor } = useRichTextEditor();
+
+    const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
+    setActiveEditor(editor);
 
     useEffect(() => {
         if (toolbarType !== type) {
@@ -57,19 +54,14 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
 
         let isLink = false;
         if ($isRangeSelection(selection)) {
-            const selectionState = getLexicalTextSelectionState(activeEditor, selection);
-            if (selectionState) {
-                setTextBlockSelection(selectionState);
-            }
             const node = getSelectedNode(selection);
-            // Update links
             const parent = node.getParent();
-
-            if ($isLinkNode(parent) || $isLinkNode(node)) {
+            if ($isLinkNode(node) || $isLinkNode(parent)) {
                 isLink = true;
             }
         }
 
+        // set floating toolbar position
         const rootElement = editor.getRootElement();
         if (
             selection !== null &&
@@ -88,9 +80,12 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
         const scrollerElem = anchorElem.parentElement;
 
         const update = () => {
-            editor.getEditorState().read(() => {
-                updateTextFormatFloatingToolbar();
-            });
+            editor.registerEditableListener(editable => {
+                setIsEditable(editable);
+            }),
+                editor.getEditorState().read(() => {
+                    updateTextFormatFloatingToolbar();
+                });
         };
 
         window.addEventListener("resize", update);
@@ -107,14 +102,8 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
     }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
 
     useEffect(() => {
-        editor.registerEditableListener(editable => {
-            setIsEditable(editable);
-        }),
-            editor.getEditorState().read(() => {
-                updateTextFormatFloatingToolbar();
-            });
         return mergeRegister(
-            editor.registerUpdateListener(({ editorState }) => {
+            toolbarActiveEditor.registerUpdateListener(({ editorState }) => {
                 editorState.read(() => {
                     updateTextFormatFloatingToolbar();
                 });
@@ -123,7 +112,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
                 SELECTION_CHANGE_COMMAND,
                 (_payload, newEditor) => {
                     updateTextFormatFloatingToolbar();
-                    setActiveEditor(newEditor);
+                    setToolbarActiveEditor(newEditor);
                     return false;
                 },
                 COMMAND_PRIORITY_LOW
@@ -151,9 +140,14 @@ const useToolbar: FC<useToolbarProps> = ({
     type,
     children
 }): JSX.Element | null => {
-    const { nodeIsText, setNodeIsText } = useRichTextEditor();
+    const { nodeIsText, setNodeIsText, setActiveEditor, setIsEditable, setTextBlockSelection } =
+        useRichTextEditor();
 
-    const updatePopup = useCallback(() => {
+    const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
+    setActiveEditor(editor);
+    setIsEditable(editor.isEditable());
+
+    const updateToolbar = useCallback(() => {
         editor.getEditorState().read(() => {
             // Should not to pop up the floating toolbar when using IME input
             if (editor.isComposing()) {
@@ -163,14 +157,21 @@ const useToolbar: FC<useToolbarProps> = ({
             const nativeSelection = window.getSelection();
             const rootElement = editor.getRootElement();
 
-            if (
-                nativeSelection !== null &&
-                (!$isRangeSelection(selection) ||
-                    rootElement === null ||
-                    !rootElement.contains(nativeSelection.anchorNode))
-            ) {
-                setNodeIsText(false);
-                return;
+            if ($isRangeSelection(selection)) {
+                const selectionState = getLexicalTextSelectionState(toolbarActiveEditor, selection);
+                if (selectionState) {
+                    setTextBlockSelection(selectionState);
+                }
+
+                if (
+                    nativeSelection !== null &&
+                    (!$isRangeSelection(selection) ||
+                        rootElement === null ||
+                        !rootElement.contains(nativeSelection.anchorNode))
+                ) {
+                    setNodeIsText(false);
+                    return;
+                }
             }
 
             if (!$isRangeSelection(selection)) {
@@ -187,19 +188,37 @@ const useToolbar: FC<useToolbarProps> = ({
                 setNodeIsText(false);
             }
         });
-    }, [editor]);
+    }, [toolbarActiveEditor]);
 
     useEffect(() => {
-        document.addEventListener("selectionchange", updatePopup);
+        document.addEventListener("selectionchange", updateToolbar);
         return () => {
-            document.removeEventListener("selectionchange", updatePopup);
+            document.removeEventListener("selectionchange", updateToolbar);
         };
-    }, [updatePopup]);
+    }, [updateToolbar]);
+
+    useEffect(() => {
+        return editor.registerCommand(
+            SELECTION_CHANGE_COMMAND,
+            (_payload, newEditor) => {
+                updateToolbar();
+                setToolbarActiveEditor(newEditor);
+                setActiveEditor(newEditor);
+                return false;
+            },
+            COMMAND_PRIORITY_CRITICAL
+        );
+    }, [editor, updateToolbar]);
 
     useEffect(() => {
         return mergeRegister(
-            editor.registerUpdateListener(() => {
-                updatePopup();
+            editor.registerEditableListener(editable => {
+                setIsEditable(editable);
+            }),
+            toolbarActiveEditor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
+                    updateToolbar();
+                });
             }),
             editor.registerRootListener(() => {
                 if (editor.getRootElement() === null) {
@@ -207,7 +226,7 @@ const useToolbar: FC<useToolbarProps> = ({
                 }
             })
         );
-    }, [editor, updatePopup]);
+    }, [updateToolbar, editor, toolbarActiveEditor]);
 
     if (!nodeIsText) {
         return null;

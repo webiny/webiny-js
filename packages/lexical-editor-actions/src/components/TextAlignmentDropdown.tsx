@@ -8,7 +8,7 @@ import {
 } from "@webiny/lexical-editor";
 
 export const TextAlignmentDropdown = () => {
-    const { isEditable } = useRichTextEditor();
+    const { isEditable, textBlockSelection } = useRichTextEditor();
     const { applyTextAlignment, outdentText, indentText } = useTextAlignmentAction();
 
     return (
@@ -62,7 +62,9 @@ export const TextAlignmentDropdown = () => {
                 }}
                 className="item"
             >
-                <i className={"icon " + (isRTL ? "indent" : "outdent")} />
+                <i
+                    className={"icon " + (textBlockSelection?.state?.isRTL ? "indent" : "outdent")}
+                />
                 <span className="text">Outdent</span>
             </DropDownItem>
             <DropDownItem
@@ -71,7 +73,9 @@ export const TextAlignmentDropdown = () => {
                 }}
                 className="item"
             >
-                <i className={"icon " + (isRTL ? "outdent" : "indent")} />
+                <i
+                    className={"icon " + (textBlockSelection?.state?.isRTL ? "outdent" : "indent")}
+                />
                 <span className="text">Indent</span>
             </DropDownItem>
         </DropDown>
