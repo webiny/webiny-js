@@ -20,8 +20,8 @@ import { Spread } from "lexical";
 import {
     $createWebinyListNode,
     $isWebinyListNode,
-    WebinyListNode
-} from "~/nodes/list-node/WebinyListNode";
+    BaseListNode
+} from "~/nodes/list-node/BaseListNode";
 import { $createListNode } from "@lexical/list";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import {
@@ -41,7 +41,7 @@ export type SerializedWebinyListItemNode = Spread<
 >;
 
 /** @noInheritDoc */
-export class WebinyListItemNode extends ElementNode {
+export class BaseListItemNode extends ElementNode {
     /** @internal */
     __value: number;
     /** @internal */
@@ -51,8 +51,8 @@ export class WebinyListItemNode extends ElementNode {
         return "webiny-listitem";
     }
 
-    static override clone(node: WebinyListItemNode): WebinyListItemNode {
-        return new WebinyListItemNode(node.__value, node.__checked, node.__key);
+    static override clone(node: BaseListItemNode): BaseListItemNode {
+        return new BaseListItemNode(node.__value, node.__checked, node.__key);
     }
 
     constructor(value?: number, checked?: boolean, key?: NodeKey) {
@@ -76,7 +76,7 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override updateDOM(
-        prevNode: WebinyListItemNode,
+        prevNode: BaseListItemNode,
         dom: HTMLElement,
         config: EditorConfig
     ): boolean {
@@ -103,8 +103,8 @@ export class WebinyListItemNode extends ElementNode {
         };
     }
 
-    static override importJSON(serializedNode: SerializedWebinyListItemNode): WebinyListItemNode {
-        const node = new WebinyListItemNode(serializedNode.value, serializedNode.checked);
+    static override importJSON(serializedNode: SerializedWebinyListItemNode): BaseListItemNode {
+        const node = new BaseListItemNode(serializedNode.value, serializedNode.checked);
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
         node.setDirection(serializedNode.direction);
@@ -200,7 +200,7 @@ export class WebinyListItemNode extends ElementNode {
 
         if ($isWebinyListNode(node) && node.getListType() === listNode.getListType()) {
             let child = node;
-            const children = node.getChildren<WebinyListNode>();
+            const children = node.getChildren<BaseListNode>();
 
             for (let i = children.length - 1; i >= 0; i--) {
                 child = children[i];
@@ -239,7 +239,7 @@ export class WebinyListItemNode extends ElementNode {
         }
     }
 
-    override insertNewAfter(): WebinyListItemNode | ParagraphNode {
+    override insertNewAfter(): BaseListItemNode | ParagraphNode {
         const newElement = $createWebinyListItemNode(this.__checked == null ? undefined : false);
         this.insertAfter(newElement);
 
@@ -395,7 +395,7 @@ export class WebinyListItemNode extends ElementNode {
 function $setListItemThemeClassNames(
     dom: HTMLElement,
     editorThemeClasses: EditorThemeClasses,
-    node: WebinyListItemNode
+    node: BaseListItemNode
 ): void {
     const classesToAdd = [];
     const classesToRemove = [];
@@ -451,9 +451,9 @@ function $setListItemThemeClassNames(
 
 function updateListItemChecked(
     dom: HTMLElement,
-    listItemNode: WebinyListItemNode,
-    prevListItemNode: WebinyListItemNode | null,
-    listNode: WebinyListNode
+    listItemNode: BaseListItemNode,
+    prevListItemNode: BaseListItemNode | null,
+    listNode: BaseListNode
 ): void {
     const isCheckList = listNode.getListType() === "check";
 
@@ -483,12 +483,12 @@ function convertListItemElement(): DOMConversionOutput {
     return { node: $createWebinyListItemNode() };
 }
 
-export function $createWebinyListItemNode(checked?: boolean): WebinyListItemNode {
-    return new WebinyListItemNode(undefined, checked);
+export function $createWebinyListItemNode(checked?: boolean): BaseListItemNode {
+    return new BaseListItemNode(undefined, checked);
 }
 
 export function $isWebinyListItemNode(
     node: LexicalNode | null | undefined
-): node is WebinyListItemNode {
-    return node instanceof WebinyListItemNode;
+): node is BaseListItemNode {
+    return node instanceof BaseListItemNode;
 }

@@ -13,7 +13,7 @@ import {
     NodeKey,
     ParagraphNode
 } from "lexical";
-import { $createWebinyListNode, $isWebinyListNode, WebinyListNode } from "./WebinyListNode";
+import { $createWebinyListNode, $isWebinyListNode, BaseListNode } from "./BaseListNode";
 import {
     $getAllListItems,
     $getTopListNode,
@@ -26,14 +26,14 @@ import { $getNearestNodeOfType } from "@lexical/utils";
 import {
     $createWebinyListItemNode,
     $isWebinyListItemNode,
-    WebinyListItemNode
-} from "~/nodes/list-node/WebinyListItemNode";
+    BaseListItemNode
+} from "~/nodes/list-node/BaseListItemNode";
 import { ListType } from "@lexical/list";
 
 const DEFAULT_LIST_START_NUMBER = 1;
 
 function $isSelectingEmptyListItem(
-    anchorNode: WebinyListItemNode | LexicalNode,
+    anchorNode: BaseListItemNode | LexicalNode,
     nodes: Array<LexicalNode>
 ): boolean {
     return (
@@ -43,7 +43,7 @@ function $isSelectingEmptyListItem(
     );
 }
 
-function $getListItemValue(listItem: WebinyListItemNode): number {
+function $getListItemValue(listItem: BaseListItemNode): number {
     const list = listItem.getParent();
 
     let value = 1;
@@ -146,7 +146,11 @@ function append(node: ElementNode, nodesToAppend: Array<LexicalNode>) {
     node.splice(node.getChildrenSize(), 0, nodesToAppend);
 }
 
-function createListOrMerge(node: ElementNode, listType: ListType, styleId?: string): WebinyListNode {
+function createListOrMerge(
+    node: ElementNode,
+    listType: ListType,
+    styleId?: string
+): BaseListNode {
     if ($isWebinyListNode(node)) {
         return node;
     }
@@ -186,7 +190,7 @@ export function removeList(editor: LexicalEditor): void {
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-            const listNodes = new Set<WebinyListNode>();
+            const listNodes = new Set<BaseListNode>();
             const nodes = selection.getNodes();
             const anchorNode = selection.anchor.getNode();
 
@@ -197,7 +201,7 @@ export function removeList(editor: LexicalEditor): void {
                     const node = nodes[i];
 
                     if ($isLeafNode(node)) {
-                        const WebinyListItemNode = $getNearestNodeOfType(node, WebinyListNode);
+                        const WebinyListItemNode = $getNearestNodeOfType(node, BaseListNode);
 
                         if (WebinyListItemNode != null) {
                             listNodes.add($getTopListNode(WebinyListItemNode));
@@ -207,7 +211,7 @@ export function removeList(editor: LexicalEditor): void {
             }
 
             for (const listNode of listNodes) {
-                let insertionPoint: WebinyListNode | ParagraphNode = listNode;
+                let insertionPoint: BaseListNode | ParagraphNode = listNode;
 
                 const listItems = $getAllListItems(listNode);
 
@@ -241,7 +245,7 @@ export function removeList(editor: LexicalEditor): void {
 }
 
 export function updateChildrenListItemValue(
-    list: WebinyListNode,
+    list: BaseListNode,
     children?: Array<LexicalNode>
 ): void {
     const childrenOrExisting = children || list.getChildren();
@@ -260,11 +264,11 @@ export function updateChildrenListItemValue(
     }
 }
 
-export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): void {
+export function $handleIndent(WebinyListItemNodes: Array<BaseListItemNode>): void {
     // go through each node and decide where to move it.
     const removed = new Set<NodeKey>();
 
-    WebinyListItemNodes.forEach((WebinyListItemNode: WebinyListItemNode) => {
+    WebinyListItemNodes.forEach((WebinyListItemNode: BaseListItemNode) => {
         if (isNestedListNode(WebinyListItemNode) || removed.has(WebinyListItemNode.getKey())) {
             return;
         }
@@ -273,9 +277,9 @@ export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): v
 
         // We can cast both of the below `isNestedListNode` only returns a boolean type instead of a user-defined type guards
         const nextSibling =
-            WebinyListItemNode.getNextSibling<WebinyListItemNode>() as WebinyListItemNode;
+            WebinyListItemNode.getNextSibling<BaseListItemNode>() as BaseListItemNode;
         const previousSibling =
-            WebinyListItemNode.getPreviousSibling<WebinyListItemNode>() as WebinyListItemNode;
+            WebinyListItemNode.getPreviousSibling<BaseListItemNode>() as BaseListItemNode;
         // if there are nested lists on either side, merge them all together.
 
         if (isNestedListNode(nextSibling) && isNestedListNode(previousSibling)) {
@@ -337,7 +341,7 @@ export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): v
     });
 }
 
-export function $handleOutdent(WebinyListItemNodes: Array<WebinyListItemNode>): void {
+export function $handleOutdent(WebinyListItemNodes: Array<BaseListItemNode>): void {
     // go through each node and decide where to move it.
 
     WebinyListItemNodes.forEach(WebinyListItemNode => {
@@ -408,7 +412,7 @@ function maybeIndentOrOutdent(direction: "indent" | "outdent"): void {
         return;
     }
     const selectedNodes = selection.getNodes();
-    let webinyListItemNodes: Array<WebinyListItemNode> = [];
+    let webinyListItemNodes: Array<BaseListItemNode> = [];
 
     if (selectedNodes.length === 0) {
         selectedNodes.push(selection.anchor.getNode());

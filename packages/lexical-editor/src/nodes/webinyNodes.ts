@@ -8,8 +8,8 @@ import { OverflowNode } from "@lexical/overflow";
 import { HeadingNode } from "@lexical/rich-text";
 import { FontColorNode } from "~/nodes/FontColorNode";
 import { TypographyElementNode } from "~/nodes/TypographyElementNode";
-import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
-import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { BaseListNode } from "~/nodes/list-node/BaseListNode";
+import { BaseListItemNode } from "~/nodes/list-node/BaseListItemNode";
 import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
 
 export const WebinyNodes: ReadonlyArray<
@@ -21,8 +21,8 @@ export const WebinyNodes: ReadonlyArray<
 > = [
     HeadingNode,
     // Don't forget to register your custom node separately!
-    WebinyListNode,
-    WebinyListItemNode,
+    BaseListNode,
+    BaseListItemNode,
     WebinyQuoteNode,
     CodeNode,
     HashtagNode,

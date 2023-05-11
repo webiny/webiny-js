@@ -14,7 +14,7 @@ import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/ut
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
 import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
 import { ListType } from "@lexical/list";
-import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { $isWebinyListItemNode, BaseListItemNode } from "~/nodes/list-node/BaseListItemNode";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 const TypographyStyleAttrName = "data-theme-list-style-id";
@@ -31,7 +31,7 @@ export type SerializedWebinyListNode = Spread<
     SerializedElementNode
 >;
 
-export class WebinyListNode extends ElementNode {
+export class BaseListNode extends ElementNode {
     /** @internal */
     __tag: ListNodeTagType;
     /** @internal */
@@ -83,8 +83,8 @@ export class WebinyListNode extends ElementNode {
         return dom;
     }
 
-    static override clone(node: WebinyListNode): WebinyListNode {
-        return new WebinyListNode(
+    static override clone(node: BaseListNode): BaseListNode {
+        return new BaseListNode(
             node.getListType(),
             node.getStyleId(),
             node.getStart(),
@@ -108,7 +108,7 @@ export class WebinyListNode extends ElementNode {
         return this.__themeStyleId;
     }
 
-    static override importJSON(serializedNode: SerializedWebinyListNode): WebinyListNode {
+    static override importJSON(serializedNode: SerializedWebinyListNode): BaseListNode {
         const node = $createWebinyListNode(
             serializedNode.listType,
             serializedNode.themeStyleId,
@@ -175,7 +175,7 @@ export class WebinyListNode extends ElementNode {
         return !!this.__themeStyleId;
     }
 
-    override updateDOM(prevNode: WebinyListNode, dom: HTMLElement, config: EditorConfig): boolean {
+    override updateDOM(prevNode: BaseListNode, dom: HTMLElement, config: EditorConfig): boolean {
         const wTheme = config.theme as WebinyTheme;
 
         if (prevNode.__tag !== this.__tag) {
@@ -200,7 +200,7 @@ export class WebinyListNode extends ElementNode {
 function setListThemeClassNames(
     dom: HTMLElement,
     editorTheme: WebinyEditorTheme,
-    node: WebinyListNode,
+    node: BaseListNode,
     themeStyleId: string
 ): void {
     const editorThemeClasses = editorTheme;
@@ -262,8 +262,8 @@ function setListThemeClassNames(
  * ensuring that they are all ListItemNodes and contain either a single nested ListNode
  * or some other inline content.
  */
-function normalizeChildren(nodes: Array<WebinyListNode>): Array<WebinyListItemNode> {
-    const normalizedListItems: Array<WebinyListItemNode> = [];
+function normalizeChildren(nodes: Array<BaseListNode>): Array<BaseListItemNode> {
+    const normalizedListItems: Array<BaseListItemNode> = [];
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         if ($isWebinyListItemNode(node)) {
@@ -306,10 +306,10 @@ export function $createWebinyListNode(
     listType: ListType,
     themeStyleId?: string,
     start = 1
-): WebinyListNode {
-    return new WebinyListNode(listType, themeStyleId, start);
+): BaseListNode {
+    return new BaseListNode(listType, themeStyleId, start);
 }
 
-export function $isWebinyListNode(node: LexicalNode | null | undefined): node is WebinyListNode {
-    return node instanceof WebinyListNode;
+export function $isWebinyListNode(node: LexicalNode | null | undefined): node is BaseListNode {
+    return node instanceof BaseListNode;
 }

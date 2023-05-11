@@ -20,7 +20,7 @@ import {
     REMOVE_WEBINY_LIST_COMMAND
 } from "~/commands/webiny-list";
 
-export function useWebinyList(editor: LexicalEditor): void {
+export function useBaseList(editor: LexicalEditor): void {
     useEffect(() => {
         return mergeRegister(
             editor.registerCommand(

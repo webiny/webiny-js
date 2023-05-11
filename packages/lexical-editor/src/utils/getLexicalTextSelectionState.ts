@@ -12,7 +12,7 @@ import {
 import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isLinkNode } from "@lexical/link";
-import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
+import { $isWebinyListNode, BaseListNode } from "~/nodes/list-node/BaseListNode";
 import { $isHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";
@@ -76,7 +76,7 @@ export const getToolbarState = (
         state.fontColor.isSelected = true;
     }
     if ($isWebinyListNode(element)) {
-        const parentList = $getNearestNodeOfType<WebinyListNode>(anchorNode, WebinyListNode);
+        const parentList = $getNearestNodeOfType<BaseListNode>(anchorNode, BaseListNode);
         const type = parentList ? parentList.getListType() : element.getListType();
         state.textType = type;
     }

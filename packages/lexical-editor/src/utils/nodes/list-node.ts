@@ -1,13 +1,13 @@
 import type { LexicalNode } from "lexical";
 
-import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
+import { $isWebinyListNode, BaseListNode } from "~/nodes/list-node/BaseListNode";
 import {
     $createWebinyListItemNode,
     $isWebinyListItemNode,
-    WebinyListItemNode
-} from "~/nodes/list-node/WebinyListItemNode";
+    BaseListItemNode
+} from "~/nodes/list-node/BaseListItemNode";
 
-export function $getListDepth(listNode: WebinyListNode): number {
+export function $getListDepth(listNode: BaseListNode): number {
     let depth = 1;
     let parent = listNode.getParent();
 
@@ -29,15 +29,15 @@ export function $getListDepth(listNode: WebinyListNode): number {
     return depth;
 }
 
-export function $getTopListNode(listItem: LexicalNode): WebinyListNode {
-    let list = listItem.getParent<WebinyListNode>();
+export function $getTopListNode(listItem: LexicalNode): BaseListNode {
+    let list = listItem.getParent<BaseListNode>();
 
     if (!$isWebinyListNode(list)) {
         console.log("A WebinyListItemNode must have a ListNode for a parent.");
-        return listItem as WebinyListNode;
+        return listItem as BaseListNode;
     }
 
-    let parent: WebinyListNode | null = list;
+    let parent: BaseListNode | null = list;
 
     while (parent !== null) {
         parent = parent.getParent();
@@ -50,9 +50,9 @@ export function $getTopListNode(listItem: LexicalNode): WebinyListNode {
     return list;
 }
 
-export function $getAllListItems(node: WebinyListNode): Array<WebinyListItemNode> {
-    let listItemNodes: Array<WebinyListItemNode> = [];
-    const listChildren: Array<WebinyListItemNode> = node
+export function $getAllListItems(node: BaseListNode): Array<BaseListItemNode> {
+    let listItemNodes: Array<BaseListItemNode> = [];
+    const listChildren: Array<BaseListItemNode> = node
         .getChildren()
         .filter($isWebinyListItemNode);
 
@@ -75,7 +75,7 @@ export function isNestedListNode(node: LexicalNode | null | undefined): boolean 
 }
 
 // TODO: rewrite with $findMatchingParent or *nodeOfType
-export function findNearestWebinyListItemNode(node: LexicalNode): WebinyListItemNode | null {
+export function findNearestWebinyListItemNode(node: LexicalNode): BaseListItemNode | null {
     let currentNode: LexicalNode | null = node;
 
     while (currentNode !== null) {
@@ -90,8 +90,8 @@ export function findNearestWebinyListItemNode(node: LexicalNode): WebinyListItem
 
 export function getUniqueWebinyListItemNodes(
     nodeList: Array<LexicalNode>
-): Array<WebinyListItemNode> {
-    const keys = new Set<WebinyListItemNode>();
+): Array<BaseListItemNode> {
+    const keys = new Set<BaseListItemNode>();
 
     for (let i = 0; i < nodeList.length; i++) {
         const node = nodeList[i];
@@ -104,7 +104,7 @@ export function getUniqueWebinyListItemNodes(
     return Array.from(keys);
 }
 
-export function $removeHighestEmptyListParent(sublist: WebinyListItemNode | WebinyListNode) {
+export function $removeHighestEmptyListParent(sublist: BaseListItemNode | BaseListNode) {
     // Nodes may be repeatedly indented, to create deeply nested lists that each
     // contain just one bullet.
     // Our goal is to remove these (empty) deeply nested lists. The easiest
@@ -114,7 +114,7 @@ export function $removeHighestEmptyListParent(sublist: WebinyListItemNode | Webi
     let emptyListPtr = sublist;
 
     while (emptyListPtr.getNextSibling() == null && emptyListPtr.getPreviousSibling() == null) {
-        const parent = emptyListPtr.getParent<WebinyListItemNode | WebinyListNode>();
+        const parent = emptyListPtr.getParent<BaseListItemNode | BaseListNode>();
 
         if (
             parent == null ||
@@ -129,7 +129,7 @@ export function $removeHighestEmptyListParent(sublist: WebinyListItemNode | Webi
     emptyListPtr.remove();
 }
 
-export function wrapInListItem(node: LexicalNode): WebinyListItemNode {
+export function wrapInListItem(node: LexicalNode): BaseListItemNode {
     const listItemWrapper = $createWebinyListItemNode();
     return listItemWrapper.append(node);
 }
