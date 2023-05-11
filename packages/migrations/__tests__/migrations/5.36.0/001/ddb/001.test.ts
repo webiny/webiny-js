@@ -28,7 +28,7 @@ describe("5.36.0-001", () => {
 
     logTestNameBeforeEachTest();
 
-    const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES) => {
+    const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES, privateFile = false) => {
         ddbFiles.length = 0;
 
         const tenants = createTenantsData().map(tenant => tenant.data.id);
@@ -57,7 +57,7 @@ describe("5.36.0-001", () => {
                             key: `${id}/demo-image-${id}.png`,
                             locale,
                             meta: {
-                                private: false
+                                private: privateFile
                             },
                             name: `demo-image-${id}.png`,
                             size: 10000,
@@ -226,6 +226,32 @@ describe("5.36.0-001", () => {
                 values
             });
         }
+    });
+
+    it("should not migrate file records is marked as private", async () => {
+        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestFiles(5, true);
+
+        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_36_0_001] });
+        const { data, error } = await handler();
+
+        assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
+        expect(grouped.notApplicable.length).toBe(0);
+
+        const searchRecords = await scanTable(table, {
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "acoSearchRecord"
+                }
+            ]
+        });
+
+        expect(searchRecords.length).toBe(0);
     });
 
     it("should not run migration if data is already in the expected shape", async () => {

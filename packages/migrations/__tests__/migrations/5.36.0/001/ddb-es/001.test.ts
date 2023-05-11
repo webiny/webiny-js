@@ -49,7 +49,7 @@ describe("5.36.0-001", () => {
         await elasticsearchClient.indices.deleteAll();
     });
 
-    const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES) => {
+    const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES, privateFile = false) => {
         ddbFiles.length = 0;
         ddbEsFiles.length = 0;
         esFiles.length = 0;
@@ -74,7 +74,7 @@ describe("5.36.0-001", () => {
                         key: `${id}/demo-image-${id}.png`,
                         locale,
                         meta: {
-                            private: false
+                            private: privateFile
                         },
                         name: `demo-image-${id}.png`,
                         size: 10000,
@@ -341,6 +341,50 @@ describe("5.36.0-001", () => {
                 data
             });
         }
+    });
+
+    it("should not migrate file records is marked as private", async () => {
+        await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestFiles(5, true);
+
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_36_0_001]
+        });
+
+        const { data, error } = await handler();
+
+        assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
+        expect(grouped.notApplicable.length).toBe(0);
+
+        const ddbSearchRecords = await scanTable(ddbTable, {
+            entity: "CmsEntries",
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "acoSearchRecord"
+                }
+            ]
+        });
+
+        const ddbEsSearchRecords = await scanTable(ddbToEsTable, {
+            entity: "CmsEntriesElasticsearch",
+            filters: [
+                {
+                    attr: "index",
+                    contains: "acosearchrecord"
+                }
+            ]
+        });
+
+        expect(ddbSearchRecords.length).toBe(0);
+        expect(ddbEsSearchRecords.length).toBe(0);
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
