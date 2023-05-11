@@ -48,11 +48,15 @@ const locationFolderIdField = () =>
         ]
     });
 
-const dataField = () =>
-    createModelField({
+const dataField = (fields?: CmsModelField[]) => {
+    return createModelField({
         label: "Data",
-        type: "wby-aco-json"
+        type: "object",
+        settings: {
+            fields
+        }
     });
+};
 
 const tagsField = () =>
     createModelField({
@@ -63,7 +67,13 @@ const tagsField = () =>
 
 export const SEARCH_RECORD_MODEL_ID = "acoSearchRecord";
 
-export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
+interface CreateSearchModelDefinitionParams {
+    fields?: CmsModelField[];
+}
+
+export const createSearchModelDefinition = (
+    params?: CreateSearchModelDefinitionParams
+): SearchRecordModelDefinition => {
     return {
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
@@ -74,7 +84,7 @@ export const createSearchModelDefinition = (): SearchRecordModelDefinition => {
             titleField(),
             contentField(),
             locationField([locationFolderIdField()]),
-            dataField(),
+            dataField(params?.fields),
             tagsField()
         ],
         description: "ACO - Search record model",

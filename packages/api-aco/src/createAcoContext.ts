@@ -1,16 +1,15 @@
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
-import WebinyError from "@webiny/error";
 import { createAcoHooks } from "~/createAcoHooks";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
 import { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types";
 import { createFolderCrudMethods } from "~/folder/folder.crud";
 import { createSearchRecordCrudMethods } from "~/record/record.crud";
-import { AcoApps } from "./apps/AcoApps";
+import { AcoApps } from "./apps";
 import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
-import { AcoAppModifierPlugin } from "~/apps/AcoAppModifierPlugin";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
@@ -66,6 +65,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         search: createSearchRecordCrudMethods(params),
         apps,
         getApp: (name: string) => apps.get(name),
+        listApps: () => apps.list(),
         registerApp: async (params: IAcoAppRegisterParams) => {
             return apps.register({
                 model: defaultRecordModel,

@@ -44,6 +44,7 @@ export interface AdvancedContentOrganisation {
     apps: IAcoApps;
     registerApp: (params: IAcoAppRegisterParams) => Promise<IAcoApp>;
     getApp: (name: string) => IAcoApp;
+    listApps: () => IAcoApp[];
 }
 
 export interface CreateAcoParams {

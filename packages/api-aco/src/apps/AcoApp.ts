@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import structuredClone from "@ungap/structured-clone";
 import { IAcoApp, IAcoAppParams } from "~/apps/types";
 import {
     AcoContext,
@@ -13,7 +14,7 @@ export class AcoApp implements IAcoApp {
     public readonly name: string;
     public readonly context: AcoContext;
     public readonly model: CmsModel;
-    private readonly dataFieldIndex: number;
+    private fields: CmsModelField[];
 
     public get search(): AcoSearchRecordCrudBase {
         return {
@@ -49,12 +50,14 @@ export class AcoApp implements IAcoApp {
         /**
          * We can safely define the api name of the model as we control everything here.
          */
+        this.model.name = `${this.model.name} ${this.name}`;
+        this.model.modelId = `${this.model.modelId}-${this.name.toLowerCase()}`;
         const apiName = `${params.apiName}SearchRecord`;
         this.model.singularApiName = apiName;
         this.model.pluralApiName = apiName;
 
-        this.dataFieldIndex = this.model.fields.findIndex(f => f.fieldId === "data");
-        if (this.dataFieldIndex === -1) {
+        const index = this.model.fields.findIndex(f => f.fieldId === "data");
+        if (index === -1) {
             throw new WebinyError(
                 `The "data" field does not exist in model "${this.model.modelId}".`,
                 "MODEL_DATA_FIELD_ERROR",
@@ -62,12 +65,11 @@ export class AcoApp implements IAcoApp {
                     modelId: this.model.modelId
                 }
             );
-        } else if (!this.model.fields[this.dataFieldIndex].settings?.fields) {
-            this.model.fields[this.dataFieldIndex].settings = {
-                ...this.model.fields[this.dataFieldIndex].settings,
-                fields: []
-            };
+        } else if (!this.model.fields[index].settings?.fields) {
+            this.model.fields[index].settings!.fields = [];
         }
+        this.fields = this.model.fields[index].settings!.fields as CmsModelField[];
+        this.fields.push(...params.fields);
     }
 
     public static create(context: AcoContext, params: IAcoAppParams) {
@@ -75,21 +77,15 @@ export class AcoApp implements IAcoApp {
     }
 
     public getFields(): CmsModelField[] {
-        return this.model.fields[this.dataFieldIndex].settings!.fields!;
+        return this.fields;
     }
 
-    public addField(field: CmsModelField): IAcoApp {
-        this.model.fields[this.dataFieldIndex].settings!.fields!.push(field);
-
-        return this;
+    public addField(field: CmsModelField): void {
+        this.fields.push(field);
     }
 
-    public removeField(id: string): IAcoApp {
-        this.model.fields[this.dataFieldIndex].settings!.fields = this.model.fields[
-            this.dataFieldIndex
-        ].settings!.fields!.filter(field => {
-            return field.id !== id;
-        });
-        return this;
+    public removeField(id: string): void {
+        const index = this.fields.findIndex(field => field.id === id);
+        this.fields.splice(index, 1);
     }
 }

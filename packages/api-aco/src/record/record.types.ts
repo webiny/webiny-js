@@ -119,11 +119,20 @@ export interface OnSearchRecordAfterDeleteTopicParams<
     record: SearchRecord<TData>;
 }
 
-export interface AcoSearchRecordCrudBase<TData extends GenericSearchData = GenericSearchData> {
-    get<TData>(id: string): Promise<SearchRecord<TData>>;
-    list<TData>(params: ListSearchRecordsParams): Promise<[SearchRecord<TData>[], ListMeta]>;
-    create<TData>(data: CreateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
-    update<TData>(id: string, data: UpdateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
+export interface AcoSearchRecordCrudBase {
+    get<TData extends GenericSearchData = GenericSearchData>(
+        id: string
+    ): Promise<SearchRecord<TData>>;
+    list<TData extends GenericSearchData = GenericSearchData>(
+        params: ListSearchRecordsParams
+    ): Promise<[SearchRecord<TData>[], ListMeta]>;
+    create<TData extends GenericSearchData = GenericSearchData>(
+        data: CreateSearchRecordParams<TData>
+    ): Promise<SearchRecord<TData>>;
+    update<TData extends GenericSearchData = GenericSearchData>(
+        id: string,
+        data: UpdateSearchRecordParams<TData>
+    ): Promise<SearchRecord<TData>>;
     delete(id: string): Promise<Boolean>;
 }
 

@@ -1,119 +1,118 @@
-import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-
-import { resolve } from "~/utils/resolve";
-
 import { AcoContext } from "~/types";
-import { parseIdentifier } from "@webiny/utils";
-import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
+import { CmsFieldTypePlugins, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
+import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields";
 
-export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
-    typeDefs: /* GraphQL */ `
-        type SearchRecord {
+export const createSchema = async (context: AcoContext) => {
+    const apps = context.aco.listApps();
+
+    const plugins = context.plugins
+        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+        .reduce<CmsFieldTypePlugins>((fields, plugin) => {
+            fields[plugin.fieldType] = plugin;
+            return fields;
+        }, {});
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter(model => {
+            return !model.isPrivate;
+        });
+    });
+
+    return apps.map(app => {
+        const apiName = app.model.singularApiName;
+
+        const fields = renderFields({
+            models,
+            model: app.model,
+            fields: app.getFields(),
+            type: "manage",
+            fieldTypePlugins: plugins
+        });
+        const inputFields = renderInputFields({
+            models,
+            model: app.model,
+            fields: app.getFields(),
+            fieldTypePlugins: plugins
+        });
+
+        return /* GraphQL */ `
+            type ${apiName}SearchRecordData {
+            ${fields.map(f => f.fields).join("\n")}
+            }
+
+            type ${apiName}SearchRecord {
             id: ID!
             type: String!
-            location: SearchLocationType!
+            location: AcoSearchLocationType!
             title: String!
             content: String
-            data: JSON!
+            data: ${apiName}SearchRecordData!
             tags: [String!]!
             savedOn: DateTime
             createdOn: DateTime
             createdBy: AcoUser
-        }
+            }
 
-        type SearchLocationType {
-            folderId: ID!
-        }
+            ${inputFields.map(f => f.typeDefs).join("\n")}
 
-        input SearchLocationInput {
-            folderId: ID!
-        }
+            input ${apiName}SearchRecordDataInput {
+            ${inputFields}
+            ${inputFields.map(f => f.fields).join("\n")}
+            }
 
-        input SearchRecordCreateInput {
+            input ${apiName}SearchRecordCreateInput {
             id: String!
             type: String!
             title: String!
             content: String
-            location: SearchLocationInput!
-            data: JSON
+            location: AcoSearchLocationInput!
+            data: ${apiName}SearchRecordDataInput!
             tags: [String!]
-        }
+            }
 
-        input SearchRecordUpdateInput {
+            input ${apiName}SearchRecordUpdateInput {
             title: String
             content: String
-            location: SearchLocationInput
-            data: JSON
+            location: AcoSearchLocationInput
+            data: ${apiName}SearchRecordDataInput
             tags: [String!]
-        }
+            }
 
-        input SearchRecordListWhereInput {
+            input ${apiName}SearchRecordListWhereInput {
             type: String!
-            location: SearchLocationInput
+            location: AcoSearchLocationInput
             tags_in: [String!]
             tags_startsWith: String
             tags_not_startsWith: String
-        }
+            }
 
-        type SearchRecordResponse {
-            data: SearchRecord
+            type ${apiName}SearchRecordResponse {
+            data: ${apiName}SearchRecord
             error: AcoError
-        }
+            }
 
-        type SearchRecordListResponse {
-            data: [SearchRecord]
+            type ${apiName}SearchRecordListResponse {
+            data: [${apiName}SearchRecord!]
             error: AcoError
             meta: AcoMeta
-        }
+            }
 
-        extend type SearchQuery {
-            getRecord(id: ID!): SearchRecordResponse
-            listRecords(
-                where: SearchRecordListWhereInput
-                search: String
-                limit: Int
-                after: String
-                sort: AcoSort
-            ): SearchRecordListResponse
-        }
+            extend type SearchQuery {
+            get${apiName}Record(id: ID!): ${apiName}SearchRecordResponse
+            list${apiName}Records(
+            where: ${apiName}SearchRecordListWhereInput
+            search: String
+            limit: Int
+            after: String
+            sort: AcoSort
+            ): ${apiName}SearchRecordListResponse
+            }
 
-        extend type SearchMutation {
-            createRecord(data: SearchRecordCreateInput!): SearchRecordResponse
-            updateRecord(id: ID!, data: SearchRecordUpdateInput!): SearchRecordResponse
-            deleteRecord(id: ID!): AcoBooleanResponse
-        }
-    `,
-    resolvers: {
-        SearchRecord: {
-            id: async parent => {
-                const { id } = parseIdentifier(parent.id);
-                return removeAcoRecordPrefix(id);
+            extend type SearchMutation {
+            create${apiName}Record(data: SearchRecordCreateInput!): ${apiName}SearchRecordResponse
+            update${apiName}Record(id: ID!, data: SearchRecordUpdateInput!): ${apiName}SearchRecordResponse
+            delete${apiName}Record(id: ID!): AcoBooleanResponse
             }
-        },
-        SearchQuery: {
-            getRecord: async (_, { id }, context) => {
-                return resolve(() => context.aco.search.get(id));
-            },
-            listRecords: async (_, args: any, context) => {
-                try {
-                    const [entries, meta] = await context.aco.search.list(args);
-                    return new ListResponse(entries, meta);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
-            }
-        },
-        SearchMutation: {
-            createRecord: async (_, { data }, context) => {
-                return resolve(() => context.aco.search.create(data));
-            },
-            updateRecord: async (_, { id, data }, context) => {
-                return resolve(() => context.aco.search.update(id, data));
-            },
-            deleteRecord: async (_, { id }, context) => {
-                return resolve(() => context.aco.search.delete(id));
-            }
-        }
-    }
-});
+        `;
+    });
+};

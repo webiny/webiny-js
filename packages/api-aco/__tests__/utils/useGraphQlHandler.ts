@@ -25,7 +25,8 @@ import {
 } from "~tests/graphql/record.gql";
 
 import { createAco } from "~/index";
-import { createStorageOperations } from "~tests/utils/storageOperations";
+import { createStorageOperations } from "./storageOperations";
+import { createIdentity } from "./identity";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -43,12 +44,6 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-const defaultIdentity: SecurityIdentity = {
-    id: "12345678",
-    type: "admin",
-    displayName: "John Doe"
-};
-
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [], storageOperationPlugins } = params;
 
@@ -60,7 +55,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         plugins: [
             ...ops.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
+            ...createTenancyAndSecurity({ permissions, identity: identity || createIdentity() }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),

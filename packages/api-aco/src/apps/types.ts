@@ -5,14 +5,22 @@ import {
     CreateAcoParams as ICreateAcoParams
 } from "~/types";
 
+export interface IAcoAppAddFieldCallable {
+    (field: CmsModelField): void;
+}
+
+export interface IAcoAppRemoveFieldCallable {
+    (id: string): void;
+}
+
 export interface IAcoApp {
     search: AcoSearchRecordCrudBase;
     folder: AcoFolderCrud;
     name: string;
     model: CmsModel;
     getFields: () => CmsModelField[];
-    addField: (field: CmsModelField) => IAcoApp;
-    removeField: (id: string) => IAcoApp;
+    addField: IAcoAppAddFieldCallable;
+    removeField: IAcoAppRemoveFieldCallable;
 }
 
 export interface IAcoAppParams {
@@ -22,7 +30,7 @@ export interface IAcoAppParams {
     fields: CmsModelField[];
 }
 
-export type IAcoAppsOptions = ICreateAcoParams
+export type IAcoAppsOptions = ICreateAcoParams;
 
 export interface IAcoApps {
     list: () => IAcoApp[];

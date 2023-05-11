@@ -1,6 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import { AcoContext, IAcoApp } from "~/types";
-import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { AcoContext, IAcoApp, IAcoAppAddFieldCallable, IAcoAppRemoveFieldCallable } from "~/types";
 import { Context } from "@webiny/handler/types";
 
 export interface AcoAppModifierPluginModifyParams<T extends Context = AcoContext> {
@@ -28,8 +27,8 @@ export interface AppModifier<T extends Context = AcoContext> {
      * @internal
      */
     context: T;
-    addField: (field: CmsModelField) => void;
-    removeField: (id: string) => void;
+    addField: IAcoAppAddFieldCallable;
+    removeField: IAcoAppRemoveFieldCallable;
 }
 
 export interface AppModifierParams<T extends Context = AcoContext> {
@@ -44,15 +43,11 @@ const createModifier = <T extends Context>({
     return {
         app,
         context,
-        addField: (field: CmsModelField) => {
-            app.fields.push(field);
+        addField: field => {
+            app.addField(field);
         },
-        removeField: (id: string) => {
-            const index = app.fields.findIndex(f => f.id === id);
-            if (index === -1) {
-                return;
-            }
-            app.fields.splice(index, 1);
+        removeField: id => {
+            app.removeField(id);
         }
     };
 };
@@ -85,3 +80,16 @@ export class AcoAppModifierPlugin<T extends Context = Context> extends Plugin {
         );
     }
 }
+
+export type CreateAppModifierCallable<T extends Context = AcoContext> =
+    AcoAppModifierPluginParamsCallable<T>;
+
+export const createAppModifier = <T extends Context = AcoContext>(
+    name: string,
+    cb: CreateAppModifierCallable<T>
+) => {
+    return AcoAppModifierPlugin.create<T>({
+        name,
+        cb
+    });
+};

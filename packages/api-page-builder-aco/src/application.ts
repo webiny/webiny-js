@@ -4,7 +4,7 @@ import { PB_APP_NAME } from "~/contants";
 export const createApplication = (): IAcoAppRegisterParams => {
     return {
         name: PB_APP_NAME,
-        apiName: "PageBuilder",
+        apiName: "Pb",
         fields: [
             {
                 id: "id",

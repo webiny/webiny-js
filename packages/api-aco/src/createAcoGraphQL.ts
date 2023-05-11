@@ -1,10 +1,8 @@
 import { ContextPlugin } from "@webiny/api";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-
 import { folderSchema } from "~/folder/folder.gql";
-import { searchRecordSchema } from "~/record/record.gql";
-
 import { AcoContext } from "~/types";
+import { createSchema } from "~/record/record.gql";
 
 const emptyResolver = () => ({});
 
@@ -92,7 +90,8 @@ const baseSchema = new GraphQLSchemaPlugin({
 });
 
 export const createAcoGraphQL = () => {
-    return new ContextPlugin<AcoContext>(context => {
+    return new ContextPlugin<AcoContext>(async context => {
+        const searchRecordSchema = await createSchema(context);
         context.plugins.register([baseSchema, folderSchema, searchRecordSchema]);
     });
 };
