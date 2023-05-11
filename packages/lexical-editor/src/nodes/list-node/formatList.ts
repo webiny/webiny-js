@@ -70,7 +70,7 @@ function $getListItemValue(listItem: WebinyListItemNode): number {
     return value;
 }
 
-export function insertList(editor: LexicalEditor, listType: ListType, styleId: string): void {
+export function insertList(editor: LexicalEditor, listType: ListType, styleId?: string): void {
     editor.update(() => {
         const selection = $getSelection();
 
@@ -146,7 +146,7 @@ function append(node: ElementNode, nodesToAppend: Array<LexicalNode>) {
     node.splice(node.getChildrenSize(), 0, nodesToAppend);
 }
 
-function createListOrMerge(node: ElementNode, listType: ListType, styleId: string): WebinyListNode {
+function createListOrMerge(node: ElementNode, listType: ListType, styleId?: string): WebinyListNode {
     if ($isWebinyListNode(node)) {
         return node;
     }
