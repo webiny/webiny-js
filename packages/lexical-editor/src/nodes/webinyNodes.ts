@@ -36,12 +36,11 @@ export const WebinyNodes: ReadonlyArray<
     TypographyElementNode,
     BaseParagraphNode,
     /*
-    * We inherit and replace the native ParagraphNode because in this way we can take advantage from the native lexical processing
-    * of the node, lib updates, copy/paste from clipboard(html/css cleaning) and
-    * provide custom theme styling and behavior on node/DOM creation and update.
-    * */
+     * We inherit and replace the native ParagraphNode because in this way we can take advantage from the native lexical processing
+     * of the node, lib updates, copy/paste from clipboard(html/css cleaning) and
+     * provide custom theme styling and behavior on node/DOM creation and update.
+     * */
     {
-
         replace: ParagraphNode,
         with: () => {
             return new BaseParagraphNode();

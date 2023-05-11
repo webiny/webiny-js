@@ -149,8 +149,8 @@ export class BaseParagraphNode
     }
 
     /*
-    * On copy/paste event this method will be executed in and create a node
-    * */
+     * On copy/paste event this method will be executed in and create a node
+     * */
     static override importDOM(): DOMConversionMap | null {
         return {
             p: () => ({
@@ -161,8 +161,8 @@ export class BaseParagraphNode
     }
 
     /*
-    * Serialize the JSON data back into a node
-    */
+     * Serialize the JSON data back into a node
+     */
     static override importJSON(serializedNode: SerializeBaseParagraphNode): BaseParagraphNode {
         const node = $createBaseParagraphNode();
         node.setFormat(serializedNode.format);
@@ -173,9 +173,9 @@ export class BaseParagraphNode
     }
 
     /*
-    * Serialize the node to JSON data representation.
-    * */
-   override exportJSON(): SerializeBaseParagraphNode {
+     * Serialize the node to JSON data representation.
+     * */
+    override exportJSON(): SerializeBaseParagraphNode {
         return {
             ...super.exportJSON(),
             styles: this.__styles,
