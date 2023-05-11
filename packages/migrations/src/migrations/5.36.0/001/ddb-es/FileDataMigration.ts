@@ -250,6 +250,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                                 entryId: `wby-aco-${id}`,
                                 tenant: fileTenant,
                                 createdOn,
+                                savedOn: createdOn,
                                 locked: false,
                                 ownedBy: createdBy,
                                 webinyVersion: process.env.WEBINY_VERSION,
