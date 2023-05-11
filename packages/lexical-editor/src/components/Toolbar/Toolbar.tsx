@@ -30,8 +30,14 @@ interface FloatingToolbarProps {
 
 const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem, editor }) => {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
-    const { toolbarType, setToolbarType, setTextBlockSelection } = useRichTextEditor();
-    const [activeEditor, setActiveEditor] = useState(editor);
+    const {
+        toolbarType,
+        setToolbarType,
+        setTextBlockSelection,
+        activeEditor,
+        setActiveEditor,
+        setIsEditable
+    } = useRichTextEditor();
 
     useEffect(() => {
         if (toolbarType !== type) {
@@ -101,9 +107,12 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
     }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
 
     useEffect(() => {
-        editor.getEditorState().read(() => {
-            updateTextFormatFloatingToolbar();
-        });
+        editor.registerEditableListener(editable => {
+            setIsEditable(editable);
+        }),
+            editor.getEditorState().read(() => {
+                updateTextFormatFloatingToolbar();
+            });
         return mergeRegister(
             editor.registerUpdateListener(({ editorState }) => {
                 editorState.read(() => {

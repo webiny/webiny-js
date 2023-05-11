@@ -1,6 +1,8 @@
 import React, { createContext, useState } from "react";
 import { TextBlockSelection, ThemeEmotionMap, ToolbarType } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
+import { LexicalEditor } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export interface RichTextEditorContext {
     nodeIsText: boolean;
@@ -13,6 +15,10 @@ export interface RichTextEditorContext {
     setTheme: (theme: WebinyTheme) => void;
     themeEmotionMap?: ThemeEmotionMap;
     setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
+    activeEditor: LexicalEditor;
+    setActiveEditor: (editor: LexicalEditor) => void;
+    isEditable: boolean;
+    setIsEditable: (isEditable: boolean) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -26,6 +32,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
+    const [editor] = useLexicalComposerContext();
+    const [activeEditor, setActiveEditor] = useState(editor);
+    const [isEditable, setIsEditable] = useState(() => editor.isEditable());
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
@@ -47,7 +56,11 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 theme,
                 setTheme,
                 themeEmotionMap,
-                setThemeEmotionMap
+                setThemeEmotionMap,
+                activeEditor,
+                setActiveEditor,
+                isEditable,
+                setIsEditable
             }}
         >
             {children}
