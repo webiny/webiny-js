@@ -196,17 +196,19 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
     }, [textData]);
 
     return (
-        <Accordion
-            title={"Text"}
-            defaultValue={defaultAccordionValue}
-            icon={
-                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
-                    {activeDisplayModeConfig.icon}
-                </Tooltip>
-            }
-        >
-            <>
-                {!usingLexicalEditor && (
+        <>
+            {!usingLexicalEditor ? (
+                <Accordion
+                    title={"Text"}
+                    defaultValue={defaultAccordionValue}
+                    icon={
+                        <Tooltip
+                            content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}
+                        >
+                            {activeDisplayModeConfig.icon}
+                        </Tooltip>
+                    }
+                >
                     <>
                         <Wrapper containerClassName={classes.grid} label={"Color"}>
                             <BaseColorPicker
@@ -245,39 +247,39 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                                 {themeTypographyOptions}
                             </SelectField>
                         </Wrapper>
-                    </>
-                )}
+                        <Wrapper
+                            containerClassName={classes.grid}
+                            label={"Alignment"}
+                            leftCellSpan={3}
+                            rightCellSpan={9}
+                            leftCellClassName={classes.leftCellStyle}
+                            rightCellClassName={classes.rightCellStyle}
+                        >
+                            <TextAlignment value={text.alignment} onChange={updateAlignment} />
+                        </Wrapper>
 
-                {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
-                    <Grid className={classes.warningMessageGrid}>
-                        <Cell span={12}>
-                            <Typography use={"caption"}>
-                                Please add typography options in{" "}
-                                <Link
-                                    to={
-                                        "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
-                                    }
-                                    target={"_blank"}
-                                >
-                                    theme
-                                </Link>
-                                .
-                            </Typography>
-                        </Cell>
-                    </Grid>
-                )}
-                <Wrapper
-                    containerClassName={classes.grid}
-                    label={"Alignment"}
-                    leftCellSpan={3}
-                    rightCellSpan={9}
-                    leftCellClassName={classes.leftCellStyle}
-                    rightCellClassName={classes.rightCellStyle}
-                >
-                    <TextAlignment value={text.alignment} onChange={updateAlignment} />
-                </Wrapper>
-            </>
-        </Accordion>
+                        {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
+                            <Grid className={classes.warningMessageGrid}>
+                                <Cell span={12}>
+                                    <Typography use={"caption"}>
+                                        Please add typography options in{" "}
+                                        <Link
+                                            to={
+                                                "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
+                                            }
+                                            target={"_blank"}
+                                        >
+                                            theme
+                                        </Link>
+                                        .
+                                    </Typography>
+                                </Cell>
+                            </Grid>
+                        )}
+                    </>
+                </Accordion>
+            ) : null}
+        </>
     );
 };
 
