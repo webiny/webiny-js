@@ -144,6 +144,23 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         })
     };
 
+    const categories = createCategoryStorageOperations({
+        entity: entities.categories,
+        plugins
+    });
+    const blockCategories = createBlockCategoryStorageOperations({
+        entity: entities.blockCategories,
+        plugins
+    });
+    const pageBlocks = createPageBlockStorageOperations({
+        entity: entities.pageBlocks,
+        plugins
+    });
+    const pageTemplates = createPageTemplateStorageOperations({
+        entity: entities.pageTemplates,
+        plugins
+    });
+
     return {
         beforeInit: async (context: PbContext) => {
             const types: string[] = [
@@ -158,6 +175,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);
             }
+            pageTemplates.dataLoader.clear();
+            pageBlocks.dataLoader.clear();
+            blockCategories.dataLoader.clear();
+            categories.dataLoader.clear();
         },
         getEntities: () => entities,
         getTable: () => tableInstance,
@@ -166,10 +187,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         }),
         settings: createSettingsStorageOperations({
             entity: entities.settings
-        }),
-        categories: createCategoryStorageOperations({
-            entity: entities.categories,
-            plugins
         }),
         menus: createMenuStorageOperations({
             entity: entities.menus,
@@ -183,17 +200,9 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entity: entities.pages,
             plugins
         }),
-        blockCategories: createBlockCategoryStorageOperations({
-            entity: entities.blockCategories,
-            plugins
-        }),
-        pageBlocks: createPageBlockStorageOperations({
-            entity: entities.pageBlocks,
-            plugins
-        }),
-        pageTemplates: createPageTemplateStorageOperations({
-            entity: entities.pageTemplates,
-            plugins
-        })
+        categories,
+        blockCategories,
+        pageBlocks,
+        pageTemplates
     };
 };
