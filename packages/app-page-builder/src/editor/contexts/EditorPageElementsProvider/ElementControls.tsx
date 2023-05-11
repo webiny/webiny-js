@@ -39,7 +39,13 @@ export const ElementControls = () => {
     // then we don't want to render any controls for any child elements.
     const isTemplateBlockChild = meta?.parentTemplateBlockElement;
     if (isTemplateBlockChild) {
-        return null;
+        // We don't want to prevent block editing in the template editor. We only want to do it
+        // in the page editor, when working with pages that were created from a template. In the
+        // page editor, within the `data.template` object, we have a `slug` property, which is not
+        // available in the template editor. That give us the ability to distinguish between the two.
+        if (meta.parentDocumentElement.data.template.slug) {
+            return null;
+        }
     }
 
     const handler = useEventActionHandler();
