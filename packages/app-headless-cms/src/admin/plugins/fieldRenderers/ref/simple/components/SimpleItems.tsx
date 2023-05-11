@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import {
     CmsReferenceContentEntry,
@@ -7,11 +7,12 @@ import {
 import { parseIdentifier } from "@webiny/utils";
 import styled from "@emotion/styled";
 import { CmsModelField } from "~/types";
+import { Radio } from "@webiny/ui/Radio";
 
 const Title = styled("h5")({
     display: "block"
 });
-const Item = styled("div")({
+const ListItem = styled("div")({
     display: "block"
 });
 
@@ -25,7 +26,23 @@ export interface RemoveItemParams {
     modelId: string;
 }
 
+interface ItemProps {
+    multiple?: boolean;
+    value?: string | null;
+    item: CmsReferenceContentEntry;
+    onChange: (checked?: boolean) => void;
+}
+
+const Item: React.VFC<ItemProps> = props => {
+    const { multiple, value, item, onChange } = props;
+    if (!multiple) {
+        return <Radio value={value} onChange={onChange} label={item.title} />;
+    }
+    return <Checkbox value={value} onChange={onChange} label={item.title} />;
+};
+
 interface Props {
+    multiple?: boolean;
     field: CmsModelField;
     items?: CmsReferenceContentEntry[];
     values?: CmsReferenceValue[];
@@ -34,7 +51,26 @@ interface Props {
 }
 
 export const SimpleItems: React.VFC<Props> = props => {
-    const { field, items, values, addItem, removeItem } = props;
+    const { field, items, values, addItem, removeItem, multiple } = props;
+
+    const onChange = useCallback(
+        (item: CmsReferenceContentEntry) => {
+            return (checked?: boolean) => {
+                if (checked) {
+                    addItem({
+                        id: item.id,
+                        modelId: item.model.modelId
+                    });
+                    return;
+                }
+                removeItem({
+                    entryId: item.entryId,
+                    modelId: item.model.modelId
+                });
+            };
+        },
+        [addItem, removeItem, multiple, values]
+    );
 
     if (!items || items.length === 0) {
         return null;
@@ -48,25 +84,14 @@ export const SimpleItems: React.VFC<Props> = props => {
                     return entryId === item.entryId;
                 });
                 return (
-                    <Item key={`item-${item.entryId}`}>
-                        <Checkbox
+                    <ListItem key={`item-${item.entryId}`}>
+                        <Item
+                            multiple={multiple}
                             value={checked ? item.entryId : null}
-                            onChange={checked => {
-                                if (checked) {
-                                    addItem({
-                                        id: item.id,
-                                        modelId: item.model.modelId
-                                    });
-                                    return;
-                                }
-                                removeItem({
-                                    entryId: item.entryId,
-                                    modelId: item.model.modelId
-                                });
-                            }}
-                            label={item.title}
+                            item={item}
+                            onChange={onChange(item)}
                         />
-                    </Item>
+                    </ListItem>
                 );
             })}
         </>
