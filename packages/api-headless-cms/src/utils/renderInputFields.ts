@@ -1,20 +1,17 @@
-import {
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldDefinition,
-    CmsModelFieldToGraphQLPlugin
-} from "~/types";
+import { CmsFieldTypePlugins, CmsModel, CmsModelField, CmsModelFieldDefinition } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderInputFieldsParams {
     models: CmsModel[];
     model: CmsModel;
+    fields: CmsModelField[];
     fieldTypePlugins: CmsFieldTypePlugins;
 }
-interface RenderInputFieldParams extends RenderInputFieldsParams {
+
+interface RenderInputFieldParams extends Omit<RenderInputFieldsParams, "fields"> {
     field: CmsModelField;
 }
+
 interface RenderInputFields {
     (params: RenderInputFieldsParams): CmsModelFieldDefinition[];
 }
@@ -22,11 +19,17 @@ interface RenderInputFields {
 export const renderInputFields: RenderInputFields = ({
     models,
     model,
+    fields,
     fieldTypePlugins
 }): CmsModelFieldDefinition[] => {
-    return model.fields
-        .map(field => renderInputField({ models, model, field, fieldTypePlugins }))
-        .filter(Boolean) as CmsModelFieldDefinition[];
+    return fields.reduce<CmsModelFieldDefinition[]>((result, field) => {
+        const input = renderInputField({ models, model, field, fieldTypePlugins });
+        if (!input) {
+            return result;
+        }
+        result.push(input);
+        return result;
+    }, []);
 };
 
 export const renderInputField = ({
@@ -40,7 +43,7 @@ export const renderInputField = ({
     // want to be careful when accessing the field plugin here too. It is still possible to have a content model
     // that contains a field, for which we don't have a plugin registered on the backend. For example, user
     // could've just removed the plugin from the backend.
-    const plugin: CmsModelFieldToGraphQLPlugin = fieldTypePlugins[getBaseFieldType(field)];
+    const plugin = fieldTypePlugins[getBaseFieldType(field)];
 
     if (!plugin) {
         // Let's not render the field if it does not exist in the field plugins.

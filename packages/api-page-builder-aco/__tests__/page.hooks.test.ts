@@ -3,16 +3,11 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { assignPageLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { pageContentMock, pageLegacyContentMock } from "./mocks/page.mocks";
 import { PB_PAGE_TYPE, ROOT_FOLDER } from "~/contants";
-import { Page } from "@webiny/api-page-builder/types";
 
 const categorySlug = "category-lifecycle-events";
 
 describe("Pages -> Search records", () => {
-    const { pageBuilder, search } = useGraphQlHandler({
-        plugins: [assignPageLifecycleEvents()]
-    });
-
-    const createDummyCategory = async () => {
+    const createDummyCategory = async (pageBuilder: any) => {
         await pageBuilder.createCategory({
             data: {
                 slug: categorySlug,
@@ -23,7 +18,8 @@ describe("Pages -> Search records", () => {
         });
     };
 
-    const createDummyPage = async () => {
+    const createDummyPage = async (pageBuilder: any) => {
+        await createDummyCategory(pageBuilder);
         const [response] = await pageBuilder.createPage({
             category: categorySlug
         });
@@ -39,17 +35,23 @@ describe("Pages -> Search records", () => {
         return page;
     };
 
-    let dummyPage: Page;
-
     beforeEach(async () => {
-        await createDummyCategory();
-        dummyPage = await createDummyPage();
         tracker.reset();
     });
 
     it("should create a search record on page creation", async () => {
+        const { pageBuilder, search } = useGraphQlHandler({
+            plugins: [assignPageLifecycleEvents()]
+        });
+        const dummyPage = await createDummyPage(pageBuilder);
+
+        await pageBuilder.deletePage({
+            id: dummyPage.id
+        });
+        tracker.reset();
+
         const { id, pid, title, createdBy, createdOn, savedOn, status, version, locked, path } =
-            await createDummyPage();
+            await createDummyPage(pageBuilder);
 
         expect(tracker.isExecutedOnce("page:beforeCreate")).toEqual(true);
         expect(tracker.isExecutedOnce("page:afterCreate")).toEqual(true);
@@ -79,9 +81,148 @@ describe("Pages -> Search records", () => {
                 path
             }
         });
+
+        const [listSearchRecords] = await search.listRecords();
+
+        expect(listSearchRecords).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                id: pid,
+                                type: PB_PAGE_TYPE,
+                                title,
+                                content: title,
+                                location: {
+                                    folderId: ROOT_FOLDER
+                                },
+                                tags: [],
+                                data: {
+                                    id,
+                                    pid,
+                                    title,
+                                    createdBy,
+                                    createdOn,
+                                    savedOn,
+                                    status,
+                                    version,
+                                    locked,
+                                    path
+                                }
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should create a search record on page creation - disable storageId conversion", async () => {
+        process.env.WEBINY_API_TEST_STORAGE_ID_CONVERSION_DISABLE = "true";
+        const { pageBuilder, search } = useGraphQlHandler({
+            plugins: [assignPageLifecycleEvents()]
+        });
+
+        const dummyPage = await createDummyPage(pageBuilder);
+        await pageBuilder.deletePage({
+            id: dummyPage.id
+        });
+        tracker.reset();
+
+        const { id, pid, title, createdBy, createdOn, savedOn, status, version, locked, path } =
+            await createDummyPage(pageBuilder);
+
+        expect(tracker.isExecutedOnce("page:beforeCreate")).toEqual(true);
+        expect(tracker.isExecutedOnce("page:afterCreate")).toEqual(true);
+
+        const [searchResponse] = await search.getRecord({ id: pid });
+
+        expect(searchResponse).toMatchObject({
+            data: {
+                search: {
+                    getRecord: {
+                        data: {
+                            id: pid,
+                            type: PB_PAGE_TYPE,
+                            title,
+                            content: title,
+                            location: {
+                                folderId: ROOT_FOLDER
+                            },
+                            tags: [],
+                            data: {
+                                id,
+                                pid,
+                                title,
+                                createdBy,
+                                createdOn,
+                                savedOn,
+                                status,
+                                version,
+                                locked,
+                                path
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listSearchRecords] = await search.listRecords();
+
+        expect(listSearchRecords).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                id: pid,
+                                type: PB_PAGE_TYPE,
+                                title,
+                                content: title,
+                                location: {
+                                    folderId: ROOT_FOLDER
+                                },
+                                tags: [],
+                                data: {
+                                    id,
+                                    pid,
+                                    title,
+                                    createdBy,
+                                    createdOn,
+                                    savedOn,
+                                    status,
+                                    version,
+                                    locked,
+                                    path
+                                }
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     it("should update an existing search record after page revision creation", async () => {
+        const { pageBuilder, search } = useGraphQlHandler({
+            plugins: [assignPageLifecycleEvents()]
+        });
+        const dummyPage = await createDummyPage(pageBuilder);
         const { pid, title, id } = dummyPage;
 
         const [response] = await pageBuilder.createPage({
@@ -110,6 +251,10 @@ describe("Pages -> Search records", () => {
     });
 
     it("should update an existing search record", async () => {
+        const { pageBuilder, search } = useGraphQlHandler({
+            plugins: [assignPageLifecycleEvents()]
+        });
+        const dummyPage = await createDummyPage(pageBuilder);
         const { pid, title, id } = dummyPage;
 
         const [update] = await pageBuilder.updatePage({
@@ -146,6 +291,10 @@ describe("Pages -> Search records", () => {
     });
 
     it("should update an existing search record with legacy content (NO lexical-editor)", async () => {
+        const { pageBuilder, search } = useGraphQlHandler({
+            plugins: [assignPageLifecycleEvents()]
+        });
+        const dummyPage = await createDummyPage(pageBuilder);
         const { pid, title, id } = dummyPage;
 
         const [update] = await pageBuilder.updatePage({
@@ -176,6 +325,10 @@ describe("Pages -> Search records", () => {
     });
 
     it("should update an existing search record on page publish and unpublish", async () => {
+        const { pageBuilder, search } = useGraphQlHandler({
+            plugins: [assignPageLifecycleEvents()]
+        });
+        const dummyPage = await createDummyPage(pageBuilder);
         const { pid, id } = dummyPage;
 
         await pageBuilder.publishPage({
@@ -218,6 +371,10 @@ describe("Pages -> Search records", () => {
     });
 
     it("should delete a search record on page deletion", async () => {
+        const { pageBuilder, search } = useGraphQlHandler({
+            plugins: [assignPageLifecycleEvents()]
+        });
+        const dummyPage = await createDummyPage(pageBuilder);
         const { pid, id } = dummyPage;
 
         await pageBuilder.deletePage({
