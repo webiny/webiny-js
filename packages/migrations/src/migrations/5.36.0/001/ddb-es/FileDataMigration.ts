@@ -257,6 +257,13 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                                     locale: fileLocale
                                 } = file;
 
+                                if (meta?.private) {
+                                    logger.info(
+                                        `File "${name}" is marked as private, skipping migration.`
+                                    );
+                                    continue;
+                                }
+
                                 const entry = await this.createSearchRecordCommonFields(file);
 
                                 const rawDatas = {

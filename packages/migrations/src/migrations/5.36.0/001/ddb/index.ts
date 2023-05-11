@@ -20,7 +20,7 @@ export class AcoRecords_5_36_0_001 implements DataMigration {
     }
 
     public getDescription() {
-        return "ACO search record migration";
+        return "Migrate FmFile Data -> Create ACO Search Records";
     }
 
     async shouldExecute(context: DataMigrationContext): Promise<boolean> {

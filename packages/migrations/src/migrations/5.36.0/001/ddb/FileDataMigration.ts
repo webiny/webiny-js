@@ -131,7 +131,16 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                         const items = await files.reduce(
                             async (accumulator: Promise<any>, current) => {
                                 const data = current.data;
-                                const { id, tenant, locale } = data;
+                                const { id, tenant, locale, meta, name } = data;
+
+                                const acc = await accumulator;
+
+                                if (meta?.private) {
+                                    logger.info(
+                                        `File "${name}" is marked as private, skipping migration.`
+                                    );
+                                    return acc;
+                                }
 
                                 const entry = await this.createSearchRecordCommonFields(data);
 
@@ -152,8 +161,6 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                                     TYPE: "cms.entry",
                                     ...entry
                                 };
-
-                                const acc = await accumulator;
 
                                 return [
                                     ...acc,

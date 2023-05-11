@@ -24,7 +24,7 @@ export class AcoRecords_5_36_0_001 implements DataMigration {
     }
 
     getDescription(): string {
-        return "Create ACO search record for each File Manager record";
+        return "Migrate FmFile Data -> Create ACO Search Records";
     }
 
     async shouldExecute(context: DataMigrationContext): Promise<boolean> {
