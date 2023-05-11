@@ -118,6 +118,13 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         ...(userPlugins || [])
     ]);
 
+    const entries = createEntriesStorageOperations({
+        entity: entities.entries,
+        esEntity: entities.entriesEs,
+        plugins,
+        elasticsearch
+    });
+
     return {
         name: "dynamodb:elasticsearch",
         beforeInit: async context => {
@@ -154,6 +161,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);
             }
+            entries.dataLoaders.clearAll();
         },
         init: async context => {
             /**
@@ -206,11 +214,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entity: entities.models,
             elasticsearch
         }),
-        entries: createEntriesStorageOperations({
-            entity: entities.entries,
-            esEntity: entities.entriesEs,
-            plugins,
-            elasticsearch
-        })
+        entries
     };
 };
