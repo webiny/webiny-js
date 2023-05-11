@@ -71,11 +71,16 @@ export class BaseParagraphNode
     }
 
     getThemeStyles(): ThemeStyleValue[] {
+        // getLatest() ensures we are getting the most
+        // up-to-date value from the EditorState.
         const self = super.getLatest();
         return self.__styles;
     }
 
     setThemeStyles(styles: ThemeStyleValue[]) {
+        // getWritable() creates a clone of the node
+        // if needed, to ensure we don't try and mutate
+        // a stale version of this node.
         const self = super.getWritable();
         self.__styles = [...styles];
         return self;
@@ -117,7 +122,6 @@ export class BaseParagraphNode
         return element;
     }
 
-    // View
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
         return this.updateElementWithThemeClasses(element, config.theme as WebinyTheme);
@@ -139,9 +143,14 @@ export class BaseParagraphNode
         if (prevTypoStyleId !== nextTypoStyleId && nextTypoStyleId) {
             this.updateElementWithThemeClasses(dom, config.theme as WebinyTheme);
         }
+        // Returning false tells Lexical that this node does not need its
+        // DOM element replacing with a new copy from createDOM.
         return false;
     }
 
+    /*
+    * On copy/paste event this method will be executed in and create a node
+    * */
     static override importDOM(): DOMConversionMap | null {
         return {
             p: () => ({
@@ -151,6 +160,9 @@ export class BaseParagraphNode
         };
     }
 
+    /*
+    * Serialize the JSON data back into a node
+    */
     static override importJSON(serializedNode: SerializeBaseParagraphNode): BaseParagraphNode {
         const node = $createBaseParagraphNode();
         node.setFormat(serializedNode.format);
@@ -160,7 +172,10 @@ export class BaseParagraphNode
         return node;
     }
 
-    override exportJSON(): SerializeBaseParagraphNode {
+    /*
+    * Serialize the node to JSON data representation.
+    * */
+   override exportJSON(): SerializeBaseParagraphNode {
         return {
             ...super.exportJSON(),
             styles: this.__styles,
