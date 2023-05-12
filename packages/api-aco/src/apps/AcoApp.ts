@@ -9,6 +9,12 @@ import {
     SearchRecord
 } from "~/types";
 import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+import lodashUpperFirst from "lodash/upperFirst";
+import lodashCamelCase from "lodash/camelCase";
+
+const createApiName = (name: string) => {
+    return lodashUpperFirst(lodashCamelCase(name));
+};
 
 export class AcoApp implements IAcoApp {
     public readonly name: string;
@@ -52,7 +58,7 @@ export class AcoApp implements IAcoApp {
          */
         this.model.name = `${this.model.name} ${this.name}`;
         this.model.modelId = `${this.model.modelId}-${this.name.toLowerCase()}`;
-        const apiName = `${params.apiName}SearchRecord`;
+        const apiName = `AcoSearchRecord${createApiName(params.apiName)}`;
         this.model.singularApiName = apiName;
         this.model.pluralApiName = apiName;
 
