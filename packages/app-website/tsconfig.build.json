@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../app-page-builder-elements/tsconfig.build.json" },
+    { "path": "../app-theme/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../react-router/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  }
+}

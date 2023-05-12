@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { UIView } from "@webiny/app-admin/ui/UIView";
-import { FormAPI, FormData } from "@webiny/form";
+import { FormAPI, GenericFormData } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import {
@@ -44,7 +44,7 @@ export class UsersFormView extends UIView {
         return this.getHook("userForm");
     }
 
-    public submit(data: FormData, form?: FormAPI): void {
+    public submit(data: GenericFormData, form?: FormAPI): void {
         this.dispatchEvent("onSubmit", { data, form });
         this.getUserFormHook().onSubmit(data);
     }

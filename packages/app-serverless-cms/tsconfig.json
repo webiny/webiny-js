@@ -1,8 +1,9 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../app" },
+    { "path": "../app-aco" },
     { "path": "../app-admin" },
     { "path": "../app-admin-rmwc" },
     { "path": "../app-apw" },
@@ -13,11 +14,14 @@
     { "path": "../app-headless-cms" },
     { "path": "../app-i18n" },
     { "path": "../app-i18n-content" },
+    { "path": "../app-mailer" },
     { "path": "../app-page-builder" },
     { "path": "../app-security" },
     { "path": "../app-security-access-management" },
     { "path": "../app-tenancy" },
     { "path": "../app-tenant-manager" },
+    { "path": "../lexical-editor-actions" },
+    { "path": "../lexical-editor-pb-element" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -26,8 +30,11 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-admin-rmwc/*": ["../app-admin-rmwc/src/*"],
@@ -48,6 +55,8 @@
       "@webiny/app-i18n": ["../app-i18n/src"],
       "@webiny/app-i18n-content/*": ["../app-i18n-content/src/*"],
       "@webiny/app-i18n-content": ["../app-i18n-content/src"],
+      "@webiny/app-mailer/*": ["../app-mailer/src/*"],
+      "@webiny/app-mailer": ["../app-mailer/src"],
       "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
       "@webiny/app-page-builder": ["../app-page-builder/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
@@ -58,6 +67,10 @@
       "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/app-tenant-manager/*": ["../app-tenant-manager/src/*"],
       "@webiny/app-tenant-manager": ["../app-tenant-manager/src"],
+      "@webiny/lexical-editor-actions/*": ["../lexical-editor-actions/src/*"],
+      "@webiny/lexical-editor-actions": ["../lexical-editor-actions/src"],
+      "@webiny/lexical-editor-pb-element/*": ["../lexical-editor-pb-element/src/*"],
+      "@webiny/lexical-editor-pb-element": ["../lexical-editor-pb-element/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

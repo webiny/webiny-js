@@ -22,8 +22,8 @@
         "afterDeclarations": true
       }
     ],
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
     "noImplicitUseStrict": false,
     "noImplicitThis": true,
     "noImplicitReturns": true,

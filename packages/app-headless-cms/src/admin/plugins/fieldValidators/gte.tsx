@@ -2,17 +2,18 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin } from "~/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
+import { Bind } from "@webiny/form";
 
-const plugin: CmsEditorFieldValidatorPlugin = {
-    type: "cms-editor-field-validator",
+const plugin: CmsModelFieldValidatorPlugin = {
+    type: "cms-model-field-validator",
     name: "cms-editor-field-validator-gte",
     validator: {
         name: "gte",
         label: "Greater or equal",
         description: "Entered value must be equal or greater than the provided max value.",
         defaultMessage: "Value is too small.",
-        renderSettings({ Bind }) {
+        renderSettings() {
             return (
                 <Grid>
                     <Cell span={12}>
@@ -29,6 +30,13 @@ const plugin: CmsEditorFieldValidatorPlugin = {
                     </Cell>
                 </Grid>
             );
+        },
+        validate: async (value, { validator }) => {
+            const gteValue = validator.settings.value;
+            if (typeof gteValue === "undefined") {
+                return true;
+            }
+            return validation.validate(value, `gte:${gteValue}`);
         }
     }
 };

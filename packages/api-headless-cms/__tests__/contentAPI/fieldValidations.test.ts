@@ -1,16 +1,13 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
-import { useFruitManageHandler } from "../utils/useFruitManageHandler";
+import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 
 describe("fieldValidations", () => {
     const manageOpts = { path: "manage/en-US" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const { createContentModelMutation, createContentModelGroupMutation } =
+        useGraphQLHandler(manageOpts);
 
     const defaultFruitData = {
         name: "Apple",
@@ -53,26 +50,23 @@ describe("fieldValidations", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
-                group: contentModelGroup.id
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
+                group: contentModelGroup.id,
+                fields: model.fields,
+                layout: model.layout
             }
         });
 
         if (create.errors) {
             console.error(`[beforeEach] ${create.errors[0].message}`);
             process.exit(1);
-        } else if (create.data.createContentModel.data.error) {
-            console.error(`[beforeEach] ${create.data.createContentModel.data.error.message}`);
+        } else if (create.data.createContentModel.error) {
+            console.error(`[beforeEach] ${create.data.createContentModel.error.message}`);
             process.exit(1);
         }
 
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return update.data.updateContentModel.data;
+        return create.data.createContentModel.data;
     };
     const setupContentModels = async (contentModelGroup: CmsGroup) => {
         const models: Record<string, CmsModel> = {
@@ -112,6 +106,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "name",
+                                storageId: expect.stringMatching("text@"),
                                 error: "Min length is 2."
                             }
                         ]
@@ -137,6 +132,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "name",
+                                storageId: expect.stringMatching("text@"),
                                 error: "Max length is 15."
                             }
                         ]
@@ -198,6 +194,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                storageId: expect.stringMatching("number@"),
                                 error: "Numbers must contain at least 2 items."
                             }
                         ]
@@ -223,6 +220,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                storageId: expect.stringMatching("number@"),
                                 error: "Numbers can contain at most 7 items."
                             }
                         ]
@@ -248,6 +246,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                storageId: expect.stringMatching("number@"),
                                 error: "Number must be greater or equal 5."
                             }
                         ]
@@ -273,6 +272,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
+                                storageId: expect.stringMatching("number@"),
                                 error: "Number be less or equal 15."
                             }
                         ]
@@ -280,35 +280,6 @@ describe("fieldValidations", () => {
                 }
             }
         });
-        /**
-         * This test is not eligible anymore because you cannot send null / undefined into the array.
-         */
-        /*
-        const [requiredResponse] = await createFruit({
-            data: {
-                ...defaultFruitData,
-                numbers: [5, 6, 15]
-            }
-        });
-
-        expect(requiredResponse).toEqual({
-            data: {
-                createFruit: {
-                    data: null,
-                    error: {
-                        message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
-                        data: [
-                            {
-                                fieldId: "numbers",
-                                error: "Number is required."
-                            }
-                        ]
-                    }
-                }
-            }
-        });
-        */
     });
 
     const emailPatternTestValues = [
@@ -328,7 +299,7 @@ describe("fieldValidations", () => {
      * testing email pattern
      */
     test.each(emailPatternTestValues)(
-        `should return error when validating "email" field with a pattern`,
+        `should return error when validating "email" field with a pattern - %s`,
         async email => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -354,6 +325,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "email",
+                                    storageId: expect.stringMatching("text@"),
                                     error: "Must be in a form of an email."
                                 }
                             ]
@@ -381,7 +353,7 @@ describe("fieldValidations", () => {
      * testing url pattern
      */
     test.each(urlPatternTestValues)(
-        `should return error when validating "url" field with a pattern`,
+        `should return error when validating "url" field with a pattern - %s`,
         async url => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -407,6 +379,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "url",
+                                    storageId: expect.stringMatching("text@"),
                                     error: "Must be in a form of a url."
                                 }
                             ]
@@ -428,7 +401,7 @@ describe("fieldValidations", () => {
      * testing lowercase
      */
     test.each(lowerCaseTestValues)(
-        `should return error when validating "lowerCase" field`,
+        `should return error when validating "lowerCase" field - %s`,
         async lowerCase => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -454,6 +427,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "lowerCase",
+                                    storageId: expect.stringMatching("text@"),
                                     error: "Everything must be lowercase."
                                 }
                             ]
@@ -474,7 +448,7 @@ describe("fieldValidations", () => {
      * testing uppercase
      */
     test.each(upperCaseTestValues)(
-        `should return error when validating "upperCase" field`,
+        `should return error when validating "upperCase" field - %s`,
         async upperCase => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -500,6 +474,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "upperCase",
+                                    storageId: expect.stringMatching("text@"),
                                     error: "Everything must be uppercase."
                                 }
                             ]
@@ -516,7 +491,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(dateErrorValidations)(
-        `should return error when validating "date" field`,
+        `should return error when validating "date" field - %s`,
         async (date, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -542,6 +517,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "date",
+                                    storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
                             ]
@@ -558,7 +534,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(dateTimeErrorValidations)(
-        `should return error when validating "dateTime" field`,
+        `should return error when validating "dateTime" field - %s`,
         async (dateTime, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -584,6 +560,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "dateTime",
+                                    storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
                             ]
@@ -603,7 +580,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(dateTimeZErrorValidations)(
-        `should return error when validating "dateTimeZ" field`,
+        `should return error when validating "dateTimeZ" field - %s`,
         async (dateTimeZ, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -629,6 +606,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "dateTimeZ",
+                                    storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
                             ]
@@ -645,7 +623,7 @@ describe("fieldValidations", () => {
     ];
 
     test.each(timeErrorValidations)(
-        `should return error when validating "time" field`,
+        `should return error when validating "time" field - %s`,
         async (time, message) => {
             const group = await setupContentModelGroup();
             await setupContentModels(group);
@@ -671,6 +649,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: "time",
+                                    storageId: expect.stringMatching("datetime@"),
                                     error: message
                                 }
                             ]
@@ -685,7 +664,7 @@ describe("fieldValidations", () => {
         const group = await setupContentModelGroup();
         await setupContentModels(group);
 
-        const { createFruit, listFruits, until } = useFruitManageHandler({
+        const { createFruit } = useFruitManageHandler({
             ...manageOpts
         });
         /**
@@ -705,17 +684,6 @@ describe("fieldValidations", () => {
         });
 
         /**
-         * If this `until` resolves successfully, we know entry is accessible via the "read" API
-         */
-        await until(
-            () => listFruits({}).then(([data]) => data),
-            ({ data }: any) => {
-                return data.listFruits.data.length === 1;
-            },
-            { name: "list all fruits" }
-        );
-
-        /**
          * Should fail on creating another fruit with same slug.
          */
         const [createAgainResponse] = await createFruit({
@@ -731,8 +699,9 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
+                                fieldId: "slug",
                                 error: "Field value must be unique.",
-                                fieldId: "slug"
+                                storageId: expect.stringMatching("text@")
                             }
                         ]
                     }
@@ -763,7 +732,7 @@ describe("fieldValidations", () => {
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
@@ -816,7 +785,7 @@ describe("fieldValidations", () => {
                         entryId: apple.entryId,
                         createdOn: apple.createdOn,
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },

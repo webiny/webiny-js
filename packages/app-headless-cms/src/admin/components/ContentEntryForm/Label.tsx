@@ -16,7 +16,7 @@ const Label: React.FC = ({ children }) => (
             style.label
         )}
     >
-        <Typography use={"subtitle2"}>{children}</Typography>
+        <Typography use={"body2"}>{children}</Typography>
     </div>
 );
 

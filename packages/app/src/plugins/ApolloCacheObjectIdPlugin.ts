@@ -6,7 +6,8 @@ export interface ApolloCacheObject {
 }
 
 interface ApolloCacheObjectIdPluginCallable<T> {
-    (data: T): string | null;
+    // A value for `id`, null to prevent normalization, or undefined to continue with defaults.
+    (data: T): string | null | undefined;
 }
 
 export class ApolloCacheObjectIdPlugin<

@@ -1,14 +1,18 @@
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { LifeCycleHookCallbackParams } from "~/types";
+import { ApwContentReview, LifeCycleHookCallbackParams } from "~/types";
+import { extractContentReviewIdAndStep } from "~/plugins/utils";
+import { parseIdentifier } from "@webiny/utils";
 
 export const validateChangeRequest = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.changeRequest.onBeforeChangeRequestCreate.subscribe(async ({ input }) => {
+    apw.changeRequest.onChangeRequestBeforeCreate.subscribe(async ({ input }) => {
         const { step } = input;
         /**
          * We need step to be in a particular format i.e. "contentReviewId#version#stepId"
          */
-        const [entryId, version, stepId] = step.split("#");
+        const { id: revisionId, stepId } = extractContentReviewIdAndStep(step);
+
+        const { id: entryId, version } = parseIdentifier(revisionId);
         if (!entryId || !version || !stepId) {
             throw new WebinyError(
                 `The step property in input is not properly formatted.`,
@@ -21,9 +25,21 @@ export const validateChangeRequest = ({ apw }: Pick<LifeCycleHookCallbackParams,
         /**
          * Check whether a contentReview entry exists with provided id.
          */
-        const revisionId = `${entryId}#${version}`;
-
-        const contentReview = await apw.contentReview.get(revisionId);
+        let contentReview: ApwContentReview | undefined = undefined;
+        try {
+            contentReview = await apw.contentReview.get(revisionId);
+        } catch (ex) {
+            /**
+             * There is no need to output the log if this is the test environment.
+             */
+            if (process.env.NODE_ENV !== "test") {
+                console.log({
+                    message: ex.message,
+                    code: ex.data,
+                    data: ex.data
+                });
+            }
+        }
         if (!contentReview) {
             throw new NotFoundError(
                 `Unable to found "ContentReview" with given id "${revisionId}"`

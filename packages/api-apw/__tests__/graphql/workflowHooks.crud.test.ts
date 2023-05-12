@@ -1,13 +1,9 @@
 import { setupCategory } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import mocks from "./mocks/workflows";
 import { ApwWorkflowApplications, WorkflowScopeTypes } from "~/types";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 describe("Workflow assignment to a PB Page", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
     const {
         createWorkflowMutation,
         updateWorkflowMutation,
@@ -21,8 +17,8 @@ describe("Workflow assignment to a PB Page", () => {
         until,
         reviewer: reviewerGQL,
         securityIdentity
-    } = usePageBuilderHandler({
-        ...options
+    } = useGraphQlHandler({
+        path: "/graphql"
     });
 
     const login = async () => {
@@ -83,7 +79,9 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            (response: any) => response.data.apw.listWorkflows.data.length === 5
+            (response: any) => {
+                return response.data.apw.listWorkflows.data.length === 5;
+            }
         );
         const [firstWorkflow] = workflows;
         /**
@@ -258,9 +256,24 @@ describe("Workflow assignment to a PB Page", () => {
          * Now page should have this workflow assigned to it.
          */
         const [getPageResponse] = await getPageQuery({ id: page.id });
-        expect(getPageResponse.data.pageBuilder.getPage.data.settings.apw.workflowId).toBe(
-            workflow.id
-        );
+
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            settings: {
+                                apw: {
+                                    contentReviewId: null,
+                                    workflowId: workflow.id
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         /**
          * Let's try creating one more workflow with same scope.

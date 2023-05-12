@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import CloneContentModelDialog from "./CloneContentModelDialog";
+import { CloneContentModelDialog } from "./CloneContentModelDialog";
 import NewContentModelDialog from "./NewContentModelDialog";
 import ContentModelsDataList from "./ContentModelsDataList";
 import { css } from "emotion";
@@ -73,7 +73,6 @@ const ContentModels: React.FC = () => {
             <NewContentModelDialog open={newContentModelDialogOpened} onClose={onClose} />
             {cloneContentModel && (
                 <CloneContentModelDialog
-                    open={!!cloneContentModel}
                     contentModel={cloneContentModel}
                     onClose={onCloneClose}
                     closeModal={closeModal}

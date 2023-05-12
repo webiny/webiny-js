@@ -48,8 +48,14 @@ export const createChangeRequestModelDefinition = (): WorkflowModelDefinition =>
     return {
         name: "APW - Change Request",
         modelId: CHANGE_REQUEST_MODEL_ID,
-        titleFieldId: "changeRequest_title",
-        layout: [["changeRequest_body"], ["changeRequest_title"]],
+        titleFieldId: "title",
+        layout: [
+            ["changeRequest_body"],
+            ["changeRequest_title"],
+            ["changeRequest_resolved"],
+            ["changeRequest_media"],
+            ["changeRequest_step"]
+        ],
         fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()],
         description: "",
         isPrivate: true

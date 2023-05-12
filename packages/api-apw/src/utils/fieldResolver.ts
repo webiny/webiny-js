@@ -27,8 +27,8 @@ export const getFieldValues = async <T extends ApwBaseFields>(
     /**
      * Transform field value for each transformers.
      */
-    for (let i = 0; i < transformers.length; i++) {
-        const { fieldId, model, field } = transformers[i];
+    for (const transformer of transformers) {
+        const { fieldId, model, field } = transformer;
         // Get transformed value (eg. data decompression)
         values[fieldId] = await entryFieldFromStorageTransform({
             context,

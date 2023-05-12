@@ -1,6 +1,6 @@
 import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPlugin";
 
-export default () => [
+export const createFileFieldsPlugins = () => [
     new FileElasticsearchFieldPlugin({
         field: "id",
         unmappedType: "string",

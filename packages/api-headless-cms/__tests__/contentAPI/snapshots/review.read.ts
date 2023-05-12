@@ -2,27 +2,28 @@ export default /* GraphQL */ `
     """
     Product review
     """
-    type Review {
+    type ReviewApiModel {
         id: ID!
         entryId: String!
+        modelId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
         text: String
-        product: Product
+        product(populate: Boolean = true): ProductApiSingular
         rating: Number
-        author: Author
+        author(populate: Boolean = true): AuthorApiModel
     }
 
-    input ReviewGetWhereInput {
+    input ReviewApiModelGetWhereInput {
         id: ID
         entryId: String
         text: String
         rating: Number
     }
 
-    input ReviewListWhereInput {
+    input ReviewApiModelListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -71,11 +72,18 @@ export default /* GraphQL */ `
         rating_lte: Number
         rating_gt: Number
         rating_gte: Number
+        # there must be two numbers sent in the array
+        rating_between: [Number!]
+        # there must be two numbers sent in the array
+        rating_not_between: [Number!]
 
         author: RefFieldWhereInput
+
+        AND: [ReviewApiModelListWhereInput!]
+        OR: [ReviewApiModelListWhereInput!]
     }
 
-    enum ReviewListSorter {
+    enum ReviewApiModelListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -88,25 +96,25 @@ export default /* GraphQL */ `
         rating_DESC
     }
 
-    type ReviewResponse {
-        data: Review
+    type ReviewApiModelResponse {
+        data: ReviewApiModel
         error: CmsError
     }
 
-    type ReviewListResponse {
-        data: [Review]
+    type ReviewApiModelListResponse {
+        data: [ReviewApiModel]
         meta: CmsListMeta
         error: CmsError
     }
 
     extend type Query {
-        getReview(where: ReviewGetWhereInput!): ReviewResponse
+        getReviewApiModel(where: ReviewApiModelGetWhereInput!): ReviewApiModelResponse
 
-        listReviews(
-            where: ReviewListWhereInput
-            sort: [ReviewListSorter]
+        listReviewsApiModel(
+            where: ReviewApiModelListWhereInput
+            sort: [ReviewApiModelListSorter]
             limit: Int
             after: String
-        ): ReviewListResponse
+        ): ReviewApiModelListResponse
     }
 `;

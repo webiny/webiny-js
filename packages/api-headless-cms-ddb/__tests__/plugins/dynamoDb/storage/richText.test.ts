@@ -1,14 +1,11 @@
-import richTextStoragePlugin from "~/dynamoDb/storage/richText";
+import { createRichTextStorageTransformPlugin } from "~/dynamoDb/storage/richText";
 
 const defaultArgs = {
     field: {
-        fieldId: "richTextFieldId"
+        storageId: "richTextFieldId"
     },
     model: {
         modelId: "richTextModel"
-    },
-    entry: {
-        savedOn: new Date()
     }
 };
 
@@ -51,7 +48,7 @@ const expectedCompressedValue =
 
 describe("richTextStoragePlugin", () => {
     test("toStorage should transform value for storage", async () => {
-        const plugin = richTextStoragePlugin();
+        const plugin = createRichTextStorageTransformPlugin();
 
         const result = await plugin.toStorage({
             ...defaultArgs,
@@ -69,7 +66,7 @@ describe("richTextStoragePlugin", () => {
             compression: "jsonpack",
             value: expectedCompressedValue
         };
-        const plugin = richTextStoragePlugin();
+        const plugin = createRichTextStorageTransformPlugin();
 
         const result = await plugin.fromStorage({
             ...defaultArgs,

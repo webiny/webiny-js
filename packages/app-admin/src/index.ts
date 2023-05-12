@@ -1,5 +1,5 @@
-export * from "@webiny/app-admin-core";
-export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/app-admin-core";
+export * from "@webiny/app";
+export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/app";
 // UI components
 export * from "./base/ui/Tags";
 export * from "./base/ui/Menu";
@@ -27,9 +27,23 @@ export type { ViewCompositionContext, ViewElement } from "./base/providers/ViewC
 
 // Plugins
 export * from "./base/plugins/AddGraphQLQuerySelection";
+export * from "./plugins/PermissionRendererPlugin";
 
 // Components
 export { AppInstaller } from "./components/AppInstaller";
+export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
+export {
+    default as SingleImageUpload,
+    SingleImageUploadProps
+} from "./components/SingleImageUpload";
+
+export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
+export type {
+    FileManagerProps,
+    FileManagerRendererProps,
+    FileManagerFileItem,
+    FileManagerOnChange
+} from "./base/ui/FileManager";
 
 // Hooks
 export * from "./hooks/useSnackbar";

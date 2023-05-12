@@ -1,5 +1,5 @@
 import { CmsGroup } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { pubSubTracker } from "./mocks/lifecycleHooks";
 
 describe("content model test reserved model ids", () => {
@@ -29,6 +29,8 @@ describe("content model test reserved model ids", () => {
             data: {
                 name: "Content Model",
                 modelId: "contentModel",
+                singularApiName: "ContentModel",
+                pluralApiName: "ContentModels",
                 group: contentModelGroup.id
             }
         });
@@ -38,8 +40,10 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "",
-                        data: null,
+                        code: "MODEL_ID_NOT_ALLOWED",
+                        data: {
+                            input: "contentModel"
+                        },
                         message: 'Provided model ID "contentModel" is not allowed.'
                     }
                 }
@@ -50,6 +54,8 @@ describe("content model test reserved model ids", () => {
             data: {
                 name: "Content Model Group",
                 modelId: "contentModelGroup",
+                singularApiName: "ContentModelGroup",
+                pluralApiName: "ContentModelsGroups",
                 group: contentModelGroup.id
             }
         });
@@ -59,8 +65,10 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "",
-                        data: null,
+                        code: "MODEL_ID_NOT_ALLOWED",
+                        data: {
+                            input: "contentModelGroup"
+                        },
                         message: 'Provided model ID "contentModelGroup" is not allowed.'
                     }
                 }

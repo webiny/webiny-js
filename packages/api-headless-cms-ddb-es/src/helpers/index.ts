@@ -1,2 +1,2 @@
-export * from "./createElasticsearchQueryBody";
 export * from "./entryIndexHelpers";
+export * from "./fieldIdentifier";

@@ -45,6 +45,14 @@ export const notFoundPageData: any = {
                             },
                             padding: { desktop: { all: "10px" } },
                             grid: { cellsType: "12" },
+                            gridSettings: {
+                                desktop: {
+                                    flexDirection: "row"
+                                },
+                                "mobile-landscape": {
+                                    flexDirection: "column"
+                                }
+                            },
                             horizontalAlignFlex: { desktop: "flex-start" },
                             verticalAlign: { desktop: "flex-start" }
                         }
@@ -78,17 +86,16 @@ export const notFoundPageData: any = {
                                         text: {
                                             desktop: {
                                                 type: "heading",
-                                                typography: "webiny-pb-typography-heading",
+                                                typography: "heading1",
                                                 alignment: "center",
                                                 tag: "h1",
-                                                color: "rgba(17, 17, 17, 1)"
+                                                color: "color3"
                                             },
                                             data: { text: "Page not found!" }
                                         },
                                         settings: {
                                             margin: { desktop: { all: "0px" } },
-                                            padding: { desktop: { all: "0px" } },
-                                            horizontalAlign: { desktop: "center" }
+                                            padding: { desktop: { all: "0px" } }
                                         }
                                     },
                                     elements: []
@@ -100,13 +107,13 @@ export const notFoundPageData: any = {
                                         text: {
                                             desktop: {
                                                 type: "paragraph",
-                                                typography: "webiny-pb-typography-body",
+                                                typography: "paragraph1",
                                                 alignment: "center",
                                                 tag: "div",
-                                                color: "rgba(17, 17, 17, 1)"
+                                                color: "color3"
                                             },
                                             data: {
-                                                text: "<p>Sorry, but the page you were looking for could not be found.</p>"
+                                                text: "Sorry, but the page you were looking for could not be found."
                                             }
                                         },
                                         settings: {

@@ -13,7 +13,18 @@ import { createSettingsStorageOperations } from "~/operations/settings";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { createModelsStorageOperations } from "~/operations/model";
 import { createEntriesStorageOperations } from "./operations/entry";
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+
+import { createFilterCreatePlugins } from "~/operations/entry/filtering/plugins";
+import {
+    CmsEntryFieldFilterPathPlugin,
+    CmsEntryFieldFilterPlugin,
+    CmsEntryFieldSortingPlugin,
+    CmsFieldFilterValueTransformPlugin
+} from "~/plugins";
+import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
+import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+
+export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const { attributes, table, documentClient, plugins: userPlugins } = params;
@@ -53,29 +64,41 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     const plugins = new PluginsContainer([
         /**
-         * User defined custom plugins.
-         */
-        ...(userPlugins || []),
-        /**
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
         /**
          * Field plugins for DynamoDB.
          */
-        dynamoDbPlugins()
+        dynamoDbPlugins(),
+        /**
+         * Filter create plugins.
+         */
+        createFilterCreatePlugins(),
+        /**
+         * User defined custom plugins.
+         */
+        ...(userPlugins || [])
     ]);
 
     return {
+        name: "dynamodb",
         beforeInit: async context => {
+            const types: string[] = [
+                "cms-model-field-to-graphql",
+                CmsEntryFieldFilterPathPlugin.type,
+                CmsFieldFilterValueTransformPlugin.type,
+                CmsEntryFieldFilterPlugin.type,
+                CmsEntryFieldSortingPlugin.type,
+                ValueFilterPlugin.type,
+                StorageOperationsCmsModelPlugin.type
+            ];
             /**
              * Collect all required plugins from parent context.
              */
-            const fieldPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-                "cms-model-field-to-graphql"
-            );
-            plugins.register(fieldPlugins);
-
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
             /**
              * Pass the plugins to the parent context.
              */

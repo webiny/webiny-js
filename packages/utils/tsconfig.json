@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [{ "path": "../error" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -8,6 +8,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"]
     },

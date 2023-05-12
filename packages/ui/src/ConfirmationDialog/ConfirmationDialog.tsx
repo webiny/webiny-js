@@ -1,15 +1,9 @@
 import React from "react";
 
-import {
-    Dialog,
-    DialogButton,
-    DialogCancel,
-    DialogActions,
-    DialogTitle,
-    DialogContent
-} from "./../Dialog";
+import { Dialog, DialogCancel, DialogActions, DialogTitle, DialogContent } from "./../Dialog";
 
 import { CircularProgress } from "../Progress";
+import { ButtonPrimary } from "~/Button";
 
 interface ChildrenRenderProp {
     showConfirmation: (onAccept?: () => void, onCancel?: () => void) => any;
@@ -126,13 +120,13 @@ class ConfirmationDialog extends React.Component<Props, ConfirmationDialogState>
                     <DialogContent>{this.props.message}</DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
-                        <DialogButton
+                        <ButtonPrimary
                             data-testid="confirmationdialog-confirm-action"
                             onClick={this.onAccept}
                             disabled={this.props.disableConfirm}
                         >
                             Confirm
-                        </DialogButton>
+                        </ButtonPrimary>
                     </DialogActions>
                 </Dialog>
                 {this.props.children({

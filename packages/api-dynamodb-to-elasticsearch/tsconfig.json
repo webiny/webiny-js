@@ -1,10 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-elasticsearch" },
     { "path": "../error" },
-    { "path": "../handler" }
+    { "path": "../handler-aws" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -12,12 +13,15 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

@@ -1,9 +1,7 @@
 import { FileElasticsearchIndexPlugin } from "~/plugins/FileElasticsearchIndexPlugin";
-import { japanese as japaneseConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/japanese";
+import { getJapaneseConfiguration } from "@webiny/api-elasticsearch";
 
 export const japanese = new FileElasticsearchIndexPlugin({
-    body: {
-        ...japaneseConfiguration
-    },
+    body: getJapaneseConfiguration(),
     locales: ["ja", "ja-jp"]
 });

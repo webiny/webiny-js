@@ -69,6 +69,16 @@ module.exports.getProjectEnvironment = async ({
     environmentId,
     apiKey
 }) => {
+    if (apiKey) {
+        return request(getWcpGqlApiUrl(), GET_ENVIRONMENT, { apiKey })
+            .then(response => response.projects.getEnvironment)
+            .catch(() => {
+                throw new Error(
+                    `It seems the API key you provided is incorrect or disabled. Please double check the API key and try again.`
+                );
+            });
+    }
+
     const pat = localStorage().get("wcpPat");
     if (!pat) {
         throw new Error(

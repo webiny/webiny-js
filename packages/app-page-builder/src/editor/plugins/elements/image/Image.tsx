@@ -1,20 +1,21 @@
 import React from "react";
-import ImageContainer from "./ImageContainer";
-import { PbEditorElement } from "../../../../types";
-import { ElementRoot } from "../../../../render/components/ElementRoot";
+import { PbEditorElement } from "~/types";
+import PeImage from "./PeImage";
+import PbImage from "./PbImage";
+import { Element } from "@webiny/app-page-builder-elements/types";
+import { isLegacyRenderingEngine } from "~/utils";
 
-type ImagePropsType = {
+interface ImageProps {
     element: PbEditorElement;
-};
-const Image: React.FC<ImagePropsType> = ({ element }) => {
-    return (
-        <ElementRoot
-            element={element}
-            className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
-        >
-            <ImageContainer element={element} />
-        </ElementRoot>
-    );
+}
+
+const Image: React.FC<ImageProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <PbImage {...props} />;
+    }
+
+    const { element, ...rest } = props;
+    return <PeImage element={element as Element} {...rest} />;
 };
 
-export default Image;
+export default React.memo(Image);

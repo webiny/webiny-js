@@ -3,6 +3,9 @@
   "include": ["src"],
   "references": [
     {
+      "path": "../../../packages/api-aco/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json"
     },
     {
@@ -45,6 +48,9 @@
       "path": "../../../packages/api-page-builder/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-page-builder-aco/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-page-builder-import-export/tsconfig.build.json"
     },
     {
@@ -81,16 +87,10 @@
       "path": "../../../packages/handler-aws/tsconfig.build.json"
     },
     {
-      "path": "../../../packages/handler-client/tsconfig.build.json"
-    },
-    {
       "path": "../../../packages/handler-db/tsconfig.build.json"
     },
     {
       "path": "../../../packages/handler-graphql/tsconfig.build.json"
-    },
-    {
-      "path": "../../../packages/handler-http/tsconfig.build.json"
     },
     {
       "path": "../../../packages/handler-logs/tsconfig.build.json"
@@ -108,6 +108,8 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-aco/*": ["../../../packages/api-aco/src/*"],
+      "@webiny/api-aco": ["../../../packages/api-aco/src"],
       "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
       "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-admin-users-cognito-so-ddb/*": [
@@ -140,6 +142,8 @@
       "@webiny/api-i18n-ddb": ["../../../packages/api-i18n-ddb/src"],
       "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "@webiny/api-page-builder-aco/*": ["../../../packages/api-page-builder-aco/src/*"],
+      "@webiny/api-page-builder-aco": ["../../../packages/api-page-builder-aco/src"],
       "@webiny/api-page-builder-import-export/*": [
         "../../../packages/api-page-builder-import-export/src/*"
       ],
@@ -172,14 +176,10 @@
       "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
       "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
-      "@webiny/handler-client/*": ["../../../packages/handler-client/src/*"],
-      "@webiny/handler-client": ["../../../packages/handler-client/src"],
       "@webiny/handler-db/*": ["../../../packages/handler-db/src/*"],
       "@webiny/handler-db": ["../../../packages/handler-db/src"],
       "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
-      "@webiny/handler-http/*": ["../../../packages/handler-http/src/*"],
-      "@webiny/handler-http": ["../../../packages/handler-http/src"],
       "@webiny/handler-logs/*": ["../../../packages/handler-logs/src/*"],
       "@webiny/handler-logs": ["../../../packages/handler-logs/src"]
     },

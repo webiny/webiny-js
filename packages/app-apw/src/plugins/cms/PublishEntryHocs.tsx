@@ -100,18 +100,6 @@ export const PublishEntryButtonHoc: HigherOrderComponent = OriginalRenderer => {
     };
 };
 
-export const EntryRequestReviewHoc: HigherOrderComponent = () => {
-    return function EntryRequestReview() {
-        return null;
-    };
-};
-
-export const EntryRequestChangesHoc: HigherOrderComponent = () => {
-    return function EntryRequestChanges() {
-        return null;
-    };
-};
-
 export const EntryRevisionListItemGraphicHoc: HigherOrderComponent = OriginalRenderer => {
     return function EntryRevisionListItemGraphic() {
         const { entry, contentModel: model } = useContentEntry();

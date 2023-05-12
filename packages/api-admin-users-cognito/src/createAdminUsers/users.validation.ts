@@ -25,13 +25,16 @@ const UpdateUserDataModel = withFields({
     group: string()
 })();
 
-export const attachUserValidation = (adminUsers: AdminUsers) => {
-    adminUsers.onUserBeforeCreate.subscribe(async ({ inputData }) => {
+export const attachUserValidation = (
+    params: Pick<AdminUsers, "onUserBeforeCreate" | "onUserBeforeUpdate">
+) => {
+    const { onUserBeforeCreate, onUserBeforeUpdate } = params;
+    onUserBeforeCreate.subscribe(async ({ inputData }) => {
         const model = await new CreateUserDataModel().populate(inputData);
         await model.validate();
     });
 
-    adminUsers.onUserBeforeUpdate.subscribe(async ({ inputData }) => {
+    onUserBeforeUpdate.subscribe(async ({ inputData }) => {
         const model = await new UpdateUserDataModel().populate(inputData);
         await model.validate();
     });

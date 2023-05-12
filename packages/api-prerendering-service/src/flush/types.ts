@@ -1,16 +1,13 @@
-import { Context } from "@webiny/handler/types";
 import { FlushEvent, PrerenderingSettings, Render } from "~/types";
-import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
+import { Context } from "@webiny/handler/types";
 
 export type HandlerArgs = FlushEvent | FlushEvent[];
-
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {}
 
 export interface HookCallbackFunction {
     (args: {
         log: (...args: string[]) => void;
-        context: HandlerContext;
+        context: Context;
         render: Render;
         settings: PrerenderingSettings;
     }): void | Promise<void>;

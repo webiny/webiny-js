@@ -46,7 +46,7 @@ interface SplitViewConfig {
 }
 
 export class SplitView extends UIView {
-    private _classNames = new Set();
+    private _classNames = new Set<string>();
     private _leftPanel?: SplitViewPanelElement;
     private _rightPanel?: SplitViewPanelElement;
 

@@ -8,6 +8,7 @@ import {
 import { UserInfo } from "~/modules/userMenu/userInfo";
 import { SignOut } from "~/modules/userMenu/signOut";
 import { UserImage } from "~/modules/userMenu/userImage";
+import { ExitTenant } from "~/modules/userMenu/exitTenant";
 
 const UserImageHOC = (): React.FC => {
     return function UserImageHOC() {
@@ -21,6 +22,7 @@ export const UserMenuModule: React.FC = () => {
             <Compose component={UserMenuHandleRenderer} with={UserImageHOC} />
             <Plugins>
                 <AddUserMenuItem element={<UserInfo />} />
+                <AddUserMenuItem element={<ExitTenant />} />
                 <AddUserMenuItem element={<SignOut />} />
             </Plugins>
         </Fragment>

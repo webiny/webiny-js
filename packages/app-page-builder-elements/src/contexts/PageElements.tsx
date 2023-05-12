@@ -1,27 +1,23 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
+import { ThemeProvider } from "@emotion/react";
 import {
     PageElementsContextValue,
     PageElementsProviderProps,
     ElementStylesCallback,
     StylesCallback,
-    ThemeStylesCallback,
-    GetElementClassNames,
+    GetElementAttributes,
     GetElementStyles,
-    GetThemeStyles,
-    GetThemeClassNames,
     GetStyles,
-    GetClassNames,
     AssignStylesCallback,
     SetElementStylesCallback,
-    SetThemeStylesCallback,
     SetStylesCallback,
-    SetAssignStylesCallback
+    SetAssignStylesCallback,
+    GetRenderers
 } from "~/types";
-import { css, cx } from "@emotion/css";
 import {
     setUsingPageElements,
+    defaultElementAttributesCallback,
     defaultElementStylesCallback,
-    defaultThemeStylesCallback,
     defaultStylesCallback
 } from "~/utils";
 
@@ -31,17 +27,30 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,
     theme,
     renderers = {},
-    modifiers
+    modifiers,
+    beforeRenderer = null,
+    afterRenderer = null
 }) => {
-    // Styles-related callback customization.
+    // Attributes-related callbacks.
+    const getElementAttributes = useCallback<GetElementAttributes>(
+        element => {
+            return defaultElementAttributesCallback({
+                element,
+                theme,
+                renderers,
+                modifiers,
+                beforeRenderer,
+                afterRenderer
+            });
+        },
+        [theme]
+    );
+
+    // Styles-related callbacks.
     const [customAssignStylesCallback, setCustomAssignStylesCallback] =
-        useState<AssignStylesCallback>(() => {
-            return {};
-        });
+        useState<AssignStylesCallback>();
     const [customElementStylesCallback, setCustomElementStylesCallback] =
         useState<ElementStylesCallback>();
-    const [customThemeStylesCallback, setCustomThemeStylesCallback] =
-        useState<ThemeStylesCallback>();
     const [customStylesCallback, setCustomStylesCallback] = useState<StylesCallback>();
 
     const setAssignStylesCallback = useCallback<SetAssignStylesCallback>(callback => {
@@ -50,10 +59,6 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 
     const setElementStylesCallback = useCallback<SetElementStylesCallback>(callback => {
         setCustomElementStylesCallback(() => callback);
-    }, []);
-
-    const setThemeStylesCallback = useCallback<SetThemeStylesCallback>(callback => {
-        setCustomThemeStylesCallback(() => callback);
     }, []);
 
     const setStylesCallback = useCallback<SetStylesCallback>(callback => {
@@ -70,39 +75,12 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
                 theme,
                 renderers,
                 modifiers,
-                assignStyles: customAssignStylesCallback
+                assignStyles: customAssignStylesCallback,
+                beforeRenderer,
+                afterRenderer
             });
         },
-        [customElementStylesCallback, customAssignStylesCallback]
-    );
-
-    const getElementClassNames = useCallback<GetElementClassNames>(
-        element => {
-            return getElementStyles(element).map(item => css(item));
-        },
-        [getElementStyles]
-    );
-
-    const getThemeStyles = useCallback<GetThemeStyles>(
-        getStyles => {
-            const callback = customThemeStylesCallback || defaultThemeStylesCallback;
-            return callback({
-                getStyles,
-                theme,
-                renderers,
-                modifiers,
-                assignStyles: customAssignStylesCallback
-            });
-        },
-        [customThemeStylesCallback, customAssignStylesCallback]
-    );
-
-    const getThemeClassNames = useCallback<GetThemeClassNames>(
-        getStyles => {
-            const styles = getThemeStyles(getStyles);
-            return styles.map(item => css(item));
-        },
-        [getThemeStyles]
+        [theme, customElementStylesCallback, customAssignStylesCallback]
     );
 
     const getStyles = useCallback<GetStyles>(
@@ -113,19 +91,17 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
                 theme,
                 renderers,
                 modifiers,
-                assignStyles: customAssignStylesCallback
+                assignStyles: customAssignStylesCallback,
+                beforeRenderer,
+                afterRenderer
             });
         },
-        [customStylesCallback, customAssignStylesCallback]
+        [theme, customStylesCallback, customAssignStylesCallback]
     );
 
-    const getClassNames = useCallback<GetClassNames>(
-        customStyles => {
-            const styles = getStyles(customStyles);
-            return styles.map(item => css(item));
-        },
-        [getStyles]
-    );
+    const getRenderers = useCallback<GetRenderers>(() => {
+        return typeof renderers === "function" ? renderers() : renderers;
+    }, []);
 
     // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
     // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
@@ -136,26 +112,20 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         theme,
         renderers,
         modifiers,
+        getRenderers,
+        getElementAttributes,
         getElementStyles,
-        getElementClassNames,
-        getThemeStyles,
-        getThemeClassNames,
         getStyles,
-        getClassNames,
-        combineClassNames: cx,
         setAssignStylesCallback,
         setElementStylesCallback,
-        setThemeStylesCallback,
-        setStylesCallback
+        setStylesCallback,
+        beforeRenderer,
+        afterRenderer
     };
 
-    return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;
+    return (
+        <ThemeProvider theme={theme}>
+            <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>
+        </ThemeProvider>
+    );
 };
-/**
- * TODO @ts-refactor the props: any
- */
-export const PageElementsConsumer: React.FC = ({ children }) => (
-    <PageElementsContext.Consumer>
-        {(props: any) => React.cloneElement(children as unknown as React.ReactElement, props)}
-    </PageElementsContext.Consumer>
-);

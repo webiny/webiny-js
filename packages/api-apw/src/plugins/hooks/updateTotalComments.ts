@@ -7,7 +7,7 @@ import {
 } from "../utils";
 
 export const updateTotalCommentsCount = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.comment.onAfterCommentDelete.subscribe(async ({ comment }) => {
+    apw.comment.onCommentAfterDelete.subscribe(async ({ comment }) => {
         const { step } = comment;
         /**
          * After a "comment" is deleted, decrement the "totalComments" count
@@ -32,7 +32,7 @@ export const updateTotalCommentsCount = ({ apw }: Pick<LifeCycleHookCallbackPara
         }
     });
 
-    apw.comment.onAfterCommentCreate.subscribe(async ({ comment }) => {
+    apw.comment.onCommentAfterCreate.subscribe(async ({ comment }) => {
         /**
          * After a "comment" is created, increment the "totalComments" count
          * of the corresponding step in the content review entry.
@@ -56,7 +56,7 @@ export const updateTotalCommentsCount = ({ apw }: Pick<LifeCycleHookCallbackPara
 };
 
 export const updateLatestCommentId = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.comment.onAfterCommentCreate.subscribe(async ({ comment }) => {
+    apw.comment.onCommentAfterCreate.subscribe(async ({ comment }) => {
         /**
          * After a "comment" is created, update the "latestCommentId" in
          *  the corresponding content review entry.
@@ -75,7 +75,7 @@ export const updateLatestCommentId = ({ apw }: Pick<LifeCycleHookCallbackParams,
         });
     });
 
-    apw.comment.onAfterCommentUpdate.subscribe(async ({ comment }) => {
+    apw.comment.onCommentAfterUpdate.subscribe(async ({ comment }) => {
         /**
          * After a "comment" is updated, update the "latestCommentId" in
          *  the corresponding content review entry.
@@ -94,7 +94,7 @@ export const updateLatestCommentId = ({ apw }: Pick<LifeCycleHookCallbackParams,
         });
     });
 
-    apw.comment.onAfterCommentDelete.subscribe(async ({ comment }) => {
+    apw.comment.onCommentAfterDelete.subscribe(async ({ comment }) => {
         /**
          * After a "comment" is updated, update the "latestCommentId" in
          *  the corresponding content review entry.

@@ -1,14 +1,9 @@
 import set from "lodash/set";
-import {
-    CmsModelField,
-    CmsContext,
-    CmsModelFieldToGraphQLCreateResolver,
-    ApiEndpoint,
-    CmsModel,
-    CmsFieldTypePlugins
-} from "~/types";
+import { ApiEndpoint, CmsContext, CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
+import WebinyError from "@webiny/error";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface CreateFieldResolvers {
     graphQLType: string;
@@ -24,21 +19,9 @@ interface CreateFieldResolversFactoryParams {
     fieldTypePlugins: CmsFieldTypePlugins;
 }
 
-const getCreateResolver = (
-    plugins: CmsFieldTypePlugins,
-    field: CmsModelField,
-    endpointType: ApiEndpoint
-): CmsModelFieldToGraphQLCreateResolver | null => {
-    if (!plugins[field.type]) {
-        return null;
-    } else if (!plugins[field.type][endpointType]) {
-        return null;
-    }
-    return plugins[field.type][endpointType].createResolver;
-};
 /**
  * We use a factory to avoid passing the parameters for recursive invocations.
- * This way they will always be in the function scope and we can only pass "fields".
+ * This way they will always be in the function scope, and we can only pass "fields".
  */
 export const createFieldResolversFactory = (factoryParams: CreateFieldResolversFactoryParams) => {
     const { endpointType, models, model, fieldTypePlugins } = factoryParams;
@@ -49,19 +32,39 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
         const typeResolvers = {};
 
         for (const field of fields) {
-            if (!fieldTypePlugins[field.type]) {
+            const plugin = fieldTypePlugins[getBaseFieldType(field)];
+            if (!plugin) {
                 continue;
             }
+            /**
+             * Field that is passed into this factory MUST have fieldId, so filter it before the method call.
+             */
+            if (!field.fieldId) {
+                throw new WebinyError(
+                    "Field is missing an `fieldId`. Cannot process field without the `fieldId` in the resolvers.",
+                    "FIELD_ID_ERROR",
+                    {
+                        field
+                    }
+                );
+            }
 
-            const createResolver = getCreateResolver(fieldTypePlugins, field, endpointType);
+            const createResolver = plugin[endpointType]?.createResolver || null;
 
             let resolver: any;
             const fieldResolver = createResolver
-                ? createResolver({ graphQLType, models, model, field, createFieldResolvers })
+                ? createResolver({
+                      graphQLType,
+                      models,
+                      model,
+                      field,
+                      createFieldResolvers,
+                      fieldTypePlugins
+                  })
                 : null;
 
             /**
-             * When fieldResolver is false it will completely skip adding fieldId into the resolvers.
+             * When fieldResolver is false it will completely skip adding field fieldId into the resolvers.
              * This is to fix the breaking of GraphQL schema.
              */
             if (fieldResolver === false) {
@@ -77,12 +80,23 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             // TODO @ts-refactor figure out types for parameters
             // @ts-ignore
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
+                /**
+                 * This is required because due to ref field can be requested without the populated data.
+                 * At that point there is no .values  no fieldId property on the parent
+                 */
+                const value =
+                    parent?.values?.[fieldId] === undefined
+                        ? parent?.[fieldId]
+                        : parent?.values?.[fieldId];
+                if (value === undefined) {
+                    return undefined;
+                }
                 // Get transformed value (eg. data decompression)
                 const transformedValue = await entryFieldFromStorageTransform({
                     context,
                     model,
                     field,
-                    value: isRoot ? parent.values[fieldId] : parent[fieldId]
+                    value: isRoot ? parent.values?.[fieldId] : parent[fieldId]
                 });
 
                 set(isRoot ? parent.values : parent, fieldId, transformedValue);

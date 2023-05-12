@@ -1,6 +1,6 @@
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createPageContentReviewSetup } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 const richTextMock = [
     {
@@ -41,12 +41,8 @@ const expectedComment = expect.objectContaining({
 });
 
 describe("Comment on a change request test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
     });
 
     const {
@@ -272,7 +268,10 @@ describe("Comment on a change request test", () => {
         /**
          * List all comments.
          */
-        let [listCommentsResponse] = await listCommentsQuery({ sort: ["createdOn_DESC"] });
+        let [listCommentsResponse] = await listCommentsQuery({
+            sort: ["createdOn_DESC"],
+            limit: 10
+        });
         expect(listCommentsResponse).toEqual({
             data: {
                 apw: {

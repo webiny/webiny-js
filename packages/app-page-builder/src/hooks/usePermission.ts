@@ -14,8 +14,6 @@ interface UsePermission {
     canDelete: (item: CreatableItem) => boolean;
     canPublish: () => boolean;
     canUnpublish: () => boolean;
-    canRequestReview: () => boolean;
-    canRequestChange: () => boolean;
 }
 
 const usePermission = (): UsePermission => {
@@ -94,39 +92,11 @@ const usePermission = (): UsePermission => {
         return false;
     }, [pbPagePermission, hasFullAccess]);
 
-    const canRequestReview = useCallback((): boolean => {
-        if (hasFullAccess) {
-            return true;
-        }
-        if (!pbPagePermission) {
-            return false;
-        }
-        if (typeof pbPagePermission.pw === "string") {
-            return pbPagePermission.pw.includes("r");
-        }
-        return false;
-    }, [pbPagePermission, hasFullAccess]);
-
-    const canRequestChange = useCallback((): boolean => {
-        if (hasFullAccess) {
-            return true;
-        }
-        if (!pbPagePermission) {
-            return false;
-        }
-        if (typeof pbPagePermission.pw === "string") {
-            return pbPagePermission.pw.includes("c");
-        }
-        return false;
-    }, [pbPagePermission, hasFullAccess]);
-
     return {
         canEdit,
         canDelete,
         canPublish,
-        canUnpublish,
-        canRequestReview,
-        canRequestChange
+        canUnpublish
     };
 };
 

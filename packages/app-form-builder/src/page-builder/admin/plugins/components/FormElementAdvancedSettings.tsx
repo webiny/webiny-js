@@ -68,8 +68,11 @@ const FormElementAdvancedSettings: React.FC<FormElementAdvancedSettingsProps> = 
             value: null
         };
         if (listQuery.data) {
-            const latestFormRevisionsList: FbRevisionModel[] =
-                get(listQuery, "data.formBuilder.listForms.data") || [];
+            const latestFormRevisionsList =
+                (get(
+                    listQuery,
+                    "data.formBuilder.listForms.data"
+                ) as unknown as FbRevisionModel[]) || [];
 
             output.options = latestFormRevisionsList.map(({ id, name }) => ({ id, name }));
             output.value =

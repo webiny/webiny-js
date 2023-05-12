@@ -298,7 +298,7 @@ const MarginPaddingSettings: React.FC<
                     />
                 </Left>
                 <Center className="align-center">
-                    <Typography className={"text mono"} use={"subtitle2"}>
+                    <Typography className={"text mono"} use={"body2"}>
                         {get(element, "data.settings.width.value", "auto")}
                         &nbsp;x&nbsp;
                         {get(element, "data.settings.height.value", "auto")}

@@ -9,6 +9,7 @@ describe("ElasticsearchQueryBuilderOperatorNotContainsPlugin", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
+            name: "name",
             path: "name.keyword",
             basePath: "name",
             value: "John",

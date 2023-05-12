@@ -12,11 +12,11 @@ export class ElasticsearchQueryBuilderOperatorNotInPlugin extends ElasticsearchQ
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value: values, path, basePath } = params;
+        const { value: values, path, basePath, name } = params;
         const isArray = Array.isArray(values);
         if (isArray === false || values.length === 0) {
             throw new Error(
-                `You cannot filter field path "${basePath}" with not_in and not send an array of values.`
+                `You cannot filter field "${name}" with "not_in" operator and not send an array of values.`
             );
         }
 

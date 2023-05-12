@@ -1,17 +1,18 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../db" }, { "path": "../handler" }],
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../api" }, { "path": "../db" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/db": ["../db/src"]
     },
     "baseUrl": "."
   }

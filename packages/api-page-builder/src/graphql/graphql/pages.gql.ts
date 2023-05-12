@@ -5,13 +5,17 @@ import {
     NotFoundResponse
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext, PageSecurityPermission } from "~/types";
+import { Page, PbContext, PageSecurityPermission, PageContentWithTemplate } from "~/types";
 import WebinyError from "@webiny/error";
 import resolve from "./utils/resolve";
 import { createPageSettingsGraphQL } from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
 import lodashGet from "lodash/get";
 import checkBasePermissions from "~/graphql/crud/utils/checkBasePermissions";
+
+function hasTemplate(content: Page["content"]): content is PageContentWithTemplate {
+    return content?.data?.template;
+}
 
 const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
     return {
@@ -149,8 +153,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     published
                     unpublished
                     draft
-                    reviewRequested
-                    changesRequested
                 }
 
                 enum PbListPagesSort {
@@ -233,22 +235,19 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 }
 
                 extend type PbMutation {
-                    createPage(from: ID, category: String): PbPageResponse
+                    createPage(from: ID, category: String, meta: JSON): PbPageResponse
 
                     # Update page by given ID.
                     updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
+
+                    # Duplicate page by given ID.
+                    duplicatePage(id: ID!): PbPageResponse
 
                     # Publish page
                     publishPage(id: ID!): PbPageResponse
 
                     # Unpublish page
                     unpublishPage(id: ID!): PbPageResponse
-
-                    # Signifies that a page needs to be reviewed.
-                    requestReview(id: ID!): PbPageResponse
-
-                    # Signifies that certain changes are needed on given page.
-                    requestChanges(id: ID!): PbPageResponse
 
                     # Delete page and all of its revisions
                     deletePage(id: ID!): PbDeletePageResponse
@@ -278,6 +277,27 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         const settings = await context.pageBuilder.getCurrentSettings();
                         const websiteUrl = lodashGet(settings, "websiteUrl") || "";
                         return websiteUrl + page.path;
+                    },
+                    content: async (page: Page, _, context) => {
+                        if (!page.content?.elements) {
+                            return page.content;
+                        }
+
+                        let blocks;
+
+                        if (hasTemplate(page.content)) {
+                            blocks = await context.pageBuilder.resolvePageTemplate(page.content);
+                        } else {
+                            blocks = await context.pageBuilder.resolvePageBlocks(page.content);
+                        }
+
+                        // Run element processors on the full page content for potential transformations.
+                        const processedPage = await context.pageBuilder.processPageContent({
+                            ...page,
+                            content: { ...page.content, elements: blocks }
+                        });
+
+                        return processedPage.content;
                     }
                 },
                 PbPageListItem: {
@@ -378,6 +398,9 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                                 if (args.returnNotFoundPage === true && err.code === "NOT_FOUND") {
                                     // Load NOT FOUND page from settings
                                     const settings = await context.pageBuilder.getCurrentSettings();
+                                    if (!settings.pages?.notFound) {
+                                        return null;
+                                    }
                                     return context.pageBuilder.getPublishedPageById({
                                         id: settings.pages.notFound
                                     });
@@ -407,9 +430,13 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    createPage: async (_, args: { from?: string; category?: string }, context) => {
+                    createPage: async (
+                        _,
+                        args: { from?: string; category?: string; meta?: Record<string, any> },
+                        context
+                    ) => {
                         return resolve(() => {
-                            const { from, category } = args;
+                            const { from, category, meta } = args;
                             if (!from && !category) {
                                 throw new WebinyError(
                                     `Cannot create page - you must provide either "from" or "category" input.`
@@ -417,12 +444,12 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             }
 
                             if (from) {
-                                return context.pageBuilder.createPageFrom(from);
+                                return context.pageBuilder.createPageFrom(from, meta);
                             }
                             /**
                              * We can safely cast because we check for category existence in the beginning of the fn
                              */
-                            return context.pageBuilder.createPage(category as string);
+                            return context.pageBuilder.createPage(category as string, meta);
                         });
                     },
                     deletePage: async (_, args: any, context) => {
@@ -441,20 +468,37 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         });
                     },
 
+                    duplicatePage: async (_, args: any, context) => {
+                        try {
+                            const page = await context.pageBuilder.getPage(args.id);
+                            const { id: duplicatedPageId } = await context.pageBuilder.createPage(
+                                page.category
+                            );
+
+                            const duplicatedPageData = {
+                                title: `${page.title} (Copy)`,
+                                path: `${page.path}-copy`,
+                                content: page.content,
+                                settings: page.settings
+                            };
+
+                            return new Response(
+                                await context.pageBuilder.updatePage(
+                                    duplicatedPageId,
+                                    duplicatedPageData
+                                )
+                            );
+                        } catch (e) {
+                            return new ErrorResponse(e);
+                        }
+                    },
+
                     publishPage: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.publishPage(args.id));
                     },
 
                     unpublishPage: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.unpublishPage(args.id));
-                    },
-
-                    requestReview: async (_, args: any, context) => {
-                        return resolve(() => context.pageBuilder.requestPageReview(args.id));
-                    },
-
-                    requestChanges: async (_, args: any, context) => {
-                        return resolve(() => context.pageBuilder.requestPageChanges(args.id));
                     },
 
                     rerenderPage: async (_, args: any, context) => {

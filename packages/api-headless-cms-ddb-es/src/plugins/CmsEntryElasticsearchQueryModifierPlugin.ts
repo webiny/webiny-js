@@ -2,7 +2,7 @@ import {
     ElasticsearchQueryModifierPlugin,
     ModifyQueryCallable,
     ModifyQueryParams as BaseModifyQueryParams
-} from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryModifierPlugin";
+} from "@webiny/api-elasticsearch";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface ModifyQueryParams extends BaseModifyQueryParams {
@@ -28,3 +28,9 @@ export class CmsEntryElasticsearchQueryModifierPlugin extends ElasticsearchQuery
         this.modelId = config.modelId;
     }
 }
+
+export const createCmsEntryElasticsearchQueryModifierPlugin = (
+    config: CmsEntryElasticsearchQueryModifierPluginConfig
+) => {
+    return new CmsEntryElasticsearchQueryModifierPlugin(config);
+};

@@ -1,4 +1,4 @@
 {
-  "name": "API Page Builder DynamoDB for Page Import Export",
+  "name": "API Page Builder DynamoDB for Import Export",
   "entryPoints": ["types.ts"]
 }

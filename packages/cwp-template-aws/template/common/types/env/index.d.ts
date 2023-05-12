@@ -14,6 +14,8 @@ declare namespace NodeJS {
         WEBINY_VERSION?: string;
         WEBINY_ENABLE_VERSION_HEADER?: "true" | "false" | string;
         WEBINY_LOGS_FORWARD_URL?: string;
+        WEBINY_FILE_UPLOAD_CHUNK_SIZE?: string;
+        WEBINY_FILE_UPLOAD_PARALLEL_CHUNKS?: string;
         AWS_LAMBDA_FUNCTION_NAME?: string;
         PATH?: string;
         DEBUG?: "true" | "false" | string;
@@ -37,13 +39,34 @@ declare namespace NodeJS {
         IMAGE_TRANSFORMER_FUNCTION?: string;
         S3_BUCKET?: string;
         ELASTIC_SEARCH_INDEX_PREFIX?: string;
-        EXPORT_PAGES_PROCESS_HANDLER?: string;
-        IMPORT_PAGES_CREATE_HANDLER?: string;
+        EXPORT_PROCESS_HANDLER?: string;
+        IMPORT_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
-        HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
+        WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
         WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
         APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
         ELASTIC_SEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
+        /**
+         * Okta
+         */
+        OKTA_ISSUER?: string;
+        REACT_APP_OKTA_ISSUER?: string;
+        /**
+         * Auth0
+         */
+        AUTH0_DOMAIN?: string;
+        AUTH0_CLIENT_ID?: string;
+        REACT_APP_AUTH0_DOMAIN?: string;
+        REACT_APP_AUTH0_CLIENT_ID?: string;
+        /**
+         * api-mailer
+         */
+        WEBINY_MAILER_HOST?: string;
+        WEBINY_MAILER_USER?: string;
+        WEBINY_MAILER_PASSWORD?: string;
+        WEBINY_MAILER_REPLY_TO?: string;
+        WEBINY_MAILER_FROM?: string;
+        WEBINY_MAILER_PASSWORD_SECRET?: string;
     }
 }

@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { AttributePlugin, DefinitionParams } from "~/plugins/definitions/AttributePlugin";
 import { PluginsContainer } from "@webiny/plugins";
 

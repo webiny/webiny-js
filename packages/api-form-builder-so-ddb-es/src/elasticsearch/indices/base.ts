@@ -1,8 +1,6 @@
 import { FormElasticsearchIndexPlugin } from "~/plugins/FormElasticsearchIndexPlugin";
-import { base as baseConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/base";
+import { getBaseConfiguration } from "@webiny/api-elasticsearch";
 
 export const base = new FormElasticsearchIndexPlugin({
-    body: {
-        ...baseConfiguration
-    }
+    body: getBaseConfiguration()
 });

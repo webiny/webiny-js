@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
-import { FieldSortOptions, SortType, SortOrder } from "./types";
-import { ElasticsearchFieldPlugin } from "./plugins/definition/ElasticsearchFieldPlugin";
+import { FieldSortOptions, SortType, SortOrder } from "~/types";
+import { ElasticsearchFieldPlugin } from "~/plugins";
 
-const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
+const sortRegExp = new RegExp(/^([a-zA-Z-0-9_@]+)_(ASC|DESC)$/);
 
 interface CreateSortParams {
     sort: string[];
@@ -13,6 +13,7 @@ interface CreateSortParams {
     };
     fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
 }
+
 export const createSort = (params: CreateSortParams): SortType => {
     const { sort, defaults, fieldPlugins } = params;
     if (!sort || sort.length === 0) {
@@ -27,8 +28,13 @@ export const createSort = (params: CreateSortParams): SortType => {
             }
         };
     }
-
+    /**
+     * Cast as string because nothing else should be allowed yet.
+     */
     return sort.reduce((acc, value) => {
+        if (typeof value !== "string") {
+            throw new WebinyError(`Sort as object is not supported..`);
+        }
         const match = value.match(sortRegExp);
 
         if (!match) {
@@ -38,7 +44,8 @@ export const createSort = (params: CreateSortParams): SortType => {
         const [, field, initialOrder] = match;
         const order: SortOrder = initialOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
-        const plugin: ElasticsearchFieldPlugin = fieldPlugins[field] || fieldPlugins["*"];
+        const plugin: ElasticsearchFieldPlugin =
+            fieldPlugins[field] || fieldPlugins[ElasticsearchFieldPlugin.ALL];
         if (!plugin) {
             throw new WebinyError(`Missing plugin for the field "${field}"`, "PLUGIN_SORT_ERROR", {
                 field

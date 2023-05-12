@@ -6,7 +6,7 @@ describe("listing tags used by pages", () => {
     const { createCategory, createPage, listPages, updatePage, listPageTags, until } =
         useGqlHandler();
 
-    let initiallyCreatedPagesIds;
+    let initiallyCreatedPagesIds: string[] = [];
 
     beforeEach(async () => {
         initiallyCreatedPagesIds = [];

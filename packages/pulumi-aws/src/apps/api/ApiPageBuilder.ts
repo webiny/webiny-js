@@ -33,37 +33,37 @@ export const ApiPageBuilder = createAppModule({
             });
         });
 
-        const exportPages = createExportPagesResources(app, params);
-        const importPages = createImportPagesResources(app, params);
+        const exportResources = createExportResources(app, params);
+        const importResources = createImportResources(app, params);
 
         return {
-            exportPages,
-            importPages
+            export: exportResources,
+            import: importResources
         };
     }
 });
 
-function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
+function createExportResources(app: PulumiApp, params: PageBuilderParams) {
     const core = app.getModule(CoreOutput);
 
-    const policy = createExportPagesLambdaPolicy(app);
+    const policy = createExportLambdaPolicy(app);
     const role = createLambdaRole(app, {
-        name: "pb-export-pages-lambda-role",
+        name: "pb-export-lambda-role",
         policy: policy.output
     });
 
     const combine = app.addResource(aws.lambda.Function, {
-        name: "pb-export-pages-combine",
+        name: "pb-export-combine",
         config: {
             role: role.output.arn,
             runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
-            description: "Handle page export's combine workflow",
+            description: "Handle export's combine workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "pageBuilder/exportPages/combine/build")
+                    path.join(app.paths.workspace, "pageBuilder/export/combine/build")
                 )
             }),
             environment: {
@@ -77,17 +77,17 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
     });
 
     const process = app.addResource(aws.lambda.Function, {
-        name: "pb-export-pages-process",
+        name: "pb-export-process",
         config: {
             role: role.output.arn,
             runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
-            description: "Handle page export's process workflow",
+            description: "Handle export's process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "pageBuilder/exportPages/process/build")
+                    path.join(app.paths.workspace, "pageBuilder/export/process/build")
                 )
             }),
             environment: {
@@ -95,7 +95,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
                     ...value,
                     ...params.env,
                     S3_BUCKET: core.fileManagerBucketId,
-                    EXPORT_PAGE_COMBINE_HANDLER: combine.output.arn
+                    EXPORT_COMBINE_HANDLER: combine.output.arn
                 }))
             }
         }
@@ -111,13 +111,13 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
     };
 }
 
-function createExportPagesLambdaPolicy(app: PulumiApp) {
+function createExportLambdaPolicy(app: PulumiApp) {
     const core = app.getModule(CoreOutput);
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
     return app.addResource(aws.iam.Policy, {
-        name: "PbExportPageTaskLambdaPolicy",
+        name: "PbExportTaskLambdaPolicy",
         config: {
             description: "This policy enables access to Dynamodb",
             policy: {
@@ -169,26 +169,26 @@ function createExportPagesLambdaPolicy(app: PulumiApp) {
     });
 }
 
-function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
+function createImportResources(app: PulumiApp, params: PageBuilderParams) {
     const core = app.getModule(CoreOutput);
-    const policy = createImportPagesLambdaPolicy(app);
+    const policy = createImportLambdaPolicy(app);
     const role = createLambdaRole(app, {
-        name: "pb-import-page-lambda-role",
+        name: "pb-import-lambda-role",
         policy: policy.output
     });
 
     const process = app.addResource(aws.lambda.Function, {
-        name: "pb-import-page-queue-process",
+        name: "pb-import-queue-process",
         config: {
             role: role.output.arn,
             runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,
-            description: "Handle import page queue process workflow",
+            description: "Handle import queue process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "pageBuilder/importPages/process/build")
+                    path.join(app.paths.workspace, "pageBuilder/import/process/build")
                 )
             }),
             environment: {
@@ -202,17 +202,17 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
     });
 
     const create = app.addResource(aws.lambda.Function, {
-        name: "pb-import-page-queue-create",
+        name: "pb-import-queue-create",
         config: {
             role: role.output.arn,
             runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,
-            description: "Handle import page queue create workflow",
+            description: "Handle import queue create workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "pageBuilder/importPages/create/build")
+                    path.join(app.paths.workspace, "pageBuilder/import/create/build")
                 )
             }),
             environment: {
@@ -220,7 +220,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
                     ...value,
                     ...params.env,
                     S3_BUCKET: core.fileManagerBucketId,
-                    IMPORT_PAGE_QUEUE_PROCESS_HANDLER: process.output.arn
+                    IMPORT_QUEUE_PROCESS_HANDLER: process.output.arn
                 }))
             }
         }
@@ -236,13 +236,13 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
     };
 }
 
-function createImportPagesLambdaPolicy(app: PulumiApp) {
+function createImportLambdaPolicy(app: PulumiApp) {
     const coreOutput = app.getModule(CoreOutput);
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
     return app.addResource(aws.iam.Policy, {
-        name: "ImportPageLambdaPolicy",
+        name: "ImportLambdaPolicy",
         config: {
             description: "This policy enables access Dynamodb, S3, Lambda and Cognito IDP",
             // Core is pulumi.Output, so we need to run apply() to resolve policy based on it

@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -16,19 +16,22 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/cli
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticsearchClientContext from "@webiny/api-elasticsearch";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
+import elasticsearchClientContext, {
+    createGzipCompression,
+    createElasticsearchClient
+} from "@webiny/api-elasticsearch";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
-import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 /**
  * APW
  */
@@ -65,8 +68,13 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbElasticStorageOperation(),
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({
+                documentClient,
+                elasticsearchClient
+            })
+        }),
+        createFileManagerGraphQL(),
         fileManagerS3(),
         prerenderingServicePlugins({
             eventBus: String(process.env.EVENT_BUS)
@@ -75,7 +83,7 @@ export const handler = createHandler({
             storageOperations: createPageBuilderStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                plugins: [elasticsearchDataGzipCompression()]
+                plugins: []
             })
         }),
         createPageBuilderGraphQL(),
@@ -93,15 +101,17 @@ export const handler = createHandler({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                plugins: [elasticsearchDataGzipCompression()]
+                plugins: []
             })
         }),
         createHeadlessCmsGraphQL(),
-        elasticsearchDataGzipCompression(),
+        createGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
+        createAco(),
+        createAcoPageBuilderContext(),
         scaffoldsPlugins()
     ],
     http: { debug }

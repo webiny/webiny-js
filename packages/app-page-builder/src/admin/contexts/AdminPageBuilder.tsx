@@ -1,12 +1,12 @@
-import React, { useMemo, useRef } from "react";
+import React, { createContext, useMemo, useRef } from "react";
 import ApolloClient from "apollo-client";
 import { useApolloClient, MutationHookOptions } from "@apollo/react-hooks";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { PageBuilderContextValue } from "~/contexts/PageBuilder";
+import { PageBuilderContext } from "~/contexts/PageBuilder";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
 
-export const AdminPageBuilderContext = React.createContext<AdminPageBuilderContextValue>(
-    {} as AdminPageBuilderContextValue
+export const AdminPageBuilderContext = createContext<AdminPageBuilderContext | undefined>(
+    undefined
 );
 
 interface Page {
@@ -20,7 +20,7 @@ export interface PublishPageOptions {
 
 export type DeletePageOptions = PublishPageOptions;
 
-export interface AdminPageBuilderContextValue extends PageBuilderContextValue {
+export interface AdminPageBuilderContext extends PageBuilderContext {
     publishPage: (page: Page, options: PublishPageOptions) => Promise<OnPagePublish>;
     onPagePublish: (fn: OnPagePublishSubscriber) => () => void;
     deletePage: (page: Page, options: DeletePageOptions) => Promise<OnPageDelete>;
@@ -52,7 +52,7 @@ export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
     const onPagePublish = useRef<OnPagePublishSubscriber[]>([]);
     const onPageDelete = useRef<OnPageDeleteSubscriber[]>([]);
 
-    const context: AdminPageBuilderContextValue = useMemo(() => {
+    const context: AdminPageBuilderContext = useMemo(() => {
         return {
             ...pageBuilder,
             async publishPage(page, options) {

@@ -35,6 +35,7 @@ export const createUniqueValidator = (): CmsModelFieldValidatorPlugin => {
                         "Error while checking if the field value is unique.",
                         "UNIQUE_CHECK_ERROR",
                         {
+                            error: ex,
                             field,
                             value,
                             model

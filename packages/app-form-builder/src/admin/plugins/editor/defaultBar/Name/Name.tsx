@@ -27,7 +27,7 @@ declare global {
 
 export const Name: React.FC = () => {
     const { state, setData } = useFormEditor();
-    const [localName, setLocalName] = useState<string | null>(null);
+    const [localName, setLocalName] = useState("");
     const [editingEnabled, setEditing] = useState<boolean>(false);
 
     const cancelChanges = useCallback(() => {

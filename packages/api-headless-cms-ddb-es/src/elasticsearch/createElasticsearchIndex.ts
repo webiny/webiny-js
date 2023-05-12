@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/CmsEntryElasticsearchIndexPlugin";
-import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch/indices";
+import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
 import { configurations } from "~/configurations";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 

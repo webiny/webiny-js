@@ -1,13 +1,9 @@
 import { createSetupForPageContentReview } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 describe("Content Review assignment to a PB Page", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
     });
 
     const {
@@ -31,6 +27,19 @@ describe("Content Review assignment to a PB Page", () => {
                 content: {
                     id: page.id,
                     type: "page"
+                }
+            }
+        });
+
+        expect(createContentReviewResponse).toMatchObject({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
                 }
             }
         });

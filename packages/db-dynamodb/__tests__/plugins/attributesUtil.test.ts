@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler";
+import { Context } from "@webiny/api";
 import { getExtraAttributes } from "~/utils/attributes";
 import { AttributePlugin, AttributePluginParams } from "~/plugins/definitions/AttributePlugin";
 
@@ -36,8 +36,7 @@ describe("get extra attributes", () => {
 
     beforeEach(() => {
         context = new Context({
-            args: [],
-            WEBINY_VERSION: process.env.WEBINY_VERSION
+            WEBINY_VERSION: process.env.WEBINY_VERSION || "w.w.w"
         });
         context.plugins.register([stringAttribute, numberAttribute, booleanAttribute]);
     });

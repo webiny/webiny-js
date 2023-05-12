@@ -9,6 +9,7 @@ describe("ElasticsearchQueryBuilderOperatorStartsWithPlugin", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
+            name: "name",
             path: "name.keyword",
             basePath: "name",
             value: "John",
@@ -16,6 +17,7 @@ describe("ElasticsearchQueryBuilderOperatorStartsWithPlugin", () => {
         });
 
         plugin.apply(query, {
+            name: "name",
             path: "name.keyword",
             basePath: "name",
             value: "Doe",
@@ -24,7 +26,8 @@ describe("ElasticsearchQueryBuilderOperatorStartsWithPlugin", () => {
 
         const expected: ElasticsearchBoolQueryConfig = {
             must_not: [],
-            must: [
+            must: [],
+            filter: [
                 {
                     match_phrase_prefix: {
                         name: "John"
@@ -36,7 +39,6 @@ describe("ElasticsearchQueryBuilderOperatorStartsWithPlugin", () => {
                     }
                 }
             ],
-            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

@@ -41,7 +41,7 @@ const PbCategories: React.FC<PbCategoriesProps> = ({ Bind, runValidation }) => {
         <Stack space={3} padding={6}>
             <Box>
                 <Typography
-                    use={"subtitle2"}
+                    use={"body2"}
                     className={textStyle}
                 >{`This workflow will apply to all pages inside the selected categories, unless a page has a specific workflow applied to it.`}</Typography>
             </Box>
@@ -85,7 +85,7 @@ const PbPagesList: React.FC<PbPagesListProps> = ({ bind }) => {
         <Stack space={6} padding={6}>
             <Box>
                 <Typography
-                    use={"subtitle2"}
+                    use={"body2"}
                     className={textStyle}
                 >{`This workflow applies to specific pages only.`}</Typography>
             </Box>

@@ -4,7 +4,8 @@ import { validation } from "@webiny/validation";
 import { Typography } from "@webiny/ui/Typography";
 import {
     createEmbedPlugin,
-    createEmbedSettingsPlugin
+    createEmbedSettingsPlugin,
+    EmbedPluginConfigRenderCallable
 } from "./../../utils/oembed/createEmbedPlugin";
 import { ReactComponent as LogoIcon } from "./codesandbox-logo.svg";
 import Accordion from "../../../elementSettings/components/Accordion";
@@ -13,6 +14,8 @@ import {
     ButtonContainer,
     SimpleButton
 } from "../../../elementSettings/components/StyledComponents";
+import { isLegacyRenderingEngine } from "~/utils";
+import { PeCodesandbox } from "./PeCodesandbox";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -22,6 +25,14 @@ const PreviewBox = styled("div")({
         width: 50
     }
 });
+
+let render: EmbedPluginConfigRenderCallable;
+if (!isLegacyRenderingEngine) {
+    render = props => (
+        // @ts-ignore Sync `elements` property type.
+        <PeCodesandbox {...props} />
+    );
+}
 
 export default () => [
     createEmbedPlugin({
@@ -42,7 +53,8 @@ export default () => [
                 data["html"] = data["html"].replace(/1000px/g, "100%").replace(/1000/g, "100%");
                 return data;
             }
-        }
+        },
+        render
     }),
     createEmbedSettingsPlugin({
         type: "codesandbox",

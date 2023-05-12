@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import get from "lodash/get";
-import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -9,13 +8,14 @@ import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { usePage } from "~/pageEditor/hooks/usePage";
+import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
 const DefaultPublishPageButton: React.FC = () => {
     const [page] = usePage();
-    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
     const { canPublish } = usePermission();
+    const { navigateToLatestFolder } = usePageViewNavigation();
 
     if (!canPublish()) {
         return null;
@@ -39,7 +39,7 @@ const DefaultPublishPageButton: React.FC = () => {
             return;
         }
 
-        history.push(`/page-builder/pages?id=${encodeURIComponent(page.id as string)}`);
+        navigateToLatestFolder();
 
         // Let's wait a bit, because we are also redirecting the user.
         setTimeout(() => {

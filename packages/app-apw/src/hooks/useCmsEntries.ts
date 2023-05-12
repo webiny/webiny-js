@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import debounce from "lodash/debounce";
 import {
     LIST_LATEST_CMS_ENTRIES,
@@ -94,7 +94,7 @@ export const useCmsEntries = ({ bind, models }: UseCmsEntriesParams): UseCmsEntr
                 if (!response) {
                     return;
                 }
-                const entries: CmsEntry[] | null = get(response, "entries.data");
+                const entries: CmsEntry[] | null = dotPropImmutable.get(response, "entries.data");
 
                 setItemsFromEntries(entries);
             }
@@ -116,7 +116,7 @@ export const useCmsEntries = ({ bind, models }: UseCmsEntriesParams): UseCmsEntr
         }
     });
 
-    const entries: CmsEntry[] = get(data, "entries.data", []);
+    const entries: CmsEntry[] = dotPropImmutable.get(data, "entries.data", []);
 
     useEffect(() => {
         if (!entries || entries.length === 0) {

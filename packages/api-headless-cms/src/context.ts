@@ -1,7 +1,14 @@
-import { CmsContext } from "~/types";
+import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
-import { CmsParametersPlugin, CmsParametersPluginResponse } from "./plugins/CmsParametersPlugin";
+import { ContextPlugin } from "@webiny/api";
+import { CmsParametersPlugin, CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin";
+import { createSystemCrud } from "~/crud/system.crud";
+import { createSettingsCrud } from "~/crud/settings.crud";
+import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud";
+import { createModelsCrud } from "~/crud/contentModel.crud";
+import { createContentEntryCrud } from "~/crud/contentEntry.crud";
+import { StorageOperationsCmsModelPlugin } from "~/plugins";
+import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -18,12 +25,12 @@ const getParameters = async (context: CmsContext): Promise<CmsParametersPluginRe
     );
 };
 
-export const createContextPlugin = () => {
-    return new ContextPlugin<CmsContext>(async context => {
-        if (context.http?.request?.method === "OPTIONS") {
-            return;
-        }
+export interface CrudParams {
+    storageOperations: HeadlessCmsStorageOperations;
+}
 
+export const createContextPlugin = ({ storageOperations }: CrudParams) => {
+    return new ContextPlugin<CmsContext>(async context => {
         const { type, locale } = await getParameters(context);
 
         const getLocale = () => {
@@ -34,14 +41,71 @@ export const createContextPlugin = () => {
             return systemLocale;
         };
 
-        context.cms = {
-            ...(context.cms || {}),
-            type,
-            locale,
-            getLocale,
-            READ: type === "read",
-            PREVIEW: type === "preview",
-            MANAGE: type === "manage"
+        const getIdentity = () => {
+            return context.security.getIdentity();
         };
+
+        const getTenant = () => {
+            return context.tenancy.getCurrentTenant();
+        };
+
+        context.plugins.register(
+            new StorageOperationsCmsModelPlugin(
+                createCmsModelFieldConvertersAttachFactory(context.plugins)
+            )
+        );
+
+        await context.benchmark.measure("headlessCms.createContext", async () => {
+            await storageOperations.beforeInit(context);
+
+            context.cms = {
+                type,
+                locale,
+                getLocale,
+                READ: type === "read",
+                PREVIEW: type === "preview",
+                MANAGE: type === "manage",
+                storageOperations,
+                ...createSystemCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createSettingsCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    storageOperations
+                }),
+                ...createModelGroupsCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createModelsCrud({
+                    context,
+                    getLocale,
+                    getTenant,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createContentEntryCrud({
+                    context,
+                    getIdentity,
+                    getTenant,
+                    getLocale,
+                    storageOperations
+                })
+            };
+
+            if (!storageOperations.init) {
+                return;
+            }
+            await storageOperations.init(context);
+        });
     });
 };

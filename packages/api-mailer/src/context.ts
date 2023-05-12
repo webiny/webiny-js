@@ -1,9 +1,13 @@
-import { ContextPlugin } from "@webiny/handler";
-import { MailerConfig, MailerContext } from "./types";
-import { createMailerCrud } from "~/crud/mailer.crud";
+import { ContextPlugin } from "@webiny/api";
+import { MailerContext } from "./types";
+import { createTransporterCrud } from "~/crud/transporter.crud";
+import { createSettingsCrud } from "~/crud/settings.crud";
 
-export const createMailerContext = (config?: MailerConfig) => {
+export const createMailerContext = () => {
     return new ContextPlugin<MailerContext>(async context => {
-        context.mailer = createMailerCrud(config);
+        context.mailer = {
+            ...(await createTransporterCrud(context)),
+            ...(await createSettingsCrud(context))
+        };
     });
 };

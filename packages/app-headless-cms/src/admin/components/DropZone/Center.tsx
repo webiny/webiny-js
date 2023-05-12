@@ -1,31 +1,43 @@
 import React, { CSSProperties } from "react";
 import styled from "@emotion/styled";
-import { Droppable, OnDropCallable } from "./../Droppable";
+import { Droppable, DroppableProps, OnDropCallable } from "./../Droppable";
 
-// @ts-ignore
-const Container = styled("div")(({ isOver }: { isOver: boolean }) => ({
-    backgroundColor: "transparent",
-    boxSizing: "border-box",
-    height: "100%",
-    minHeight: 100,
-    position: "relative",
-    userSelect: "none",
-    width: "100%",
-    border: isOver
-        ? "2px dashed var(--mdc-theme-primary)"
-        : "2px dashed var(--mdc-theme-secondary)",
-    opacity: 1
-}));
+interface DroppableFlags {
+    isOver: boolean;
+    isDroppable: boolean;
+}
 
-// @ts-ignore
-const Add = styled("div")(({ isOver }: { isOver: boolean }) => ({
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%,-50%)",
-    margin: 0,
-    color: isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)"
-}));
+const getColor = ({ isOver, isDroppable }: DroppableFlags) => {
+    if (isOver) {
+        return "var(--mdc-theme-primary)";
+    }
+
+    if (!isDroppable) {
+        return "var(--mdc-theme-background)";
+    }
+
+    return "var(--mdc-theme-secondary)";
+};
+
+const Container = styled.div`
+    background-color: transparent;
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 100px;
+    position: relative;
+    user-select: none;
+    width: 100%;
+    border: 2px dashed ${getColor};
+    opacity: 1;
+    > div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        color: ${getColor};
+    }
+`;
 
 interface CenterProps {
     type?: string;
@@ -34,19 +46,25 @@ interface CenterProps {
     active?: boolean;
     highlight?: boolean;
     style?: CSSProperties;
+    isDroppable?: DroppableProps["isDroppable"];
 }
 
-const Center: React.FC<CenterProps> = ({ onDrop, children, style }) => {
+const getInert = (isDroppable: boolean) => {
+    return isDroppable ? {} : { inert: "" };
+};
+
+const Center: React.FC<CenterProps> = ({ onDrop, children, style, isDroppable }) => {
     return (
-        <Droppable onDrop={onDrop}>
-            {({ isOver, drop }) => (
+        <Droppable onDrop={onDrop} isDroppable={isDroppable}>
+            {({ isOver, drop, isDroppable }) => (
                 <div
                     ref={drop}
                     style={{ width: "100%", height: "100%", ...style }}
                     data-testid={"cms-editor-first-field-area"}
+                    {...getInert(isDroppable)}
                 >
-                    <Container isOver={isOver}>
-                        <Add isOver={isOver}>{children}</Add>
+                    <Container isOver={isOver} isDroppable={isDroppable}>
+                        <div>{children}</div>
                     </Container>
                 </div>
             )}

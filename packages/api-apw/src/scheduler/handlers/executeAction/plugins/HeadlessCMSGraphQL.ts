@@ -1,6 +1,11 @@
-import { ApplicationGraphQL, ApplicationGraphQLBody } from "./ApplicationGraphQL";
-import { ApwContentTypes, ApwScheduleActionData, ApwScheduleActionTypes } from "~/scheduler/types";
-import { ApwSettings } from "~/scheduler/handlers/utils";
+import {
+    ApplicationGraphQL,
+    ApplicationGraphQLBody,
+    ApwSettings,
+    ApplicationGraphQLGetUrlParams,
+    ApwScheduleActionData
+} from "./ApplicationGraphQL";
+import { ApwContentTypes, ApwScheduleActionTypes } from "~/scheduler/types";
 import WebinyError from "@webiny/error";
 import upperFirst from "lodash/upperFirst";
 
@@ -59,14 +64,18 @@ interface ApplicationGraphQLBodyVariables {
 }
 
 export class HeadlessCMSGraphQL extends ApplicationGraphQL {
-    public override name = "apw.scheduler.applicationGraphQL.pageBuilder";
+    public override name = "apw.scheduler.applicationGraphQL.headlessCms";
 
     public override canUse(data: ApwScheduleActionData): boolean {
         return data.type === ApwContentTypes.CMS_ENTRY;
     }
 
+    public override getUrl({ locale }: ApplicationGraphQLGetUrlParams): string {
+        return `/cms/manage/${locale}`;
+    }
+
     public override getArn(settings: ApwSettings): string {
-        return settings.cmsGraphqlFunctionArn;
+        return settings.mainGraphqlFunctionArn;
     }
 
     public override getGraphQLBody(data: ApwScheduleActionData): ApplicationGraphQLBody | null {

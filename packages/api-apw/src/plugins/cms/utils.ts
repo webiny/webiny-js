@@ -125,7 +125,7 @@ export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams)
      */
     try {
         /*
-         * List all workflows for app pageBuilder
+         * List all workflows for app cms
          */
         const [entries] = await apw.workflow.list({
             where: {

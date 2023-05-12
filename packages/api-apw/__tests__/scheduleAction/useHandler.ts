@@ -1,7 +1,7 @@
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler, createEventHandler } from "@webiny/handler-aws/raw";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createScheduler } from "~/scheduler";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
@@ -17,88 +17,80 @@ export default (params: Params = {}) => {
 
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    const handler = createHandler(
-        {
-            type: "context",
-            name: "context-header",
-            apply(context) {
-                context.http = {
-                    ...(context?.http || {}),
-                    request: {
-                        ...(context?.http?.request || {}),
-                        headers: {
-                            ...(context?.http?.request?.headers || {}),
-                            ["x-tenant"]: "root"
-                        }
-                    }
-                };
-            }
-        } as ContextPlugin<ApwContext>,
-        ...createTenancyAndSecurity(),
-        graphqlHandler(),
-        {
-            type: "context",
-            apply: (context: any) => {
-                if (context.i18n) {
-                    return;
-                }
-
-                context.i18n = {
-                    getContentLocale: () => {
-                        return {
-                            code: "en-US"
-                        };
-                    },
-                    hasI18NContentPermission: () => {
-                        return true;
-                    },
-                    checkI18NContentPermission: () => {
+    const handler = createHandler<unknown, ApwContext>({
+        plugins: [
+            ...createTenancyAndSecurity(),
+            graphqlHandler(),
+            {
+                type: "context",
+                apply: (context: any) => {
+                    if (context.i18n) {
                         return;
                     }
-                };
-            }
-        },
-        new ContextPlugin<PbContext>(context => {
-            context.pageBuilder = {} as any;
-        }),
-        new ContextPlugin<any>(async context => {
-            context.scheduleAction = createScheduler({
-                storageOperations,
-                getTenant: () => {
-                    return {
-                        id: "root",
-                        name: "Root",
-                        parent: null,
-                        status: "unknown",
-                        description: "",
-                        settings: {
-                            domains: []
+
+                    context.i18n = {
+                        getContentLocale: () => {
+                            return {
+                                code: "en-US"
+                            };
                         },
-                        createdOn: new Date().toISOString(),
-                        savedOn: new Date().toISOString()
-                    };
-                },
-                getLocale: () => {
-                    return { code: "en-US", default: true };
-                },
-                getPermission: async (name: string) => {
-                    if (!name) {
-                        return null;
-                    }
-                    return [{ name: "*" }] as unknown as SecurityPermission;
-                },
-                getIdentity: (): SecurityIdentity => {
-                    return {
-                        id: "12345678",
-                        type: "admin",
-                        displayName: "John Doe",
-                        permissions: createPermissions().concat({ name: "pb.*" })
+                        hasI18NContentPermission: () => {
+                            return true;
+                        },
+                        checkI18NContentPermission: () => {
+                            return;
+                        }
                     };
                 }
-            });
-        }),
-        extraPlugins || []
-    );
+            },
+            new ContextPlugin<PbContext>(context => {
+                context.pageBuilder = {} as any;
+            }),
+            new ContextPlugin<any>(async context => {
+                context.scheduleAction = createScheduler({
+                    storageOperations,
+                    getTenant: () => {
+                        return {
+                            id: "root",
+                            name: "Root",
+                            parent: null,
+                            status: "unknown",
+                            description: "",
+                            settings: {
+                                domains: []
+                            },
+                            createdOn: new Date().toISOString(),
+                            savedOn: new Date().toISOString()
+                        };
+                    },
+                    getLocale: () => {
+                        return { code: "en-US", default: true };
+                    },
+                    getPermission: async (name: string) => {
+                        if (!name) {
+                            return null;
+                        }
+                        return [{ name: "*" }] as unknown as SecurityPermission;
+                    },
+                    getIdentity: (): SecurityIdentity => {
+                        return {
+                            id: "12345678",
+                            type: "admin",
+                            displayName: "John Doe",
+                            permissions: createPermissions().concat({ name: "pb.*" })
+                        };
+                    }
+                });
+            }),
+            createEventHandler(async ({ context }) => {
+                return context;
+            }),
+            /**
+             * We need an EventPlugin defined because it returns the context which we actually use in tests.
+             */
+            extraPlugins || []
+        ]
+    });
 
     return {
         handler

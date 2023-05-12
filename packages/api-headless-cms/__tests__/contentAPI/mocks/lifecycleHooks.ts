@@ -1,5 +1,5 @@
 import { CmsContext } from "~/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 
 class PubSubTracker {
     private _tracked: Record<string, number> = {};
@@ -31,28 +31,28 @@ export const assignModelEvents = () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.onBeforeModelCreate.subscribe(async () => {
+        context.cms.onModelBeforeCreate.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeCreate");
         });
-        context.cms.onAfterModelCreate.subscribe(async () => {
+        context.cms.onModelAfterCreate.subscribe(async () => {
             pubSubTracker.track("contentModel:afterCreate");
         });
-        context.cms.onBeforeModelCreateFrom.subscribe(async () => {
+        context.cms.onModelBeforeCreateFrom.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeCreateFrom");
         });
-        context.cms.onAfterModelCreateFrom.subscribe(async () => {
+        context.cms.onModelAfterCreateFrom.subscribe(async () => {
             pubSubTracker.track("contentModel:afterCreateFrom");
         });
-        context.cms.onBeforeModelUpdate.subscribe(async () => {
+        context.cms.onModelBeforeUpdate.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeUpdate");
         });
-        context.cms.onAfterModelUpdate.subscribe(async () => {
+        context.cms.onModelAfterUpdate.subscribe(async () => {
             pubSubTracker.track("contentModel:afterUpdate");
         });
-        context.cms.onBeforeModelDelete.subscribe(async () => {
+        context.cms.onModelBeforeDelete.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeDelete");
         });
-        context.cms.onAfterModelDelete.subscribe(async () => {
+        context.cms.onModelAfterDelete.subscribe(async () => {
             pubSubTracker.track("contentModel:afterDelete");
         });
     });
@@ -63,64 +63,52 @@ export const assignEntryEvents = () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.onBeforeEntryCreate.subscribe(async () => {
+        context.cms.onEntryBeforeCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeCreate");
         });
-        context.cms.onAfterEntryCreate.subscribe(async () => {
+        context.cms.onEntryAfterCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreate");
         });
-        context.cms.onBeforeEntryCreateRevision.subscribe(async () => {
+        context.cms.onEntryRevisionBeforeCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
         });
-        context.cms.onAfterEntryCreateRevision.subscribe(async () => {
+        context.cms.onEntryRevisionAfterCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
         });
-        context.cms.onBeforeEntryUpdate.subscribe(async () => {
+        context.cms.onEntryBeforeUpdate.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeUpdate");
         });
-        context.cms.onAfterEntryUpdate.subscribe(async () => {
+        context.cms.onEntryAfterUpdate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterUpdate");
         });
-        context.cms.onBeforeEntryDelete.subscribe(async () => {
+        context.cms.onEntryBeforeDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeDelete");
         });
-        context.cms.onAfterEntryDelete.subscribe(async () => {
+        context.cms.onEntryAfterDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDelete");
         });
-        context.cms.onBeforeEntryDeleteRevision.subscribe(async () => {
+        context.cms.onEntryRevisionBeforeDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeDeleteRevision");
         });
-        context.cms.onAfterEntryDeleteRevision.subscribe(async () => {
+        context.cms.onEntryRevisionAfterDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDeleteRevision");
         });
-        context.cms.onBeforeEntryPublish.subscribe(async () => {
+        context.cms.onEntryBeforePublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforePublish");
         });
-        context.cms.onAfterEntryPublish.subscribe(async () => {
+        context.cms.onEntryAfterPublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterPublish");
         });
-        context.cms.onBeforeEntryUnpublish.subscribe(async () => {
+        context.cms.onEntryBeforeUnpublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeUnpublish");
         });
-        context.cms.onAfterEntryUnpublish.subscribe(async () => {
+        context.cms.onEntryAfterUnpublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterUnpublish");
         });
-        context.cms.onBeforeEntryRequestReview.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeRequestReview");
-        });
-        context.cms.onAfterEntryRequestReview.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterRequestReview");
-        });
-        context.cms.onBeforeEntryRequestChanges.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeRequestChanges");
-        });
-        context.cms.onAfterEntryRequestChanges.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterRequestChanges");
-        });
-        context.cms.onBeforeEntryGet.subscribe(async () => {
+        context.cms.onEntryBeforeGet.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeGet");
         });
-        context.cms.onBeforeEntryList.subscribe(async () => {
+        context.cms.onEntryBeforeList.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeList");
         });
     });

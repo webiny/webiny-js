@@ -1,12 +1,14 @@
-import { CmsEditorFieldValidatorPatternPlugin } from "~/types";
+import { CmsModelFieldRegexValidatorExpressionPlugin } from "~/types";
 
-const plugin: CmsEditorFieldValidatorPatternPlugin = {
-    type: "cms-editor-field-validator-pattern",
-    name: "cms-editor-field-validator-pattern-lower-case",
+const plugin: CmsModelFieldRegexValidatorExpressionPlugin = {
+    type: "cms-model-field-regex-validator-expression",
+    name: "cms-model-field-regex-validator-expression-case",
     pattern: {
         message: "Only lower case characters are allowed.",
         name: "lowerCase",
-        label: "Lower case"
+        label: "Lower case",
+        regex: `^([a-z]*)$`,
+        flags: ""
     }
 };
 

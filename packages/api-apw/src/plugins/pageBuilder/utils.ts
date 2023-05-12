@@ -80,8 +80,8 @@ export const assignWorkflowToPage = async ({ listWorkflow, page }: AssignWorkflo
                 break;
             }
         }
-    } catch (e) {
-        throw new WebinyError(`Failed to assign workflow to page "${page.pid}".`, e.code, e.data);
+    } catch (ex) {
+        throw new WebinyError(`Failed to assign workflow to page "${page.pid}".`, ex.code, ex.data);
     }
 };
 
@@ -105,8 +105,8 @@ export const shouldUpdatePages = (
     if (prevScope.type !== WorkflowScopeTypes.CUSTOM) {
         return true;
     }
-    const prevScopePages: string[] = get(prevScope, "data.pages");
-    const currentScopePages: string[] = get(scope, "data.pages");
+    const prevScopePages: string[] = get(prevScope, "data.pages") as unknown as string[];
+    const currentScopePages: string[] = get(scope, "data.pages") as unknown as string[];
     /**
      * Bail out early if there were no pages assigned previously.
      */

@@ -62,7 +62,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     }, [filter]);
 
     const where = {
-        status: status === "all" ? undefined : status,
+        reviewStatus: status === "all" ? undefined : status,
         title_contains: title ? title : undefined
     };
 

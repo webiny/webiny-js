@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../app-page-builder-elements/tsconfig.build.json" },
+    { "path": "../lexical-editor/tsconfig.build.json" },
+    { "path": "../react-composition/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  }
+}

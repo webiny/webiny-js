@@ -1,18 +1,18 @@
 import React, { memo } from "react";
-import { Plugins } from "@webiny/app-admin-core";
+import { Plugins } from "@webiny/app";
 import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
 import { ReactComponent as SlackIcon } from "~/assets/icons/slack-logo.svg";
 import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
-import { ReactComponent as FileIcon } from "~/assets/icons/insert_drive_file-24px.svg";
-import { ReactComponent as SettingsIcon } from "~/assets/icons/round-settings-24px.svg";
-import { FileManager } from "~/components";
-
-import adminPlugins from "../plugins";
+import { ReactComponent as FileIcon } from "@material-design-icons/svg/filled/insert_drive_file.svg";
+import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
+import { FileManager } from "~/base/ui/FileManager";
+import { globalSearchHotkey } from "~/plugins/globalSearch";
+import { uiLayoutPlugin } from "~/plugins/uiLayoutRenderer";
 
 const BaseExtension: React.FC = () => {
-    plugins.register(adminPlugins());
+    plugins.register([globalSearchHotkey, uiLayoutPlugin]);
 
     return (
         <Plugins>

@@ -7,10 +7,13 @@ import {
 import WebinyError from "@webiny/error";
 
 export const createReviewerStorageOperations = ({
-    cms
-}: Pick<CreateApwStorageOperationsParams, "cms">): ApwReviewerStorageOperations => {
+    cms,
+    security
+}: CreateApwStorageOperationsParams): ApwReviewerStorageOperations => {
     const getReviewerModel = async () => {
-        const model = await cms.getModel("apwReviewerModelDefinition");
+        const model = await security.withoutAuthorization(async () => {
+            return cms.getModel("apwReviewerModelDefinition");
+        });
         if (!model) {
             throw new WebinyError(
                 "Could not find `apwReviewerModelDefinition` model.",
@@ -21,7 +24,10 @@ export const createReviewerStorageOperations = ({
     };
     const getReviewer: ApwReviewerStorageOperations["getReviewer"] = async ({ id }) => {
         const model = await getReviewerModel();
-        const entry = await cms.getEntryById(model, id);
+
+        const entry = await security.withoutAuthorization(async () => {
+            return cms.getEntryById(model, id);
+        });
         return getFieldValues(entry, baseFields);
     };
     return {
@@ -29,17 +35,22 @@ export const createReviewerStorageOperations = ({
         getReviewer,
         async listReviewers(params) {
             const model = await getReviewerModel();
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...params.where
-                }
+
+            const [entries, meta] = await security.withoutAuthorization(async () => {
+                return cms.listLatestEntries(model, {
+                    ...params,
+                    where: {
+                        ...params.where
+                    }
+                });
             });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createReviewer(params) {
             const model = await getReviewerModel();
-            const entry = await cms.createEntry(model, params.data);
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.createEntry(model, params.data);
+            });
             return getFieldValues(entry, baseFields);
         },
         async updateReviewer(params) {
@@ -50,15 +61,20 @@ export const createReviewerStorageOperations = ({
              */
             const existingEntry = await getReviewer({ id: params.id });
 
-            const entry = await cms.updateEntry(model, params.id, {
-                ...existingEntry,
-                ...params.data
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.updateEntry(model, params.id, {
+                    ...existingEntry,
+                    ...params.data
+                });
             });
             return getFieldValues(entry, baseFields);
         },
         async deleteReviewer(params) {
             const model = await getReviewerModel();
-            await cms.deleteEntry(model, params.id);
+
+            await security.withoutAuthorization(async () => {
+                return cms.deleteEntry(model, params.id);
+            });
             return true;
         }
     };

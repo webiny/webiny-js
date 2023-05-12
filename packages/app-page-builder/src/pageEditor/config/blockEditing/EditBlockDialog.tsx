@@ -55,7 +55,7 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
         "pb-editor-block-category"
     );
     const blockCategoriesOptions = blockCategoryPlugins.map(item => ({
-        value: item.name,
+        value: item.categoryName,
         label: item.title
     }));
 
@@ -64,7 +64,7 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
             {loading && <CircularProgress label={"Saving block..."} />}
             {plugin && (
                 <Form onSubmit={onSubmit} data={plugin}>
-                    {({ data, submit, Bind }) => (
+                    {({ submit, Bind }) => (
                         <React.Fragment>
                             <DialogTitle>Update {plugin.title}</DialogTitle>
                             <DialogContent>
@@ -78,24 +78,20 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
                                         </Bind>
                                     </Cell>
                                 </Grid>
-                                {data.type === "block" && (
-                                    <>
-                                        <Grid>
-                                            <Cell span={12}>
-                                                <Bind
-                                                    name="category"
-                                                    validators={validation.create("required")}
-                                                >
-                                                    <Select
-                                                        label="Category"
-                                                        description="Select a block category"
-                                                        options={blockCategoriesOptions}
-                                                    />
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </>
-                                )}
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name="blockCategory"
+                                            validators={validation.create("required")}
+                                        >
+                                            <Select
+                                                label="Category"
+                                                description="Select a block category"
+                                                options={blockCategoriesOptions}
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
                                 <Grid>
                                     <Cell span={12}>
                                         <PreviewBox>{plugin.preview()}</PreviewBox>

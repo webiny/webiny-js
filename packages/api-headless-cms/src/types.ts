@@ -1,20 +1,19 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/handler/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
+import { Context } from "@webiny/api/types";
 import {
     GraphQLFieldResolver,
     GraphQLSchemaDefinition,
     Resolvers
 } from "@webiny/handler-graphql/types";
 import { SecurityPermission } from "@webiny/api-security/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
+import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
+
 export interface HeadlessCms
     extends CmsSettingsContext,
         CmsSystemContext,
@@ -50,6 +49,7 @@ export interface HeadlessCms
      */
     storageOperations: HeadlessCmsStorageOperations;
 }
+
 /**
  * @description This combines all contexts used in the CMS into a single one.
  *
@@ -58,10 +58,9 @@ export interface HeadlessCms
 export interface CmsContext
     extends Context,
         DbContext,
-        HttpContext,
+        // HttpContext,
         I18NContext,
-        FileManagerContext,
-        TenancyContext {
+        FileManagerContext {
     cms: HeadlessCms;
 }
 
@@ -104,6 +103,56 @@ interface CmsModelFieldRenderer {
 }
 
 /**
+ * A definition for content model field settings.
+ *
+ * @category ModelField
+ * @category Database model
+ */
+export interface CmsModelFieldSettings {
+    /**
+     * Predefined values (text, number)
+     * The default value for the field in case it is not predefined values field.
+     */
+    defaultValue?: string | number | null | undefined;
+    /**
+     * Object field has child fields.
+     */
+    fields?: CmsModelField[];
+    /**
+     * Is the file field images only one?
+     */
+    imagesOnly?: boolean;
+    /**
+     * Object field has child fields - so it needs to have a layout.
+     */
+    layout?: string[][];
+    /**
+     * Ref field.
+     */
+    models?: Pick<CmsModel, "modelId">[];
+    /**
+     * Date field.
+     */
+    type?: string;
+    /**
+     * There are a lot of other settings that are possible to add, so we keep the type opened.
+     */
+    [key: string]: any;
+}
+
+export type CmsModelFieldType =
+    | "boolean"
+    | "datetime"
+    | "file"
+    | "long-text"
+    | "number"
+    | "object"
+    | "ref"
+    | "rich-text"
+    | "text"
+    | "dynamicZone"
+    | string;
+/**
  * A definition for content model field. This type exists on the app side as well.
  *
  * @category ModelField
@@ -120,15 +169,26 @@ export interface CmsModelField {
      */
     id: string;
     /**
-     * A type of the field
+     * A type of the field.
+     * We are defining our built-in fields, so people know which are available by the default.
      */
-    type: string;
+    type: CmsModelFieldType;
     /**
-     * A unique field ID for mapping values.
+     * A unique storage ID for storing actual values.
+     * Must in form of a-zA-Z0-9@a-zA-Z0-9
+     *
+     * This is an auto-generated value: uses `id` and `type`
+     *
+     * This is used as path for the entry value.
+     */
+    storageId: `${string}@${string}` | string;
+    /**
+     * Field identifier for the model field that will be available to the outside world.
+     * `storageId` is used as path (or column) to store the data.
+     *
      * Must in form of a-zA-Z0-9.
      *
-     * We generate a unique fieldId value when you're building a model via UI,
-     * but when user is creating a model via a plugin it is up to them to be careful about this.
+     * This value MUST be unique in the CmsModel.
      */
     fieldId: string;
     /**
@@ -171,33 +231,49 @@ export interface CmsModelField {
      */
     multipleValues?: boolean;
     /**
+     * Fields can be tagged to give them contextual meaning.
+     */
+    tags?: string[];
+    /**
      * Any user defined settings.
      *
      * @default {}
      */
-    settings?: {
-        /**
-         * Predefined values (text, number)
-         * The default value for the field in case it is not predefined values field.
-         */
-        defaultValue?: string | number | null | undefined;
-        /**
-         * Object field.
-         */
-        fields?: CmsModelField[];
-        /**
-         * Ref field.
-         */
-        models?: Pick<CmsModel, "modelId">[];
-        /**
-         * Date field.
-         */
-        type?: string;
-        /**
-         * There are a lot of other settings that are possible to add so we keep the type opened.
-         */
-        [key: string]: any;
+    settings?: CmsModelFieldSettings;
+}
+
+export interface CmsDynamicZoneTemplate {
+    id: string;
+    name: string;
+    gqlTypeName: string;
+    description: string;
+    icon: string;
+    fields: CmsModelField[];
+    layout: string[][];
+    validation: CmsModelFieldValidation[];
+}
+
+/**
+ * A definition for dynamic-zone field to show possible type of the field in settings.
+ */
+export interface CmsModelDynamicZoneField extends CmsModelField {
+    /**
+     * Settings object for the field. Contains `templates` property.
+     */
+    settings: {
+        templates: CmsDynamicZoneTemplate[];
     };
+}
+
+/**
+ * Used for our internal functionality.
+ */
+export interface CmsModelFieldWithParent extends CmsModelField {
+    parent?: CmsModelFieldWithParent | null;
+}
+
+export interface CmsModelDynamicZoneFieldWithParent extends CmsModelDynamicZoneField {
+    parent?: CmsModelDynamicZoneFieldWithParent | null;
 }
 
 /**
@@ -205,7 +281,7 @@ export interface CmsModelField {
  */
 export interface CmsModelDateTimeField extends CmsModelField {
     /**
-     * Settings object for the field. Contains type property.
+     * Settings object for the field. Contains `type` property.
      */
     settings: {
         type: "time" | "date" | "dateTimeWithoutTimezone" | "dateTimeWithTimezone";
@@ -316,7 +392,8 @@ export interface CmsModelFieldPatternValidatorPlugin extends Plugin {
  */
 export interface LockedField {
     /**
-     * Locked field ID - one used for mapping values.
+     * Locked field storage ID - one used to store values.
+     * We cannot change this due to old systems.
      */
     fieldId: string;
     /**
@@ -331,7 +408,22 @@ export interface LockedField {
 }
 
 /**
- * Cms Model defining an entry.
+ * @category Database model
+ * @category CmsModel
+ */
+export interface CmsModelGroup {
+    /**
+     * Generated ID of the group
+     */
+    id: string;
+    /**
+     * Name of the group
+     */
+    name: string;
+}
+
+/**
+ * Base CMS Model. Should not be exported and used outside of this package.
  *
  * @category Database model
  * @category CmsModel
@@ -346,6 +438,24 @@ export interface CmsModel {
      */
     modelId: string;
     /**
+     * Name of the content model in singular form to be used in the API.
+     * example:
+     * - Article
+     * - Fruit
+     * - Vegetable
+     * - Car
+     */
+    singularApiName: string;
+    /**
+     * Name of the content model in plural form to be used in the API.
+     * example:
+     * - Articles
+     * - Fruits
+     * - Vegetables
+     * - Cars
+     */
+    pluralApiName: string;
+    /**
      * Model tenant.
      */
     tenant: string;
@@ -356,20 +466,15 @@ export interface CmsModel {
     /**
      * Cms Group reference object.
      */
-    group: {
-        /**
-         * Generated ID of the group
-         */
-        id: string;
-        /**
-         * Name of the group
-         */
-        name: string;
-    };
+    group: CmsModelGroup;
+    /**
+     * Icon for the content model.
+     */
+    icon?: string | null;
     /**
      * Description for the content model.
      */
-    description: string;
+    description: string | null;
     /**
      * Date created
      */
@@ -381,7 +486,7 @@ export interface CmsModel {
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */
-    createdBy?: CreatedBy;
+    createdBy?: CmsIdentity;
     /**
      * List of fields defining entry values.
      */
@@ -398,6 +503,10 @@ export interface CmsModel {
      */
     layout: string[][];
     /**
+     * Models can be tagged to give them contextual meaning.
+     */
+    tags?: string[];
+    /**
      * List of locked fields. Updated when entry is saved and a field has been used.
      */
     lockedFields?: LockedField[];
@@ -407,15 +516,36 @@ export interface CmsModel {
      */
     titleFieldId: string;
     /**
+     * The field which is displayed as the description one.
+     * Only way this is null or undefined is that there are no long-text fields to be set as description.
+     */
+    descriptionFieldId?: string | null;
+    /**
+     * The field which is displayed as the image.
+     * Only way this is null or undefined is that there are no file fields, with images only set, to be set as image.
+     */
+    imageFieldId?: string | null;
+    /**
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
+
     /**
      * Is model private?
      * This is meant to be used for some internal models - will not be visible in the schema.
      * Only available for the plugin constructed models.
      */
     isPrivate?: boolean;
+}
+
+/**
+ * When sending model to the storage operations, it must contain createValueKeyToStorageConverter and createValueKeyFromStorageConverter
+ *
+ * @category CmsModel
+ */
+export interface StorageOperationsCmsModel extends CmsModel {
+    convertValueKeyToStorage: CmsModelConverterCallable;
+    convertValueKeyFromStorage: CmsModelConverterCallable;
 }
 
 /**
@@ -426,18 +556,45 @@ export interface CmsModelFieldDefinition {
     typeDefs?: string;
 }
 
-interface CmsModelFieldToGraphQLCreateResolverParams {
+interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     models: CmsModel[];
     model: CmsModel;
     graphQLType: string;
-    field: CmsModelField;
+    field: TField;
     createFieldResolvers: any;
+    fieldTypePlugins: CmsFieldTypePlugins;
 }
-export interface CmsModelFieldToGraphQLCreateResolver {
-    (params: CmsModelFieldToGraphQLCreateResolverParams):
+
+export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
+    (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
         | { resolver: GraphQLFieldResolver | null; typeResolvers: Resolvers<CmsContext> }
         | false;
+}
+
+export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams<
+    TField extends CmsModelField = CmsModelField
+> {
+    fields: TField[];
+    originalFields: TField[];
+}
+
+export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidate {
+    (params: CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams): void;
+}
+
+export interface CmsModelFieldToGraphQLPluginValidateChildFieldsParams<
+    TField extends CmsModelField = CmsModelField
+> {
+    field: TField;
+    originalField?: TField;
+    validate: CmsModelFieldToGraphQLPluginValidateChildFieldsValidate;
+}
+
+export interface CmsModelFieldToGraphQLPluginValidateChildFields<
+    TField extends CmsModelField = CmsModelField
+> {
+    (params: CmsModelFieldToGraphQLPluginValidateChildFieldsParams<TField>): void;
 }
 
 /**
@@ -445,7 +602,8 @@ export interface CmsModelFieldToGraphQLCreateResolver {
  * @category ModelField
  * @category GraphQL
  */
-export interface CmsModelFieldToGraphQLPlugin extends Plugin {
+export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = CmsModelField>
+    extends Plugin {
     /**
      * A plugin type
      */
@@ -498,7 +656,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createGetFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createGetFilters?(params: { field: TField }): string;
         /**
          * Definition for list filtering for GraphQL.
          *
@@ -515,7 +673,11 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createListFilters?(params: {
+            model: Pick<CmsModel, "singularApiName">;
+            field: TField;
+            plugins: CmsFieldTypePlugins;
+        }): string;
         /**
          * Definition of the field type for GraphQL - be aware if multiple values is selected.
          *
@@ -532,25 +694,26 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * ```
          */
         createTypeField(params: {
+            models: CmsModel[];
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default, it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * read: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
          * ```
          */
-        createResolver?: CmsModelFieldToGraphQLCreateResolver;
+        createResolver?: CmsModelFieldToGraphQLCreateResolver<TField>;
         /**
          * Read API schema definitions for the field and resolvers for them.
          *
@@ -589,7 +752,11 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createListFilters?: (params: { model: CmsModel; field: CmsModelField }) => string;
+        createListFilters?: (params: {
+            model: Pick<CmsModel, "singularApiName">;
+            field: TField;
+            plugins: CmsFieldTypePlugins;
+        }) => string;
         /**
          * Manage API schema definitions for the field and resolvers for them. Probably similar to `read.createSchema`.
          *
@@ -624,8 +791,9 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * ```
          */
         createTypeField: (params: {
+            models: CmsModel[];
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }) => CmsModelFieldDefinition | string | null;
         /**
@@ -644,26 +812,32 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * ```
          */
         createInputField: (params: {
+            models: CmsModel[];
             model: CmsModel;
-            field: CmsModelField;
+            field: TField;
             fieldTypePlugins: CmsFieldTypePlugins;
         }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
-         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
+         * By default, it is simple return of the `instance.values[storageId]` but if required, users can define their own.
          *
          * ```ts
          * manage: {
          *     createResolver({ field }) {
          *         return instance => {
-         *             return instance.values[field.fieldId];
+         *             return instance.values[field.storageId];
          *         };
          *     }
          * }
          * ```
          */
-        createResolver?: CmsModelFieldToGraphQLCreateResolver;
+        createResolver?: CmsModelFieldToGraphQLCreateResolver<TField>;
     };
+    /**
+     *
+     * @param field
+     */
+    validateChildFields?: CmsModelFieldToGraphQLPluginValidateChildFields<TField>;
 }
 
 /**
@@ -700,11 +874,11 @@ export interface CmsFieldTypePlugins {
 }
 
 /**
- * A interface describing the reference to a user that created some data in the database.
+ * An interface describing the reference to a user that created some data in the database.
  *
  * @category General
  */
-export interface CreatedBy {
+export interface CmsIdentity {
     /**
      * ID if the user.
      */
@@ -756,15 +930,21 @@ export interface CmsSettingsContext {
     /**
      * Get the datetime when content model last changed.
      */
-    getModelLastChange: () => Promise<Date>;
+    getModelLastChange: () => Promise<Date | null>;
 }
 
-export interface BeforeInstallTopicParams {
+export interface OnSystemBeforeInstallTopicParams {
     tenant: string;
     locale: string;
 }
 
-export interface AfterInstallTopicParams {
+export interface OnSystemAfterInstallTopicParams {
+    tenant: string;
+    locale: string;
+}
+
+export interface OnSystemInstallErrorTopicParams {
+    error: Error;
     tenant: string;
     locale: string;
 }
@@ -772,18 +952,28 @@ export interface AfterInstallTopicParams {
 export type CmsSystemContext = {
     getSystemVersion: () => Promise<string | null>;
     setSystemVersion: (version: string) => Promise<void>;
-    getReadAPIKey(): Promise<string | null>;
     installSystem: () => Promise<void>;
-    upgradeSystem: (version: string) => Promise<boolean>;
     /**
-     * Events
+     * Lifecycle events - deprecated
      */
-    onBeforeSystemInstall: Topic<BeforeInstallTopicParams>;
-    onAfterSystemInstall: Topic<AfterInstallTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeSystemInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterSystemInstall: Topic<OnSystemAfterInstallTopicParams>;
+    /**
+     * Released in 5.34.0
+     */
+    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
+    onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
+    onSystemInstallError: Topic<OnSystemInstallErrorTopicParams>;
 };
 
 /**
- * A GraphQL params.data parameter received when creating content model group.
+ * A GraphQL `params.data` parameter received when creating content model group.
  *
  * @category CmsGroup
  * @category GraphQL params
@@ -796,7 +986,7 @@ export interface CmsGroupCreateInput {
 }
 
 /**
- * A GraphQL params.data parameter received when updating content model group.
+ * A GraphQL `params.data` parameter received when updating content model group.
  *
  * @category CmsGroup
  * @category GraphQL params
@@ -846,7 +1036,7 @@ export interface CmsGroup {
     /**
      * CreatedBy reference object.
      */
-    createdBy?: CreatedBy;
+    createdBy?: CmsIdentity;
     /**
      * Date group was created on.
      */
@@ -868,7 +1058,7 @@ export interface CmsGroup {
 }
 
 /**
- * A data.where parameter received when listing content model groups.
+ * A `data.where` parameter received when listing content model groups.
  *
  * @category CmsGroup
  * @category GraphQL params
@@ -885,7 +1075,7 @@ export interface CmsGroupListParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface BeforeGroupCreateTopicParams {
+export interface OnGroupBeforeCreateTopicParams {
     group: CmsGroup;
 }
 
@@ -893,7 +1083,7 @@ export interface BeforeGroupCreateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface AfterGroupCreateTopicParams {
+export interface OnGroupAfterCreateTopicParams {
     group: CmsGroup;
 }
 
@@ -901,7 +1091,17 @@ export interface AfterGroupCreateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface BeforeGroupUpdateTopicParams {
+export interface OnGroupCreateErrorTopicParams {
+    input: CmsGroupCreateInput;
+    group: CmsGroup;
+    error: Error;
+}
+
+/**
+ * @category CmsGroup
+ * @category Topic
+ */
+export interface OnGroupBeforeUpdateTopicParams {
     original: CmsGroup;
     group: CmsGroup;
 }
@@ -910,7 +1110,7 @@ export interface BeforeGroupUpdateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface AfterGroupUpdateTopicParams {
+export interface OnGroupAfterUpdateTopicParams {
     original: CmsGroup;
     group: CmsGroup;
 }
@@ -919,7 +1119,18 @@ export interface AfterGroupUpdateTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface BeforeGroupDeleteTopicParams {
+export interface OnGroupUpdateErrorTopicParams {
+    input: CmsGroupUpdateInput;
+    original: CmsGroup;
+    group: CmsGroup;
+    error: Error;
+}
+
+/**
+ * @category CmsGroup
+ * @category Topic
+ */
+export interface OnGroupBeforeDeleteTopicParams {
     group: CmsGroup;
 }
 
@@ -927,8 +1138,17 @@ export interface BeforeGroupDeleteTopicParams {
  * @category CmsGroup
  * @category Topic
  */
-export interface AfterGroupDeleteTopicParams {
+export interface OnGroupAfterDeleteTopicParams {
     group: CmsGroup;
+}
+
+/**
+ * @category CmsGroup
+ * @category Topic
+ */
+export interface OnGroupDeleteErrorTopicParams {
+    group: CmsGroup;
+    error: Error;
 }
 
 /**
@@ -963,14 +1183,44 @@ export interface CmsGroupContext {
      */
     clearGroupsCache: () => void;
     /**
-     * Events.
+     * Lifecycle events - deprecated
      */
-    onBeforeGroupCreate: Topic<BeforeGroupCreateTopicParams>;
-    onAfterGroupCreate: Topic<AfterGroupCreateTopicParams>;
-    onBeforeGroupUpdate: Topic<BeforeGroupUpdateTopicParams>;
-    onAfterGroupUpdate: Topic<AfterGroupUpdateTopicParams>;
-    onBeforeGroupDelete: Topic<BeforeGroupDeleteTopicParams>;
-    onAfterGroupDelete: Topic<AfterGroupDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeGroupCreate: Topic<OnGroupBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterGroupCreate: Topic<OnGroupAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeGroupUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterGroupUpdate: Topic<OnGroupAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeGroupDelete: Topic<OnGroupBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterGroupDelete: Topic<OnGroupAfterDeleteTopicParams>;
+    /**
+     * Lifecycle events released in 5.33.0
+     */
+    onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
+    onGroupAfterCreate: Topic<OnGroupAfterCreateTopicParams>;
+    onGroupCreateError: Topic<OnGroupCreateErrorTopicParams>;
+    onGroupBeforeUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
+    onGroupAfterUpdate: Topic<OnGroupAfterUpdateTopicParams>;
+    onGroupUpdateError: Topic<OnGroupUpdateErrorTopicParams>;
+    onGroupBeforeDelete: Topic<OnGroupBeforeDeleteTopicParams>;
+    onGroupAfterDelete: Topic<OnGroupAfterDeleteTopicParams>;
+    onGroupDeleteError: Topic<OnGroupDeleteErrorTopicParams>;
 }
 
 /**
@@ -991,7 +1241,7 @@ export interface CmsModelFieldValidation {
 }
 
 /**
- * A GraphQL params.data parameter received when creating content model.
+ * A GraphQL `params.data` parameter received when creating content model.
  *
  * @category GraphQL params
  * @category CmsModel
@@ -1002,13 +1252,21 @@ export interface CmsModelCreateInput {
      */
     name: string;
     /**
+     * Singular name of the content model to be used in the API.
+     */
+    singularApiName: string;
+    /**
+     * Plural name of the content model to be used in the API.
+     */
+    pluralApiName: string;
+    /**
      * Unique ID of the content model. Created from name if not sent by the user. Cannot be changed.
      */
     modelId?: string;
     /**
      * Description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Group where to put the content model in.
      */
@@ -1029,14 +1287,19 @@ export interface CmsModelCreateInput {
      */
     layout?: string[][];
     /**
-     * The field that is being displayed as entry title.
-     * It is picked as first available text field. Or user can select own field.
+     * Models can be tagged to give them contextual meaning.
      */
-    titleFieldId?: string;
+    tags?: string[];
+    /**
+     * Fields fieldId which are picked to represent the CMS entry.
+     */
+    titleFieldId?: string | null;
+    descriptionFieldId?: string | null;
+    imageFieldId?: string | null;
 }
 
 /**
- * A GraphQL params.data parameter received when creating content model from existing model.
+ * A GraphQL `params.data` parameter received when creating content model from existing model.
  *
  * @category GraphQL params
  * @category CmsModel
@@ -1068,8 +1331,7 @@ export interface CmsModelFieldInput {
      */
     type: string;
     /**
-     * A unique ID for the field. Values will be mapped via this value.
-     * This field MUST be in range of "a-zA-Z".
+     * Field outside world identifier for the field. Must be unique in the model.
      */
     fieldId: string;
     /**
@@ -1079,11 +1341,15 @@ export interface CmsModelFieldInput {
     /**
      * Text to display below the field to help user what to write in the field.
      */
-    helpText?: string;
+    helpText?: string | null;
     /**
      * Text to display in the field.
      */
-    placeholderText?: string;
+    placeholderText?: string | null;
+    /**
+     * Fields can be tagged to give them contextual meaning.
+     */
+    tags?: string[];
     /**
      * Are multiple values allowed?
      */
@@ -1103,7 +1369,7 @@ export interface CmsModelFieldInput {
     /**
      * @see CmsModelField.listValidation
      */
-    listValidation: CmsModelFieldValidation[];
+    listValidation?: CmsModelFieldValidation[];
     /**
      * User defined settings.
      */
@@ -1111,7 +1377,7 @@ export interface CmsModelFieldInput {
 }
 
 /**
- * A GraphQL params.data parameter received when updating content model.
+ * A GraphQL `params.data` parameter received when updating content model.
  *
  * @category GraphQL params
  * @category CmsModel
@@ -1122,13 +1388,21 @@ export interface CmsModelUpdateInput {
      */
     name?: string;
     /**
+     * A new singular name of the content model to be used in the API.
+     */
+    singularApiName?: string;
+    /**
+     * A new plural name of the content model to be used in the API.
+     */
+    pluralApiName?: string;
+    /**
      * A group we want to move the model to.
      */
     group?: string;
     /**
      * A new description of the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * A list of content model fields to define the entry values.
      */
@@ -1145,10 +1419,11 @@ export interface CmsModelUpdateInput {
      */
     layout: string[][];
     /**
-     * The field that is being displayed as entry title.
-     * It is picked as first available text field. Or user can select own field.
+     * Fields fieldId which are picked to represent the CMS entry.
      */
-    titleFieldId?: string;
+    titleFieldId?: string | null;
+    descriptionFieldId?: string | null;
+    imageFieldId?: string | null;
 }
 
 /**
@@ -1178,15 +1453,25 @@ export interface ModelManagerPlugin extends Plugin {
 }
 
 /**
+ * A content entry values definition for and from the database.
+ *
+ * @category Database model
+ * @category CmsEntry
+ */
+export interface CmsEntryValues {
+    [key: string]: any;
+}
+
+/**
  * A content entry definition for and from the database.
  *
  * @category Database model
  * @category CmsEntry
  */
-export interface CmsEntry {
+export interface CmsEntry<T = CmsEntryValues> {
     /**
      * A version of the webiny this entry was created with.
-     * This can be used when upgrading the system so we know which entries to update.
+     * This can be used when upgrading the system, so we know which entries to update.
      */
     webinyVersion: string;
     /**
@@ -1205,11 +1490,15 @@ export interface CmsEntry {
     /**
      * CreatedBy object reference.
      */
-    createdBy: CreatedBy;
+    createdBy: CmsIdentity;
     /**
      * OwnedBy object reference. Can be different from CreatedBy.
      */
-    ownedBy: CreatedBy;
+    ownedBy: CmsIdentity;
+    /**
+     * ModifiedBy object reference. Last person who modified the entry.
+     */
+    modifiedBy?: CmsIdentity | null;
     /**
      * A string of Date.toISOString() type.
      * Populated on creation.
@@ -1248,20 +1537,18 @@ export interface CmsEntry {
      */
     status: CmsEntryStatus;
     /**
-     * A mapped fieldId -> value object.
+     * A mapped storageId -> value object.
      *
      * @see CmsModelField
      */
-    values: {
-        [key: string]: any;
-    };
+    values: T;
     /**
      * Settings for the given entry.
      *
-     * Introduced with Advanced Publishing Workflow - will be always inserted after this PR is merged.
-     * Be aware that when accessing properties in it on old systems - it will break if not checked first.
+     * Introduced with Advanced Publishing Workflow. Will always be inserted once this PR is merged.
+     * Be aware that when accessing properties in it on old systems, it will break if not checked first.
      *
-     * Available only on the Manage API in entry GraphQL type meta.data property.
+     * Available only on the Manage API in entry GraphQL type `meta.data` property.
      */
     meta?: {
         [key: string]: any;
@@ -1296,7 +1583,7 @@ export interface CmsModelManager {
      */
     getPublishedByIds: (ids: string[]) => Promise<CmsEntry[]>;
     /**
-     * Get a list of latest entries by the ID list.
+     * Get a list of the latest entries by the ID list.
      */
     getLatestByIds: (ids: string[]) => Promise<CmsEntry[]>;
     /**
@@ -1304,54 +1591,109 @@ export interface CmsModelManager {
      */
     get: (id: string) => Promise<CmsEntry>;
     /**
-     * Create a entry.
+     * Create an entry.
      */
     create: (data: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
-     * Update a entry.
+     * Update an entry.
      */
     update: (id: string, data: UpdateCmsEntryInput) => Promise<CmsEntry>;
     /**
-     * Delete a entry.
+     * Delete an entry.
      */
     delete: (id: string) => Promise<void>;
 }
 
-export interface BeforeModelCreateTopicParams {
+/**
+ * Create
+ */
+export interface OnModelBeforeCreateTopicParams {
     input: CmsModelCreateInput;
-    model: CmsModel;
-}
-export interface AfterModelCreateTopicParams {
-    input: CmsModelCreateInput;
-    model: CmsModel;
-}
-export interface BeforeModelCreateFromTopicParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-export interface AfterModelCreateFromTopicParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-export interface BeforeModelUpdateTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-export interface AfterModelUpdateTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-export interface BeforeModelDeleteTopicParams {
-    model: CmsModel;
-}
-export interface AfterModelDeleteTopicParams {
     model: CmsModel;
 }
 
+export interface OnModelAfterCreateTopicParams {
+    input: CmsModelCreateInput;
+    model: CmsModel;
+}
+
+export interface OnModelCreateErrorTopicParams {
+    input: CmsModelCreateInput;
+    model: CmsModel;
+    error: Error;
+}
+
+/**
+ * Create From / Clone
+ */
+export interface OnModelBeforeCreateFromTopicParams {
+    input: CmsModelCreateInput;
+    original: CmsModel;
+    model: CmsModel;
+}
+
+export interface OnModelAfterCreateFromTopicParams {
+    input: CmsModelCreateInput;
+    original: CmsModel;
+    model: CmsModel;
+}
+
+export interface OnModelCreateFromErrorParams {
+    input: CmsModelCreateInput;
+    original: CmsModel;
+    model: CmsModel;
+    error: Error;
+}
+
+/**
+ * Update
+ */
+export interface OnModelBeforeUpdateTopicParams {
+    input: CmsModelUpdateInput;
+    original: CmsModel;
+    model: CmsModel;
+}
+
+export interface OnModelAfterUpdateTopicParams {
+    input: CmsModelUpdateInput;
+    original: CmsModel;
+    model: CmsModel;
+}
+
+export interface OnModelUpdateErrorTopicParams {
+    input: CmsModelUpdateInput;
+    original: CmsModel;
+    model: CmsModel;
+    error: Error;
+}
+
+/**
+ * Delete
+ */
+export interface OnModelBeforeDeleteTopicParams {
+    model: CmsModel;
+}
+
+export interface OnModelAfterDeleteTopicParams {
+    model: CmsModel;
+}
+
+export interface OnModelDeleteErrorTopicParams {
+    model: CmsModel;
+    error: Error;
+}
+
+/**
+ * Initialize
+ */
+export interface OnModelInitializeParams {
+    model: CmsModel;
+    data: Record<string, any>;
+}
+
+/**
+ *
+ */
 export interface CmsModelUpdateDirectParams {
     model: CmsModel;
     original: CmsModel;
@@ -1394,7 +1736,14 @@ export interface CmsModelContext {
      */
     deleteModel: (modelId: string) => Promise<void>;
     /**
-     * Get a instance of CmsModelManager for given content modelId.
+     * Possibility for users to trigger the model initialization.
+     * They can hook into it and do what ever they want to.
+     *
+     * Primary idea behind this is creating the index, for the code models, in the ES.
+     */
+    initializeModel: (modelId: string, data: Record<string, any>) => Promise<boolean>;
+    /**
+     * Get an instance of CmsModelManager for given content modelId.
      *
      * @see CmsModelManager
      *
@@ -1414,16 +1763,56 @@ export interface CmsModelContext {
      */
     clearModelsCache: () => void;
     /**
-     * Events.
+     * Lifecycle events - deprecated.
      */
-    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
-    onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
-    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
-    onAfterModelCreateFrom: Topic<AfterModelCreateFromTopicParams>;
-    onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
-    onAfterModelUpdate: Topic<AfterModelUpdateTopicParams>;
-    onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
-    onAfterModelDelete: Topic<AfterModelDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeModelCreate: Topic<OnModelBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterModelCreate: Topic<OnModelAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeModelCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterModelCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeModelUpdate: Topic<OnModelBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterModelUpdate: Topic<OnModelAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeModelDelete: Topic<OnModelBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterModelDelete: Topic<OnModelAfterDeleteTopicParams>;
+    /**
+     * Lifecycle events - released in 5.33.0
+     */
+    onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
+    onModelAfterCreate: Topic<OnModelAfterCreateTopicParams>;
+    onModelCreateError: Topic<OnModelCreateErrorTopicParams>;
+    onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
+    onModelAfterCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
+    onModelCreateFromError: Topic<OnModelCreateFromErrorParams>;
+    onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
+    onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
+    onModelUpdateError: Topic<OnModelUpdateErrorTopicParams>;
+    onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
+    onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
+    onModelDeleteError: Topic<OnModelDeleteErrorTopicParams>;
+    onModelInitialize: Topic<OnModelInitializeParams>;
 }
 
 /**
@@ -1431,12 +1820,7 @@ export interface CmsModelContext {
  *
  * @category CmsEntry
  */
-export type CmsEntryStatus =
-    | "published"
-    | "unpublished"
-    | "reviewRequested"
-    | "changesRequested"
-    | "draft";
+export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
 export interface CmsEntryListWhereRef {
     id?: string;
@@ -1448,6 +1832,7 @@ export interface CmsEntryListWhereRef {
     entryId_in?: string[];
     entryId_not_in?: string[];
 }
+
 /**
  * Entry listing where params.
  *
@@ -1515,7 +1900,22 @@ export interface CmsEntryListWhere {
     /**
      * This is to allow querying by any content model field defined by the user.
      */
-    [key: string]: any | CmsEntryListWhereRef;
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | undefined
+        | string[]
+        | number[]
+        | null
+        | CmsEntryListWhere[]
+        | CmsEntryListWhere
+        | CmsEntryListWhereRef;
+    /**
+     * To allow querying via nested queries, we added the AND / OR properties.
+     */
+    AND?: CmsEntryListWhere[];
+    OR?: CmsEntryListWhere[];
 }
 
 /**
@@ -1573,26 +1973,40 @@ export interface CmsEntryMeta {
     totalCount: number;
 }
 
-export interface BeforeEntryCreateTopicParams {
+/**
+ * Create
+ */
+export interface OnEntryBeforeCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryCreateTopicParams {
+
+export interface OnEntryAfterCreateTopicParams {
     input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryCreateRevisionTopicParams {
+export interface OnEntryCreateErrorTopicParams {
+    error: Error;
+    input: CreateCmsEntryInput;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+/**
+ * Revision Create
+ */
+export interface OnEntryRevisionBeforeCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryCreateRevisionTopicParams {
+export interface OnEntryRevisionAfterCreateTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     original: CmsEntry;
@@ -1600,13 +2014,25 @@ export interface AfterEntryCreateRevisionTopicParams {
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryUpdateTopicParams {
+export interface OnEntryCreateRevisionErrorTopicParams {
+    error: Error;
+    input: CreateFromCmsEntryInput;
+    original: CmsEntry;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+/**
+ * Update
+ */
+export interface OnEntryBeforeUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryUpdateTopicParams {
+
+export interface OnEntryAfterUpdateTopicParams {
     input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
@@ -1614,74 +2040,113 @@ export interface AfterEntryUpdateTopicParams {
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryPublishTopicParams {
+export interface OnEntryUpdateErrorTopicParams {
+    error: Error;
+    input: CreateFromCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryPublishTopicParams {
+/**
+ * Publish
+ */
+
+export interface OnEntryBeforePublishTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryAfterPublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryUnpublishTopicParams {
+export interface OnEntryPublishErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryUnpublishTopicParams {
+/**
+ * Republish
+ */
+export interface OnEntryBeforeRepublishTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryAfterRepublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryRequestChangesTopicParams {
+export interface OnEntryRepublishErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryRequestChangesTopicParams {
+/**
+ * Unpublish
+ */
+
+export interface OnEntryBeforeUnpublishTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryAfterUnpublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryRequestReviewTopicParams {
+export interface OnEntryUnpublishErrorTopicParams {
+    error: Error;
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryRequestReviewTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface BeforeEntryDeleteTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-export interface AfterEntryDeleteTopicParams {
+export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface BeforeEntryDeleteRevisionTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-export interface AfterEntryDeleteRevisionTopicParams {
+export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface BeforeEntryGetTopicParams {
+export interface OnEntryDeleteErrorTopicParams {
+    error: Error;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryRevisionBeforeDeleteTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryRevisionAfterDeleteTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryRevisionDeleteErrorTopicParams {
+    error: Error;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryBeforeGetTopicParams {
     model: CmsModel;
     where: CmsEntryListWhere;
 }
 
-export interface BeforeEntryListTopicParams {
+export interface EntryBeforeListTopicParams {
     where: CmsEntryListWhere;
     model: CmsModel;
 }
@@ -1691,6 +2156,7 @@ export interface BeforeEntryListTopicParams {
  * @category CmsEntry
  */
 export interface CreateCmsEntryInput {
+    id?: string;
     [key: string]: any;
 }
 
@@ -1709,6 +2175,7 @@ export interface CreateFromCmsEntryInput {
 export interface UpdateCmsEntryInput {
     [key: string]: any;
 }
+
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -1736,7 +2203,7 @@ export interface CmsEntryContext {
         params: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
-     * Lists latest entries. Used for manage API.
+     * Lists the latest entries. Used for manage API.
      */
     listLatestEntries: (
         model: CmsModel,
@@ -1800,40 +2267,113 @@ export interface CmsEntryContext {
      */
     unpublishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
-     * Request a review for the entry.
-     */
-    requestEntryReview: (model: CmsModel, id: string) => Promise<CmsEntry>;
-    /**
-     * Request changes for the entry.
-     */
-    requestEntryChanges: (model: CmsModel, id: string) => Promise<CmsEntry>;
-    /**
      * Get all entry revisions.
      */
     getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
     /**
-     * Events.
+     * Lifecyle events - deprecated.
      */
-    onBeforeEntryCreate: Topic<BeforeEntryCreateTopicParams>;
-    onAfterEntryCreate: Topic<AfterEntryCreateTopicParams>;
-    onBeforeEntryCreateRevision: Topic<BeforeEntryCreateRevisionTopicParams>;
-    onAfterEntryCreateRevision: Topic<AfterEntryCreateRevisionTopicParams>;
-    onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
-    onAfterEntryUpdate: Topic<AfterEntryUpdateTopicParams>;
-    onBeforeEntryDelete: Topic<BeforeEntryDeleteTopicParams>;
-    onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
-    onBeforeEntryDeleteRevision: Topic<BeforeEntryDeleteRevisionTopicParams>;
-    onAfterEntryDeleteRevision: Topic<AfterEntryDeleteRevisionTopicParams>;
-    onBeforeEntryPublish: Topic<BeforeEntryPublishTopicParams>;
-    onAfterEntryPublish: Topic<AfterEntryPublishTopicParams>;
-    onBeforeEntryUnpublish: Topic<BeforeEntryUnpublishTopicParams>;
-    onAfterEntryUnpublish: Topic<AfterEntryUnpublishTopicParams>;
-    onBeforeEntryRequestChanges: Topic<BeforeEntryRequestChangesTopicParams>;
-    onAfterEntryRequestChanges: Topic<AfterEntryRequestChangesTopicParams>;
-    onBeforeEntryRequestReview: Topic<BeforeEntryRequestReviewTopicParams>;
-    onAfterEntryRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
-    onBeforeEntryGet: Topic<BeforeEntryGetTopicParams>;
-    onBeforeEntryList: Topic<BeforeEntryListTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryCreate: Topic<OnEntryBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterEntryCreate: Topic<OnEntryAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryCreateRevision: Topic<OnEntryRevisionBeforeCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterEntryCreateRevision: Topic<OnEntryRevisionAfterCreateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterEntryUpdate: Topic<OnEntryAfterUpdateTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryDelete: Topic<OnEntryBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterEntryDelete: Topic<OnEntryAfterDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryDeleteRevision: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterEntryDeleteRevision: Topic<OnEntryRevisionAfterDeleteTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryPublish: Topic<OnEntryBeforePublishTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterEntryPublish: Topic<OnEntryAfterPublishTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
+    /**
+     * @deprecated
+     */
+    onAfterEntryUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryGet: Topic<OnEntryBeforeGetTopicParams>;
+    /**
+     * @deprecated
+     */
+    onBeforeEntryList: Topic<EntryBeforeListTopicParams>;
+    /**
+     * Lifecycle events released in 5.33.0
+     */
+    onEntryBeforeCreate: Topic<OnEntryBeforeCreateTopicParams>;
+    onEntryAfterCreate: Topic<OnEntryAfterCreateTopicParams>;
+    onEntryCreateError: Topic<OnEntryCreateErrorTopicParams>;
+
+    onEntryRevisionBeforeCreate: Topic<OnEntryRevisionBeforeCreateTopicParams>;
+    onEntryRevisionAfterCreate: Topic<OnEntryRevisionAfterCreateTopicParams>;
+    onEntryRevisionCreateError: Topic<OnEntryCreateRevisionErrorTopicParams>;
+
+    onEntryBeforeUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
+    onEntryAfterUpdate: Topic<OnEntryAfterUpdateTopicParams>;
+    onEntryUpdateError: Topic<OnEntryUpdateErrorTopicParams>;
+
+    onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
+    onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
+    onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
+
+    onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
+    onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;
+    onEntryRevisionDeleteError: Topic<OnEntryRevisionDeleteErrorTopicParams>;
+
+    onEntryBeforePublish: Topic<OnEntryBeforePublishTopicParams>;
+    onEntryAfterPublish: Topic<OnEntryAfterPublishTopicParams>;
+    onEntryPublishError: Topic<OnEntryPublishErrorTopicParams>;
+
+    onEntryBeforeRepublish: Topic<OnEntryBeforeRepublishTopicParams>;
+    onEntryAfterRepublish: Topic<OnEntryAfterRepublishTopicParams>;
+    onEntryRepublishError: Topic<OnEntryRepublishErrorTopicParams>;
+
+    onEntryBeforeUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
+    onEntryAfterUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
+    onEntryUnpublishError: Topic<OnEntryUnpublishErrorTopicParams>;
+
+    onEntryBeforeGet: Topic<OnEntryBeforeGetTopicParams>;
+    onEntryBeforeList: Topic<EntryBeforeListTopicParams>;
 }
 
 /**
@@ -1872,6 +2412,7 @@ export interface BaseCmsSecurityPermission extends SecurityPermission {
     own?: boolean;
     rwd: string | number;
 }
+
 /**
  * A security permission for content model.
  *
@@ -1880,13 +2421,13 @@ export interface BaseCmsSecurityPermission extends SecurityPermission {
  */
 export interface CmsModelPermission extends BaseCmsSecurityPermission {
     /**
-     * A object representing `key: model.modelId` values where key is locale code.
+     * An object representing `key: model.modelId` values where key is locale code.
      */
     models?: {
         [key: string]: string[];
     };
     /**
-     * A object representing `key: group.id` values where key is locale code.
+     * {locale: groupId[]} map, where key is a locale code.
      */
     groups?: {
         [key: string]: string[];
@@ -1901,7 +2442,7 @@ export interface CmsModelPermission extends BaseCmsSecurityPermission {
  */
 export interface CmsGroupPermission extends BaseCmsSecurityPermission {
     /**
-     * A object representing `key: group.id` values where key is locale code.
+     * {locale: groupId[]} map, where key is a locale code.
      */
     groups?: {
         [key: string]: string[];
@@ -1917,13 +2458,13 @@ export interface CmsGroupPermission extends BaseCmsSecurityPermission {
 export interface CmsEntryPermission extends BaseCmsSecurityPermission {
     pw?: string;
     /**
-     * A object representing `key: model.modelId` values where key is locale code.
+     * An object representing `key: model.modelId` values where key is locale code.
      */
     models?: {
         [key: string]: string[];
     };
     /**
-     * A object representing `key: group.id` values where key is locale code.
+     * {locale: groupId[]} map, where key is a locale code.
      */
     groups?: {
         [key: string]: string[];
@@ -1941,6 +2482,7 @@ export interface CmsGroupStorageOperationsListWhereParams {
     locale: string;
     [key: string]: any;
 }
+
 export interface CmsGroupStorageOperationsListParams {
     where: CmsGroupStorageOperationsListWhereParams;
     sort?: string[];
@@ -2053,7 +2595,7 @@ export interface CmsEntryStorageOperationsListParams {
     sort?: CmsEntryListSort;
     search?: string;
     fields?: string[];
-    limit?: number;
+    limit: number;
     after?: string | null;
 }
 
@@ -2151,32 +2693,6 @@ export interface CmsEntryStorageOperationsUnpublishParams<
     storageEntry: T;
 }
 
-export interface CmsEntryStorageOperationsRequestChangesParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
-    /**
-     * Entry data updated with the required properties.
-     */
-    entry: CmsEntry;
-    /**
-     * Entry that is prepared for the storageOperations, with the transformations.
-     */
-    storageEntry: T;
-}
-
-export interface CmsEntryStorageOperationsRequestReviewParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
-    /**
-     * Entry that is prepared for the storageOperations.
-     */
-    entry: CmsEntry;
-    /**
-     * Entry that is prepared for the storageOperations, with the transformations.
-     */
-    storageEntry: T;
-}
-
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
 }
@@ -2200,6 +2716,7 @@ export interface CmsEntryStorageOperationsGetRevisionParams {
 export interface CmsEntryStorageOperationsGetPublishedRevisionParams {
     id: string;
 }
+
 export interface CmsEntryStorageOperationsGetLatestRevisionParams {
     id: string;
 }
@@ -2265,13 +2782,6 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
     ) => Promise<T[]>;
-    /**
-     * Get all revisions of all of the given IDs.
-     */
-    // getAllRevisionsByIds: (
-    //     model: CmsModel,
-    //     params: CmsEntryStorageOperationsGetAllRevisionsParams
-    // ) => Promise<T[]>;
     /**
      * Get the entry by the given revision id.
      */
@@ -2345,28 +2855,12 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Unpublish the entry.
      */
     unpublish: (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams<T>) => Promise<T>;
-    /**
-     * Request changes the entry.
-     */
-    requestChanges: (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsRequestChangesParams<T>
-    ) => Promise<T>;
-    /**
-     * Request review the entry.
-     */
-    requestReview: (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsRequestReviewParams<T>
-    ) => Promise<CmsEntry>;
 }
 
 export enum CONTENT_ENTRY_STATUS {
     DRAFT = "draft",
     PUBLISHED = "published",
-    UNPUBLISHED = "unpublished",
-    CHANGES_REQUESTED = "changesRequested",
-    REVIEW_REQUESTED = "reviewRequested"
+    UNPUBLISHED = "unpublished"
 }
 
 export interface CmsSettingsStorageOperationsGetParams {
@@ -2433,7 +2927,8 @@ export interface CmsSystemStorageOperations {
     update: (params: CmsSystemStorageOperationsUpdateParams) => Promise<CmsSystem>;
 }
 
-export interface HeadlessCmsStorageOperations {
+export interface HeadlessCmsStorageOperations<C = CmsContext> {
+    name: string;
     system: CmsSystemStorageOperations;
     settings: CmsSettingsStorageOperations;
     groups: CmsGroupStorageOperations;
@@ -2442,10 +2937,6 @@ export interface HeadlessCmsStorageOperations {
     /**
      * Either attach something from the storage operations or run something in it.
      */
-    beforeInit?: (context: CmsContext) => Promise<void>;
-    init?: (context: CmsContext) => Promise<void>;
-    /**
-     * An upgrade to run if necessary.
-     */
-    upgrade?: UpgradePlugin | null;
+    beforeInit: (context: C) => Promise<void>;
+    init?: (context: C) => Promise<void>;
 }

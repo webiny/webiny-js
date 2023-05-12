@@ -4,44 +4,48 @@ export default /* GraphQL */ `
     """
     Product category
     """
-    type Category {
+    type CategoryApiNameWhichIsABitDifferentThanModelId {
         id: ID!
         entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
-        meta: CategoryMeta
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
+        modifiedBy: CmsIdentity
+        meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         title: String
         slug: String
     }
 
-    type CategoryMeta {
+    type CategoryApiNameWhichIsABitDifferentThanModelIdMeta {
         modelId: String
         version: Int
         locked: Boolean
         publishedOn: DateTime
         status: String
         ${revisionsComment}
-        revisions: [Category]
+        revisions: [CategoryApiNameWhichIsABitDifferentThanModelId!]
         title: String
+        description: String
+        image: String
         ${metaDataComment}
         data: JSON
     }
 
-    input CategoryInput {
+    input CategoryApiNameWhichIsABitDifferentThanModelIdInput {
+        id: ID
         title: String!
         slug: String!
     }
 
-    input CategoryGetWhereInput {
+    input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInput {
         id: ID
         entryId: String
         title: String
         slug: String
     }
 
-    input CategoryListWhereInput {
+    input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -72,6 +76,10 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        status: String
+        status_not: String
+        status_in: [String!]
+        status_not_in: [String!]
 
         title: String
         title_not: String
@@ -86,25 +94,28 @@ export default /* GraphQL */ `
         slug_not_in: [String]
         slug_contains: String
         slug_not_contains: String
+    
+        AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
+        OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
     }
 
-    type CategoryResponse {
-        data: Category
+    type CategoryApiNameWhichIsABitDifferentThanModelIdResponse {
+        data: CategoryApiNameWhichIsABitDifferentThanModelId
         error: CmsError
     }
-        
-    type CategoryArrayResponse {
-        data: [Category]
+    
+    type CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse {
+        data: [CategoryApiNameWhichIsABitDifferentThanModelId]
         error: CmsError
     }
 
-    type CategoryListResponse {
-        data: [Category]
+    type CategoryApiNameWhichIsABitDifferentThanModelIdListResponse {
+        data: [CategoryApiNameWhichIsABitDifferentThanModelId]
         meta: CmsListMeta
         error: CmsError
     }
 
-    enum CategoryListSorter {
+    enum CategoryApiNameWhichIsABitDifferentThanModelIdListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -118,37 +129,33 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getCategory(revision: ID, entryId: ID, status: CmsEntryStatusType): CategoryResponse
+        getCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID, entryId: ID, status: CmsEntryStatusType): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
         
-        getCategoryRevisions(id: ID!): CategoryArrayResponse
+        getCategoryApiNameWhichIsABitDifferentThanModelIdRevisions(id: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse
         
-        getCategoriesByIds(revisions: [ID!]!): CategoryArrayResponse
+        getCategoriesApiModelByIds(revisions: [ID!]!): CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse
 
-        listCategories(
-            where: CategoryListWhereInput
-            sort: [CategoryListSorter]
+        listCategoriesApiModel(
+            where: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput
+            sort: [CategoryApiNameWhichIsABitDifferentThanModelIdListSorter]
             limit: Int
             after: String
-        ): CategoryListResponse
+        ): CategoryApiNameWhichIsABitDifferentThanModelIdListResponse
     }
 
     extend type Mutation {
-        createCategory(data: CategoryInput!): CategoryResponse
+        createCategoryApiNameWhichIsABitDifferentThanModelId(data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        createCategoryFrom(revision: ID!, data: CategoryInput): CategoryResponse
+        createCategoryApiNameWhichIsABitDifferentThanModelIdFrom(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        updateCategory(revision: ID!, data: CategoryInput!): CategoryResponse
+        updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        deleteCategory(revision: ID!): CmsDeleteResponse
+        deleteCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CmsDeleteResponse
 
-        publishCategory(revision: ID!): CategoryResponse
+        publishCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
     
-        republishCategory(revision: ID!): CategoryResponse
+        republishCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        unpublishCategory(revision: ID!): CategoryResponse
-        
-        requestCategoryReview(revision: ID!): CategoryResponse
-        
-        requestCategoryChanges(revision: ID!): CategoryResponse
+        unpublishCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
     }
 `;

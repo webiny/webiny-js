@@ -3,13 +3,14 @@
   "include": ["src"],
   "references": [
     { "path": "../cli-plugin-scaffold/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" }
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

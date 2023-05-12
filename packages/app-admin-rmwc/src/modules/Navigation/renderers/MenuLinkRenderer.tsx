@@ -6,12 +6,14 @@ import { useMenuItem } from "@webiny/app-admin";
 import { Icon } from "@webiny/ui/Icon";
 import { useNavigation } from "../index";
 
-const listItemStyle = css({
-    ".mdc-list &.mdc-list-item:hover": {
-        cursor: "pointer",
-        backgroundColor: "var(--mdc-theme-background)"
+const listItemStyle = css`
+    font-weight: 400 !important;
+
+    .mdc-list &.mdc-list-item:hover {
+        cursor: pointer;
+        background-color: var(--mdc-theme-background);
     }
-});
+`;
 
 export const MenuLinkRenderer = (PrevMenuItem: React.FC): React.FC => {
     return function MenuLink() {

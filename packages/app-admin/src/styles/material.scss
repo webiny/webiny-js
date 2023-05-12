@@ -13,6 +13,7 @@ $mdc-theme-text-primary-on-background: $webiny-theme-light-text-primary-on-backg
 $mdc-theme-text-secondary-on-background: $webiny-theme-light-text-secondary-on-background;
 $mdc-theme-text-hint-on-dark: $webiny-theme-light-text-hint-on-dark;
 $mdc-typography-font-family: $webiny-theme-typography-font-family;
+$mdc-typography-subtitle2-font-weight: $webiny-theme-typography-subtitle2-font-weight;
 
 @import "~material-components-web/material-components-web.scss";
 @import "material-theme-assignments.scss";
@@ -35,6 +36,7 @@ body {
   --mdc-theme-text-hint-on-dark: #{$mdc-theme-text-hint-on-dark};
   --mdc-theme-caret-down: #{$webiny-theme-light-caret-down};
   --mdc-typography-font-family: #{$mdc-typography-font-family};
+  --mdc-typography-subtitle2-font-weight: #{$mdc-typography-subtitle2-font-weight};
 
   font-family: "Source Sans Pro";
 }

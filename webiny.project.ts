@@ -17,7 +17,8 @@ export default {
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
                     import("@webiny/cli-plugin-scaffold-graphql-service"),
-                    import("@webiny/cli-plugin-scaffold-admin-app-module")
+                    import("@webiny/cli-plugin-scaffold-admin-app-module"),
+                    import("@webiny/cli-plugin-scaffold-ci")
                 ]);
 
                 return modules
@@ -40,5 +41,17 @@ export default {
                 return [];
             }
         }
+    },
+    appAliases: {
+        core: "apps/core",
+        api: "apps/api",
+        admin: "apps/admin",
+        website: "apps/website"
+    },
+    featureFlags: {
+        // Enforces usage of legacy PB page elements rendering engine.
+        // To migrate to the latest one, please read:
+        // https://www.webiny.com/docs/page-builder-rendering-upgrade
+        pbLegacyRenderingEngine: false
     }
 };

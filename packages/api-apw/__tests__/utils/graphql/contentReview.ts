@@ -14,7 +14,7 @@ const getDataFields = (fields = "") => `{
         type
     }
     title
-    status
+    reviewStatus
     steps {
         status
         id

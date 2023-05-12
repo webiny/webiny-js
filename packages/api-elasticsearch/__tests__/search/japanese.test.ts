@@ -1,5 +1,5 @@
 import { createElasticsearchClient } from "../helpers";
-import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
+import { getJapaneseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { entries, searchTargets } from "./japanese.entries";
@@ -15,6 +15,8 @@ describe("Japanese search", () => {
 
     const searchPlugin = new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin();
 
+    const japaneseIndexConfiguration = getJapaneseConfiguration();
+
     const createIndex = async () => {
         try {
             const responseExists1 = await client.indices.exists({
@@ -25,7 +27,7 @@ describe("Japanese search", () => {
                     index: indexName
                 });
             }
-            console.log(`Creating index "${indexName}" @${new Date().getTime()}: ${indexName}`);
+            // console.log(`Creating index "${indexName}" @${new Date().getTime()}: ${indexName}`);
             const result = await client.indices.create({
                 index: indexName,
                 body: japaneseIndexConfiguration
@@ -73,13 +75,13 @@ describe("Japanese search", () => {
     };
 
     const refreshIndex = async () => {
-        console.log(`Refreshing index ${indexName} @${new Date().getTime()}`);
+        // console.log(`Refreshing index ${indexName} @${new Date().getTime()}`);
         return await client.indices.refresh({
             index: indexName
         });
     };
     const fetchAllData = async () => {
-        console.log(`Fetching all data from index ${indexName} @${new Date().getTime()}`);
+        // console.log(`Fetching all data from index ${indexName} @${new Date().getTime()}`);
         return await clientSearch({
             index: indexName,
             body: {
@@ -120,7 +122,7 @@ describe("Japanese search", () => {
     };
 
     const clientSearch = async (request: RequestParams.Search) => {
-        console.log(`Searching index "${indexName}" @${new Date().getTime()}`);
+        // console.log(`Searching index "${indexName}" @${new Date().getTime()}`);
         try {
             return await client.search(request);
         } catch (ex) {
@@ -234,6 +236,7 @@ describe("Japanese search", () => {
             };
 
             searchPlugin.apply(query, {
+                name: "title",
                 basePath: "title",
                 path: "title",
                 value: search,

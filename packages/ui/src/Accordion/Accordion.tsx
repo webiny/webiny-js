@@ -9,7 +9,10 @@ export interface AccordionProps {
     /**
      * Element displayed when accordion is expanded.
      */
-    children: React.ReactElement<typeof ListItem>[] | React.ReactElement<typeof AccordionItem>[];
+    children:
+        | React.ReactElement<typeof ListItem>[]
+        | React.ReactElement<typeof AccordionItem>
+        | React.ReactElement<typeof AccordionItem>[];
 
     /**
      * Elevation number, default set to 2
@@ -22,11 +25,15 @@ export interface AccordionProps {
     className?: string;
 }
 
-const listStyle = css({
-    "&.mdc-list": {
-        padding: 0
+const listStyle = css`
+    &.mdc-list {
+        padding: 0;
+        &.mdc-list--two-line .mdc-list-item {
+            height: 48px;
+            padding: 8px 20px;
+        }
     }
-});
+`;
 
 const Accordion: React.FC<AccordionProps> = props => {
     const { children, elevation = 2, className, ...other } = props;

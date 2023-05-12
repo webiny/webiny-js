@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Input, TrailingIcon } from "./Input";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import {
     getCurrentDate,
     getDefaultFieldValue
@@ -8,7 +8,7 @@ import {
 import { BindComponentRenderProp } from "@webiny/form";
 
 export interface Props {
-    field: CmsEditorField;
+    field: CmsModelField;
     bind: BindComponentRenderProp;
     trailingIcon?: TrailingIcon;
 }

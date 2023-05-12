@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useContext, useMemo, useState } from "react";
+import styled from "@emotion/styled";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import {
     Compose,
@@ -21,6 +22,11 @@ import { MenuElementRenderer } from "./renderers/MenuElementRenderer";
 import { List, ListItem } from "@webiny/ui/List";
 import { MenuFooter, subFooter, MenuHeader, navHeader, navContent } from "./Styled";
 import { config as appConfig } from "@webiny/app/config";
+import { Typography } from "@webiny/ui/Typography";
+
+const AutoWidthDrawer = styled(Drawer)`
+    width: auto;
+`;
 
 interface NavigationContext {
     visible: boolean;
@@ -86,7 +92,7 @@ export const NavigationImpl = (): React.FC => {
         const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
 
         return (
-            <Drawer modal open={visible} onClose={hideDrawer}>
+            <AutoWidthDrawer modal open={visible} onClose={hideDrawer}>
                 <DrawerHeader className={navHeader}>
                     <MenuHeader>
                         <BrandSpec />
@@ -99,11 +105,11 @@ export const NavigationImpl = (): React.FC => {
                     <List nonInteractive>
                         <MenuItems menuItems={footerMenu} />
                         <ListItem ripple={false} className={subFooter}>
-                            Webiny v{wbyVersion}
+                            <Typography use={"body2"}>Webiny v{wbyVersion}</Typography>
                         </ListItem>
                     </List>
                 </MenuFooter>
-            </Drawer>
+            </AutoWidthDrawer>
         );
     };
 };

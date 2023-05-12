@@ -13,6 +13,7 @@ import button from "@webiny/app-page-builder/render/plugins/elements/button";
 import codesandbox from "@webiny/app-page-builder/render/plugins/elements/embeds/codesandbox";
 import soundcloud from "@webiny/app-page-builder/render/plugins/elements/embeds/soundcloud";
 import youtube from "@webiny/app-page-builder/render/plugins/elements/embeds/youtube";
+import iframe from "@webiny/app-page-builder/render/plugins/elements/iframe";
 import vimeo from "@webiny/app-page-builder/render/plugins/elements/embeds/vimeo";
 import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twitter";
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
@@ -25,13 +26,14 @@ import align from "@webiny/app-page-builder/render/plugins/elementSettings/align
 import animation from "@webiny/app-page-builder/render/plugins/elementSettings/animation";
 import background from "@webiny/app-page-builder/render/plugins/elementSettings/background";
 import border from "@webiny/app-page-builder/render/plugins/elementSettings/border";
+import gridSettings from "@webiny/app-page-builder/render/plugins/elementSettings/grid";
 import height from "@webiny/app-page-builder/render/plugins/elementSettings/height";
 import width from "@webiny/app-page-builder/render/plugins/elementSettings/width";
 import shadow from "@webiny/app-page-builder/render/plugins/elementSettings/shadow";
 import padding from "@webiny/app-page-builder/render/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings/text";
-import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/visibility";
+import property from "@webiny/app-page-builder/render/plugins/elementSettings/property";
 // Responsive mode
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
@@ -51,6 +53,7 @@ export default [
     codesandbox(),
     soundcloud(),
     youtube(),
+    iframe(),
     vimeo(),
     twitter(),
     pinterest(),
@@ -63,12 +66,13 @@ export default [
     animation,
     background,
     border,
+    gridSettings,
     height,
     width,
     shadow,
     padding,
     margin,
     textSetting,
-    visibility,
+    property,
     responsiveMode()
 ];

@@ -14,7 +14,7 @@ const width: ElementStylesModifier = ({ theme, element }) => {
         return {
             ...returnStyles,
             [breakpointName]: {
-                width: width[breakpointName].value
+                maxWidth: width[breakpointName].value
             }
         };
     }, {});

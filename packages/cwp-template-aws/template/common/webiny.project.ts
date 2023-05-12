@@ -23,5 +23,11 @@ export default {
             cliScaffoldAdminModule(),
             cliScaffoldCiCd()
         ]
+    },
+    appAliases: {
+        core: "apps/core",
+        api: "apps/api",
+        admin: "apps/admin",
+        website: "apps/website"
     }
 };

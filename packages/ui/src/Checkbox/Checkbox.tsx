@@ -18,6 +18,9 @@ interface Props extends FormComponentProps {
 
     // Description beneath the checkbox.
     description?: string;
+
+    // For testing purposes.
+    "data-testid"?: string;
 }
 
 /**
@@ -47,6 +50,7 @@ class Checkbox extends React.Component<Props> {
                     onClick={() => typeof onClick === "function" && onClick(Boolean(value))}
                     // @ts-ignore Although the label is React.ReactNode internally, an error is still thrown.
                     label={label}
+                    data-testid={this.props["data-testid"]}
                 />
                 {validationIsValid === false && (
                     <FormElementMessage error>{validationMessage}</FormElementMessage>

@@ -1,4 +1,9 @@
-describe("Menus Module", () => {
+/**
+ * IMPORTANT!
+ * Temporarily skipping this test suite due to Prerendering Service issues with Puppeteer.
+ * An issue is added to our tracker and will be resolved ASAP.
+ */
+describe.skip("Menus Module", () => {
     // Not generating unique IDs because of Cypress' multiple super domains issue. Once we change the domain,
     // this code gets executed again, meaning we get a different unique ID. This is also the reason why the
     // test below is broken into multiple steps.

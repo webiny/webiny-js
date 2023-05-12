@@ -12,6 +12,7 @@ import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
 import { PbEditorBlockPlugin } from "~/types";
 import { useCallback } from "react";
+import previewFallback from "~/admin/views/PageBlocks/assets/preview.png";
 
 interface BlockPreviewProps {
     plugin: PbEditorBlockPlugin;
@@ -77,7 +78,13 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                     </Styled.EditBlock>
                 )}
             </Styled.Overlay>
-            <Styled.BlockPreview>{plugin.preview()}</Styled.BlockPreview>
+            <Styled.BlockPreview>
+                {plugin?.image?.src ? (
+                    plugin.preview()
+                ) : (
+                    <img src={previewFallback} alt={plugin.title} />
+                )}
+            </Styled.BlockPreview>
             <Styled.Title>
                 <Typography use={"overline"}>{plugin.title}</Typography>
             </Styled.Title>

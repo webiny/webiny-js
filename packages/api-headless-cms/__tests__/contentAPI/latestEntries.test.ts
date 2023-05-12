@@ -1,9 +1,9 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useArticleManageHandler } from "../utils/useArticleManageHandler";
-import { useArticleReadHandler } from "../utils/useArticleReadHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler";
+import { useArticleReadHandler } from "../testHelpers/useArticleReadHandler";
 
 jest.setTimeout(100000);
 
@@ -48,6 +48,8 @@ describe("latest entries", function () {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -145,7 +147,7 @@ describe("latest entries", function () {
     });
 
     it("should load all the latest categories in the article ref field", async () => {
-        const { createArticle, publishArticle, until } = useArticleManageHandler(manageOpts);
+        const { createArticle, publishArticle } = useArticleManageHandler(manageOpts);
         const { listArticles: previewListArticles } = useArticleReadHandler(previewOpts);
         const { listArticles } = useArticleReadHandler(readOpts);
         const title = "Test article";
@@ -227,24 +229,6 @@ describe("latest entries", function () {
             title: "Fruit 2"
         });
 
-        /**
-         * Need to wait propagation of the updated fruit category on the preview API.
-         */
-        await until(
-            () => previewListArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const targetArticle = data?.listArticles?.data[0];
-                if (targetArticle.savedOn !== article.savedOn) {
-                    return false;
-                }
-                const categories: any[] = targetArticle.categories || [];
-                return categories.some(category => {
-                    return category.id === updatedFruitCategory.id;
-                });
-            },
-            { name: "list all articles", tries: 10 }
-        );
-
         const [listResponse] = await previewListArticles();
 
         expect(listResponse).toEqual({
@@ -264,14 +248,20 @@ describe("latest entries", function () {
                             categories: [
                                 {
                                     id: updatedFruitCategory.id,
+                                    entryId: updatedFruitCategory.entryId,
+                                    modelId: "category",
                                     title: updatedFruitCategory.title
                                 },
                                 {
                                     id: vehicleCategory.id,
+                                    entryId: vehicleCategory.entryId,
+                                    modelId: "category",
                                     title: vehicleCategory.title
                                 },
                                 {
                                     id: animalCategory.id,
+                                    entryId: animalCategory.entryId,
+                                    modelId: "category",
                                     title: animalCategory.title
                                 }
                             ]
@@ -339,19 +329,6 @@ describe("latest entries", function () {
             }
         });
         const publishedFruitCategory = publishFruitResponse?.data?.publishCategory?.data;
-        /**
-         * Need to wait propagation of the updated fruit category on the read API.
-         */
-        await until(
-            () => listArticles().then(([data]) => data),
-            ({ data }: any) => {
-                const categories: any[] = data?.listArticles?.data[0]?.categories || [];
-                return categories.some(category => {
-                    return category.id === publishedFruitCategory.id;
-                });
-            },
-            { name: "list all articles after published fruit category", tries: 5 }
-        );
 
         const [listReadResponse] = await listArticles();
 
@@ -372,14 +349,20 @@ describe("latest entries", function () {
                             categories: [
                                 {
                                     id: publishedFruitCategory.id,
+                                    entryId: publishedFruitCategory.entryId,
+                                    modelId: "category",
                                     title: updatedFruitCategory.title
                                 },
                                 {
                                     id: vehicleCategory.id,
+                                    entryId: vehicleCategory.entryId,
+                                    modelId: "category",
                                     title: vehicleCategory.title
                                 },
                                 {
                                     id: animalCategory.id,
+                                    entryId: animalCategory.entryId,
+                                    modelId: "category",
                                     title: animalCategory.title
                                 }
                             ]

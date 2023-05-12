@@ -79,6 +79,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
                 onClose={this.closeMenu}
                 onSelect={this.props.onSelect}
                 renderToPortal={true}
+                style={{ zIndex: 99 }} // Fixes Menu in Drawers
             >
                 {this.props.children}
             </BaseMenu>
@@ -88,7 +89,11 @@ class Menu extends React.Component<MenuProps, MenuState> {
     private readonly renderCustomContent = () => {
         const { children } = this.props;
         return (
-            <MenuSurface open={this.state.menuIsOpen} onClose={this.closeMenu}>
+            <MenuSurface
+                open={this.state.menuIsOpen}
+                onClose={this.closeMenu}
+                renderToPortal={this.props.renderToPortal}
+            >
                 {typeof children === "function"
                     ? children({ closeMenu: this.closeMenu })
                     : children}

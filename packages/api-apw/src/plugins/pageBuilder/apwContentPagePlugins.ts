@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 
 export const apwContentPagePlugins = () =>

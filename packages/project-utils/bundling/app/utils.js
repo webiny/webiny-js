@@ -6,8 +6,8 @@ const { globalConfig } = require("@webiny/global-config");
 module.exports.applyDefaults = () => {
     let telemetry;
     const config = getProject().config;
-    if (config.cli && config.cli.telemetry === false) {
-        telemetry = false;
+    if (config.cli && "telemetry" in config.cli) {
+        telemetry = config.cli.telemetry;
     } else {
         telemetry = isEnabled();
     }
@@ -30,7 +30,7 @@ module.exports.applyDefaults = () => {
     }
 
     if (!("REACT_APP_WEBINY_VERSION" in process.env)) {
-        process.env.REACT_APP_WEBINY_VERSION = version;
+        process.env.REACT_APP_WEBINY_VERSION = process.env.WEBINY_VERSION || version;
     }
 
     // This variable is for backwards compatibility with projects created prior to 5.29.0 release.

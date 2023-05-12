@@ -3,24 +3,13 @@
  */
 // @ts-ignore
 import mdbid from "mdbid";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-/**
- * Package commodo-fields-object does not have types.
- */
-// @ts-ignore
-import { object } from "commodo-fields-object";
-import { validation } from "@webiny/validation";
 import {
-    OnAfterPageElementCreateTopicParams,
-    OnAfterPageElementDeleteTopicParams,
-    OnAfterPageElementUpdateTopicParams,
-    OnBeforePageElementCreateTopicParams,
-    OnBeforePageElementDeleteTopicParams,
-    OnBeforePageElementUpdateTopicParams,
+    OnPageElementAfterCreateTopicParams,
+    OnPageElementAfterDeleteTopicParams,
+    OnPageElementAfterUpdateTopicParams,
+    OnPageElementBeforeCreateTopicParams,
+    OnPageElementBeforeDeleteTopicParams,
+    OnPageElementBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PageElement,
@@ -33,22 +22,11 @@ import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
-
-const CreateDataModel = withFields({
-    name: string({ validation: validation.create("required,maxLength:100") }),
-    type: string({ validation: validation.create("required,in:element:block") }),
-    category: string({ validation: validation.create("required,maxLength:100") }),
-    content: object({ validation: validation.create("required") }),
-    preview: object({ validation: validation.create("required") })
-})();
-
-const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("maxLength:100") }),
-    type: string({ validation: validation.create("in:element:block") }),
-    category: string({ validation: validation.create("maxLength:100") }),
-    content: object(),
-    preview: object()
-})();
+import {
+    createPageElementsCreateValidation,
+    createPageElementsUpdateValidation
+} from "~/graphql/crud/pageElements/validation";
+import { createZodError, removeUndefinedValues } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.page";
 
@@ -58,26 +36,51 @@ export interface CreatePageElementsCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createPageElementsCrud = (params: CreatePageElementsCrudParams): PageElementsCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
-    const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
-    const onBeforePageElementUpdate = createTopic<OnBeforePageElementUpdateTopicParams>();
-    const onAfterPageElementUpdate = createTopic<OnAfterPageElementUpdateTopicParams>();
-    const onBeforePageElementDelete = createTopic<OnBeforePageElementDeleteTopicParams>();
-    const onAfterPageElementDelete = createTopic<OnAfterPageElementDeleteTopicParams>();
+    // create
+    const onPageElementBeforeCreate = createTopic<OnPageElementBeforeCreateTopicParams>(
+        "pageBuilder.onPageElementBeforeCreate"
+    );
+    const onPageElementAfterCreate = createTopic<OnPageElementAfterCreateTopicParams>(
+        "pageBuilder.onPageElementAfterCreate"
+    );
+    // update
+    const onPageElementBeforeUpdate = createTopic<OnPageElementBeforeUpdateTopicParams>(
+        "pageBuilder.onPageElementBeforeUpdate"
+    );
+    const onPageElementAfterUpdate = createTopic<OnPageElementAfterUpdateTopicParams>(
+        "pageBuilder.onPageElementAfterUpdate"
+    );
+    // delete
+    const onPageElementBeforeDelete = createTopic<OnPageElementBeforeDeleteTopicParams>(
+        "pageBuilder.onPageElementBeforeDelete"
+    );
+    const onPageElementAfterDelete = createTopic<OnPageElementAfterDeleteTopicParams>(
+        "pageBuilder.onPageElementAfterDelete"
+    );
 
     return {
         /**
-         * Lifecycle events
+         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
          */
-        onBeforePageElementCreate,
-        onAfterPageElementCreate,
-        onBeforePageElementUpdate,
-        onAfterPageElementUpdate,
-        onBeforePageElementDelete,
-        onAfterPageElementDelete,
+        onBeforePageElementCreate: onPageElementBeforeCreate,
+        onAfterPageElementCreate: onPageElementAfterCreate,
+        onBeforePageElementUpdate: onPageElementBeforeUpdate,
+        onAfterPageElementUpdate: onPageElementAfterUpdate,
+        onBeforePageElementDelete: onPageElementBeforeDelete,
+        onAfterPageElementDelete: onPageElementAfterDelete,
+        /**
+         * Introduced in 5.34.0
+         */
+        onPageElementBeforeCreate,
+        onPageElementAfterCreate,
+        onPageElementBeforeUpdate,
+        onPageElementAfterUpdate,
+        onPageElementBeforeDelete,
+        onPageElementAfterDelete,
         async getPageElement(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
@@ -152,16 +155,16 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         async createPageElement(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
+            const validation = await createPageElementsCreateValidation().safeParseAsync(input);
+            if (!validation.success) {
+                throw createZodError(validation.error);
+            }
 
             const id: string = mdbid();
             const identity = context.security.getIdentity();
 
-            const data: PageElement = await createDataModel.toJSON();
-
             const pageElement: PageElement = {
-                ...data,
+                ...validation.data,
                 tenant: getTenantId(),
                 locale: getLocaleCode(),
                 id,
@@ -174,14 +177,14 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             };
 
             try {
-                await onBeforePageElementCreate.publish({
+                await onPageElementBeforeCreate.publish({
                     pageElement
                 });
                 const result = await storageOperations.pageElements.create({
-                    input: data,
+                    input: validation.data,
                     pageElement
                 });
-                await onAfterPageElementCreate.publish({
+                await onPageElementAfterCreate.publish({
                     pageElement
                 });
                 return result;
@@ -209,10 +212,12 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
+            const validation = await createPageElementsUpdateValidation().safeParseAsync(input);
+            if (!validation.success) {
+                throw createZodError(validation.error);
+            }
 
-            const data = await updateDataModel.toJSON({ onlyDirty: true });
+            const data = removeUndefinedValues(validation.data);
 
             const pageElement: PageElement = {
                 ...original,
@@ -220,7 +225,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             };
 
             try {
-                await onBeforePageElementUpdate.publish({
+                await onPageElementBeforeUpdate.publish({
                     original,
                     pageElement
                 });
@@ -229,7 +234,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
                     original,
                     pageElement
                 });
-                await onAfterPageElementUpdate.publish({
+                await onPageElementAfterUpdate.publish({
                     original,
                     pageElement: result
                 });
@@ -261,13 +266,13 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             checkOwnPermissions(identity, permission, pageElement);
 
             try {
-                await onBeforePageElementDelete.publish({
+                await onPageElementBeforeDelete.publish({
                     pageElement
                 });
                 const result = await storageOperations.pageElements.delete({
                     pageElement
                 });
-                await onAfterPageElementDelete.publish({
+                await onPageElementAfterDelete.publish({
                     pageElement: result
                 });
                 return result;

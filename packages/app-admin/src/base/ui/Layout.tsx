@@ -1,5 +1,5 @@
 import React from "react";
-import { makeComposable } from "@webiny/app-admin-core";
+import { makeComposable } from "@webiny/app";
 
 export interface LayoutProps {
     title?: string;

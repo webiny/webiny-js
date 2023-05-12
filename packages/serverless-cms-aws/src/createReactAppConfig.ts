@@ -130,17 +130,17 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
     const entryModifiers: EntryModifier[] = [];
 
     const loadEnvVars = () => {
-        let envVars = customEnvModifiers.reduce<ReactAppEnv>((env, modifier) => modifier(env), {});
-
         const outputCache = new Map<string, Unwrap<PulumiOutput>>();
 
-        envVars = pulumiOutputToEnvModifiers.reduce<ReactAppEnv>((env, [app, modifier]) => {
+        let envVars = pulumiOutputToEnvModifiers.reduce<ReactAppEnv>((env, [app, modifier]) => {
             if (!outputCache.has(app)) {
                 outputCache.set(app, getStackOutput({ folder: app, env: options.env }));
             }
 
             return modifier({ output: outputCache.get(app)!, env });
-        }, envVars);
+        }, {});
+
+        envVars = customEnvModifiers.reduce<ReactAppEnv>((env, modifier) => modifier(env), envVars);
 
         Object.assign(process.env, envVars);
     };

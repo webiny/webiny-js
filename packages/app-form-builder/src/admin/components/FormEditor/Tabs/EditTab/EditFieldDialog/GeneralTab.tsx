@@ -4,6 +4,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "../../../Context";
 import { validation } from "@webiny/validation";
+import { Validator } from "@webiny/validation/types";
 import { FbFormModelField } from "~/types";
 import { FormRenderPropParams } from "@webiny/form/types";
 
@@ -20,7 +21,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
         setValue("fieldId", camelCase(value));
     }, []);
 
-    const uniqueFieldIdValidator = useCallback((fieldId: string): boolean => {
+    const uniqueFieldIdValidator: Validator = useCallback((fieldId: string) => {
         const existingField = getField({ fieldId });
         if (!existingField) {
             return true;
@@ -30,6 +31,17 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
             return true;
         }
         throw new Error("Please enter a unique Field ID");
+    }, []);
+
+    const fieldIdValidator: Validator = useCallback((fieldId: string) => {
+        if (!fieldId) {
+            return true;
+        }
+
+        if (/^[a-zA-Z0-9_-]*$/.test(fieldId)) {
+            return true;
+        }
+        throw Error('Field ID may contain only letters, numbers and "-" and "_" characters.');
     }, []);
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
@@ -58,7 +70,11 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
                 <Cell span={6}>
                     <Bind
                         name={"fieldId"}
-                        validators={[validation.create("required"), uniqueFieldIdValidator]}
+                        validators={[
+                            validation.create("required"),
+                            uniqueFieldIdValidator,
+                            fieldIdValidator
+                        ]}
                     >
                         <Input label={"Field ID"} />
                     </Bind>

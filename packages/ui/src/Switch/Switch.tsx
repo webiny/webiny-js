@@ -5,8 +5,8 @@ import pick from "lodash/pick";
 import { FormElementMessage } from "~/FormElementMessage";
 import { getClasses } from "~/Helpers";
 
-type Props = FormComponentProps &
-    SwitchProps & {
+type Props = Omit<SwitchProps, "value"> &
+    FormComponentProps<boolean> & {
         // Description beneath the switch.
         description?: string;
 

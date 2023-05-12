@@ -8,6 +8,10 @@ const log = require("./log");
 const sendEvent = require("./sendEvent");
 const PluginsContainer = require("./PluginsContainer");
 
+const noop = () => {
+    // Do nothing.
+};
+
 module.exports = {
     createProjectApplicationWorkspace,
     getApiProjectApplicationFolder,
@@ -16,6 +20,7 @@ module.exports = {
     importModule,
     localStorage,
     log,
+    noop,
     sendEvent,
     PluginsContainer
 };

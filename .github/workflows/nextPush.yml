@@ -2,12 +2,11 @@ name: Next Branch - Push
 
 on:
   push:
-    branches: [next, before-next]
+    branches: [next]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
   AWS_REGION: eu-central-1
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   init:
@@ -17,43 +16,44 @@ jobs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
 
-      - uses: actions/checkout@v2
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+        run: echo "jest-packages=$(node scripts/listPackagesWithTests.js)" >> $GITHUB_OUTPUT
 
   build:
     name: Build
     needs: init
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: global-daily-packages-cache
         with:
           path: .webiny/cached-packages
@@ -63,9 +63,9 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: .webiny/cached-packages
@@ -76,18 +76,18 @@ jobs:
     needs: [init, build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -111,13 +111,13 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -126,7 +126,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages (full)
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   jest-tests:
     name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
@@ -145,13 +145,13 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -159,13 +159,13 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Run tests
         run: yarn test ${{ matrix.package }}
@@ -178,23 +178,23 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: List Cypress tests folders
         id: list-cypress-folders
-        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+        run: echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT
 
   e2e-wby-cms-ddb-project-setup:
     name: E2E (DDB) - Project setup
@@ -204,8 +204,8 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
       CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
@@ -213,11 +213,11 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
@@ -226,13 +226,13 @@ jobs:
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           # ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: next/.webiny/cached-packages
@@ -244,9 +244,9 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: next/.webiny/cached-packages
@@ -270,16 +270,12 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: next
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: next
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: verdaccio-files
           retention-days: 1
@@ -299,8 +295,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb"}'
 
@@ -309,7 +305,7 @@ jobs:
         run: yarn webiny --version
 
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: project-files
           retention-days: 1
@@ -345,20 +341,11 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: next
-        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: next
         run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
-
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: next/cypress
-          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
   e2e-wby-cms-ddb-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
@@ -366,8 +353,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
+        os: [ubuntu-latest]
+        node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
@@ -381,16 +368,16 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: next
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
@@ -401,7 +388,7 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: next
@@ -412,15 +399,6 @@ jobs:
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: next/cypress
-          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
-
   e2e-wby-cms-ddb-es-init:
     name: E2E (DDB+ES) - Init
     runs-on: ubuntu-latest
@@ -429,23 +407,23 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: List Cypress tests folders
         id: list-cypress-folders
-        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+        run: echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT
 
   e2e-wby-cms-ddb-es-project-setup:
     name: E2E (DDB+ES) - Project setup
@@ -455,9 +433,9 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_WEBINY_PROJECT_AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
@@ -467,11 +445,11 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
@@ -480,13 +458,13 @@ jobs:
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           # ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: next/.webiny/cached-packages
@@ -498,9 +476,9 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: next/.webiny/cached-packages
@@ -524,16 +502,12 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Version packages (no push, no changelog)
+      - name: Version and publish to Verdaccio
         working-directory: next
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: next
-        run: yarn lerna:publish:verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: verdaccio-files
           retention-days: 1
@@ -553,8 +527,8 @@ jobs:
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
@@ -563,7 +537,7 @@ jobs:
         run: yarn webiny --version
 
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: project-files
           retention-days: 1
@@ -599,20 +573,11 @@ jobs:
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: next
-        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+        run: echo "cypress-config=$(cat cypress.json | tr -d ' \t\n\r')" >> $GITHUB_OUTPUT
 
       - name: Cypress - run installation wizard test
         working-directory: next
         run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
-
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: next/cypress
-          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
   e2e-wby-cms-ddb-es-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb+es, ${{ matrix.os }}, Node v${{ matrix.node }})
@@ -620,8 +585,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
+        os: [ubuntu-latest]
+        node: [14]
         cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
@@ -638,16 +603,16 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: next
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
@@ -658,7 +623,7 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: next
@@ -669,11 +634,54 @@ jobs:
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
+  npm-release-unstable:
+    needs:
+      [
+        init,
+        code-analysis,
+        jest-tests,
+        e2e-wby-cms-ddb-cypress-tests,
+        e2e-wby-cms-ddb-es-cypress-tests
+      ]
+    name: NPM release ("unstable" tag)
+    runs-on: ubuntu-latest
+    environment: release
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v3
         with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: next/cypress
-          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
+          node-version: 16
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v3
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v3
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+
+      - name: Set git info
+        run: |
+          git config --global user.email "webiny-bot@webiny.com"
+          git config --global user.name "webiny-bot"
+
+      - name: Version and publish to NPM
+        run: yarn release --type=unstable

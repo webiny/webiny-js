@@ -1,7 +1,8 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsGroup, CmsGroupCreateInput, CmsModel } from "~/types";
+import { CreateContentModelMutationVariables } from "~tests/testHelpers/graphql/contentModel";
 
 const privateGroup = new CmsGroupPlugin({
     isPrivate: true,
@@ -16,14 +17,21 @@ const privateAuthorsModel = new CmsModelPlugin({
     isPrivate: true,
     modelId: "author",
     name: "Authors",
-    layout: [],
-    fields: [],
-    titleFieldId: "",
+    layout: [["title"]],
+    fields: [
+        {
+            id: "title",
+            fieldId: "title",
+            type: "text",
+            label: "Title"
+        }
+    ],
+    titleFieldId: "title",
     group: {
         id: privateGroup.contentModelGroup.id,
         name: privateGroup.contentModelGroup.name
     },
-    description: "Authors model with no fields"
+    description: "Authors model with one basic field"
 });
 
 describe("Private Groups and Models", function () {
@@ -39,7 +47,7 @@ describe("Private Groups and Models", function () {
         listContentModelsQuery
     } = useGraphQLHandler(manageHandlerOpts);
 
-    const createGroup = async (data: Record<string, any>): Promise<CmsGroup> => {
+    const createGroup = async (data: CmsGroupCreateInput): Promise<CmsGroup> => {
         const [createResponse] = await createContentModelGroupMutation({
             data
         });
@@ -63,7 +71,9 @@ describe("Private Groups and Models", function () {
         });
     };
 
-    const createModel = async (data: Record<string, any>): Promise<CmsModel> => {
+    const createModel = async (
+        data: CreateContentModelMutationVariables["data"]
+    ): Promise<CmsModel> => {
         const [createResponse] = await createContentModelMutation({
             data
         });
@@ -74,6 +84,8 @@ describe("Private Groups and Models", function () {
         return createModel({
             name: "Animals",
             modelId: "animals",
+            singularApiName: "Animal",
+            pluralApiName: "Animals",
             group: {
                 id: group.id,
                 name: group.name

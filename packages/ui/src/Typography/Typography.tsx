@@ -4,7 +4,7 @@ import {
     TypographyProps as RmwcTypographyProps
 } from "@rmwc/typography";
 
-export interface TypographyProps extends RmwcTypographyProps {
+interface TypographyProps extends RmwcTypographyProps {
     children?: React.ReactNode;
     className?: string;
     style?: React.CSSProperties;
@@ -18,4 +18,4 @@ const Typography: React.FC<TypographyProps> = props => {
     return <RwmcTypography {...props}>{props.children}</RwmcTypography>;
 };
 
-export { Typography };
+export { Typography, TypographyProps };

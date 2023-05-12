@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import {
     PUBLISH_CONTENT_MUTATION,
     UNPUBLISH_CONTENT_MUTATION,
@@ -41,7 +41,7 @@ export const usePublishContent = (): UsePublishContentResult => {
             }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.publishContent.error");
+            const error = dotPropImmutable.get(response, "apw.publishContent.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -63,7 +63,7 @@ export const usePublishContent = (): UsePublishContentResult => {
             }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.unpublishContent.error");
+            const error = dotPropImmutable.get(response, "apw.unpublishContent.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -85,7 +85,7 @@ export const usePublishContent = (): UsePublishContentResult => {
             }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.deleteScheduledAction.error");
+            const error = dotPropImmutable.get(response, "apw.deleteScheduledAction.error");
             if (error) {
                 showSnackbar(error.message);
                 return;

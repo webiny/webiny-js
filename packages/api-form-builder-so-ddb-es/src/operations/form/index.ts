@@ -25,7 +25,7 @@ import fields from "./fields";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { parseIdentifier, zeroPad } from "@webiny/utils";
 import { createElasticsearchBody, createFormElasticType } from "./elasticsearchBody";
-import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { FormBuilderFormCreateKeyParams, FormBuilderFormStorageOperations } from "~/types";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";

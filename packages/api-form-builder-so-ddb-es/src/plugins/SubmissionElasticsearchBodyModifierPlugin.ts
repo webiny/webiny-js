@@ -1,4 +1,4 @@
-import { ElasticsearchBodyModifierPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchBodyModifierPlugin";
+import { ElasticsearchBodyModifierPlugin } from "@webiny/api-elasticsearch";
 
 export class SubmissionElasticsearchBodyModifierPlugin extends ElasticsearchBodyModifierPlugin {
     public static override readonly type: string =

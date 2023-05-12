@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import {
@@ -11,10 +11,12 @@ import { ApwContentTypes } from "~/types";
 import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { FetchResult } from "apollo-link";
+import { useApolloClient } from "@apollo/react-hooks";
 
 const t = i18n.ns("app-apw/cms/dialog");
 
 export const ApwOnEntryDelete: React.FC = () => {
+    const client = useApolloClient();
     const { onEntryDelete } = useCms();
     const { showSnackbar } = useSnackbar();
 
@@ -31,7 +33,7 @@ export const ApwOnEntryDelete: React.FC = () => {
 
     useEffect(() => {
         return onEntryDelete(next => async params => {
-            const { entry, client } = params;
+            const { entry } = params;
             const input = {
                 id: entry.id,
                 type: ApwContentTypes.CMS_ENTRY,
@@ -46,10 +48,12 @@ export const ApwOnEntryDelete: React.FC = () => {
                 },
                 fetchPolicy: "network-only"
             });
-            const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
-            const error = get(data, "apw.isReviewRequired.error", null);
+            const contentReviewId = dotPropImmutable.get(
+                data,
+                "apw.isReviewRequired.data.contentReviewId"
+            );
+            const error = dotPropImmutable.get(data, "apw.isReviewRequired.error", null);
             if (error) {
-                // showSnackbar(error.message);
                 return next({ ...params, error });
             } else if (contentReviewId) {
                 const response = await new Promise<
@@ -70,7 +74,7 @@ export const ApwOnEntryDelete: React.FC = () => {
                     });
                 });
 
-                const error = get(response, "data.apw.deleteContentReview.error");
+                const error = dotPropImmutable.get(response, "data.apw.deleteContentReview.error");
                 if (error) {
                     showSnackbar(error.message);
                     return next({ ...params, error });

@@ -25,8 +25,6 @@ export const hasPw = (permission: CmsEntryPermission, pw: string): boolean => {
 };
 
 const PW: Record<string, string> = {
-    r: "request review",
-    c: "request change",
     p: "publish",
     u: "unpublish"
 };
@@ -92,8 +90,6 @@ export const checkPermissions = async <
         });
     }
 
-    // r = request review
-    // c = request change
     // p = publish
     // u = unpublish
     if (check.pw && !hasPw(permission, check.pw)) {

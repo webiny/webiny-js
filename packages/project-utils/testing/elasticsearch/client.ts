@@ -85,8 +85,9 @@ const createDeleteIndexCallable = (client: Client) => {
                 if (isSnapshotError(ex) === false) {
                     return;
                 }
+                console.log("Is snapshot error, will try to delete the index in a sec...");
+                console.log(JSON.stringify(ex));
             }
-            console.log("Is snapshot error, will try to delete the index in a sec...");
             /**
              * Let's retry deleting index again...
              */
@@ -99,12 +100,20 @@ const createDeleteIndexCallable = (client: Client) => {
 interface ElasticsearchClient extends Client {
     indices: Client["indices"] & {
         deleteAll: () => Promise<any>;
+        registerIndex: (names: string[] | string) => void;
     };
 }
 
 const attachCustomEvents = (client: Client): ElasticsearchClient => {
-    const createdIndexes = new Set<string>();
+    const registeredIndexes = new Set<string>();
     const originalCreate = client.indices.create;
+
+    const registerIndex = (input: string[] | string) => {
+        const names = Array.isArray(input) ? input : [input];
+        for (const name of names) {
+            registeredIndexes.add(name);
+        }
+    };
 
     // @ts-ignore
     client.indices.create = async (
@@ -115,9 +124,7 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
         // @ts-ignore
         const response = await originalCreate.apply(client.indices, [params, options]);
 
-        if (createdIndexes.has(params.index) === false) {
-            createdIndexes.add(params.index);
-        }
+        registerIndex(params.index);
 
         await client.indices.refresh({
             index: params.index
@@ -129,29 +136,25 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
     const deleteIndexCallable = createDeleteIndexCallable(client);
 
     (client as ElasticsearchClient).indices.deleteAll = async () => {
-        const indexes = Array.from(createdIndexes.values());
+        const indexes = Array.from(registeredIndexes.values());
         if (indexes.length === 0) {
-            // console.log("No indexes to delete.");
             return;
         }
-        const deletedIndexes: string[] = [];
         for (const index of indexes) {
             try {
                 await deleteIndexCallable(index);
-
-                createdIndexes.delete(index);
-                deletedIndexes.push(index);
             } catch (ex) {
                 console.log(`Could not delete index "${index}".`);
                 console.log(JSON.stringify(ex));
             }
         }
-        // console.log(`Deleted indexes: ${deletedIndexes}`);
-        // console.log(deletedIndexes.join(", "));
     };
+    (client as ElasticsearchClient).indices.registerIndex = registerIndex;
 
     return client as ElasticsearchClient;
 };
+
+export { ElasticsearchClientOptions, ElasticsearchClient };
 
 export const createElasticsearchClient = (
     options: Partial<ElasticsearchClientOptions> = {}

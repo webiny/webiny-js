@@ -1,18 +1,18 @@
 import { Topic } from "@webiny/pubsub/types";
-import { BeforeGroupDeleteTopicParams, HeadlessCmsStorageOperations } from "~/types";
+import { OnGroupBeforeDeleteTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import WebinyError from "@webiny/error";
 
 interface AssignBeforeGroupDeleteParams {
-    onBeforeDelete: Topic<BeforeGroupDeleteTopicParams>;
+    onGroupBeforeDelete: Topic<OnGroupBeforeDeleteTopicParams>;
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
 export const assignBeforeGroupDelete = (params: AssignBeforeGroupDeleteParams) => {
-    const { onBeforeDelete, plugins, storageOperations } = params;
+    const { onGroupBeforeDelete, plugins, storageOperations } = params;
 
-    onBeforeDelete.subscribe(async params => {
+    onGroupBeforeDelete.subscribe(async params => {
         const { group } = params;
 
         const groupPlugin = plugins

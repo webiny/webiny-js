@@ -1,31 +1,34 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-cell": any;
+export type CellRenderer = ReturnType<typeof createCell>;
+
+export const createCell = () => {
+    return createRenderer(
+        () => {
+            const { getElement } = useRenderer();
+
+            const element = getElement();
+            return <Elements element={element} />;
+        },
+        {
+            baseStyles: ({ element }) => {
+                const styles = {
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column"
+                };
+                const size = element.data?.settings?.grid?.size;
+                if (typeof size !== "number") {
+                    return styles;
+                }
+
+                styles.width = `${(size / 12) * 100}%`;
+                return styles;
+            }
         }
-    }
-}
-
-const defaultStyles = { display: "block" };
-
-const Cell: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
-
-    return (
-        <pb-cell class={classNames}>
-            <Elements element={element} />
-        </pb-cell>
     );
 };
-
-export const createCell = () => Cell;

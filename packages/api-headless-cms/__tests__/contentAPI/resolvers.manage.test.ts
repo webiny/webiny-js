@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 
 interface CreateCategoriesResult {
     fruits: CmsEntry;
@@ -49,12 +49,8 @@ describe("MANAGE - Resolvers", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const {
-        until,
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const { createContentModelMutation, createContentModelGroupMutation } =
+        useGraphQLHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
@@ -86,7 +82,11 @@ describe("MANAGE - Resolvers", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
-                group: contentModelGroup.id
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
+                group: contentModelGroup.id,
+                fields: model.fields,
+                layout: model.layout
             }
         });
 
@@ -98,28 +98,13 @@ describe("MANAGE - Resolvers", () => {
             process.exit(1);
         }
 
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
-        } else if (update.data.updateContentModel.error) {
-            console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
-            process.exit(1);
-        }
-        return update.data.updateContentModel.data;
+        return create.data.createContentModel.data;
     };
 
     const createCategories = async (): Promise<CreateCategoriesResult> => {
         await setupModel();
         // Use "manage" API to create and publish entries
-        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         const values: Record<string, string> = {
             animals: "Animals",
@@ -138,35 +123,17 @@ describe("MANAGE - Resolvers", () => {
             });
             categories[slug] = response.data.createCategory.data;
         }
-        // Wait until the previous revision is indexed
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === Object.keys(values).length,
-            {
-                name: "list all categories after creation in setupCategories"
-            }
-        );
 
         return categories;
     };
 
     test(`get category`, async () => {
         await setupModel();
-        const { createCategory, getCategory, listCategories } =
-            useCategoryManageHandler(manageOpts);
+        const { createCategory, getCategory } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id, entryId } = create.data.createCategory.data;
-
-        // Need to wait until the new entry is propagated
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const [response] = await getCategory({ revision: id });
 
@@ -175,7 +142,7 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -207,20 +174,11 @@ describe("MANAGE - Resolvers", () => {
 
     test(`error when getting category without specific groups and models permissions`, async () => {
         await setupModel();
-        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id } = create.data.createCategory.data;
-
-        // Need to wait until the new entry is propagated to Elastic Search index
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const { getCategory } = useCategoryManageHandler({
             ...manageOpts,
@@ -244,20 +202,11 @@ describe("MANAGE - Resolvers", () => {
 
     test(`get category with specific groups and models permissions`, async () => {
         await setupModel();
-        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id, entryId } = create.data.createCategory.data;
-
-        // Need to wait until the new entry is propagated to Elastic Search index
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const { getCategory } = useCategoryManageHandler({
             ...manageOpts,
@@ -274,7 +223,7 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -308,7 +257,7 @@ describe("MANAGE - Resolvers", () => {
     test(`list categories (no parameters)`, async () => {
         await setupModel();
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory, listCategories } =
+        const { createCategory, publishCategory, listCategories } =
             useCategoryManageHandler(manageOpts);
 
         // Create an entry
@@ -324,15 +273,6 @@ describe("MANAGE - Resolvers", () => {
             throw new WebinyError(error);
         }
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].meta.status === "published",
-            {
-                name: "wait for entry to be published"
-            }
-        );
-
         const [response] = await listCategories();
 
         expect(response).toEqual({
@@ -346,7 +286,7 @@ describe("MANAGE - Resolvers", () => {
                             slug: category.slug,
                             createdOn: category.createdOn,
                             createdBy: {
-                                id: "12345678",
+                                id: "id-12345678",
                                 displayName: "John Doe",
                                 type: "admin"
                             },
@@ -433,7 +373,7 @@ describe("MANAGE - Resolvers", () => {
 
     test(`should create category`, async () => {
         await setupModel();
-        const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
         const [create1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const category1 = create1.data.createCategory.data;
@@ -443,7 +383,7 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -471,14 +411,6 @@ describe("MANAGE - Resolvers", () => {
                 data: {}
             }
         });
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === category1.id,
-            {
-                name: "list categories after create"
-            }
-        );
     });
 
     test(`should return validation error`, async () => {
@@ -496,6 +428,7 @@ describe("MANAGE - Resolvers", () => {
                         data: [
                             {
                                 error: "This field is required",
+                                storageId: expect.stringMatching("text@"),
                                 fieldId: "slug"
                             }
                         ],
@@ -510,7 +443,7 @@ describe("MANAGE - Resolvers", () => {
         const model = modelsWithoutValidation.find(m => m.modelId === "category");
         await setupModel(model);
 
-        const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
         const [result] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const category = result.data.createCategory.data;
@@ -520,7 +453,7 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "12345678",
+                id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
@@ -549,32 +482,35 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === category.id,
-            {
-                name: "list categories after create"
+        const [listResponse] = await listCategories();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: category.id
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
             }
-        );
+        });
     });
 
     test(`create category revision`, async () => {
         await setupModel();
 
-        const { until, createCategory, createCategoryFrom, listCategories } =
+        const { createCategory, createCategoryFrom, listCategories } =
             useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
         const { id } = create.data.createCategory.data;
-
-        // Wait until the new category is propagated to ES index (listCategories works with ES directly in MANAGE API)
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const [revision] = await createCategoryFrom({ revision: id });
 
@@ -588,7 +524,7 @@ describe("MANAGE - Resolvers", () => {
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
@@ -629,20 +565,7 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        // Wait until the new category revision is propagated to ES index
-        const response = await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                const entry = data.listCategories.data[0];
-                if (!entry) {
-                    return false;
-                }
-                return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
-            },
-            {
-                name: "list after create revision"
-            }
-        );
+        const [response] = await listCategories();
 
         expect(response).toEqual({
             data: {
@@ -661,7 +584,7 @@ describe("MANAGE - Resolvers", () => {
 
     test(`update category`, async () => {
         await setupModel();
-        const { until, createCategory, updateCategory, listCategories } =
+        const { createCategory, updateCategory, listCategories } =
             useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
@@ -680,7 +603,7 @@ describe("MANAGE - Resolvers", () => {
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "12345678",
+                            id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
@@ -719,40 +642,39 @@ describe("MANAGE - Resolvers", () => {
         const updatedOn = new Date(updatedCategory.savedOn).getTime();
         expect(createdOn).toBeLessThan(updatedOn);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories({}).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === updatedCategory.id,
-            {
-                name: "create category"
+        const [listResponse] = await listCategories();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: updatedCategory.id,
+                            savedOn: updatedCategory.savedOn,
+                            slug: "hardware-store",
+                            title: "New title"
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
             }
-        );
+        });
     });
 
     test(`delete category`, async () => {
         await setupModel();
-        const {
-            until,
-            createCategory,
-            createCategoryFrom,
-            getCategory,
-            listCategories,
-            deleteCategory
-        } = useCategoryManageHandler(manageOpts);
+        const { createCategory, createCategoryFrom, getCategory, listCategories, deleteCategory } =
+            useCategoryManageHandler(manageOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const rev1Category = revision1.data.createCategory.data;
         const { id } = revision1.data.createCategory.data;
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length > 0,
-            {
-                name: "create first revision"
-            }
-        );
-
         // Create 2 more revisions
         const [revision2] = await createCategoryFrom({ revision: id });
 
@@ -790,15 +712,6 @@ describe("MANAGE - Resolvers", () => {
         });
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "after create 2 more revisions"
-            }
-        );
-
         // Delete latest revision
         const [deleteId3Response] = await deleteCategory({ revision: id3 });
 
@@ -810,17 +723,6 @@ describe("MANAGE - Resolvers", () => {
                 }
             }
         });
-
-        // Wait until the previous revision is indexed
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data[0].id === id2;
-            },
-            {
-                name: "after delete latest revision"
-            }
-        );
 
         // Make sure revision #2 is now "latest"
         const [list2] = await listCategories();
@@ -851,28 +753,14 @@ describe("MANAGE - Resolvers", () => {
 
     test(`publish and unpublish a category`, async () => {
         await setupModel();
-        const {
-            until,
-            createCategory,
-            createCategoryFrom,
-            listCategories: listLatestCategories,
-            publishCategory,
-            unpublishCategory
-        } = useCategoryManageHandler(manageOpts);
+        const { createCategory, createCategoryFrom, publishCategory, unpublishCategory } =
+            useCategoryManageHandler(manageOpts);
 
         const { listCategories: listPublishedCategories } = useCategoryReadHandler(readOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id } = revision1.data.createCategory.data;
-
-        await until(
-            () => listLatestCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length > 0,
-            {
-                name: "create first revision"
-            }
-        );
 
         // Create 2 more revisions
         const [revision2] = await createCategoryFrom({ revision: id });
@@ -899,15 +787,6 @@ describe("MANAGE - Resolvers", () => {
 
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed
-        await until(
-            () => listLatestCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "create 2 more revisions"
-            }
-        );
-
         // Publish latest revision
         const [res] = await publishCategory({ revision: id3 });
 
@@ -919,15 +798,6 @@ describe("MANAGE - Resolvers", () => {
                 }
             }
         });
-
-        // Wait until the previous revision is indexed
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "publish latest revision"
-            }
-        );
 
         const [unpublish] = await unpublishCategory({ revision: id3 });
 
@@ -942,15 +812,6 @@ describe("MANAGE - Resolvers", () => {
 
         expect(unpublish.data.unpublishCategory.data.meta.status).toBe("unpublished");
 
-        // Wait until there are no categories available in READ API
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 0,
-            {
-                name: "unpublish revision"
-            }
-        );
-
         // Publish the latest revision again
         const [publish2] = await publishCategory({ revision: id3 });
 
@@ -963,14 +824,25 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        // Wait until the previous revision is indexed
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "publish latest revision again"
+        const [listResponse] = await listPublishedCategories();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: id3
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
             }
-        );
+        });
     });
 
     test(`list categories (contains, not_contains, in, not_in)`, async () => {
@@ -1108,17 +980,24 @@ describe("MANAGE - Resolvers", () => {
 
         const { vegetables } = await createCategories();
 
-        const { createProduct } = useProductManageHandler({
+        const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
-        const [potatoResponse] = await createProduct({
+        const [createPotatoResponse] = await createProduct({
             data: {
                 title: "Potato",
                 price: 99.9,
                 availableOn: "2020-12-25",
                 color: "white",
+                inStock: true,
+                itemsInStock: 101,
                 image: "image.png",
+                richText: [
+                    {
+                        type: "p"
+                    }
+                ],
                 availableSizes: ["s", "m"],
                 category: {
                     modelId: "category",
@@ -1127,6 +1006,7 @@ describe("MANAGE - Resolvers", () => {
                 variant: {
                     name: "Variant 1",
                     price: 100,
+                    images: ["testImage.jpg", "testImage2.jpg"],
                     category: {
                         modelId: "category",
                         id: vegetables.id
@@ -1135,6 +1015,7 @@ describe("MANAGE - Resolvers", () => {
                         {
                             name: "Option 1",
                             price: 10,
+                            image: "testImageOption1.jpg",
                             category: {
                                 modelId: "category",
                                 id: vegetables.id
@@ -1144,11 +1025,13 @@ describe("MANAGE - Resolvers", () => {
                                     modelId: "category",
                                     id: vegetables.id
                                 }
-                            ]
+                            ],
+                            longText: []
                         },
                         {
                             name: "Option 2",
                             price: 20,
+                            image: "testImageOption2.jpg",
                             category: {
                                 modelId: "category",
                                 id: vegetables.id
@@ -1158,22 +1041,38 @@ describe("MANAGE - Resolvers", () => {
                                     modelId: "category",
                                     id: vegetables.id
                                 }
-                            ]
+                            ],
+                            longText: ["long text"]
                         }
                     ]
                 }
             }
         });
 
-        expect(potatoResponse).toMatchObject({
+        expect(createPotatoResponse.errors).toBeUndefined();
+
+        expect(createPotatoResponse).toEqual({
             data: {
                 createProduct: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Potato",
                         price: 99.9,
+                        createdBy: expect.any(Object),
+                        meta: expect.any(Object),
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         availableOn: "2020-12-25",
                         color: "white",
+                        inStock: true,
+                        itemsInStock: 101,
+                        image: "image.png",
+                        richText: [
+                            {
+                                type: "p"
+                            }
+                        ],
                         availableSizes: ["s", "m"],
                         category: {
                             modelId: "category",
@@ -1183,6 +1082,7 @@ describe("MANAGE - Resolvers", () => {
                         variant: {
                             name: "Variant 1",
                             price: 100,
+                            images: ["testImage.jpg", "testImage2.jpg"],
                             category: {
                                 modelId: "category",
                                 id: vegetables.id,
@@ -1192,20 +1092,38 @@ describe("MANAGE - Resolvers", () => {
                                 {
                                     name: "Option 1",
                                     price: 10,
+                                    image: "testImageOption1.jpg",
                                     category: {
                                         modelId: "category",
                                         id: vegetables.id,
                                         entryId: vegetables.entryId
-                                    }
+                                    },
+                                    categories: [
+                                        {
+                                            modelId: "category",
+                                            id: vegetables.id,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ],
+                                    longText: []
                                 },
                                 {
                                     name: "Option 2",
                                     price: 20,
+                                    image: "testImageOption2.jpg",
                                     category: {
                                         modelId: "category",
                                         id: vegetables.id,
                                         entryId: vegetables.entryId
-                                    }
+                                    },
+                                    categories: [
+                                        {
+                                            modelId: "category",
+                                            id: vegetables.id,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ],
+                                    longText: ["long text"]
                                 }
                             ]
                         }
@@ -1214,9 +1132,31 @@ describe("MANAGE - Resolvers", () => {
                 }
             }
         });
+
+        const potato = createPotatoResponse.data.createProduct.data;
+
+        const [listResponse] = await listProducts();
+
+        expect(listResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            ...potato
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
     });
 
-    it("should have all entry revisions published", async () => {
+    test("should have all entry revisions published", async () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom, listCategories } =
             useCategoryManageHandler(manageOpts);
 
@@ -1253,6 +1193,35 @@ describe("MANAGE - Resolvers", () => {
         const [publishWebinyResponse] = await publishCategory({
             revision: createWebinyResponse.data.createCategory.data.id
         });
+
+        const createdWebinyCategory = createWebinyResponse.data.createCategory.data;
+
+        expect(publishWebinyResponse).toEqual({
+            data: {
+                publishCategory: {
+                    data: {
+                        ...createdWebinyCategory,
+                        meta: {
+                            ...createdWebinyCategory.meta,
+                            locked: true,
+                            status: "published",
+                            publishedOn: expect.any(String),
+                            revisions: createdWebinyCategory.meta.revisions.map((rev: any) => {
+                                return {
+                                    ...rev,
+                                    meta: {
+                                        ...rev.meta,
+                                        status: "published"
+                                    }
+                                };
+                            })
+                        },
+                        savedOn: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
         const webiny = publishWebinyResponse.data.publishCategory.data;
         /**
          * Only publish categories with these versions.
@@ -1265,33 +1234,56 @@ describe("MANAGE - Resolvers", () => {
                 revision: webiny.id
             });
 
+            expect(response).toEqual({
+                data: {
+                    createCategoryFrom: {
+                        data: {
+                            ...webiny,
+                            meta: {
+                                ...webiny.meta,
+                                locked: false,
+                                status: "draft",
+                                publishedOn: null,
+                                version: i + 2,
+                                revisions: expect.any(Array)
+                            },
+                            id: expect.stringMatching(`${webiny.entryId}#000`),
+                            createdOn: expect.any(String),
+                            savedOn: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            });
+
             const createdCategory = response.data.createCategoryFrom.data;
             if (publishCategoriesList.includes(createdCategory.meta.version) === false) {
                 continue;
             }
 
-            await publishCategory({
+            const [publishResponse] = await publishCategory({
                 revision: response.data.createCategoryFrom.data.id
             });
+
+            expect(publishResponse).toEqual({
+                data: {
+                    publishCategory: {
+                        data: {
+                            ...createdCategory,
+                            meta: {
+                                ...createdCategory.meta,
+                                locked: true,
+                                status: "published",
+                                publishedOn: expect.any(String),
+                                revisions: expect.any(Array)
+                            },
+                            savedOn: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            });
         }
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                if (data.listCategories.data.length !== 1) {
-                    return false;
-                }
-                const [last] = data.listCategories.data;
-                if (!last || last.meta.version !== 6 || last.meta.status !== "published") {
-                    return false;
-                }
-
-                return true;
-            },
-            {
-                name: "list categories after creating revisions"
-            }
-        );
 
         const [listResponse] = await listCategories();
 
@@ -1430,11 +1422,9 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    it("should get latest, published or exact category", async () => {
+    test("should get latest, published or exact category", async () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom } =
             useCategoryManageHandler(manageOpts);
-
-        const { listCategories: listPublishedCategories } = useCategoryReadHandler(readOpts);
 
         await setupModel();
 
@@ -1469,16 +1459,6 @@ describe("MANAGE - Resolvers", () => {
                 }
             }
         });
-
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data.length === 1;
-            },
-            {
-                name: "list categories after publishing"
-            }
-        );
 
         const [exactResponse] = await getCategory({
             revision: webiny.id

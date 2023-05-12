@@ -1,4 +1,4 @@
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
 import { DecryptedWcpProjectLicense, WcpProjectEnvironment } from "@webiny/wcp/types";
 import { WCP_FEATURE_LABEL } from "@webiny/wcp";
 
@@ -13,6 +13,8 @@ export interface WcpContextObject {
     ensureCanUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => void;
     incrementSeats: () => Promise<void>;
     decrementSeats: () => Promise<void>;
+    incrementTenants: () => Promise<void>;
+    decrementTenants: () => Promise<void>;
 }
 
 export interface CachedWcpProjectLicense {

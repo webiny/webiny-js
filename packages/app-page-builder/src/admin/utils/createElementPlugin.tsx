@@ -40,7 +40,7 @@ export default (el: PbEditorElement): void => {
                         src={el.preview.src}
                         // @ts-ignore
                         alt={el.name}
-                        style={{ width: 227, height: "auto", backgroundColor: "#fff" }}
+                        style={{ width: "100%", height: "auto", backgroundColor: "#fff" }}
                     />
                 );
             }

@@ -53,12 +53,12 @@ export const ChangeContentStatusButton: React.FC = () => {
     /**
      * If the content is "underReview" render disabled action button with tooltip.
      */
-    if (contentReview.status === ApwContentReviewStatus.UNDER_REVIEW) {
+    if (contentReview.reviewStatus === ApwContentReviewStatus.UNDER_REVIEW) {
         return (
             <PublishContentBox paddingX={5}>
                 <Tooltip
                     content={
-                        contentReview.status === ApwContentReviewStatus.UNDER_REVIEW
+                        contentReview.reviewStatus === ApwContentReviewStatus.UNDER_REVIEW
                             ? disabledButtonTooltip
                             : alreadyPublishedMessage
                     }
@@ -91,7 +91,7 @@ export const ChangeContentStatusButton: React.FC = () => {
     /**
      * If the content has already been published, render content status and "unpublish" CTA.
      */
-    if (contentReview.status === ApwContentReviewStatus.PUBLISHED) {
+    if (contentReview.reviewStatus === ApwContentReviewStatus.PUBLISHED) {
         return (
             <>
                 <ContentStatus content={contentReview.content} />

@@ -1,4 +1,4 @@
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useQuery } from "@apollo/react-hooks";
 import {
     LIST_COMMENTS_QUERY,
@@ -47,7 +47,7 @@ export const useCommentsList = (): UseCommentsListResult => {
         }
     );
 
-    const comments = get(data, "apw.listComments.data", []);
+    const comments = dotPropImmutable.get(data, "apw.listComments.data", []);
 
     return {
         comments,

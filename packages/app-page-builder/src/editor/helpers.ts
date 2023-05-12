@@ -8,7 +8,8 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    PbEditorElement
+    PbEditorElement,
+    PbElement
 } from "~/types";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -126,9 +127,9 @@ export const createDroppedElement = (
     return createElement(source.type, {}, target);
 };
 /**
- * Add unique id to elements recur
+ * Add unique id to elements recursively
  */
-const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorElement => {
+export const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorElement => {
     /**
      * Need to cast because typescript thinks we removed everything via Omit???
      */
@@ -145,6 +146,25 @@ const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorElement => {
         });
     }
     return element;
+};
+/**
+ * Remove id from elements recursively
+ */
+export const removeElementId = (el: PbElement): PbElement => {
+    // @ts-ignore
+    delete el.id;
+
+    el.elements = el.elements.map(el => {
+        // @ts-ignore
+        delete el.id;
+        if (el.elements && el.elements.length) {
+            el = removeElementId(el);
+        }
+
+        return el;
+    });
+
+    return el;
 };
 
 export const createBlockElements = (name: string): PbEditorElement => {

@@ -7,8 +7,10 @@ import {
 } from "~/editor/contexts/EventActionHandlerProvider";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { useRevisions } from "~/pageEditor/hooks/useRevisions";
-import { PageAtomType, RevisionsAtomType } from "~/pageEditor/state";
+import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
+import { PageAtomType, RevisionsAtomType, TemplateModeAtomType } from "~/pageEditor/state";
 import { PageEditorEventActionCallableState } from "~/pageEditor/types";
+import { PbElement, PbEditorElement } from "~/types";
 
 type ProviderProps = EventActionHandlerProviderProps<PageEditorEventActionCallableState>;
 
@@ -18,13 +20,49 @@ const PbEventActionHandler = createComponentPlugin(
         return function PbEventActionHandlerProvider(props) {
             const pageAtomValueRef = useRef<PageAtomType>();
             const revisionsAtomValueRef = useRef<RevisionsAtomType>();
+            const templateModeAtomValueRef = useRef<TemplateModeAtomType>();
             const [pageAtomValue, setPageAtomValue] = usePage();
             const [revisionsAtomValue] = useRevisions();
+            const [templateModeAtomValue] = useTemplateMode();
 
             useEffect(() => {
                 pageAtomValueRef.current = pageAtomValue;
                 revisionsAtomValueRef.current = revisionsAtomValue;
-            }, [pageAtomValue, revisionsAtomValue]);
+                templateModeAtomValueRef.current = templateModeAtomValue;
+            }, [pageAtomValue, revisionsAtomValue, templateModeAtomValue]);
+
+            const getElementTree: ProviderProps["getElementTree"] = useMemo(
+                () => [
+                    ...(props.getElementTree || []),
+                    next => {
+                        return async props => {
+                            const element = props?.element;
+                            const res = (await next({ element })) as PbElement;
+
+                            const cleanUpReferenceBlocks = (
+                                element: PbElement
+                            ): PbEditorElement => {
+                                if (element.data.blockId) {
+                                    return {
+                                        ...element,
+                                        elements: []
+                                    };
+                                } else {
+                                    return {
+                                        ...element,
+                                        elements: element.elements.map((child: PbElement) =>
+                                            cleanUpReferenceBlocks(child)
+                                        )
+                                    };
+                                }
+                            };
+
+                            return cleanUpReferenceBlocks(res);
+                        };
+                    }
+                ],
+                []
+            );
 
             const saveCallablesResults: ProviderProps["saveCallablesResults"] = useMemo(
                 () => [
@@ -49,6 +87,7 @@ const PbEventActionHandler = createComponentPlugin(
                 return {
                     page: pageAtomValueRef.current as PageAtomType,
                     revisions: revisionsAtomValueRef.current as RevisionsAtomType,
+                    isTemplateMode: templateModeAtomValueRef.current as TemplateModeAtomType,
                     ...callableState
                 };
             };
@@ -56,6 +95,7 @@ const PbEventActionHandler = createComponentPlugin(
             return (
                 <Component
                     {...props}
+                    getElementTree={getElementTree}
                     getCallableState={[...(props.getCallableState || []), getCallableState]}
                     saveCallablesResults={saveCallablesResults}
                 />

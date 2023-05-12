@@ -50,7 +50,7 @@ export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue
     if (loading || !reviewers || reviewers.length === 0) {
         return (
             <div style={{ width: "100%", height: "120px" }}>
-                <Typography use={"subtitle2"}>Loading reviewers...</Typography>
+                <Typography use={"body2"}>Loading reviewers...</Typography>
             </div>
         );
     }

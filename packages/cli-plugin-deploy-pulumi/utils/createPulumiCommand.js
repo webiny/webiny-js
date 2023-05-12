@@ -1,5 +1,5 @@
 const path = require("path");
-const { getProjectApplication } = require("@webiny/cli/utils");
+const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const createProjectApplicationWorkspace = require("./createProjectApplicationWorkspace");
 const login = require("./login");
 const loadEnvVariables = require("./loadEnvVariables");
@@ -22,6 +22,32 @@ const createPulumiCommand = ({
             }
 
             return plugin[name](inputs, context);
+        } else {
+            // Before proceeding, let's detect if multiple project applications were passed.
+            const folders = inputs.folder.split(",").map(current => current.trim());
+            if (folders.length > 1) {
+                for (let i = 0; i < folders.length; i++) {
+                    const folder = folders[i];
+                    await createPulumiCommand({ name, command, createProjectApplicationWorkspace })(
+                        {
+                            ...inputs,
+                            folder
+                        },
+                        context
+                    );
+                }
+
+                return;
+            }
+
+            // Detect if an app alias was provided.
+            const project = getProject();
+            if (project.config.appAliases) {
+                const appAliases = project.config.appAliases;
+                if (appAliases[inputs.folder]) {
+                    inputs.folder = appAliases[inputs.folder];
+                }
+            }
         }
 
         if (!inputs.env) {

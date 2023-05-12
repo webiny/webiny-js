@@ -1,33 +1,32 @@
+import WebinyError from "@webiny/error";
 import {
-    CmsEntry,
     CmsContext,
-    CmsModelFieldToGraphQLPlugin,
+    CmsEntry,
     CmsModel,
-    CmsModelField
+    CmsModelField,
+    CmsModelFieldToGraphQLPlugin
 } from "~/types";
-import { createReadTypeName } from "~/utils/createTypeName";
+import { createTypeName } from "~/utils/createTypeName";
 import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./helpers";
 
 interface RefFieldValue {
+    /**
+     * `id` is optional for backwards compatibility with records created before this property was introduced.
+     */
     id?: string;
     entryId: string;
     modelId: string;
 }
 
-interface UnionField {
-    model: CmsModel;
-    field: CmsModelField;
-    typeName: string;
-}
-
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
+    return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 };
 
 interface CreateListFilterParams {
     field: CmsModelField;
 }
+
 const createListFilters = ({ field }: CreateListFilterParams) => {
     return `
         ${field.fieldId}: RefFieldWhereInput
@@ -70,6 +69,33 @@ const getFieldModels = (field: CmsModelField): Pick<CmsModel, "modelId">[] => {
 
 const modelIdToTypeName = new Map();
 
+interface GetModelParams {
+    models: CmsModel[];
+    modelId: string;
+}
+
+const getModel = (params: GetModelParams): CmsModel => {
+    const { models, modelId } = params;
+
+    const model = models.find(item => item.modelId === modelId);
+    if (model) {
+        return model;
+    }
+    throw new WebinyError(
+        `Could not find model with ID "${modelId}" in the list of models.`,
+        "MODEL_NOT_FOUND",
+        {
+            modelId
+        }
+    );
+};
+
+const getModelSingularApiName = (params: GetModelParams): string => {
+    const model = getModel(params);
+
+    return model.singularApiName;
+};
+
 export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
     return {
         name: "cms-model-field-to-graphql-ref",
@@ -78,29 +104,52 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
         isSortable: false,
         isSearchable: true,
         read: {
-            createTypeField({ model, field }) {
-                const models = field.settings?.models || [];
+            createTypeField({ model, field, models }) {
+                const fieldModels = field.settings?.models || [];
                 const gqlType =
-                    models.length > 1
+                    fieldModels.length > 1
                         ? createUnionTypeName(model, field)
-                        : createReadTypeName(models[0].modelId);
+                        : getModelSingularApiName({ models, modelId: fieldModels[0].modelId });
+                const typeDefs =
+                    fieldModels.length > 1
+                        ? `union ${gqlType} = ${getFieldModels(field)
+                              .map(({ modelId }) =>
+                                  getModelSingularApiName({
+                                      models,
+                                      modelId
+                                  })
+                              )
+                              .join(" | ")}`
+                        : "";
 
-                return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
+                return {
+                    fields:
+                        field.fieldId +
+                        `(populate: Boolean = true): ${
+                            field.multipleValues ? `[${gqlType}!]` : gqlType
+                        }`,
+                    typeDefs
+                };
             },
             /**
              * TS is complaining about mixed types for createResolver.
              * TODO @ts-refactor @pavel Maybe we should have a single createResolver method?
              */
             // @ts-ignore
-            createResolver(params) {
-                const { field } = params;
+            createResolver({ field, models }) {
                 // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
-                const models = field.settings?.models || [];
-                for (const item of models) {
-                    modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
+                const fieldModels = field.settings?.models || [];
+                for (const item of fieldModels) {
+                    modelIdToTypeName.set(
+                        item.modelId,
+                        getModelSingularApiName({
+                            models,
+                            modelId: item.modelId
+                        })
+                    );
                 }
 
-                return async (parent, _, context: CmsContext) => {
+                return async (parent, args, context: CmsContext) => {
                     const { cms } = context;
 
                     // Get field value for this entry
@@ -108,6 +157,9 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
 
                     if (!initialValue) {
                         return null;
+                    }
+                    if (args.populate === false) {
+                        return initialValue;
                     }
 
                     if (field.multipleValues) {
@@ -158,7 +210,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     const value = initialValue as RefFieldValue;
 
                     // Get model manager, to get access to CRUD methods
-                    const model = await cms.getModelManager(value.modelId);
+                    const model = await cms.getEntryManager(value.modelId);
 
                     let revisions: CmsEntry[];
                     // `read` API works with `published` data
@@ -182,40 +234,9 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     };
                 };
             },
-            createSchema({ models }) {
-                const unionFields: UnionField[] = [];
-                for (const model of models) {
-                    // Generate a dedicated union type for every `ref` field which has more than 1 content model assigned.
-                    model.fields
-                        .filter(
-                            field =>
-                                field.type === "ref" && (field.settings?.models || []).length > 1
-                        )
-                        .forEach(field =>
-                            unionFields.push({
-                                model,
-                                field,
-                                typeName: createUnionTypeName(model, field)
-                            })
-                        );
-                }
-                const unionFieldsTypeDef = unionFields
-                    .map(
-                        ({ field, typeName }) =>
-                            `union ${typeName} = ${getFieldModels(field)
-                                .map(({ modelId }) => createReadTypeName(modelId))
-                                .join(" | ")}`
-                    )
-                    .join("\n");
-
-                const filteringTypeDef = `
-                ${createFilteringTypeDef()}
-                
-                ${unionFieldsTypeDef}
-            `;
-
+            createSchema() {
                 return {
-                    typeDefs: filteringTypeDef,
+                    typeDefs: createFilteringTypeDef(),
                     resolvers: {}
                 };
             },
@@ -224,23 +245,25 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createSchema() {
                 /**
-                 * entryId in RefFieldInput is deprecated but cannot mark it as GraphQL does not allow marking input fields as deprecated
+                 * `entryId` in `RefFieldInput` is deprecated, but we cannot mark it as such in GraphQL.
+                 * `entryId` is extracted at runtime from the `id` which contains both the `entryId` and revision number.
+                 * See: `packages/api-headless-cms/src/crud/contentEntry/referenceFieldsMapping.ts`
                  */
                 return {
-                    typeDefs: `
-                    type RefField {
-                        modelId: String!
-                        entryId: ID!
-                        id: ID!
-                    }
-                    
-                    input RefFieldInput {
-                        modelId: String!
-                        id: ID!
-                    }
-                    
-                    ${createFilteringTypeDef()}
-                `,
+                    typeDefs: /* GraphQL */ `
+                        type RefField {
+                            modelId: String!
+                            entryId: ID!
+                            id: ID!
+                        }
+
+                        input RefFieldInput {
+                            modelId: String!
+                            id: ID!
+                        }
+
+                        ${createFilteringTypeDef()}
+                    `,
                     resolvers: {
                         RefField: {
                             entryId: (parent: RefFieldValue) => {

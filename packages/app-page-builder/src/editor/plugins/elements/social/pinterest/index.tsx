@@ -15,7 +15,9 @@ import {
     SimpleButton,
     classes
 } from "../../../elementSettings/components/StyledComponents";
-import { PbEditorElementPluginArgs } from "../../../../../types";
+import { PbEditorElementPluginArgs } from "~/types";
+import { isLegacyRenderingEngine } from "~/utils";
+import { PePinterest } from "~/editor/plugins/elements/social/pinterest/PePinterest";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -52,8 +54,12 @@ export default (args: PbEditorElementPluginArgs = {}) => {
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
             settings: args.settings,
-            render({ element }) {
-                return <PinterestEmbed element={element} />;
+            render(props) {
+                if (isLegacyRenderingEngine) {
+                    return <PinterestEmbed element={props.element} />;
+                }
+                // @ts-ignore Sync `elements` property type.
+                return <PePinterest {...props} />;
             }
         }),
         createEmbedSettingsPlugin({

@@ -5,7 +5,7 @@ const NodeEnvironment = require("jest-environment-node");
 /**
  * For this to work it must load plugins that have already been built
  */
-const { createStorageOperations } = require("../../dist/index");
+const { createStorageOperations, createCmsEntryFieldSortingPlugin } = require("../../dist/index");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -33,6 +33,26 @@ class CmsTestEnvironment extends NodeEnvironment {
                 driver: new DynamoDbDriver({
                     documentClient
                 })
+            }),
+            createCmsEntryFieldSortingPlugin({
+                canUse: params => {
+                    const { fieldId } = params;
+                    return fieldId === "customSorter";
+                },
+                createSort: params => {
+                    const { order, fields } = params;
+
+                    const field = Object.values(fields).find(f => f.fieldId === "createdBy");
+                    if (!field) {
+                        throw new Error("Impossible, but it seems there is no field createdBy.");
+                    }
+                    return {
+                        reverse: order === "DESC",
+                        valuePath: "createdBy.id",
+                        field,
+                        fieldId: field.fieldId
+                    };
+                }
             })
         ];
 

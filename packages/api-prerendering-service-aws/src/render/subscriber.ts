@@ -1,22 +1,12 @@
-import { EventBridgeEvent } from "aws-lambda";
 import SqsClient, { SendMessageBatchRequestEntry } from "aws-sdk/clients/sqs";
 import lodashChunk from "lodash/chunk";
-import { nanoid } from "nanoid";
-
 import {
     RenderEvent,
     PrerenderingServiceStorageOperations,
     RenderPagesEvent
 } from "@webiny/api-prerendering-service/types";
-import { ArgsContext } from "@webiny/handler-args/types";
-import { Context } from "@webiny/handler/types";
-import { HandlerPlugin } from "@webiny/handler";
-
-export type HandlerArgs = EventBridgeEvent<"RenderPages", RenderPagesEvent>;
-
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
-    //
-}
+import { createEventBridgeEventHandler } from "@webiny/handler-aws";
+import { generateId } from "@webiny/utils";
 
 export interface HandlerConfig {
     storageOperations: PrerenderingServiceStorageOperations;
@@ -26,13 +16,12 @@ export default (params: HandlerConfig) => {
     const { storageOperations } = params;
     const sqsClient = new SqsClient();
 
-    return new HandlerPlugin<HandlerContext>(async context => {
-        if (context.invocationArgs["detail-type"] !== "RenderPages") {
+    return createEventBridgeEventHandler<"RenderPages", RenderPagesEvent>(async ({ payload }) => {
+        if (payload["detail-type"] !== "RenderPages") {
             return;
         }
 
-        const event = context.invocationArgs.detail;
-        const tenant = event.tenant;
+        const event = payload.detail;
         const variant = event.variant;
 
         // Check if a specific variant rerender is requested.
@@ -51,29 +40,37 @@ export default (params: HandlerConfig) => {
         // Event might contain specific paths to exclude from full rerender.
         const exclude = event.exclude || [];
 
-        if (event.path === "*") {
-            const renders = await storageOperations.listRenders({
-                where: { tenant }
-            });
+        let tenants = [event.tenant];
+        if (event.tenant === "*") {
+            // If `*` is passed, we need to process this event on all tenants.
+            tenants = await storageOperations.getTenantIds();
+        }
 
-            renders.forEach(addRender);
-        } else if (event.tag) {
-            const renders = await storageOperations.listRenders({
-                where: {
-                    tenant,
-                    tag: event.tag
-                }
-            });
+        for (const tenant of tenants) {
+            if (event.path === "*") {
+                const renders = await storageOperations.listRenders({
+                    where: { tenant }
+                });
 
-            renders.forEach(addRender);
-        } else {
-            addRender(event);
+                renders.forEach(addRender);
+            } else if (event.tag) {
+                const renders = await storageOperations.listRenders({
+                    where: {
+                        tenant,
+                        tag: event.tag
+                    }
+                });
+
+                renders.forEach(addRender);
+            } else {
+                addRender({ ...event, tenant });
+            }
         }
 
         const entries: SendMessageBatchRequestEntry[] = [];
 
         for (const item of toRender) {
-            const messageId = nanoid(8);
+            const messageId = generateId(8);
 
             entries.push({
                 // A batch entry ID can only contain alphanumeric characters, hyphens and underscores.

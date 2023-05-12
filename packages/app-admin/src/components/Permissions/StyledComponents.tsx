@@ -17,6 +17,6 @@ interface PermissionInfoProps {
 }
 export const PermissionInfo: React.FC<PermissionInfoProps> = ({ title }) => (
     <div className={flexClass}>
-        <Typography use={"subtitle2"}>{title}</Typography>
+        <Typography use={"body2"}>{title}</Typography>
     </div>
 );

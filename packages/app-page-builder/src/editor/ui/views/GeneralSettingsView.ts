@@ -30,7 +30,8 @@ export class GeneralSettingsView extends PageSettingsFormView {
             new InputElement("title", {
                 name: "title",
                 label: "Title",
-                description: "Page title.",
+                description:
+                    "Page title. Will be used on the public website if the SEO title wasn't specified (SEO settings tab).",
                 validators: () => validation.create("required")
             })
         );
@@ -76,8 +77,7 @@ export class GeneralSettingsView extends PageSettingsFormView {
         this.addField(
             new FileManagerElement("image", {
                 name: "settings.general.image",
-                label: "Page Image",
-                onChangePickAttributes: ["id", "src"]
+                label: "Page Image"
             })
         );
 

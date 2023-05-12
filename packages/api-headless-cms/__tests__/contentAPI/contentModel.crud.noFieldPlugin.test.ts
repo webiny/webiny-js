@@ -1,5 +1,5 @@
 import { CmsGroup, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
     name: "cms-model-field-to-graphql-custom-test-field",
@@ -55,6 +55,8 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Test Content model",
                 modelId: "testContentModel",
+                singularApiName: "TestContentModel",
+                pluralApiName: "TestContentModels",
                 group: contentModelGroup.id
             }
         }).then(async ([response]) => {
@@ -83,6 +85,7 @@ describe("content model test no field plugin", () => {
                                 name: "text-input"
                             },
                             label: "test",
+                            storageId: "test",
                             fieldId: "test",
                             id: "aaa",
                             predefinedValues: {
@@ -97,6 +100,7 @@ describe("content model test no field plugin", () => {
                                 name: "text-input"
                             },
                             label: "test",
+                            storageId: "test",
                             fieldId: "test",
                             id: "bbb",
                             predefinedValues: {
@@ -138,6 +142,8 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Event",
                 modelId: "event",
+                singularApiName: "Event",
+                pluralApiName: "Events",
                 group: contentModelGroup.id
             }
         });
@@ -153,7 +159,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Title",
                         type: "text",
-                        fieldId: "title",
+                        storageId: "title",
                         validation: [],
                         listValidation: [],
                         placeholderText: "placeholder text",
@@ -167,7 +173,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Slug",
                         type: "text",
-                        fieldId: "slug",
+                        storageId: "slug",
                         validation: [],
                         listValidation: [],
                         placeholderText: "placeholder text",
@@ -181,7 +187,7 @@ describe("content model test no field plugin", () => {
                         helpText: "",
                         label: "Test",
                         type: "custom-test-field",
-                        fieldId: "test",
+                        storageId: "test",
                         validation: [],
                         listValidation: [],
                         renderer: {
@@ -196,6 +202,8 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Bug",
                 modelId: "bug",
+                singularApiName: "Bug",
+                pluralApiName: "Bugs",
                 group: contentModelGroup.id
             }
         });

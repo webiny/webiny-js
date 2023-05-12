@@ -1,21 +1,58 @@
 import { Topic } from "@webiny/pubsub/types";
-import { BeforeModelUpdateTopicParams, HeadlessCmsStorageOperations } from "~/types";
-import { PluginsContainer } from "@webiny/plugins";
-import { validateModelFields } from "./validateModelFields";
+import { OnModelBeforeUpdateTopicParams, CmsContext } from "~/types";
+import { validateModel } from "./validateModel";
+import { validateLayout } from "./validateLayout";
+import { validateSingularApiName } from "./validate/singularApiName";
+import { validatePluralApiName } from "./validate/pluralApiName";
+import { validateEndingAllowed } from "~/crud/contentModel/validate/endingAllowed";
 
 interface AssignBeforeModelUpdateParams {
-    onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
-    storageOperations: HeadlessCmsStorageOperations;
-    plugins: PluginsContainer;
+    onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
+    context: CmsContext;
 }
 
-export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) => {
-    const { onBeforeModelUpdate, plugins } = params;
+export const assignModelBeforeUpdate = (params: AssignBeforeModelUpdateParams) => {
+    const { onModelBeforeUpdate, context } = params;
 
-    onBeforeModelUpdate.subscribe(async params => {
-        await validateModelFields({
-            model: params.model,
-            plugins
+    onModelBeforeUpdate.subscribe(async ({ model: newModel, original }) => {
+        /**
+         * First we go through the layout...
+         */
+        validateLayout(newModel.layout, newModel.fields);
+
+        const models = await context.security.withoutAuthorization(async () => {
+            return (await context.cms.listModels()).filter(model => {
+                return model.modelId !== newModel.modelId;
+            });
+        });
+
+        validateEndingAllowed({
+            model: newModel
+        });
+        /**
+         * We need to check for the existence of:
+         * - modelId
+         * - singularApiName
+         * - pluralApiName
+         */
+        for (const model of models) {
+            validateSingularApiName({
+                existingModel: model,
+                model: newModel
+            });
+            validatePluralApiName({
+                existingModel: model,
+                model: newModel
+            });
+        }
+        /**
+         * then the model and fields...
+         */
+        await validateModel({
+            models,
+            model: newModel,
+            original,
+            context
         });
     });
 };

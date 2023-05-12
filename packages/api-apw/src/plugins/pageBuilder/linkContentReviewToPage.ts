@@ -1,5 +1,3 @@
-import set from "lodash/set";
-import get from "lodash/get";
 import Error from "@webiny/error";
 import { AdvancedPublishingWorkflow, ApwContentTypes } from "~/types";
 import { updatePageSettings } from "./utils";
@@ -13,38 +11,52 @@ interface LinkContentReviewToPageParams {
 export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) => {
     const { apw, pageBuilder } = params;
 
-    apw.contentReview.onAfterContentReviewCreate.subscribe(async ({ contentReview }) => {
+    apw.contentReview.onContentReviewAfterCreate.subscribe(async ({ contentReview }) => {
         const { content } = contentReview;
 
-        if (content.type === ApwContentTypes.PAGE) {
-            await updatePageSettings({
-                getPage: pageBuilder.getPage,
-                updatePage: pageBuilder.updatePage,
-                uniquePageId: content.id,
-                getNewSettings: settings => {
-                    return set(settings, "apw.contentReviewId", contentReview.id);
-                }
-            });
+        if (content.type !== ApwContentTypes.PAGE) {
+            return;
         }
+        await updatePageSettings({
+            getPage: pageBuilder.getPage,
+            updatePage: pageBuilder.updatePage,
+            uniquePageId: content.id,
+            getNewSettings: settings => {
+                return {
+                    ...settings,
+                    apw: {
+                        ...(settings.apw || {}),
+                        contentReviewId: contentReview.id
+                    }
+                };
+            }
+        });
     });
 
-    apw.contentReview.onAfterContentReviewDelete.subscribe(async ({ contentReview }) => {
+    apw.contentReview.onContentReviewAfterDelete.subscribe(async ({ contentReview }) => {
         const { content } = contentReview;
 
-        if (content.type === ApwContentTypes.PAGE) {
-            await updatePageSettings({
-                getPage: pageBuilder.getPage,
-                updatePage: pageBuilder.updatePage,
-                uniquePageId: content.id,
-                getNewSettings: settings => {
-                    return set(settings, "apw.contentReviewId", null);
-                }
-            });
+        if (content.type !== ApwContentTypes.PAGE) {
+            return;
         }
+        await updatePageSettings({
+            getPage: pageBuilder.getPage,
+            updatePage: pageBuilder.updatePage,
+            uniquePageId: content.id,
+            getNewSettings: settings => {
+                return {
+                    ...settings,
+                    apw: {
+                        ...(settings.apw || {}),
+                        contentReviewId: null
+                    }
+                };
+            }
+        });
     });
 
-    pageBuilder.onBeforePageDelete.subscribe(async ({ page }) => {
-        const contentReviewId = get(page, "settings.apw.contentReviewId");
+    pageBuilder.onPageBeforeDelete.subscribe(async ({ page }) => {
+        const contentReviewId = page.settings?.apw?.contentReviewId;
         if (!contentReviewId) {
             return;
         }
@@ -52,13 +64,13 @@ export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) =
         let contentReview;
         try {
             contentReview = await apw.contentReview.get(contentReviewId);
-        } catch (e) {
+        } catch (ex) {
             /**
              * We're handling the case whereby "contentReviewId" is still linked to page;
              * even when the contentReview entry has been deleted. In that case, we'll allow page deletion.
              */
-            if (e.code !== "NOT_FOUND") {
-                throw e;
+            if (ex.code !== "NOT_FOUND") {
+                throw ex;
             }
         }
 

@@ -1,8 +1,6 @@
-import { base as baseConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/base";
+import { getBaseConfiguration } from "@webiny/api-elasticsearch";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/CmsEntryElasticsearchIndexPlugin";
 
 export const base = new CmsEntryElasticsearchIndexPlugin({
-    body: {
-        ...baseConfiguration
-    }
+    body: getBaseConfiguration()
 });

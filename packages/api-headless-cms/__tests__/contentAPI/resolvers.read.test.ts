@@ -1,10 +1,10 @@
 import { CmsGroup } from "~/types";
-import { GraphQLHandlerParams, useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { GraphQLHandlerParams, useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
-import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
+import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
+import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 
 const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
     {
@@ -38,7 +38,7 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
 
 const categoryManagerHelper = async (manageOpts: GraphQLHandlerParams) => {
     // Use "manage" API to create and publish entries
-    const { until, createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
+    const { createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
 
     const [fruitsResponse] = await createCategory({
         data: {
@@ -69,7 +69,6 @@ const categoryManagerHelper = async (manageOpts: GraphQLHandlerParams) => {
 
     return {
         sleep,
-        until,
         fruits: publishedFruitsResponse.data.publishCategory.data,
         vegetables: publishedVegetablesResponse.data.publishCategory.data,
         animals: publishedAnimalsResponse.data.publishCategory.data,
@@ -103,6 +102,8 @@ describe("READ - Resolvers", () => {
             data: {
                 name: targetModel.name,
                 modelId: targetModel.modelId,
+                singularApiName: targetModel.singularApiName,
+                pluralApiName: targetModel.pluralApiName,
                 group: group.id
             }
         });
@@ -122,12 +123,12 @@ describe("READ - Resolvers", () => {
 
         if (update.errors) {
             console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
+            process.exit(update.errors[0].message);
         }
 
         if (update.data.updateContentModel.error) {
             console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
-            process.exit(1);
+            process.exit(update.data.updateContentModel.error.message);
         }
         return targetModel;
     };
@@ -148,7 +149,7 @@ describe("READ - Resolvers", () => {
 
     test("should return a record by id", async () => {
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -173,21 +174,11 @@ describe("READ - Resolvers", () => {
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                getCategory({
-                    where: {
-                        id: categoryId
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => {
-                return !!data.getCategory.data.id;
-            },
-            {
-                name: "getCategory"
+        const [result] = await getCategory({
+            where: {
+                id: categoryId
             }
-        );
+        });
 
         expect(result).toEqual({
             data: {
@@ -403,21 +394,14 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit)`, async () => {
-        // create categories and return until from manage handler
-        const { until, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    limit: 2
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.meta.totalCount === 3,
-            { name: "list entries with limit" }
-        );
+        const [result] = await listCategories({
+            limit: 2
+        });
 
         expect(result).toEqual({
             data: {
@@ -450,20 +434,14 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit + after)`, async () => {
-        // create categories and return until from manage handler
-        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         // we need list with first result because of cursor that we need for later
-        const firstResult = await until(
-            () =>
-                listCategories({
-                    limit: 1
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === animals.id,
-            { name: "list entries with limit after" }
-        );
+        const [firstResult] = await listCategories({
+            limit: 1
+        });
 
         expect(firstResult).toEqual({
             data: {
@@ -489,16 +467,10 @@ describe("READ - Resolvers", () => {
 
         const firstCursor = firstResult.data.listCategories.meta.cursor;
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const secondResult = await until(
-            () =>
-                listCategories({
-                    limit: 1,
-                    after: firstCursor
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 1,
-            { name: "list categories after first cursor with limit" }
-        );
+        const [secondResult] = await listCategories({
+            limit: 1,
+            after: firstCursor
+        });
 
         expect(secondResult).toEqual({
             data: {
@@ -524,16 +496,10 @@ describe("READ - Resolvers", () => {
 
         const secondCursor = secondResult.data.listCategories.meta.cursor;
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const thirdResult = await until(
-            () =>
-                listCategories({
-                    limit: 1,
-                    after: secondCursor
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 1,
-            { name: "list categories after second cursor with limit" }
-        );
+        const [thirdResult] = await listCategories({
+            limit: 1,
+            after: secondCursor
+        });
 
         expect(thirdResult).toEqual({
             data: {
@@ -559,16 +525,10 @@ describe("READ - Resolvers", () => {
 
         // also, when limit 2 with first cursor, there should be 2 categories listed
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const fourthResult = await until(
-            () =>
-                listCategories({
-                    limit: 2,
-                    after: firstCursor
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 2,
-            { name: "list categories after first cursor with limit" }
-        );
+        const [fourthResult] = await listCategories({
+            limit: 2,
+            after: firstCursor
+        });
         expect(fourthResult).toEqual({
             data: {
                 listCategories: {
@@ -600,19 +560,13 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort ASC)`, async () => {
-        // create categories and return until from manage handler
-        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    sort: ["savedOn_ASC"]
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 3
-        );
+        const [result] = await listCategories({
+            sort: ["savedOn_ASC"]
+        });
 
         expect(result).toEqual({
             data: {
@@ -652,20 +606,13 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort DESC)`, async () => {
-        // create categories and return until from manage handler
-        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    sort: ["title_DESC"]
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 3,
-            { name: "list entries by title DESC" }
-        );
+        const [result] = await listCategories({
+            sort: ["title_DESC"]
+        });
 
         expect(result).toEqual({
             data: {
@@ -705,22 +652,15 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that contains given value", async () => {
-        // create categories and return until from manage handler
-        const { until, animals } = await categoryManagerHelper(manageOpts);
+        const { animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        title_contains: "NIMal"
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === animals.id,
-            { name: "list categories with NIMal" }
-        );
+        const [result] = await listCategories({
+            where: {
+                title_contains: "NIMal"
+            }
+        });
 
         expect(result).toEqual({
             data: {
@@ -746,21 +686,15 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that do not contains given value", async () => {
-        // create categories and return until from manage handler
-        const { until, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        title_not_contains: "fruits"
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 2
-        );
+        const [result] = await listCategories({
+            where: {
+                title_not_contains: "fruits"
+            }
+        });
 
         expect(result).toEqual({
             data: {
@@ -793,21 +727,15 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are in given values", async () => {
-        // create categories and return until from manage handler
-        const { until, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        slug_in: [vegetables.slug, animals.slug]
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 2
-        );
+        const [result] = await listCategories({
+            where: {
+                slug_in: [vegetables.slug, animals.slug]
+            }
+        });
 
         expect(result).toEqual({
             data: {
@@ -840,21 +768,15 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are not in given values", async () => {
-        // create categories and return until from manage handler
-        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        slug_not_in: [vegetables.slug, animals.slug]
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 1
-        );
+        const [result] = await listCategories({
+            where: {
+                slug_not_in: [vegetables.slug, animals.slug]
+            }
+        });
 
         expect(result).toEqual({
             data: {
@@ -880,25 +802,18 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are created after given date", async () => {
-        // create categories and return until from manage handler
-        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const date = new Date();
         date.setTime(date.getTime() - 86400000);
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        createdOn_gt: date
-                    },
-                    sort: ["createdOn_ASC"]
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 3,
-            { name: "list entries with createdOn greater than given date" }
-        );
+        const [result] = await listCategories({
+            where: {
+                createdOn_gt: date
+            },
+            sort: ["createdOn_ASC"]
+        });
 
         expect(result).toEqual({
             data: {
@@ -938,24 +853,16 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are created after or at given date: one returned", async () => {
-        // create categories and return until from manage handler
-        const { until, animals } = await categoryManagerHelper(manageOpts);
+        const { animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        createdOn_gte: animals.createdOn
-                    },
-                    sort: ["createdOn_ASC"]
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 1,
-            {
-                name: "after create categories"
-            }
-        );
+
+        const [result] = await listCategories({
+            where: {
+                createdOn_gte: animals.createdOn
+            },
+            sort: ["createdOn_ASC"]
+        });
 
         expect(result).toEqual({
             data: {
@@ -981,24 +888,17 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are created before given date: none returned", async () => {
-        // create categories and return until from manage handler
-        const { until } = await categoryManagerHelper(manageOpts);
-
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const date = new Date();
         date.setTime(date.getTime() - 86400000 * 100);
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        createdOn_lt: date
-                    },
-                    sort: ["createdOn_ASC"]
-                }).then(([data]) => data),
-            ({ data }: any) => Array.isArray(data.listCategories.data)
-        );
+
+        const [result] = await listCategories({
+            where: {
+                createdOn_lt: date
+            },
+            sort: ["createdOn_ASC"]
+        });
 
         expect(result).toEqual({
             data: {
@@ -1016,22 +916,16 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are created before or at given date: one returned", async () => {
-        // create categories and return until from manage handler
-        const { until, fruits, vegetables } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        savedOn_lte: vegetables.savedOn
-                    },
-                    sort: ["savedOn_ASC"]
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 2
-        );
+        const [result] = await listCategories({
+            where: {
+                savedOn_lte: vegetables.savedOn
+            },
+            sort: ["savedOn_ASC"]
+        });
 
         expect(result).toEqual({
             data: {
@@ -1064,8 +958,7 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are not created between given dates", async () => {
-        // create categories and return until from manage handler
-        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -1073,17 +966,13 @@ describe("READ - Resolvers", () => {
         from.setTime(from.getTime() - 10);
         const to = new Date(vegetables.savedOn);
         to.setTime(to.getTime() + 10);
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const result = await until(
-            () =>
-                listCategories({
-                    where: {
-                        savedOn_not_between: [from, to]
-                    },
-                    sort: ["savedOn_ASC"]
-                }).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 2
-        );
+
+        const [result] = await listCategories({
+            where: {
+                savedOn_not_between: [from, to]
+            },
+            sort: ["savedOn_ASC"]
+        });
 
         expect(result).toEqual({
             data: {
@@ -1121,7 +1010,7 @@ describe("READ - Resolvers", () => {
         const { vegetables } = await categoryManagerHelper({
             ...manageOpts
         });
-        const { createProduct, listProducts, until } = useProductManageHandler({
+        const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
@@ -1172,16 +1061,6 @@ describe("READ - Resolvers", () => {
         });
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products available
-        await until(
-            () =>
-                listProducts({
-                    where: {}
-                }).then(([data]) => data),
-            ({ data }: any) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories - range" }
-        );
-
         const [response] = await listProducts({
             where: {
                 price_gte: 99,
@@ -1210,7 +1089,7 @@ describe("READ - Resolvers", () => {
         const { vegetables } = await categoryManagerHelper({
             ...manageOpts
         });
-        const { createProduct, listProducts, until } = useProductManageHandler({
+        const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
@@ -1263,15 +1142,6 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products available
-        await until(
-            () => listProducts({}).then(([data]) => data),
-            ({ data }: any) => data.listProducts.data.length === 3,
-            {
-                name: "list all products in vegetables categories - sort title"
-            }
-        );
-
         const [responseAsc] = await listProducts({
             sort: ["title_ASC"]
         });
@@ -1315,7 +1185,7 @@ describe("READ - Resolvers", () => {
         const { vegetables } = await categoryManagerHelper({
             ...manageOpts
         });
-        const { createProduct, listProducts, until } = useProductManageHandler({
+        const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
@@ -1368,15 +1238,6 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products available
-        await until(
-            () => listProducts({}).then(([data]) => data),
-            ({ data }: any) => data.listProducts.data.length === 3,
-            {
-                name: "list all products in vegetables categories - sort price"
-            }
-        );
-
         const [responseAsc] = await listProducts({
             sort: ["price_ASC"]
         });
@@ -1421,9 +1282,13 @@ describe("READ - Resolvers", () => {
             ...manageOpts
         });
 
-        const { until, getProduct } = useProductReadHandler({ ...readOpts });
+        const { getProduct } = useProductReadHandler({ ...readOpts });
 
-        const { createProduct, publishProduct } = useProductManageHandler({
+        const {
+            createProduct,
+            publishProduct,
+            getProduct: manageGetProduct
+        } = useProductManageHandler({
             ...manageOpts
         });
 
@@ -1432,7 +1297,7 @@ describe("READ - Resolvers", () => {
             id: vegetables.id
         };
 
-        const [potatoResponse] = await createProduct({
+        const [createResponse] = await createProduct({
             data: {
                 title: "Potato",
                 price: 99.9,
@@ -1449,31 +1314,187 @@ describe("READ - Resolvers", () => {
                         {
                             name: "Option 1",
                             price: 10,
-                            category: categoryValue
+                            category: categoryValue,
+                            categories: [categoryValue]
                         },
                         {
                             name: "Option 2",
                             price: 20,
-                            category: categoryValue
+                            category: categoryValue,
+                            categories: [categoryValue]
                         }
                     ]
                 }
             }
         });
 
-        const potato = potatoResponse.data.createProduct.data;
+        expect(createResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        title: "Potato",
+                        price: 99.9,
+                        availableOn: "2020-12-25",
+                        color: "white",
+                        image: "image.png",
+                        availableSizes: ["s", "m"],
+                        category: {
+                            ...categoryValue,
+                            entryId: vegetables.entryId
+                        },
+                        variant: {
+                            name: "Variant 1",
+                            price: 100,
+                            category: {
+                                ...categoryValue,
+                                entryId: vegetables.entryId
+                            },
+                            options: [
+                                {
+                                    name: "Option 1",
+                                    price: 10,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                },
+                                {
+                                    name: "Option 2",
+                                    price: 20,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
 
-        await publishProduct({ revision: potato.id });
+        const potato = createResponse.data.createProduct.data;
+        const [getAfterCreateResponse] = await manageGetProduct({
+            revision: potato.id
+        });
 
-        const result = await until(
-            () =>
-                getProduct({
-                    where: {
-                        id: potato.id
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => !!data.getProduct.data.id
-        );
+        expect(getAfterCreateResponse).toMatchObject({
+            data: {
+                getProduct: {
+                    data: {
+                        id: potato.id,
+                        title: "Potato",
+                        price: 99.9,
+                        availableOn: "2020-12-25",
+                        color: "white",
+                        image: "image.png",
+                        availableSizes: ["s", "m"],
+                        category: {
+                            ...categoryValue,
+                            entryId: vegetables.entryId
+                        },
+                        variant: {
+                            name: "Variant 1",
+                            price: 100,
+                            category: {
+                                ...categoryValue,
+                                entryId: vegetables.entryId
+                            },
+                            options: [
+                                {
+                                    name: "Option 1",
+                                    price: 10,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                },
+                                {
+                                    name: "Option 2",
+                                    price: 20,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [publishResponse] = await publishProduct({ revision: potato.id });
+
+        expect(publishResponse).toMatchObject({
+            data: {
+                publishProduct: {
+                    data: {
+                        id: potato.id,
+                        meta: {
+                            status: "published"
+                        },
+                        title: "Potato",
+                        price: 99.9,
+                        availableOn: "2020-12-25",
+                        color: "white",
+                        image: "image.png",
+                        availableSizes: ["s", "m"],
+                        category: {
+                            ...categoryValue,
+                            entryId: vegetables.entryId
+                        },
+                        variant: {
+                            name: "Variant 1",
+                            price: 100,
+                            category: {
+                                ...categoryValue,
+                                entryId: vegetables.entryId
+                            },
+                            options: [
+                                {
+                                    name: "Option 1",
+                                    price: 10,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    },
+                                    categories: [
+                                        {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: "Option 2",
+                                    price: 20,
+                                    category: {
+                                        ...categoryValue,
+                                        entryId: vegetables.entryId
+                                    },
+                                    categories: [
+                                        {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [result] = await getProduct({
+            where: {
+                id: potato.id
+            }
+        });
 
         expect(result.data.getProduct.data).toMatchObject({
             id: potato.id,

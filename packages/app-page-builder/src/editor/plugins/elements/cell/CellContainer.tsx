@@ -1,5 +1,5 @@
 import React from "react";
-import Cell from "./Cell";
+import Cell from "./PbCell";
 import DropZone from "~/editor/components/DropZone";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
@@ -13,7 +13,7 @@ import { ElementRoot } from "~/render/components/ElementRoot";
 import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
 import { PbEditorElement } from "~/types";
 
-const CellContainerStyle = styled<"div", { active: boolean }>("div")(({ active }) => ({
+const CellContainerStyle = styled.div<{ active: boolean }>(({ active }) => ({
     position: "relative",
     color: "#666",
     boxSizing: "border-box",

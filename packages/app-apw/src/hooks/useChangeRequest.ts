@@ -1,7 +1,6 @@
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import cloneDeep from "lodash/cloneDeep";
-import set from "lodash/set";
 import {
     CREATE_CHANGE_REQUEST_MUTATION,
     GET_CHANGE_REQUEST_QUERY,
@@ -55,7 +54,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
              */
             fetchPolicy: skip ? "cache-only" : "cache-first",
             onCompleted: response => {
-                const error = get(response, "apw.changeRequest.error");
+                const error = dotPropImmutable.get(response, "apw.changeRequest.error");
                 if (error) {
                     showSnackbar(error.message);
                     navigate(`/apw/content-reviews/${encodedId}/${stepId}`);
@@ -76,12 +75,12 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
             { query: GET_CONTENT_REVIEW_QUERY, variables: { id: contentReviewId } }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.changeRequest.error");
+            const error = dotPropImmutable.get(response, "apw.changeRequest.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
             }
-            const { id } = get(response, "apw.changeRequest.data");
+            const { id } = dotPropImmutable.get(response, "apw.changeRequest.data");
             showSnackbar("Change request created successfully!");
             navigate(`/apw/content-reviews/${encodedId}/${stepId}/${encodeURIComponent(id)}`);
         }
@@ -98,7 +97,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
             }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.changeRequest.error");
+            const error = dotPropImmutable.get(response, "apw.changeRequest.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -123,10 +122,10 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
             cache.writeQuery({
                 query: GET_CHANGE_REQUEST_QUERY,
                 variables: { id },
-                data: set(
+                data: dotPropImmutable.set(
                     newData,
                     "apw.getChangeRequest.data.savedOn",
-                    get(data, "apw.changeRequest.data.savedOn")
+                    dotPropImmutable.get(data, "apw.changeRequest.data.savedOn")
                 )
             });
         }
@@ -144,7 +143,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
             { query: GET_CONTENT_REVIEW_QUERY, variables: { id: contentReviewId } }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.deleteChangeRequest.error");
+            const error = dotPropImmutable.get(response, "apw.deleteChangeRequest.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -167,12 +166,12 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
             }
         ],
         onCompleted: response => {
-            const error = get(response, "apw.changeRequest.error");
+            const error = dotPropImmutable.get(response, "apw.changeRequest.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
             }
-            const { title, resolved } = get(response, "apw.changeRequest.data");
+            const { title, resolved } = dotPropImmutable.get(response, "apw.changeRequest.data");
             showSnackbar(
                 `Successfully marked "${title}" as ${resolved ? "resolved" : "unresolved"}!`
             );
@@ -187,7 +186,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         create,
         update,
         deleteChangeRequest: async id => deleteChangeRequest({ variables: { id } }),
-        changeRequest: get(getQuery, "data.apw.getChangeRequest.data"),
+        changeRequest: dotPropImmutable.get(getQuery, "data.apw.getChangeRequest.data"),
         markResolved,
         loading: [
             getQuery.loading,

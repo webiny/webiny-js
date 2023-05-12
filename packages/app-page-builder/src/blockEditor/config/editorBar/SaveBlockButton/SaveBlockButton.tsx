@@ -1,38 +1,64 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
+import styled from "@emotion/styled";
 import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { EditorBar } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
+import { SaveBlockActionEvent } from "~/blockEditor/config/eventActions/saveBlock/event";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+import { DisplayMode } from "~/types";
+
+const SpinnerWrapper = styled.div`
+    position: relative;
+`;
 
 const DefaultSaveBlockButton: React.FC = () => {
     const [block] = useBlock();
     const eventActionHandler = useEventActionHandler();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
+    const [loading, setLoading] = useState(false);
+    const { setDisplayMode } = useDisplayMode();
 
     const saveChanges = useCallback(() => {
-        eventActionHandler.trigger(
-            new UpdateDocumentActionEvent({
-                debounce: false,
-                onFinish() {
-                    history.push(
-                        `/page-builder/blocks?id=${encodeURIComponent(block.id as string)}`
-                    );
+        setLoading(true);
+        setDisplayMode(DisplayMode.DESKTOP);
+        setTimeout(() => {
+            eventActionHandler.trigger(
+                new SaveBlockActionEvent({
+                    debounce: false,
+                    onFinish: () => {
+                        setLoading(false);
+                        history.push(`/page-builder/page-blocks`);
+                        showSnackbar(`Block "${block.name}" saved successfully!`);
+                    }
+                })
+            );
+        }, 200);
+    }, [block.name]);
 
-                    // Let's wait a bit, because we are also redirecting the user.
-                    setTimeout(() => {
-                        showSnackbar("Your page was published successfully!");
-                    }, 500);
-                }
-            })
-        );
-    }, [block.id]);
-
-    return <ButtonPrimary onClick={saveChanges}>Save Changes</ButtonPrimary>;
+    return (
+        <ButtonPrimary onClick={saveChanges} disabled={loading}>
+            {loading && (
+                <ButtonIcon
+                    icon={
+                        <SpinnerWrapper>
+                            <CircularProgress
+                                size={20}
+                                spinnerWidth={2}
+                                style={{ background: "transparent" }}
+                            />
+                        </SpinnerWrapper>
+                    }
+                />
+            )}
+            Save Changes
+        </ButtonPrimary>
+    );
 };
 
 export const SaveBlockButton = makeComposable("SaveBlockButton", DefaultSaveBlockButton);

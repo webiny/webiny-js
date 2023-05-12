@@ -43,7 +43,7 @@ const ForgotPassword: React.FC = () => {
                                         <Typography use="headline4">Password Recovery</Typography>
                                     </h1>
                                     <p>
-                                        <Typography use="subtitle2">
+                                        <Typography use="body2">
                                             request a password reset code
                                         </Typography>
                                     </p>

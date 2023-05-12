@@ -7,7 +7,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { LocalesAttributePlugin } from "~/plugins/LocalesAttributePlugin";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { I18NContext } from "@webiny/api-i18n/types";
 
 const fieldName = "origin";
@@ -49,14 +49,14 @@ export default () => [
      * We want to validate file data so we need to add the lifecycle events.
      */
     new ContextPlugin<I18NContext>(async context => {
-        context.i18n.locales.onBeforeCreate.subscribe(async params => {
+        context.i18n.locales.onLocaleBeforeCreate.subscribe(async params => {
             const locale = params.locale as any;
             if (!locale.origin) {
                 return;
             }
             verifyOrigin(locale.origin);
         });
-        context.i18n.locales.onBeforeUpdate.subscribe(async params => {
+        context.i18n.locales.onLocaleBeforeUpdate.subscribe(async params => {
             const locale = params.locale as any;
             if (!locale.origin) {
                 return;

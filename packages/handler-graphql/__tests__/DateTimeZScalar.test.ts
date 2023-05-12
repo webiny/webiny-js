@@ -1,4 +1,4 @@
-import { DateTimeZScalar } from "../src/builtInTypes";
+import { DateTimeZScalar } from "~/builtInTypes";
 
 describe("DateTimeZScalar", () => {
     test("should not change the input dateTime - it is correct", () => {

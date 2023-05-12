@@ -4,33 +4,15 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
-    type Product_Variant_Options {
-        name: String
-        price: Number
-        category: RefField
-        categories: [RefField!]
-    }
-    
-    type Product_Variant {
-        name: String
-        price: Number
-        category: RefField
-        options: [Product_Variant_Options!]
-    }
-
-    type Product_FieldsObject {
-        text: String
-    }
-
-
-    type Product {
+    type ProductApiSingular {
         id: ID!
         entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CmsCreatedBy!
-        ownedBy: CmsOwnedBy!
-        meta: ProductMeta
+        createdBy: CmsIdentity!
+        ownedBy: CmsIdentity!
+        modifiedBy: CmsIdentity
+        meta: ProductApiSingularMeta
         title: String
         category: RefField
         price: Number
@@ -41,43 +23,131 @@ export default /* GraphQL */ `
         availableSizes: [String]
         image: String
         richText: JSON
-        variant: Product_Variant
-        fieldsObject: Product_FieldsObject
+        variant: ProductApiSingular_Variant
+        fieldsObject: ProductApiSingular_FieldsObject
     }
 
-    type ProductMeta {
+    type ProductApiSingularMeta {
         modelId: String
         version: Int
         locked: Boolean
         publishedOn: DateTime
         status: String
         ${revisionsComment}
-        revisions: [Product]
+        revisions: [ProductApiSingular!]
         title: String
+        description: String
+        image: String
         ${metaDataComment}
         data: JSON
     }
-    
-    input Product_Variant_OptionsInput {
-        name: String
-        price: Number
-        category: RefFieldInput!
-        categories: [RefFieldInput!]
+
+    type ProductApiSingular_Variant_Options {
+    name: String
+    price: Number
+    image: String
+    category: RefField
+    categories: [RefField!]
+    longText: [String]
     }
-    
-    input Product_VariantInput {
-        name: String
-        price: Number
-        category: RefFieldInput!
-        options: [Product_Variant_OptionsInput!]
+    input ProductApiSingular_Variant_OptionsWhereInput {
+    name: String
+    name_not: String
+    name_in: [String]
+    name_not_in: [String]
+    name_contains: String
+    name_not_contains: String
+
+    price: Number
+    price_not: Number
+    price_in: [Number]
+    price_not_in: [Number]
+    price_lt: Number
+    price_lte: Number
+    price_gt: Number
+    price_gte: Number
+    # there must be two numbers sent in the array
+    price_between: [Number!]
+    # there must be two numbers sent in the array
+    price_not_between: [Number!]
+
+    category: RefFieldWhereInput
+
+    categories: RefFieldWhereInput
+
+    longText_contains: String
+    longText_not_contains: String
     }
 
-    input Product_FieldsObjectInput {
+    type ProductApiSingular_Variant {
+    name: String
+    price: Number
+    images: [String]
+    category: RefField
+    options: [ProductApiSingular_Variant_Options!]
+    }
+    input ProductApiSingular_VariantWhereInput {
+    name: String
+    name_not: String
+    name_in: [String]
+    name_not_in: [String]
+    name_contains: String
+    name_not_contains: String
+
+    price: Number
+    price_not: Number
+    price_in: [Number]
+    price_not_in: [Number]
+    price_lt: Number
+    price_lte: Number
+    price_gt: Number
+    price_gte: Number
+    # there must be two numbers sent in the array
+    price_between: [Number!]
+    # there must be two numbers sent in the array
+    price_not_between: [Number!]
+
+    category: RefFieldWhereInput
+
+    options: ProductApiSingular_Variant_OptionsWhereInput
+    }
+
+    type ProductApiSingular_FieldsObject {
+    text: String
+    }
+    input ProductApiSingular_FieldsObjectWhereInput {
+    text: String
+    text_not: String
+    text_in: [String]
+    text_not_in: [String]
+    text_contains: String
+    text_not_contains: String
+    }
+    
+    input ProductApiSingular_Variant_OptionsInput {
+        name: String
+        price: Number
+        image: String
+        category: RefFieldInput!
+        categories: [RefFieldInput]
+        longText: [String]
+    }
+    
+    input ProductApiSingular_VariantInput {
+        name: String
+        price: Number
+        images: [String]
+        category: RefFieldInput!
+        options: [ProductApiSingular_Variant_OptionsInput!]
+    }
+
+    input ProductApiSingular_FieldsObjectInput {
         text: String!
     }
 
 
-    input ProductInput {
+    input ProductApiSingularInput {
+        id: ID
         title: String!
         category: RefFieldInput!
         price: Number!
@@ -88,11 +158,12 @@ export default /* GraphQL */ `
         availableSizes: [String!]
         image: String!
         richText: JSON
-        variant: Product_VariantInput
-        fieldsObject: Product_FieldsObjectInput
+        variant: ProductApiSingular_VariantInput
+        fieldsObject: ProductApiSingular_FieldsObjectInput
+        
     }
 
-    input ProductGetWhereInput {
+    input ProductApiSingularGetWhereInput {
         id: ID
         entryId: String
         title: String
@@ -102,9 +173,10 @@ export default /* GraphQL */ `
         availableOn: Date
         color: String
         availableSizes: String
+        
     }
     
-    input ProductListWhereInput {
+    input ProductApiSingularListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -135,6 +207,10 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        status: String
+        status_not: String
+        status_in: [String!]
+        status_not_in: [String!]
 
         title: String
         title_not: String
@@ -153,6 +229,10 @@ export default /* GraphQL */ `
         price_lte: Number
         price_gt: Number
         price_gte: Number
+        # there must be two numbers sent in the array
+        price_between: [Number!]
+        # there must be two numbers sent in the array
+        price_not_between: [Number!]
 
         inStock: Boolean
         inStock_not: Boolean
@@ -165,6 +245,10 @@ export default /* GraphQL */ `
         itemsInStock_lte: Number
         itemsInStock_gt: Number
         itemsInStock_gte: Number
+        # there must be two numbers sent in the array
+        itemsInStock_between: [Number!]
+        # there must be two numbers sent in the array
+        itemsInStock_not_between: [Number!]
 
         availableOn: Date
         availableOn_not: Date
@@ -189,25 +273,30 @@ export default /* GraphQL */ `
         availableSizes_not_in: [String]
         availableSizes_contains: String
         availableSizes_not_contains: String
+        
+        variant: ProductApiSingular_VariantWhereInput
+        fieldsObject: ProductApiSingular_FieldsObjectWhereInput
+        AND: [ProductApiSingularListWhereInput!]
+        OR: [ProductApiSingularListWhereInput!]
     }
 
-    type ProductResponse {
-        data: Product
+    type ProductApiSingularResponse {
+        data: ProductApiSingular
         error: CmsError
     }
     
-    type ProductArrayResponse {
-        data: [Product]
+    type ProductApiSingularArrayResponse {
+        data: [ProductApiSingular]
         error: CmsError
     }
 
-    type ProductListResponse {
-        data: [Product]
+    type ProductApiSingularListResponse {
+        data: [ProductApiSingular]
         meta: CmsListMeta
         error: CmsError
     }
 
-    enum ProductListSorter {
+    enum ProductApiSingularListSorter {
         id_ASC
         id_DESC
         savedOn_ASC
@@ -231,37 +320,33 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getProduct(revision: ID, entryId: ID, status: CmsEntryStatusType): ProductResponse
+        getProductApiSingular(revision: ID, entryId: ID, status: CmsEntryStatusType): ProductApiSingularResponse
         
-        getProductRevisions(id: ID!): ProductArrayResponse
+        getProductApiSingularRevisions(id: ID!): ProductApiSingularArrayResponse
         
-        getProductsByIds(revisions: [ID!]!): ProductArrayResponse
+        getProductPluralApiNameByIds(revisions: [ID!]!): ProductApiSingularArrayResponse
 
-        listProducts(
-            where: ProductListWhereInput
-            sort: [ProductListSorter]
+        listProductPluralApiName(
+            where: ProductApiSingularListWhereInput
+            sort: [ProductApiSingularListSorter]
             limit: Int
             after: String
-        ): ProductListResponse
+        ): ProductApiSingularListResponse
     }
 
     extend type Mutation {
-        createProduct(data: ProductInput!): ProductResponse
+        createProductApiSingular(data: ProductApiSingularInput!): ProductApiSingularResponse
 
-        createProductFrom(revision: ID!, data: ProductInput): ProductResponse
+        createProductApiSingularFrom(revision: ID!, data: ProductApiSingularInput): ProductApiSingularResponse
 
-        updateProduct(revision: ID!, data: ProductInput!): ProductResponse
+        updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!): ProductApiSingularResponse
 
-        deleteProduct(revision: ID!): CmsDeleteResponse
+        deleteProductApiSingular(revision: ID!): CmsDeleteResponse
 
-        publishProduct(revision: ID!): ProductResponse
+        publishProductApiSingular(revision: ID!): ProductApiSingularResponse
     
-        republishProduct(revision: ID!): ProductResponse
+        republishProductApiSingular(revision: ID!): ProductApiSingularResponse
 
-        unpublishProduct(revision: ID!): ProductResponse
-        
-        requestProductReview(revision: ID!): ProductResponse
-        
-        requestProductChanges(revision: ID!): ProductResponse
+        unpublishProductApiSingular(revision: ID!): ProductApiSingularResponse
     }
 `;

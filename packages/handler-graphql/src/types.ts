@@ -4,7 +4,8 @@ import {
     GraphQLSchema
 } from "graphql";
 import { Plugin } from "@webiny/plugins/types";
-import { Context } from "@webiny/handler/types";
+import { Context } from "@webiny/api/types";
+import { RouteMethodPath } from "@webiny/handler/types";
 
 export interface GraphQLScalarPlugin extends Plugin {
     type: "graphql-scalar";
@@ -12,6 +13,7 @@ export interface GraphQLScalarPlugin extends Plugin {
 }
 
 export interface HandlerGraphQLOptions {
+    path?: RouteMethodPath;
     debug?: boolean | string;
 }
 

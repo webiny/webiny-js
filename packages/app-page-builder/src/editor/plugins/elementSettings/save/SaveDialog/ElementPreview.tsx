@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
 import domToImage from "./domToImage";
 import { PbEditorPageElementPlugin, PbElement } from "~/types";
+import { isLegacyRenderingEngine } from "~/utils";
 
 const replaceContent = (element: PbElement, doc: Document): Document => {
     const pl = plugins
@@ -57,16 +58,26 @@ const generateImage = async (element: any, onChange: (value: string) => void): P
         return;
     }
 
-    const editor = document.querySelector(".pb-editor");
-    // Hide element highlight while creating the image
-    editor && editor.classList.add("pb-editor-no-highlight");
+    let dataUrl;
+    if (isLegacyRenderingEngine) {
+        const editor = document.querySelector(".pb-editor");
+        // Hide element highlight while creating the image
+        editor && editor.classList.add("pb-editor-no-highlight");
 
-    const dataUrl = await domToImage.toPng(node, {
-        onDocument: (doc: Document) => replaceContent(element, doc),
-        width: 1000
-    });
+        dataUrl = await domToImage.toPng(node, {
+            onDocument: (doc: Document) => replaceContent(element, doc),
+            width: 1000
+        });
 
-    editor && editor.classList.remove("pb-editor-no-highlight");
+        editor && editor.classList.remove("pb-editor-no-highlight");
+    } else {
+        dataUrl = await domToImage.toPng(node, {
+            width: 2000,
+            filter: (element: Element) => {
+                return element.tagName !== "PB-ELEMENT-CONTROLS-OVERLAY";
+            }
+        });
+    }
 
     onChange(dataUrl);
 };

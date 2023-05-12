@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { css } from "emotion";
 import React, { useState, useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
@@ -17,6 +18,12 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { View } from "@webiny/app/components/View";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
+
+const removeGridPadding = css`
+    > .mdc-layout-grid {
+        padding: 0;
+    }
+`;
 
 const IS_INSTALLED = gql`
     query IsAdminUsersInstalled {
@@ -39,9 +46,11 @@ const INSTALL = gql`
         }
     }
 `;
+
 export interface InstallProps {
     onInstalled: () => void;
 }
+
 const Install: React.FC<InstallProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState<boolean>(false);
@@ -55,7 +64,14 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
         setLoading(false);
         const { error } = res.adminUsers.install;
         if (error) {
-            setError(error);
+            switch (error.code) {
+                case "COGNITO_ACCOUNT_EXISTS":
+                    setError(`An account with this email already exists.`);
+                    break;
+                default:
+                    setError(error.message);
+            }
+
             return;
         }
 
@@ -141,7 +157,7 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                             </Cell>
                         </Grid>
                     </SimpleFormContent>
-                    <SimpleFormFooter>
+                    <SimpleFormFooter className={removeGridPadding}>
                         <Grid>
                             <Cell span={8}>
                                 <p style={{ textAlign: "left" }}>

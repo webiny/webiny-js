@@ -195,7 +195,7 @@ Fix the width of input components when inside grids
   margin-left: 2px !important;
   color: $mdc-theme-text-secondary-on-background;
   &--error {
-    color: $webiny-theme-dark-primary !important;
+    color: $mdc-theme-primary !important;
   }
 }
 
@@ -222,6 +222,7 @@ Fix the width of input components when inside grids
       overflow: auto;
       margin-top: 0;
       padding-top: 24px;
+      padding-bottom: 24px;
       background-color: $mdc-theme-surface;
 
       // add options for when tabs are inside the body
@@ -250,6 +251,9 @@ Fix the width of input components when inside grids
           padding-top: 50px;
           padding-bottom: 25px;
         }
+      }
+      > .mdc-layout-grid {
+        margin: -24px;
       }
     }
     .mdc-dialog__actions {

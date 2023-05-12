@@ -1,8 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import { ReactComponent as FileIcon } from "@webiny/app-admin/assets/icons/insert_drive_file-24px.svg";
-import lodashSet from "lodash/set";
-import lodashGet from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import cloneDeep from "lodash/cloneDeep";
 import { RichTextEditorProps } from "@webiny/ui/RichTextEditor";
 
@@ -72,13 +71,14 @@ export const getTrimmedBody = (body: RichTextEditorProps["value"]) => {
      */
     const firstBlock = cloneDeep(body[0]);
 
-    const text = lodashGet(firstBlock, "data.text");
+    const text = dotPropImmutable.get(firstBlock, "data.text");
     return [
-        lodashSet(
+        dotPropImmutable.set(
             firstBlock,
             "data.text",
             text.length > SAFE_TEXT_LENGTH
-                ? lodashGet(firstBlock, "data.text").substring(0, SAFE_TEXT_LENGTH) + "..."
+                ? dotPropImmutable.get(firstBlock, "data.text").substring(0, SAFE_TEXT_LENGTH) +
+                      "..."
                 : text
         )
     ];

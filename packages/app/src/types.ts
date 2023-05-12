@@ -18,13 +18,9 @@ export interface FileItem {
     [key: string]: any;
 }
 
-export type WebinyInitPlugin = Plugin & {
-    type: "webiny-init";
-    init(): void;
-};
-
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
+    onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
 };
 
 export type UiStatePlugin = Plugin & {
@@ -32,16 +28,18 @@ export type UiStatePlugin = Plugin & {
     render(): React.ReactElement;
 };
 
+export interface UploadedFile {
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    key: string;
+}
+
 export type FileUploaderPlugin = Plugin & {
     type: "file-uploader";
-    // TODO: @adrian define type for the returned object
-    upload(file: FileItem, options: UploadOptions): Promise<any>;
-};
-
-export type AppFileManagerStoragePlugin = Plugin & {
-    type: "app-file-manager-storage";
-    // TODO: @adrian define type for the returned object
-    upload(file: FileItem, options: UploadOptions): Promise<any>;
+    name: "file-uploader";
+    upload(file: File, options: UploadOptions): Promise<UploadedFile>;
 };
 
 export { Plugin };
@@ -80,14 +78,4 @@ export type ImageComponentPlugin = Plugin & {
 export type RoutePlugin = Plugin & {
     type: "route";
     route: React.ReactElement;
-};
-
-interface CacheGetObjectIdPluginObj {
-    __typename: string;
-    modelId: string;
-    [key: string]: any;
-}
-export type CacheGetObjectIdPlugin = Plugin & {
-    type: "cache-get-object-id";
-    getObjectId(obj: CacheGetObjectIdPluginObj): string | undefined;
 };

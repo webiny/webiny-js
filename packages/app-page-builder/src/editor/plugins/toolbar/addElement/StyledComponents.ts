@@ -1,15 +1,7 @@
 import styled from "@emotion/styled";
 
-export const Flex = styled("div")({
-    display: "flex",
-    height: "100vh"
-});
-
 export const Elements = styled("div")({
-    flex: "65%",
-    backgroundColor: "var(--mdc-theme-background)",
-    overflow: "auto",
-    marginBottom: 65
+    backgroundColor: "var(--mdc-theme-background)"
 });
 
 export const ElementPreview = styled("div")({
@@ -22,10 +14,6 @@ export const ElementTitle = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export const ElementBox = styled("div")({
-    padding: "0px 15px"
-});
-
 export const ElementPreviewCanvas = styled("div")({
     marginTop: 10,
     border: "1px solid var(--mdc-theme-on-background)",
@@ -33,7 +21,9 @@ export const ElementPreviewCanvas = styled("div")({
     color: "var(--mdc-theme-on-surface)",
     padding: 15,
     boxSizing: "border-box",
-    width: 260
+    "> *": {
+        width: "100%"
+    }
 });
 
 export const Backdrop = styled("div")({

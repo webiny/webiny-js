@@ -1,2 +1,2 @@
 export { FieldEditor } from "./FieldEditor";
-export { useFieldEditor } from "./useFieldEditor";
+export { useModelFieldEditor } from "./useModelFieldEditor";

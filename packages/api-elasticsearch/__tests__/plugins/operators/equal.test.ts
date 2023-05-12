@@ -5,10 +5,11 @@ import { ElasticsearchQueryBuilderOperatorEqualPlugin } from "~/plugins/operator
 describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorEqualPlugin();
 
-    it("should apply must correctly", () => {
+    it("should apply equal correctly", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
+            name: "name",
             basePath: "name",
             path: "name.keyword",
             value: "John",
@@ -16,6 +17,7 @@ describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
         });
 
         plugin.apply(query, {
+            name: "name",
             basePath: "name",
             path: "name.keyword",
             value: "Doe",
@@ -24,7 +26,8 @@ describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
 
         const expected: ElasticsearchBoolQueryConfig = {
             must_not: [],
-            must: [
+            must: [],
+            filter: [
                 {
                     term: {
                         "name.keyword": "John"
@@ -36,7 +39,6 @@ describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
                     }
                 }
             ],
-            filter: [],
             should: []
         };
 

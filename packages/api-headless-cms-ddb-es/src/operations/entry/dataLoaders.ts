@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
-import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
+import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import {

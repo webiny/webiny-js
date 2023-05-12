@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { SecurityContext } from "~/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 

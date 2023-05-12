@@ -9,10 +9,12 @@ const ERROR_FIELDS = `
 export const FIELDS_FIELDS = `
     id
     fieldId
+    storageId
     type
     label
+    tags
     placeholderText
-    helpText  
+    helpText
     predefinedValues {
         enabled
         values {
@@ -21,7 +23,7 @@ export const FIELDS_FIELDS = `
             selected
         }
     }
-    multipleValues 
+    multipleValues
     renderer {
         name
     }
@@ -44,15 +46,22 @@ export const MODEL_FIELDS = `
         id
         name
     }
+    icon
     description
     modelId
+    singularApiName
+    pluralApiName
     savedOn
     titleFieldId
+    descriptionFieldId
+    imageFieldId
     lockedFields
     layout
+    tags
     fields {
         ${FIELDS_FIELDS}
     }
+    plugin
 `;
 /**
  * ############################

@@ -161,13 +161,6 @@ export declare const createApiPulumiApp: (projectAppParams?: CreateApiAppParams)
             graphql: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
         };
     };
-    headlessCms: {
-        role: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/iam").Role>;
-        policy: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/iam").Policy>;
-        functions: {
-            graphql: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
-        };
-    };
     apiGateway: {
         api: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/apigatewayv2").Api>;
         stage: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/apigatewayv2").Stage>;

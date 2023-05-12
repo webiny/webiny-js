@@ -5,15 +5,19 @@ import {
     getFieldValues
 } from "~/storageOperations/index";
 import WebinyError from "@webiny/error";
+import { CONTENT_REVIEW_MODEL_ID } from "~/storageOperations/models/contentReview.model";
 
 export const createContentReviewStorageOperations = ({
-    cms
-}: Pick<CreateApwStorageOperationsParams, "cms">): ApwContentReviewStorageOperations => {
+    cms,
+    security
+}: CreateApwStorageOperationsParams): ApwContentReviewStorageOperations => {
     const getContentReviewModel = async () => {
-        const model = await cms.getModel("apwContentReviewModelDefinition");
+        const model = await security.withoutAuthorization(async () => {
+            return cms.getModel(CONTENT_REVIEW_MODEL_ID);
+        });
         if (!model) {
             throw new WebinyError(
-                "Could not find `apwContentReviewModelDefinition` model.",
+                `Could not find "${CONTENT_REVIEW_MODEL_ID}" model.`,
                 "MODEL_NOT_FOUND_ERROR"
             );
         }
@@ -23,7 +27,9 @@ export const createContentReviewStorageOperations = ({
         id
     }) => {
         const model = await getContentReviewModel();
-        const entry = await cms.getEntryById(model, id);
+        const entry = await security.withoutAuthorization(async () => {
+            return cms.getEntryById(model, id);
+        });
         return getFieldValues(entry, baseFields);
     };
     return {
@@ -31,17 +37,24 @@ export const createContentReviewStorageOperations = ({
         getContentReview,
         async listContentReviews(params) {
             const model = await getContentReviewModel();
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...params.where
-                }
+
+            const [entries, meta] = await security.withoutAuthorization(async () => {
+                return cms.listLatestEntries(model, {
+                    ...params,
+                    where: {
+                        ...params.where
+                    }
+                });
             });
+
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createContentReview(params) {
             const model = await getContentReviewModel();
-            const entry = await cms.createEntry(model, params.data);
+
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.createEntry(model, params.data);
+            });
             return getFieldValues(entry, baseFields);
         },
         async updateContentReview(params) {
@@ -52,15 +65,21 @@ export const createContentReviewStorageOperations = ({
              */
             const existingEntry = await getContentReview({ id: params.id });
 
-            const entry = await cms.updateEntry(model, params.id, {
-                ...existingEntry,
-                ...params.data
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.updateEntry(model, params.id, {
+                    ...existingEntry,
+                    ...params.data
+                });
             });
             return getFieldValues(entry, baseFields);
         },
         async deleteContentReview(params) {
             const model = await getContentReviewModel();
-            await cms.deleteEntry(model, params.id);
+
+            await security.withoutAuthorization(async () => {
+                return cms.deleteEntry(model, params.id);
+            });
+
             return true;
         }
     };

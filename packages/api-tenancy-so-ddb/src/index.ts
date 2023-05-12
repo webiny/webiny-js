@@ -1,6 +1,6 @@
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
@@ -20,43 +20,35 @@ interface TenantDomainRecord {
     webinyVersion: string;
 }
 
-const reservedFields = ["PK", "SK", "index", "data"];
-
-const isReserved = (name: string): void => {
-    if (!reservedFields.includes(name)) {
-        return;
+const setTenantDefaults = (item: Tenant) => {
+    if (!item.tags) {
+        item.tags = [];
     }
-    throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
-        name
-    });
+
+    if (!item.description) {
+        item.description = "";
+    }
+
+    return item;
 };
 
 export const createStorageOperations: CreateTenancyStorageOperations = params => {
-    const { table, documentClient, attributes } = params;
-
-    if (attributes) {
-        Object.values(attributes).forEach(attrs => {
-            Object.keys(attrs).forEach(isReserved);
-        });
-    }
+    const { table, documentClient } = params;
 
     const tableInstance = createTable({ table, documentClient });
 
     const entities = {
         tenants: createTenantEntity({
             entityName: ENTITIES.TENANT,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.TENANT] : {}
+            table: tableInstance
         }),
         domains: createDomainEntity({
             entityName: ENTITIES.DOMAIN,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.DOMAIN] : {}
+            table: tableInstance
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
+            table: tableInstance
         })
     };
 
@@ -146,9 +138,9 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         async getTenantsByIds<TTenant extends Tenant = Tenant>(ids: string[]): Promise<TTenant[]> {
             const items = ids.map(id => entities.tenants.getBatch({ PK: `T#${id}`, SK: "A" }));
 
-            const tenants = await batchReadAll<TTenant>({ table: tableInstance, items });
+            const tenants = await batchReadAll<{ data: TTenant }>({ table: tableInstance, items });
 
-            return cleanupItems(entities.tenants, tenants);
+            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as TTenant);
         },
 
         async listTenants<TTenant extends Tenant = Tenant>(
@@ -166,13 +158,13 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 options.gt = " ";
             }
 
-            const tenants = await queryAll<TTenant>({
+            const tenants = await queryAll<{ data: TTenant }>({
                 entity: entities.tenants,
                 partitionKey: `TENANTS`,
                 options
             });
 
-            return cleanupItems(entities.tenants, tenants);
+            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as TTenant);
         },
 
         async createTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant> {
@@ -185,7 +177,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
             try {
                 const items: any[] = [
-                    entities.tenants.putBatch({ TYPE: "tenancy.tenant", ...keys, ...data })
+                    entities.tenants.putBatch({ TYPE: "tenancy.tenant", ...keys, data })
                 ];
                 const newDomains = createNewDomainsRecords(data);
 
@@ -218,7 +210,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 GSI1_SK: `T#${data.parent}#${data.createdOn}`
             };
 
-            const items: any[] = [entities.tenants.putBatch({ ...keys, ...data })];
+            const items: any[] = [entities.tenants.putBatch({ ...keys, data })];
 
             const existingDomains = await queryAll<TenantDomain>({
                 entity: entities.domains,
@@ -267,9 +259,35 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
 
         async deleteTenant(id: string): Promise<void> {
-            await entities.tenants.delete({
-                PK: `T#${id}`,
-                SK: "A"
+            const existingDomains = await queryAll<TenantDomain>({
+                entity: entities.domains,
+                partitionKey: "DOMAINS",
+                options: {
+                    index: "GSI1",
+                    beginsWith: `T#${id}`
+                }
+            });
+
+            const items = [
+                entities.tenants.deleteBatch({
+                    PK: `T#${id}`,
+                    SK: "A"
+                })
+            ];
+
+            existingDomains.forEach(domain => {
+                items.push(
+                    entities.domains.deleteBatch({
+                        PK: domain.PK,
+                        SK: domain.SK
+                    })
+                );
+            });
+
+            // Delete tenant and domain items
+            await batchWriteAll({
+                table: tableInstance,
+                items
             });
         }
     };

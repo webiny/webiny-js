@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -16,14 +16,16 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/cli
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 /**
@@ -57,8 +59,12 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbStorageOperation(),
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({
+                documentClient
+            })
+        }),
+        createFileManagerGraphQL(),
         fileManagerS3(),
         prerenderingServicePlugins({
             eventBus: String(process.env.EVENT_BUS)
@@ -88,6 +94,8 @@ export const handler = createHandler({
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
+        createAco(),
+        createAcoPageBuilderContext(),
         scaffoldsPlugins()
     ],
     http: { debug }

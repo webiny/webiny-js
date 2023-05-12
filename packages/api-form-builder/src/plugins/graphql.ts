@@ -22,9 +22,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             type FbMutation {
                 # Install Form Builder
                 install(domain: String): FbBooleanResponse
-
-                # Upgrade Form Builder
-                upgrade(version: String!): FbBooleanResponse
             }
 
             extend type Query {
@@ -85,15 +82,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             message: e.message,
                             data: e.data
                         });
-                    }
-                },
-                upgrade: async (_, args: any, context) => {
-                    try {
-                        await context.formBuilder.upgradeSystem(args.version as string);
-
-                        return new Response(true);
-                    } catch (e) {
-                        return new ErrorResponse(e);
                     }
                 }
             }

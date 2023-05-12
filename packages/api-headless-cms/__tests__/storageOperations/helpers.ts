@@ -1,4 +1,3 @@
-import shortId from "shortid";
 /**
  * Package mdbid does not have types.
  */
@@ -6,14 +5,15 @@ import shortId from "shortid";
 import mdbid from "mdbid";
 import {
     CmsEntry,
+    CmsIdentity,
     CmsModel,
     CmsModelField,
-    CreatedBy,
     HeadlessCmsStorageOperations
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import crypto from "crypto";
+import { PluginsContainer } from "@webiny/plugins";
 
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
@@ -30,16 +30,23 @@ const baseGroup = new CmsGroupPlugin({
 
 const biography = crypto.randomBytes(65536).toString("hex");
 
+const nameId = generateAlphaNumericLowerCaseId(8);
+const dateOfBirthId = generateAlphaNumericLowerCaseId(8);
+const childrenId = generateAlphaNumericLowerCaseId(8);
+const marriedId = generateAlphaNumericLowerCaseId(8);
+const biographyId = generateAlphaNumericLowerCaseId(8);
 const personModelFields: Record<string, CmsModelField> = {
     name: {
-        id: shortId.generate(),
+        id: nameId,
+        storageId: `text@${nameId}`,
         fieldId: "name",
         label: "Name",
         multipleValues: false,
         type: "text"
     },
     dateOfBirth: {
-        id: shortId.generate(),
+        id: dateOfBirthId,
+        storageId: `datetime@${dateOfBirthId}`,
         fieldId: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
@@ -49,22 +56,25 @@ const personModelFields: Record<string, CmsModelField> = {
         }
     },
     children: {
-        id: shortId.generate(),
+        id: childrenId,
+        storageId: `number@${childrenId}`,
         fieldId: "children",
         label: "Children",
         multipleValues: false,
         type: "number"
     },
     married: {
-        id: shortId.generate(),
-        fieldId: "married",
+        id: marriedId,
+        storageId: "married",
+        fieldId: `boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
     },
     biography: {
-        id: shortId.generate(),
-        fieldId: "biography",
+        id: biographyId,
+        storageId: "biography",
+        fieldId: `text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
         type: "text"
@@ -74,6 +84,8 @@ const personModelFields: Record<string, CmsModelField> = {
 export const createPersonModel = (): CmsModel => {
     return {
         name: "Person Model",
+        singularApiName: "PersonModel",
+        pluralApiName: "PersonModels",
         group: {
             id: baseGroup.contentModelGroup.id,
             name: baseGroup.contentModelGroup.name
@@ -91,12 +103,12 @@ export const createPersonModel = (): CmsModel => {
     };
 };
 
-const createdBy: CreatedBy = {
+const createdBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"
 };
-const ownedBy: CreatedBy = {
+const ownedBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"
@@ -106,6 +118,7 @@ interface CreatePersonEntriesParams {
     amount: number;
     storageOperations: HeadlessCmsStorageOperations;
     maxRevisions?: number;
+    plugins: PluginsContainer;
 }
 
 export interface PersonEntriesResult {

@@ -1,15 +1,18 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../handler" }],
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../handler" }, { "path": "../handler-aws" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

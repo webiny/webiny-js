@@ -36,8 +36,7 @@ export class SocialSettingsView extends PageSettingsFormView {
             new FileManagerElement("image", {
                 name: "settings.social.image",
                 label: "Social Image",
-                description: `Linked via "og:image" tag. Recommended resolution 1596x545.`,
-                onChangePickAttributes: ["id", "src"]
+                description: `Linked via "og:image" tag. Recommended resolution 1596x545.`
             })
         );
 

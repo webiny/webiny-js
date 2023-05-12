@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { css, cx } from "emotion";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { validation } from "@webiny/validation";
 import { Form } from "@webiny/form";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
@@ -100,7 +100,7 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment })
                  * After submitting comment we're using the "id" state to re-mount entire Form component,
                  * so that we have a clean slate for "RichTextEditor" for new comment.
                  */
-                setCommentBoxKey(get(response, "data.apw.comment.data.id"));
+                setCommentBoxKey(dotPropImmutable.get(response, "data.apw.comment.data.id"));
                 setLoading(false);
                 scrollToLatestComment();
             }}

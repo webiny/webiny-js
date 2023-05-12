@@ -1,17 +1,24 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../cli-plugin-scaffold" }, { "path": "../plugins" }],
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../cli-plugin-scaffold" },
+    { "path": "../plugins" },
+    { "path": "../validation" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
       "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

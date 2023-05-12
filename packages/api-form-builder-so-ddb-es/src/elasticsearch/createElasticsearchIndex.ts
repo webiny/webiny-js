@@ -1,5 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
-import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch/indices";
+import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
 import { FormElasticsearchIndexPlugin } from "~/plugins/FormElasticsearchIndexPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";

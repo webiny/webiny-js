@@ -15,7 +15,8 @@ export enum ENTITIES {
     RENDER = "PrerenderingServiceRender",
     SETTINGS = "PrerenderingServiceSettings",
     QUEUE_JOB = "PrerenderingServiceQueueJob",
-    TAG_PATH_LINK = "PrerenderingServiceTagPathLink"
+    TAG_PATH_LINK = "PrerenderingServiceTagPathLink",
+    TENANT = "Tenant"
 }
 
 export interface PrerenderingServiceFactoryParams {

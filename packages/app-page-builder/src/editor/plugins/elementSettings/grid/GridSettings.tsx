@@ -1,196 +1,206 @@
-import React from "react";
-import { css } from "emotion";
-import styled from "@emotion/styled";
+import React, { useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import {
-    PbEditorGridPresetPluginType,
-    PbEditorPageElementSettingsRenderComponentProps,
-    PbEditorElement
-} from "../../../../types";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { createElement } from "../../../helpers";
-import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
+import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { PbEditorPageElementSettingsRenderComponentProps, PbEditorElement } from "~/types";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import { isLegacyRenderingEngine } from "~/utils";
 // Components
-import CellSize from "./CellSize";
-import { ContentWrapper } from "../components/StyledComponents";
-import Accordion from "../components/Accordion";
+import Wrapper from "~/editor/plugins/elementSettings/components/Wrapper";
+import SelectField from "~/editor/plugins/elementSettings/components/SelectField";
+import InputField from "~/editor/plugins/elementSettings/components/InputField";
+import {
+    ContentWrapper,
+    classes
+} from "~/editor/plugins/elementSettings/components/StyledComponents";
+import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 
-const classes = {
-    grid: css({
-        "&.mdc-layout-grid": {
-            padding: 0,
-            marginBottom: 24
-        }
-    }),
-    icon: css({
-        "& .mdc-list-item__graphic > svg": {
-            width: "18px",
-            height: "18px"
-        }
-    })
-};
-
-const StyledIconButton = styled("button")(({ active }: any) => ({
-    padding: "0",
-    margin: "0 2px 2px 0",
-    background: "transparent",
-    width: "auto",
-    height: "auto",
-    border: "0 none",
-    cursor: "pointer",
-    opacity: active ? 1 : 0.7,
-    "& svg": {
-        filter: active ? "none" : "grayscale(1)"
-    },
-    ":hover": {
-        "& svg": {
-            boxShadow: active ? "none" : "0 0 5px rgba(0, 204, 176, 1)"
-        }
-    },
-    ":focus": {
-        outline: "none"
-    }
-}));
-
-const createCells = (amount: number): PbEditorElement[] => {
-    return Array(amount)
-        .fill(0)
-        .map(() => createElement("cell", {}));
-};
-
-const resizeCells = (elements: PbEditorElement[], cells: number[]): PbEditorElement[] => {
-    return elements.map((element, index) => {
-        return {
-            ...element,
-            data: {
-                ...element.data,
-                settings: {
-                    ...element.data.settings,
-                    grid: {
-                        size: cells[index]
-                    }
-                }
-            }
-        };
-    });
-};
-
-const updateChildrenWithPreset = (
-    target: PbEditorElement,
-    pl: PbEditorGridPresetPluginType
-): PbEditorElement[] => {
-    const cells = calculatePresetPluginCells(pl);
-    const total = target.elements.length;
-    const max = cells.length;
-    if (total === max) {
-        return resizeCells(target.elements as PbEditorElement[], cells);
-    } else if (total > max) {
-        return resizeCells(target.elements.slice(0, max) as PbEditorElement[], cells);
-    }
-    const created = [...(target.elements as PbEditorElement[]), ...createCells(max - total)];
-    return resizeCells(created, cells);
-};
+const DATA_NAMESPACE = "data.settings.gridSettings";
 
 export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
-    const handler = useEventActionHandler();
+    const { displayMode, config } = useDisplayMode();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)
     ) as unknown as PbEditorElement;
-    const currentCellsType = element.data.settings?.grid?.cellsType;
-    const presetPlugins = getPresetPlugins();
+    const updateElement = useUpdateElement();
+    const flexDirectionPropName = `${DATA_NAMESPACE}.${displayMode}.flexDirection`;
+    const verticalAlignPropName = `data.settings.verticalAlign.${displayMode}`;
+    const columnGapPropName = `${DATA_NAMESPACE}.${displayMode}.columnGap`;
+    const rowGapPropName = `${DATA_NAMESPACE}.${displayMode}.rowGap`;
 
-    const onInputSizeChange = (value: number, index: number) => {
-        const cellElement = element.elements[index] as PbEditorElement;
-        if (!cellElement) {
-            throw new Error(`There is no element on index ${index}.`);
-        }
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element: {
-                    ...cellElement,
-                    data: {
-                        ...cellElement.data,
-                        settings: {
-                            ...(cellElement.data.settings || {}),
-                            grid: {
-                                size: value
-                            }
-                        }
-                    }
-                } as any,
-                history: true
-            })
+    const flexDirectionFallbackValue = useMemo(() => {
+        const value = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.${mode}.flexDirection`)
         );
+        // For backward compatibility
+        if (!value && (displayMode === "desktop" || displayMode === "tablet")) {
+            return "row";
+        }
+        if (!value && (displayMode === "mobile-landscape" || displayMode === "mobile-portrait")) {
+            return "column";
+        }
+
+        return value;
+    }, [displayMode]);
+
+    const flexDirection = get(element, flexDirectionPropName, flexDirectionFallbackValue || "row");
+
+    const columnWrap = useMemo(() => {
+        return flexDirection === "row" ? "row" : "column";
+    }, [flexDirection]);
+
+    const onFlexDirectionChange = (type: any) => {
+        const newElement = merge({}, element, set({}, flexDirectionPropName, type));
+        updateElement(newElement);
     };
 
-    const setPreset = (pl: PbEditorGridPresetPluginType) => {
-        const cellsType = pl.cellsType;
-        if (cellsType === currentCellsType) {
-            return;
-        }
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element: {
-                    ...element,
-                    data: {
-                        ...element.data,
-                        settings: {
-                            ...(element.data.settings || {}),
-                            grid: {
-                                cellsType
-                            }
-                        }
-                    },
-                    elements: updateChildrenWithPreset(element, pl) as any
-                },
-                history: true
-            })
+    const verticalAlignFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.verticalAlign.${mode}`)
+            ),
+        [displayMode]
+    );
+
+    const columnHeight =
+        get(
+            element,
+            `data.settings.verticalAlign.${displayMode}`,
+            verticalAlignFallbackValue || "flex-start"
+        ) === "stretch"
+            ? "full-height"
+            : "auto";
+
+    const onColumnHeightChange = (value: string) => {
+        const newElement = merge(
+            {},
+            element,
+            set({}, verticalAlignPropName, value === "auto" ? "flex-start" : "stretch")
         );
+        updateElement(newElement);
     };
-    const totalCellsUsed = element.elements.reduce((total, cell) => {
-        return total + ((cell as PbEditorElement).data.settings?.grid?.size || 1);
-    }, 0);
+
+    const columnGapFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.gridSettings.${mode}.columnGap`)
+            ),
+        [displayMode]
+    );
+
+    const columnGap = get(element, columnGapPropName, columnGapFallbackValue || "");
+
+    const onColumnGapChange = (value: string) => {
+        const newElement = merge({}, element, set({}, columnGapPropName, value));
+        updateElement(newElement);
+    };
+
+    const rowGapFallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `data.settings.gridSettings.${mode}.rowGap`)
+            ),
+        [displayMode]
+    );
+
+    const rowGap = get(element, rowGapPropName, rowGapFallbackValue || "");
+
+    const onRowGapChange = (value: string) => {
+        const newElement = merge({}, element, set({}, rowGapPropName, value));
+        updateElement(newElement);
+    };
 
     return (
-        <Accordion title={"Grid"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Grid Settings"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${config.displayMode}`}>
+                    {config.icon}
+                </Tooltip>
+            }
+        >
             <ContentWrapper direction={"column"}>
-                <Grid className={classes.grid}>
-                    {presetPlugins.map(pl => {
-                        const Icon = pl.icon;
-                        return (
-                            <Cell key={`preset-${pl.cellsType}`} span={4}>
-                                <StyledIconButton
-                                    onClick={() => setPreset(pl)}
-                                    active={pl.cellsType === currentCellsType}
-                                >
-                                    <Icon />
-                                </StyledIconButton>
-                            </Cell>
-                        );
-                    })}
-                </Grid>
-
-                <Grid className={classes.grid}>
-                    {element.elements.map((cell, index) => {
-                        const size = (cell as PbEditorElement).data.settings?.grid?.size || 1;
-                        return (
-                            <Cell span={12} key={`cell-size-${index}`}>
-                                <CellSize
-                                    value={size}
-                                    label={`Cell ${index + 1}`}
-                                    onChange={value => onInputSizeChange(value, index)}
-                                    maxAllowed={12 - totalCellsUsed}
-                                />
-                            </Cell>
-                        );
-                    })}
-                </Grid>
+                <Wrapper
+                    label={"Column wrap"}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                    containerClassName={classes.simpleGrid}
+                >
+                    <SelectField
+                        disabled={false}
+                        value={columnWrap}
+                        onChange={value => onFlexDirectionChange(value)}
+                    >
+                        <option value="row">No wrap</option>
+                        <option value="column">Wrap</option>
+                    </SelectField>
+                </Wrapper>
+                <Wrapper
+                    label={"Wrap direction"}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                    containerClassName={classes.simpleGrid}
+                >
+                    <SelectField
+                        value={flexDirection}
+                        onChange={value => onFlexDirectionChange(value)}
+                        disabled={flexDirection === "row"}
+                    >
+                        <option value="column">Regular</option>
+                        <option value="column-reverse">Reverse</option>
+                    </SelectField>
+                </Wrapper>
+                {!isLegacyRenderingEngine && (
+                    <>
+                        <Wrapper
+                            label={"Column height"}
+                            leftCellSpan={5}
+                            rightCellSpan={7}
+                            containerClassName={classes.simpleGrid}
+                        >
+                            <SelectField
+                                value={columnHeight}
+                                onChange={value => onColumnHeightChange(value)}
+                            >
+                                <option value="auto">Match content size</option>
+                                <option value="full-height">Match grid height</option>
+                            </SelectField>
+                        </Wrapper>
+                        <Wrapper
+                            containerClassName={classes.simpleGrid}
+                            label={"Column gap"}
+                            leftCellSpan={8}
+                            rightCellSpan={4}
+                        >
+                            <InputField
+                                placeholder={"px"}
+                                value={columnGap}
+                                onChange={onColumnGapChange}
+                            />
+                        </Wrapper>
+                        <Wrapper
+                            containerClassName={classes.simpleGrid}
+                            label={"Row gap"}
+                            leftCellSpan={8}
+                            rightCellSpan={4}
+                        >
+                            <InputField
+                                placeholder={"px"}
+                                value={rowGap}
+                                onChange={onRowGapChange}
+                            />
+                        </Wrapper>
+                    </>
+                )}
             </ContentWrapper>
         </Accordion>
     );

@@ -6,13 +6,13 @@ import {
 
 const createPath: CreatePathCallable<string> = ({ field, key }) => {
     if (key && key.match("entryId") === null) {
-        return `${field.fieldId}.id`;
+        return `${field.storageId}.id`;
     }
-    return `${field.fieldId}.entryId`;
+    return `${field.storageId}.entryId`;
 };
 
-const transform: TransformCallable<string> = params => {
-    return params.value;
+const transform: TransformCallable = ({ value }) => {
+    return value;
 };
 
 export const createRefSearchPlugin = (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin => {

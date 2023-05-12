@@ -5,31 +5,20 @@ import {
     PbEditorElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementPluginSettings,
-    PbEditorPageElementPluginToolbar,
     PbEditorTextElementPluginsArgs
 } from "~/types";
-import List, { className } from "./List";
+import List from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
+/*
+ * @TODO: Remove the list component
+ * List component will be deprecated in the next version and will not be available in the sidebar.
+ * Now component exist to support legacy content for the list, in the future Lexical editor will be used.
+ * For more check @webiny/lexical-editor and @webiny/lexical-editor-pb packages.
+ */
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const elementType = kebabCase(args.elementType || "list");
-
-    const defaultToolbar: PbEditorPageElementPluginToolbar = {
-        title: "List",
-        group: "pb-editor-element-group-basic",
-        preview() {
-            return (
-                <div className={className}>
-                    <ul>
-                        <li>List item 1</li>
-                        <li>List item 2</li>
-                        <li>List item 3</li>
-                    </ul>
-                </div>
-            );
-        }
-    };
 
     const defaultSettings: PbEditorPageElementPluginSettings = [
         "pb-editor-page-element-style-settings-text",
@@ -46,12 +35,6 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
         elementType: elementType,
-        /**
-         * TODO @ts-refactor @ashutosh
-         * Completely different types between method result and variable
-         */
-        // @ts-ignore
-        toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         target: ["cell", "block"],
@@ -95,8 +78,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <List elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
+        render(props) {
+            return <List {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

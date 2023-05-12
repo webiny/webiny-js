@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
-import { CmsEditorField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "~/types";
 import {
     SEARCH_CONTENT_ENTRIES,
     GET_CONTENT_ENTRIES,
@@ -19,7 +19,7 @@ import {
 
 interface UseReferencesParams {
     bind: BindComponentRenderProp;
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 export const useReferences = ({ bind, field }: UseReferencesParams) => {
     const isMounted = useRef(true);

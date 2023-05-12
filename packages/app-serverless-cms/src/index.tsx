@@ -1,7 +1,7 @@
 export { Admin } from "./Admin";
 export type { AdminProps } from "./Admin";
 export {
-    useAdmin,
+    useApp,
     useWcp,
     useUserMenuItem,
     useUserMenu,
@@ -25,7 +25,11 @@ export {
     Provider,
     Compose,
     Plugins,
+    Plugin,
     makeComposable,
+    createComponentPlugin,
+    createProviderPlugin,
+    createProvider,
     MenuItem,
     MenuItemRenderer,
     MenuItems,

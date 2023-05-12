@@ -1,12 +1,14 @@
-import { CmsEditorFieldValidatorPatternPlugin } from "~/types";
+import { CmsModelFieldRegexValidatorExpressionPlugin } from "~/types";
 
-const plugin: CmsEditorFieldValidatorPatternPlugin = {
-    type: "cms-editor-field-validator-pattern",
-    name: "cms-editor-field-validator-pattern-upper-case-space",
+const plugin: CmsModelFieldRegexValidatorExpressionPlugin = {
+    type: "cms-model-field-regex-validator-expression",
+    name: "cms-model-field-regex-validator-expression-upper-case-space",
     pattern: {
         message: "Only upper case characters and space are allowed.",
         name: "upperCaseSpace",
-        label: "Upper case + space"
+        label: "Upper case + space",
+        regex: `^([A-Z\\s]+)$`,
+        flags: ""
     }
 };
 export default plugin;

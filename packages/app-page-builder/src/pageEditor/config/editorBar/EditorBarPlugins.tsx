@@ -4,7 +4,9 @@ import { PageSettingsPlugin } from "./PageSettings";
 import { RevisionsPlugin } from "./Revisions";
 import { PublishPageButtonPlugin } from "./PublishPageButton";
 import { TitlePlugin } from "./Title";
-import { PageOptionsMenuPlugin } from "./PageOptionsMenu";
+import { PageOptionsMenuPlugin } from "./PageOptionsMenu/PageOptionsMenuPlugin";
+import { PreviewPageButtonPlugin } from "./PreviewPageButton/PreviewPageButton";
+import { SetAsHomepageButtonPlugin } from "./SetAsHomepageButton/SetAsHomepageButton";
 
 export const EditorBarPlugins = () => {
     return (
@@ -15,6 +17,8 @@ export const EditorBarPlugins = () => {
             <PageSettingsPlugin />
             <PageOptionsMenuPlugin />
             <PublishPageButtonPlugin />
+            <PreviewPageButtonPlugin />
+            <SetAsHomepageButtonPlugin />
         </>
     );
 };

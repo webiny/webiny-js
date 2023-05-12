@@ -1,11 +1,13 @@
 import * as pulumi from "@pulumi/pulumi";
 import { PulumiApp } from "@webiny/pulumi";
 
-type EnvVariables = Record<string, string>;
+type EnvVariables = Record<string, string | pulumi.Output<string>>;
 
 const variablesRegistry: EnvVariables = {};
 
 export let sealEnvVariables: () => void;
+
+const magicPrefixes = ["WEBINY_", "WEBINY_API_", "WCP_", "OKTA_", "AUTH0_"];
 
 const variablesPromise = new Promise<EnvVariables>(resolve => {
     sealEnvVariables = () => {
@@ -13,13 +15,11 @@ const variablesPromise = new Promise<EnvVariables>(resolve => {
         // we also take into consideration variables that have `WEBINY_` and `WCP_` prefix in their names.
         const baseVariables = Object.keys(process.env).reduce<EnvVariables>(
             (current, environmentVariableName) => {
-                const startsWithWebiny = environmentVariableName.startsWith("WEBINY_");
-                const startsWithWcp = environmentVariableName.startsWith("WCP_");
+                const hasMagicPrefix = magicPrefixes.some(prefix =>
+                    environmentVariableName.startsWith(prefix)
+                );
 
-                if (
-                    (startsWithWebiny || startsWithWcp) &&
-                    process.env[environmentVariableName] !== undefined
-                ) {
+                if (hasMagicPrefix && process.env[environmentVariableName] !== undefined) {
                     current[environmentVariableName] = String(process.env[environmentVariableName]);
                 }
                 return current;

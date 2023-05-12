@@ -1,13 +1,9 @@
 import { createSetupForPageContentReview } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 describe("Page publishing workflow", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
     });
     const {
         createContentReviewMutation,
@@ -40,12 +36,26 @@ describe("Page publishing workflow", () => {
                 }
             }
         });
+
+        expect(createContentReviewResponse).toMatchObject({
+            data: {
+                apw: {
+                    createContentReview: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
         const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
         /*
          * Check content status, it should be "under review".
          */
-        expect(createdContentReview.status).toEqual("underReview");
+        expect(createdContentReview.reviewStatus).toEqual("underReview");
         expect(createdContentReview.title).toEqual(page.title);
 
         /*
@@ -72,7 +82,7 @@ describe("Page publishing workflow", () => {
             id: createdContentReview.id
         });
         const contentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(contentReview.status).toEqual("underReview");
+        expect(contentReview.reviewStatus).toEqual("underReview");
         expect(contentReview.title).toEqual(updatedPage.title);
 
         /**
@@ -183,7 +193,7 @@ describe("Page publishing workflow", () => {
             id: createdContentReview.id
         });
         const updatedContentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
         expect(updatedContentReview.title).toEqual(updatedPage.title);
 
         /**
@@ -211,7 +221,7 @@ describe("Page publishing workflow", () => {
         [getContentReviewResponse] = await getContentReviewQuery({
             id: createdContentReview.id
         });
-        expect(getContentReviewResponse.data.apw.getContentReview.data.status).toEqual(
+        expect(getContentReviewResponse.data.apw.getContentReview.data.reviewStatus).toEqual(
             "underReview"
         );
 
@@ -275,7 +285,9 @@ describe("Page publishing workflow", () => {
             id: createdContentReview.id
         });
 
-        expect(getContentReviewResponse.data.apw.getContentReview.data.status).toEqual("published");
+        expect(getContentReviewResponse.data.apw.getContentReview.data.reviewStatus).toEqual(
+            "published"
+        );
     });
 
     test(`Should able to "unpublish" page for content review process`, async () => {
@@ -297,7 +309,7 @@ describe("Page publishing workflow", () => {
         /*
          * Check content status, it should be "under review".
          */
-        expect(createdContentReview.status).toEqual("underReview");
+        expect(createdContentReview.reviewStatus).toEqual("underReview");
         expect(createdContentReview.title).toEqual(page.title);
 
         /*
@@ -317,7 +329,7 @@ describe("Page publishing workflow", () => {
             id: createdContentReview.id
         });
         const contentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(contentReview.status).toEqual("underReview");
+        expect(contentReview.reviewStatus).toEqual("underReview");
         expect(contentReview.title).toEqual(updatedPage.title);
 
         /**
@@ -428,7 +440,7 @@ describe("Page publishing workflow", () => {
             id: createdContentReview.id
         });
         const updatedContentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
         expect(updatedContentReview.title).toEqual(updatedPage.title);
 
         /**
@@ -456,7 +468,7 @@ describe("Page publishing workflow", () => {
         [getContentReviewResponse] = await getContentReviewQuery({
             id: createdContentReview.id
         });
-        expect(getContentReviewResponse.data.apw.getContentReview.data.status).toEqual(
+        expect(getContentReviewResponse.data.apw.getContentReview.data.reviewStatus).toEqual(
             "underReview"
         );
 
@@ -520,7 +532,9 @@ describe("Page publishing workflow", () => {
             id: createdContentReview.id
         });
 
-        expect(getContentReviewResponse.data.apw.getContentReview.data.status).toEqual("published");
+        expect(getContentReviewResponse.data.apw.getContentReview.data.reviewStatus).toEqual(
+            "published"
+        );
 
         /**
          * Let's "unpublish" the content.
@@ -561,7 +575,7 @@ describe("Page publishing workflow", () => {
             id: createdContentReview.id
         });
 
-        expect(getContentReviewResponse.data.apw.getContentReview.data.status).toEqual(
+        expect(getContentReviewResponse.data.apw.getContentReview.data.reviewStatus).toEqual(
             "readyToBePublished"
         );
     });

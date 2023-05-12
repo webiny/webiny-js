@@ -1,7 +1,7 @@
 import { ElasticsearchIndexRequestBody } from "~/types";
-import { dynamicTemplateDates } from "./common";
+import { getCommonMappings } from "./common";
 
-export const japanese: ElasticsearchIndexRequestBody = {
+const config: ElasticsearchIndexRequestBody = {
     settings: {
         index: {
             analysis: {
@@ -92,29 +92,32 @@ export const japanese: ElasticsearchIndexRequestBody = {
         }
     },
     mappings: {
-        dynamic_templates: dynamicTemplateDates.concat([
-            {
-                strings: {
-                    match_mapping_type: "string",
-                    mapping: {
-                        type: "text",
-                        search_analyzer: "ja_kuromoji_search_analyzer",
-                        analyzer: "ja_kuromoji_index_analyzer",
-                        fields: {
-                            ngram: {
-                                type: "text",
-                                search_analyzer: "ja_ngram_search_analyzer",
-                                analyzer: "ja_ngram_index_analyzer"
-                            },
-                            keyword: {
-                                ignore_above: 256,
-                                type: "keyword"
+        numeric_detection: true,
+        dynamic_templates: getCommonMappings(mappings => {
+            return mappings.concat([
+                {
+                    strings: {
+                        match_mapping_type: "string",
+                        mapping: {
+                            type: "text",
+                            search_analyzer: "ja_kuromoji_search_analyzer",
+                            analyzer: "ja_kuromoji_index_analyzer",
+                            fields: {
+                                ngram: {
+                                    type: "text",
+                                    search_analyzer: "ja_ngram_search_analyzer",
+                                    analyzer: "ja_ngram_index_analyzer"
+                                },
+                                keyword: {
+                                    ignore_above: 256,
+                                    type: "keyword"
+                                }
                             }
                         }
                     }
                 }
-            }
-        ]),
+            ]);
+        }),
         properties: {
             rawValues: {
                 type: "object",
@@ -122,4 +125,14 @@ export const japanese: ElasticsearchIndexRequestBody = {
             }
         }
     }
+};
+
+interface Modifier {
+    (config: ElasticsearchIndexRequestBody): ElasticsearchIndexRequestBody;
+}
+export const getJapaneseConfiguration = (modifier?: Modifier) => {
+    if (!modifier) {
+        return config;
+    }
+    return modifier(config);
 };

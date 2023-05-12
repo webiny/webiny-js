@@ -2,6 +2,7 @@
 import React from "react";
 import { css } from "emotion";
 import { List, ListItem } from "@webiny/ui/List";
+import { Typography } from "@webiny/ui/Typography";
 
 const linkStyle = css({
     color: "var(--mdc-theme-text-primary-on-background)",
@@ -34,7 +35,9 @@ export const NothingToShow: React.FC = () => {
     return (
         <List className={submenuList} style={{ opacity: 0.4 }}>
             <ListItem className={submenuItems} ripple={false} disabled>
-                <span className={linkStyle}>Nothing to show.</span>
+                <Typography use={"body2"} className={linkStyle}>
+                    Nothing to show.
+                </Typography>
             </ListItem>
         </List>
     );

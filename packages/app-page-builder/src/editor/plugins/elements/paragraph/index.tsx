@@ -9,20 +9,16 @@ import {
 import Paragraph, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
+import { defaultText, displayText } from "~/editor/plugins/elements/paragraph/elementText";
 
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
-    const defaultText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-     Suspendisse varius enim in eros elementum tristique.
-     Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.
-     Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.`;
-
     const elementType = kebabCase(args.elementType || "paragraph");
 
     const defaultToolbar = {
         title: "Paragraph",
         group: "pb-editor-element-group-basic",
         preview() {
-            return <p className={textClassName}>{defaultText}</p>;
+            return <p className={textClassName}>{displayText}</p>;
         }
     };
 
@@ -85,10 +81,9 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return (
-                <Paragraph elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />
-            );
+
+        render(props) {
+            return <Paragraph {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

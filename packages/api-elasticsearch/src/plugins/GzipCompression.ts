@@ -66,6 +66,13 @@ class GzipCompression extends CompressionPlugin {
     }
 }
 
-export default () => {
+export const createGzipCompression = () => {
     return new GzipCompression();
+};
+/**
+ * Left due to backward compatibility with older systems.
+ * Remove when upgraded the system to run from @webiny/api-serverless-cms-aws
+ */
+export default () => {
+    return createGzipCompression();
 };

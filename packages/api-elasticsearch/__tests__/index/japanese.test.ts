@@ -1,4 +1,4 @@
-import { japanese } from "~/indexConfiguration/japanese";
+import { getJapaneseConfiguration } from "~/indexConfiguration";
 import { createElasticsearchClient } from "../helpers";
 
 describe("Elasticsearch Japanese", () => {
@@ -17,6 +17,8 @@ describe("Elasticsearch Japanese", () => {
     });
 
     it("should create index", async () => {
+        const japanese = getJapaneseConfiguration();
+
         const createResponse = await client.indices.create({
             index: indexTestName,
             body: {

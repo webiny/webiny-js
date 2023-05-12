@@ -17,11 +17,26 @@ import { createSettingsEntity } from "~/definitions/settings";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
-import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
+import {
+    CompressionPlugin,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import {
+    CmsElasticsearchModelFieldPlugin,
+    CmsEntryElasticsearchBodyModifierPlugin,
+    CmsEntryElasticsearchFullTextSearchPlugin,
+    CmsEntryElasticsearchIndexPlugin,
+    CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
+    CmsEntryElasticsearchQueryModifierPlugin,
+    CmsEntryElasticsearchSortModifierPlugin
+} from "~/plugins";
+import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
+import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
+import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+
+export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -77,24 +92,9 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     const plugins = new PluginsContainer([
         /**
-         * User defined custom plugins.
-         */
-        ...(userPlugins || []),
-        /**
-         * Plugins of type CmsModelFieldToGraphQLPlugin.
-         */
-        /**
-         * Elasticsearch field definitions for the entry record.
-         */
-        cmsEntryElasticsearchFields,
-        /**
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
-        /**
-         * Elasticsearch operators.
-         */
-        getElasticsearchOperators(),
         /**
          * Field plugins for DynamoDB.
          */
@@ -106,47 +106,86 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Built-in Elasticsearch index templates.
          */
-        elasticsearchIndexPlugins()
+        elasticsearchIndexPlugins(),
+        /**
+         * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
+         */
+        createFilterPlugins(),
+        /**
+         * User defined custom plugins.
+         * They are at the end because we can then override existing plugins.
+         */
+        ...(userPlugins || [])
     ]);
 
     return {
+        name: "dynamodb:elasticsearch",
         beforeInit: async context => {
             /**
-             * Collect all required plugins from parent context.
+             * Attach the elasticsearch into context if it is not already attached.
              */
-            const fieldPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-                "cms-model-field-to-graphql"
-            );
-            plugins.register(fieldPlugins);
-
+            if (!context.elasticsearch) {
+                context.elasticsearch = elasticsearch;
+            }
             /**
              * Pass the plugins to the parent context.
              */
             context.plugins.register([dynamoDbPlugins()]);
+            /**
+             * We need to fetch all the plugin types in the list from the main container.
+             * This way we do not need to register plugins in the storage plugins contains.
+             */
+            const types: string[] = [
+                // Elasticsearch
+                CompressionPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                // Headless CMS
+                "cms-model-field-to-graphql",
+                CmsEntryFilterPlugin.type,
+                CmsEntryElasticsearchBodyModifierPlugin.type,
+                CmsEntryElasticsearchFullTextSearchPlugin.type,
+                CmsEntryElasticsearchIndexPlugin.type,
+                CmsEntryElasticsearchQueryBuilderValueSearchPlugin.type,
+                CmsEntryElasticsearchQueryModifierPlugin.type,
+                CmsEntryElasticsearchSortModifierPlugin.type,
+                CmsElasticsearchModelFieldPlugin.type,
+                StorageOperationsCmsModelPlugin.type
+            ];
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
         },
         init: async context => {
             /**
              * We need to create indexes on before model create and on clone (create from).
              * Other apps create indexes on locale creation.
              */
-            context.cms.onBeforeModelCreate.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onBeforeModelCreateFrom.subscribe(async ({ model }) => {
+            context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     model,
                     plugins
                 });
             });
-            context.cms.onAfterModelDelete.subscribe(async ({ model }) => {
+            context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
                 await deleteElasticsearchIndex({
                     elasticsearch,
                     model
+                });
+            });
+
+            context.cms.onModelInitialize.subscribe(async ({ model }) => {
+                await createElasticsearchIndex({
+                    elasticsearch,
+                    model,
+                    plugins
                 });
             });
         },

@@ -1,65 +1,85 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import styled from "@emotion/styled";
-/**
- * Package react-loading-skeleton does not have types.
- */
-// @ts-ignore
-import Skeleton from "react-loading-skeleton";
 
-const LoaderUl = styled("ul")({
-    listStyle: "none",
-    padding: "10px 20px",
-    "li > div": {
-        display: "inline-block",
-        verticalAlign: "middle",
-        ".react-loading-skeleton": {
-            backgroundColor: "var(--mdc-theme-background)",
-            backgroundImage:
-                "linear-gradient(90deg, var(--mdc-theme-background), var(--mdc-theme-surface), var(--mdc-theme-background))"
-        }
-    },
-    ".graphic": {
-        fontSize: 36,
-        width: 36
-    },
-    ".data": {
-        width: "calc(-36px + 75%)",
-        marginLeft: 10
-    },
-    ".actions": {
-        width: "calc(-36px + 25%)",
-        marginLeft: 10,
-        textAlign: "right",
-        "> div": {
-            display: "inline-block",
-            fontSize: 24,
-            marginLeft: 10,
-            width: 24
-        }
+import { Skeleton } from "~/Skeleton";
+
+const LoaderUl = styled("ul")`
+    list-style: none;
+    padding: 24px 20px;
+`;
+
+const LoaderWrapper = styled("div")`
+    margin-bottom: 16px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+`;
+
+const Graphic = styled("div")`
+    width: 36px;
+`;
+
+const Data = styled("div")`
+    width: calc(-42px + 75%);
+
+    .data-skeleton-container {
+        height: 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
-});
+`;
 
-const Loader: React.FC = () => (
-    <LoaderUl data-testid={"default-data-list.loading"}>
-        {[1, 2, 3, 4, 5].map(item => (
-            <li key={"list-" + item}>
-                <div className="graphic">
-                    <Skeleton />
-                </div>
-                <div className="data">
-                    <Skeleton count={2} />
-                </div>
-                <div className="actions">
-                    <div>
-                        <Skeleton />
-                    </div>
-                    <div>
-                        <Skeleton />
-                    </div>
-                </div>
-            </li>
-        ))}
-    </LoaderUl>
-);
+const Actions = styled("div")`
+    width: calc(-42px + 25%);
+    margin-left: 10px;
+    text-align: right;
+
+    .actions-skeleton-container {
+        height: 24px;
+        display: flex;
+        justify-content: end;
+    }
+
+    .actions-skeleton {
+        width: 24px;
+        height: 24px;
+        margin-left: 16px;
+    }
+`;
+
+const Loader = (): ReactElement => {
+    const lines = Array.from(Array(5).keys());
+
+    return (
+        <LoaderUl data-testid={"default-data-list.loading"}>
+            {lines.map(line => (
+                <li key={"list-" + line}>
+                    <LoaderWrapper>
+                        <Graphic>
+                            <Skeleton height={36} />
+                        </Graphic>
+                        <Data>
+                            <Skeleton
+                                inline={true}
+                                count={2}
+                                containerClassName={"data-skeleton-container"}
+                            />
+                        </Data>
+                        <Actions>
+                            <Skeleton
+                                inline={true}
+                                count={2}
+                                className={"actions-skeleton"}
+                                containerClassName={"actions-skeleton-container"}
+                            />
+                        </Actions>
+                    </LoaderWrapper>
+                </li>
+            ))}
+        </LoaderUl>
+    );
+};
 
 export default Loader;

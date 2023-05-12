@@ -15,6 +15,7 @@ import {
     ButtonContainer
 } from "../../elementSettings/components/StyledComponents";
 import { BindComponent } from "@webiny/form";
+import { FileManagerFileItem } from "@webiny/app-admin";
 
 const style = {
     addImagesButton: css({ clear: "both", padding: "20px 10px", textAlign: "center" }),
@@ -39,6 +40,11 @@ interface ImagesListImagesSettingsProps {
     Bind: BindComponent;
     submit: () => void;
 }
+
+const getName = (file: FileManagerFileItem): string | undefined => {
+    return file.meta?.find(meta => meta.key === "name")?.value;
+};
+
 const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props => {
     const { Bind, submit } = props;
     return (
@@ -48,7 +54,7 @@ const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props 
                     <Bind name={"images"} afterChange={() => submit()}>
                         {({ onChange, value: images }) => {
                             /**
-                             * We're creating a fresh copy of value here because all of sudden
+                             * We're creating a fresh copy of value here because all of a sudden
                              * dragging a "SortableItem" started throwing TypeError: "Cannot assign to read only property"
                              * which means the state is being mutated by "Sortable" somehow.
                              */
@@ -58,13 +64,17 @@ const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props 
                                     images
                                     multiple
                                     onChange={files => {
-                                        const filesArray = Array.isArray(files) ? files : [files];
+                                        const filesWithName = files.map(file => ({
+                                            id: file.id,
+                                            src: file.src,
+                                            name: getName(file)
+                                        }));
+
                                         Array.isArray(value)
-                                            ? onChange([...value, ...filesArray])
-                                            : onChange([...filesArray]);
+                                            ? onChange([...value, ...filesWithName])
+                                            : onChange([...filesWithName]);
                                     }}
-                                >
-                                    {({ showFileManager }) => (
+                                    render={({ showFileManager }) => (
                                         <>
                                             <ul className="sortable-list">
                                                 {Array.isArray(value) &&
@@ -96,7 +106,7 @@ const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props 
                                             </ButtonContainer>
                                         </>
                                     )}
-                                </FileManager>
+                                />
                             );
                         }}
                     </Bind>

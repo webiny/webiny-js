@@ -2,7 +2,7 @@ import {
     ElasticsearchSortModifierPlugin,
     ModifySortCallable,
     ModifySortParams as BaseModifySortParams
-} from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchSortModifierPlugin";
+} from "@webiny/api-elasticsearch";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface ModifySortParams extends BaseModifySortParams {
@@ -27,3 +27,9 @@ export class CmsEntryElasticsearchSortModifierPlugin extends ElasticsearchSortMo
         this.modelId = config.modelId;
     }
 }
+
+export const createCmsEntryElasticsearchSortModifierPlugin = (
+    config: CmsEntryElasticsearchSortModifierPluginConfig
+) => {
+    return new CmsEntryElasticsearchSortModifierPlugin(config);
+};

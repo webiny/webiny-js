@@ -1,5 +1,5 @@
 import { CmsGroup } from "~/types";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { emptyObjectFields } from "./mocks/emptyObjectFields";
 
 describe("Model - nested field", () => {
@@ -30,7 +30,9 @@ describe("Model - nested field", () => {
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Model",
-                group: contentModelGroup.id
+                group: contentModelGroup.id,
+                singularApiName: "TestModel",
+                pluralApiName: "TestModels"
             }
         });
 

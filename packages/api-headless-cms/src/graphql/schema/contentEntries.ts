@@ -1,9 +1,13 @@
-import { Response } from "@webiny/handler-graphql";
-import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere } from "~/types";
-import { NotAuthorizedResponse } from "@webiny/api-security";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { getEntryTitle } from "~/utils/getEntryTitle";
 import WebinyError from "@webiny/error";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere, CmsIdentity } from "~/types";
+import { NotAuthorizedResponse } from "@webiny/api-security";
+import { getEntryTitle } from "~/utils/getEntryTitle";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { getEntryDescription } from "~/utils/getEntryDescription";
+import { getEntryImage } from "~/utils/getEntryImage";
+import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
+import { Resolvers } from "@webiny/handler-graphql/types";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -11,6 +15,12 @@ interface EntriesByModel {
 
 type GetContentEntryType = "latest" | "published" | "exact";
 
+const createDate = (date: string): Date => {
+    try {
+        return new Date(date);
+    } catch {}
+    return new Date();
+};
 interface CmsEntryRecord {
     id: string;
     entryId: string;
@@ -20,7 +30,36 @@ interface CmsEntryRecord {
     };
     status: string;
     title: string;
+    description?: string | null;
+    image?: string | null;
+    createdBy: CmsIdentity;
+    modifiedBy?: CmsIdentity | null;
+    /**
+     * We can use the number since it is an internal field.
+     * Created via Date.parse() method.
+     */
+    createdOn: Date;
+    savedOn: Date;
 }
+
+const createCmsEntryRecord = (model: CmsModel, entry: CmsEntry): CmsEntryRecord => {
+    return {
+        id: entry.id,
+        entryId: entry.entryId,
+        model: {
+            modelId: model.modelId,
+            name: model.name
+        },
+        status: entry.status,
+        title: getEntryTitle(model, entry),
+        description: getEntryDescription(model, entry),
+        image: getEntryImage(model, entry),
+        createdBy: entry.createdBy,
+        modifiedBy: entry.modifiedBy,
+        createdOn: createDate(entry.createdOn),
+        savedOn: createDate(entry.savedOn)
+    };
+};
 
 interface FetchMethod {
     (model: CmsModel, ids: string[]): Promise<CmsEntry[]>;
@@ -70,7 +109,9 @@ const getContentEntriesMethods = {
     published: "getPublishedEntriesByIds",
     exact: "getEntriesByIds"
 };
-const getContentEntries = async (params: GetContentEntriesParams): Promise<Response> => {
+const getContentEntries = async (
+    params: GetContentEntriesParams
+): Promise<Response | ErrorResponse> => {
     const { args, context, type } = params;
 
     const method = getFetchMethod(type, context);
@@ -102,30 +143,25 @@ const getContentEntries = async (params: GetContentEntriesParams): Promise<Respo
         return new Response([]);
     }
 
-    const results = await Promise.all(getters);
+    try {
+        const results = await Promise.all(getters);
 
-    const entries = results
-        .reduce((collection, items) => {
-            return collection.concat(
-                items.map(item => {
-                    const model = modelsMap[item.modelId];
+        const entries = results
+            .reduce<CmsEntryRecord[]>((collection, items) => {
+                return collection.concat(
+                    items.map(item => {
+                        const model = modelsMap[item.modelId];
 
-                    return {
-                        id: item.id,
-                        entryId: item.entryId,
-                        model: {
-                            modelId: model.modelId,
-                            name: model.name
-                        },
-                        status: item.status,
-                        title: getEntryTitle(model, item)
-                    };
-                })
-            );
-        }, [] as CmsEntryRecord[])
-        .filter(Boolean);
+                        return createCmsEntryRecord(model, item);
+                    })
+                );
+            }, [])
+            .filter(Boolean);
 
-    return new Response(entries);
+        return new Response(entries);
+    } catch (ex) {
+        return new ErrorResponse(ex);
+    }
 };
 
 /**
@@ -140,7 +176,7 @@ interface GetContentEntryParams {
 }
 const getContentEntry = async (
     params: GetContentEntryParams
-): Promise<Response | NotAuthorizedResponse> => {
+): Promise<Response<CmsEntryRecord | null> | NotAuthorizedResponse> => {
     const { args, context, type } = params;
     if (!getContentEntriesMethods[type]) {
         throw new WebinyError(
@@ -174,52 +210,85 @@ const getContentEntry = async (
         return new Response(null);
     }
 
-    return new Response({
-        id: entry.id,
-        entryId: entry.entryId,
-        model: {
-            modelId: model.modelId,
-            name: model.name
-        },
-        status: entry.status,
-        title: getEntryTitle(model, entry)
-    });
+    return new Response(createCmsEntryRecord(model, entry));
+};
+/**
+ * As we support description field, we need to transform the value from storage.
+ */
+const createResolveDescription = (): Resolvers<CmsContext> => {
+    return async (parent, _, context) => {
+        const models = await context.cms.listModels();
+        const model = models.find(({ modelId }) => {
+            return parent.model.modelId === modelId;
+        });
+        if (!model) {
+            return null;
+        }
+        const field = model.fields.find(f => f.fieldId === model.descriptionFieldId);
+        if (!field) {
+            return null;
+        }
+        const value = parent.description || parent[field.fieldId];
+        if (!value) {
+            return null;
+        }
+        return entryFieldFromStorageTransform({
+            context,
+            model,
+            field,
+            value
+        });
+    };
 };
 
-export const createContentEntriesSchema = (
-    context: CmsContext
-): GraphQLSchemaPlugin<CmsContext> => {
+interface Params {
+    context: CmsContext;
+}
+export const createContentEntriesSchema = ({
+    context
+}: Params): CmsGraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
-        return new GraphQLSchemaPlugin({
+        const plugin = new CmsGraphQLSchemaPlugin({
             typeDefs: "",
             resolvers: {}
         });
+        plugin.name = `headless-cms.graphql.schema.${context.cms.type}.empty`;
+        return plugin;
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsModelMeta {
-                modelId: String
-                name: String
+                modelId: String!
+                name: String!
             }
 
             type CmsPublishedContentEntry {
                 id: ID!
                 entryId: String!
                 title: String
+                description: String
+                image: String
             }
 
             type CmsContentEntry {
                 id: ID!
                 entryId: String!
-                model: CmsModelMeta
-                status: String
-                title: String
+                model: CmsModelMeta!
+                status: String!
+                title: String!
+                description: String
+                image: String
+                createdBy: CmsIdentity!
+                ownedBy: CmsIdentity!
+                modifiedBy: CmsIdentity
                 published: CmsPublishedContentEntry
+                createdOn: DateTime!
+                savedOn: DateTime!
             }
 
             type CmsContentEntriesResponse {
-                data: [CmsContentEntry]
+                data: [CmsContentEntry!]
                 error: CmsError
             }
 
@@ -240,20 +309,20 @@ export const createContentEntriesSchema = (
                     query: String
                     fields: [String!]
                     limit: Int
-                ): CmsContentEntriesResponse
+                ): CmsContentEntriesResponse!
 
                 # Get content entry meta data
-                getContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse
+                getContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
 
-                getLatestContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse
-                getPublishedContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse
+                getLatestContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
+                getPublishedContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
 
                 # Get content entries meta data
-                getContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse
-                getLatestContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse
+                getContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse!
+                getLatestContentEntries(entries: [CmsModelEntryInput!]!): CmsContentEntriesResponse!
                 getPublishedContentEntries(
                     entries: [CmsModelEntryInput!]!
-                ): CmsContentEntriesResponse
+                ): CmsContentEntriesResponse!
             }
         `,
         resolvers: {
@@ -273,15 +342,15 @@ export const createContentEntriesSchema = (
                         if (!entry) {
                             return null;
                         }
-                        return {
-                            id: entry.id,
-                            entryId: entry.entryId,
-                            title: getEntryTitle(model, entry)
-                        };
+                        return createCmsEntryRecord(model, entry);
                     } catch (ex) {
                         return null;
                     }
-                }
+                },
+                description: createResolveDescription()
+            },
+            CmsPublishedContentEntry: {
+                description: createResolveDescription()
             },
             Query: {
                 async searchContentEntries(_, args: any, context) {
@@ -302,30 +371,23 @@ export const createContentEntriesSchema = (
                             });
 
                             return items.map((entry: CmsEntry) => {
-                                return {
-                                    id: entry.id,
-                                    entryId: entry.entryId,
-                                    model: {
-                                        modelId: model.modelId,
-                                        name: model.name
-                                    },
-                                    status: entry.status,
-                                    title: getEntryTitle(model, entry),
-                                    // We need `savedOn` to sort entries from latest to oldest
-                                    savedOn: entry.savedOn
-                                };
+                                return createCmsEntryRecord(model, entry);
                             });
                         });
 
-                    const entries = await Promise.all(getters).then(results =>
-                        results.reduce((result, item) => result.concat(item), [])
-                    );
+                    try {
+                        const entries = await Promise.all(getters).then(results =>
+                            results.reduce((result, item) => result.concat(item), [])
+                        );
 
-                    return new Response(
-                        entries
-                            .sort((a, b) => Date.parse(b.savedOn) - Date.parse(a.savedOn))
-                            .slice(0, limit)
-                    );
+                        return new Response(
+                            entries
+                                .sort((a, b) => b.savedOn.getTime() - a.savedOn.getTime())
+                                .slice(0, limit)
+                        );
+                    } catch (ex) {
+                        return new ErrorResponse(ex);
+                    }
                 },
                 async getContentEntry(_, args: any, context) {
                     return getContentEntry({
@@ -372,4 +434,8 @@ export const createContentEntriesSchema = (
             }
         }
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-entries`;
+
+    return plugin;
 };

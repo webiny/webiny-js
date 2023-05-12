@@ -14,8 +14,6 @@ import {
     PageStorageOperationsListRevisionsParams,
     PageStorageOperationsListTagsParams,
     PageStorageOperationsPublishParams,
-    PageStorageOperationsRequestChangesParams,
-    PageStorageOperationsRequestReviewParams,
     PageStorageOperationsUnpublishParams,
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
@@ -534,115 +532,6 @@ export const createPageStorageOperations = (
     };
 
     /**
-     * We need to
-     * - update revision record
-     * - update latest record if it is the latest record
-     */
-    const requestReview = async (
-        params: PageStorageOperationsRequestReviewParams
-    ): Promise<Page> => {
-        const { original, page, latestPage } = params;
-
-        const revisionKeys = {
-            PK: createRevisionPartitionKey(page),
-            SK: createRevisionSortKey(page)
-        };
-        const latestKeys = {
-            PK: createLatestPartitionKey(page),
-            SK: createLatestSortKey(page)
-        };
-
-        const items = [
-            entity.putBatch({
-                ...page,
-                ...revisionKeys,
-                TYPE: createRevisionType()
-            })
-        ];
-        if (latestPage.id === page.id) {
-            items.push(
-                entity.putBatch({
-                    ...page,
-                    ...latestKeys,
-                    TYPE: createLatestType()
-                })
-            );
-        }
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not request review on page record.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    original,
-                    page,
-                    latestPage
-                }
-            );
-        }
-        return page;
-    };
-
-    /**
-     * We need to
-     * - update revision record
-     * - update latest record if it is the latest one
-     */
-    const requestChanges = async (
-        params: PageStorageOperationsRequestChangesParams
-    ): Promise<Page> => {
-        const { original, page, latestPage } = params;
-
-        const revisionKeys = {
-            PK: createRevisionPartitionKey(page),
-            SK: createRevisionSortKey(page)
-        };
-        const latestKeys = {
-            PK: createLatestPartitionKey(page),
-            SK: createLatestSortKey(page)
-        };
-
-        const items = [
-            entity.putBatch({
-                ...page,
-                ...revisionKeys,
-                TYPE: createRevisionType()
-            })
-        ];
-        if (latestPage.id === page.id) {
-            items.push(
-                entity.putBatch({
-                    ...page,
-                    ...latestKeys,
-                    TYPE: createLatestType()
-                })
-            );
-        }
-
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not request changes on page record.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    original,
-                    page,
-                    latestPage
-                }
-            );
-        }
-        return page;
-    };
-
-    /**
      * There are only few options to use when getting the page.
      * For that reason we try to have it as simple as possible when querying.
      */
@@ -947,7 +836,7 @@ export const createPageStorageOperations = (
         }
 
         const tags = pages.reduce((collection, page) => {
-            let list: string[] = lodashGet(page, "settings.general.tags");
+            let list: string[] = lodashGet(page, "settings.general.tags") as unknown as string[];
             if (!list || list.length === 0) {
                 return collection;
             } else if (where.search) {
@@ -974,8 +863,6 @@ export const createPageStorageOperations = (
         list,
         listRevisions,
         publish,
-        requestChanges,
-        requestReview,
         unpublish,
         listTags
     };

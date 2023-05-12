@@ -1,10 +1,10 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import workflowSchema from "./graphql/workflow.gql";
 import contentReviewSchema from "./graphql/contentReview.gql";
 import reviewerSchema from "./graphql/reviewer.gql";
 import commentSchema from "./graphql/comment.gql";
 import changeRequestedSchema from "./graphql/changeRequest.gql";
-import { ContextPlugin } from "@webiny/handler";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 
 const emptyResolver = () => ({});
@@ -38,7 +38,7 @@ const baseSchema = new GraphQLSchemaPlugin({
             totalCount: Int
             cursor: String
         }
-        type ApwCreatedBy {
+        type ApwIdentity {
             id: ID
             displayName: String
             type: String

@@ -10,7 +10,7 @@ interface RoutePropsRenderParams {
     location: Location;
 }
 
-export interface RouteProps extends BaseRouteProps {
+export type RouteProps = BaseRouteProps & {
     /**
      * @deprecated This prop is here for backwards compatibility with react-router v5 routes.
      */
@@ -23,7 +23,7 @@ export interface RouteProps extends BaseRouteProps {
      * @deprecated This prop is here for backwards compatibility with react-router v5 routes.
      */
     component?: React.ComponentType;
-}
+};
 
 export const Route: React.FC<RouteProps> = props => {
     const newProps = {

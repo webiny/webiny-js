@@ -1,8 +1,7 @@
-import { Context } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { Topic } from "@webiny/pubsub/types";
 import { WcpContext } from "@webiny/api-wcp/types";
+import { Context as BaseContext } from "@webiny/handler/types";
 
 export interface TenantDomain {
     fqdn: string;
@@ -16,6 +15,7 @@ export interface Tenant {
     id: string;
     name: string;
     description: string;
+    tags: string[];
     status: string;
     settings: TenantSettings;
     parent: string | null;
@@ -47,9 +47,14 @@ export interface Tenancy {
         data: Partial<TTenant>
     ): Promise<TTenant>;
     deleteTenant(id: string): Promise<boolean>;
+    withRootTenant<T>(cb: () => T): Promise<T>;
+    withEachTenant<TTenant extends Tenant, TReturn>(
+        tenants: TTenant[],
+        cb: (tenant: TTenant) => Promise<TReturn>
+    ): Promise<TReturn[]>;
 }
 
-export interface TenancyContext extends Context, HttpContext, DbContext, WcpContext {
+export interface TenancyContext extends BaseContext, DbContext, WcpContext {
     tenancy: Tenancy;
 }
 
@@ -57,6 +62,7 @@ export interface CreateTenantInput {
     id?: string;
     name: string;
     description: string;
+    tags: string[];
     status?: string;
     settings?: TenantSettings;
     parent: string;
@@ -84,10 +90,12 @@ export interface System {
 // Tenant lifecycle events
 export interface TenantBeforeCreateEvent {
     tenant: Tenant;
+    input: CreateTenantInput & Record<string, any>;
 }
 
 export interface TenantAfterCreateEvent {
     tenant: Tenant;
+    input: CreateTenantInput & Record<string, any>;
 }
 
 export interface TenantBeforeUpdateEvent {

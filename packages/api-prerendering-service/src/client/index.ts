@@ -1,8 +1,8 @@
 import { ClientContext } from "@webiny/handler-client/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
 import { PrerenderingServiceClientArgs, PrerenderingServiceClientContext } from "./types";
-import { HandlerArgs as RenderHandlerEvent } from "../render/types";
+import { HandlerPayload as RenderHandlerEvent } from "../render/types";
 import { HandlerArgs as FlushHandlerEvent } from "../flush/types";
 import { QueueAddJobEvent } from "~/queue/add/types";
 

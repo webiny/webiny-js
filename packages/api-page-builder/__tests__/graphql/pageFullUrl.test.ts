@@ -1,5 +1,4 @@
 import useGqlHandler from "./useGqlHandler";
-import useUpdateSettingsHandler from "../updateSettings/useHandler";
 import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
 
@@ -52,7 +51,25 @@ describe("page full URL test", () => {
 
     test("full URL must be returned correctly", async () => {
         const initialPages = await createInitialData();
-        await updateSettings({ data: { websiteUrl: "https://domain.com" } });
+        const websiteUrl = "https://domain.com";
+        const [updateSettingsResponse] = await updateSettings({
+            data: {
+                websiteUrl
+            }
+        });
+
+        expect(updateSettingsResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updateSettings: {
+                        data: {
+                            websiteUrl
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         const [listPagesAfterUpdateSettingsResponse] = await until(
             () =>
@@ -61,6 +78,35 @@ describe("page full URL test", () => {
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 3
         );
+        expect(listPagesAfterUpdateSettingsResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                id: initialPages[2].id,
+                                url: expect.stringMatching(
+                                    /^https:\/\/domain.com\/some-url\/untitled-/
+                                )
+                            },
+                            {
+                                id: initialPages[1].id,
+                                url: expect.stringMatching(
+                                    /^https:\/\/domain.com\/some-url\/untitled-/
+                                )
+                            },
+                            {
+                                id: initialPages[0].id,
+                                url: expect.stringMatching(
+                                    /^https:\/\/domain.com\/some-url\/untitled-/
+                                )
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
         expect(listPagesAfterUpdateSettingsResponse.data.pageBuilder.listPages.data).toMatchObject([
             { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
             { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
@@ -92,21 +138,6 @@ describe("page full URL test", () => {
 
     test("full URL must be returned correctly when only default settings exist", async () => {
         await createInitialData();
-        const { handler } = useUpdateSettingsHandler();
-
-        await handler({
-            data: {
-                name: "test 1",
-                websiteUrl: "https://www.test.com/",
-                websitePreviewUrl: "https://preview.test.com/",
-                prerendering: {
-                    app: {
-                        url: "https://www.app.com/"
-                    },
-                    storage: { name: "storage-name" }
-                }
-            }
-        });
 
         const [listPagesAfterFirstSettingsUpdate] = await until(
             () =>

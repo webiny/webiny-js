@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "./types";
-import { HttpContext } from "@webiny/handler-http/types";
+import { Context } from "@webiny/api/types";
 import {
-    RefInput,
-    Number as NumberScalar,
-    Any as AnyScalar,
+    RefInputScalar,
+    NumberScalar,
+    AnyScalar,
     DateScalar,
     DateTimeScalar,
     JsonScalar,
@@ -14,11 +14,13 @@ import {
 } from "./builtInTypes";
 import { GraphQLScalarType } from "graphql/type/definition";
 
-export const createGraphQLSchema = (context: HttpContext) => {
+export const createGraphQLSchema = (context: Context) => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
+    // TODO: once the API packages more closed, we'll have the opportunity
+    // TODO: to maybe import the @ps directive from `api-prerendering-service` package.
     const typeDefs = [
         gql`
             type Query
@@ -32,18 +34,23 @@ export const createGraphQLSchema = (context: HttpContext) => {
             scalar Date
             scalar DateTime
             scalar Time
+
+            # This directive doesn't do anything on the GraphQL resolution level. It just serves
+            # as a way to tell the Prerendering Service whether the GraphQL query needs to be
+            # cached or not.
+            directive @ps(cache: Boolean) on QUERY
         `
     ];
 
     const resolvers = [
         {
-            ...scalars.reduce((acc, s) => {
+            ...scalars.reduce<Record<string, GraphQLScalarType>>((acc, s) => {
                 acc[s.name] = s;
                 return acc;
-            }, {} as Record<string, GraphQLScalarType>),
+            }, {}),
             JSON: JsonScalar,
             Long: LongScalar,
-            RefInput,
+            RefInput: RefInputScalar,
             Number: NumberScalar,
             Any: AnyScalar,
             DateTime: DateTimeScalar,
@@ -52,12 +59,11 @@ export const createGraphQLSchema = (context: HttpContext) => {
         }
     ];
 
-    const gqlPlugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
-    for (let i = 0; i < gqlPlugins.length; i++) {
-        const plugin = gqlPlugins[i];
+    const plugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
+    for (const plugin of plugins) {
         /**
          * TODO @ts-refactor
-         * Figure out correct tyeps on typeDefs and resolvers
+         * Figure out correct types on typeDefs and resolvers
          */
         // @ts-ignore
         typeDefs.push(plugin.schema.typeDefs);

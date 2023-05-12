@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { PbErrorResponse } from "~/types";
 
 const fields = /* GraphQL */ `
     {
@@ -27,9 +28,15 @@ const fields = /* GraphQL */ `
                     src
                 }
             }
+            htmlTags {
+                header
+                footer
+            }
         }
         error {
             message
+            code
+            data
         }
     }
 `;
@@ -60,6 +67,10 @@ export interface GetSettingsResponseData {
             id: string;
             src: string;
         };
+    };
+    htmlTags: {
+        header: string;
+        footer: string;
     };
 }
 
@@ -101,7 +112,10 @@ export const GET_SETTINGS = gql`
  */
 export interface UpdateSettingsMutationResponse {
     pageBuilder: {
-        updateSettings: GetSettingsResponseData;
+        updateSettings: {
+            data: GetSettingsResponseData | null;
+            error: PbErrorResponse | null;
+        };
     };
 }
 export interface UpdateSettingsMutationVariablesData {
@@ -125,17 +139,13 @@ export interface UpdateSettingsMutationVariablesData {
             src: string;
         };
     };
+    htmlTags?: {
+        header: string;
+        footer: string;
+    };
     pages?: {
         home: string;
         notFound: string;
-    };
-    prerendering?: {
-        storage: {
-            name: string;
-        };
-        app: {
-            url: string;
-        };
     };
 }
 export interface UpdateSettingsMutationVariables {

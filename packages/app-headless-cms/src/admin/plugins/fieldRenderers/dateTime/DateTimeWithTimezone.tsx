@@ -11,7 +11,7 @@ import {
     getCurrentLocalTime,
     getCurrentTimeZone
 } from "./utils";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 
 interface State {
@@ -58,7 +58,7 @@ export interface DateTimeWithTimezoneProps {
     // TODO @ts-refactor figure out correct trailing icon type
     // @ts-ignore
     trailingIcon?: any;
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 export const DateTimeWithTimezone: React.FC<DateTimeWithTimezoneProps> = ({
     bind,

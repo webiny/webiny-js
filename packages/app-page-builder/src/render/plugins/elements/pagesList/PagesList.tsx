@@ -9,19 +9,6 @@ import trimEnd from "lodash/trimEnd";
 
 import { PbPageElementPagesListComponentPlugin } from "~/types";
 
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            // @ts-ignore
-            "ps-tag": {
-                key?: string;
-                value?: string;
-            };
-        }
-    }
-}
-
 interface PagesListRenderProps {
     data: {
         component: string;

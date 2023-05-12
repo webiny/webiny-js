@@ -1,31 +1,34 @@
 import { createSetupForEntryContentReview } from "../utils/cms.helpers";
-import { useContentHeadlessCmsHandler } from "../utils/useContentHeadlessCmsHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { ApwContentTypes } from "~/scheduler/types";
 
 const updatedProductName = "Updated Webiny product";
 
 describe("Cms Entry Publishing Workflow", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = useContentHeadlessCmsHandler({
-        ...options
+    const cmsHandler = useGraphQlHandler({
+        path: "/cms/manage/en-US"
     });
+    const { getContentEntryQuery, updateContentEntryMutation, createContentEntryFromMutation } =
+        cmsHandler;
+
+    const coreHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
+
     const {
-        getContentEntryQuery,
         createContentReviewMutation,
-        updateContentEntryMutation,
-        createContentEntryFromMutation,
         getContentReviewQuery,
         provideSignOffMutation,
         retractSignOffMutation,
         publishContentMutation,
         unpublishContentMutation
-    } = gqlHandler;
+    } = coreHandler;
 
     const setup = async () => {
-        return createSetupForEntryContentReview(gqlHandler);
+        return createSetupForEntryContentReview({
+            coreHandler,
+            cmsHandler
+        });
     };
 
     it(`should be able to "publish" entry for content review process`, async () => {
@@ -60,7 +63,7 @@ describe("Cms Entry Publishing Workflow", () => {
                                 type: ApwContentTypes.CMS_ENTRY,
                                 version: 1
                             },
-                            status: "underReview",
+                            reviewStatus: "underReview",
                             title: entry.name
                         },
                         error: null
@@ -92,6 +95,7 @@ describe("Cms Entry Publishing Workflow", () => {
                         id: entry.id,
                         entryId: entry.entryId,
                         meta: {
+                            version: 1,
                             data: {
                                 apw: {
                                     workflowId: workflow.id,
@@ -105,13 +109,31 @@ describe("Cms Entry Publishing Workflow", () => {
             }
         });
         /**
+         * Make sure that product is updated.
+         */
+        const [getAfterUpdateProduct] = await getContentEntryQuery(model, {
+            revision: entry.id
+        });
+        expect(getAfterUpdateProduct).toMatchObject({
+            data: {
+                getProduct: {
+                    data: {
+                        id: entry.id,
+                        entryId: entry.entryId,
+                        name: updatedProductName
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
          * Fetch the content review and check if the updates were successful.
          */
         const [getContentReviewResponse] = await getContentReviewQuery({
             id: createdContentReview.id
         });
         const contentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(contentReview.status).toEqual("underReview");
+        expect(contentReview.reviewStatus).toEqual("underReview");
         expect(contentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -231,7 +253,7 @@ describe("Cms Entry Publishing Workflow", () => {
         });
         const updatedContentReview =
             getContentReviewAfterSignOffResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
         expect(updatedContentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -260,7 +282,8 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
         expect(
-            getContentReviewAfterRetractingSignOffResponse.data.apw.getContentReview.data.status
+            getContentReviewAfterRetractingSignOffResponse.data.apw.getContentReview.data
+                .reviewStatus
         ).toEqual("underReview");
 
         /**
@@ -283,12 +306,66 @@ describe("Cms Entry Publishing Workflow", () => {
         });
 
         /**
+         * Let's confirm that the content is "published".
+         */
+        const [getProductBeforeSignOffResponse] = await getContentEntryQuery(model, {
+            revision: entry.id
+        });
+        expect(getProductBeforeSignOffResponse).toEqual({
+            data: {
+                getProduct: {
+                    data: {
+                        ...updatedProduct,
+                        meta: {
+                            ...updatedProduct.meta,
+                            status: "draft",
+                            data: {
+                                ...updatedProduct.meta.data
+                            }
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Let's confirm that the content is "published".
+         */
+        const [getProductBeforePublishResponse] = await getContentEntryQuery(model, {
+            revision: entry.id
+        });
+        expect(getProductBeforePublishResponse).toEqual({
+            data: {
+                getProduct: {
+                    data: {
+                        ...updatedProduct,
+                        meta: {
+                            ...updatedProduct.meta,
+                            status: "draft",
+                            data: {
+                                ...updatedProduct.meta.data
+                            }
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const cleanCoreHandler = useGraphQlHandler({
+            path: "/graphql"
+        });
+        /**
          * After providing sign-off to every step of the workflow,
          * Should be able to publish the entry.
+         *
+         * We need to use the clean handler, with no cache.
          */
-        const [publishContentAfterAllSignOffResponse] = await publishContentMutation({
-            id: contentReview.id
-        });
+        const [publishContentAfterAllSignOffResponse] =
+            await cleanCoreHandler.publishContentMutation({
+                id: contentReview.id
+            });
         expect(publishContentAfterAllSignOffResponse).toEqual({
             data: {
                 apw: {
@@ -300,10 +377,17 @@ describe("Cms Entry Publishing Workflow", () => {
             }
         });
 
+        const cleanCmsHandler = useGraphQlHandler({
+            path: "/cms/manage/en-US"
+        });
         /**
          * Let's confirm that the content is "published".
+         *
+         * We need to use the clean handler, with no cache.
          */
-        const [getProductResponse] = await getContentEntryQuery(model, { revision: entry.id });
+        const [getProductResponse] = await cleanCmsHandler.getContentEntryQuery(model, {
+            revision: entry.id
+        });
         expect(getProductResponse).toEqual({
             data: {
                 getProduct: {
@@ -332,9 +416,9 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
 
-        expect(getContentReviewAfterPublishResponse.data.apw.getContentReview.data.status).toEqual(
-            "published"
-        );
+        expect(
+            getContentReviewAfterPublishResponse.data.apw.getContentReview.data.reviewStatus
+        ).toEqual("published");
     });
 
     test(`Should able to "unpublish" entry for content review process`, async () => {
@@ -359,7 +443,7 @@ describe("Cms Entry Publishing Workflow", () => {
         /*
          * Check content status, it should be "under review".
          */
-        expect(createdContentReview.status).toEqual("underReview");
+        expect(createdContentReview.reviewStatus).toEqual("underReview");
         expect(createdContentReview.title).toEqual(entry.name);
 
         /*
@@ -382,7 +466,7 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
         const contentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(contentReview.status).toEqual("underReview");
+        expect(contentReview.reviewStatus).toEqual("underReview");
         expect(contentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -508,7 +592,7 @@ describe("Cms Entry Publishing Workflow", () => {
         });
         const updatedContentReview =
             getContentReviewAfterSignOffResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
         expect(updatedContentReview.title).toEqual(updatedProduct.name);
 
         /**
@@ -537,7 +621,7 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
         expect(
-            getContentReviewAfterRetractingResponse.data.apw.getContentReview.data.status
+            getContentReviewAfterRetractingResponse.data.apw.getContentReview.data.reviewStatus
         ).toEqual("underReview");
 
         /**
@@ -559,11 +643,16 @@ describe("Cms Entry Publishing Workflow", () => {
             }
         });
 
+        const cleanCoreHandler = useGraphQlHandler({
+            path: "/graphql"
+        });
         /**
          * After providing sign-off to every step of the workflow,
          * Should be able to publish the entry.
+         *
+         * We need to use clean core handler, with no cache.
          */
-        const [publishContentAfterSignOffResponse] = await publishContentMutation({
+        const [publishContentAfterSignOffResponse] = await cleanCoreHandler.publishContentMutation({
             id: contentReview.id
         });
         expect(publishContentAfterSignOffResponse).toEqual({
@@ -616,9 +705,9 @@ describe("Cms Entry Publishing Workflow", () => {
             id: createdContentReview.id
         });
 
-        expect(getContentReviewAfterPublishResponse.data.apw.getContentReview.data.status).toEqual(
-            "published"
-        );
+        expect(
+            getContentReviewAfterPublishResponse.data.apw.getContentReview.data.reviewStatus
+        ).toEqual("published");
 
         /**
          * Let's "unpublish" the content.
@@ -637,12 +726,18 @@ describe("Cms Entry Publishing Workflow", () => {
             }
         });
 
+        const cleanCmsHandler = useGraphQlHandler({
+            path: "/cms/manage/en-US"
+        });
         /**
          * Let's confirm that the content is "unpublished".
          */
-        const [getProductAfterUnpublishResponse] = await getContentEntryQuery(model, {
-            revision: updatedProduct.id
-        });
+        const [getProductAfterUnpublishResponse] = await cleanCmsHandler.getContentEntryQuery(
+            model,
+            {
+                revision: updatedProduct.id
+            }
+        );
         expect(getProductAfterUnpublishResponse).toEqual({
             data: {
                 getProduct: {
@@ -667,7 +762,7 @@ describe("Cms Entry Publishing Workflow", () => {
         });
 
         expect(
-            getContentReviewAfterUnpublishResponse.data.apw.getContentReview.data.status
+            getContentReviewAfterUnpublishResponse.data.apw.getContentReview.data.reviewStatus
         ).toEqual("readyToBePublished");
     });
 });

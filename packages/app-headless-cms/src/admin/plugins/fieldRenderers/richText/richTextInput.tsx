@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorContentEntry, CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
@@ -9,7 +9,7 @@ import { BindComponentRenderProp } from "@webiny/form";
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
 const getKey = (
-    field: CmsEditorField,
+    field: CmsModelField,
     bind: BindComponentRenderProp<string, CmsEditorContentEntry>
 ): string => {
     const formId = bind.form.data.id || "new";

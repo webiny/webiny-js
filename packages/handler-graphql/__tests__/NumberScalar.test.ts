@@ -1,4 +1,4 @@
-import { Number as NumberScalar } from "../src/builtInTypes";
+import { NumberScalar } from "~/builtInTypes";
 
 describe("NumberScalar", () => {
     const correctInputValues = [
@@ -11,8 +11,8 @@ describe("NumberScalar", () => {
         ["0.00001", 0.00001]
     ];
     test.each(correctInputValues)(
-        "it should parse number correctly",
-        (value: any, expected: number) => {
+        "it should parse number correctly - %s -> %s",
+        (value, expected) => {
             const result = NumberScalar.parseValue(value);
             expect(result).toEqual(expected);
         }
@@ -25,7 +25,7 @@ describe("NumberScalar", () => {
     ];
 
     test.each(incorrectInputValues)(
-        "it should throw an error on incorrect value",
+        "it should throw an error on incorrect value - %s -> %s",
         (value: any, message: string) => {
             expect(() => {
                 NumberScalar.parseValue(value);
@@ -42,8 +42,8 @@ describe("NumberScalar", () => {
         ["0.00001", 0.00001]
     ];
     test.each(correctOutputValues)(
-        "should serialize number correctly",
-        (value: any, expected: number) => {
+        "should serialize number correctly - %s -> %s",
+        (value, expected) => {
             const result = NumberScalar.serialize(value);
             expect(result).toEqual(expected);
         }
@@ -51,8 +51,11 @@ describe("NumberScalar", () => {
 
     const incorrectOutputValues = [["fdlms"], ["hf91nhfd"], ["0x005"]];
 
-    test.each(incorrectOutputValues)("should return null on incorrect value", (value: any) => {
-        const result = NumberScalar.serialize(value);
-        expect(result).toEqual(null);
-    });
+    test.each(incorrectOutputValues)(
+        "should return null on incorrect value - %s -> %s",
+        (value: any) => {
+            const result = NumberScalar.serialize(value);
+            expect(result).toEqual(null);
+        }
+    );
 });

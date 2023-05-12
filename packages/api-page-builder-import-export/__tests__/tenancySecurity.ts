@@ -4,9 +4,10 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { TenancyContext } from "@webiny/api-tenancy/types";
+import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
+import { Identity } from "../../api-authentication/src/types";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
 const documentClient = new DocumentClient({
@@ -23,18 +24,33 @@ interface Config {
     identity?: SecurityIdentity;
 }
 
-export const defaultIdentity = {
+export const defaultIdentity: Identity = {
     id: "12345678",
     type: "admin",
     displayName: "John Doe"
 };
+
+const tenant = {
+    id: "root",
+    name: "Root",
+    parent: null
+} as unknown as Tenant;
+
+const defaultPermission: SecurityPermission[] = [
+    {
+        name: "*"
+    }
+];
 
 export const createTenancyAndSecurity = ({ permissions, identity }: Config = {}) => {
     return [
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
                 documentClient,
-                table: table => ({ ...table, name: process.env.DB_TABLE })
+                table: table => ({
+                    ...table,
+                    name: process.env.DB_TABLE as string
+                })
             })
         }),
         createTenancyGraphQL(),
@@ -46,14 +62,14 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
-            context.tenancy.setCurrentTenant({ id: "root", name: "Root" });
+            context.tenancy.setCurrentTenant(tenant);
 
             context.security.addAuthenticator(async () => {
                 return identity || defaultIdentity;
             });
 
             context.security.addAuthorizer(async () => {
-                return permissions || [{ name: "*" }];
+                return permissions || defaultPermission;
             });
         }),
         new BeforeHandlerPlugin<SecurityContext>(context => {

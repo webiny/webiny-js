@@ -91,6 +91,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         render(props) {
             return <Block {...props} />;
         },
+
         // This callback is executed when another element is dropped on the drop zones with type "block"
         onReceived({ source, target, position, state, meta }) {
             const element = createDroppedElement(source as any, target);

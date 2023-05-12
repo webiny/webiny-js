@@ -66,28 +66,14 @@ This will set the necessary values in yarn2 config file, which will be located i
 
 > Yarn2 projects don't rely on global configurations and is not installed globally, but on per-project basis. This allows having multiple versions of yarn2, for different projects.
 
-#### 3. Version and publish packages
+#### 3. Release
 
 Commit (no need to push it if you don't want to) all of the code changes, and execute the following command:
 
+
+```bash
+yarn release --type=verdaccio
 ```
-yarn lerna:version:verdaccio
-```
-
-This will increment the version of all packages in the repository, create a tag, and do some other preparations that are needed before we start publishing. Note that it will also create a new commit, which MUST NOT be pushed to your remote origin. If you happen to do it by accident, you'll need to revert the changes and push those.
-
-Once that's done, you run the following command:
-
-```
-yarn lerna:publish:verdaccio
-```
-
-This will publish the packages to Verdaccio. Once it's done, you can start testing.
-
-> You can also execute both commands immediately with: 
-> ```
-> yarn lerna:version:verdaccio && yarn lerna:publish:verdaccio
-> ```
 
 #### 4. Test
 
@@ -99,41 +85,26 @@ npx create-webiny-project@next my-test-project --tag next --assign-to-yarnrc '{"
 
 This should create a project, with all of the packages pulled from Verdaccio.
 
-#### 5. Additional testing
-
-If, while testing, you've spotted an error or something that needs to be improved, you should revert the `lerna:version:verdaccio` commit that was made in your repo and start over, by adding your changes, and repeating the step 3.
-
-To revert the version commit, you can run `git reset HEAD~ && git reset --hard HEAD`.
-To restart Verdaccio, you can delete the `.verdaccio` folder created in your project root, stop the existing Verdaccio server (just CMD+C in terminal), and start it again with `yarn verdaccio:start`.
-
-##### Why not just make another commit, and repeat step 3?
-
-The thing is, you will make your commits, and then another `lerna:version:verdaccio` commit, and so on. So, after a while, you'll end up having a mix of your own commits and `lerna:version:verdaccio` commits, and you still need to remove all of the `lerna:version:verdaccio` commits in the end.
-
-> If you come up with a better way to do this, feel free to let us know.
-
-#### 6. Cleanup
+#### 5. Cleanup
 
 Once you're done, do the following:
 
-1. Undo all commits created with `lerna:version:verdaccio`.
-2. Remove created tags. List all tags with `git tag -l "v5*"` and delete a tag with `git tag -d "v5.0.0-next.5"`.
-3. Reset NPM registry with `npm config set registry https://registry.npmjs.org/`
-4. Remove `.verdaccio` folder
+1. Reset NPM registry with `npm config set registry https://registry.npmjs.org/`
+2. Remove `.verdaccio` folder
 
 ### Commands Cheat Sheet
 
-| Description                       | Command                                                                                                                                                            |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Remove `.verdaccio` folder        | `rm -rf .verdaccio`                                                                                                                                                |
-| List all v5\* tags                | `git tag -l "v5*"`                                                                                                                                                 |
-| Remove specific tag               | `git tag -d "v5.0.0-next.5"`                                                                                                                                       |
-| Set Verdaccio as the NPM registry | `npm config set registry http://localhost:4873`                                                                                                                    |
-| Reset NPM registry                | `npm config set registry https://registry.npmjs.org/`                                                                                                              |
-| Start Verdaccio                   | `yarn verdaccio:start`                                                                                                                                             |
-| Version and publish to Verdaccio  | `yarn lerna:version:verdaccio && yarn lerna:publish:verdaccio`                                                                                                     |
-| Create a new Webiny project       | `npx create-webiny-project@next my-test-project --tag next --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'` |
-| Revert versioning commit          | `git reset HEAD~ && git reset --hard HEAD`                                                                                                                         |
+| Description                                   | Command                                                                                                                                                            |
+|-----------------------------------------------| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Remove `.verdaccio` folder                    | `rm -rf .verdaccio`                                                                                                                                                |
+| List all v5\* tags                            | `git tag -l "v5*"`                                                                                                                                                 |
+| Remove specific tag                           | `git tag -d "v5.0.0-next.5"`                                                                                                                                       |
+| Set Verdaccio as the NPM registry             | `npm config set registry http://localhost:4873`                                                                                                                    |
+| Reset NPM registry                            | `npm config set registry https://registry.npmjs.org/`                                                                                                              |
+| Start Verdaccio                               | `yarn verdaccio:start`                                                                                                                                             |
+| Release to Verdaccio | `yarn release --type=verdaccio`                                                                                                     |
+| Create a new Webiny project                   | `npx create-webiny-project@next my-test-project --tag next --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'` |
+| Revert versioning commit                      | `git reset HEAD~ && git reset --hard HEAD`                                                                                                                         |
 
 ## Troubleshooting
 

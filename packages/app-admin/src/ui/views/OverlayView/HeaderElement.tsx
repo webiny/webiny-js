@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { UIElement, UIElementConfig, UiElementRenderProps } from "~/ui/UIElement";
 import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as CloseIcon } from "~/components/OverlayLayout/icons/close.svg";
+import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
 import { PlaceholderElement } from "~/ui/elements/PlaceholderElement";
 import { HeaderTitleElement } from "./HeaderTitleElement";
 

@@ -3,7 +3,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import RenderFieldElement from "./RenderFieldElement";
 import {
     CmsEditorContentModel,
-    CmsEditorField,
+    CmsModelField,
     CmsEditorFieldsLayout,
     BindComponent
 } from "~/types";
@@ -11,12 +11,12 @@ import {
 interface FieldsProps {
     Bind: BindComponent;
     contentModel: CmsEditorContentModel;
-    fields: CmsEditorField[];
+    fields: CmsModelField[];
     layout: CmsEditorFieldsLayout;
     gridClassName?: string;
 }
 
-const getFieldById = (fields: CmsEditorField[], id: string): CmsEditorField | null => {
+const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null => {
     return fields.find(field => field.id === id) || null;
 };
 
@@ -34,7 +34,7 @@ export const Fields: React.FC<FieldsProps> = ({
                     {row.map(fieldId => (
                         <Cell span={Math.floor(12 / row.length)} key={fieldId}>
                             <RenderFieldElement
-                                field={getFieldById(fields, fieldId) as CmsEditorField}
+                                field={getFieldById(fields, fieldId) as CmsModelField}
                                 Bind={Bind}
                                 contentModel={contentModel}
                             />

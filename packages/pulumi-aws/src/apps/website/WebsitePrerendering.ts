@@ -90,8 +90,7 @@ function createRenderSubscriber(
 
     const role = createLambdaRole(app, {
         name: "ps-render-subscriber-role",
-        policy: policy,
-        executionRole: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+        policy: policy
     });
 
     const lambda = app.addResource(aws.lambda.Function, {
@@ -226,8 +225,7 @@ function createFlushService(
 
     const role = createLambdaRole(app, {
         name: "ps-flush-lambda-role",
-        policy: policy,
-        executionRole: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+        policy: policy
     });
 
     const lambda = app.addResource(aws.lambda.Function, {

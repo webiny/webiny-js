@@ -1,10 +1,10 @@
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 
 interface setValueParams {
     value: string[];
     bind: BindComponentRenderProp;
-    field: Pick<CmsEditorField, "multipleValues">;
+    field: Pick<CmsModelField, "multipleValues">;
     index: number;
 }
 export const setValue = (params: setValueParams): void => {

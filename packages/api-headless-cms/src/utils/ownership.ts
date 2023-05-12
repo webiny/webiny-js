@@ -1,9 +1,9 @@
-import { BaseCmsSecurityPermission, CmsContext, CreatedBy } from "~/types";
+import { BaseCmsSecurityPermission, CmsContext, CmsIdentity } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 
 interface OwnableRecord {
-    createdBy?: CreatedBy;
-    ownedBy?: CreatedBy;
+    createdBy?: CmsIdentity;
+    ownedBy?: CmsIdentity;
 }
 
 export const checkOwnership = (
@@ -16,8 +16,8 @@ export const checkOwnership = (
     }
 
     const identity = context.security.getIdentity();
-    const owner = identity && record["ownedBy"] && record["ownedBy"].id === identity.id;
-    const creator = identity && record["createdBy"] && record["createdBy"].id === identity.id;
+    const owner = identity && record.ownedBy?.id === identity.id;
+    const creator = identity && record.createdBy?.id === identity.id;
 
     if (!owner && !creator) {
         throw new NotAuthorizedError({

@@ -1,6 +1,6 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { AdminUser, AdminUsersContext, BaseUserAttributes } from "~/types";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
@@ -104,21 +104,15 @@ export const syncWithCognito = ({
                     {
                         Name: "email",
                         Value: username
+                    },
+                    {
+                        Name: "custom:id",
+                        Value: user.id
                     }
                 ]
             };
 
-            const response = await cognito.adminCreateUser(params).promise();
-
-            const { User } = response;
-            /**
-             * TODO @ts-refactor @pavel are we doing anything in case there is no User variable?
-             * Same goes for the sub attribute.
-             */
-            // @ts-ignore
-            const subAttr = User.Attributes.find(attr => attr.Name === "sub");
-            // @ts-ignore
-            user.id = subAttr ? subAttr.Value : null;
+            await cognito.adminCreateUser(params).promise();
 
             const verify = {
                 UserPoolId: userPoolId,

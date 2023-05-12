@@ -1,10 +1,15 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
-import { CmsContext } from "~/types";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { CmsContext, CmsModel } from "~/types";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { toSlug } from "~/utils/toSlug";
 
-export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+interface Params {
+    context: CmsContext;
+}
+
+export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
@@ -31,7 +36,31 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 }
             }
         },
+        CmsContentModelField: {
+            tags(field) {
+                // Make sure `tags` are always returned as an array.
+                return Array.isArray(field.tags) ? field.tags : [];
+            }
+        },
         CmsContentModel: {
+            group: async (model: CmsModel) => {
+                const groups = await context.security.withoutAuthorization(async () => {
+                    return context.cms.listGroups();
+                });
+
+                const group = groups.find(group => group.id === model.group.id);
+                return {
+                    ...model.group,
+                    slug: toSlug(model.group.name),
+                    ...(group || {})
+                };
+            },
+            tags(model: CmsModel) {
+                // Make sure `tags` always contain a `type` tag, to differentiate between models.
+                const hasType = (model.tags || []).find(tag => tag.startsWith("type:"));
+
+                return hasType ? model.tags : ["type:model", ...(model.tags || [])];
+            },
             plugin: async (model, _, context): Promise<boolean> => {
                 return context.plugins
                     .byType<CmsModelPlugin>(CmsModelPlugin.type)
@@ -76,6 +105,16 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            },
+            initializeModel: async (_, args, context) => {
+                const { modelId, data } = args;
+
+                try {
+                    const result = await context.cms.initializeModel(modelId, data || {});
+                    return new Response(result);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         };
 
@@ -105,8 +144,12 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 label: String!
                 helpText: String
                 placeholderText: String
+                # we never use user input - this is here to the GraphQL does not break when posting from our UI
+                # used for debugging purposes
+                storageId: String
                 fieldId: String!
                 type: String!
+                tags: [String!]
                 multipleValues: Boolean
                 predefinedValues: CmsPredefinedValuesInput
                 renderer: CmsFieldRendererInput
@@ -117,29 +160,50 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
 
             input CmsContentModelCreateInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
+                icon: String
                 description: String
                 layout: [[ID!]!]
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
+                tags: [String!]
+                defaultFields: Boolean
             }
 
             input CmsContentModelCreateFromInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
+                icon: String
                 description: String
                 locale: String
             }
 
             input CmsContentModelUpdateInput {
                 name: String
+                singularApiName: String
+                pluralApiName: String
                 group: RefInput
+                icon: String
                 description: String
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
+                tags: [String!]
+            }
+
+            type InitializeModelResponse {
+                data: Boolean
+                error: CmsError
             }
 
             extend type Mutation {
@@ -156,11 +220,14 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 ): CmsContentModelResponse
 
                 deleteContentModel(modelId: ID!): CmsDeleteResponse
+
+                # users can send anything into the data variable
+                initializeModel(modelId: ID!, data: JSON): InitializeModelResponse!
             }
         `;
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsFieldValidation {
                 name: String!
@@ -185,11 +252,15 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
 
             type CmsContentModelField {
                 id: ID!
+                # auto-generated value
+                # used for debugging purposes
+                storageId: String
                 fieldId: String!
                 label: String!
                 helpText: String
                 placeholderText: String
                 type: String!
+                tags: [String!]!
                 multipleValues: Boolean
                 predefinedValues: CmsPredefinedValues
                 renderer: CmsFieldRenderer
@@ -200,17 +271,22 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
 
             type CmsContentModel {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String!
                 description: String
                 group: CmsContentModelGroup!
+                icon: String
                 createdOn: DateTime
                 savedOn: DateTime
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
                 lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
-
+                descriptionFieldId: String
+                imageFieldId: String
+                tags: [String!]!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
             }
@@ -236,4 +312,6 @@ export const createModelsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         `,
         resolvers
     });
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-models`;
+    return plugin;
 };

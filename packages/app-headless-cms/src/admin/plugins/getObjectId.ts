@@ -1,15 +1,10 @@
-import { CacheGetObjectIdPlugin } from "@webiny/app/types";
+import { ApolloCacheObjectIdPlugin } from "@webiny/app";
 
-const plugin: CacheGetObjectIdPlugin = {
-    type: "cache-get-object-id",
-    getObjectId(obj): string | undefined {
-        switch (obj.__typename) {
-            case "CmsContentModel":
-                return obj.modelId;
-            default:
-                return undefined;
-        }
+export default new ApolloCacheObjectIdPlugin(obj => {
+    switch (obj.__typename) {
+        case "CmsContentModel":
+            return `${obj.__typename}:${obj.modelId}`;
+        default:
+            return undefined;
     }
-};
-
-export default plugin;
+});

@@ -21,7 +21,7 @@ interface LinkWorkflowToEntryParams {
 export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
     const { apw, cms } = params;
 
-    cms.onBeforeEntryCreate.subscribe(async ({ entry, model }) => {
+    cms.onEntryBeforeCreate.subscribe(async ({ entry, model }) => {
         if (isAwpModel(model)) {
             return;
         }
@@ -31,7 +31,7 @@ export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
         });
     });
 
-    cms.onBeforeEntryCreateRevision.subscribe(async ({ entry, original, model }) => {
+    cms.onEntryRevisionBeforeCreate.subscribe(async ({ entry, original, model }) => {
         if (isAwpModel(model)) {
             return;
         }
@@ -61,7 +61,7 @@ export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
         });
     });
 
-    cms.onBeforeEntryUpdate.subscribe(async ({ entry, original, model }) => {
+    cms.onEntryBeforeUpdate.subscribe(async ({ entry, original, model }) => {
         if (isAwpModel(model)) {
             return;
         }
@@ -94,7 +94,7 @@ export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
     /**
      * Link created workflow to associated entries.
      */
-    apw.workflow.onAfterWorkflowCreate.subscribe(async ({ workflow }) => {
+    apw.workflow.onWorkflowAfterCreate.subscribe(async ({ workflow }) => {
         const { scope } = workflow;
         /**
          * If the workflow has entries in it's scope, we'll link that workflow for each of those entries.

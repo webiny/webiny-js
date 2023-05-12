@@ -52,7 +52,7 @@ const CmsModelsList: React.FC<CmsModelsListProps> = ({ Bind, runValidation, mode
     return (
         <Stack space={3} padding={6}>
             <Box>
-                <Typography use={"subtitle2"} className={textStyle}>
+                <Typography use={"body2"} className={textStyle}>
                     This workflow will apply to all entries inside the selected models, unless an
                     entry has a specific workflow applied to it.
                 </Typography>
@@ -111,7 +111,7 @@ const CmsEntriesList: React.FC<CmsEntriesListProps> = ({ bind, models }) => {
         <Stack space={6} padding={6}>
             <Box>
                 <Typography
-                    use={"subtitle2"}
+                    use={"body2"}
                     className={textStyle}
                 >{`This workflow applies to specific entries only.`}</Typography>
             </Box>

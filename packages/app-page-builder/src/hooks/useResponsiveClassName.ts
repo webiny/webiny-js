@@ -2,16 +2,18 @@ import React from "react";
 import { plugins } from "@webiny/plugins";
 import kebabCase from "lodash/kebabCase";
 import { PbRenderResponsiveModePlugin } from "~/types";
-import { PageBuilderContext } from "~/contexts/PageBuilder";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 interface UseResponsiveClassName {
     pageElementRef: (node: HTMLElement | null) => void;
     responsiveClassName: string;
 }
+
+// @deprecation-warning pb-legacy-rendering-engine
 const useResponsiveClassName = (): UseResponsiveClassName => {
     const {
         responsiveDisplayMode: { displayMode, setDisplayMode }
-    } = React.useContext(PageBuilderContext);
+    } = usePageBuilder();
     const ref = React.useRef<HTMLElement>();
 
     // Get "responsive-mode" plugins

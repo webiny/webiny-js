@@ -1,11 +1,12 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { until } from "./../utils/helpers";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
 const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
     modelId: "product",
+    singularApiName: "Product",
+    pluralApiName: "Products",
     locale: "en-US",
     tenant: "root",
     group: {
@@ -15,39 +16,51 @@ const contentModelPlugin = new CmsModelPlugin({
     fields: [
         {
             id: "name",
+            // storageId: "text@name",
             fieldId: "name",
             type: "text",
             label: "Product Name"
         },
         {
             id: "sku",
+            // storageId: "text@sku",
             fieldId: "sku",
             type: "text",
             label: "SKU"
         },
         {
             id: "price",
+            // storageId: "number@price",
             fieldId: "price",
             type: "number",
             label: "Price"
+        },
+        {
+            id: "descr",
+            fieldId: "descr",
+            label: "Description",
+            type: "long-text"
         }
     ],
-    layout: [["name"], ["sku", "price"]],
+    layout: [["name"], ["sku", "price"], ["descr"]],
     titleFieldId: "name",
+    descriptionFieldId: "descr",
     description: ""
 });
 
-const FIELDS_FRAGMENT = /* GraphQL */ `
-    fragment ProductFields on Product {
-        id
-        name
-        sku
-        price
-        meta {
-            status
+const FIELDS_FRAGMENT = (model: Pick<CmsModel, "singularApiName">) => {
+    return /* GraphQL */ `
+        fragment ${model.singularApiName}Fields on ${model.singularApiName} {
+            id
+            name
+            sku
+            price
+            meta {
+                status
+            }
         }
-    }
-`;
+    `;
+};
 
 const ERROR_FRAGMENT = /* GraphQL */ `
     fragment ErrorFields on CmsError {
@@ -57,65 +70,73 @@ const ERROR_FRAGMENT = /* GraphQL */ `
     }
 `;
 
-const CREATE_PRODUCT = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    mutation CreateProduct($data: ProductInput!) {
-        createProduct(data: $data) {
-            data {
-                ...ProductFields
-            }
-            error {
-                ...ErrorFields
+const CREATE_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        mutation CreateProduct($data: ${model.singularApiName}Input!) {
+            createProduct: create${model.singularApiName}(data: $data) {
+                data {
+                    ...${model.singularApiName}Fields
+                }
+                error {
+                    ...ErrorFields
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-const PUBLISH_PRODUCT = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    mutation PublishProduct($revision: ID!) {
-        publishProduct(revision: $revision) {
-            data {
-                ...ProductFields
-            }
-            error {
-                ...ErrorFields
+const PUBLISH_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        mutation PublishProduct($revision: ID!) {
+                publishProduct: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ...${model.singularApiName}Fields
+                }
+                error {
+                    ...ErrorFields
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-const LIST_PRODUCTS = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    query ListProducts {
-        listProducts {
+const LIST_PRODUCTS = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        query ListProducts {
+            listProducts: list${model.pluralApiName} {
             data {
-                ...ProductFields
+                ...${model.singularApiName}Fields
             }
             error {
                 ...ErrorFields
             }
         }
-    }
-`;
+        }
+    `;
+};
 
-const GET_PRODUCT = /* GraphQL */ `
-    ${FIELDS_FRAGMENT}
-    ${ERROR_FRAGMENT}
-    query GetProduct($revision: ID!) {
-        getProduct(revision: $revision) {
+const GET_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {
+    return /* GraphQL */ `
+        ${FIELDS_FRAGMENT(model)}
+        ${ERROR_FRAGMENT}
+        query GetProduct($revision: ID!) {
+            getProduct: get${model.singularApiName}(revision: $revision) {
             data {
-                ...ProductFields
+                ...${model.singularApiName}Fields
             }
             error {
                 ...ErrorFields
             }
         }
-    }
-`;
+        }
+    `;
+};
 
 describe("content model plugins", () => {
     const { storageOperations } = useGraphQLHandler({
@@ -178,6 +199,8 @@ describe("content model plugins", () => {
             data: {
                 name: "product",
                 modelId: "product",
+                singularApiName: "Product",
+                pluralApiName: "Products",
                 group: group.id
             }
         });
@@ -247,16 +270,111 @@ describe("content model plugins", () => {
             plugins: [contentModelPlugin]
         });
 
-        await getContentModelQuery({ modelId: "product" }).then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    getContentModel: {
-                        data: {
+        const [getContentModelResponse] = await getContentModelQuery({ modelId: "product" });
+        expect(getContentModelResponse).toEqual({
+            data: {
+                getContentModel: {
+                    data: {
+                        createdBy: null,
+                        createdOn: null,
+                        description: "",
+                        fields: [
+                            {
+                                storageId: "text@name",
+                                fieldId: "name",
+                                helpText: null,
+                                id: "name",
+                                label: "Product Name",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "text",
+                                validation: null
+                            },
+                            {
+                                storageId: "text@sku",
+                                fieldId: "sku",
+                                helpText: null,
+                                id: "sku",
+                                label: "SKU",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "text",
+                                validation: null
+                            },
+                            {
+                                storageId: "number@price",
+                                fieldId: "price",
+                                helpText: null,
+                                id: "price",
+                                label: "Price",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "number",
+                                validation: null
+                            },
+                            {
+                                storageId: "long-text@descr",
+                                fieldId: "descr",
+                                helpText: null,
+                                id: "descr",
+                                label: "Description",
+                                listValidation: null,
+                                multipleValues: null,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: null,
+                                type: "long-text",
+                                validation: null
+                            }
+                        ],
+                        group: {
+                            id: "ecommerce",
+                            slug: "e-commerce",
+                            name: "E-Commerce"
+                        },
+                        layout: [["name"], ["sku", "price"], ["descr"]],
+                        modelId: "product",
+                        name: "Product",
+                        singularApiName: "Product",
+                        pluralApiName: "Products",
+                        plugin: true,
+                        savedOn: null,
+                        titleFieldId: "name",
+                        descriptionFieldId: "descr",
+                        imageFieldId: null,
+                        icon: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listContentModelsResponse] = await listContentModelsQuery();
+
+        expect(listContentModelsResponse).toEqual({
+            data: {
+                listContentModels: {
+                    data: [
+                        {
                             createdBy: null,
                             createdOn: null,
                             description: "",
                             fields: [
                                 {
+                                    storageId: "text@name",
                                     fieldId: "name",
                                     helpText: null,
                                     id: "name",
@@ -271,6 +389,7 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
+                                    storageId: "text@sku",
                                     fieldId: "sku",
                                     helpText: null,
                                     id: "sku",
@@ -285,6 +404,7 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
+                                    storageId: "number@price",
                                     fieldId: "price",
                                     helpText: null,
                                     id: "price",
@@ -297,95 +417,45 @@ describe("content model plugins", () => {
                                     settings: null,
                                     type: "number",
                                     validation: null
+                                },
+                                {
+                                    storageId: "long-text@descr",
+                                    fieldId: "descr",
+                                    helpText: null,
+                                    id: "descr",
+                                    label: "Description",
+                                    listValidation: null,
+                                    multipleValues: null,
+                                    placeholderText: null,
+                                    predefinedValues: null,
+                                    renderer: null,
+                                    settings: null,
+                                    type: "long-text",
+                                    validation: null
                                 }
                             ],
                             group: {
                                 id: "ecommerce",
+                                slug: "e-commerce",
                                 name: "E-Commerce"
                             },
-                            layout: [["name"], ["sku", "price"]],
+                            icon: null,
+                            layout: [["name"], ["sku", "price"], ["descr"]],
                             modelId: "product",
                             name: "Product",
+                            singularApiName: "Product",
+                            pluralApiName: "Products",
                             plugin: true,
                             savedOn: null,
-                            titleFieldId: "name"
-                        },
-                        error: null
-                    }
+                            titleFieldId: "name",
+                            descriptionFieldId: "descr",
+                            imageFieldId: null
+                        }
+                    ],
+                    error: null
                 }
-            })
-        );
-
-        await listContentModelsQuery().then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    listContentModels: {
-                        data: [
-                            {
-                                createdBy: null,
-                                createdOn: null,
-                                description: "",
-                                fields: [
-                                    {
-                                        fieldId: "name",
-                                        helpText: null,
-                                        id: "name",
-                                        label: "Product Name",
-                                        listValidation: null,
-                                        multipleValues: null,
-                                        placeholderText: null,
-                                        predefinedValues: null,
-                                        renderer: null,
-                                        settings: null,
-                                        type: "text",
-                                        validation: null
-                                    },
-                                    {
-                                        fieldId: "sku",
-                                        helpText: null,
-                                        id: "sku",
-                                        label: "SKU",
-                                        listValidation: null,
-                                        multipleValues: null,
-                                        placeholderText: null,
-                                        predefinedValues: null,
-                                        renderer: null,
-                                        settings: null,
-                                        type: "text",
-                                        validation: null
-                                    },
-                                    {
-                                        fieldId: "price",
-                                        helpText: null,
-                                        id: "price",
-                                        label: "Price",
-                                        listValidation: null,
-                                        multipleValues: null,
-                                        placeholderText: null,
-                                        predefinedValues: null,
-                                        renderer: null,
-                                        settings: null,
-                                        type: "number",
-                                        validation: null
-                                    }
-                                ],
-                                group: {
-                                    id: "ecommerce",
-                                    name: "E-Commerce"
-                                },
-                                layout: [["name"], ["sku", "price"]],
-                                modelId: "product",
-                                name: "Product",
-                                plugin: true,
-                                savedOn: null,
-                                titleFieldId: "name"
-                            }
-                        ],
-                        error: null
-                    }
-                }
-            })
-        );
+            }
+        });
     });
 
     test("must be able to perform basic CRUD operations with content models registered via plugin", async () => {
@@ -399,7 +469,7 @@ describe("content model plugins", () => {
         for (let i = 0; i < 3; i++) {
             const [createResponse] = await invoke({
                 body: {
-                    query: CREATE_PRODUCT,
+                    query: CREATE_PRODUCT(contentModelPlugin.contentModel),
                     variables: {
                         data: {
                             name: `product-${i}`,
@@ -424,18 +494,10 @@ describe("content model plugins", () => {
             products.push(createResponse.data.createProduct.data);
         }
 
-        await until(
-            () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]: any) => response.data.listProducts.data.length === 3,
-            {
-                name: "list after create products"
-            }
-        );
-
         for (const product of products) {
             const [getProductResponse] = await invoke({
                 body: {
-                    query: GET_PRODUCT,
+                    query: GET_PRODUCT(contentModelPlugin.contentModel),
                     variables: {
                         revision: product.id
                     }
@@ -453,7 +515,9 @@ describe("content model plugins", () => {
             });
         }
 
-        const [listProductsResponse] = await invoke({ body: { query: LIST_PRODUCTS } });
+        const [listProductsResponse] = await invoke({
+            body: { query: LIST_PRODUCTS(contentModelPlugin.contentModel) }
+        });
 
         expect(listProductsResponse).toEqual({
             data: {
@@ -498,7 +562,7 @@ describe("content model plugins", () => {
         for (const id of productsIds) {
             const [publishResponse] = await invoke({
                 body: {
-                    query: PUBLISH_PRODUCT,
+                    query: PUBLISH_PRODUCT(contentModelPlugin.contentModel),
                     variables: {
                         revision: id
                     }
@@ -516,22 +580,10 @@ describe("content model plugins", () => {
             });
         }
 
-        await until(
-            () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]: any) => {
-                return response.data.listProducts.data.every(
-                    (p: any) => p.meta.status === "published"
-                );
-            },
-            {
-                name: "list products after published"
-            }
-        );
-
         // The list should contain three products, all published.
         const [listProductsAfterPublishResponse] = await invoke({
             body: {
-                query: LIST_PRODUCTS
+                query: LIST_PRODUCTS(contentModelPlugin.contentModel)
             }
         });
         expect(listProductsAfterPublishResponse).toEqual({
@@ -595,6 +647,8 @@ describe("content model plugins", () => {
             data: {
                 name: "shop",
                 modelId: "shop",
+                singularApiName: "Shop",
+                pluralApiName: "Shops",
                 group: group.id
             }
         });
@@ -620,5 +674,82 @@ describe("content model plugins", () => {
                 }
             })
         );
+    });
+
+    it(`should fail to create model plugin due to invalid "storageId"`, async () => {
+        let error: Error | undefined;
+        try {
+            new CmsModelPlugin({
+                name: "test",
+                layout: [],
+                fields: [
+                    {
+                        type: "text",
+                        fieldId: "something",
+                        id: "something",
+                        label: "Something",
+                        storageId: "text@something",
+                        settings: {}
+                    }
+                ],
+                modelId: "test",
+                singularApiName: "Test",
+                pluralApiName: "Tests",
+                group: {
+                    id: "group",
+                    name: "Group"
+                },
+                description: "",
+                titleFieldId: "something"
+            });
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toEqual(
+            `Field's "storageId" of the field with "fieldId" something is not camel cased string in the content model "test".`
+        );
+    });
+
+    const testModel = {
+        modelId: "testModel",
+        singularApiName: "TestModel",
+        pluralApiName: "TestModels",
+        fields: [
+            {
+                id: "title",
+                fieldId: "title",
+                label: "Title",
+                type: "text"
+            }
+        ],
+        layout: [],
+        titleFieldId: "title",
+        name: "Test Model",
+        description: "",
+        group: {
+            id: "id",
+            name: "name"
+        }
+    };
+
+    it("should validate model fields layout", () => {
+        let error: Error | undefined;
+        try {
+            new CmsModelPlugin(testModel);
+        } catch (ex) {
+            error = ex;
+        }
+
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toEqual(`Missing field "title" in layout.`);
+    });
+
+    it("should not validate model fields layout", () => {
+        const model = new CmsModelPlugin(testModel, {
+            validateLayout: false
+        });
+
+        expect(model).toBeInstanceOf(CmsModelPlugin);
     });
 });

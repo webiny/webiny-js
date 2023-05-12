@@ -5,10 +5,10 @@ import { GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gq
 import get from "lodash/get";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
-import { LoadingDialog } from "../ImportPageButton/styledComponents";
-import ProgressBar from "../ImportPageButton/ProgressBar";
+import { LoadingDialog } from "../ImportButton/styledComponents";
+import ProgressBar from "../ImportButton/ProgressBar";
 import useExportPageDialog from "./useExportPageDialog";
-import { PageImportExportTaskStatus } from "~/types";
+import { ImportExportTaskStatus } from "~/types";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
 
@@ -20,9 +20,9 @@ const processingMessage = t`Exporting pages`;
 const INTERVAL = 0.5 * 1000;
 
 const MESSAGES: Record<string, string> = {
-    [PageImportExportTaskStatus.COMPLETED]: completionMessage,
-    [PageImportExportTaskStatus.PROCESSING]: processingMessage,
-    [PageImportExportTaskStatus.PENDING]: pendingMessage
+    [ImportExportTaskStatus.COMPLETED]: completionMessage,
+    [ImportExportTaskStatus.PROCESSING]: processingMessage,
+    [ImportExportTaskStatus.PENDING]: pendingMessage
 };
 
 interface ExportPageLoadingDialogContent {
@@ -46,7 +46,7 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
     });
 
     const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getPageImportExportTask", {});
+        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
         if (error) {
             showSnackbar(error.message);
             return;
@@ -74,8 +74,8 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
         pollExportPageTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getPageImportExportTask.data", {
-        status: PageImportExportTaskStatus.PENDING,
+    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
+        status: ImportExportTaskStatus.PENDING,
         stats: null
     });
 
@@ -90,7 +90,7 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
                         <LoadingDialog.CancelIcon />
                         <Typography use={"subtitle1"}>{errorMessage}</Typography>
                     </LoadingDialog.TitleContainer>
-                ) : status === PageImportExportTaskStatus.COMPLETED ? (
+                ) : status === ImportExportTaskStatus.COMPLETED ? (
                     <LoadingDialog.TitleContainer>
                         <LoadingDialog.CheckMarkIcon />
                         <Typography use={"subtitle1"}>{MESSAGES[status]}</Typography>
@@ -107,7 +107,7 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
                 <LoadingDialog.StatsContainer>
                     {error && (
                         <LoadingDialog.StatusContainer>
-                            <LoadingDialog.StatusTitle use={"subtitle2"}>
+                            <LoadingDialog.StatusTitle use={"body2"}>
                                 {t`Error`}
                             </LoadingDialog.StatusTitle>
                             <LoadingDialog.StatusBody use={"body2"}>
@@ -117,10 +117,10 @@ const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> =
                     )}
                     {stats && (
                         <LoadingDialog.ProgressContainer>
-                            <LoadingDialog.StatusTitle use={"subtitle2"}>
+                            <LoadingDialog.StatusTitle use={"body2"}>
                                 {t`{completed} of {total} completed`({
-                                    completed: stats.completed,
-                                    total: stats.total
+                                    completed: `${stats.completed}`,
+                                    total: `${stats.total}`
                                 })}
                             </LoadingDialog.StatusTitle>
                             <ProgressBar

@@ -1,12 +1,10 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes } from "~/types";
 
 interface Params {
     entityName: string;
     table: Table;
-    attributes?: Attributes;
 }
-export const createSystemEntity = ({ entityName, table, attributes }: Params): Entity<any> => {
+export const createSystemEntity = ({ entityName, table }: Params): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -25,8 +23,7 @@ export const createSystemEntity = ({ entityName, table, attributes }: Params): E
             },
             version: {
                 type: "string"
-            },
-            ...(attributes || {})
+            }
         }
     });
 };

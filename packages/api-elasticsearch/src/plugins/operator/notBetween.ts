@@ -12,14 +12,14 @@ export class ElasticsearchQueryBuilderOperatorNotBetweenPlugin extends Elasticse
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value, basePath } = params;
+        const { value, basePath, name } = params;
         if (Array.isArray(value) === false) {
             throw new Error(
-                `You cannot filter field path "${basePath}" with between query and not send an array of values.`
+                `You cannot filter field path "${name}" with "not_between" query and not send an array of values.`
             );
         } else if (value.length !== 2) {
             throw new Error(
-                `You must pass 2 values in the array for field path "${basePath}" filtering.`
+                `You must pass 2 values in the array for field path "${name}" filtering.`
             );
         }
         // we take gte first because it should be a lesser value than lte, eg [5, 10]

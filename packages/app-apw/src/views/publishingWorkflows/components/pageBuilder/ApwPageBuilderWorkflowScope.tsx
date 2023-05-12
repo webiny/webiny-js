@@ -1,5 +1,5 @@
 import React from "react";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import isEmpty from "lodash/isEmpty";
 import { PbScopeSettings } from "./PbScopeSettings";
 import { ApwWorkflowApplications, ApwWorkflowScopeTypes } from "~/types";
@@ -15,9 +15,9 @@ const t = i18n.ns("app-apw/admin/publishing-workflows/form/page-builder");
 const PageBuilderWorkflowScope: React.FC<WorkflowScopeProps> = props => {
     const { Bind, workflow } = props;
     const { scope } = workflow;
-    const type = get(scope, "type");
-    const noPages = isEmpty(get(scope, "data.pages"));
-    const noCategories = isEmpty(get(scope, "data.categories"));
+    const type = dotPropImmutable.get(scope, "type");
+    const noPages = isEmpty(dotPropImmutable.get(scope, "data.pages"));
+    const noCategories = isEmpty(dotPropImmutable.get(scope, "data.categories"));
     return (
         <Stack space={6}>
             <Box>

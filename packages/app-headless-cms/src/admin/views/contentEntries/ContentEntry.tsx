@@ -49,16 +49,8 @@ declare global {
 }
 
 export const ContentEntry: React.FC = () => {
-    const {
-        contentModel,
-        loading,
-        entry,
-        showEmptyView,
-        canCreate,
-        createEntry,
-        tabsRef,
-        setFormRef
-    } = useContentEntry();
+    const { loading, entry, showEmptyView, canCreate, createEntry, tabsRef, setFormRef } =
+        useContentEntry();
 
     // Render "No content selected" view.
     if (showEmptyView) {
@@ -92,7 +84,6 @@ export const ContentEntry: React.FC = () => {
                                 {loading && <CircularProgress />}
                                 <Header />
                                 <ContentEntryForm
-                                    contentModel={contentModel}
                                     entry={entry}
                                     onForm={form => setFormRef(form)}
                                     addEntryToListCache={true}

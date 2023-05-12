@@ -7,7 +7,7 @@ import {
     RemoveFieldButton
 } from "./utils";
 import { Input } from "./Input";
-import { CmsEditorField } from "~/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 
 interface State {
@@ -47,7 +47,7 @@ const parseDateTime = (value?: string): State => {
 export interface DateTimeWithoutTimezoneProps {
     bind: BindComponentRenderProp;
     trailingIcon?: any;
-    field: CmsEditorField;
+    field: CmsModelField;
 }
 export const DateTimeWithoutTimezone: React.FC<DateTimeWithoutTimezoneProps> = ({
     field,

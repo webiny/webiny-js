@@ -1,6 +1,6 @@
-import { identity } from "../utils/helpers";
+import { identity } from "../testHelpers/helpers";
 import { toSlug } from "~/utils/toSlug";
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
@@ -251,7 +251,11 @@ describe("Cms Group crud test", () => {
                     error: {
                         message: `Validation failed.`,
                         code: "VALIDATION_FAILED_INVALID_FIELDS",
-                        data: expect.any(Object)
+                        data: {
+                            invalidFields: {
+                                name: expect.any(Object)
+                            }
+                        }
                     }
                 }
             }
@@ -273,7 +277,11 @@ describe("Cms Group crud test", () => {
                     error: {
                         message: `Validation failed.`,
                         code: "VALIDATION_FAILED_INVALID_FIELDS",
-                        data: expect.any(Object)
+                        data: {
+                            invalidFields: {
+                                icon: expect.any(Object)
+                            }
+                        }
                     }
                 }
             }
@@ -295,7 +303,12 @@ describe("Cms Group crud test", () => {
                     error: {
                         message: `Validation failed.`,
                         code: "VALIDATION_FAILED_INVALID_FIELDS",
-                        data: expect.any(Object)
+                        data: {
+                            invalidFields: {
+                                name: expect.any(Object),
+                                icon: expect.any(Object)
+                            }
+                        }
                     }
                 }
             }

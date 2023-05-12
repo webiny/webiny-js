@@ -1,17 +1,22 @@
 import { CmsEntry, CmsModel } from "~/types";
 
-export function getEntryTitle(model: CmsModel, entry: CmsEntry): string {
+export function getEntryTitle(
+    model: Pick<CmsModel, "titleFieldId" | "fields">,
+    entry: CmsEntry
+): string {
     if (!model.titleFieldId) {
-        return entry.id;
-    }
-    const titleValue = entry.values[model.titleFieldId];
-    if (!titleValue) {
         return entry.id;
     }
     const field = model.fields.find(f => f.fieldId === model.titleFieldId);
     if (!field) {
-        return titleValue;
+        return entry.id;
     }
+    const titleFieldId = field.fieldId;
+    const titleValue = entry.values[titleFieldId];
+    if (!titleValue) {
+        return entry.id;
+    }
+
     const { enabled = false, values } = field.predefinedValues || {};
     if (!enabled || !values || Array.isArray(values) === false) {
         return titleValue;

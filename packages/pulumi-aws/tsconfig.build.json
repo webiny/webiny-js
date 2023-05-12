@@ -9,7 +9,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

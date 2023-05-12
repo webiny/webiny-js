@@ -3,35 +3,42 @@ import get from "lodash/get";
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { IMPORT_PAGES } from "~/admin/graphql/pageImportExport.gql";
-import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
-import useImportPageLoadingDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageLoadingDialog";
+import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageDialog";
+import useImportPageLoadingDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageLoadingDialog";
 
 interface UseImportPageParams {
-    setLoadingLabel: () => void;
-    clearLoadingLabel: () => void;
+    setLoading: () => void;
+    clearLoading: () => void;
     closeDialog: () => void;
+    folderId?: string;
 }
 const useImportPage = ({
-    setLoadingLabel,
-    clearLoadingLabel,
-    closeDialog
+    setLoading,
+    clearLoading,
+    closeDialog,
+    folderId
 }: UseImportPageParams) => {
     const [importPage] = useMutation(IMPORT_PAGES);
     const { showSnackbar } = useSnackbar();
     const { showImportPageDialog } = useImportPageDialog();
     const { showImportPageLoadingDialog } = useImportPageLoadingDialog();
 
-    const importPageMutation = useCallback(async ({ slug: category }, fileKey) => {
+    const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl, folderId) => {
         try {
-            setLoadingLabel();
+            setLoading();
             const res = await importPage({
                 variables: {
                     category,
-                    [fileKey.startsWith("http") ? "zipFileUrl" : "zipFileKey"]: fileKey
+                    zipFileUrl,
+                    meta: {
+                        location: {
+                            folderId
+                        }
+                    }
                 }
             });
 
-            clearLoadingLabel();
+            clearLoading();
             closeDialog();
 
             const { error, data } = get(res, "data.pageBuilder.importPages", {});
@@ -46,16 +53,14 @@ const useImportPage = ({
         }
     }, []);
 
-    const showDialog = useCallback(category => {
-        showImportPageDialog(
-            async key => {
-                await importPageMutation(category, key);
-            },
-            async url => {
-                await importPageMutation(category, url);
-            }
-        );
-    }, []);
+    const showDialog = useCallback(
+        category => {
+            showImportPageDialog(async url => {
+                await importPageMutation(category, url, folderId);
+            });
+        },
+        [folderId]
+    );
 
     return {
         importPageMutation,

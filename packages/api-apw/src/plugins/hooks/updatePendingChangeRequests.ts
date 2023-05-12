@@ -36,7 +36,7 @@ const updatePendingChangeRequests = async ({
 export const updatePendingChangeRequestsCount = ({
     apw
 }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
+    apw.changeRequest.onChangeRequestAfterDelete.subscribe(async ({ changeRequest }) => {
         /**
          * If the deleted changeRequest was marked as resolved. We don't need to do anything here,
          * because "pendingChangeRequests has been already updated in "onAfterChangeRequestUpdate" hook.
@@ -55,7 +55,7 @@ export const updatePendingChangeRequestsCount = ({
         });
     });
 
-    apw.changeRequest.onAfterChangeRequestCreate.subscribe(async ({ changeRequest }) => {
+    apw.changeRequest.onChangeRequestAfterCreate.subscribe(async ({ changeRequest }) => {
         /**
          * After a "changeRequest" is created, increment the "pendingChangeRequests" count
          * of the corresponding step in the content review entry.
@@ -67,7 +67,7 @@ export const updatePendingChangeRequestsCount = ({
         });
     });
 
-    apw.changeRequest.onAfterChangeRequestUpdate.subscribe(async ({ changeRequest, original }) => {
+    apw.changeRequest.onChangeRequestAfterUpdate.subscribe(async ({ changeRequest, original }) => {
         /**
          * After a "changeRequest" is created, and the value of "resolved" field has changed;
          * then we also need to update the "pendingChangeRequests" count of the corresponding step in the content review entry.

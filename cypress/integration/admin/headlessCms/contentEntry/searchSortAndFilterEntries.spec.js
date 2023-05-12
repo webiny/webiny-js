@@ -1,5 +1,7 @@
 import uniqid from "uniqid";
 import kebabCase from "lodash/kebabCase";
+import upperFirst from "lodash/upperFirst";
+import camelCase from "lodash/camelCase";
 import { CONTENT_MODEL_DATA } from "../mocks";
 
 const NEWEST_TO_OLDEST = "savedOn_DESC";
@@ -48,6 +50,8 @@ const deleteContentEntry = () => {
 
 context("Search, Sort and Filter Content Entries", () => {
     const newModel = uniqid("Book-");
+    const singularApiName = upperFirst(camelCase(uniqid("Book")));
+    const pluralApiName = upperFirst(camelCase(uniqid("Books")));
     const totalEntries = 3;
     const entries = [];
     let createdModel;
@@ -62,6 +66,8 @@ context("Search, Sort and Filter Content Entries", () => {
                 data: {
                     name: newModel,
                     modelId: kebabCase(newModel.toLowerCase()),
+                    singularApiName,
+                    pluralApiName,
                     group: group.id,
                     description: "Testing 123"
                 }

@@ -1,6 +1,6 @@
 import { attachApwHooks } from "./hooks";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 import { createApw } from "~/crud";
 import { apwPageBuilderHooks } from "./pageBuilder";
@@ -66,7 +66,8 @@ const setupApwContext = (params: CreateApwContextParams) =>
                 /**
                  * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
                  */
-                getCmsContext: () => context
+                getCmsContext: () => context,
+                security
             }),
             scheduler,
             handlerClient,
@@ -102,20 +103,5 @@ export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
         await createCustomAuth(params).apply(context);
 
         context.plugins.register(extendPbPageSettingsSchema());
-    });
-};
-
-export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
-    return new ContextPlugin<ApwContext>(async context => {
-        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
-            return;
-        } else if (isInstallationPending(context)) {
-            return;
-        }
-
-        await setupApwContext(params).apply(context);
-        await setupApwHeadlessCms().apply(context);
-        await attachApwHooks().apply(context);
-        await createCustomAuth(params).apply(context);
     });
 };

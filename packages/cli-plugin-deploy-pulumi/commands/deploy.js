@@ -1,5 +1,5 @@
 const buildPackages = require("./deploy/buildPackages");
-const { createPulumiCommand, processHooks, login, notify } = require("../utils");
+const { createPulumiCommand, runHook, login, notify } = require("../utils");
 
 module.exports = (params, context) => {
     const command = createPulumiCommand({
@@ -55,7 +55,6 @@ module.exports = (params, context) => {
 
             await runHook({
                 hook: "hook-before-deploy",
-                skip: inputs.preview,
                 args: hookArgs,
                 context
             });
@@ -69,6 +68,7 @@ module.exports = (params, context) => {
                 await pulumi.run({
                     command: "preview",
                     args: {
+                        diff: true,
                         debug: inputs.debug
                         // Preview command does not accept "--secrets-provider" argument.
                         // secretsProvider: PULUMI_SECRETS_PROVIDER
@@ -115,7 +115,6 @@ module.exports = (params, context) => {
 
             await runHook({
                 hook: "hook-after-deploy",
-                skip: inputs.preview,
                 args: hookArgs,
                 context
             });
@@ -126,13 +125,3 @@ module.exports = (params, context) => {
 
     return command(params, context);
 };
-
-async function runHook({ hook, skip, args, context }) {
-    if (skip) {
-        context.info(`Skipped "${hook}" hook.`);
-    } else {
-        context.info(`Running "${hook}" hook...`);
-        await processHooks(hook, args);
-        context.success(`Hook "${hook}" completed.`);
-    }
-}

@@ -67,7 +67,7 @@ export const subscribeToEvents = (context: Context): void => {
     });
 
     // Before install, load `full-access` group and assign it to the new user.
-    adminUsers.onBeforeInstall.subscribe(async ({ user }) => {
+    adminUsers.onSystemBeforeInstall.subscribe(async ({ user }) => {
         const group = await security.getGroup({ where: { slug: "full-access" } });
         user.group = group.id;
     });

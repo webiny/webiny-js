@@ -1,7 +1,7 @@
-import { CmsEditorField, CmsModel, FieldLayoutPosition } from "~/types";
+import { CmsModelField, CmsModel, FieldLayoutPosition } from "~/types";
 
 interface GetFieldPositionParams {
-    field: string | CmsEditorField;
+    field: string | CmsModelField;
     data: Pick<CmsModel, "layout">;
 }
 export default (params: GetFieldPositionParams): FieldLayoutPosition | null => {

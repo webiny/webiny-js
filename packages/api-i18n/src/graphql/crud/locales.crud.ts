@@ -4,42 +4,77 @@ import {
     I18NLocaleData,
     I18NLocalesStorageOperations,
     LocalesCRUD,
-    OnAfterCreateLocaleTopicParams,
-    OnAfterDeleteLocaleTopicParams,
-    OnAfterUpdateLocaleTopicParams,
-    OnBeforeCreateLocaleTopicParams,
-    OnBeforeDeleteLocaleTopicParams,
-    OnBeforeUpdateLocaleTopicParams
+    OnLocaleAfterCreateTopicParams,
+    OnLocaleAfterDeleteTopicParams,
+    OnLocaleAfterUpdateTopicParams,
+    OnLocaleBeforeCreateTopicParams,
+    OnLocaleBeforeDeleteTopicParams,
+    OnLocaleBeforeUpdateTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 export interface CreateLocalesCrudParams {
     context: I18NContext;
     storageOperations: I18NLocalesStorageOperations;
+    getTenant: () => Tenant;
 }
 export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD => {
-    const { storageOperations, context } = params;
+    const { storageOperations, context, getTenant } = params;
 
-    const onBeforeCreate = createTopic<OnBeforeCreateLocaleTopicParams>();
-    const onAfterCreate = createTopic<OnAfterCreateLocaleTopicParams>();
-    const onBeforeUpdate = createTopic<OnBeforeUpdateLocaleTopicParams>();
-    const onAfterUpdate = createTopic<OnAfterUpdateLocaleTopicParams>();
-    const onBeforeDelete = createTopic<OnBeforeDeleteLocaleTopicParams>();
-    const onAfterDelete = createTopic<OnAfterDeleteLocaleTopicParams>();
+    const getTenantId = () => {
+        return getTenant().id;
+    };
+    // create
+    const onLocaleBeforeCreate = createTopic<OnLocaleBeforeCreateTopicParams>(
+        "i18n.onLocaleBeforeCreate"
+    );
+    const onLocaleAfterCreate = createTopic<OnLocaleAfterCreateTopicParams>(
+        "i18n.onLocaleAfterCreate"
+    );
+    // update
+    const onLocaleBeforeUpdate = createTopic<OnLocaleBeforeUpdateTopicParams>(
+        "i18n.onLocaleBeforeUpdate"
+    );
+    const onLocaleAfterUpdate = createTopic<OnLocaleAfterUpdateTopicParams>(
+        "i18n.onLocaleAfterUpdate"
+    );
+    // delete
+    const onLocaleBeforeDelete = createTopic<OnLocaleBeforeDeleteTopicParams>(
+        "i18n.onLocaleBeforeDelete"
+    );
+    const onLocaleAfterDelete = createTopic<OnLocaleAfterDeleteTopicParams>(
+        "i18n.onLocaleAfterDelete"
+    );
 
     return {
-        onBeforeCreate,
-        onAfterCreate,
-        onBeforeUpdate,
-        onAfterUpdate,
-        onBeforeDelete,
-        onAfterDelete,
+        /**
+         * Deprecated in 5.34.0
+         */
+        onBeforeCreate: onLocaleBeforeCreate,
+        onAfterCreate: onLocaleAfterCreate,
+        onBeforeUpdate: onLocaleBeforeUpdate,
+        onAfterUpdate: onLocaleAfterUpdate,
+        onBeforeDelete: onLocaleBeforeDelete,
+        onAfterDelete: onLocaleAfterDelete,
+        /**
+         * Introduced in 5.34.0
+         */
+        onLocaleBeforeCreate,
+        onLocaleAfterCreate,
+        onLocaleBeforeUpdate,
+        onLocaleAfterUpdate,
+        onLocaleBeforeDelete,
+        onLocaleAfterDelete,
+        storageOperations,
         async getDefaultLocale() {
             let locale: I18NLocaleData | null = null;
             try {
-                locale = await storageOperations.getDefault();
+                locale = await storageOperations.getDefault({
+                    tenant: getTenantId()
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load the default locale.",
@@ -57,7 +92,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
         async getLocale(code) {
             let locale: I18NLocaleData | null = null;
             try {
-                locale = await storageOperations.get(code);
+                locale = await storageOperations.get({
+                    tenant: getTenantId(),
+                    code
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load the requested locale.",
@@ -82,7 +120,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             const { where, sort, after, limit = 1000 } = params || {};
             try {
                 return await storageOperations.list({
-                    where,
+                    where: {
+                        ...(where || {}),
+                        tenant: getTenantId()
+                    },
                     sort: sort && sort.length ? sort : ["createdOn_DESC"],
                     after,
                     limit
@@ -95,14 +136,17 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
         },
         async createLocale(input) {
-            const { security, tenancy } = context;
+            const { security } = context;
             const permission = await security.getPermission("i18n.locale");
 
             if (!permission) {
                 throw new NotAuthorizedError();
             }
 
-            const original = await storageOperations.get(input.code);
+            const original = await storageOperations.get({
+                tenant: getTenantId(),
+                code: input.code
+            });
 
             if (original) {
                 throw new WebinyError(`Locale with key "${original.code}" already exists.`);
@@ -110,9 +154,9 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
 
             const identity = security.getIdentity();
 
-            const defaultLocale = await storageOperations.getDefault();
-
-            const tenant = tenancy.getCurrentTenant().id;
+            const defaultLocale = await storageOperations.getDefault({
+                tenant: getTenantId()
+            });
 
             const locale: I18NLocaleData = {
                 ...input,
@@ -123,15 +167,15 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                tenant,
+                tenant: getTenantId(),
                 webinyVersion: context.WEBINY_VERSION
             };
 
             try {
-                await onBeforeCreate.publish({
+                await onLocaleBeforeCreate.publish({
                     context,
                     locale,
-                    tenant
+                    tenant: getTenantId()
                 });
                 const result = await storageOperations.create({
                     locale
@@ -142,10 +186,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale: result
                     });
                 }
-                await onAfterCreate.publish({
+                await onLocaleAfterCreate.publish({
                     context,
                     locale: result,
-                    tenant
+                    tenant: getTenantId()
                 });
                 return locale;
             } catch (ex) {
@@ -161,7 +205,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
         },
         async updateLocale(this: LocalesCRUD, code, input) {
-            const { security, tenancy } = context;
+            const { security } = context;
 
             const permission = await security.getPermission("i18n.locale");
 
@@ -184,12 +228,12 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
             const defaultLocale = original.default
                 ? original
-                : await storageOperations.getDefault();
+                : await storageOperations.getDefault({
+                      tenant: getTenantId()
+                  });
             if (!defaultLocale) {
                 throw new NotFoundError(`Missing default locale.`);
             }
-
-            const tenant = tenancy.getCurrentTenant().id;
 
             const locale: I18NLocaleData = {
                 ...original,
@@ -199,10 +243,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             };
 
             try {
-                await onBeforeUpdate.publish({
+                await onLocaleBeforeUpdate.publish({
                     context,
                     locale,
-                    tenant,
+                    tenant: getTenantId(),
                     original
                 });
                 const result = await storageOperations.update({
@@ -215,10 +259,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale
                     });
                 }
-                await onAfterUpdate.publish({
+                await onLocaleAfterUpdate.publish({
                     context,
                     locale: result,
-                    tenant,
+                    tenant: getTenantId(),
                     original
                 });
                 return locale;
@@ -259,7 +303,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             const tenant = tenancy.getCurrentTenant().id;
 
             try {
-                await onBeforeDelete.publish({
+                await onLocaleBeforeDelete.publish({
                     context,
                     locale,
                     tenant
@@ -267,7 +311,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 await storageOperations.delete({
                     locale
                 });
-                await onAfterDelete.publish({
+                await onLocaleAfterDelete.publish({
                     context,
                     locale,
                     tenant

@@ -6,7 +6,7 @@ describe("dynamodb path plain object", () => {
 
         const result = plugin.createPath({
             field: {
-                fieldId: "authors",
+                storageId: "authors",
                 settings: {
                     path: "createdBy.id"
                 }

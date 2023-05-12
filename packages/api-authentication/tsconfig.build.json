@@ -2,14 +2,14 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-http/tsconfig.build.json" }
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

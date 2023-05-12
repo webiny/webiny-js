@@ -6,6 +6,8 @@ export interface TenancyConfig {
     tenant: string | null;
     storageOperations: TenancyStorageOperations;
     multiTenancy?: boolean;
+    incrementWcpTenants: () => Promise<void>;
+    decrementWcpTenants: () => Promise<void>;
 }
 
 const withToString = (tenant: Tenant) => {
@@ -20,7 +22,9 @@ const withToString = (tenant: Tenant) => {
 export async function createTenancy({
     tenant,
     storageOperations,
-    multiTenancy = false
+    multiTenancy = false,
+    incrementWcpTenants,
+    decrementWcpTenants
 }: TenancyConfig): Promise<Tenancy> {
     let currentTenant: Tenant | null = null;
 
@@ -37,8 +41,32 @@ export async function createTenancy({
         setCurrentTenant(tenant: Tenant) {
             currentTenant = withToString(tenant);
         },
-        ...createSystemMethods(storageOperations),
-        ...createTenantsMethods(storageOperations)
+        async withRootTenant(cb) {
+            const initialTenant = this.getCurrentTenant();
+            const rootTenant = await this.getRootTenant();
+            this.setCurrentTenant(rootTenant);
+            try {
+                return await cb();
+            } finally {
+                // Make sure that, whatever happens in the callback, the tenant is set back to the initial one.
+                tenancy.setCurrentTenant(initialTenant);
+            }
+        },
+        async withEachTenant(tenants, cb) {
+            const initialTenant = this.getCurrentTenant();
+            const results = [];
+            for (const tenant of tenants) {
+                this.setCurrentTenant(tenant);
+                try {
+                    results.push(await cb(tenant));
+                } finally {
+                    this.setCurrentTenant(initialTenant);
+                }
+            }
+            return results;
+        },
+        ...createSystemMethods({ storageOperations }),
+        ...createTenantsMethods({ storageOperations, incrementWcpTenants, decrementWcpTenants })
     };
 
     if (tenant) {

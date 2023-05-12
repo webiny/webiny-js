@@ -1,8 +1,6 @@
-import { base as baseConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/base";
+import { getBaseConfiguration } from "@webiny/api-elasticsearch";
 import { FileElasticsearchIndexPlugin } from "~/plugins/FileElasticsearchIndexPlugin";
 
 export const base = new FileElasticsearchIndexPlugin({
-    body: {
-        ...baseConfiguration
-    }
+    body: getBaseConfiguration()
 });

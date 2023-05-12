@@ -1,12 +1,14 @@
 import WebinyError from "@webiny/error";
-import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin, LockedField } from "~/types";
+import { CmsEntry, CmsContext, CmsModelLockedFieldPlugin, LockedField, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface MarkLockedFieldsParams {
     model: CmsModel;
     entry: CmsEntry;
     context: CmsContext;
 }
+
 export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<void> => {
     const { model, context } = params;
     /**
@@ -23,8 +25,9 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
     const existingLockedFields = model.lockedFields || [];
     const lockedFields: LockedField[] = [];
     for (const field of model.fields) {
+        const baseType = getBaseFieldType(field);
         const alreadyLocked = existingLockedFields.some(
-            lockedField => lockedField.fieldId === field.fieldId
+            lockedField => lockedField.fieldId === field.storageId
         );
         if (alreadyLocked) {
             continue;
@@ -32,7 +35,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
 
         let lockedFieldData = {};
 
-        const lockedFieldPlugins = cmsLockedFieldPlugins.filter(pl => pl.fieldType === field.type);
+        const lockedFieldPlugins = cmsLockedFieldPlugins.filter(pl => pl.fieldType === baseType);
         for (const plugin of lockedFieldPlugins) {
             if (typeof plugin.getLockedFieldData !== "function") {
                 continue;
@@ -44,9 +47,9 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
         }
 
         lockedFields.push({
-            fieldId: field.fieldId,
+            fieldId: field.storageId,
             multipleValues: !!field.multipleValues,
-            type: field.type,
+            type: baseType,
             ...lockedFieldData
         });
     }
@@ -59,18 +62,25 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
 
     try {
         await context.cms.updateModelDirect({
-            original: model,
+            /**
+             * At this point we know this is a CmsModel, so it is safe to cast.
+             */
+            original: model as CmsModel,
             model: {
                 ...model,
                 lockedFields: newLockedFields
-            }
+            } as CmsModel
         });
         model.lockedFields = newLockedFields;
     } catch (ex) {
         throw new WebinyError(
             `Could not update model "${model.modelId}" with new locked fields.`,
             "MODEL_LOCKED_FIELDS_UPDATE_FAILED",
-            ex
+            {
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            }
         );
     }
 };
@@ -79,6 +89,7 @@ export interface MarkFieldsUnlockedParams {
     context: CmsContext;
     model: CmsModel;
 }
+
 export const markUnlockedFields = async (params: MarkFieldsUnlockedParams) => {
     const { context, model } = params;
     /**
@@ -91,18 +102,22 @@ export const markUnlockedFields = async (params: MarkFieldsUnlockedParams) => {
 
     try {
         await context.cms.updateModelDirect({
-            original: model,
+            original: model as CmsModel,
             model: {
                 ...model,
                 lockedFields: []
-            }
+            } as CmsModel
         });
         model.lockedFields = [];
     } catch (ex) {
         throw new WebinyError(
             `Could not update model "${model.modelId}" with unlocked fields.`,
             "MODEL_UNLOCKED_FIELDS_UPDATE_FAILED",
-            ex
+            {
+                message: ex.message,
+                code: ex.code,
+                data: ex.data
+            }
         );
     }
 };

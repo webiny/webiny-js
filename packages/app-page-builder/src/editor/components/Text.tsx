@@ -1,9 +1,9 @@
 import React from "react";
 import { CoreOptions } from "medium-editor";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
 import PeText from "./Text/PeText";
 import PbText from "./Text/PbText";
+import { isLegacyRenderingEngine } from "~/utils";
 
 interface TextElementProps {
     elementId: string;
@@ -13,11 +13,11 @@ interface TextElementProps {
 }
 
 const Text: React.FC<TextElementProps> = props => {
-    const pageElements = usePageElements();
-    if (pageElements) {
-        return <PeText {...props} />;
+    if (isLegacyRenderingEngine) {
+        return <PbText {...props} />;
     }
-    return <PbText {...props} />;
+
+    return <PeText {...props} />;
 };
 
 export default React.memo(Text);

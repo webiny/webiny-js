@@ -1,39 +1,25 @@
 import React from "react";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
+import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-heading": any;
+export type HeadingRenderer = ReturnType<typeof createHeading>;
+
+export const createHeading = () => {
+    return createRenderer(() => {
+        const { getElement } = useRenderer();
+        const element = getElement();
+        const { theme } = usePageElements();
+
+        const tag = element.data.text.desktop.tag || "h1";
+        const __html = element.data.text.data.text;
+
+        if (isValidLexicalData(__html)) {
+            return <LexicalHtmlRenderer theme={theme} value={__html} />;
         }
-    }
-}
-
-const defaultStyles = {
-    display: "block"
+        return React.createElement(tag, {
+            dangerouslySetInnerHTML: { __html }
+        });
+    }, {});
 };
-
-const Heading: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const tag = element.data.text.desktop.tag || "h1";
-
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
-
-    return (
-        <pb-heading>
-            {React.createElement(tag, {
-                dangerouslySetInnerHTML: {
-                    __html: element.data.text.data.text
-                },
-                className: classNames
-            })}
-        </pb-heading>
-    );
-};
-
-export const createHeading = () => Heading;

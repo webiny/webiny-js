@@ -1,30 +1,17 @@
-import { CmsGroup } from "@webiny/api-headless-cms";
-import { CmsModelPlugin } from "@webiny/api-headless-cms";
-import { CmsModel } from "@webiny/api-headless-cms/types";
-
-type ModelDefinition = Omit<CmsModel, "locale" | "tenant" | "webinyVersion" | "group">;
+import { CmsModelPlugin, CmsPrivateModelFull, createCmsModel } from "@webiny/api-headless-cms";
+import { CmsGroup } from "@webiny/api-headless-cms/types";
 
 interface Params {
-    group: CmsGroup;
-    /**
-     * Locale and tenant do not need to be defined.
-     * In that case model is not bound to any locale or tenant.
-     * You can bind it to locale, tenant, both or none.
-     */
-    locale?: string;
-    tenant?: string;
-    modelDefinition: ModelDefinition;
+    group: Pick<CmsGroup, "id" | "name">;
+    modelDefinition: Omit<CmsPrivateModelFull, "group" | "noValidate">;
 }
 
-const contentModelPluginFactory = (params: Params): CmsModelPlugin => {
-    const { group, locale, tenant, modelDefinition } = params;
+export const contentModelPluginFactory = (params: Params): CmsModelPlugin => {
+    const { group, modelDefinition } = params;
 
-    return new CmsModelPlugin({
+    return createCmsModel({
+        ...modelDefinition,
         group,
-        locale,
-        tenant,
-        ...modelDefinition
+        noValidate: true
     });
 };
-
-export default contentModelPluginFactory;

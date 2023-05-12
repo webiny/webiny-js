@@ -1,5 +1,4 @@
-import { base } from "~/indexConfiguration/base";
-import { japanese } from "~/indexConfiguration/japanese";
+import { getBaseConfiguration, getJapaneseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchIndexRequestBody } from "~/types";
 import { createElasticsearchClient } from "./helpers";
 
@@ -7,8 +6,8 @@ import { createElasticsearchClient } from "./helpers";
  * Add configurations when added to the code.
  */
 const settings: [string, ElasticsearchIndexRequestBody][] = [
-    ["base", base],
-    ["japanese", japanese]
+    ["base", getBaseConfiguration()],
+    ["japanese", getJapaneseConfiguration()]
 ];
 
 describe("Elasticsearch Index Mapping And Settings", () => {

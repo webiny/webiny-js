@@ -72,15 +72,6 @@
     "meta": { "private": true }
   },
   {
-    "id": "60228148f98841000981c724",
-    "name": "idp.svg",
-    "__physicalFileName": "idp.svg",
-    "key": "welcome-to-webiny__IDP.svg",
-    "size": 27878,
-    "type": "image/svg+xml",
-    "meta": { "private": true }
-  },
-  {
     "id": "6022814bef4a940008b3ba28",
     "name": "environments.svg",
     "__physicalFileName": "environments.svg",

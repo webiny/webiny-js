@@ -5,19 +5,18 @@ import React, { useCallback, useMemo, useState } from "react";
 // @ts-ignore
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
-import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { ReactComponent as ViewListIcon } from "../../icons/view_list.svg";
 import { ReactComponent as CloneIcon } from "../../icons/clone.svg";
-import { useApolloClient, useQuery } from "../../hooks";
+import { useApolloClient, useModels } from "../../hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as UIL from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { removeModelFromGroupCache, removeModelFromListCache } from "./cache";
+import { removeModelFromGroupCache, removeModelFromListCache, removeModelFromCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
@@ -29,10 +28,12 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { CmsEditorContentModel, CmsModel } from "~/types";
 import {
     DeleteCmsModelMutationResponse,
-    DeleteCmsModelMutationVariables,
-    ListCmsModelsQueryResponse
+    DeleteCmsModelMutationVariables
 } from "../../viewsGraphql";
 import usePermission from "~/admin/hooks/usePermission";
+import styled from "@emotion/styled";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -40,6 +41,7 @@ interface Sorter {
     label: string;
     sorters: string;
 }
+
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
@@ -73,6 +75,32 @@ interface ContentModelsDataListProps {
     onCreate: () => void;
     onClone: (contentModel: CmsEditorContentModel) => void;
 }
+
+const Icon = styled("div")({
+    width: "24px",
+    height: "24px",
+    marginRight: "15px",
+    flex: "0 0 24px",
+    svg: {
+        color: "var(--mdc-theme-text-icon-on-light)",
+        width: "100%",
+        height: "auto",
+        maxWidth: 24,
+        maxHeight: 24
+    }
+});
+
+interface IconProps {
+    model: Pick<CmsModel, "icon">;
+}
+
+const DisplayIcon: React.VFC<IconProps> = ({ model }) => {
+    if (!model.icon) {
+        return null;
+    }
+    return <FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />;
+};
+
 const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     canCreate,
     onCreate,
@@ -86,7 +114,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "cms-delete-content-model-dialog"
     });
-    const { data, loading } = useQuery<ListCmsModelsQueryResponse>(GQL.LIST_CONTENT_MODELS);
+    const { models, loading } = useModels();
     const { canDelete, canEdit } = usePermission();
 
     const filterData = useCallback(
@@ -106,8 +134,6 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
         },
         [sort]
     );
-
-    const models: CmsModel[] = loading ? [] : get(data, "listContentModels.data", []);
 
     const deleteRecord = async (item: CmsModel): Promise<void> => {
         showConfirmation(async () => {
@@ -130,6 +156,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
 
                     removeModelFromListCache(cache, item);
                     removeModelFromGroupCache(cache, item);
+                    removeModelFromCache(client, item);
 
                     showSnackbar(
                         t`Content model {name} deleted successfully!.`({ name: item.name })
@@ -212,11 +239,18 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                             : "View content";
                         return (
                             <UIL.ListItem key={contentModel.modelId} className={listItemMinHeight}>
+                                <Icon>
+                                    <DisplayIcon model={contentModel} />
+                                </Icon>
                                 <UIL.ListItemText>
                                     {contentModel.name}
                                     <UIL.ListItemTextSecondary>
                                         {t`Last modified: {time}.`({
-                                            time: <TimeAgo datetime={contentModel.savedOn} />
+                                            time: contentModel.savedOn ? (
+                                                <TimeAgo datetime={contentModel.savedOn} />
+                                            ) : (
+                                                "N/A"
+                                            )
                                         })}
                                     </UIL.ListItemTextSecondary>
                                 </UIL.ListItemText>

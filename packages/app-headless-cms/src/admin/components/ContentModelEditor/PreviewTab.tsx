@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { Elevation } from "@webiny/ui/Elevation";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorContentTab } from "~/types";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useModelEditor } from "~/admin/hooks";
 import { ContentEntryFormPreview } from "../ContentEntryForm/ContentEntryFormPreview";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/tabs/preview");
@@ -21,7 +21,7 @@ const style = {
 };
 
 export const PreviewTab: CmsEditorContentTab = ({ activeTab }) => {
-    const { data } = useContentModelEditor();
+    const { data } = useModelEditor();
 
     return (
         <Elevation z={1} className={formPreviewWrapper}>

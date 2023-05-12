@@ -67,11 +67,12 @@ export type { UseHistory } from "./useHistory";
 
 export { usePrompt } from "./usePrompt";
 
-export interface UseRouter extends RouteProps, ReactRouterContext {
-    history: UseHistory;
-    location: Location;
-    params: Record<string, any>;
-}
+export type UseRouter = RouteProps &
+    ReactRouterContext & {
+        history: UseHistory;
+        location: Location;
+        params: Record<string, any>;
+    };
 
 export function useRouter(): UseRouter {
     const location = useLocation();

@@ -1,11 +1,13 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
-
 import { CmsContext } from "~/types";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+interface Params {
+    context: CmsContext;
+}
+export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     let manageSchema = "";
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
@@ -53,9 +55,9 @@ export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    context.security.disableAuthorization();
-                    const models = await context.cms.listModels();
-                    context.security.enableAuthorization();
+                    const models = await context.security.withoutAuthorization(async () => {
+                        return context.cms.listModels();
+                    });
                     return models.filter(model => {
                         if (model.isPrivate === true) {
                             return false;
@@ -64,9 +66,9 @@ export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                     });
                 },
                 totalContentModels: async (group, _, context) => {
-                    context.security.disableAuthorization();
-                    const models = await context.cms.listModels();
-                    context.security.enableAuthorization();
+                    const models = await context.security.withoutAuthorization(async () => {
+                        return context.cms.listModels();
+                    });
                     return models.filter(model => {
                         if (model.isPrivate === true) {
                             return false;
@@ -131,7 +133,7 @@ export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         };
     }
 
-    return new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID!
@@ -143,7 +145,7 @@ export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
                 slug: String!
                 description: String
                 icon: String
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
 
                 # Returns true if the content model group is registered via a plugin.
                 plugin: Boolean!
@@ -152,4 +154,8 @@ export const createGroupsSchema = (context: CmsContext): GraphQLSchemaPlugin<Cms
         `,
         resolvers
     });
+
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-model-groups`;
+
+    return plugin;
 };

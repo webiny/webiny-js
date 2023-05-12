@@ -1,18 +1,19 @@
 import WebinyError from "@webiny/error";
 import { SearchBody as esSearchBody } from "elastic-ts";
-import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
+import {
+    applyWhere,
+    createLimit,
+    createSort,
+    decodeCursor,
+    getElasticsearchOperatorPluginsByLocale
+} from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { PageStorageOperationsListWhere } from "@webiny/api-page-builder/types";
-import { createSort } from "@webiny/api-elasticsearch/sort";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { PageElasticsearchFieldPlugin } from "~/plugins/definitions/PageElasticsearchFieldPlugin";
 import { PageElasticsearchSortModifierPlugin } from "~/plugins/definitions/PageElasticsearchSortModifierPlugin";
 import { PageElasticsearchQueryModifierPlugin } from "~/plugins/definitions/PageElasticsearchQueryModifierPlugin";
 import { PageElasticsearchBodyModifierPlugin } from "~/plugins/definitions/PageElasticsearchBodyModifierPlugin";
-import { applyWhere } from "@webiny/api-elasticsearch/where";
 import { PluginsContainer } from "@webiny/plugins";
-import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 
 interface CreateElasticsearchQueryArgs {
     where: PageStorageOperationsListWhere;
@@ -81,13 +82,10 @@ interface CreateElasticsearchBodyParams {
     limit: number;
     after: string | null;
     sort: string[];
+    fieldPlugins: Record<string, PageElasticsearchFieldPlugin>;
 }
 
-const createElasticsearchQuery = (
-    params: CreateElasticsearchBodyParams & {
-        fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
-    }
-) => {
+const createElasticsearchQuery = (params: CreateElasticsearchBodyParams) => {
     const { plugins, where: initialWhere, fieldPlugins } = params;
     const query = createInitialQueryValue({
         where: initialWhere
@@ -170,7 +168,7 @@ const createElasticsearchQuery = (
 };
 
 export const createElasticsearchQueryBody = (
-    params: CreateElasticsearchBodyParams
+    params: Omit<CreateElasticsearchBodyParams, "fieldPlugins">
 ): esSearchBody & Pick<Required<esSearchBody>, "sort"> => {
     const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 
@@ -199,7 +197,9 @@ export const createElasticsearchQueryBody = (
     for (const plugin of queryModifiers) {
         plugin.modifyQuery({
             query,
-            where
+            where,
+            sort,
+            limit
         });
     }
 
@@ -208,7 +208,8 @@ export const createElasticsearchQueryBody = (
     );
     for (const plugin of sortModifiers) {
         plugin.modifySort({
-            sort
+            sort,
+            where
         });
     }
 
@@ -228,7 +229,7 @@ export const createElasticsearchQueryBody = (
          * Which is correct in some cases. In our case, it is not.
          * https://www.elastic.co/guide/en/elasticsearch/reference/7.13/paginate-search-results.html
          */
-        search_after: decodeCursor(after) as any,
+        search_after: decodeCursor(after),
         sort
     };
 
@@ -237,7 +238,8 @@ export const createElasticsearchQueryBody = (
     );
     for (const plugin of bodyModifiers) {
         plugin.modifyBody({
-            body
+            body,
+            where
         });
     }
 

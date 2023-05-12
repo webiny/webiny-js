@@ -4,6 +4,8 @@ import {
     I18NLocalesStorageOperations,
     I18NLocalesStorageOperationsCreateParams,
     I18NLocalesStorageOperationsDeleteParams,
+    I18NLocalesStorageOperationsGetDefaultParams,
+    I18NLocalesStorageOperationsGetParams,
     I18NLocalesStorageOperationsListParams,
     I18NLocalesStorageOperationsListResponse,
     I18NLocalesStorageOperationsUpdateDefaultParams,
@@ -43,10 +45,12 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         });
     }
 
-    public async getDefault(): Promise<I18NLocaleData | null> {
+    public async getDefault(
+        params: I18NLocalesStorageOperationsGetDefaultParams
+    ): Promise<I18NLocaleData | null> {
         try {
             const locale = await this.entity.get({
-                PK: this.createDefaultPartitionKey(),
+                PK: this.createDefaultPartitionKey(params),
                 SK: DEFAULT_SORT_KEY
             });
             if (!locale || !locale.Item) {
@@ -61,11 +65,13 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         }
     }
 
-    public async get(code: string): Promise<I18NLocaleData | null> {
+    public async get(
+        params: I18NLocalesStorageOperationsGetParams
+    ): Promise<I18NLocaleData | null> {
         try {
             const locale = await this.entity.get({
-                PK: this.createPartitionKey(),
-                SK: code
+                PK: this.createPartitionKey(params),
+                SK: params.code
             });
             if (!locale || !locale.Item) {
                 return null;
@@ -83,7 +89,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         locale
     }: I18NLocalesStorageOperationsCreateParams): Promise<I18NLocaleData> {
         const keys = {
-            PK: this.createPartitionKey(),
+            PK: this.createPartitionKey(locale),
             SK: this.getSortKey(locale)
         };
 
@@ -109,7 +115,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         locale
     }: I18NLocalesStorageOperationsUpdateParams): Promise<I18NLocaleData> {
         const keys = {
-            PK: this.createPartitionKey(),
+            PK: this.createPartitionKey(locale),
             SK: this.getSortKey(locale)
         };
         try {
@@ -140,12 +146,12 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         const batch = [
             {
                 ...locale,
-                PK: this.createPartitionKey(),
+                PK: this.createPartitionKey(locale),
                 SK: this.getSortKey(locale)
             },
             {
                 ...locale,
-                PK: this.createDefaultPartitionKey(),
+                PK: this.createDefaultPartitionKey(locale),
                 SK: DEFAULT_SORT_KEY
             }
         ];
@@ -156,7 +162,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
             batch.push({
                 ...previous,
                 default: false,
-                PK: this.createPartitionKey(),
+                PK: this.createPartitionKey(locale),
                 SK: this.getSortKey(previous)
             });
         }
@@ -179,7 +185,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
 
     public async delete({ locale }: I18NLocalesStorageOperationsDeleteParams): Promise<void> {
         const keys = {
-            PK: this.createPartitionKey(),
+            PK: this.createPartitionKey(locale),
             SK: this.getSortKey(locale)
         };
         try {
@@ -253,16 +259,12 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         });
     }
 
-    public createPartitionKey(): string {
-        const tenant = this.context.tenancy.getCurrentTenant();
-        if (!tenant) {
-            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-        }
-        return `T#${tenant.id}#I18N#L`;
+    public createPartitionKey(params: Pick<I18NLocaleData, "tenant">): string {
+        return `T#${params.tenant}#I18N#L`;
     }
 
-    public createDefaultPartitionKey(): string {
-        return `${this.createPartitionKey()}#D`;
+    public createDefaultPartitionKey(params: Pick<I18NLocaleData, "tenant">): string {
+        return `${this.createPartitionKey(params)}#D`;
     }
 
     public getSortKey(locale: I18NLocaleData): string {
@@ -279,9 +281,13 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
     ): QueryAllParams {
         const { where } = params;
 
-        let partitionKey = this.createPartitionKey();
+        const tenant = where.tenant;
+        // @ts-ignore
+        delete where.tenant;
+
+        let partitionKey = this.createPartitionKey({ tenant });
         if (where && where.default === true) {
-            partitionKey = this.createDefaultPartitionKey();
+            partitionKey = this.createDefaultPartitionKey({ tenant });
             delete where.default;
         }
         return {

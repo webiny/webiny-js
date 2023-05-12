@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 import { plugins } from "@webiny/plugins";
@@ -7,8 +7,6 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { PbEditorResponsiveModePlugin } from "~/types";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { isPerBreakpointStylesObject } from "@webiny/app-page-builder-elements/utils";
 import { useUI } from "~/editor/hooks/useUI";
 import { setDisplayModeMutation } from "~/editor/recoil/modules";
 
@@ -108,40 +106,6 @@ export const ResponsiveModeSelector: React.FC = () => {
         []
     );
 
-    const pageElements = usePageElements();
-    if (pageElements) {
-        // By default, we want to only assign styles for the first breakpoint in line, which is "desktop".
-        // We only care about tablet, mobile-landscape, and mobile-portrait if user selects one of those.
-        useEffect(() => {
-            pageElements.setAssignStylesCallback(params => {
-                const whitelistedBreakpoints = [];
-                for (let i = 0; i < editorModes.length; i++) {
-                    const current = editorModes[i];
-                    whitelistedBreakpoints.push(current.config.displayMode);
-                    if (current.config.displayMode === displayMode) {
-                        break;
-                    }
-                }
-
-                const { breakpoints, styles = {}, assignTo = {} } = params;
-                if (isPerBreakpointStylesObject({ breakpoints, styles })) {
-                    for (const breakpointName in breakpoints) {
-                        if (
-                            styles[breakpointName] &&
-                            whitelistedBreakpoints.includes(breakpointName)
-                        ) {
-                            Object.assign(assignTo, styles[breakpointName]);
-                        }
-                    }
-                } else {
-                    Object.assign(assignTo, styles);
-                }
-
-                return assignTo;
-            });
-        }, [displayMode]);
-    }
-
     const responsiveBarContent = useMemo(() => {
         return editorModes.map(({ config: { displayMode: mode, icon, toolTip } }) => {
             return (
@@ -177,12 +141,12 @@ export const ResponsiveModeSelector: React.FC = () => {
             {responsiveBarContent}
             <div className={classes.dimensionIndicator}>
                 <span className="width">
-                    <Typography use={"subtitle2"}>{pagePreviewDimension.width}</Typography>
-                    <Typography use={"subtitle2"}>PX</Typography>
+                    <Typography use={"body2"}>{pagePreviewDimension.width}</Typography>
+                    <Typography use={"body2"}>PX</Typography>
                 </span>
                 <span className="height">
-                    <Typography use={"subtitle2"}>{"100"}</Typography>
-                    <Typography use={"subtitle2"}>%</Typography>
+                    <Typography use={"body2"}>{"100"}</Typography>
+                    <Typography use={"body2"}>%</Typography>
                 </span>
             </div>
         </div>

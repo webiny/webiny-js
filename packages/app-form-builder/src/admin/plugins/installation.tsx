@@ -100,21 +100,7 @@ const plugin: AdminInstallationPlugin = {
     },
     render({ onInstalled }) {
         return <FBInstaller onInstalled={onInstalled} />;
-    },
-    upgrades: [
-        // {
-        //     version: "5.0.0",
-        //     getComponent() {
-        //         return lazy(() => import("./upgrades/v5.0.0"));
-        //     }
-        // },
-        // {
-        //     version: "5.16.0",
-        //     getComponent() {
-        //         return lazy(() => import("./upgrades/v5.16.0"));
-        //     }
-        // }
-    ]
+    }
 };
 
 export default plugin;

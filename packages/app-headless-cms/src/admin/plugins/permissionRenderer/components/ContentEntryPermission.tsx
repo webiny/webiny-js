@@ -18,9 +18,7 @@ interface PermissionOption {
 }
 const pwOptions: PermissionOption[] = [
     { id: "p", name: t`Publish` },
-    { id: "u", name: t`Unpublish` },
-    { id: "r", name: t`Request review` },
-    { id: "c", name: t`Request changes` }
+    { id: "u", name: t`Unpublish` }
 ];
 
 interface ContentEntryPermissionProps {

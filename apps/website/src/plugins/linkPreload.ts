@@ -1,12 +1,7 @@
 import { ReactRouterOnLinkPlugin } from "@webiny/react-router/types";
 import gql from "graphql-tag";
-import { GET_PUBLISHED_PAGE } from "../components/Page/graphql";
-
-declare global {
-    interface Window {
-        __PS_RENDER_ID__: string;
-    }
-}
+import { isPrerendering, getPrerenderId } from "@webiny/app-website";
+import { GET_PUBLISHED_PAGE } from "@webiny/app-website/Page/graphql";
 
 export default (): ReactRouterOnLinkPlugin => {
     const preloadedPaths: string[] = [];
@@ -16,7 +11,7 @@ export default (): ReactRouterOnLinkPlugin => {
         type: "react-router-on-link",
         async onLink({ link: path, apolloClient }) {
             // Only if we're serving a pre-rendered page, we want to activate this feature.
-            if (!window.__PS_RENDER_ID__) {
+            if (isPrerendering()) {
                 return;
             }
 
@@ -30,7 +25,7 @@ export default (): ReactRouterOnLinkPlugin => {
 
             preloadedPaths.push(path);
 
-            const graphqlJson = `graphql.json?k=${window.__PS_RENDER_ID__}`;
+            const graphqlJson = `graphql.json?k=${getPrerenderId()}`;
             const fetchPath = path !== "/" ? `${path}/${graphqlJson}` : `/${graphqlJson}`;
             const pageState = await fetch(fetchPath)
                 .then(res => res.json())

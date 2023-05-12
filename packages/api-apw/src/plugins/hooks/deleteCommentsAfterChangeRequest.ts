@@ -3,7 +3,7 @@ import { ApwComment, LifeCycleHookCallbackParams, ListMeta } from "~/types";
 export const deleteCommentsAfterChangeRequest = ({
     apw
 }: Pick<LifeCycleHookCallbackParams, "apw">) => {
-    apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
+    apw.changeRequest.onChangeRequestAfterDelete.subscribe(async ({ changeRequest }) => {
         /**
          * Also delete all associated comments with "changeRequest".
          */

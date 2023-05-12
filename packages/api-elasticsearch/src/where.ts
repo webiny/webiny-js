@@ -28,7 +28,7 @@ export const parseWhereKey = (key: string): ParseWhereKeyResult => {
 
     const [, field, operation = "eq"] = match;
 
-    if (!field.match(/^([a-zA-Z]+)$/)) {
+    if (!field.match(/^([a-zA-Z0-9]+)$/)) {
         throw new Error(`Cannot filter by "${field}".`);
     }
 
@@ -91,6 +91,7 @@ export const applyWhere = (params: ApplyWhereParams): void => {
         });
 
         operatorPlugin.apply(query, {
+            name: field,
             value,
             path,
             basePath,

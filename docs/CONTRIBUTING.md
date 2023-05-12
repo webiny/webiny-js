@@ -9,7 +9,7 @@ We have an active community on [slack](https://www.webiny.com/slack). Talk to th
 
 ### Branches
 
-`next` is the main branch on which we develop. All `issue` branches should be branched from `next` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
+`dev` is the main branch on which we develop. All `issue` branches should be branched from `dev` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
 
 ### Workflow
 
@@ -75,7 +75,7 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
 
 > IMPORTANT: The following commands should be executed from the root of your repository.
  
-1. Fork and clone the repo. It will be on `next` branch by default.
+1. Fork and clone the repo. It will be on `dev` branch by default.
 
 2. Install all dependencies:
 
@@ -88,15 +88,17 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
    yarn setup-project
    ```
 
-4. Deploy your API to use with local React apps: 
+4. Deploy your Core and API apps to use with local React apps: 
    ```
+   yarn webiny deploy apps/core --env=dev
    yarn webiny deploy apps/api --env=dev
    ```
 
 6. Begin working on the `admin` app:
    ```
-   yarn webiny watch apps/admin --env=dev
+   yarn webiny watch apps/admin --env=dev -p admin
    ```
+   Add more packages to the watch command using `-p` and specifying the name of the package, for example, `-p @webiny/app-admin -p @webiny/app-page-builder`
    
 7. Begin working on the `website` app (OPTIONAL):
    ```

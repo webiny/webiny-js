@@ -71,8 +71,10 @@ async function hasMultipleTenants() {
 }
 
 async function handleOriginRequest(request) {
+    const origin = request.origin;
+    const isCustomOrigin = Boolean(origin.custom);
     const requestedDomain = request.headers.host[0].value;
-    const originDomain = request.origin.s3.domainName;
+    const originDomain = isCustomOrigin ? origin.custom.domainName : origin.s3.domainName;
 
     let tenant;
     if (await hasMultipleTenants()) {

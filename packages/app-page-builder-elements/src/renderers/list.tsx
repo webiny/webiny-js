@@ -1,31 +1,16 @@
 import React from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { ElementRenderer } from "~/types";
+import { createRenderer } from "~/createRenderer";
+import { useRenderer } from "~/hooks/useRenderer";
 
-declare global {
-    //eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "pb-list": any;
-        }
-    }
-}
+export type ListRenderer = ReturnType<typeof createList>;
 
-const defaultStyles = { display: "block" };
+export const createList = () => {
+    return createRenderer(() => {
+        const { getElement } = useRenderer();
+        const element = getElement();
 
-const List: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+        const __html = element.data.text.data.text;
 
-    return (
-        <pb-list
-            class={classNames}
-            dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
-        />
-    );
+        return <div style={{ width: "100%" }} dangerouslySetInnerHTML={{ __html }} />;
+    });
 };
-
-export const createList = () => List;

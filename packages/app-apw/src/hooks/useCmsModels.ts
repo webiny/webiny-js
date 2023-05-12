@@ -3,7 +3,7 @@ import { CmsModel } from "~/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useState } from "react";
 import { useQueryLocale } from "@webiny/app-headless-cms/admin/hooks";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 
 interface UseCmsModelsResult {
     models: CmsModel[];
@@ -24,7 +24,7 @@ export const useCmsModels = (): UseCmsModelsResult => {
             if (!data) {
                 return;
             }
-            const items = get(data, "listContentModels.data");
+            const items = dotPropImmutable.get(data, "listContentModels.data");
             if (!items) {
                 return;
             }

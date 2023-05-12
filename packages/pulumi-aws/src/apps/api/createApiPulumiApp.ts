@@ -5,14 +5,13 @@ import {
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
-    ApiHeadlessCMS,
+    ApiMigration,
     ApiPageBuilder,
     CoreOutput,
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources } from "~/utils";
-import { withCommonLambdaEnvVariables } from "~/utils";
+import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -31,6 +30,18 @@ export interface CreateApiPulumiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ApiPulumiApp) => void | Promise<void>;
+
+    /**
+     * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
+     */
+    pulumiResourceNamePrefix?: PulumiAppParam<string>;
+
+    /**
+     * Treats provided environments as production environments, which
+     * are deployed in production deployment mode.
+     * https://www.webiny.com/docs/architecture/deployment-modes/production
+     */
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
@@ -39,6 +50,17 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
+            const pulumiResourceNamePrefix = app.getParam(
+                projectAppParams.pulumiResourceNamePrefix
+            );
+            if (pulumiResourceNamePrefix) {
+                app.onResource(resource => {
+                    if (!resource.name.startsWith(pulumiResourceNamePrefix)) {
+                        resource.name = `${pulumiResourceNamePrefix}${resource.name}`;
+                    }
+                });
+            }
+
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied too late.
             if (projectAppParams.pulumi) {
@@ -47,6 +69,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 });
             }
 
+            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const isProduction = productionEnvironments.includes(app.params.run.env);
+
             // Enables logs forwarding.
             // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
             const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
@@ -54,10 +79,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             // Register core output as a module available to all the other modules
             const core = app.addModule(CoreOutput);
 
-            // Register VPC config module to be available to other modules
-            app.addModule(VpcConfig, {
-                enabled: app.getParam(projectAppParams.vpc)
-            });
+            // Register VPC config module to be available to other modules.
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
+            app.addModule(VpcConfig, { enabled: vpcEnabled });
 
             const pageBuilder = app.addModule(ApiPageBuilder, {
                 env: {
@@ -76,7 +100,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager);
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName
+                }
+            });
 
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
@@ -104,35 +132,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
                     S3_BUCKET: core.fileManagerBucketId,
                     EVENT_BUS: core.eventBusArn,
-                    IMPORT_PAGES_CREATE_HANDLER:
-                        pageBuilder.importPages.functions.create.output.arn,
-                    EXPORT_PAGES_PROCESS_HANDLER:
-                        pageBuilder.exportPages.functions.process.output.arn,
+                    IMPORT_CREATE_HANDLER: pageBuilder.import.functions.create.output.arn,
+                    EXPORT_PROCESS_HANDLER: pageBuilder.export.functions.process.output.arn,
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                    WEBINY_LOGS_FORWARD_URL
+                    WEBINY_LOGS_FORWARD_URL,
+                    /**
+                     * APW
+                     */
+                    APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
+                        apwScheduler.scheduleAction.lambda.output.arn
                 },
                 apwSchedulerEventRule: apwScheduler.eventRule.output,
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
-            });
-
-            const headlessCms = app.addModule(ApiHeadlessCMS, {
-                env: {
-                    COGNITO_REGION: String(process.env.AWS_REGION),
-                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                    ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
-
-                    // Not required. Useful for testing purposes / ephemeral environments.
-                    // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-
-                    S3_BUCKET: core.fileManagerBucketId,
-                    // TODO: move to okta plugin
-                    OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                    WEBINY_LOGS_FORWARD_URL
-                }
             });
 
             const apiGateway = app.addModule(ApiGateway, {
@@ -147,23 +159,29 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     function: graphql.functions.graphql.output.arn
                 },
                 "files-any": {
-                    path: "/files/{path}",
+                    path: "/files/{path+}",
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
                 "cms-post": {
                     path: "/cms/{key+}",
                     method: "POST",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
                 },
                 "cms-options": {
                     path: "/cms/{key+}",
                     method: "OPTIONS",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
+                },
+                "files-catch-all": {
+                    path: "/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
                 }
             });
 
             const cloudfront = app.addModule(ApiCloudfront);
+            const migration = app.addModule(ApiMigration);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -172,8 +190,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             app.addOutputs({
                 region: process.env.AWS_REGION,
-                apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
-                apiDomain: cloudfront.output.domainName,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
@@ -182,7 +198,21 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
+                migrationLambdaArn: migration.function.output.arn
+            });
+
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: cloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontApiDomain",
+                        distributionUrl: "cloudfrontApiUrl",
+                        usedDomain: "apiDomain",
+                        usedUrl: "apiUrl"
+                    }
+                });
             });
 
             tagResources({
@@ -193,10 +223,10 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             return {
                 fileManager,
                 graphql,
-                headlessCms,
                 apiGateway,
                 cloudfront,
-                apwScheduler
+                apwScheduler,
+                migration
             };
         }
     });

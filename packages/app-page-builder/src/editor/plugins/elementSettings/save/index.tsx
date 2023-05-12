@@ -10,7 +10,7 @@ export default {
     renderAction() {
         return (
             <SaveAction>
-                <Action tooltip={"Save element"} icon={<FavoriteIcon />} />
+                <Action tooltip={"Save selected"} icon={<FavoriteIcon />} />
             </SaveAction>
         );
     }

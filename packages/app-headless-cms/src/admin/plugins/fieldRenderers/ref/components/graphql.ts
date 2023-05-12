@@ -8,6 +8,20 @@ data {
     entryId
     status
     title
+    description
+    image
+    createdOn
+    savedOn
+    createdBy {
+        id
+        type
+        displayName
+    }
+    modifiedBy {
+        id
+        type
+        displayName
+    }
     model {
         modelId
         name

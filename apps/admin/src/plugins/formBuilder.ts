@@ -42,6 +42,8 @@ import editorValidatorLowerCase from "@webiny/app-form-builder/admin/plugins/edi
 import editorValidatorUpperCase from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/patternPlugins/upperCase";
 
 /* Form Editor triggers */
+import editorTriggerEmailNotification from "@webiny/app-form-builder/admin/plugins/editor/triggers/emailNotification";
+import editorTriggerEmailThanks from "@webiny/app-form-builder/admin/plugins/editor/triggers/emailThanks";
 import editorTriggerRedirect from "@webiny/app-form-builder/admin/plugins/editor/triggers/redirect";
 import editorTriggerWebhook from "@webiny/app-form-builder/admin/plugins/editor/triggers/webhook";
 
@@ -99,6 +101,8 @@ export default [
     editorValidatorUrl,
     editorValidatorLowerCase,
     editorValidatorUpperCase,
+    editorTriggerEmailNotification,
+    editorTriggerEmailThanks,
     editorTriggerRedirect,
     editorTriggerWebhook,
     fieldValidatorGte,

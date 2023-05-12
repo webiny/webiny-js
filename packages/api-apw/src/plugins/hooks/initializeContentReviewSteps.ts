@@ -1,11 +1,16 @@
 import lodashSet from "lodash/set";
-import { ApwContentReviewStepStatus, ApwContext } from "~/types";
+import {
+    ApwContentReviewStatus,
+    ApwContentReviewStepStatus,
+    ApwContext,
+    ApwWorkflowStepTypes
+} from "~/types";
 import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { getContentApwSettingsPlugin } from "~/utils/contentApwSettingsPlugin";
 
 export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
-    apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
+    apw.contentReview.onContentReviewBeforeCreate.subscribe(async ({ input }) => {
         const { type, id, settings } = input.content;
         /*
          * Let's set "title" field value.
@@ -36,6 +41,8 @@ export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
             throw new NotFoundError(`Unable to initiate a "Content review". No workflow found!`);
         }
 
+        input.workflowId = workflowId;
+
         const workflow = await apw.workflow.get(workflowId);
         const workflowSteps = workflow.steps;
 
@@ -55,9 +62,15 @@ export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
             };
         });
         /**
-         * TODO Figure our what does this actually do?
-         * There is no steps property on CreateApwContentReviewParams
+         * If there are only steps which are not mandatory ones, put review status to ApwContentReviewStatus.READY_TO_BE_PUBLISHED.
          */
+        const isNonMandatory = updatedSteps.every(step => {
+            return step.type === ApwWorkflowStepTypes.NON_MANDATORY;
+        });
+        if (isNonMandatory) {
+            input.reviewStatus = ApwContentReviewStatus.READY_TO_BE_PUBLISHED;
+        }
+
         input = lodashSet(input, "steps", updatedSteps);
     });
 };

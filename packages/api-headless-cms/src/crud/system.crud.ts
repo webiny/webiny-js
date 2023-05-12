@@ -1,16 +1,13 @@
-import crypto from "crypto";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { ErrorCode, getApplicablePlugin } from "@webiny/api-upgrade";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import {
-    AfterInstallTopicParams,
-    BeforeInstallTopicParams,
+    OnSystemAfterInstallTopicParams,
+    OnSystemBeforeInstallTopicParams,
     CmsContext,
     CmsSystem,
     CmsSystemContext,
-    HeadlessCms,
-    HeadlessCmsStorageOperations
+    HeadlessCmsStorageOperations,
+    OnSystemInstallErrorTopicParams
 } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -34,12 +31,16 @@ interface CreateSystemCrudParams {
 export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemContext => {
     const { getTenant, getLocale, storageOperations, context, getIdentity } = params;
 
-    const onBeforeInstall = createTopic<BeforeInstallTopicParams>();
-    const onAfterInstall = createTopic<AfterInstallTopicParams>();
+    const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
+        "cms.onSystemBeforeInstall"
+    );
+    const onSystemAfterInstall = createTopic<OnSystemAfterInstallTopicParams>(
+        "cms.onSystemAfterInstall"
+    );
 
-    const createReadAPIKey = () => {
-        return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");
-    };
+    const onSystemInstallError = createTopic<OnSystemInstallErrorTopicParams>(
+        "cms.onSystemInstallError"
+    );
 
     const getVersion = async () => {
         if (!getTenant()) {
@@ -50,7 +51,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             tenant: getTenant().id
         });
 
-        return system ? system.version || null : null;
+        return system?.version || null;
     };
 
     const setVersion = async (version: string) => {
@@ -74,33 +75,19 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
     };
 
     return {
-        onBeforeSystemInstall: onBeforeInstall,
-        onAfterSystemInstall: onAfterInstall,
+        /**
+         * Deprecated - will be removed in 5.36.0
+         */
+        onBeforeSystemInstall: onSystemBeforeInstall,
+        onAfterSystemInstall: onSystemAfterInstall,
+        /**
+         * Released in 5.34.0
+         */
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
+        onSystemInstallError,
         getSystemVersion: getVersion,
         setSystemVersion: setVersion,
-        getReadAPIKey: async () => {
-            const original = await storageOperations.system.get({
-                tenant: getTenant().id
-            });
-
-            if (!original) {
-                return null;
-            }
-
-            if (!original.readAPIKey) {
-                const readAPIKey = createReadAPIKey();
-                const system: CmsSystem = {
-                    ...original,
-                    readAPIKey
-                };
-                await storageOperations.system.update({
-                    system
-                });
-                return readAPIKey;
-            }
-
-            return original.readAPIKey;
-        },
         installSystem: async (): Promise<void> => {
             const identity = getIdentity();
             if (!identity) {
@@ -111,85 +98,55 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             if (version) {
                 return;
             }
-            /**
-             * First trigger before install event.
-             */
-            await onBeforeInstall.publish({
-                tenant: getTenant().id,
-                locale: getLocale().code
-            });
-
-            /**
-             * Add default content model group.
-             */
             try {
-                await context.cms.createGroup(initialContentModelGroup);
-            } catch (ex) {
-                throw new WebinyError(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR", {
-                    group: initialContentModelGroup
-                });
-            }
-
-            const system: CmsSystem = {
-                version: context.WEBINY_VERSION,
-                readAPIKey: createReadAPIKey(),
-                tenant: getTenant().id
-            };
-            /**
-             * We need to create the system data.
-             */
-            await storageOperations.system.create({
-                system
-            });
-            /**
-             * And trigger after install event.
-             */
-            await onAfterInstall.publish({
-                tenant: getTenant().id,
-                locale: getLocale().code
-            });
-        },
-        async upgradeSystem(this: HeadlessCms, version) {
-            const identity = getIdentity();
-            if (!identity) {
-                throw new NotAuthorizedError();
-            }
-
-            const upgradePlugins = context.plugins
-                .byType<UpgradePlugin>("api-upgrade")
-                .filter(pl => pl.app === "headless-cms");
-
-            const installedAppVersion = await this.getSystemVersion();
-
-            let plugin: UpgradePlugin | undefined = undefined;
-            try {
-                plugin = getApplicablePlugin({
-                    deployedVersion: context.WEBINY_VERSION,
-                    installedAppVersion,
-                    upgradePlugins,
-                    upgradeToVersion: version
-                });
-            } catch (ex) {
                 /**
-                 * We just let the error disappear if is UPGRADE_NOT_AVAILABLE code
-                 * and rethrow if is not.
-                 * This is because we want upgrade to pass if there is no plugin available.
+                 * First trigger before install event.
                  */
-                if (ex.code !== ErrorCode.UPGRADE_NOT_AVAILABLE) {
-                    throw ex;
+                await onSystemBeforeInstall.publish({
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                });
+
+                /**
+                 * Add default content model group.
+                 */
+                try {
+                    await context.cms.createGroup(initialContentModelGroup);
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message,
+                        "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR",
+                        {
+                            group: initialContentModelGroup
+                        }
+                    );
                 }
+
+                const system: CmsSystem = {
+                    version: context.WEBINY_VERSION,
+                    tenant: getTenant().id
+                };
+                /**
+                 * We need to create the system data.
+                 */
+                await storageOperations.system.create({
+                    system
+                });
+                /**
+                 * And trigger after install event.
+                 */
+                await onSystemAfterInstall.publish({
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                });
+            } catch (ex) {
+                await onSystemInstallError.publish({
+                    error: ex,
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                });
+                throw new WebinyError(ex.message, ex.code, ex.data);
             }
-
-            if (plugin) {
-                await plugin.apply(context);
-            }
-
-            /**
-             * Store new app version.
-             */
-            await setVersion(version);
-
-            return true;
         }
     };
 };

@@ -28,10 +28,10 @@ $webiny-theme-dark-caret-down: url("data:image/svg+xml,%3Csvg%20width%3D%2210px%
 
 // webiny typography
 $webiny-theme-typography-font-family: "Source Sans Pro" !default;
+$webiny-theme-typography-subtitle2-font-weight: 600 !default;
 
 // import required fonts
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700|Open+Sans:300,400,600,700|Source+Code+Pro:400,700");
-//@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700|Open+Sans:300,400,600,700|Source+Code+Pro:400,700");
 
 body {
   font-size: 16px;
@@ -41,3 +41,36 @@ a {
   color: var(--webiny-theme-color-primary, #ee896b);
   text-decoration: none;
 }
+
+// Default heading styles
+h1 {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+h3 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+h6 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+@import "@webiny/ui/styles.scss";

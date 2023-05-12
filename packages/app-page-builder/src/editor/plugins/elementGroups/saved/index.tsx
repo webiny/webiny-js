@@ -1,8 +1,8 @@
 import React from "react";
-import { ReactComponent as SavedIcon } from "../../../assets/icons/round-favorite-24px.svg";
-import { PbEditorPageElementGroupPlugin } from "../../../../types";
+import { ReactComponent as SavedIcon } from "@material-design-icons/svg/outlined/favorite_border.svg";
+import { ReactComponent as ContentIcon } from "@material-design-icons/svg/outlined/insights.svg";
+import { PbEditorPageElementGroupPlugin } from "~/types";
 import EmptyElementGroupView from "../../../components/EmptyElementGroupView";
-import { ReactComponent as ContentIcon } from "../../../assets/icons/insights.svg";
 
 export default {
     name: "pb-editor-element-group-saved",

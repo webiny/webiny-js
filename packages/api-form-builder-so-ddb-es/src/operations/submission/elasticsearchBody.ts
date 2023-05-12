@@ -1,16 +1,18 @@
 import { SearchBody as esSearchBody } from "elastic-ts";
-import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
+import {
+    decodeCursor,
+    createLimit,
+    createSort,
+    applyWhere,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { createSort } from "@webiny/api-elasticsearch/sort";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { SubmissionElasticsearchFieldPlugin } from "~/plugins/SubmissionElasticsearchFieldPlugin";
 import { SubmissionElasticsearchSortModifierPlugin } from "~/plugins/SubmissionElasticsearchSortModifierPlugin";
 import { SubmissionElasticsearchBodyModifierPlugin } from "~/plugins/SubmissionElasticsearchBodyModifierPlugin";
 import { FormBuilderStorageOperationsListSubmissionsParams } from "@webiny/api-form-builder/types";
 import { SubmissionElasticsearchQueryModifierPlugin } from "~/plugins/SubmissionElasticsearchQueryModifierPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { applyWhere } from "@webiny/api-elasticsearch/where";
 
 const createInitialQueryValue = (): ElasticsearchBoolQueryConfig => {
     return {

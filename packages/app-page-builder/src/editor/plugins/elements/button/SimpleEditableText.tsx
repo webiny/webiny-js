@@ -2,6 +2,7 @@ import React, { useCallback, useRef } from "react";
 
 interface SimpleTextPropsType {
     value?: string;
+    variableValue?: string;
     onFocus?: () => void;
     onBlur?: () => void;
     onChange: (value: string) => void;
@@ -12,6 +13,7 @@ interface SimpleTextPropsType {
 }
 const SimpleEditableText: React.FC<SimpleTextPropsType> = ({
     value: defaultValue = "",
+    variableValue,
     onFocus,
     onBlur,
     onChange,
@@ -60,7 +62,7 @@ const SimpleEditableText: React.FC<SimpleTextPropsType> = ({
         onBlur: onBlurHandler,
         onFocus: onFocusHandler,
         dangerouslySetInnerHTML: {
-            __html: value.current
+            __html: variableValue || value.current
         },
         ref: inputRef,
         ...options

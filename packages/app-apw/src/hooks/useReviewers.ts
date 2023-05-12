@@ -5,7 +5,7 @@ import {
     ListReviewersQueryVariables
 } from "~/graphql/reviewer.gql";
 import { ApwReviewer } from "~/types";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { useMemo } from "react";
 
 interface UseReviewersResult {
@@ -22,7 +22,7 @@ export const useReviewers = (): UseReviewersResult => {
         if (!data) {
             return [];
         }
-        return get(data, "apw.listReviewers.data", []);
+        return dotPropImmutable.get(data, "apw.listReviewers.data", []);
     }, [data]);
 
     return {

@@ -1,32 +1,47 @@
 import {
     ApwReviewerCrud,
     CreateApwParams,
-    OnAfterReviewerCreateTopicParams,
-    OnAfterReviewerDeleteTopicParams,
-    OnAfterReviewerUpdateTopicParams,
-    OnBeforeReviewerCreateTopicParams,
-    OnBeforeReviewerDeleteTopicParams,
-    OnBeforeReviewerUpdateTopicParams
+    OnReviewerAfterCreateTopicParams,
+    OnReviewerAfterDeleteTopicParams,
+    OnReviewerAfterUpdateTopicParams,
+    OnReviewerBeforeCreateTopicParams,
+    OnReviewerBeforeDeleteTopicParams,
+    OnReviewerBeforeUpdateTopicParams
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 
 export function createReviewerMethods({ storageOperations }: CreateApwParams): ApwReviewerCrud {
-    const onBeforeReviewerCreate = createTopic<OnBeforeReviewerCreateTopicParams>();
-    const onAfterReviewerCreate = createTopic<OnAfterReviewerCreateTopicParams>();
-    const onBeforeReviewerUpdate = createTopic<OnBeforeReviewerUpdateTopicParams>();
-    const onAfterReviewerUpdate = createTopic<OnAfterReviewerUpdateTopicParams>();
-    const onBeforeReviewerDelete = createTopic<OnBeforeReviewerDeleteTopicParams>();
-    const onAfterReviewerDelete = createTopic<OnAfterReviewerDeleteTopicParams>();
+    // create
+    const onReviewerBeforeCreate = createTopic<OnReviewerBeforeCreateTopicParams>(
+        "apw.onReviewerBeforeCreate"
+    );
+    const onReviewerAfterCreate = createTopic<OnReviewerAfterCreateTopicParams>(
+        "apw.onReviewerAfterCreate"
+    );
+    // update
+    const onReviewerBeforeUpdate = createTopic<OnReviewerBeforeUpdateTopicParams>(
+        "apw.onReviewerBeforeUpdate"
+    );
+    const onReviewerAfterUpdate = createTopic<OnReviewerAfterUpdateTopicParams>(
+        "apw.onReviewerAfterUpdate"
+    );
+    // delete
+    const onReviewerBeforeDelete = createTopic<OnReviewerBeforeDeleteTopicParams>(
+        "apw.onReviewerBeforeDelete"
+    );
+    const onReviewerAfterDelete = createTopic<OnReviewerAfterDeleteTopicParams>(
+        "apw.onReviewerAfterDelete"
+    );
     return {
         /**
          * Lifecycle events
          */
-        onBeforeReviewerCreate,
-        onAfterReviewerCreate,
-        onBeforeReviewerUpdate,
-        onAfterReviewerUpdate,
-        onBeforeReviewerDelete,
-        onAfterReviewerDelete,
+        onReviewerBeforeCreate,
+        onReviewerAfterCreate,
+        onReviewerBeforeUpdate,
+        onReviewerAfterUpdate,
+        onReviewerBeforeDelete,
+        onReviewerAfterDelete,
         async get(id) {
             return storageOperations.getReviewer({ id });
         },
@@ -34,33 +49,33 @@ export function createReviewerMethods({ storageOperations }: CreateApwParams): A
             return storageOperations.listReviewers(params);
         },
         async create(data) {
-            await onBeforeReviewerCreate.publish({ input: data });
+            await onReviewerBeforeCreate.publish({ input: data });
 
             const reviewer = await storageOperations.createReviewer({ data });
 
-            await onAfterReviewerCreate.publish({ reviewer });
+            await onReviewerAfterCreate.publish({ reviewer });
 
             return reviewer;
         },
         async update(id, data) {
             const original = await storageOperations.getReviewer({ id });
 
-            await onBeforeReviewerUpdate.publish({ original, input: { id, data } });
+            await onReviewerBeforeUpdate.publish({ original, input: { id, data } });
 
             const reviewer = await storageOperations.updateReviewer({ id, data });
 
-            await onAfterReviewerUpdate.publish({ original, input: { id, data }, reviewer });
+            await onReviewerAfterUpdate.publish({ original, input: { id, data }, reviewer });
 
             return reviewer;
         },
         async delete(id: string) {
             const reviewer = await storageOperations.getReviewer({ id });
 
-            await onBeforeReviewerDelete.publish({ reviewer });
+            await onReviewerBeforeDelete.publish({ reviewer });
 
             await storageOperations.deleteReviewer({ id });
 
-            await onAfterReviewerDelete.publish({ reviewer });
+            await onReviewerAfterDelete.publish({ reviewer });
 
             return true;
         }

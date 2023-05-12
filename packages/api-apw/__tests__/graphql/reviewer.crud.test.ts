@@ -1,27 +1,28 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { defaultIdentity } from "../utils/defaultIdentity";
 
-const identityRoot = { id: "root", displayName: "root", type: "admin" };
+const identityRoot = {
+    id: "root",
+    displayName: "root",
+    type: "admin",
+    email: "root@webiny.com"
+};
 const updatedDisplayName = "Robert Downey";
 
 describe("Reviewer crud test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const { securityIdentity, reviewer, until } = usePageBuilderHandler({
-        ...options,
+    const { securityIdentity, reviewer, until } = useGraphQlHandler({
+        path: "/graphql",
         plugins: [defaultIdentity()]
     });
 
-    const { securityIdentity: securityIdentityRoot } = usePageBuilderHandler({
-        ...options,
+    const { securityIdentity: securityIdentityRoot } = useGraphQlHandler({
+        path: "/graphql",
         plugins: [defaultIdentity()],
         identity: identityRoot
     });
 
-    const { securityIdentity: securityIdentityRootUpdated } = usePageBuilderHandler({
-        ...options,
+    const { securityIdentity: securityIdentityRootUpdated } = useGraphQlHandler({
+        path: "/graphql",
         plugins: [defaultIdentity()],
         identity: {
             ...identityRoot,
@@ -75,7 +76,8 @@ describe("Reviewer crud test", () => {
                                 },
                                 identityId: "12345678",
                                 displayName: "John Doe",
-                                type: "admin"
+                                type: "admin",
+                                email: "testing@webiny.com"
                             }
                         ],
                         error: null,
@@ -124,7 +126,8 @@ describe("Reviewer crud test", () => {
                                 },
                                 identityId: identityRoot.id,
                                 displayName: identityRoot.displayName,
-                                type: "admin"
+                                type: "admin",
+                                email: identityRoot.email
                             },
                             {
                                 id: expect.any(String),
@@ -137,7 +140,8 @@ describe("Reviewer crud test", () => {
                                 },
                                 identityId: "12345678",
                                 displayName: "John Doe",
-                                type: "admin"
+                                type: "admin",
+                                email: "testing@webiny.com"
                             }
                         ],
                         error: null,
@@ -198,7 +202,8 @@ describe("Reviewer crud test", () => {
                                 },
                                 identityId: "12345678",
                                 displayName: "John Doe",
-                                type: "admin"
+                                type: "admin",
+                                email: "testing@webiny.com"
                             }
                         ],
                         error: null,
@@ -247,7 +252,8 @@ describe("Reviewer crud test", () => {
                                 },
                                 identityId: "12345678",
                                 displayName: "John Doe",
-                                type: "admin"
+                                type: "admin",
+                                email: "testing@webiny.com"
                             }
                         ],
                         error: null,
@@ -308,7 +314,8 @@ describe("Reviewer crud test", () => {
                                 },
                                 identityId: "root",
                                 displayName: "root",
-                                type: "admin"
+                                type: "admin",
+                                email: identityRoot.email
                             }
                         ],
                         error: null,
@@ -357,7 +364,8 @@ describe("Reviewer crud test", () => {
                                 },
                                 identityId: "root",
                                 displayName: updatedDisplayName,
-                                type: "admin"
+                                type: "admin",
+                                email: identityRoot.email
                             }
                         ],
                         error: null,
@@ -365,6 +373,111 @@ describe("Reviewer crud test", () => {
                             hasMoreItems: false,
                             cursor: null,
                             totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should update reviewer when login info changes", async () => {
+        const { securityIdentity: baseSecurityIdentity, reviewer } = useGraphQlHandler({
+            path: "/graphql",
+            identity: {
+                id: "mockUpdateIdentityId",
+                type: "admin",
+                displayName: "Base Identity"
+            }
+        });
+        await securityIdentity.login();
+        await baseSecurityIdentity.login();
+
+        await until(
+            () => reviewer.listReviewersQuery({}).then(([data]) => data),
+            (response: any) => {
+                const list = response.data.apw.listReviewers.data;
+                return list.length === 2;
+            },
+            {
+                name: "Wait for listReviewers query"
+            }
+        );
+
+        const [response] = await reviewer.listReviewersQuery({});
+
+        expect(response).toMatchObject({
+            data: {
+                apw: {
+                    listReviewers: {
+                        data: [
+                            {
+                                identityId: "mockUpdateIdentityId"
+                            },
+                            {
+                                identityId: "12345678"
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 2,
+                            hasMoreItems: false,
+                            cursor: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const email = "mock@webiny.local";
+
+        const { securityIdentity: updatedSecurityIdentity, reviewer: updatedReviewer } =
+            useGraphQlHandler({
+                path: "/graphql",
+                identity: {
+                    id: "mockUpdateIdentityId",
+                    type: "admin",
+                    displayName: "Base Identity",
+                    email
+                },
+                permissions: []
+            });
+
+        await updatedSecurityIdentity.login();
+
+        await until(
+            () => updatedReviewer.listReviewersQuery({}).then(([data]) => data),
+            (response: any) => {
+                const list = response.data.apw.listReviewers.data as any[];
+                if (list.length !== 2) {
+                    return false;
+                }
+                return list.some(reviewer => reviewer.email === email);
+            },
+            {
+                name: "Wait for listReviewers query after updated login"
+            }
+        );
+
+        const [responseAfterUpdatedLogin] = await reviewer.listReviewersQuery({});
+
+        expect(responseAfterUpdatedLogin).toMatchObject({
+            data: {
+                apw: {
+                    listReviewers: {
+                        data: [
+                            {
+                                identityId: "mockUpdateIdentityId",
+                                email
+                            },
+                            {
+                                identityId: "12345678"
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 2,
+                            hasMoreItems: false,
+                            cursor: null
                         }
                     }
                 }

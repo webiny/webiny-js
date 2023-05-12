@@ -1,3 +1,13 @@
+/**
+ * TODO remove rawValue when field aliases and field types targeting will be active.
+ *
+ * Currently we use rawValue for the values that we do not want to be indexed.
+ * When field aliases and types in the value path will be active, we can target the keys directly.
+ *
+ * This change will be incompatible with the current systems so we will need to release a major version.
+ *
+ */
+
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import {
     CmsModel,
@@ -5,6 +15,7 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import { PluginsContainer } from "@webiny/plugins";
+import { getFieldIdentifiers } from "~/helpers";
 
 interface ProcessToIndex {
     (params: {
@@ -53,22 +64,28 @@ const processToIndex: ProcessToIndex = ({
         if (!plugin || !plugin.toIndex) {
             return values;
         }
+
+        const identifiers = getFieldIdentifiers(sourceValue, sourceRawValue, field);
+        if (!identifiers) {
+            return values;
+        }
+
         const { value, rawValue } = plugin.toIndex({
             model,
             field,
-            value: sourceValue[field.fieldId],
-            rawValue: sourceRawValue[field.fieldId],
+            value: sourceValue[identifiers.valueIdentifier || identifiers.rawValueIdentifier],
+            rawValue: sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier],
             getFieldIndexPlugin,
             getFieldTypePlugin,
             plugins
         });
 
         if (value !== undefined) {
-            values.value[field.fieldId] = value;
+            values.value[identifiers.valueIdentifier || identifiers.rawValueIdentifier] = value;
         }
-
         if (rawValue !== undefined) {
-            values.rawValue[field.fieldId] = rawValue;
+            values.rawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier] =
+                rawValue;
         }
 
         return values;
@@ -90,18 +107,23 @@ const processFromIndex: ProcessFromIndex = ({
         if (!plugin || !plugin.fromIndex) {
             return values;
         }
+        const identifiers = getFieldIdentifiers(sourceValue, sourceRawValue, field);
+        if (!identifiers) {
+            return values;
+        }
+
         const value = plugin.fromIndex({
             plugins,
             model,
             field,
-            value: sourceValue[field.fieldId],
-            rawValue: sourceRawValue[field.fieldId],
+            value: sourceValue[identifiers.valueIdentifier || identifiers.rawValueIdentifier],
+            rawValue: sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier],
             getFieldIndexPlugin,
             getFieldTypePlugin
         });
 
         if (value !== undefined) {
-            values[field.fieldId] = value;
+            values[identifiers.valueIdentifier || identifiers.rawValueIdentifier] = value;
         }
 
         return values;
@@ -129,7 +151,9 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         getFieldTypePlugin
     }) {
         if (!initialValue) {
-            return { value: null };
+            return {
+                value: null
+            };
         }
 
         const fields = (field.settings?.fields || []) as CmsModelField[];
@@ -182,7 +206,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             return null;
         }
 
-        const fields = (field.settings?.fields || []) as CmsModelField[];
+        const fields = field.settings?.fields || [];
 
         /**
          * In "object" field, value is either an object or an array of objects.

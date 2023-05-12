@@ -40,7 +40,7 @@ export const PageTitle = styled("div")({
 });
 
 export const pageTitleWrapper = css({
-    maxWidth: "calc(100% - 50px)"
+    maxWidth: "calc(100% - 100px)"
 });
 
 export const PageVersion = styled("span")({

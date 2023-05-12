@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
     { "path": "../app-tenant-manager/tsconfig.build.json" },
@@ -14,7 +15,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

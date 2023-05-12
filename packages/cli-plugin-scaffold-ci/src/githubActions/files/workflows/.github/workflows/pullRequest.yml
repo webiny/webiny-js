@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       - uses: actions/checkout@v2
 
@@ -48,7 +48,7 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-      # 3. Build custom packages (all packages located within the "packages" folder).
+      # 3. Build custom packages located within the "packages" folder (if any).
       - name: Build packages
         run: yarn webiny workspaces run build --folder packages
 
@@ -60,19 +60,20 @@ jobs:
     name: Build and run integration and E2E tests
     needs: build-test-static-unit
     runs-on: ubuntu-latest
-    environment: pr
+    # We use "dev" environment variables here, but, if needed, a separate set of
+    # variables and a separate pull requests-related AWS account can be used too.
     env:
       NODE_OPTIONS: --max_old_space_size=4096
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.DEV_AWS_REGION }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.DEV_PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.DEV_PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.DEV_WEBINY_PULUMI_BACKEND }}
     steps:
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       - uses: actions/checkout@v2
 
@@ -86,7 +87,7 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      # 2. Build custom packages (all packages located within the "packages" folder).
+      # 2. Build custom packages located within the "packages" folder (if any).
       - name: Build packages
         run: yarn webiny workspaces run build --folder packages
 

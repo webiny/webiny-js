@@ -74,7 +74,7 @@ export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => 
                     paddingTop={1}
                 >
                     <Box>
-                        <TypographyTitle use={"subtitle2"}>{title}</TypographyTitle>
+                        <TypographyTitle use={"body2"}>{title}</TypographyTitle>
                     </Box>
                     <Box>
                         <StatusBadge status={status} />

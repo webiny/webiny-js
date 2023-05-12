@@ -6,10 +6,22 @@ describe(`Test "Tenancy" tenants`, () => {
     const { storageOperations } = __getStorageOperations();
     let tenancy: Tenancy;
 
+    let wcpTenantsCount: number;
+
+    beforeEach(async () => {
+        wcpTenantsCount = 0;
+    });
+
     beforeAll(async () => {
         tenancy = await createTenancy({
             tenant: null,
-            storageOperations
+            storageOperations,
+            incrementWcpTenants: async () => {
+                wcpTenantsCount++;
+            },
+            decrementWcpTenants: async () => {
+                wcpTenantsCount--;
+            }
         });
     });
 
@@ -17,6 +29,7 @@ describe(`Test "Tenancy" tenants`, () => {
         const tenant1Data = {
             id: "1",
             name: "Tenant #1",
+            tags: [],
             description: "The first sub-tenant",
             parent: "root"
         };
@@ -27,6 +40,7 @@ describe(`Test "Tenancy" tenants`, () => {
             description: "The second sub-tenant",
             parent: "root",
             status: "pending",
+            tags: ["blog"],
             settings: {
                 domains: [{ fqdn: "domain.com" }]
             }
@@ -34,6 +48,9 @@ describe(`Test "Tenancy" tenants`, () => {
 
         // Install root tenant
         await tenancy.install();
+
+        // After the installation, we should have one tenant recorded.
+        expect(wcpTenantsCount).toBe(1);
 
         // Create first subtenant
         await tenancy.createTenant(tenant1Data);
@@ -48,6 +65,9 @@ describe(`Test "Tenancy" tenants`, () => {
             savedOn: expect.any(String)
         });
 
+        // New tenant added, meaning total tenants count should be 2.
+        expect(wcpTenantsCount).toBe(2);
+
         // Create second subtenant
         await tenancy.createTenant(tenant2Data);
         const tenant2 = await tenancy.getTenantById("2");
@@ -59,6 +79,9 @@ describe(`Test "Tenancy" tenants`, () => {
             createdOn: expect.any(String),
             savedOn: expect.any(String)
         });
+
+        // Final tenants count should be 3.
+        expect(wcpTenantsCount).toBe(3);
 
         await tenancy.updateTenant("2", { name: "Tenant #2.1", description: "Subtenant" });
         await expect(tenancy.getTenantById("2")).resolves.toEqual({
@@ -77,6 +100,9 @@ describe(`Test "Tenancy" tenants`, () => {
         // Delete tenants
         await tenancy.deleteTenant("1");
         await tenancy.deleteTenant("2");
+
+        // With 2 tenants just deleted, the tenants count should fall back to 1.
+        expect(wcpTenantsCount).toBe(1);
 
         await expect(tenancy.listTenants({ parent: "root" })).resolves.toEqual([]);
         await expect(tenancy.getTenantById("1")).resolves.toEqual(undefined);

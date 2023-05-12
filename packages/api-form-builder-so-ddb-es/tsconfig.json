@@ -1,16 +1,16 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-elasticsearch" },
     { "path": "../api-form-builder" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../api-dynamodb-to-elasticsearch" },
+    { "path": "../handler-aws" },
     { "path": "../handler-db" }
   ],
   "compilerOptions": {
@@ -19,6 +19,9 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-form-builder/*": ["../api-form-builder/src/*"],
@@ -27,16 +30,14 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"]
     },

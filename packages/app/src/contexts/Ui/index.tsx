@@ -45,10 +45,3 @@ export class UiProvider extends React.Component<Props, State> {
         );
     }
 }
-
-export interface UiConsumerProps {
-    children: React.ReactElement;
-}
-export const UiConsumer: React.FC<UiConsumerProps> = ({ children }) => {
-    return <UiContext.Consumer>{ui => React.cloneElement(children, { ui })}</UiContext.Consumer>;
-};

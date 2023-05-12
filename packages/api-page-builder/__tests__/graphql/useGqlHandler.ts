@@ -1,14 +1,13 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDdbPlugins from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
-
 import prerenderingHookPlugins from "~/prerendering/hooks";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
@@ -38,8 +37,6 @@ import {
     GET_PUBLISHED_PAGE,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
-    REQUEST_REVIEW,
-    REQUEST_CHANGES,
     OEMBED_DATA
 } from "./graphql/pages";
 
@@ -53,15 +50,33 @@ import {
 } from "./graphql/categories";
 
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+
+import {
+    CREATE_BLOCK_CATEGORY,
+    DELETE_BLOCK_CATEGORY,
+    LIST_BLOCK_CATEGORIES,
+    UPDATE_BLOCK_CATEGORY,
+    GET_BLOCK_CATEGORY
+} from "./graphql/blockCategories";
+
+import {
+    CREATE_PAGE_BLOCK,
+    UPDATE_PAGE_BLOCK,
+    DELETE_PAGE_BLOCK,
+    LIST_PAGE_BLOCKS,
+    GET_PAGE_BLOCK
+} from "./graphql/pageBlocks";
+
 import path from "path";
 import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "../tenancySecurity";
 import { getStorageOperations } from "../storageOperations";
+import { documentClient } from "~tests/documentClient";
 
 interface Params {
     permissions?: any;
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
     plugins?: any[];
     storageOperationPlugins?: any[];
 }
@@ -71,66 +86,79 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         plugins: storageOperationPlugins || []
     });
 
-    const handler = createHandler(
-        ...ops.plugins,
-        // TODO figure out a way to load these automatically
-        createWcpContext(),
-        createWcpGraphQL(),
-        fileManagerDdbPlugins(),
-        graphqlHandler(),
-        ...createTenancyAndSecurity({ permissions, identity }),
-        i18nContext(),
-        i18nDynamoDbStorageOperations(),
-        fileManagerPlugins(),
-        mockLocalesPlugins(),
-        createPageBuilderGraphQL(),
-        createPageBuilderContext({
-            storageOperations: ops.storageOperations
-        }),
-        prerenderingHookPlugins(),
-        prerenderingServicePlugins({
-            handlers: {
-                render: "render",
-                flush: "flush",
-                queue: {
-                    add: "add",
-                    process: "process"
-                }
-            }
-        }),
-        {
-            type: "api-file-manager-storage",
-            name: "api-file-manager-storage",
-            async upload(args: any) {
-                // TODO: use tmp OS directory
-                const key = path.join(__dirname, args.name);
-
-                fs.writeFileSync(key, args.buffer);
-
-                return {
-                    file: {
-                        key: args.name,
-                        name: args.name,
-                        type: args.type,
-                        size: args.size
+    const handler = createHandler({
+        plugins: [
+            ...ops.plugins,
+            // TODO figure out a way to load these automatically
+            createWcpContext(),
+            createWcpGraphQL(),
+            createFileManagerContext({
+                storageOperations: createFileManagerStorageOperations({
+                    documentClient
+                })
+            }),
+            graphqlHandler(),
+            ...createTenancyAndSecurity({ permissions, identity }),
+            i18nContext(),
+            i18nDynamoDbStorageOperations(),
+            mockLocalesPlugins(),
+            createPageBuilderGraphQL(),
+            createPageBuilderContext({
+                storageOperations: ops.storageOperations
+            }),
+            prerenderingHookPlugins(),
+            prerenderingServicePlugins({
+                handlers: {
+                    render: "render",
+                    flush: "flush",
+                    queue: {
+                        add: "add",
+                        process: "process"
                     }
-                };
+                }
+            }),
+            {
+                type: "api-file-manager-storage",
+                name: "api-file-manager-storage",
+                async upload(args: any) {
+                    // TODO: use tmp OS directory
+                    const key = path.join(__dirname, args.name);
+
+                    fs.writeFileSync(key, args.buffer);
+
+                    return {
+                        file: {
+                            key: args.name,
+                            name: args.name,
+                            type: args.type,
+                            size: args.size
+                        }
+                    };
+                },
+                async delete() {
+                    return;
+                }
             },
-            async delete() {
-                return;
-            }
-        },
-        plugins || []
-    );
+            plugins || []
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }: any) => {
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    "Content-Type": "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            },
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
@@ -206,22 +234,16 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         async unpublishPage(variables: Record<string, any>) {
             return invoke({ body: { query: UNPUBLISH_PAGE, variables } });
         },
-        async requestReview(variables: Record<string, any>) {
-            return invoke({ body: { query: REQUEST_REVIEW, variables } });
-        },
-        async requestChanges(variables: Record<string, any>) {
-            return invoke({ body: { query: REQUEST_CHANGES, variables } });
-        },
         async deletePage(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
         },
-        async listPages(variables: Record<string, any>) {
+        async listPages(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_PAGES, variables } });
         },
         async listPublishedPages(variables = {}) {
             return invoke({ body: { query: LIST_PUBLISHED_PAGES, variables } });
         },
-        async listPageTags(variables: Record<string, any>) {
+        async listPageTags(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_PAGE_TAGS, variables } });
         },
         async getPage(variables: Record<string, any>) {
@@ -259,6 +281,40 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         },
         async getDefaultSettings(variables = {}) {
             return invoke({ body: { query: GET_DEFAULT_SETTINGS, variables } });
+        },
+
+        // Block Categories.
+        async createBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_BLOCK_CATEGORY, variables } });
+        },
+        async updateBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_BLOCK_CATEGORY, variables } });
+        },
+        async deleteBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_BLOCK_CATEGORY, variables } });
+        },
+        async listBlockCategories(variables = {}) {
+            return invoke({ body: { query: LIST_BLOCK_CATEGORIES, variables } });
+        },
+        async getBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_BLOCK_CATEGORY, variables } });
+        },
+
+        // Page Blocks.
+        async createPageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_PAGE_BLOCK, variables } });
+        },
+        async updatePageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_PAGE_BLOCK, variables } });
+        },
+        async deletePageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_PAGE_BLOCK, variables } });
+        },
+        async listPageBlocks(variables: any = {}) {
+            return invoke({ body: { query: LIST_PAGE_BLOCKS, variables } });
+        },
+        async getPageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_PAGE_BLOCK, variables } });
         }
     };
 };

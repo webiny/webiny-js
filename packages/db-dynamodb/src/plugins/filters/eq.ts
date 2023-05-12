@@ -1,6 +1,6 @@
 import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
 
-export default new ValueFilterPlugin({
+const plugin = new ValueFilterPlugin({
     operation: "eq",
     matches: ({ value, compareValue }) => {
         /**
@@ -18,3 +18,7 @@ export default new ValueFilterPlugin({
         return value === compareValue;
     }
 });
+
+plugin.name = "dynamodb.value.filter.eq";
+
+export default plugin;

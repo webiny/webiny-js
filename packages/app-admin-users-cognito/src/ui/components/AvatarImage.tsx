@@ -1,7 +1,5 @@
 import * as React from "react";
-import SingleImageUpload, {
-    SingleImageUploadProps
-} from "@webiny/app-admin/components/SingleImageUpload";
+import { SingleImageUpload, SingleImageUploadProps } from "@webiny/app-admin";
 
 const getImagePreviewStyles = (round: boolean) => ({
     width: 150,

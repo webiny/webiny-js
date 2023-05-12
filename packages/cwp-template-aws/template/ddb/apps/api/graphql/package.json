@@ -6,6 +6,7 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-aco": "latest",
     "@webiny/api-apw": "latest",
     "@webiny/api-apw-scheduler-so-ddb": "latest",
     "@webiny/api-file-manager": "latest",
@@ -19,6 +20,7 @@
     "@webiny/api-headless-cms": "latest",
     "@webiny/api-headless-cms-ddb": "latest",
     "@webiny/api-page-builder": "latest",
+    "@webiny/api-page-builder-aco": "latest",
     "@webiny/api-page-builder-so-ddb": "latest",
     "@webiny/api-page-builder-import-export": "latest",
     "@webiny/api-page-builder-import-export-so-ddb": "latest",
@@ -38,7 +40,6 @@
     "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",
     "@webiny/handler-graphql": "latest",
-    "@webiny/handler-http": "latest",
     "@webiny/handler-logs": "latest",
     "@webiny/project-utils": "latest"
   }

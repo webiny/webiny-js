@@ -1,5 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
-import shortid from "shortid";
+import React, { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { IconButton } from "@webiny/ui/Button";
 import { Cell } from "@webiny/ui/Grid";
@@ -8,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import {
     BindComponentRenderProp,
     CmsEditorFieldRendererPlugin,
-    CmsEditorFieldRendererProps
+    CmsModelFieldRendererProps
 } from "~/types";
 import DynamicSection from "../DynamicSection";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
@@ -24,6 +23,7 @@ import {
     ItemHighLight,
     ObjectItem
 } from "./StyledComponents";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -37,37 +37,42 @@ interface ActionsProps {
 }
 
 const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => {
+    const { moveValueDown, moveValueUp } = bind.field;
+
+    const onDown = useCallback(
+        e => {
+            e.stopPropagation();
+            moveValueDown(index);
+            setHighlightIndex(map => ({
+                ...map,
+                [index + 1]: generateAlphaNumericLowerCaseId(12)
+            }));
+        },
+        [moveValueDown, index]
+    );
+
+    const onUp = useCallback(
+        e => {
+            e.stopPropagation();
+            moveValueUp(index);
+            setHighlightIndex(map => ({
+                ...map,
+                [index - 1]: generateAlphaNumericLowerCaseId(12)
+            }));
+        },
+        [moveValueUp, index]
+    );
+
     return index > 0 ? (
         <>
-            <IconButton
-                icon={<ArrowDown />}
-                onClick={e => {
-                    e.stopPropagation();
-                    bind.field.moveValueDown(index);
-                    setHighlightIndex(map => ({
-                        ...map,
-                        [index + 1]: shortid.generate()
-                    }));
-                }}
-            />
-            <IconButton
-                icon={<ArrowUp />}
-                onClick={e => {
-                    e.stopPropagation();
-                    bind.field.moveValueUp(index);
-                    setHighlightIndex(map => ({
-                        ...map,
-                        [index - 1]: shortid.generate()
-                    }));
-                }}
-            />
-
+            <IconButton icon={<ArrowDown />} onClick={onDown} />
+            <IconButton icon={<ArrowUp />} onClick={onUp} />
             <IconButton icon={<DeleteIcon />} onClick={() => bind.field.removeValue(index)} />
         </>
     ) : null;
 };
 
-const ObjectsRenderer: React.FC<CmsEditorFieldRendererProps> = props => {
+const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
     const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
     const { field, contentModel } = props;
 
@@ -123,10 +128,10 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-objects",
     renderer: {
         rendererName: "objects",
-        name: t`Objects`,
+        name: t`Inline Form`,
         description: t`Renders a set of fields.`,
         canUse({ field }) {
-            return field.type === "object" && !!field.multipleValues;
+            return field.type === "object" && Boolean(field.multipleValues);
         },
         render(props) {
             return <ObjectsRenderer {...props} />;

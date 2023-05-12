@@ -1,9 +1,9 @@
 import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
 import { CmsContext } from "~/types";
 import {
-    RefInput,
-    Number as NumberScalar,
-    Any as AnyScalar,
+    RefInputScalar,
+    NumberScalar,
+    AnyScalar,
     DateTimeScalar,
     DateScalar,
     TimeScalar,
@@ -11,15 +11,18 @@ import {
     JsonScalar,
     DateTimeZScalar
 } from "@webiny/handler-graphql/builtInTypes";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { GraphQLScalarType } from "graphql";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugin => {
+interface Params {
+    context: CmsContext;
+}
+export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
-    return new GraphQLSchemaPlugin({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
@@ -38,13 +41,7 @@ export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugi
                 _empty: String
             }
 
-            type CmsCreatedBy {
-                id: String
-                displayName: String
-                type: String
-            }
-
-            type CmsOwnedBy {
+            type CmsIdentity {
                 id: String
                 displayName: String
                 type: String
@@ -56,13 +53,13 @@ export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugi
             }
         `,
         resolvers: {
-            ...scalars.reduce((acc, s) => {
+            ...scalars.reduce<Record<string, GraphQLScalarType>>((acc, s) => {
                 acc[s.name] = s;
                 return acc;
-            }, {} as Record<string, GraphQLScalarType>),
+            }, {}),
             JSON: JsonScalar,
             Long: LongScalar,
-            RefInput,
+            RefInput: RefInputScalar,
             Number: NumberScalar,
             Any: AnyScalar,
             DateTime: DateTimeScalar,
@@ -74,4 +71,7 @@ export const createBaseContentSchema = (context: CmsContext): GraphQLSchemaPlugi
             }
         }
     });
+    plugin.name = `headless-cms.graphql.schema.baseContentSchema`;
+
+    return plugin;
 };

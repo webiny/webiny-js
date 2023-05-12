@@ -87,6 +87,17 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             authentication.setIdentity(identity);
             this.onIdentity.publish({ identity });
         },
+        async withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T> {
+            const isAuthorizationEnabled = performAuthorization;
+            performAuthorization = false;
+            try {
+                return await cb();
+            } finally {
+                if (isAuthorizationEnabled) {
+                    performAuthorization = true;
+                }
+            }
+        },
         async getPermission<TPermission extends SecurityPermission = SecurityPermission>(
             this: Security,
             permission: string

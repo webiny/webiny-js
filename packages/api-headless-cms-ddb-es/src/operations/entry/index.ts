@@ -1,40 +1,18 @@
+import lodashCloneDeep from "lodash/cloneDeep";
+import WebinyError from "@webiny/error";
 import {
     CmsEntry,
     CmsEntryStorageOperations,
-    CmsEntryStorageOperationsCreateParams,
-    CmsEntryStorageOperationsCreateRevisionFromParams,
-    CmsEntryStorageOperationsDeleteParams,
-    CmsEntryStorageOperationsDeleteRevisionParams,
-    CmsEntryStorageOperationsGetByIdsParams,
-    CmsEntryStorageOperationsGetLatestByIdsParams,
-    CmsEntryStorageOperationsGetLatestRevisionParams,
-    CmsEntryStorageOperationsGetParams,
-    CmsEntryStorageOperationsGetPreviousRevisionParams,
-    CmsEntryStorageOperationsGetPublishedByIdsParams,
-    CmsEntryStorageOperationsGetRevisionParams,
-    CmsEntryStorageOperationsGetRevisionsParams,
-    CmsEntryStorageOperationsListParams,
-    CmsEntryStorageOperationsPublishParams,
-    CmsEntryStorageOperationsRequestChangesParams,
-    CmsEntryStorageOperationsRequestReviewParams,
-    CmsEntryStorageOperationsUnpublishParams,
-    CmsEntryStorageOperationsUpdateParams,
     CmsModel,
-    CONTENT_ENTRY_STATUS
+    CmsStorageEntry,
+    CONTENT_ENTRY_STATUS,
+    StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
-import {
-    createElasticsearchQueryBody,
-    extractEntriesFromIndex,
-    prepareEntryToIndex
-} from "~/helpers";
+import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
 import { configurations } from "~/configurations";
-import WebinyError from "@webiny/error";
-import lodashCloneDeep from "lodash/cloneDeep";
-import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
-import { compress, decompress } from "@webiny/api-elasticsearch/compression";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { DataLoadersHandler } from "~/operations/entry/dataLoaders";
 import {
@@ -44,37 +22,40 @@ import {
     createRevisionSortKey
 } from "~/operations/entry/keys";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import {
+    compress,
+    createLimit,
+    decodeCursor,
+    decompress,
+    encodeCursor
+} from "@webiny/api-elasticsearch";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
+import { CmsIndexEntry } from "~/types";
+import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
+import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
+import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 
-const createType = (): string => {
-    return "cms.entry";
-};
-export const createLatestType = (): string => {
-    return `${createType()}.l`;
-};
-export const createPublishedType = (): string => {
-    return `${createType()}.p`;
-};
-
-const getEntryData = (entry: CmsEntry) => {
-    return {
-        ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
-        TYPE: createType(),
-        __type: createType()
+const getEntryData = (input: CmsEntry): CmsEntry => {
+    const output: any = {
+        ...input
     };
+    delete output["PK"];
+    delete output["SK"];
+    delete output["published"];
+    delete output["latest"];
+
+    return output;
 };
 
 const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
     return compress(plugins, {
         ...getEntryData(entry),
         latest: true,
-        TYPE: createLatestType(),
-        __type: createLatestType()
+        TYPE: createLatestRecordType(),
+        __type: createLatestRecordType()
     });
 };
 
@@ -82,9 +63,39 @@ const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntr
     return compress(plugins, {
         ...getEntryData(entry),
         published: true,
-        TYPE: createPublishedType(),
-        __type: createPublishedType()
+        TYPE: createPublishedRecordType(),
+        __type: createPublishedRecordType()
     });
+};
+
+interface ConvertStorageEntryParams {
+    entry: CmsStorageEntry;
+    model: StorageOperationsCmsModel;
+}
+const convertEntryKeysToStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+    const { model, entry } = params;
+
+    const values = model.convertValueKeyToStorage({
+        fields: model.fields,
+        values: entry.values
+    });
+    return {
+        ...entry,
+        values
+    };
+};
+
+const convertEntryKeysFromStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+    const { model, entry } = params;
+
+    const values = model.convertValueKeyFromStorage({
+        fields: model.fields,
+        values: entry.values
+    });
+    return {
+        ...entry,
+        values
+    };
 };
 
 interface ElasticsearchDbRecord {
@@ -103,14 +114,42 @@ export const createEntriesStorageOperations = (
 ): CmsEntryStorageOperations => {
     const { entity, esEntity, elasticsearch, plugins } = params;
 
+    let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
+    const getStorageOperationsCmsModelPlugin = () => {
+        if (storageOperationsCmsModelPlugin) {
+            return storageOperationsCmsModelPlugin;
+        }
+        storageOperationsCmsModelPlugin = plugins.oneByType<StorageOperationsCmsModelPlugin>(
+            StorageOperationsCmsModelPlugin.type
+        );
+        return storageOperationsCmsModelPlugin;
+    };
+
+    const getStorageOperationsModel = (model: CmsModel): StorageOperationsCmsModel => {
+        const plugin = getStorageOperationsCmsModelPlugin();
+        return plugin.getModel(model);
+    };
+
     const dataLoaders = new DataLoadersHandler({
         entity
     });
 
-    const create = async (model: CmsModel, params: CmsEntryStorageOperationsCreateParams) => {
-        const { entry, storageEntry } = params;
-        const isPublished = entry.status === "published";
-        const locked = isPublished ? true : entry.locked;
+    const create: CmsEntryStorageOperations["create"] = async (initialModel, params) => {
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+
+        const model = getStorageOperationsModel(initialModel);
+
+        const isPublished = initialEntry.status === "published";
+        const locked = isPublished ? true : initialEntry.locked;
+
+        const entry = convertEntryKeysToStorage({
+            model,
+            entry: initialEntry
+        });
+        const storageEntry = convertEntryKeysToStorage({
+            model,
+            entry: initialStorageEntry
+        });
 
         const esEntry = prepareEntryToIndex({
             plugins,
@@ -158,13 +197,13 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             }),
             entity.putBatch({
                 ...storageEntry,
                 locked,
                 ...latestKeys,
-                TYPE: createLatestType()
+                TYPE: createLatestRecordType()
             })
         ];
 
@@ -174,7 +213,7 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     locked,
                     ...publishedKeys,
-                    TYPE: createPublishedType()
+                    TYPE: createPublishedRecordType()
                 })
             );
         }
@@ -233,14 +272,25 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        return storageEntry;
+        return initialStorageEntry;
     };
 
-    const createRevisionFrom = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsCreateRevisionFromParams
+    const createRevisionFrom: CmsEntryStorageOperations["createRevisionFrom"] = async (
+        initialModel,
+        params
     ) => {
-        const { entry, storageEntry } = params;
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const entry = convertEntryKeysToStorage({
+            model,
+            entry: initialEntry
+        });
+        const storageEntry = convertEntryKeysToStorage({
+            model,
+            entry: initialStorageEntry
+        });
+
         const revisionKeys = {
             PK: createPartitionKey({
                 id: entry.id,
@@ -270,12 +320,12 @@ export const createEntriesStorageOperations = (
         const items = [
             entity.putBatch({
                 ...storageEntry,
-                TYPE: createType(),
+                TYPE: createRecordType(),
                 ...revisionKeys
             }),
             entity.putBatch({
                 ...storageEntry,
-                TYPE: createLatestType(),
+                TYPE: createLatestRecordType(),
                 ...latestKeys
             })
         ];
@@ -324,11 +374,21 @@ export const createEntriesStorageOperations = (
         /**
          * There are no modifications on the entry created so just return the data.
          */
-        return storageEntry;
+        return initialStorageEntry;
     };
 
-    const update = async (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams) => {
-        const { entry, storageEntry } = params;
+    const update: CmsEntryStorageOperations["update"] = async (initialModel, params) => {
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const entry = convertEntryKeysToStorage({
+            model,
+            entry: initialEntry
+        });
+        const storageEntry = convertEntryKeysToStorage({
+            model,
+            entry: initialStorageEntry
+        });
 
         const isPublished = entry.status === "published";
         const locked = isPublished ? true : entry.locked;
@@ -377,7 +437,7 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
         if (isPublished) {
@@ -386,7 +446,7 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     locked,
                     ...publishedKeys,
-                    TYPE: createPublishedType()
+                    TYPE: createPublishedRecordType()
                 })
             );
         }
@@ -397,10 +457,14 @@ export const createEntriesStorageOperations = (
             model
         });
         /**
+         * Variable for the elasticsearch entry so we do not convert it more than once
+         */
+        let esEntry: CmsIndexEntry | undefined = undefined;
+        /**
          * If the latest entry is the one being updated, we need to create a new latest entry records.
          */
         let elasticsearchLatestData: any = null;
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
+        if (latestStorageEntry?.id === entry.id) {
             /**
              * First we update the regular DynamoDB table
              */
@@ -414,7 +478,7 @@ export const createEntriesStorageOperations = (
             /**
              * And then update the Elasticsearch table to propagate changes to the Elasticsearch
              */
-            const esEntry = prepareEntryToIndex({
+            esEntry = prepareEntryToIndex({
                 plugins,
                 model,
                 entry: lodashCloneDeep({
@@ -438,30 +502,32 @@ export const createEntriesStorageOperations = (
             );
         }
         let elasticsearchPublishedData = null;
-        if (isPublished && publishedStorageEntry && publishedStorageEntry.id === entry.id) {
+        if (isPublished && publishedStorageEntry?.id === entry.id) {
             if (!elasticsearchLatestData) {
                 /**
                  * And then update the Elasticsearch table to propagate changes to the Elasticsearch
                  */
-                const esEntry = prepareEntryToIndex({
-                    plugins,
-                    model,
-                    entry: lodashCloneDeep({
-                        ...entry,
-                        locked
-                    }),
-                    storageEntry: lodashCloneDeep({
-                        ...storageEntry,
-                        locked
-                    })
-                });
+                if (!esEntry) {
+                    esEntry = prepareEntryToIndex({
+                        plugins,
+                        model,
+                        entry: lodashCloneDeep({
+                            ...entry,
+                            locked
+                        }),
+                        storageEntry: lodashCloneDeep({
+                            ...storageEntry,
+                            locked
+                        })
+                    });
+                }
                 elasticsearchPublishedData = await getESPublishedEntryData(plugins, esEntry);
             } else {
                 elasticsearchPublishedData = {
                     ...elasticsearchLatestData,
                     published: true,
-                    TYPE: createPublishedType(),
-                    __type: createPublishedType()
+                    TYPE: createPublishedRecordType(),
+                    __type: createPublishedRecordType()
                 };
                 delete elasticsearchPublishedData.latest;
             }
@@ -493,7 +559,7 @@ export const createEntriesStorageOperations = (
             );
         }
         if (esItems.length === 0) {
-            return storageEntry;
+            return initialStorageEntry;
         }
 
         try {
@@ -511,11 +577,12 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
-        return storageEntry;
+        return initialStorageEntry;
     };
 
-    const deleteEntry = async (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => {
+    const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
@@ -589,11 +656,12 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const deleteRevision = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsDeleteRevisionParams
+    const deleteRevision: CmsEntryStorageOperations["deleteRevision"] = async (
+        initialModel,
+        params
     ) => {
         const { entry, latestEntry, latestStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
@@ -629,7 +697,7 @@ export const createEntriesStorageOperations = (
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
          */
-        if (publishedStorageEntry && entry.id === publishedStorageEntry.id) {
+        if (publishedStorageEntry?.id === entry.id) {
             items.push(
                 entity.deleteBatch({
                     PK: partitionKey,
@@ -660,7 +728,7 @@ export const createEntriesStorageOperations = (
                     ...latestStorageEntry,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType()
+                    TYPE: createLatestRecordType()
                 })
             );
             esItems.push(
@@ -719,7 +787,9 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const list = async (model: CmsModel, params: CmsEntryStorageOperationsListParams) => {
+    const list: CmsEntryStorageOperations["list"] = async (initialModel, params) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const limit = createLimit(params.limit, 50);
         const { index } = configurations.es({
             model
@@ -729,7 +799,7 @@ export const createEntriesStorageOperations = (
             const result = await elasticsearch.indices.exists({
                 index
             });
-            if (!result || !result.body) {
+            if (!result?.body) {
                 return {
                     hasMoreItems: false,
                     totalCount: 0,
@@ -748,17 +818,17 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const body = createElasticsearchQueryBody({
+        const body = createElasticsearchBody({
             model,
-            args: {
+            params: {
                 ...params,
-                limit
+                limit,
+                after: decodeCursor(params.after)
             },
-            plugins,
-            parentPath: "values"
+            plugins
         });
 
-        let response: ElasticsearchSearchResponse;
+        let response: ElasticsearchSearchResponse<CmsIndexEntry>;
         try {
             response = await elasticsearch.search({
                 index,
@@ -768,15 +838,22 @@ export const createEntriesStorageOperations = (
             throw new WebinyError(ex.message, ex.code || "ELASTICSEARCH_ERROR", {
                 error: ex,
                 index,
-                body
+                body,
+                model
             });
         }
 
-        const { hits, total } = response.body.hits;
+        const { hits, total } = response?.body?.hits || {};
+
         const items = extractEntriesFromIndex({
             plugins,
             model,
             entries: hits.map(item => item._source)
+        }).map(item => {
+            return convertEntryKeysFromStorage({
+                model,
+                entry: item
+            });
         });
 
         const hasMoreItems = items.length > limit;
@@ -799,7 +876,9 @@ export const createEntriesStorageOperations = (
         };
     };
 
-    const get = async (model: CmsModel, params: CmsEntryStorageOperationsGetParams) => {
+    const get: CmsEntryStorageOperations["get"] = async (initialModel, params) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const { items } = await list(model, {
             ...params,
             limit: 1
@@ -807,8 +886,18 @@ export const createEntriesStorageOperations = (
         return items.shift() || null;
     };
 
-    const publish = async (model: CmsModel, params: CmsEntryStorageOperationsPublishParams) => {
-        const { entry, storageEntry } = params;
+    const publish: CmsEntryStorageOperations["publish"] = async (initialModel, params) => {
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const entry = convertEntryKeysToStorage({
+            model,
+            entry: initialEntry
+        });
+        const storageEntry = convertEntryKeysToStorage({
+            model,
+            entry: initialStorageEntry
+        });
 
         /**
          * We need currently published entry to check if need to remove it.
@@ -865,7 +954,7 @@ export const createEntriesStorageOperations = (
             entity.putBatch({
                 ...storageEntry,
                 ...revisionKeys,
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
         const esItems = [];
@@ -886,7 +975,6 @@ export const createEntriesStorageOperations = (
                 model,
                 ids: [publishedStorageEntry.id]
             });
-
             items.push(
                 /**
                  * Update currently published entry (unpublish it)
@@ -895,7 +983,7 @@ export const createEntriesStorageOperations = (
                     ...previouslyPublishedEntry,
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     savedOn: entry.savedOn,
-                    TYPE: createType(),
+                    TYPE: createRecordType(),
                     PK: createPartitionKey(publishedStorageEntry),
                     SK: createRevisionSortKey(publishedStorageEntry)
                 })
@@ -908,7 +996,7 @@ export const createEntriesStorageOperations = (
             entity.putBatch({
                 ...storageEntry,
                 ...publishedKeys,
-                TYPE: createPublishedType()
+                TYPE: createPublishedRecordType()
             })
         );
 
@@ -920,7 +1008,7 @@ export const createEntriesStorageOperations = (
             ids: [entry.id]
         });
 
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
+        if (latestStorageEntry?.id === entry.id) {
             items.push(
                 entity.putBatch({
                     ...storageEntry,
@@ -931,9 +1019,11 @@ export const createEntriesStorageOperations = (
         /**
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */
-        if (latestEsEntry && latestStorageEntry && latestStorageEntry.id === entry.id) {
+        if (latestEsEntry && latestStorageEntry?.id === entry.id) {
             /**
              * Need to decompress the data from Elasticsearch DynamoDB table.
+             *
+             * No need to transform it for the storage because it was fetched directly from the Elasticsearch table, where it sits transformed.
              */
             const latestEsEntryDataDecompressed: CmsEntry = (await decompress(
                 plugins,
@@ -945,13 +1035,13 @@ export const createEntriesStorageOperations = (
                     index,
                     PK: createPartitionKey(latestEsEntryDataDecompressed),
                     SK: createLatestSortKey(),
-                    data: {
+                    data: await getESLatestEntryData(plugins, {
                         ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
                         savedOn: entry.savedOn,
                         publishedOn: entry.publishedOn
-                    }
+                    })
                 })
             );
         }
@@ -965,13 +1055,13 @@ export const createEntriesStorageOperations = (
         /**
          * Update the published revision entry in ES.
          */
-        const esLatestData = await getESPublishedEntryData(plugins, preparedEntryData);
+        const esPublishedData = await getESPublishedEntryData(plugins, preparedEntryData);
 
         esItems.push(
             esEntity.putBatch({
                 ...publishedKeys,
                 index,
-                data: esLatestData
+                data: esPublishedData
             })
         );
 
@@ -1019,11 +1109,21 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
-        return storageEntry;
+        return initialStorageEntry;
     };
 
-    const unpublish = async (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams) => {
-        const { entry, storageEntry } = params;
+    const unpublish: CmsEntryStorageOperations["unpublish"] = async (initialModel, params) => {
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const entry = convertEntryKeysToStorage({
+            model,
+            entry: initialEntry
+        });
+        const storageEntry = convertEntryKeysToStorage({
+            model,
+            entry: initialStorageEntry
+        });
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -1048,7 +1148,7 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 PK: partitionKey,
                 SK: createRevisionSortKey(entry),
-                TYPE: createType()
+                TYPE: createRecordType()
             })
         ];
 
@@ -1061,7 +1161,7 @@ export const createEntriesStorageOperations = (
         /**
          * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
          */
-        if (latestStorageEntry.id === entry.id) {
+        if (latestStorageEntry?.id === entry.id) {
             const { index } = configurations.es({
                 model
             });
@@ -1124,271 +1224,139 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
-        return storageEntry;
+        return initialStorageEntry;
     };
 
-    const requestReview = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsRequestReviewParams
-    ) => {
-        const { entry, storageEntry } = params;
+    const getLatestRevisionByEntryId: CmsEntryStorageOperations["getLatestRevisionByEntryId"] =
+        async (initialModel, params) => {
+            const model = getStorageOperationsModel(initialModel);
 
-        /**
-         * We need the latest entry to check if it needs to be updated.
-         */
-        const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
-            model,
-            ids: [entry.id]
-        });
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        /**
-         * If we updated the latest version, then make sure the changes are propagated to ES too.
-         */
-        let esLatestData = null;
-        const { index } = configurations.es({
-            model
-        });
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            const preparedEntryData = prepareEntryToIndex({
-                plugins,
+            const [entry] = await dataLoaders.getLatestRevisionByEntryId({
                 model,
-                entry: lodashCloneDeep(entry),
-                storageEntry: lodashCloneDeep(storageEntry)
+                ids: [params.id]
             });
-
-            esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
-        }
-
-        try {
-            await entity.put({
-                ...storageEntry,
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                TYPE: createType()
-            });
-            dataLoaders.clearAll({
-                model
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not store request review entry record into DynamoDB table.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    entry,
-                    storageEntry,
-                    latestStorageEntry
-                }
-            );
-        }
-        /**
-         * No need to proceed further if nothing to put into Elasticsearch.
-         */
-        if (!esLatestData) {
-            return storageEntry;
-        }
-
-        try {
-            await esEntity.put({
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                index,
-                data: esLatestData
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message ||
-                    "Could not store request review entry record into DynamoDB Elasticsearch table.",
-                ex.code || "REQUEST_REVIEW_ERROR",
-                {
-                    entry,
-                    storageEntry,
-                    latestStorageEntry
-                }
-            );
-        }
-        return storageEntry;
-    };
-
-    const requestChanges = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsRequestChangesParams
-    ) => {
-        const { entry, storageEntry } = params;
-
-        /**
-         * We need the latest entry to check if it needs to be updated.
-         */
-        const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
-            model,
-            ids: [entry.id]
-        });
-
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            locale: model.locale,
-            tenant: model.tenant
-        });
-
-        const items = [
-            entity.putBatch({
-                ...storageEntry,
-                PK: partitionKey,
-                SK: createRevisionSortKey(entry),
-                TYPE: createType()
-            })
-        ];
-        /**
-         * If we updated the latest version, then make sure the changes are propagated to ES too.
-         */
-        const { index } = configurations.es({
-            model
-        });
-        let esLatestData = null;
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType()
-                })
-            );
-
-            const preparedEntryData = prepareEntryToIndex({
-                plugins,
+            if (!entry) {
+                return null;
+            }
+            return convertEntryKeysFromStorage({
                 model,
-                entry: lodashCloneDeep(entry),
-                storageEntry: lodashCloneDeep(storageEntry)
+                entry
             });
+        };
 
-            esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
-        }
+    const getPublishedRevisionByEntryId: CmsEntryStorageOperations["getPublishedRevisionByEntryId"] =
+        async (initialModel, params) => {
+            const model = getStorageOperationsModel(initialModel);
 
-        try {
-            await batchWriteAll({
-                table: entity.table,
-                items
+            const [entry] = await dataLoaders.getPublishedRevisionByEntryId({
+                model,
+                ids: [params.id]
             });
-            dataLoaders.clearAll({
-                model
+            if (!entry) {
+                return null;
+            }
+            return convertEntryKeysFromStorage({
+                model,
+                entry
             });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not store request changes entry record into DynamoDB table.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    entry,
-                    latestStorageEntry
-                }
-            );
-        }
-        /**
-         * No need to proceed further if nothing to put into Elasticsearch.
-         */
-        if (!esLatestData) {
-            return storageEntry;
-        }
+        };
 
-        try {
-            await esEntity.put({
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                index,
-                data: esLatestData
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message ||
-                    "Could not store request changes entry record into DynamoDB Elasticsearch table.",
-                ex.code || "REQUEST_CHANGES_ERROR",
-                {
-                    entry,
-                    latestStorageEntry
-                }
-            );
-        }
-        return storageEntry;
-    };
-
-    const getLatestRevisionByEntryId = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetLatestRevisionParams
+    const getRevisionById: CmsEntryStorageOperations["getRevisionById"] = async (
+        initialModel,
+        params
     ) => {
-        const result = await dataLoaders.getLatestRevisionByEntryId({
+        const model = getStorageOperationsModel(initialModel);
+
+        const [entry] = await dataLoaders.getRevisionById({
             model,
             ids: [params.id]
         });
-        return result.shift() || null;
-    };
-    const getPublishedRevisionByEntryId = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetLatestRevisionParams
-    ) => {
-        const result = await dataLoaders.getPublishedRevisionByEntryId({
+        if (!entry) {
+            return null;
+        }
+        return convertEntryKeysFromStorage({
             model,
-            ids: [params.id]
-        });
-        return result.shift() || null;
-    };
-
-    const getRevisionById = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetRevisionParams
-    ) => {
-        const result = await dataLoaders.getRevisionById({
-            model,
-            ids: [params.id]
-        });
-        return result.shift() || null;
-    };
-
-    const getRevisions = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetRevisionsParams
-    ) => {
-        return await dataLoaders.getAllEntryRevisions({
-            model,
-            ids: [params.id]
+            entry
         });
     };
 
-    const getByIds = async (model: CmsModel, params: CmsEntryStorageOperationsGetByIdsParams) => {
-        return dataLoaders.getRevisionById({
+    const getRevisions: CmsEntryStorageOperations["getRevisions"] = async (
+        initialModel,
+        params
+    ) => {
+        const model = getStorageOperationsModel(initialModel);
+
+        const entries = await dataLoaders.getAllEntryRevisions({
+            model,
+            ids: [params.id]
+        });
+
+        return entries.map(entry => {
+            return convertEntryKeysFromStorage({
+                model,
+                entry
+            });
+        });
+    };
+
+    const getByIds: CmsEntryStorageOperations["getByIds"] = async (initialModel, params) => {
+        const model = getStorageOperationsModel(initialModel);
+
+        const entries = await dataLoaders.getRevisionById({
             model,
             ids: params.ids
         });
-    };
-
-    const getLatestByIds = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetLatestByIdsParams
-    ) => {
-        return dataLoaders.getLatestRevisionByEntryId({
-            model,
-            ids: params.ids
+        return entries.map(entry => {
+            return convertEntryKeysFromStorage({
+                model,
+                entry
+            });
         });
     };
 
-    const getPublishedByIds = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetPublishedByIdsParams
+    const getLatestByIds: CmsEntryStorageOperations["getLatestByIds"] = async (
+        initialModel,
+        params
     ) => {
-        return dataLoaders.getPublishedRevisionByEntryId({
+        const model = getStorageOperationsModel(initialModel);
+
+        const entries = await dataLoaders.getLatestRevisionByEntryId({
             model,
             ids: params.ids
         });
+        return entries.map(entry => {
+            return convertEntryKeysFromStorage({
+                model,
+                entry
+            });
+        });
     };
 
-    const getPreviousRevision = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetPreviousRevisionParams
+    const getPublishedByIds: CmsEntryStorageOperations["getPublishedByIds"] = async (
+        initialModel,
+        params
     ) => {
+        const model = getStorageOperationsModel(initialModel);
+
+        const entries = await dataLoaders.getPublishedRevisionByEntryId({
+            model,
+            ids: params.ids
+        });
+
+        return entries.map(entry => {
+            return convertEntryKeysFromStorage({
+                model,
+                entry
+            });
+        });
+    };
+
+    const getPreviousRevision: CmsEntryStorageOperations["getPreviousRevision"] = async (
+        initialModel,
+        params
+    ) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const { tenant, locale } = model;
         const { entryId, version } = params;
         const queryParams: QueryOneParams = {
@@ -1406,7 +1374,7 @@ export const createEntriesStorageOperations = (
                 filters: [
                     {
                         attr: "TYPE",
-                        eq: createType()
+                        eq: createRecordType()
                     },
                     {
                         attr: "version",
@@ -1420,7 +1388,15 @@ export const createEntriesStorageOperations = (
         try {
             const result = await queryOne<CmsEntry>(queryParams);
 
-            return cleanupItem(entity, result);
+            const entry = cleanupItem(entity, result);
+
+            if (!entry) {
+                return null;
+            }
+            return convertEntryKeysFromStorage({
+                entry,
+                model
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get previous version of given entry.",
@@ -1445,8 +1421,6 @@ export const createEntriesStorageOperations = (
         get,
         publish,
         unpublish,
-        requestReview,
-        requestChanges,
         list,
         getLatestRevisionByEntryId,
         getPublishedRevisionByEntryId,

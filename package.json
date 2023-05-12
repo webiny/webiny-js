@@ -3,6 +3,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
+      "migrations",
       "apps/admin",
       "apps/custom",
       "apps/website",
@@ -12,10 +13,11 @@
       "apps/api/apw/*",
       "apps/api/fileManager/*",
       "apps/api/graphql",
-      "apps/api/headlessCMS",
+      "apps/api/migration",
       "apps/api/pageBuilder/updateSettings",
-      "apps/api/pageBuilder/importPages/*",
-      "apps/api/pageBuilder/exportPages/*"
+      "apps/api/pageBuilder/import/*",
+      "apps/api/pageBuilder/export/*",
+      "scripts/buildPackages"
     ]
   },
   "author": "Webiny Ltd.",
@@ -25,16 +27,17 @@
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^1.4.0",
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@deploysentinel/cypress-debugger": "^0.2.5",
+    "@deploysentinel/cypress-debugger": "^0.7.4",
+    "@octokit/rest": "^19.0.5",
     "@testing-library/cypress": "^8.0.2",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.24",
     "@types/jquery": "^3.3.31",
-    "@types/node": "^12.12.22",
+    "@types/node": "^16.0.0",
     "@types/react": "17.0.39",
     "@types/react-dom": "17.0.11",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
@@ -44,12 +47,12 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^28.1.2",
+    "babel-plugin-dynamic-import-node": "^2.0.0",
     "babel-plugin-macros": "^3.0.1",
     "babel-plugin-module-resolver": "^4.1.0",
     "bufferutil": "^4.0.1",
     "chalk": "^4.1.0",
     "commitizen": "^2.10.1",
-    "contreebutors": "^1.1.3",
     "cross-env": "^5.2.0",
     "cypress": "^9.6.0",
     "cypress-image-snapshot": "^4.0.1",
@@ -108,7 +111,7 @@
     "utf-8-validate": "^5.0.2",
     "verdaccio": "^4.10.0",
     "write-json-file": "^4.2.0",
-    "yargs": "^12.0.1"
+    "yargs": "^17.0.1"
   },
   "optionalDependencies": {
     "fsevents": "^2.0.7"
@@ -117,23 +120,22 @@
     "awp": "yarn add-webiny-package",
     "add-webiny-package": "node scripts/addWebinyPackage.js",
     "check-ts-configs": "node scripts/checkTsConfigs.js",
+    "check-package-dependencies": "node scripts/checkPackageNodeModules.js",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
-    "build": "node scripts/buildWithCache.js",
-    "build:quick": "node scripts/buildWithCache.js --build-overrides='{\"tsConfig\":{\"compilerOptions\":{\"skipLibCheck\":true}}}'",
+    "build": "node scripts/buildPackages",
+    "build:quick": "node scripts/buildPackages --build-overrides='{\"tsConfig\":{\"compilerOptions\":{\"skipLibCheck\":true}}}'",
     "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
     "build:api": "yarn webiny ws run build --scope='@webiny/api*' --scope='@webiny/handler*'",
     "watch:apps": "yarn webiny ws run watch --scope='@webiny/app*'",
     "watch:api": "yarn webiny ws run watch --scope='@webiny/api*'",
     "clear-dist": "yarn rimraf packages/*/dist",
     "delete-empty-package-folders": "node scripts/deleteEmptyPackageFolders.js",
-    "contributors:add": "contreebutors add --username",
-    "contributors:generate": "contreebutors render",
     "commit": "node ./scripts/commitizen.js",
     "commit:no-verify": "yarn commit --no-verify",
     "commit:verify": "yarn lint-staged",
     "webiny-versions": "node ./scripts/webinyVersions.js",
-    "release-latest": "node ./scripts/releaseLatest.js",
+    "trigger-release": "node ./scripts/release/triggerRelease.js",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
     "lint-staged": "lint-staged",
     "postinstall": "yarn node ./scripts/linkWorkspaces.js",
@@ -142,6 +144,7 @@
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
     "lint:fix": "yarn eslint:fix && yarn prettier:fix",
+    "release": "node ./scripts/release/index.js",
     "setup-project": "node scripts/setupProject",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-cypress": "node scripts/setupCypress",
@@ -150,14 +153,6 @@
     "test:integration": "cross-env TEST_TYPE=integration yarn test",
     "test:e2e": "cross-env TEST_TYPE=e2e yarn test",
     "validate-packages": "node scripts/validatePackages.js",
-    "lerna:version:latest": "yarn lerna version --force-publish --conventional-graduate --yes",
-    "lerna:publish:latest": "yarn lerna publish from-package --yes",
-    "lerna:version:beta": "yarn lerna version --conventional-prerelease --force-publish --preid beta --yes",
-    "lerna:publish:beta": "yarn lerna publish from-package --dist-tag beta --yes",
-    "lerna:version:verdaccio": "yarn lerna version --conventional-prerelease --force-publish --preid next --no-push --no-changelog --yes",
-    "lerna:publish:verdaccio": "yarn lerna publish from-package --dist-tag next --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry --yes",
-    "lerna:version:experimental": "yarn lerna version --conventional-prerelease --preid experimental --force-publish --no-push --no-changelog --yes",
-    "lerna:publish:experimental": "yarn lerna publish from-package --dist-tag experimental --yes",
     "verdaccio:start": "yarn verdaccio -c ./.verdaccio.yaml",
     "verdaccio:start:detached": "yarn pm2 start \"yarn verdaccio:start\"",
     "webiny": "./node_modules/.bin/webiny",
@@ -166,16 +161,14 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn && git add yarn.lock && yarn lint-staged",
+      "pre-commit": "yarn && git add yarn.lock && yarn lint-staged && yarn adio && yarn check-ts-configs",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
       "prettier --write",
-      "eslint --max-warnings=0 --no-ignore",
-      "adio",
-      "npm run check-ts-configs"
+      "eslint --max-warnings=0 --no-ignore"
     ]
   },
   "yargs": {
@@ -212,7 +205,15 @@
       ]
     }
   },
+  "lerna": {
+    "version": "0.0.0",
+    "packages": [
+      "packages/*",
+      "packages-v6/*"
+    ]
+  },
   "resolutions": {
+    "@emotion/react": "11.10.8",
     "@types/react": "17.0.39",
     "@types/jsdom": "link:./typings/void",
     "@typescript/lib-dom": "npm:@types/web@*",
@@ -223,7 +224,8 @@
     "codex-tooltip": "1.0.2",
     "@types/eslint": "8.2.1",
     "yargs": "^17.3.1",
-    "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd"
+    "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd",
+    "@lerna/publish@3.22.1": "patch:@lerna/publish@npm:3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67"
   },
   "packageManager": "yarn@3.2.1"
 }

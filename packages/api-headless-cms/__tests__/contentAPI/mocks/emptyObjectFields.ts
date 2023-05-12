@@ -1,6 +1,6 @@
 import { CmsModel } from "~/types";
 
-export const emptyObjectFields: Partial<CmsModel> = {
+export const emptyObjectFields: Pick<CmsModel, "fields" | "layout"> = {
     layout: [["T87zmyqoF"]],
     fields: [
         {
@@ -22,6 +22,7 @@ export const emptyObjectFields: Partial<CmsModel> = {
                         id: "X2TQojXka",
                         type: "object",
                         validation: [],
+                        storageId: "repeat",
                         fieldId: "repeat"
                     }
                 ],
@@ -40,6 +41,7 @@ export const emptyObjectFields: Partial<CmsModel> = {
             label: "AnotherOne",
             type: "object",
             validation: [],
+            storageId: "anotherOne",
             fieldId: "anotherOne"
         }
     ]

@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/react-hooks";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import {
     GET_CONTENT_REVIEW_QUERY,
     GetContentReviewQueryResponse,
@@ -28,7 +28,7 @@ export function useContentReview(params: UseContentReviewParams): UseContentRevi
         skip: !id
     });
     return {
-        contentReview: get(data, "apw.getContentReview.data"),
+        contentReview: dotPropImmutable.get(data, "apw.getContentReview.data"),
         loading
     };
 }

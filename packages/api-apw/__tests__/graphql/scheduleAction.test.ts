@@ -1,13 +1,9 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Schedule action in a content review process`, function () {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
     });
     const {
         getContentReviewQuery,
@@ -73,7 +69,7 @@ describe(`Schedule action in a content review process`, function () {
             id: createdContentReview.id
         });
         const updatedContentReview = getContentReviewResponse.data.apw.getContentReview.data;
-        expect(updatedContentReview.status).toEqual("readyToBePublished");
+        expect(updatedContentReview.reviewStatus).toEqual("readyToBePublished");
 
         return createdContentReview;
     };

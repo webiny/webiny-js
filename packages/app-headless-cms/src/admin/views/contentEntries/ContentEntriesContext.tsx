@@ -1,7 +1,7 @@
 import React, { useState, useMemo, Dispatch, SetStateAction, useCallback } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorContentModel, CmsSecurityPermission } from "~/types";
+import { CmsModel, CmsSecurityPermission } from "~/types";
 import {
     useContentEntriesViewConfig,
     ContentEntriesViewConfigSorter
@@ -23,7 +23,7 @@ export interface ListQueryVariables {
 }
 
 export interface ContentEntriesContext {
-    contentModel: CmsEditorContentModel;
+    contentModel: CmsModel;
     canCreate: boolean;
     listQueryVariables: ListQueryVariables;
     sorters: CmsEntriesSorter[];
@@ -31,18 +31,10 @@ export interface ContentEntriesContext {
     insideDialog?: boolean;
 }
 
-export const Context = React.createContext<ContentEntriesContext>({
-    contentModel: null as unknown as CmsEditorContentModel,
-    canCreate: false,
-    listQueryVariables: {},
-    sorters: [],
-    setListQueryVariables: () => {
-        return void 0;
-    }
-});
+export const Context = React.createContext<ContentEntriesContext | undefined>(undefined);
 
 export interface ContentEntriesContextProviderProps {
-    contentModel: CmsEditorContentModel;
+    contentModel: CmsModel;
     children: React.ReactNode;
     insideDialog?: boolean;
 }
@@ -51,7 +43,7 @@ function toEntriesSorters(sorters: ContentEntriesViewConfigSorter[]) {
     return sorters.map(s => ({ label: s.label, value: s.name }));
 }
 
-export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
+export const ContentEntriesProvider: React.FC<ContentEntriesContextProviderProps> = ({
     contentModel,
     children,
     insideDialog
@@ -119,4 +111,4 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
     return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-Provider.displayName = "ContentEntriesProvider";
+ContentEntriesProvider.displayName = "ContentEntriesProvider";

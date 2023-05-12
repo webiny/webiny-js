@@ -7,6 +7,7 @@ import { DefaultPages } from "./settingsGroups/DefaultPages";
 import { WebsiteSettingsView } from "./WebsiteSettingsView";
 import { FaviconAndLogo } from "./settingsGroups/FaviconAndLogo";
 import { SocialMedia } from "./settingsGroups/SocialMedia";
+import { HtmlTags } from "./settingsGroups/HtmlTags";
 
 export const WebsiteSettings: React.FC = () => {
     return (
@@ -22,6 +23,7 @@ export const WebsiteSettings: React.FC = () => {
             <DefaultPages />
             <FaviconAndLogo />
             <SocialMedia />
+            <HtmlTags />
         </Fragment>
     );
 };

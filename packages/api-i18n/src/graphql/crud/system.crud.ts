@@ -1,19 +1,47 @@
-import { I18NContext, I18NSystem, I18NSystemStorageOperations, SystemCRUD } from "~/types";
+import {
+    I18NContext,
+    I18NSystem,
+    I18NSystemStorageOperations,
+    OnSystemAfterInstallTopicParams,
+    OnSystemBeforeInstallTopicParams,
+    SystemCRUD
+} from "~/types";
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { createTopic } from "@webiny/pubsub";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 interface CreateSystemCrudParams {
     context: I18NContext;
     storageOperations: I18NSystemStorageOperations;
+    getTenant: () => Tenant;
 }
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
-    const { context, storageOperations } = params;
+    const { context, storageOperations, getTenant } = params;
 
     const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
+        return getTenant().id;
     };
 
+    const onSystemBeforeInstall = createTopic<OnSystemBeforeInstallTopicParams>(
+        "i18n.onSystemBeforeInstall"
+    );
+    const onSystemAfterInstall = createTopic<OnSystemAfterInstallTopicParams>(
+        "i18n.onSystemAfterInstall"
+    );
+
     return {
+        /**
+         * Deprecated in 5.34.0
+         */
+        onBeforeInstall: onSystemBeforeInstall,
+        onAfterInstall: onSystemAfterInstall,
+        /**
+         * Introduced in 5.34.0
+         */
+        onSystemBeforeInstall,
+        onSystemAfterInstall,
+        storageOperations,
         async getSystemVersion() {
             const system = await storageOperations.get();
 
@@ -24,7 +52,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
 
             const system: I18NSystem = {
                 ...(original || {}),
-                tenant: original && original.tenant ? original.tenant : getTenantId(),
+                tenant: original?.tenant || getTenantId(),
                 version
             };
             if (original) {
@@ -71,11 +99,17 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
                     version
                 });
             }
+            await onSystemBeforeInstall.publish({
+                code
+            });
             await i18n.locales.createLocale({
                 code,
                 default: true
             });
             await this.setSystemVersion(context.WEBINY_VERSION);
+            await onSystemAfterInstall.publish({
+                code
+            });
         }
     };
 };

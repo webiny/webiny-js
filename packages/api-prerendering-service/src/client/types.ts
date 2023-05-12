@@ -1,4 +1,4 @@
-import { HandlerArgs as RenderHandlerArgs } from "~/render/types";
+import { HandlerPayload as RenderHandlerArgs } from "~/render/types";
 import { HandlerArgs as FlushHandlerArgs } from "~/flush/types";
 import { QueueAddJobEvent as QueueHandlerArgs } from "~/queue/add/types";
 

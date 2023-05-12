@@ -164,6 +164,8 @@ export const executeTask = async ({
             },
             await: false
         });
+    } else {
+        console.log(`context.handlerClient.invoke is not a function!`);
     }
 
     /**

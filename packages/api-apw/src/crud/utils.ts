@@ -90,7 +90,7 @@ export const filterContentReviewsByRequiresMyAttention = async (
      */
     const newListParams = set(
         cloneDeep(listParams),
-        "where.status",
+        "where.reviewStatus",
         ApwContentReviewStatus.UNDER_REVIEW
     );
     const [contentReviews, meta] = await listContentReviews(newListParams);

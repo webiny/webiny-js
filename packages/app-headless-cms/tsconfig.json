@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
@@ -12,6 +12,7 @@
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-composition" },
+    { "path": "../react-properties" },
     { "path": "../react-router" },
     { "path": "../ui" },
     { "path": "../utils" },
@@ -23,6 +24,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
@@ -43,6 +45,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
+      "@webiny/react-properties/*": ["../react-properties/src/*"],
+      "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],

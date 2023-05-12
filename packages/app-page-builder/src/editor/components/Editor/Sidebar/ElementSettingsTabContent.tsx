@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { makeComposable } from "@webiny/app-admin";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -7,7 +8,9 @@ import { COLORS } from "~/editor/plugins/elementSettings/components/StyledCompon
 import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElementSettings";
 import { ElementSettings } from "~/editor/plugins/elementSettings/advanced/ElementSettings";
 
-const RootElement = styled("div")({
+export const RootElement = styled("div")({
+    display: "flex",
+    flexDirection: "column",
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
     overflowY: "auto",
     // Style scrollbar
@@ -47,7 +50,7 @@ const ElementSettingsTabContent: React.FC = () => {
 
     return (
         <RootElement>
-            <SidebarActionsWrapper>
+            <SidebarActions>
                 {elementSettings.map(({ plugin, options }, index) => {
                     return (
                         <div key={plugin.name + "-" + index}>
@@ -56,10 +59,21 @@ const ElementSettingsTabContent: React.FC = () => {
                         </div>
                     );
                 })}
-            </SidebarActionsWrapper>
-            <ElementSettings />
+            </SidebarActions>
         </RootElement>
     );
 };
+
+export const SidebarActions = makeComposable(
+    "ElementSettingsTabContent",
+    ({ children, ...props }) => {
+        return (
+            <>
+                <SidebarActionsWrapper {...props}>{children}</SidebarActionsWrapper>
+                <ElementSettings />
+            </>
+        );
+    }
+);
 
 export default React.memo(ElementSettingsTabContent);

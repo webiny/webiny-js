@@ -78,7 +78,8 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
                     }
                 ]
             }
-        }
+        },
+        meta: { isLambdaFunctionRole: true }
     });
 
     const policy = createExecuteActionLambdaPolicy(app);
@@ -180,7 +181,8 @@ function createScheduleActionLambda(
                     }
                 ]
             }
-        }
+        },
+        meta: { isLambdaFunctionRole: true }
     });
 
     const policy = createScheduleActionLambdaPolicy(app);

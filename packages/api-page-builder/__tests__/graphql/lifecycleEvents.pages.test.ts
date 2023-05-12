@@ -10,26 +10,8 @@ describe("Page Lifecycle Events", () => {
         plugins: [assignPageLifecycleEvents()]
     });
 
-    const handler2 = useGqlHandler({
-        plugins: [assignPageLifecycleEvents()],
-        identity: {
-            id: "secondaryAdmin",
-            type: "admin",
-            displayName: "Admin 2"
-        }
-    });
-
-    const {
-        createCategory,
-        createPage,
-        deletePage,
-        updatePage,
-        publishPage,
-        unpublishPage,
-        requestReview
-    } = handler;
-
-    const { requestChanges, createCategory: createCategoryDifferentIdentity } = handler2;
+    const { createCategory, createPage, deletePage, updatePage, publishPage, unpublishPage } =
+        handler;
 
     const createDummyPage = async (): Promise<PageData> => {
         const [response] = await createPage({
@@ -81,10 +63,6 @@ describe("Page Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(false);
     });
 
     it("should trigger update lifecycle events", async () => {
@@ -122,10 +100,6 @@ describe("Page Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(false);
     });
 
     it("should trigger create from lifecycle events", async () => {
@@ -160,10 +134,6 @@ describe("Page Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(false);
     });
 
     it("should trigger delete lifecycle events", async () => {
@@ -201,10 +171,6 @@ describe("Page Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(false);
     });
 
     it("should trigger publish lifecycle events", async () => {
@@ -240,10 +206,6 @@ describe("Page Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(true);
         expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(false);
     });
 
     it("should trigger unpublish lifecycle events", async () => {
@@ -284,119 +246,5 @@ describe("Page Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
         expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(true);
         expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(true);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(false);
-    });
-
-    it("should trigger request review lifecycle events", async () => {
-        const [response] = await requestReview({
-            id: dummyPage.id
-        });
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    requestReview: {
-                        data: {
-                            id: dummyPage.id,
-                            status: "reviewRequested",
-                            category: {
-                                slug: categorySlug
-                            }
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        expect(tracker.isExecutedOnce("page:beforeCreate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterCreate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeCreateFrom")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterCreateFrom")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeUpdate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterUpdate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeDelete")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterDelete")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforePublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(true);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(true);
-    });
-
-    it("should trigger request changes lifecycle events", async () => {
-        const [requestReviewResponse] = await requestReview({
-            id: dummyPage.id
-        });
-
-        expect(requestReviewResponse).toMatchObject({
-            data: {
-                pageBuilder: {
-                    requestReview: {
-                        data: {
-                            id: dummyPage.id,
-                            status: "reviewRequested",
-                            category: {
-                                slug: categorySlug
-                            }
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        await createCategoryDifferentIdentity({
-            data: {
-                slug: categorySlug,
-                name: `name`,
-                url: `/some-url/`,
-                layout: `layout`
-            }
-        });
-
-        tracker.reset();
-
-        const [response] = await requestChanges({
-            id: dummyPage.id
-        });
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    requestChanges: {
-                        data: {
-                            id: dummyPage.id,
-                            status: "changesRequested",
-                            category: {
-                                slug: categorySlug
-                            }
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        expect(tracker.isExecutedOnce("page:beforeCreate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterCreate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeCreateFrom")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterCreateFrom")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeUpdate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterUpdate")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeDelete")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterDelete")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforePublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:beforeRequestChanges")).toEqual(true);
-        expect(tracker.isExecutedOnce("page:afterRequestChanges")).toEqual(true);
-        expect(tracker.isExecutedOnce("page:beforeRequestReview")).toEqual(false);
-        expect(tracker.isExecutedOnce("page:afterRequestReview")).toEqual(false);
     });
 });

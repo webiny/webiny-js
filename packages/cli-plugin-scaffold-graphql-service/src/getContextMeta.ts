@@ -42,7 +42,7 @@ export default function (typesTsPath: string): ContextMeta {
         const i18NContextImportDeclaration = source.getFirstDescendant(node => {
             return (
                 Node.isImportDeclaration(node) &&
-                node.getModuleSpecifier().getText() === `"@webiny/api-i18n/types"` &&
+                node.getModuleSpecifier().getText().includes("@webiny/api-i18n/types") &&
                 Boolean(
                     (node.getImportClause() as ImportClause)
                         .getNamedImports()
@@ -73,7 +73,7 @@ export default function (typesTsPath: string): ContextMeta {
         const securityContextImportDeclaration = source.getFirstDescendant(node => {
             return (
                 Node.isImportDeclaration(node) &&
-                node.getModuleSpecifier().getText() === `"@webiny/api-security/types"` &&
+                node.getModuleSpecifier().getText().includes("@webiny/api-security/types") &&
                 Boolean(
                     (node.getImportClause() as ImportClause)
                         .getNamedImports()

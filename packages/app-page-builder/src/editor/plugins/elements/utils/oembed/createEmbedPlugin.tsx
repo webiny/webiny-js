@@ -11,19 +11,24 @@ import { createInitialPerDeviceSettingValue } from "../../../elementSettings/ele
 
 interface EmbedPluginConfigRenderCallableParams {
     element: PbEditorElement;
+    embedPluginConfig: EmbedPluginConfig;
 }
-interface EmbedPluginConfigRenderCallable {
+
+export interface EmbedPluginConfigRenderCallable {
     (params: EmbedPluginConfigRenderCallableParams): React.ReactNode;
 }
+
 interface EmbedPluginConfigRenderElementPreviewCallableParams {
     element: PbEditorElement;
     width: number;
     height: number;
 }
+
 interface EmbedPluginConfigRenderElementPreviewCallable {
     (params: EmbedPluginConfigRenderElementPreviewCallableParams): React.ReactElement;
 }
-interface EmbedPluginConfig {
+
+export interface EmbedPluginConfig {
     type: string;
     toolbar?: {
         title?: string;
@@ -83,7 +88,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
         },
         render(props) {
             if (config.render) {
-                return config.render(props);
+                return config.render({ element: props.element, embedPluginConfig: config });
             }
 
             return <OEmbed element={props.element} {...(config.oembed || {})} />;

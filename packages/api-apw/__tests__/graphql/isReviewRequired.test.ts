@@ -1,14 +1,10 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { ApwContentTypes } from "~/types";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe("Is review required test", () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
     });
     const { isReviewRequiredQuery, createContentReviewMutation } = gqlHandler;
 

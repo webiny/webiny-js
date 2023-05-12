@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import Auth from "@aws-amplify/auth";
+import { Auth } from "@aws-amplify/auth";
 import get from "lodash.get";
 import { useAuthenticator } from "./useAuthenticator";
 

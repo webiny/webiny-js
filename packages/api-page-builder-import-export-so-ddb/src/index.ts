@@ -1,25 +1,25 @@
 import {
-    PageImportExportTask,
-    PageImportExportTaskStatus,
-    PageImportExportTaskStorageOperationsCreateParams,
-    PageImportExportTaskStorageOperationsCreateSubTaskParams,
-    PageImportExportTaskStorageOperationsDeleteParams,
-    PageImportExportTaskStorageOperationsGetParams,
-    PageImportExportTaskStorageOperationsGetSubTaskParams,
-    PageImportExportTaskStorageOperationsListParams,
-    PageImportExportTaskStorageOperationsListResponse,
-    PageImportExportTaskStorageOperationsListSubTaskParams,
-    PageImportExportTaskStorageOperationsListSubTaskResponse,
-    PageImportExportTaskStorageOperationsUpdateParams,
-    PageImportExportTaskStorageOperationsUpdateSubTaskParams,
-    PageImportExportTaskStorageOperationsUpdateTaskStatsParams
+    ImportExportTask,
+    ImportExportTaskStatus,
+    ImportExportTaskStorageOperationsCreateParams,
+    ImportExportTaskStorageOperationsCreateSubTaskParams,
+    ImportExportTaskStorageOperationsDeleteParams,
+    ImportExportTaskStorageOperationsGetParams,
+    ImportExportTaskStorageOperationsGetSubTaskParams,
+    ImportExportTaskStorageOperationsListParams,
+    ImportExportTaskStorageOperationsListResponse,
+    ImportExportTaskStorageOperationsListSubTaskParams,
+    ImportExportTaskStorageOperationsListSubTaskResponse,
+    ImportExportTaskStorageOperationsUpdateParams,
+    ImportExportTaskStorageOperationsUpdateSubTaskParams,
+    ImportExportTaskStorageOperationsUpdateTaskStatsParams
 } from "@webiny/api-page-builder-import-export/types";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { createTable } from "~/definitions/table";
-import { createPageImportExportTaskEntity } from "~/definitions/pageImportExportTaskEntity";
+import { createImportExportTaskEntity } from "~/definitions/importExportTaskEntity";
 import { CreateStorageOperations } from "./types";
 
 interface PartitionKeyOptions {
@@ -42,12 +42,12 @@ const createGsiPartitionKey = ({ tenant, locale, id }: PartitionKeyOptions): str
     return `T#${tenant}#L#${locale}#PB#IE_TASK#${id}`;
 };
 
-const createGsiSortKey = (status: PageImportExportTaskStatus, id: string): string => {
+const createGsiSortKey = (status: ImportExportTaskStatus, id: string): string => {
     return `S#${status}#${id}`;
 };
 
 const createType = (): string => {
-    return "pb.pageImportExportTask";
+    return "pb.importExportTask";
 };
 
 export const createStorageOperations: CreateStorageOperations = params => {
@@ -55,8 +55,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
 
     const table = createTable({ table: tableName, documentClient });
 
-    const entity = createPageImportExportTaskEntity({
-        entityName: "PageImportExportTask",
+    const entity = createImportExportTaskEntity({
+        entityName: "ImportExportTask",
         table,
         attributes
     });
@@ -69,8 +69,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
             return entity;
         },
         async getTask(
-            params: PageImportExportTaskStorageOperationsGetParams
-        ): Promise<PageImportExportTask | null> {
+            params: ImportExportTaskStorageOperationsGetParams
+        ): Promise<ImportExportTask | null> {
             const { where } = params;
 
             const keys = {
@@ -86,8 +86,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return cleanupItem(entity, result.Item);
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not load page element by given parameters.",
-                    ex.code || "PAGE_IMPORT_EXPORT_TASK_GET_ERROR",
+                    ex.message || "Could not load element by given parameters.",
+                    ex.code || "IMPORT_EXPORT_TASK_GET_ERROR",
                     {
                         where
                     }
@@ -96,8 +96,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async listTasks(
-            params: PageImportExportTaskStorageOperationsListParams
-        ): Promise<PageImportExportTaskStorageOperationsListResponse> {
+            params: ImportExportTaskStorageOperationsListParams
+        ): Promise<ImportExportTaskStorageOperationsListResponse> {
             const { limit = 100 } = params;
 
             const queryAllParams: QueryAllParams = {
@@ -110,14 +110,14 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 }
             };
 
-            let results: PageImportExportTask[] = [];
+            let results: ImportExportTask[] = [];
 
             try {
-                results = await queryAll<PageImportExportTask>(queryAllParams);
+                results = await queryAll<ImportExportTask>(queryAllParams);
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list page import export tasks by given parameters.",
-                    ex.code || "PAGE_IMPORT_EXPORT_TASKS_LIST_ERROR",
+                    ex.message || "Could not list import export tasks by given parameters.",
+                    ex.code || "IMPORT_EXPORT_TASKS_LIST_ERROR",
                     {
                         partitionKey: queryAllParams.partitionKey,
                         options: queryAllParams.options
@@ -126,8 +126,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
             }
 
             const items = results.map(item =>
-                cleanupItem<PageImportExportTask>(entity, item)
-            ) as PageImportExportTask[];
+                cleanupItem<ImportExportTask>(entity, item)
+            ) as ImportExportTask[];
 
             // TODO: Implement sort and filter
 
@@ -140,8 +140,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async createTask(
-            params: PageImportExportTaskStorageOperationsCreateParams
-        ): Promise<PageImportExportTask> {
+            params: ImportExportTaskStorageOperationsCreateParams
+        ): Promise<ImportExportTask> {
             const { task } = params;
 
             const keys = {
@@ -164,19 +164,19 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return task;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not create pageImportExportTask.",
-                    ex.code || "PAGE_IMPORT_EXPORT_TASK_CREATE_ERROR",
+                    ex.message || "Could not create importExportTask.",
+                    ex.code || "IMPORT_EXPORT_TASK_CREATE_ERROR",
                     {
                         keys,
-                        pageImportExportTask: task
+                        importExportTask: task
                     }
                 );
             }
         },
 
         async updateTask(
-            params: PageImportExportTaskStorageOperationsUpdateParams
-        ): Promise<PageImportExportTask> {
+            params: ImportExportTaskStorageOperationsUpdateParams
+        ): Promise<ImportExportTask> {
             const { task, original } = params;
             const keys = {
                 PK: createPartitionKey({
@@ -198,8 +198,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return task;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not update pageImportExportTask.",
-                    ex.code || "PAGE_IMPORT_EXPORT_TASK_UPDATE_ERROR",
+                    ex.message || "Could not update importExportTask.",
+                    ex.code || "IMPORT_EXPORT_TASK_UPDATE_ERROR",
                     {
                         keys,
                         original,
@@ -210,8 +210,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async deleteTask(
-            params: PageImportExportTaskStorageOperationsDeleteParams
-        ): Promise<PageImportExportTask> {
+            params: ImportExportTaskStorageOperationsDeleteParams
+        ): Promise<ImportExportTask> {
             const { task } = params;
             const keys = {
                 PK: createPartitionKey({
@@ -227,8 +227,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return task;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not delete pageImportExportTask.",
-                    ex.code || "PAGE_IMPORT_EXPORT_TASK_DELETE_ERROR",
+                    ex.message || "Could not delete importExportTask.",
+                    ex.code || "IMPORT_EXPORT_TASK_DELETE_ERROR",
                     {
                         keys,
                         task: task
@@ -238,8 +238,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async updateTaskStats(
-            params: PageImportExportTaskStorageOperationsUpdateTaskStatsParams
-        ): Promise<PageImportExportTask> {
+            params: ImportExportTaskStorageOperationsUpdateTaskStatsParams
+        ): Promise<ImportExportTask> {
             const {
                 original,
                 input: { prevStatus, nextStatus }
@@ -270,8 +270,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return original;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not update pageImportExportTask.",
-                    ex.code || "PAGE_IMPORT_EXPORT_TASK_UPDATE_ERROR",
+                    ex.message || "Could not update importExportTask.",
+                    ex.code || "IMPORT_EXPORT_TASK_UPDATE_ERROR",
                     {
                         keys,
                         original
@@ -281,8 +281,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async createSubTask(
-            params: PageImportExportTaskStorageOperationsCreateSubTaskParams
-        ): Promise<PageImportExportTask> {
+            params: ImportExportTaskStorageOperationsCreateSubTaskParams
+        ): Promise<ImportExportTask> {
             const { subTask } = params;
             const pkParams = {
                 tenant: subTask.tenant,
@@ -305,8 +305,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return subTask;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not create pageImportExportSubTask.",
-                    ex.code || "CREATE_PAGE_IMPORT_EXPORT_SUB_TASK_ERROR",
+                    ex.message || "Could not create importExportSubTask.",
+                    ex.code || "CREATE_IMPORT_EXPORT_SUB_TASK_ERROR",
                     {
                         keys,
                         subTask: subTask
@@ -316,8 +316,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async updateSubTask(
-            params: PageImportExportTaskStorageOperationsUpdateSubTaskParams
-        ): Promise<PageImportExportTask> {
+            params: ImportExportTaskStorageOperationsUpdateSubTaskParams
+        ): Promise<ImportExportTask> {
             const { subTask, original } = params;
             const pkParams = {
                 tenant: subTask.tenant,
@@ -340,8 +340,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return subTask;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not update pageImportExportSubTask.",
-                    ex.code || "UPDATE_PAGE_IMPORT_EXPORT_SUB_TASK_ERROR",
+                    ex.message || "Could not update importExportSubTask.",
+                    ex.code || "UPDATE_IMPORT_EXPORT_SUB_TASK_ERROR",
                     {
                         keys,
                         original,
@@ -352,8 +352,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async getSubTask(
-            params: PageImportExportTaskStorageOperationsGetSubTaskParams
-        ): Promise<PageImportExportTask | null> {
+            params: ImportExportTaskStorageOperationsGetSubTaskParams
+        ): Promise<ImportExportTask | null> {
             const { where } = params;
 
             const keys = {
@@ -372,8 +372,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 return cleanupItem(entity, result.Item);
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not load page import export subTask by given parameters.",
-                    ex.code || "PAGE_IMPORT_EXPORT_TASK_GET_ERROR",
+                    ex.message || "Could not load import export subTask by given parameters.",
+                    ex.code || "IMPORT_EXPORT_TASK_GET_ERROR",
                     {
                         where
                     }
@@ -382,8 +382,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
         },
 
         async listSubTasks(
-            params: PageImportExportTaskStorageOperationsListSubTaskParams
-        ): Promise<PageImportExportTaskStorageOperationsListSubTaskResponse> {
+            params: ImportExportTaskStorageOperationsListSubTaskParams
+        ): Promise<ImportExportTaskStorageOperationsListSubTaskResponse> {
             const { where, limit = 100 } = params;
 
             const { tenant, locale, parent, status } = where;
@@ -401,14 +401,14 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 }
             };
 
-            let results: PageImportExportTask[] = [];
+            let results: ImportExportTask[] = [];
 
             try {
-                results = await queryAll<PageImportExportTask>(queryAllParams);
+                results = await queryAll<ImportExportTask>(queryAllParams);
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list page import export tasks by given parameters.",
-                    ex.code || "LIST_PAGE_IMPORT_EXPORT_SUB_TASKS_ERROR",
+                    ex.message || "Could not list import export tasks by given parameters.",
+                    ex.code || "LIST_IMPORT_EXPORT_SUB_TASKS_ERROR",
                     {
                         partitionKey: queryAllParams.partitionKey,
                         options: queryAllParams.options
@@ -417,8 +417,8 @@ export const createStorageOperations: CreateStorageOperations = params => {
             }
 
             const items = results.map(item =>
-                cleanupItem<PageImportExportTask>(entity, item)
-            ) as PageImportExportTask[];
+                cleanupItem<ImportExportTask>(entity, item)
+            ) as ImportExportTask[];
 
             return createListResponse({
                 items: items,

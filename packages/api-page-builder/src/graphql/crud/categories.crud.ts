@@ -1,20 +1,14 @@
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-import { validation } from "@webiny/validation";
 import {
     CategoriesCrud,
     Category,
     CategoryStorageOperationsGetParams,
     CategoryStorageOperationsListParams,
-    OnAfterCategoryCreateTopicParams,
-    OnAfterCategoryDeleteTopicParams,
-    OnAfterCategoryUpdateTopicParams,
-    OnBeforeCategoryCreateTopicParams,
-    OnBeforeCategoryDeleteTopicParams,
-    OnBeforeCategoryUpdateTopicParams,
+    OnCategoryAfterCreateTopicParams,
+    OnCategoryAfterDeleteTopicParams,
+    OnCategoryAfterUpdateTopicParams,
+    OnCategoryBeforeCreateTopicParams,
+    OnCategoryBeforeDeleteTopicParams,
+    OnCategoryBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PbContext,
@@ -27,19 +21,11 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
-
-const CreateDataModel = withFields({
-    slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
-    name: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
-    url: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
-    layout: string({ validation: validation.create("required,minLength:1,maxLength:100") })
-})();
-
-const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("minLength:1,maxLength:100") }),
-    url: string({ validation: validation.create("minLength:1,maxLength:100") }),
-    layout: string({ validation: validation.create("minLength:1,maxLength:100") })
-})();
+import {
+    createCategoryCreateValidation,
+    createCategoryUpdateValidation
+} from "~/graphql/crud/categories/validation";
+import { createZodError, removeUndefinedValues } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.category";
 
@@ -49,28 +35,50 @@ export interface CreateCategoriesCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createCategoriesCrud = (params: CreateCategoriesCrudParams): CategoriesCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     const getPermission = (name: string) => context.security.getPermission(name);
 
-    const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>();
-    const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>();
-    const onBeforeCategoryUpdate = createTopic<OnBeforeCategoryUpdateTopicParams>();
-    const onAfterCategoryUpdate = createTopic<OnAfterCategoryUpdateTopicParams>();
-    const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
-    const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
+    const onCategoryBeforeCreate = createTopic<OnCategoryBeforeCreateTopicParams>(
+        "pageBuilder.onCategoryBeforeCreate"
+    );
+    const onCategoryAfterCreate = createTopic<OnCategoryAfterCreateTopicParams>(
+        "pageBuilder.onCategoryAfterCreate"
+    );
+    const onCategoryBeforeUpdate = createTopic<OnCategoryBeforeUpdateTopicParams>(
+        "pageBuilder.onCategoryBeforeUpdate"
+    );
+    const onCategoryAfterUpdate = createTopic<OnCategoryAfterUpdateTopicParams>(
+        "pageBuilder.onCategoryAfterUpdate"
+    );
+    const onCategoryBeforeDelete = createTopic<OnCategoryBeforeDeleteTopicParams>(
+        "pageBuilder.onCategoryBeforeDelete"
+    );
+    const onCategoryAfterDelete = createTopic<OnCategoryAfterDeleteTopicParams>(
+        "pageBuilder.onCategoryAfterDelete"
+    );
 
     return {
         /**
-         * Lifecycle events
+         * Lifecycle events - deprecated in 5.34.0 - will be removed from 5.36.0
          */
-        onBeforeCategoryCreate,
-        onAfterCategoryCreate,
-        onBeforeCategoryUpdate,
-        onAfterCategoryUpdate,
-        onBeforeCategoryDelete,
-        onAfterCategoryDelete,
+        onBeforeCategoryCreate: onCategoryBeforeCreate,
+        onAfterCategoryCreate: onCategoryAfterCreate,
+        onBeforeCategoryUpdate: onCategoryBeforeUpdate,
+        onAfterCategoryUpdate: onCategoryAfterUpdate,
+        onBeforeCategoryDelete: onCategoryBeforeDelete,
+        onAfterCategoryDelete: onCategoryAfterDelete,
+        /**
+         * Introduced in 5.34.0
+         */
+        onCategoryBeforeCreate,
+        onCategoryAfterCreate,
+        onCategoryBeforeUpdate,
+        onCategoryAfterUpdate,
+        onCategoryBeforeDelete,
+        onCategoryAfterDelete,
         /**
          * This method should return category or null. No error throwing on not found.
          */
@@ -184,6 +192,11 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
         async createCategory(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
+            const validationResult = await createCategoryCreateValidation().safeParseAsync(input);
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
+
             const existingCategory = await this.getCategory(input.slug, {
                 auth: false
             });
@@ -191,12 +204,9 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 throw new NotFoundError(`Category with slug "${input.slug}" already exists.`);
             }
 
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
-
             const identity = context.security.getIdentity();
 
-            const data: Category = await createDataModel.toJSON();
+            const data = validationResult.data;
 
             const category: Category = {
                 ...data,
@@ -211,14 +221,14 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             };
 
             try {
-                await onBeforeCategoryCreate.publish({
+                await onCategoryBeforeCreate.publish({
                     category
                 });
                 const result = await storageOperations.categories.create({
                     input: data,
                     category
                 });
-                await onAfterCategoryCreate.publish({
+                await onCategoryAfterCreate.publish({
                     category: result
                 });
                 return result;
@@ -246,17 +256,19 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
+            const validationResult = await createCategoryUpdateValidation().safeParseAsync(input);
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
 
-            const data = await updateDataModel.toJSON({ onlyDirty: true });
+            const data = removeUndefinedValues(validationResult.data);
 
             const category: Category = {
                 ...original,
                 ...data
             };
             try {
-                await onBeforeCategoryUpdate.publish({
+                await onCategoryBeforeUpdate.publish({
                     original,
                     category
                 });
@@ -265,7 +277,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                     original,
                     category
                 });
-                await onAfterCategoryUpdate.publish({
+                await onCategoryAfterUpdate.publish({
                     original,
                     category
                 });
@@ -316,13 +328,13 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
 
             try {
-                await onBeforeCategoryDelete.publish({
+                await onCategoryBeforeDelete.publish({
                     category
                 });
                 const result = await storageOperations.categories.delete({
                     category
                 });
-                await onAfterCategoryDelete.publish({
+                await onCategoryAfterDelete.publish({
                     category: result
                 });
                 return result;

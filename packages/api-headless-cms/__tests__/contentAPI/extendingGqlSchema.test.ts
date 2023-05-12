@@ -1,7 +1,7 @@
-import { useGraphQLHandler } from "../utils/useGraphQLHandler";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
-const graphqlSchemaPlugin = new GraphQLSchemaPlugin({
+const graphqlSchemaPlugin = new CmsGraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
         extend type Query {
             getOne: Int

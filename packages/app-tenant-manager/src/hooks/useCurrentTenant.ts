@@ -22,6 +22,6 @@ export function useCurrentTenant(): UseCurrentTenant {
 
     return {
         loading,
-        tenant: loading ? null : get(data, "tenancy.getTenant.data")
+        tenant: loading ? null : (get(data, "tenancy.getTenant.data") as unknown as TenantItem)
     };
 }

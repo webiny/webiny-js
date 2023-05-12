@@ -25,7 +25,7 @@ const PAGE_BUILDER_SETTINGS_ACCESS = `${PAGE_BUILDER}.settings`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["category", "menu", "page"];
+const ENTITIES = ["category", "menu", "page", "template", "blockCategory", "block"];
 
 interface PwOptions {
     id: string;
@@ -33,9 +33,7 @@ interface PwOptions {
 }
 const pwOptions: PwOptions[] = [
     { id: "p", name: t`Publish` },
-    { id: "u", name: t`Unpublish` },
-    { id: "r", name: t`Request review` },
-    { id: "c", name: t`Request changes` }
+    { id: "u", name: t`Unpublish` }
 ];
 
 interface PageBuilderPermissionsProps {
@@ -106,6 +104,16 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                 }
             });
 
+            // Unlink template functionality
+            if (formData.templateUnlink) {
+                newValue.push({ name: `${PAGE_BUILDER}.template.unlink` });
+            }
+
+            // Unlink block functionality
+            if (formData.blockUnlink) {
+                newValue.push({ name: `${PAGE_BUILDER}.block.unlink` });
+            }
+
             // Settings.
             if (formData.settingsAccessLevel === FULL_ACCESS) {
                 newValue.push({ name: PAGE_BUILDER_SETTINGS_ACCESS });
@@ -136,7 +144,9 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
         // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
         const formData = {
             accessLevel: CUSTOM_ACCESS,
-            settingsAccessLevel: NO_ACCESS
+            settingsAccessLevel: NO_ACCESS,
+            templateUnlink: false,
+            blockUnlink: false
         };
 
         ENTITIES.forEach(entity => {
@@ -163,6 +173,18 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
 
             Object.assign(formData, data);
         });
+
+        // Set form data for unlink template functionality
+        const hasUnlinkTemplateAccess = permissions.find(
+            item => item.name === `${PAGE_BUILDER}.template.unlink`
+        );
+        formData.templateUnlink = hasUnlinkTemplateAccess;
+
+        //  Set form data for unlink block functionality
+        const hasUnlinkBlockAccess = permissions.find(
+            item => item.name === `${PAGE_BUILDER}.block.unlink`
+        );
+        formData.blockUnlink = hasUnlinkBlockAccess;
 
         // Finally, let's prepare data for Page Builder settings.
         const hasSettingsAccess = permissions.find(
@@ -253,7 +275,39 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                                     </Bind>
                                 </Cell>
                             </CustomSection>
-
+                            <CustomSection
+                                data={data}
+                                Bind={Bind}
+                                setValue={setValue}
+                                entity={"template"}
+                                title={"Templates"}
+                            >
+                                <Cell span={12}>
+                                    <Bind name={"templateUnlink"}>
+                                        <Checkbox label="User is allowed to unlink a template" />
+                                    </Bind>
+                                </Cell>
+                            </CustomSection>
+                            <CustomSection
+                                data={data}
+                                Bind={Bind}
+                                setValue={setValue}
+                                entity={"blockCategory"}
+                                title={"Block categories"}
+                            />
+                            <CustomSection
+                                data={data}
+                                Bind={Bind}
+                                setValue={setValue}
+                                entity={"block"}
+                                title={"Block content"}
+                            >
+                                <Cell span={12}>
+                                    <Bind name={"blockUnlink"}>
+                                        <Checkbox label="User is allowed to unlink a block" />
+                                    </Bind>
+                                </Cell>
+                            </CustomSection>
                             <Elevation z={1} style={{ marginTop: 10 }}>
                                 <Grid>
                                     <Cell span={12}>

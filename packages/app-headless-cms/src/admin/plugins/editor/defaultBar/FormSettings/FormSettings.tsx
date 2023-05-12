@@ -12,7 +12,7 @@ import { i18n } from "@webiny/app/i18n";
 import * as SF from "@webiny/app-admin/components/SimpleForm";
 import { CmsEditorFormSettingsPlugin } from "~/types";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
-import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useModelEditor } from "~/admin/hooks";
 
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
 
@@ -24,7 +24,7 @@ const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
     const cmsEditorFormSettingsPlugins = plugins.byType<CmsEditorFormSettingsPlugin>(
         "cms-editor-form-settings"
     );
-    const { data, setData } = useContentModelEditor();
+    const { data, setData } = useModelEditor();
     const { showSnackbar } = useSnackbar();
 
     const [activePlugin, setActivePlugin] = useState(cmsEditorFormSettingsPlugins[0]);
@@ -45,7 +45,7 @@ const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
                                 </ListItemGraphic>
                                 <TitleContent>
                                     <ListItemTitle>{pl.title}</ListItemTitle>
-                                    <Typography use={"subtitle2"}>{pl.description}</Typography>
+                                    <Typography use={"body2"}>{pl.description}</Typography>
                                 </TitleContent>
                             </ListItem>
                         ))}

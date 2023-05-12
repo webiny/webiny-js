@@ -1,97 +1,114 @@
-import { CmsModel, CmsFieldTypePlugins } from "~/types";
-import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
+import { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
-import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
+import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateReadSDLParams {
+    models: CmsModel[];
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
+    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }
 interface CreateReadSDL {
     (params: CreateReadSDLParams): string;
 }
 
-export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): string => {
-    const typeName = createTypeName(model.modelId);
-    const rTypeName = createReadTypeName(typeName);
+export const createReadSDL: CreateReadSDL = ({
+    models,
+    model,
+    fieldTypePlugins,
+    sorterPlugins
+}): string => {
+    const type: ApiEndpoint = "read";
 
-    const listFilterFieldsRender = renderListFilterFields({
+    const fieldsRender = renderFields({
+        models,
         model,
-        type: "read",
+        fields: model.fields,
+        type,
         fieldTypePlugins
     });
-
-    const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
-    const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-    const fieldsRender = renderFields({ model, type: "read", fieldTypePlugins });
 
     if (fieldsRender.length === 0) {
         return "";
     }
+    const listFilterFieldsRender = renderListFilterFields({
+        model,
+        fields: model.fields,
+        type,
+        fieldTypePlugins
+    });
+    const sortEnumRender = renderSortEnum({
+        model,
+        fields: model.fields,
+        fieldTypePlugins,
+        sorterPlugins
+    });
+    const getFilterFieldsRender = renderGetFilterFields({
+        fields: model.fields,
+        fieldTypePlugins
+    });
+
+    const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");
+
+    const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
     return `
-        """${model.description || ""}"""
+        """${model.description || singularName}"""
+        type ${singularName} {
+            id: ID!
+            entryId: String!
+            ${hasModelIdField ? "" : "modelId: String!"}
+            createdOn: DateTime!
+            savedOn: DateTime!
+            createdBy: CmsIdentity!
+            ownedBy: CmsIdentity!
+            ${fieldsRender.map(f => f.fields).join("\n")}
+        }
+        
         ${fieldsRender
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
         
-        type ${rTypeName} {
-            id: ID!
-            entryId: String!
-            createdOn: DateTime!
-            savedOn: DateTime!
-            createdBy: CmsCreatedBy!
-            ownedBy: CmsOwnedBy!
-            ${fieldsRender.map(f => f.fields).join("\n")}
-        }
-        
-        ${
-            getFilterFieldsRender &&
-            `input ${rTypeName}GetWhereInput {
+        input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`
         }
         
         
-        ${
-            listFilterFieldsRender &&
-            `input ${rTypeName}ListWhereInput {
+        input ${singularName}ListWhereInput {
             ${listFilterFieldsRender}
-        }`
+            AND: [${singularName}ListWhereInput!]
+            OR: [${singularName}ListWhereInput!]
         }
         
         
-        ${
-            sortEnumRender &&
-            `enum ${rTypeName}ListSorter {
+        enum ${singularName}ListSorter {
             ${sortEnumRender}
-        }`
         }
         
-        type ${rTypeName}Response {
-            data: ${rTypeName}
+        type ${singularName}Response {
+            data: ${singularName}
             error: CmsError
         }
         
-        type ${rTypeName}ListResponse {
-            data: [${rTypeName}]
+        type ${singularName}ListResponse {
+            data: [${singularName}]
             meta: CmsListMeta
             error: CmsError
         }
         
         extend type Query {
-            get${typeName}(where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
+            get${singularName}(where: ${singularName}GetWhereInput!): ${singularName}Response
 
-            list${pluralizedTypeName(typeName)}(
-                where: ${rTypeName}ListWhereInput
-                sort: [${rTypeName}ListSorter]
+            list${pluralName}(
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
                 limit: Int
                 after: String
-            ): ${rTypeName}ListResponse
+            ): ${singularName}ListResponse
         }
     `;
 };

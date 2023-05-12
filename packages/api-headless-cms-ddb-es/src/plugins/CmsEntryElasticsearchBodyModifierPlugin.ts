@@ -2,11 +2,14 @@ import {
     ElasticsearchBodyModifierPlugin,
     ModifyBodyCallable,
     ModifyBodyParams as BaseModifyBodyParams
-} from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchBodyModifierPlugin";
+} from "@webiny/api-elasticsearch";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface ModifyBodyParams extends BaseModifyBodyParams {
     model: CmsModel;
+    where: {
+        [key: string]: any;
+    };
 }
 
 export interface CmsEntryElasticsearchBodyModifierPluginConfig {
@@ -28,3 +31,9 @@ export class CmsEntryElasticsearchBodyModifierPlugin extends ElasticsearchBodyMo
         this.modelId = config.modelId;
     }
 }
+
+export const createCmsEntryElasticsearchBodyModifierPlugin = (
+    config: CmsEntryElasticsearchBodyModifierPluginConfig
+) => {
+    return new CmsEntryElasticsearchBodyModifierPlugin(config);
+};

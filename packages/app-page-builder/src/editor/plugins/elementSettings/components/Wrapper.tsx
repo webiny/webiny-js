@@ -24,7 +24,7 @@ const Wrapper: React.FC<WrapperPropsType> = ({
     return (
         <Grid className={containerClassName}>
             <Cell span={leftCellSpan} className={leftCellClassName}>
-                <Typography use={"subtitle2"}>{label}</Typography>
+                <Typography use={"body2"}>{label}</Typography>
             </Cell>
             <Cell span={rightCellSpan} className={rightCellClassName}>
                 {children}

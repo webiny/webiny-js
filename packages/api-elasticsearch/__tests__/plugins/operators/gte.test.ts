@@ -8,6 +8,7 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
     it("should apply gte correctly", () => {
         const query = createBlankQuery();
         plugin.apply(query, {
+            name: "id",
             value: 100,
             path: "id",
             basePath: "id",
@@ -16,7 +17,8 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
 
         const expected: ElasticsearchBoolQueryConfig = {
             must_not: [],
-            must: [
+            must: [],
+            filter: [
                 {
                     range: {
                         id: {
@@ -25,7 +27,6 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
                     }
                 }
             ],
-            filter: [],
             should: []
         };
 
@@ -35,14 +36,16 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
     it("should apply multiple gte correctly", () => {
         const query = createBlankQuery();
         plugin.apply(query, {
+            name: "id",
             value: 100,
             path: "id",
             basePath: "id",
             keyword: false
         });
 
-        const from = new Date();
+        const from = new Date().toISOString();
         plugin.apply(query, {
+            name: "id",
             value: from,
             path: "date",
             basePath: "date",
@@ -51,7 +54,8 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
 
         const expected: ElasticsearchBoolQueryConfig = {
             must_not: [],
-            must: [
+            must: [],
+            filter: [
                 {
                     range: {
                         id: {
@@ -62,12 +66,11 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
                 {
                     range: {
                         date: {
-                            gte: from as any
+                            gte: from
                         }
                     }
                 }
             ],
-            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

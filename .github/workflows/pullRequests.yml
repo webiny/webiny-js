@@ -4,15 +4,14 @@ on: [pull_request]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   validate-commits:
     name: Validate commit messages
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: webiny/action-conventional-commits@v1.0.3
+      - uses: actions/checkout@v3
+      - uses: webiny/action-conventional-commits@v1.1.0
 
   init:
     name: Init
@@ -23,40 +22,40 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Get day of the month
         id: get-day
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
 
       - name: Get timestamp
         id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
 
       - name: Is a PR from a fork
         id: is-fork-pr
-        run: echo "::set-output name=is-fork-pr::${{ github.event.pull_request.head.repo.fork }}"
+        run: echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT
 
       - name: Ignored Jest packages
         id: get-ignored-jest-packages
         if: steps.is-fork-pr.outputs.is-fork-pr == 'true'
-        run: echo "::set-output name=ignored-jest-packages::ddb-es"
+        run: echo "ignored-jest-packages=ddb-es" >> $GITHUB_OUTPUT
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})"
+        run: echo "jest-packages=$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cached-packages
         with:
           path: .webiny/cached-packages
@@ -66,9 +65,9 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: packages-cache
         with:
           path: .webiny/cached-packages
@@ -79,18 +78,18 @@ jobs:
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -114,13 +113,13 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -129,7 +128,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages (full)
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   jest-tests:
     needs: init
@@ -150,18 +149,18 @@ jobs:
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
 
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -170,7 +169,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Run tests
         run: yarn test ${{ matrix.package }}
@@ -181,41 +180,32 @@ jobs:
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
 
-      - name: Git status
-        run: git status
-
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Git status
-        run: git status && git diff packages-v6/cli/src/bin.js
-
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
-
-      - name: Git status
-        run: git status
+        run: yarn build:quick
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -232,20 +222,11 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
 
-      - name: Git status
-        run: git status
-
-      - name: Version packages (no push, no changelog)
-        run: yarn lerna:version:verdaccio
-
-      - name: Git status
-        run: git status
-
-      - name: Release to Verdaccio
-        run: yarn lerna:publish:verdaccio
+      - name: Version and publish to Verdaccio
+        run: yarn release --type=verdaccio
 
       - name: Upload verdaccio files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: verdaccio-files
           retention-days: 1
@@ -265,11 +246,11 @@ jobs:
     env:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: verdaccio-files
           path: verdaccio-files
@@ -294,11 +275,11 @@ jobs:
 
       - name: Create a new Webiny project
         run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
+          npx create-webiny-project@local-npm test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-      - name: Build "api" project application
+      - name: Build "api" app
         working-directory: test-project
         run: yarn webiny ws run build --folder api --env dev

@@ -1,7 +1,8 @@
-import { CmsContext, CmsModel, CmsModelField } from "~/types";
+import { CmsContext, CmsDynamicZoneTemplate, CmsModel, CmsModelField } from "~/types";
 import WebinyError from "@webiny/error";
 import dotProp from "dot-prop";
 import { parseIdentifier } from "@webiny/utils";
+import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface CmsRefEntry {
     id: string;
@@ -35,12 +36,13 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
     const isMultipleValues = Array.isArray(input);
 
     return fields
-        .filter(field => ["object", "ref"].includes(field.type))
+        .filter(field => ["object", "ref", "dynamicZone"].includes(getBaseFieldType(field)))
         .reduce((collection, field) => {
             /**
              * First we check the ref field
              */
-            if (field.type === "ref") {
+            const baseType = getBaseFieldType(field);
+            if (baseType === "ref") {
                 const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
                 if (field.multipleValues) {
                     const inputValue = dotProp.get(input, `${field.fieldId}`, []);
@@ -66,6 +68,42 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
 
                 return collection;
             }
+
+            if (baseType === "dynamicZone") {
+                const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];
+                for (const template of templates) {
+                    if (field.multipleValues) {
+                        const inputValue = dotProp.get(input, `${field.fieldId}`, []);
+                        if (Array.isArray(inputValue) === false) {
+                            return collection;
+                        }
+
+                        for (const key in inputValue) {
+                            const result = buildReferenceFieldPaths({
+                                fields: template.fields,
+                                input: inputValue[key],
+                                parentPaths: parentPaths.concat([
+                                    field.fieldId,
+                                    key,
+                                    template.gqlTypeName
+                                ])
+                            });
+                            collection.push(...result);
+                        }
+                        continue;
+                    }
+
+                    const result = buildReferenceFieldPaths({
+                        fields: template.fields,
+                        input,
+                        parentPaths: parentPaths.concat([field.fieldId, template.gqlTypeName])
+                    });
+                    collection.push(...result);
+                }
+
+                return collection;
+            }
+
             /**
              * Then we move onto the object field
              */
@@ -177,7 +215,7 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
      */
     const models = (await context.cms.listModels()).filter(model => {
         const entries = referencesByModel[model.modelId];
-        if (Array.isArray(entries) === false || entries.length === 0) {
+        if (!Array.isArray(entries) || entries.length === 0) {
             return false;
         }
         return true;
@@ -216,7 +254,7 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
         for (const id of entries) {
             if (records[id]) {
                 continue;
-            } else if (validateEntries === true) {
+            } else if (validateEntries) {
                 throw new WebinyError(
                     `Missing referenced entry with id "${id}" in model "${modelId}".`,
                     "ENTRY_NOT_FOUND",
@@ -242,7 +280,7 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
         const entry = records[id];
         const paths = pathsByReferenceId[id];
         if (!entry) {
-            if (validateEntries === true) {
+            if (validateEntries) {
                 throw new WebinyError("Missing entry in records.", "ENTRY_ERROR", {
                     id,
                     paths

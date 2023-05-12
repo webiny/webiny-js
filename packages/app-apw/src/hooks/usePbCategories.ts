@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/react-hooks";
-import get from "lodash/get";
+import dotPropImmutable from "dot-prop-immutable";
 import { LIST_CATEGORIES } from "~/graphql/workflow.gql";
 import { PbCategory } from "~/types";
 
@@ -12,7 +12,7 @@ export const usePbCategories = (): UsePbCategoriesResult => {
     const { data, loading } = useQuery(LIST_CATEGORIES);
 
     return {
-        categories: get(data, "pageBuilder.listCategories.data", []),
+        categories: dotPropImmutable.get(data, "pageBuilder.listCategories.data", []),
         loading
     };
 };

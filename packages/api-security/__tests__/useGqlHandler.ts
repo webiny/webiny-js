@@ -1,6 +1,6 @@
 import groupAuthorization from "~/plugins/groupAuthorization";
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
@@ -63,7 +63,10 @@ export default (opts: UseGqlHandlerParams = {}) => {
             createTenancyContext({
                 storageOperations: tenancyStorageOperations({
                     documentClient,
-                    table: table => ({ ...table, name: process.env.DB_TABLE })
+                    table: table => ({
+                        ...table,
+                        name: process.env.DB_TABLE as string
+                    })
                 })
             }),
             createTenancyGraphQL(),
@@ -74,37 +77,45 @@ export default (opts: UseGqlHandlerParams = {}) => {
             customAuthenticator(),
             customGroupAuthorizer(),
             groupAuthorization({ identityType: "admin" }),
-            ...opts.plugins
-        ].filter(Boolean)
+            opts.plugins
+        ].filter(Boolean) as any
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }) => {
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
     };
 
     const securityGroup = {
-        async create(variables) {
+        async create(variables = {}) {
             return invoke({ body: { query: CREATE_SECURITY_GROUP, variables } });
         },
-        async update(variables) {
+        async update(variables = {}) {
             return invoke({ body: { query: UPDATE_SECURITY_GROUP, variables } });
         },
-        async delete(variables) {
+        async delete(variables = {}) {
             return invoke({ body: { query: DELETE_SECURITY_GROUP, variables } });
         },
         async list(variables = {}, headers = {}) {
             return invoke({ body: { query: LIST_SECURITY_GROUPS, variables }, headers });
         },
-        async get(variables) {
+        async get(variables = {}) {
             return invoke({ body: { query: GET_SECURITY_GROUP, variables } });
         }
     };
@@ -113,16 +124,16 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async list(variables = {}) {
             return invoke({ body: { query: LIST_API_KEYS, variables } });
         },
-        async get(variables) {
+        async get(variables = {}) {
             return invoke({ body: { query: GET_API_KEY, variables } });
         },
-        async create(variables) {
+        async create(variables = {}) {
             return invoke({ body: { query: CREATE_API_KEY, variables } });
         },
-        async update(variables) {
+        async update(variables = {}) {
             return invoke({ body: { query: UPDATE_API_KEY, variables } });
         },
-        async delete(variables) {
+        async delete(variables = {}) {
             return invoke({ body: { query: DELETE_API_KEY, variables } });
         }
     };

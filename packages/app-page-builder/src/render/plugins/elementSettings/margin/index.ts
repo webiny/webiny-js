@@ -4,11 +4,13 @@ import { PbRenderElementStylePlugin } from "../../../../types";
 import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 const validateSpacingValue = (value: string): string | "auto" => {
-    if (!value) {
-        return "0px";
-    }
-    if (value.includes("auto")) {
+    if (value?.includes("auto")) {
         return "auto";
+    }
+
+    const parsedValue = parseInt(value);
+    if (Number.isNaN(parsedValue)) {
+        return "0px";
     }
 
     return value;

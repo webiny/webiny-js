@@ -12,7 +12,7 @@ import { Client } from "@elastic/elasticsearch";
 import WebinyError from "@webiny/error";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
+import { createLimit, encodeCursor, decodeCursor } from "@webiny/api-elasticsearch";
 import {
     createElasticsearchBody,
     createSubmissionElasticType
@@ -25,7 +25,6 @@ import {
 import { configurations } from "~/configurations";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { parseIdentifier } from "@webiny/utils";
-import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
 export interface CreateSubmissionStorageOperationsParams {

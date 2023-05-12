@@ -37,4 +37,3 @@ resource-types:
     - CloudWatchEventsTarget
     - CloudWatchEventsBuses
     - SQSQueue
-    - EventBus

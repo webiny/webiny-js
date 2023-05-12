@@ -1,12 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useMutation } from "@apollo/react-hooks";
+import classNames from "classnames";
+import get from "lodash/get";
+import orderBy from "lodash/orderBy";
+import { useMutation, useApolloClient } from "@apollo/react-hooks";
+import { ReactComponent as RefreshIcon } from "@material-design-icons/svg/round/refresh.svg";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
-import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
+import { ScrollList, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
+import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
 import {
     SimpleForm,
@@ -18,18 +23,32 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
-import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
+import { UPDATE_PAGE_BLOCK, DELETE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import EditBlockDialog from "./EditBlockDialog";
-import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
+import {
+    IconWrapper,
+    listItem,
+    activeListItem,
+    ListItemTitle,
+    listStyle,
+    TitleContent
+} from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
-import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin, PbEditorElement } from "~/types";
+import {
+    PbEditorBlockCategoryPlugin,
+    PbEditorBlockPlugin,
+    PbEditorElement,
+    PbPageBlock
+} from "~/types";
 import { elementWithChildrenByIdSelector, rootElementAtom } from "~/editor/recoil/modules";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { createBlockElements } from "~/editor/helpers";
-import { DelayedOnChange } from "~/editor/components/DelayedOnChange";
+import { createBlockReference } from "~/pageEditor/helpers";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
+import { LIST_PAGE_BLOCKS } from "~/admin/views/PageBlocks/graphql";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
     type: "pb-editor-block-category",
@@ -67,24 +86,30 @@ const SearchBar = () => {
         elementWithChildrenByIdSelector(rootElementId)
     ) as PbEditorElement;
     const eventActionHandler = useEventActionHandler();
+    const client = useApolloClient();
 
     const [search, setSearch] = useState<string>("");
+    const [allBlocks, setAllBlocks] = useState<PbEditorBlockPlugin[]>(
+        plugins.byType<PbEditorBlockPlugin>("pb-editor-block")
+    );
     const [editingBlock, setEditingBlock] = useState<PbEditorBlockPlugin | null>(null);
     const [activeCategory, setActiveCategory] = useState<string>("all");
 
     const [updatePageElementMutation, { loading: updateInProgress }] =
-        useMutation(UPDATE_PAGE_ELEMENT);
-    const [deletePageElementMutation] = useMutation(DELETE_PAGE_ELEMENT);
+        useMutation(UPDATE_PAGE_BLOCK);
+    const [deletePageElementMutation] = useMutation(DELETE_PAGE_BLOCK);
 
     const allCategories = useMemo(
         () => [
             allBlockCategory,
-            ...plugins.byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
+            ...orderBy(
+                plugins.byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category"),
+                "title",
+                "asc"
+            )
         ],
         []
     );
-
-    const allBlocks = plugins.byType<PbEditorBlockPlugin>("pb-editor-block");
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
@@ -103,9 +128,13 @@ const SearchBar = () => {
 
     const addBlockToContent = useCallback(
         plugin => {
+            const blockToAdd = plugin.tags.includes("saved")
+                ? createBlockReference(plugin.name)
+                : createBlockElements(plugin.name);
+
             const element: any = {
                 ...content,
-                elements: [...content.elements, createBlockElements(plugin.name)]
+                elements: [...content.elements, blockToAdd]
             };
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({
@@ -139,7 +168,7 @@ const SearchBar = () => {
                 });
             } else {
                 output = output.filter(item => {
-                    return item.category === activeCategory;
+                    return item.blockCategory === activeCategory;
                 });
             }
         }
@@ -154,12 +183,50 @@ const SearchBar = () => {
         return sortBlocks(output);
     };
 
-    const getCategoryBlocksCount = useCallback(category => {
-        if (category === "all") {
-            return allBlocks.length;
-        }
-        return allBlocks.filter(pl => pl.category === category).length;
+    const refreshBlockPlugins = useCallback(() => {
+        setAllBlocks(plugins.byType<PbEditorBlockPlugin>("pb-editor-block"));
     }, []);
+
+    const refetchBlocks = useCallback(async () => {
+        await client
+            .query({
+                query: LIST_PAGE_BLOCKS,
+                variables: activeCategory === "all" ? {} : { blockCategory: activeCategory },
+                fetchPolicy: "network-only"
+            })
+            .then(({ data }) => {
+                const blocks: PbPageBlock[] = get(data, "pageBuilder.listPageBlocks.data") || [];
+
+                const pluginsToDelete = getBlocksList().filter(
+                    plugin =>
+                        !blocks.some(block => block.id === plugin.id) &&
+                        plugin.tags.includes("saved")
+                );
+                pluginsToDelete.forEach(plugin => {
+                    if (plugin.name) {
+                        plugins.unregister(plugin.name);
+                    }
+                });
+
+                blocks.forEach(element => {
+                    createBlockPlugin({
+                        ...element
+                    });
+                });
+            });
+
+        refreshBlockPlugins();
+    }, [client, activeCategory, plugins, getBlocksList]);
+
+    const getCategoryBlocksCount = useCallback(
+        category => {
+            if (category === "all") {
+                return allBlocks.length;
+            }
+            return allBlocks.filter(pl => pl.blockCategory === category).length;
+        },
+        [allBlocks]
+    );
 
     const { showSnackbar } = useSnackbar();
 
@@ -170,13 +237,14 @@ const SearchBar = () => {
             }
         });
 
-        const { error } = response.data.pageBuilder.deletePageElement;
+        const { error } = response.data.pageBuilder.deletePageBlock;
         if (error) {
             showSnackbar(error.message);
             return;
         }
 
         plugins.unregister(plugin.name);
+        refreshBlockPlugins();
         showSnackbar(
             <span>
                 Block <strong>{plugin.title}</strong> was deleted!
@@ -185,7 +253,7 @@ const SearchBar = () => {
     }, []);
 
     const updateBlock = useCallback(
-        async ({ updateElement, data: { title: name, category } }) => {
+        async ({ updateElement, data: { title: name, blockCategory } }) => {
             if (!editingBlock) {
                 return;
             }
@@ -193,11 +261,11 @@ const SearchBar = () => {
             const response = await updateElement({
                 variables: {
                     id: editingBlock.id,
-                    data: { name, category }
+                    data: { name, blockCategory }
                 }
             });
 
-            const { error, data } = response.data.pageBuilder.updatePageElement;
+            const { error, data } = response.data.pageBuilder.pageBlock;
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -206,6 +274,7 @@ const SearchBar = () => {
             // This will replace previously registered block plugin.
             createBlockPlugin(data);
 
+            refreshBlockPlugins();
             setEditingBlock(null);
             setTimeout(() => {
                 // For better UX, success message is shown after 300ms.
@@ -251,11 +320,14 @@ const SearchBar = () => {
         <OverlayLayout barMiddle={renderSearchInput()} onExited={onExited}>
             <SplitView>
                 <LeftPanel span={3}>
-                    <List twoLine className={listStyle}>
+                    <ScrollList className={listStyle}>
                         {allCategories.map(p => (
                             <ListItem
                                 key={p.name}
-                                className={listItem}
+                                className={classNames(
+                                    listItem,
+                                    activeCategory === p.categoryName && activeListItem
+                                )}
                                 onClick={() => {
                                     setActiveCategory(p.categoryName);
                                 }}
@@ -267,19 +339,21 @@ const SearchBar = () => {
                                     <ListItemTitle>
                                         {p.title} ({getCategoryBlocksCount(p.categoryName)})
                                     </ListItemTitle>
-                                    <Typography use={"subtitle2"}>{p.description}</Typography>
+                                    <Typography use={"body2"}>{p.description}</Typography>
                                 </TitleContent>
                             </ListItem>
                         ))}
-                    </List>
+                    </ScrollList>
                 </LeftPanel>
                 <RightPanel span={9}>
                     {activeCategory && (
                         <SimpleForm>
                             <SimpleFormHeader
                                 title={categoryPlugin.title}
-                                icon={categoryPlugin.icon}
-                            />
+                                icon={<IconWrapper>{categoryPlugin.icon}</IconWrapper>}
+                            >
+                                <IconButton icon={<RefreshIcon />} onClick={refetchBlocks} />
+                            </SimpleFormHeader>
                             <SimpleFormContent>
                                 <Styled.BlockList>
                                     <BlocksList

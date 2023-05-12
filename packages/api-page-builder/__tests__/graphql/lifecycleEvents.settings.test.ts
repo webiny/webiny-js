@@ -4,11 +4,9 @@ import { assignSettingsLifecycleEvents, tracker } from "./mocks/lifecycleEvents"
 const name = "Lifecycles test Settings";
 
 describe("Settings Lifecycle Events", () => {
-    const handler = useGqlHandler({
+    const { updateSettings } = useGqlHandler({
         plugins: [assignSettingsLifecycleEvents()]
     });
-
-    const { updateSettings } = handler;
 
     beforeEach(async () => {
         tracker.reset();

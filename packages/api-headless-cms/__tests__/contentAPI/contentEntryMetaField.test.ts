@@ -1,7 +1,10 @@
+/**
+ * There must be the "until" in this file because we are using storage operations directly.
+ */
 import models from "./mocks/contentModels";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
-import shortId from "shortid";
-import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 
 const manageOpts = {
     path: "manage/en-US"
@@ -63,6 +66,8 @@ describe("Content Entry Meta Field", () => {
             data: {
                 name: targetModel.name,
                 modelId: targetModel.modelId,
+                singularApiName: targetModel.singularApiName,
+                pluralApiName: targetModel.pluralApiName,
                 group: group.id
             }
         });
@@ -88,7 +93,7 @@ describe("Content Entry Meta Field", () => {
 
     it("storage operations - should have meta field data in the retrieved record", async () => {
         const { model } = await setup();
-        const entryId = shortId.generate();
+        const entryId = generateAlphaNumericLowerCaseId(8);
         const entry: CmsEntry = {
             id: `${entryId}#0001`,
             entryId,
@@ -147,7 +152,8 @@ describe("Content Entry Meta Field", () => {
                 return storageOperations.entries.list(model, {
                     where: {
                         latest: true
-                    }
+                    },
+                    limit: 10000
                 });
             },
             (response: any) => {
@@ -163,7 +169,8 @@ describe("Content Entry Meta Field", () => {
                 return storageOperations.entries.list(model, {
                     where: {
                         published: true
-                    }
+                    },
+                    limit: 10000
                 });
             },
             (response: any) => {
@@ -193,7 +200,8 @@ describe("Content Entry Meta Field", () => {
         const listLatestRecordResult = await storageOperations.entries.list(model, {
             where: {
                 latest: true
-            }
+            },
+            limit: 10000
         });
 
         expect(listLatestRecordResult).toEqual({

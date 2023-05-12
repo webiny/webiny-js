@@ -7,7 +7,7 @@ import {
     DisplayMode,
     PbEditorElementPluginArgs,
     OnCreateActions
-} from "../../../../types";
+} from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ImagesList from "./ImagesList";
 import ImagesListImagesSettings from "./ImagesListImagesSettings";
@@ -75,9 +75,8 @@ export default (args: PbEditorElementPluginArgs = {}) => {
 
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
-            render({ element }) {
-                // TODO @ts-refactor
-                return <ImagesList data={element.data as any} />;
+            render(props) {
+                return <ImagesList {...props} />;
             }
         } as PbEditorPageElementPlugin,
         {

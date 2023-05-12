@@ -1,6 +1,7 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import Quote, { className } from "./Quote";
+import Quote from "./Quote";
+
 import {
     DisplayMode,
     PbEditorElement,
@@ -10,22 +11,15 @@ import {
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
+/*
+ * @TODO: Remove the Quote component
+ * Quote component will be deprecated in the next version and will not be available in the sidebar.
+ * Now component exist to support legacy content for the quote, in the future Lexical editor will be used.
+ * For more check @webiny/lexical-editor and @webiny/lexical-editor-pb packages.
+ */
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = "Block Quote";
     const elementType = kebabCase(args.elementType || "quote");
-    const defaultToolbar = {
-        title: "Quote",
-        group: "pb-editor-element-group-basic",
-        preview() {
-            return (
-                <div className={className}>
-                    <blockquote>
-                        <q>{defaultText}</q>
-                    </blockquote>
-                </div>
-            );
-        }
-    };
     const defaultSettings = [
         "pb-editor-page-element-style-settings-text",
         "pb-editor-page-element-style-settings-background",
@@ -41,12 +35,6 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
         elementType: elementType,
-        /**
-         * TODO @ts-refactor @ashutosh
-         * Completely different types between method result and variable
-         */
-        // @ts-ignore
-        toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         target: ["cell", "block"],
@@ -84,8 +72,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <Quote elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
+        render(props) {
+            return <Quote {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

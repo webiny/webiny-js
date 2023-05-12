@@ -1,7 +1,7 @@
 /**
  * Compose a single middleware from the array of middleware functions
  */
-export default (functions: Array<Function> = []): Function => {
+export const middleware = (functions: Function[] = []): Function => {
     return (...args: string[]): Promise<any> => {
         if (!functions.length) {
             return Promise.resolve();

@@ -1,16 +1,16 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../handler-graphql" },
+    { "path": "../api" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../api-wcp" },
     { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-http" }
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -18,12 +18,15 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
@@ -33,9 +36,7 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

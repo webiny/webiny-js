@@ -1,14 +1,10 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Total comments count test`, () => {
-    const options = {
-        path: "manage/en-US"
-    };
-
-    const gqlHandler = usePageBuilderHandler({
-        ...options
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
     });
     const {
         createChangeRequestMutation,
@@ -164,7 +160,7 @@ describe(`Total comments count test`, () => {
                                     displayName: expect.any(String),
                                     type: "admin"
                                 },
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 title: expect.any(String),
                                 content: expect.objectContaining(expectedContent),
                                 steps: expectedSteps,
@@ -235,7 +231,7 @@ describe(`Total comments count test`, () => {
                                     displayName: expect.any(String),
                                     type: "admin"
                                 },
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 title: expect.any(String),
                                 content: expect.objectContaining(expectedContent),
                                 steps: expectedSteps,
@@ -369,7 +365,7 @@ describe(`Total comments count test`, () => {
                                     displayName: expect.any(String),
                                     type: "admin"
                                 },
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 title: expect.any(String),
                                 content: expect.objectContaining(expectedContent),
                                 steps: expectedSteps,
@@ -442,7 +438,7 @@ describe(`Total comments count test`, () => {
                                     displayName: expect.any(String),
                                     type: "admin"
                                 },
-                                status: "underReview",
+                                reviewStatus: "underReview",
                                 title: expect.any(String),
                                 content: expect.objectContaining(expectedContent),
                                 steps: expect.arrayContaining([

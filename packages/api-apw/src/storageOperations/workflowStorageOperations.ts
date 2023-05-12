@@ -6,6 +6,7 @@ import {
     getFieldValues
 } from "~/storageOperations/index";
 import WebinyError from "@webiny/error";
+import { WORKFLOW_MODEL_ID } from "~/storageOperations/models/workflow.model";
 
 type ReviewersRefInput = CreateApwWorkflowParams<{ modelId: string; id: string }>;
 
@@ -25,14 +26,17 @@ const formatReviewersForRefInput = (
     };
 };
 
-export const createWorkflowStorageOperations = ({
-    cms
-}: Pick<CreateApwStorageOperationsParams, "cms">): ApwWorkflowStorageOperations => {
+export const createWorkflowStorageOperations = (
+    params: CreateApwStorageOperationsParams
+): ApwWorkflowStorageOperations => {
+    const { cms, security } = params;
     const getWorkflowModel = async () => {
-        const model = await cms.getModel("apwWorkflowModelDefinition");
+        const model = await security.withoutAuthorization(async () => {
+            return cms.getModel(WORKFLOW_MODEL_ID);
+        });
         if (!model) {
             throw new WebinyError(
-                "Could not find `apwWorkflowModelDefinition` model.",
+                `Could not find "${WORKFLOW_MODEL_ID}" model.`,
                 "MODEL_NOT_FOUND_ERROR"
             );
         }
@@ -40,7 +44,9 @@ export const createWorkflowStorageOperations = ({
     };
     const getWorkflow: ApwWorkflowStorageOperations["getWorkflow"] = async ({ id }) => {
         const model = await getWorkflowModel();
-        const entry = await cms.getEntryById(model, id);
+        const entry = await security.withoutAuthorization(async () => {
+            return cms.getEntryById(model, id);
+        });
         return getFieldValues(entry, baseFields);
     };
     return {
@@ -48,8 +54,14 @@ export const createWorkflowStorageOperations = ({
         getWorkflow,
         async listWorkflows(params) {
             const model = await getWorkflowModel();
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params
+
+            const [entries, meta] = await security.withoutAuthorization(async () => {
+                return cms.listLatestEntries(model, {
+                    ...params,
+                    where: {
+                        ...params.where
+                    }
+                });
             });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
@@ -58,7 +70,10 @@ export const createWorkflowStorageOperations = ({
             const reviewerModel = await this.getReviewerModel();
 
             const data = formatReviewersForRefInput(params.data, reviewerModel.modelId);
-            const entry = await cms.createEntry(model, data);
+
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.createEntry(model, data);
+            });
 
             return getFieldValues(entry, baseFields);
         },
@@ -78,12 +93,19 @@ export const createWorkflowStorageOperations = ({
                 input as CreateApwWorkflowParams,
                 reviewerModel.modelId
             );
-            const entry = await cms.updateEntry(model, params.id, data);
+
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.updateEntry(model, params.id, data);
+            });
+
             return getFieldValues(entry, baseFields);
         },
         async deleteWorkflow(params) {
             const model = await getWorkflowModel();
-            await cms.deleteEntry(model, params.id);
+
+            await security.withoutAuthorization(async () => {
+                return cms.deleteEntry(model, params.id);
+            });
             return true;
         }
     };

@@ -1,15 +1,11 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
-import { FileManagerContext } from "~/types";
 
-export interface SettingsEntityElasticsearch {
-    context: FileManagerContext;
+export interface SettingsEntityParams {
     table: Table;
 }
-export default (params: SettingsEntityElasticsearch): Entity<any> => {
-    const { context, table } = params;
-    const entityName = "Settings";
-    const attributes = getExtraAttributes(context, entityName);
+export default (params: SettingsEntityParams): Entity<any> => {
+    const { table } = params;
+    const entityName = "FM.Settings";
     return new Entity({
         name: entityName,
         table,
@@ -20,22 +16,18 @@ export default (params: SettingsEntityElasticsearch): Entity<any> => {
             SK: {
                 sortKey: true
             },
+            GSI1_PK: {
+                type: "string"
+            },
+            GSI1_SK: {
+                type: "string"
+            },
             TYPE: {
                 type: "string"
             },
-            key: {
-                type: "string"
-            },
-            uploadMinFileSize: {
-                type: "number"
-            },
-            uploadMaxFileSize: {
-                type: "number"
-            },
-            srcPrefix: {
-                type: "string"
-            },
-            ...attributes
+            data: {
+                type: "map"
+            }
         }
     });
 };

@@ -1,14 +1,13 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { ExportPagesParams, ImportPagesParams } from "~/types";
-import { PbPageImportExportContext } from "../types";
+import { PbImportExportContext } from "../types";
 import resolve from "./utils/resolve";
 
-const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
+const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
             type PbExportPageData {
-                task: PbPageImportExportTask
+                task: PbImportExportTask
             }
 
             type PbExportPageResponse {
@@ -17,7 +16,7 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
             }
 
             type PbImportPageData {
-                task: PbPageImportExportTask
+                task: PbImportExportTask
             }
 
             type PbImportPageResponse {
@@ -41,31 +40,17 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
                 ): PbExportPageResponse
 
                 # Import pages
-                importPages(
-                    category: String!
-                    zipFileKey: String
-                    zipFileUrl: String
-                ): PbImportPageResponse
+                importPages(category: String!, zipFileUrl: String, meta: JSON): PbImportPageResponse
             }
         `,
         resolvers: {
             PbMutation: {
                 exportPages: async (_, args: any, context) => {
-                    /**
-                     * We know that args is ExportPagesParams.
-                     */
-                    return resolve(() =>
-                        context.pageBuilder.pages.exportPages(args as unknown as ExportPagesParams)
-                    );
+                    return resolve(() => context.pageBuilder.pages.exportPages(args));
                 },
 
                 importPages: async (_, args: any, context) => {
-                    /**
-                     * We know that args is ExportPagesParams.
-                     */
-                    return resolve(() =>
-                        context.pageBuilder.pages.importPages(args as unknown as ImportPagesParams)
-                    );
+                    return resolve(() => context.pageBuilder.pages.importPages(args));
                 }
             }
         }

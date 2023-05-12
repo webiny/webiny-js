@@ -1,4 +1,3 @@
-import { customAlphabet } from "nanoid";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -7,9 +6,6 @@ import utc from "dayjs/plugin/utc";
 dayjs.extend(advancedFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
-
-const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 
 export const formatDate = (date: string): string => {
     return dayjs(date).format("MMM Do, YYYY");

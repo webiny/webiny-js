@@ -19,3 +19,9 @@ export class HandlerResultPlugin<T extends Context = Context> extends Plugin {
         return this._callable(context, result);
     }
 }
+
+export const createHandlerResultPlugin = <T extends Context = Context>(
+    callable: HandlerResultCallable<T>
+): HandlerResultPlugin<T> => {
+    return new HandlerResultPlugin<T>(callable);
+};

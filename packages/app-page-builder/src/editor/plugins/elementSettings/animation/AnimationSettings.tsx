@@ -51,12 +51,14 @@ const Settings: React.FC<SettingsPropsType & PbEditorPageElementSettingsRenderCo
         element,
         dataNamespace: DATA_NAMESPACE
     });
+
     const animationName = get(element, DATA_NAMESPACE + ".name", "");
     const animationDuration = get(element, DATA_NAMESPACE + ".duration", 0);
+
     // Trigger animation manually on "animation" type change.
     useEffect(() => {
         if (animationName) {
-            const animationElement = document.querySelector(`[data-aos=${animationName}]`);
+            const animationElement = document.getElementById(element.id);
             if (animationElement) {
                 animationElement.classList.remove("aos-animate");
                 setTimeout(

@@ -7,8 +7,8 @@ import { useCurrentContentReview } from "~/hooks/useContentReview";
 
 export const ContentReviewStatus = () => {
     const { contentReview } = useCurrentContentReview();
-    const { status } = contentReview;
-    const level = statusToLevel[status];
+    const { reviewStatus } = contentReview;
+    const level = statusToLevel[reviewStatus];
 
     return (
         <Stack space={2} paddingX={4}>
@@ -18,7 +18,7 @@ export const ContentReviewStatus = () => {
                 <Circle active={level >= 2} />
             </Columns>
             <Box display={"flex"} justifyContent={"center"}>
-                <StatusText>{upperCase(status)}</StatusText>
+                <StatusText>{upperCase(reviewStatus)}</StatusText>
             </Box>
         </Stack>
     );

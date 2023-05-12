@@ -6,14 +6,21 @@ import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "~/apps";
-import { tagResources, withCommonLambdaEnvVariables } from "~/utils";
+import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
 
 export interface CreateWebsitePulumiAppParams {
-    /** Custom domain configuration */
+    /**
+     * Custom domain(s) configuration.
+     */
     domains?: PulumiAppParamCallback<CustomDomainParams>;
+
+    /**
+     * Custom preview domain(s) configuration.
+     */
+    previewDomains?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Enables or disables VPC for the API.
@@ -26,6 +33,18 @@ export interface CreateWebsitePulumiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: WebsitePulumiApp) => void | Promise<void>;
+
+    /**
+     * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
+     */
+    pulumiResourceNamePrefix?: PulumiAppParam<string>;
+
+    /**
+     * Treats provided environments as production environments, which
+     * are deployed in production deployment mode.
+     * https://www.webiny.com/docs/architecture/deployment-modes/production
+     */
+    productionEnvironments?: PulumiAppParam<string[]>;
 }
 
 export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
@@ -34,6 +53,17 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
         path: "apps/website",
         config: projectAppParams,
         program: async app => {
+            const pulumiResourceNamePrefix = app.getParam(
+                projectAppParams.pulumiResourceNamePrefix
+            );
+            if (pulumiResourceNamePrefix) {
+                app.onResource(resource => {
+                    if (!resource.name.startsWith(pulumiResourceNamePrefix)) {
+                        resource.name = `${pulumiResourceNamePrefix}${resource.name}`;
+                    }
+                });
+            }
+
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {
@@ -42,13 +72,15 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 });
             }
 
+            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const isProduction = productionEnvironments.includes(app.params.run.env);
+
             // Register core output as a module available for all other modules
             const core = app.addModule(CoreOutput);
 
-            // Register VPC config module to be available to other modules
-            app.addModule(VpcConfig, {
-                enabled: app.getParam(projectAppParams.vpc)
-            });
+            // Register VPC config module to be available to other modules.
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
+            app.addModule(VpcConfig, { enabled: vpcEnabled });
 
             const appBucket = createPrivateAppBucket(app, "app");
 
@@ -186,7 +218,15 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 applyCustomDomain(deliveryCloudfront, domains);
             }
 
-            if (process.env.WCP_PROJECT_ENVIRONMENT) {
+            const previewDomains = app.getParam(projectAppParams.previewDomains);
+            if (previewDomains) {
+                applyCustomDomain(appCloudfront, previewDomains);
+            }
+
+            if (
+                process.env.WCP_PROJECT_ENVIRONMENT ||
+                process.env.WEBINY_MULTI_TENANCY === "true"
+            ) {
                 applyTenantRouter(app, deliveryCloudfront);
             }
 
@@ -196,15 +236,36 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 // The files that are generated in that process are stored in the `deliveryStorage` S3 bucket further below.
                 appId: appCloudfront.output.id,
                 appStorage: appBucket.bucket.output.id,
-                appUrl: appCloudfront.output.domainName.apply(value => `https://${value}`),
-                appDomain: appCloudfront.output.domainName,
+
                 // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
                 // The static HTML snapshots delivered from them still rely on the app's S3 bucket
                 // defined above, for serving static assets (JS, CSS, images).
                 deliveryId: deliveryCloudfront.output.id,
-                deliveryStorage: deliveryBucket.bucket.output.id,
-                deliveryDomain: deliveryCloudfront.output.domainName,
-                deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
+                deliveryStorage: deliveryBucket.bucket.output.id
+            });
+
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: appCloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontAppDomain",
+                        distributionUrl: "cloudfrontAppUrl",
+                        usedDomain: "appDomain",
+                        usedUrl: "appUrl"
+                    }
+                });
+
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: deliveryCloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontDeliveryDomain",
+                        distributionUrl: "cloudfrontDeliveryUrl",
+                        usedDomain: "deliveryDomain",
+                        usedUrl: "deliveryUrl"
+                    }
+                });
             });
 
             tagResources({
@@ -214,10 +275,22 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
 
             return {
                 prerendering,
+
+                // "preview" and "app" are the same.
+                // We introduced "preview" just because it's the word we use when talking about
+                // Page Builder and "previewing" pages. In other words, the "preview" property
+                // contains all resources related to serving page previews, unlike "delivery",
+                // which is used to serve published pages to actual website visitors.
+                // The "app" property was still left here just for backwards compatibility.
+                preview: {
+                    ...appBucket,
+                    cloudfront: appCloudfront
+                },
                 app: {
                     ...appBucket,
                     cloudfront: appCloudfront
                 },
+
                 delivery: {
                     ...deliveryBucket,
                     cloudfront: deliveryCloudfront

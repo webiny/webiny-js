@@ -1,38 +1,21 @@
 import React from "react";
-import get from "lodash/get";
-import { css } from "emotion";
-import { ElementRoot } from "~/render/components/ElementRoot";
 import { PbEditorElement } from "~/types";
-
-const center = css({ textAlign: "center" });
+import PeIcon from "./PeIcon";
+import PbIcon from "./PbIcon";
+import { isLegacyRenderingEngine } from "~/utils";
+import { Element } from "@webiny/app-page-builder-elements/types";
 
 interface IconProps {
     element: PbEditorElement;
 }
-const Icon: React.FC<IconProps> = ({ element }) => {
-    return (
-        <ElementRoot element={element}>
-            {({ getAllClasses, elementStyle }) => {
-                const svg = get(element, "data.icon.svg", null);
-                const className = getAllClasses(
-                    "webiny-pb-base-page-element-style webiny-pb-page-element-icon",
-                    center
-                );
 
-                if (!svg) {
-                    return <></>;
-                }
+const Icon: React.FC<IconProps> = props => {
+    if (isLegacyRenderingEngine) {
+        return <PbIcon {...props} />;
+    }
 
-                return (
-                    <div
-                        style={elementStyle}
-                        className={className}
-                        dangerouslySetInnerHTML={{ __html: svg }}
-                    />
-                );
-            }}
-        </ElementRoot>
-    );
+    const { element, ...rest } = props;
+    return <PeIcon element={element as Element} {...rest} />;
 };
 
 export default Icon;

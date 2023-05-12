@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler";
+import { ContextPlugin } from "@webiny/api";
 import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
 import graphql from "./graphql/full.gql";
@@ -24,16 +24,24 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
         await applyBackwardsCompatibility(context);
 
         const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+        if (!context.request) {
+            throw new Error("MISSING CONTEXT REQUEST");
+        }
 
         if (multiTenancy) {
-            const { headers = {}, method } = context.http.request;
+            const { headers = {}, method, params, query } = context.request;
 
-            tenantId = headers["x-tenant"];
+            tenantId = headers["x-tenant"] as string;
 
-            if (!tenantId && method === "POST") {
+            if (!tenantId) {
                 throw new WebinyError({
                     message: `"x-tenant" header is missing in the request!`,
-                    code: "MISSING_TENANT_HEADER"
+                    code: "MISSING_TENANT_HEADER",
+                    data: {
+                        method,
+                        params,
+                        query
+                    }
                 });
             }
         }
@@ -41,7 +49,21 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
         context.tenancy = await createTenancy({
             tenant: tenantId,
             multiTenancy,
-            storageOperations
+            storageOperations,
+            incrementWcpTenants: async () => {
+                if (!context.wcp) {
+                    return;
+                }
+
+                await context.wcp.incrementTenants();
+            },
+            decrementWcpTenants: async () => {
+                if (!context.wcp) {
+                    return;
+                }
+
+                await context.wcp.decrementTenants();
+            }
         });
 
         // Even though we don't have a full GraphQL schema when using the `context` plugins,
