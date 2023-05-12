@@ -1,8 +1,7 @@
 import WebinyError from "@webiny/error";
-import { AcoContext } from "~/types";
-import { IAcoApp, IAcoAppParams, IAcoApps, IAcoAppsOptions } from "~/apps/types";
 import { AcoApp } from "./AcoApp";
-import { AcoAppModifierPlugin } from "~/apps/AcoAppModifierPlugin";
+import { AcoAppModifierPlugin } from "~/plugins";
+import { AcoContext, IAcoApp, IAcoAppParams, IAcoApps, IAcoAppsOptions } from "~/types";
 
 export class AcoApps implements IAcoApps {
     private readonly apps: Map<string, IAcoApp> = new Map();

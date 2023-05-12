@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import structuredClone from "@ungap/structured-clone";
-import { IAcoApp, IAcoAppParams } from "~/apps/types";
+import { IAcoApp, IAcoAppParams } from "~/types";
 import {
     AcoContext,
     AcoSearchRecordCrudBase,

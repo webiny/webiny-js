@@ -1,9 +1,9 @@
-export const createAppsSchemaSnapshot = () => {
+export const createCustomAppsSchemaSnapshot = () => {
     return `
-        type AcoSearchRecordWebiny_Location {
+        type AcoSearchRecordCustomWebiny_Location {
           folderId: String
         }
-        input AcoSearchRecordWebiny_LocationWhereInput {
+        input AcoSearchRecordCustomWebiny_LocationWhereInput {
           folderId: String
           folderId_not: String
           folderId_in: [String]
@@ -12,12 +12,12 @@ export const createAppsSchemaSnapshot = () => {
           folderId_not_contains: String
         }
 
-        type AcoSearchRecordWebiny_Data_CreatedBy {
+        type AcoSearchRecordCustomWebiny_Data_CreatedBy {
           id: String
           displayName: String
           type: String
         }
-        input AcoSearchRecordWebiny_Data_CreatedByWhereInput {
+        input AcoSearchRecordCustomWebiny_Data_CreatedByWhereInput {
           id: String
           id_not: String
           id_in: [String]
@@ -40,14 +40,16 @@ export const createAppsSchemaSnapshot = () => {
           type_not_contains: String
         }
 
-        type AcoSearchRecordWebiny_Data {
+        type AcoSearchRecordCustomWebiny_Data {
           title: String
-          createdBy: AcoSearchRecordWebiny_Data_CreatedBy
+          createdBy: AcoSearchRecordCustomWebiny_Data_CreatedBy
           createdOn: DateTime
           version: Number
           locked: Boolean
+          customWebinyTextField: String
+          customWebinyNumberField: Number
         }
-        input AcoSearchRecordWebiny_DataWhereInput {
+        input AcoSearchRecordCustomWebiny_DataWhereInput {
           title: String
           title_not: String
           title_in: [String]
@@ -55,7 +57,7 @@ export const createAppsSchemaSnapshot = () => {
           title_contains: String
           title_not_contains: String
 
-          createdBy: AcoSearchRecordWebiny_Data_CreatedByWhereInput
+          createdBy: AcoSearchRecordCustomWebiny_Data_CreatedByWhereInput
 
           createdOn: DateTime
           createdOn_not: DateTime
@@ -81,68 +83,81 @@ export const createAppsSchemaSnapshot = () => {
 
           locked: Boolean
           locked_not: Boolean
+          
+          customWebinyTextField: String
+          customWebinyTextField_not: String
+          customWebinyTextField_in: [String]
+          customWebinyTextField_not_in: [String]
+          customWebinyTextField_contains: String
+          customWebinyTextField_not_contains: String
+          
+          customWebinyNumberField: Number
+          customWebinyNumberField_not: Number
+          customWebinyNumberField_in: [Number]
+          customWebinyNumberField_not_in: [Number]
+          customWebinyNumberField_lt: Number
+          customWebinyNumberField_lte: Number
+          customWebinyNumberField_gt: Number
+          customWebinyNumberField_gte: Number
+          # there must be two numbers sent in the array
+          customWebinyNumberField_between: [Number!]
+          # there must be two numbers sent in the array
+          customWebinyNumberField_not_between: [Number!]
         }
 
-        type AcoSearchRecordWebinyData {
+        type AcoSearchRecordCustomWebinyData {
           type: String
           title: String
           content: String
-          location: AcoSearchRecordWebiny_Location
-          data: AcoSearchRecordWebiny_Data
+          location: AcoSearchRecordCustomWebiny_Location
+          data: AcoSearchRecordCustomWebiny_Data
           tags: [String]
         }
 
-        type AcoSearchRecordWebiny {
+        type AcoSearchRecordCustomWebiny {
           id: ID!
           type: String!
           location: AcoSearchLocationType!
           title: String!
           content: String
-          data: AcoSearchRecordWebinyData!
+          data: AcoSearchRecordCustomWebinyData!
           tags: [String!]!
           savedOn: DateTime
           createdOn: DateTime
           createdBy: AcoUser
         }
 
-        input AcoSearchRecordWebiny_LocationInput {
+        input AcoSearchRecordCustomWebiny_LocationInput {
           folderId: String!
         }
 
-        input AcoSearchRecordWebiny_Data_CreatedByInput {
+        input AcoSearchRecordCustomWebiny_Data_CreatedByInput {
           id: String
           displayName: String
           type: String
         }
 
-        input AcoSearchRecordWebiny_DataInput {
+        input AcoSearchRecordCustomWebiny_DataInput {
           title: String
-          createdBy: AcoSearchRecordWebiny_Data_CreatedByInput
+          createdBy: AcoSearchRecordCustomWebiny_Data_CreatedByInput
           createdOn: DateTime
           version: Number
           locked: Boolean
+          customWebinyTextField: String
+          customWebinyNumberField: Number
         }
 
-        input AcoSearchRecordWebinyDataInput {
-          type: String!
-          title: String
-          content: String
-          location: AcoSearchRecordWebiny_LocationInput
-          data: AcoSearchRecordWebiny_DataInput
-          tags: [String]
-        }
-
-        input AcoSearchRecordWebinyInput {
+        input AcoSearchRecordCustomWebinyInput {
           id: ID
           type: String!
-          title: String
+          title: String!
           content: String
-          location: AcoSearchRecordWebiny_LocationInput
-          data: AcoSearchRecordWebiny_DataInput
-          tags: [String]
+          location: AcoSearchRecordCustomWebiny_LocationInput!
+          data: AcoSearchRecordCustomWebiny_DataInput!
+          tags: [String!]
         }
 
-        input AcoSearchRecordWebinyListWhereInput {
+        input AcoSearchRecordCustomWebinyListWhereInput {
           type: String!
           location: AcoSearchLocationInput
           tags_in: [String!]
@@ -150,39 +165,39 @@ export const createAppsSchemaSnapshot = () => {
           tags_not_startsWith: String
         }
 
-        type AcoSearchRecordWebinyResponse {
-          data: AcoSearchRecordWebiny
+        type AcoSearchRecordCustomWebinyResponse {
+          data: AcoSearchRecordCustomWebiny
           error: AcoError
         }
 
-        type AcoSearchRecordWebinyListResponse {
-          data: [AcoSearchRecordWebiny!]
+        type AcoSearchRecordCustomWebinyListResponse {
+          data: [AcoSearchRecordCustomWebiny!]
           error: AcoError
           meta: AcoMeta
         }
 
         extend type SearchQuery {
-          getAcoSearchRecordWebiny(
+          getAcoSearchRecordCustomWebiny(
             id: ID!
-          ): AcoSearchRecordWebinyResponse!
-          listAcoSearchRecordWebiny(
-            where: AcoSearchRecordWebinyListWhereInput
+          ): AcoSearchRecordCustomWebinyResponse!
+          listAcoSearchRecordCustomWebiny(
+            where: AcoSearchRecordCustomWebinyListWhereInput
             search: String
             limit: Int
             after: String
             sort: AcoSort
-          ): AcoSearchRecordWebinyListResponse!
+          ): AcoSearchRecordCustomWebinyListResponse!
         }
 
         extend type SearchMutation {
-          createAcoSearchRecordWebiny(
-            data: AcoSearchRecordWebinyInput!
-          ): AcoSearchRecordWebinyResponse!
-          updateAcoSearchRecordWebiny(
+          createAcoSearchRecordCustomWebiny(
+            data: AcoSearchRecordCustomWebinyInput!
+          ): AcoSearchRecordCustomWebinyResponse!
+          updateAcoSearchRecordCustomWebiny(
             id: ID!
-            data: AcoSearchRecordWebinyInput!
-          ): AcoSearchRecordWebinyResponse!
-          deleteAcoSearchRecordWebiny(id: ID!): AcoBooleanResponse!
+            data: AcoSearchRecordCustomWebinyInput!
+          ): AcoSearchRecordCustomWebinyResponse!
+          deleteAcoSearchRecordCustomWebiny(id: ID!): AcoBooleanResponse!
         }
     `;
 };

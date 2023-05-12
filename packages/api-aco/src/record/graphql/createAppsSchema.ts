@@ -1,7 +1,15 @@
 import { CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields";
-import { IAcoApp } from "~/apps/types";
+import { IAcoApp } from "~/types";
+
+/**
+ * Cache the GraphQL Schema while Lambda lives.
+ * It will reset on Lambda redeploy.
+ *
+ * TODO This will work until we introduce the ability to update ACO App models via the UI / Database.
+ */
+let schema: string | undefined;
 
 interface AppParams {
     app: IAcoApp;
@@ -50,11 +58,6 @@ const createAppSchema = (params: AppParams): string => {
         }
 
         ${inputFields.map(f => f.typeDefs).join("\n")}
-
-
-        input ${apiName}DataInput {
-            ${inputFields.map(f => f.fields).join("\n")}
-        }
 
         input ${apiName}Input {
             id: ID
@@ -106,9 +109,14 @@ interface Params {
 }
 
 export const createAppsSchema = (params: Params): string => {
+    /**
+     * Take the Cache if it exists.
+     */
+    if (schema) {
+        return schema;
+    }
     const { apps, models, plugins } = params;
-
-    return apps
+    schema = apps
         .map(app => {
             return createAppSchema({
                 app,
@@ -117,4 +125,6 @@ export const createAppsSchema = (params: Params): string => {
             });
         })
         .join("\n");
+
+    return schema;
 };

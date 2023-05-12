@@ -8,9 +8,10 @@ import {
     createMockAppVersionField,
     MOCK_APP_NAME
 } from "./mocks/app";
-import { AcoApp, createAppModifier } from "~/apps";
+import { AcoApp } from "~/apps";
 import { createSearchModelDefinition, SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
 import { CmsModel } from "@webiny/api-headless-cms/types";
+import { createAcoAppModifier } from "~/plugins";
 
 jest.retryTimes(0);
 
@@ -51,8 +52,8 @@ describe("aco apps", () => {
             modelId: `${SEARCH_RECORD_MODEL_ID}-${MOCK_APP_NAME.toLowerCase()}`,
             tenant: "root",
             locale: "en-US",
-            singularApiName: "MockAppApiNameSearchRecord",
-            pluralApiName: "MockAppApiNameSearchRecord",
+            singularApiName: "AcoSearchRecordMockAppApiName",
+            pluralApiName: "AcoSearchRecordMockAppApiName",
             group: expect.objectContaining({
                 id: expect.any(String),
                 name: expect.any(String),
@@ -124,8 +125,8 @@ describe("aco apps", () => {
             modelId: `${SEARCH_RECORD_MODEL_ID}-${MOCK_APP_NAME.toLowerCase()}`,
             tenant: "root",
             locale: "en-US",
-            singularApiName: "MockAppApiNameSearchRecord",
-            pluralApiName: "MockAppApiNameSearchRecord",
+            singularApiName: "AcoSearchRecordMockAppApiName",
+            pluralApiName: "AcoSearchRecordMockAppApiName",
             group: expect.objectContaining({
                 id: expect.any(String),
                 name: expect.any(String),
@@ -225,7 +226,7 @@ describe("aco apps", () => {
     it("should add the custom field to the app via the plugin", async () => {
         const { handler } = useHandler({
             plugins: [
-                createAppModifier(MOCK_APP_NAME, async ({ addField }) => {
+                createAcoAppModifier(MOCK_APP_NAME, async ({ addField }) => {
                     addField({
                         id: "customField",
                         fieldId: "customField",
@@ -261,7 +262,7 @@ describe("aco apps", () => {
     it("should remove the field to the app via the plugin", async () => {
         const { handler } = useHandler({
             plugins: [
-                createAppModifier(MOCK_APP_NAME, async ({ removeField }) => {
+                createAcoAppModifier(MOCK_APP_NAME, async ({ removeField }) => {
                     removeField("createdOn");
                 })
             ]
@@ -283,7 +284,7 @@ describe("aco apps", () => {
     it("should not modify the app with wrong modifier", async () => {
         const { handler } = useHandler({
             plugins: [
-                createAppModifier("NON_EXISTING_APP", async ({ removeField }) => {
+                createAcoAppModifier("NON_EXISTING_APP", async ({ removeField }) => {
                     removeField("createdOn");
                 })
             ]

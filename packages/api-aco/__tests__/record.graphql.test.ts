@@ -1,10 +1,11 @@
 import prettier from "prettier";
-import { createAppsSchemaSnapshot } from "./snapshots/appsSchema";
-import { createMockApp } from "./mocks/app";
+import { createDefaultAppsSchemaSnapshot } from "./snapshots/defaultAppsSchema";
+import { createCustomAppsSchemaSnapshot } from "./snapshots/customAppsSchema";
+import { createMockApp, MOCK_APP_NAME } from "./mocks/app";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { useHandler } from "./utils/useHandler";
 import { IntrospectionField, IntrospectionInterfaceType } from "graphql";
-import { createAcoApp } from "~/plugins";
+import { createAcoApp, createAcoAppModifier } from "~/plugins";
 import { createAppsSchema } from "~/record/graphql/createAppsSchema";
 import { CmsFieldTypePlugins, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
@@ -161,7 +162,7 @@ describe("record graphql generator", () => {
         expect(SearchMutation?.fields).toHaveLength(4);
     });
 
-    it("should generate graphql schema when an app is present - method", async () => {
+    it("should generate the default graphql schema when an app is present - via method", async () => {
         const { handler } = useHandler({
             plugins: [
                 createAcoApp(
@@ -193,7 +194,63 @@ describe("record graphql generator", () => {
         });
         expect(sdl).not.toBeNull();
         const schema = prettier.format(sdl.trim(), { parser: "graphql" });
-        const snapshot = prettier.format(createAppsSchemaSnapshot().trim(), { parser: "graphql" });
+        const snapshot = prettier.format(createDefaultAppsSchemaSnapshot().trim(), {
+            parser: "graphql"
+        });
+        expect(schema).toEqual(snapshot);
+    });
+
+    it("should generate a custom graphql schema when an app is present - via method", async () => {
+        const { handler } = useHandler({
+            plugins: [
+                createAcoApp(
+                    createMockApp({
+                        apiName: "CustomWebiny"
+                    })
+                ),
+                createAcoAppModifier(MOCK_APP_NAME, async ({ addField }) => {
+                    addField({
+                        id: "customWebinyTextField",
+                        fieldId: "customWebinyTextField",
+                        label: "Custom Webiny Text Field",
+                        type: "text",
+                        storageId: "text@customWebinyTextField"
+                    });
+                    addField({
+                        id: "customWebinyNumberField",
+                        fieldId: "customWebinyNumberField",
+                        label: "Custom Webiny Number Field",
+                        type: "number",
+                        storageId: "text@customWebinyNumberField"
+                    });
+                })
+            ]
+        });
+
+        const context = await handler();
+        expect(context.aco.listApps()).toHaveLength(1);
+
+        const plugins = context.plugins
+            .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+            .reduce<CmsFieldTypePlugins>((fields, plugin) => {
+                fields[plugin.fieldType] = plugin;
+                return fields;
+            }, {});
+
+        const models = await context.security.withoutAuthorization(async () => {
+            return (await context.cms.listModels()).filter(model => !model.isPrivate);
+        });
+
+        const sdl = createAppsSchema({
+            models,
+            plugins,
+            apps: context.aco.listApps()
+        });
+        expect(sdl).not.toBeNull();
+        const schema = prettier.format(sdl.trim(), { parser: "graphql" });
+        const snapshot = prettier.format(createCustomAppsSchemaSnapshot().trim(), {
+            parser: "graphql"
+        });
         expect(schema).toEqual(snapshot);
     });
 });

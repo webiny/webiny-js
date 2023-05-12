@@ -81,12 +81,12 @@ export class AcoAppModifierPlugin<T extends Context = Context> extends Plugin {
     }
 }
 
-export type CreateAppModifierCallable<T extends Context = AcoContext> =
+export type CreateAcoAppModifierCallable<T extends Context = AcoContext> =
     AcoAppModifierPluginParamsCallable<T>;
 
-export const createAppModifier = <T extends Context = AcoContext>(
+export const createAcoAppModifier = <T extends Context = AcoContext>(
     name: string,
-    cb: CreateAppModifierCallable<T>
+    cb: CreateAcoAppModifierCallable<T>
 ) => {
     return AcoAppModifierPlugin.create<T>({
         name,

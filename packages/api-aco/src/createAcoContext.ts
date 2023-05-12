@@ -10,7 +10,7 @@ import { createFolderCrudMethods } from "~/folder/folder.crud";
 import { createSearchRecordCrudMethods } from "~/record/record.crud";
 import { AcoApps } from "./apps";
 import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
-import { CreateAcoAppPlugin } from "~/plugins";
+import { AcoCreateAppPlugin } from "~/plugins";
 
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
@@ -61,7 +61,7 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
 
     const apps = new AcoApps(context, params);
 
-    const plugins = context.plugins.byType<CreateAcoAppPlugin>(CreateAcoAppPlugin.type);
+    const plugins = context.plugins.byType<AcoCreateAppPlugin>(AcoCreateAppPlugin.type);
     for (const plugin of plugins) {
         await apps.register({
             model: defaultRecordModel,
