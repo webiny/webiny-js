@@ -1,4 +1,3 @@
-import { PulumiAppParam } from "@webiny/pulumi";
 import { createApiPulumiApp, CreateApiPulumiAppParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
