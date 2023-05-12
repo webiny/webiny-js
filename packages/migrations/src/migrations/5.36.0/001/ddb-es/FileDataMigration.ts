@@ -72,87 +72,88 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const tenants = await this.listTenants();
-        if (tenants.length === 0) {
-            logger.info(`No tenants found in the system; skipping migration.`);
-            return false;
-        }
-
-        for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
-            if (locales.length === 0) {
-                logger.info(`No locales found in tenant "${tenant.data.id}".`);
-                continue;
-            }
-
-            for (const locale of locales) {
-                // there is an index? NO -> skip
-                const indexExists = await esGetIndexExist({
-                    elasticsearchClient: this.elasticsearchClient,
-                    tenant: tenant.data.id,
-                    locale: locale.code,
-                    type: "file-manager",
-                    isHeadlessCmsModel: false
-                });
-
-                if (!indexExists) {
-                    logger.info(
-                        `No elastic search index found for files in tenant "${tenant.data.id}" and locale "${locale.code}".`
-                    );
-                    continue;
-                }
-
-                // Fetch latest file record from ES
-                const latestFile = await esFindOne<File>({
-                    elasticsearchClient: this.elasticsearchClient,
-                    index: esGetIndexName({
-                        tenant: tenant.data.id,
-                        locale: locale.code,
-                        type: "file-manager"
-                    }),
-                    body: {
-                        query: {
-                            bool: {
-                                filter: [
-                                    { term: { "tenant.keyword": tenant.data.id } },
-                                    { term: { "locale.keyword": locale.code } }
-                                ]
-                            }
-                        },
-                        sort: [
-                            {
-                                "id.keyword": "asc"
-                            }
-                        ]
-                    }
-                });
-
-                if (!latestFile) {
-                    logger.info(
-                        `No files found in tenant "${tenant.data.id}" and locale "${locale.code}".`
-                    );
-                    continue;
-                }
-
-                // Fetch latest aco search record from DDB using latest file "id"
-                const latestSearchRecord = await queryOne<{ id: string }>({
-                    entity: this.ddbEntryEntity,
-                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#wby-aco-${latestFile.id}`,
-                    options: {
-                        eq: "L"
-                    }
-                });
-
-                if (latestSearchRecord) {
-                    logger.info(
-                        `Files already migrated to Search Records in tenant "${tenant.data.id}" and locale "${locale.code}".`
-                    );
-                    continue;
-                }
-                return true;
-            }
-        }
-        return false;
+        return true;
+        // const tenants = await this.listTenants();
+        // if (tenants.length === 0) {
+        //     logger.info(`No tenants found in the system; skipping migration.`);
+        //     return false;
+        // }
+        //
+        // for (const tenant of tenants) {
+        //     const locales = await this.listLocales({ tenant });
+        //     if (locales.length === 0) {
+        //         logger.info(`No locales found in tenant "${tenant.data.id}".`);
+        //         continue;
+        //     }
+        //
+        //     for (const locale of locales) {
+        //         // there is an index? NO -> skip
+        //         const indexExists = await esGetIndexExist({
+        //             elasticsearchClient: this.elasticsearchClient,
+        //             tenant: tenant.data.id,
+        //             locale: locale.code,
+        //             type: "file-manager",
+        //             isHeadlessCmsModel: false
+        //         });
+        //
+        //         if (!indexExists) {
+        //             logger.info(
+        //                 `No elastic search index found for files in tenant "${tenant.data.id}" and locale "${locale.code}".`
+        //             );
+        //             continue;
+        //         }
+        //
+        //         // Fetch latest file record from ES
+        //         const latestFile = await esFindOne<File>({
+        //             elasticsearchClient: this.elasticsearchClient,
+        //             index: esGetIndexName({
+        //                 tenant: tenant.data.id,
+        //                 locale: locale.code,
+        //                 type: "file-manager"
+        //             }),
+        //             body: {
+        //                 query: {
+        //                     bool: {
+        //                         filter: [
+        //                             { term: { "tenant.keyword": tenant.data.id } },
+        //                             { term: { "locale.keyword": locale.code } }
+        //                         ]
+        //                     }
+        //                 },
+        //                 sort: [
+        //                     {
+        //                         "id.keyword": "asc"
+        //                     }
+        //                 ]
+        //             }
+        //         });
+        //
+        //         if (!latestFile) {
+        //             logger.info(
+        //                 `No files found in tenant "${tenant.data.id}" and locale "${locale.code}".`
+        //             );
+        //             continue;
+        //         }
+        //
+        //         // Fetch latest aco search record from DDB using latest file "id"
+        //         const latestSearchRecord = await queryOne<{ id: string }>({
+        //             entity: this.ddbEntryEntity,
+        //             partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#wby-aco-${latestFile.id}`,
+        //             options: {
+        //                 eq: "L"
+        //             }
+        //         });
+        //
+        //         if (latestSearchRecord) {
+        //             logger.info(
+        //                 `Files already migrated to Search Records in tenant "${tenant.data.id}" and locale "${locale.code}".`
+        //             );
+        //             continue;
+        //         }
+        //         return true;
+        //     }
+        // }
+        // return false;
     }
 
     async execute({
