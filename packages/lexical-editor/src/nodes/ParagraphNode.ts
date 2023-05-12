@@ -198,8 +198,6 @@ export function $createParagraphNode(typographyStyleId?: string): ParagraphNode 
     return $applyNodeReplacement(new ParagraphNode(typographyStyleId));
 }
 
-export function $isParagraphNode(
-    node: LexicalNode | null | undefined
-): node is ParagraphNode {
+export function $isParagraphNode(node: LexicalNode | null | undefined): node is ParagraphNode {
     return node instanceof ParagraphNode;
 }
