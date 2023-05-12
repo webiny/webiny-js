@@ -27,6 +27,7 @@ import {
 import { createAco } from "~/index";
 import { createStorageOperations } from "./storageOperations";
 import { createIdentity } from "./identity";
+import { getIntrospectionQuery } from "graphql";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -133,6 +134,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         handler,
         invoke,
         aco,
-        search
+        search,
+        async introspect() {
+            return invoke({
+                body: {
+                    query: getIntrospectionQuery()
+                }
+            });
+        }
     };
 };
