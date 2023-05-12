@@ -14,6 +14,10 @@ import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
 import { BaseParagraphNode } from "~/nodes/BaseParagraphNode";
 import { ParagraphNode } from "lexical";
 
+
+/*
+* This is a list of all the nodes that Webiny's Lexical implementation supports OOTB.
+* */
 export const WebinyNodes: ReadonlyArray<
     | Klass<LexicalNode>
     | {
@@ -36,10 +40,9 @@ export const WebinyNodes: ReadonlyArray<
     TypographyElementNode,
     BaseParagraphNode,
     /*
-     * We inherit and replace the native ParagraphNode because in this way we can take advantage from the native lexical processing
-     * of the node, lib updates, copy/paste from clipboard(html/css cleaning) and
-     * provide custom theme styling and behavior on node/DOM creation and update.
-     * */
+    * In order to provide additional Webiny-related functionality, we override Lexical's ParagraphNode node.
+    * More info on overriding can be found here: https://lexical.dev/docs/concepts/node-replacement.
+    * */
     {
         replace: ParagraphNode,
         with: () => {
