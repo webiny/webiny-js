@@ -1,6 +1,6 @@
-import { createAdvancedSingleRenderer } from "~/admin/plugins/fieldRenderers/ref/advanced/detailedReferenceRenderer";
-import { createAdvancedMultipleRenderer } from "~/admin/plugins/fieldRenderers/ref/advanced/detailedReferencesRenderer";
+import { createAdvancedSingleRenderer } from "./detailedReferenceRenderer";
+import { createAdvancedMultipleRenderer } from "./detailedReferencesRenderer";
 
-export const createAdvancedRefRender = () => {
+export const createAdvancedRefRenderer = () => {
     return [createAdvancedSingleRenderer(), createAdvancedMultipleRenderer()];
 };
