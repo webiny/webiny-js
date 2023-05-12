@@ -3,11 +3,11 @@ import WebinyError from "@webiny/error";
 import { updatePageRecordPayload } from "~/utils/createRecordPayload";
 
 import { PbAcoContext, PbPageRecordData } from "~/types";
-import { PB_APP_NAME } from "~/contants";
+import { PB_PAGE_TYPE } from "~/contants";
 
 export const onPageAfterCreateFromHook = (context: PbAcoContext) => {
     const { aco, pageBuilder } = context;
-    const app = aco.getApp(PB_APP_NAME);
+    const app = aco.getApp(PB_PAGE_TYPE);
     /**
      * Intercept page revision creation and update the related record.
      * Here we perform an update since all the page revisions are related to the same search record entry.

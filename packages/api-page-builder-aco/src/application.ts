@@ -1,9 +1,9 @@
-import { IAcoAppRegisterParams } from "@webiny/api-aco/apps/types";
-import { PB_APP_NAME } from "~/contants";
+import { IAcoAppRegisterParams } from "@webiny/api-aco/types";
+import { PB_PAGE_TYPE } from "~/contants";
 
 export const createApplication = (): IAcoAppRegisterParams => {
     return {
-        name: PB_APP_NAME,
+        name: PB_PAGE_TYPE,
         apiName: "Pb",
         fields: [
             {

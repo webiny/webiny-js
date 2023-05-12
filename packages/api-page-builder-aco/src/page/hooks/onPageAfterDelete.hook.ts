@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
 
 import { PbAcoContext } from "~/types";
-import { PB_APP_NAME } from "~/contants";
+import { PB_PAGE_TYPE } from "~/contants";
 
 export const onPageAfterDeleteHook = ({ pageBuilder, aco }: PbAcoContext) => {
-    const app = aco.getApp(PB_APP_NAME);
+    const app = aco.getApp(PB_PAGE_TYPE);
     /**
      * Intercept page deletion and delete the related search record.
      */
