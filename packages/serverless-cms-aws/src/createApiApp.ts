@@ -16,7 +16,13 @@ export interface CreateApiAppParams extends CreateApiPulumiAppParams {
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
      */
-    elasticSearch?: PulumiAppParam<boolean>;
+    elasticSearch?: PulumiAppParam<
+        | boolean
+        | {
+              domainName: string;
+              indexPrefix: string;
+          }
+    >;
 
     plugins?: PluginCollection;
 }
@@ -27,6 +33,7 @@ export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
         generateCommonHandlers,
         executeDataMigrations
     ];
+
     if (projectAppParams.elasticSearch) {
         builtInPlugins.push(generateDdbEsHandlers);
     } else {
@@ -34,6 +41,19 @@ export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
     }
 
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
+
+    if (projectAppParams.elasticSearch) {
+        const { elasticSearch } = projectAppParams;
+        if (typeof elasticSearch === "object") {
+            if (elasticSearch.domainName) {
+                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+            }
+
+            if (elasticSearch.indexPrefix) {
+                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+            }
+        }
+    }
 
     return {
         id: "api",

@@ -20,7 +20,13 @@ export interface CreateCorePulumiAppParams {
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
      */
-    elasticSearch?: PulumiAppParam<boolean>;
+    elasticSearch?: PulumiAppParam<
+        | boolean
+        | {
+              domainName: string;
+              indexPrefix: string;
+          }
+    >;
 
     /**
      * Enables VPC for the application.
