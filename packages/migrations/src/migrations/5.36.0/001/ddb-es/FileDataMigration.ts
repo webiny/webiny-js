@@ -396,6 +396,10 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
 
                     migrationStatus[groupId] = true;
                     await context.createCheckpoint(migrationStatus);
+                } catch (e) {
+                    logger.error(
+                        `Error while executing migration in catch block, ${JSON.stringify(e)}`
+                    );
                 } finally {
                     await esPutIndexSettings({
                         elasticsearchClient: this.elasticsearchClient,
