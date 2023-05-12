@@ -3,7 +3,7 @@ import { Client } from "@elastic/elasticsearch";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { executeWithRetry } from "@webiny/utils";
-import chunk from "lodash/chunk";
+//import chunk from "lodash/chunk";
 
 import { createLocaleEntity } from "../entities/createLocaleEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
@@ -344,26 +344,40 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                             }
 
                             const executeDdb = () => {
-                                return Promise.all(
-                                    chunk(ddbItems, 200).map(ddbItemsChunk => {
-                                        return batchWriteAll({
-                                            table: this.ddbEntryEntity.table,
-                                            items: ddbItemsChunk
-                                        });
-                                    })
-                                );
+                                return batchWriteAll({
+                                    table: this.ddbEntryEntity.table,
+                                    items: ddbItems
+                                });
                             };
 
                             const executeDdbEs = () => {
-                                return Promise.all(
-                                    chunk(ddbEsItems, 200).map(ddbEsItemsChunk => {
-                                        return batchWriteAll({
-                                            table: this.ddbEsEntryEntity.table,
-                                            items: ddbEsItemsChunk
-                                        });
-                                    })
-                                );
+                                return batchWriteAll({
+                                    table: this.ddbEsEntryEntity.table,
+                                    items: ddbEsItems
+                                });
                             };
+
+                            // const executeDdb = () => {
+                            //     return Promise.all(
+                            //         chunk(ddbItems, 200).map(ddbItemsChunk => {
+                            //             return batchWriteAll({
+                            //                 table: this.ddbEntryEntity.table,
+                            //                 items: ddbItemsChunk
+                            //             });
+                            //         })
+                            //     );
+                            // };
+
+                            // const executeDdbEs = () => {
+                            //     return Promise.all(
+                            //         chunk(ddbEsItems, 200).map(ddbEsItemsChunk => {
+                            //             return batchWriteAll({
+                            //                 table: this.ddbEsEntryEntity.table,
+                            //                 items: ddbEsItemsChunk
+                            //             });
+                            //         })
+                            //     );
+                            // };
 
                             await executeWithRetry(executeDdb, {
                                 onFailedAttempt: error => {
