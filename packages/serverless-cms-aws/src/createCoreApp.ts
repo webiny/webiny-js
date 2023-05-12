@@ -16,19 +16,6 @@ export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
 
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
 
-    if (projectAppParams.elasticSearch) {
-        const { elasticSearch } = projectAppParams;
-        if (typeof elasticSearch === "object") {
-            if (elasticSearch.domainName) {
-                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
-            }
-
-            if (elasticSearch.indexPrefix) {
-                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
-            }
-        }
-    }
-
     return {
         id: "core",
         name: "Core",
