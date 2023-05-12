@@ -224,7 +224,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                                     ]
                                 }
                             },
-                            size: 10000,
+                            size: 5000,
                             sort: [
                                 {
                                     "id.keyword": "asc"
