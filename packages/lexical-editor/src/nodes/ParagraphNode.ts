@@ -5,8 +5,8 @@ import {
     ElementFormatType,
     LexicalNode,
     NodeKey,
-    ParagraphNode,
-    SerializedParagraphNode,
+    ParagraphNode as BaseParagraphNode,
+    SerializedParagraphNode as SerializedBaseParagraphNode,
     Spread
 } from "lexical";
 import { EditorConfig } from "lexical";
@@ -16,16 +16,16 @@ import { addClassNamesToElement } from "@lexical/utils";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 import { ThemeEmotionMap } from "~/types";
 
-export type SerializeBaseParagraphNode = Spread<
+export type SerializeParagraphNode = Spread<
     {
         styles: ThemeStyleValue[];
-        type: "base-paragraph-node";
+        type: "paragraph-element";
     },
-    SerializedParagraphNode
+    SerializedBaseParagraphNode
 >;
 
-export class BaseParagraphNode
-    extends ParagraphNode
+export class ParagraphNode
+    extends BaseParagraphNode
     implements TextNodeThemeStyles, TypographyStylesNode
 {
     __styles: ThemeStyleValue[] = [];
@@ -87,11 +87,11 @@ export class BaseParagraphNode
     }
 
     static override getType(): string {
-        return "base-paragraph-node";
+        return "paragraph-element";
     }
 
-    static override clone(node: BaseParagraphNode): BaseParagraphNode {
-        return new BaseParagraphNode(node.getTypographyStyleId(), node.__key);
+    static override clone(node: ParagraphNode): ParagraphNode {
+        return new ParagraphNode(node.getTypographyStyleId(), node.__key);
     }
 
     protected updateElementWithThemeClasses(element: HTMLElement, theme: WebinyTheme): HTMLElement {
@@ -163,8 +163,8 @@ export class BaseParagraphNode
     /*
      * Serialize the JSON data back into a node
      */
-    static override importJSON(serializedNode: SerializeBaseParagraphNode): BaseParagraphNode {
-        const node = $createBaseParagraphNode();
+    static override importJSON(serializedNode: SerializeParagraphNode): BaseParagraphNode {
+        const node = $createParagraphNode();
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
         node.setDirection(serializedNode.direction);
@@ -175,18 +175,18 @@ export class BaseParagraphNode
     /*
      * Serialize the node to JSON data representation.
      * */
-    override exportJSON(): SerializeBaseParagraphNode {
+    override exportJSON(): SerializeParagraphNode {
         return {
             ...super.exportJSON(),
             styles: this.__styles,
-            type: "base-paragraph-node",
+            type: "paragraph-element",
             version: 1
         };
     }
 }
 
 function convertParagraphElement(element: HTMLElement): DOMConversionOutput {
-    const node = $createBaseParagraphNode();
+    const node = $createParagraphNode();
     if (element.style) {
         node.setFormat(element.style.textAlign as ElementFormatType);
     }
@@ -194,12 +194,12 @@ function convertParagraphElement(element: HTMLElement): DOMConversionOutput {
     return { node };
 }
 
-export function $createBaseParagraphNode(typographyStyleId?: string): BaseParagraphNode {
-    return $applyNodeReplacement(new BaseParagraphNode(typographyStyleId));
+export function $createParagraphNode(typographyStyleId?: string): ParagraphNode {
+    return $applyNodeReplacement(new ParagraphNode(typographyStyleId));
 }
 
-export function $isBaseParagraphNode(
+export function $isParagraphNode(
     node: LexicalNode | null | undefined
-): node is BaseParagraphNode {
-    return node instanceof BaseParagraphNode;
+): node is ParagraphNode {
+    return node instanceof ParagraphNode;
 }

@@ -40,7 +40,7 @@ export type ToolbarState = {
     list: NodeState;
     quote: NodeState;
     textType: LexicalTextType;
-    baseParagraph: NodeState;
+    paragraph: NodeState;
 };
 
 /*

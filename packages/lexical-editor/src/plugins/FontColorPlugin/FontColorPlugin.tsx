@@ -14,7 +14,7 @@ import {
     COMMAND_PRIORITY_EDITOR
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
-import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 export const FontColorPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
@@ -36,7 +36,7 @@ export const FontColorPlugin: React.FC = () => {
                         $applyStylesToNode(fontColorNode, selection);
                         $insertNodes([fontColorNode]);
                         if ($isRootOrShadowRoot(fontColorNode.getParentOrThrow())) {
-                            $wrapNodeInElement(fontColorNode, $createBaseParagraphNode).selectEnd();
+                            $wrapNodeInElement(fontColorNode, $createParagraphNode).selectEnd();
                         }
                     }
                 });

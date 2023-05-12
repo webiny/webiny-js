@@ -18,7 +18,7 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
-import { $isBaseParagraphNode, BaseParagraphNode } from "~/nodes/BaseParagraphNode";
+import { $isParagraphNode, ParagraphNode } from "~/nodes/ParagraphNode";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -53,7 +53,7 @@ export const TypographyAction: TypographyAction = () => {
     const [typography, setTypography] = useState<TypographyValue>();
     const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
-    const isBaseParagraphSelected = textBlockSelection?.state?.baseParagraph.isSelected || false;
+    const isBaseParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
@@ -111,8 +111,8 @@ export const TypographyAction: TypographyAction = () => {
                 return;
             }
 
-            if ($isBaseParagraphNode(textBlockSelection?.element)) {
-                const el = textBlockSelection.element as BaseParagraphNode;
+            if ($isParagraphNode(textBlockSelection?.element)) {
+                const el = textBlockSelection.element as ParagraphNode;
                 const styleId = el.getTypographyStyleId();
                 if (!styleId) {
                     return;
