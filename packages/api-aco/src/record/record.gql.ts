@@ -19,16 +19,18 @@ export const createSchema = async (context: AcoContext) => {
         });
     });
 
-    return new GraphQLSchemaPlugin({
-        typeDefs: createAppsSchema({
-            models,
-            apps,
-            plugins
-        }),
-        resolvers: createAppsResolvers({
-            models,
-            apps,
-            plugins
-        })
+    return context.benchmark.measure("aco.schema.generate", async () => {
+        return new GraphQLSchemaPlugin({
+            typeDefs: createAppsSchema({
+                models,
+                apps,
+                plugins
+            }),
+            resolvers: createAppsResolvers({
+                models,
+                apps,
+                plugins
+            })
+        });
     });
 };

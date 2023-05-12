@@ -9,8 +9,6 @@ import { createAcoApp, createAcoAppModifier } from "~/plugins";
 import { createAppsSchema } from "~/record/graphql/createAppsSchema";
 import { CmsFieldTypePlugins, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
-jest.retryTimes(0);
-
 interface GraphQlType {
     kind: Uppercase<string>;
     name: string;
@@ -27,7 +25,7 @@ const getTypesFromResult = (result: any): GraphQlType[] => {
 };
 
 describe("record graphql generator", () => {
-    it.skip("should be no graphql schema when no apps are present", async () => {
+    it("should be no graphql schema when no apps are present", async () => {
         const { introspect } = useGraphQlHandler();
         const [result] = await introspect();
 

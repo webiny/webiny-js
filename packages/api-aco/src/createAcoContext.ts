@@ -90,7 +90,11 @@ export const createAcoContext = () => {
             return;
         }
 
-        await setupAcoContext(context);
-        await createAcoHooks(context);
+        await context.benchmark.measure("aco.context.setup", async () => {
+            await setupAcoContext(context);
+        });
+        await context.benchmark.measure("aco.context.hooks", async () => {
+            await createAcoHooks(context);
+        });
     });
 };

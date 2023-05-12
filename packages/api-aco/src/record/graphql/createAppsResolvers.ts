@@ -3,14 +3,6 @@ import { createFieldResolversFactory } from "@webiny/api-headless-cms/graphql/sc
 import { IAcoApp } from "~/types";
 import { resolve } from "~/utils/resolve";
 
-/**
- * Cache the GraphQL Schema Resolvers while Lambda lives.
- * It will reset on Lambda redeploy.
- *
- * TODO This will work until we introduce the ability to update ACO App models via the UI / Database.
- */
-let resolvers: Resolvers | undefined;
-
 interface Params {
     apps: IAcoApp[];
     models: CmsModel[];
@@ -24,15 +16,9 @@ interface Resolvers {
 }
 
 export const createAppsResolvers = (params: Params): Resolvers => {
-    /**
-     * Take the Cache if it exists.
-     */
-    if (resolvers) {
-        return resolvers;
-    }
-
     const { apps, models, plugins } = params;
-    resolvers = {
+
+    const resolvers: Resolvers = {
         SearchQuery: {},
         SearchMutation: {}
     };

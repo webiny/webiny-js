@@ -1,7 +1,7 @@
 import createGraphQLHandler from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import { createHandler, createEventHandler } from "@webiny/handler-aws/raw";
+import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
 import { AcoContext } from "~/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";

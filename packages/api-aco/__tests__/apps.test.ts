@@ -13,8 +13,6 @@ import { createSearchModelDefinition, SEARCH_RECORD_MODEL_ID } from "~/record/re
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createAcoAppModifier } from "~/plugins";
 
-jest.retryTimes(0);
-
 describe("aco apps", () => {
     const { handler } = useHandler();
 
