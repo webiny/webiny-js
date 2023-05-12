@@ -6,6 +6,7 @@ export const customGroupAuthorizer = () => {
         // @ts-ignore Even though this object doesn't contain the `name` property
         // and it's not valid according to TS, we still want to have it in our test.
         security.addAuthorizer(async () => {
+            // Use customPermission object.
             const ttt = [
                 { something: "custom" },
                 { name: "custom" },

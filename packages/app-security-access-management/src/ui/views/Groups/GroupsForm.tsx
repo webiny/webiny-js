@@ -141,7 +141,6 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => {
-                console.log(JSON.stringify(data.permissions, null, 2));
                 return (
                     <SimpleForm>
                         {loading && <CircularProgress />}

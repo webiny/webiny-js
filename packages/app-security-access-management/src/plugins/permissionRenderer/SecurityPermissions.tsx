@@ -32,7 +32,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
     const { getPermission } = useSecurity();
 
     // We disable form elements for custom permissions if AACL cannot be used.
-    const cannotUseAAcl = useMemo(() => {
+    const cannotUseAacl = useMemo(() => {
         const wcpPermissions = getPermission<WcpPermission>("wcp");
         return wcpPermissions?.aacl === false;
     }, []);
@@ -111,7 +111,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                     <Fragment>
                         <Grid className={gridNoPaddingClass}>
                             <Cell span={12}>
-                                {data.accessLevel === "custom" && cannotUseAAcl && (
+                                {data.accessLevel === "custom" && cannotUseAacl && (
                                     <CannotUseAaclAlert />
                                 )}
                             </Cell>
@@ -122,7 +122,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                             </Cell>
                             <Cell span={6}>
                                 <Bind name={"accessLevel"}>
-                                    <Select label={t`Access Level`} disabled={cannotUseAAcl}>
+                                    <Select label={t`Access Level`} disabled={cannotUseAacl}>
                                         <option value={NO_ACCESS}>{t`No access`}</option>
                                         <option value={FULL_ACCESS}>{t`Full access`}</option>
                                         <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
@@ -139,7 +139,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind name={"apiKeyAccessScope"}>
-                                                <Select label={t`Access Scope`} disabled={cannotUseAAcl}>
+                                                <Select label={t`Access Scope`} disabled={cannotUseAacl}>
                                                     <option
                                                         value={NO_ACCESS}
                                                     >{t`No access`}</option>
@@ -158,7 +158,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind name={"groupAccessScope"}>
-                                                <Select label={t`Access Scope`} disabled={cannotUseAAcl}>
+                                                <Select label={t`Access Scope`} disabled={cannotUseAacl}>
                                                     <option
                                                         value={NO_ACCESS}
                                                     >{t`No access`}</option>
