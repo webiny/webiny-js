@@ -24,9 +24,7 @@ const AccordionItemHeader = styled.div<{ theme: Theme; open?: boolean }>`
     .accordion-item-title {
         ${props => props.theme.styles.typography.paragraph1};
         color: ${props =>
-            props.open
-                ? props.theme.styles.colors.color1
-                : props.theme.styles.typography.paragraph1.color};
+            props.open ? props.theme.styles.colors.color1 : props.theme.styles.colors.color3};
         font-size: 20px;
         font-weight: 700;
         padding-right: 24px;
