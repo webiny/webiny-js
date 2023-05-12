@@ -53,7 +53,7 @@ export const TypographyAction: TypographyAction = () => {
     const [typography, setTypography] = useState<TypographyValue>();
     const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
-    const isBaseParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
+    const isParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
@@ -148,7 +148,7 @@ export const TypographyAction: TypographyAction = () => {
                 }
             }
         }
-    }, [isTypographySelected, textType, isBaseParagraphSelected]);
+    }, [isTypographySelected, textType, isParagraphSelected]);
 
     return (
         <TypographyActionContext.Provider
