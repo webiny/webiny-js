@@ -98,6 +98,8 @@ interface CreateSearchModelDefinitionParams {
     fields?: CmsModelField[];
 }
 
+export const DEFAULT_FIELDS = ["type", "title", "content", "location", "data", "tags"];
+
 export const createSearchModelDefinition = (
     params?: CreateSearchModelDefinitionParams
 ): SearchRecordModelDefinition => {
@@ -105,7 +107,7 @@ export const createSearchModelDefinition = (
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
         titleFieldId: "title",
-        layout: [["type"], ["title"], ["content"], ["location"], ["data"], ["tags"]],
+        layout: DEFAULT_FIELDS.map(field => [field]),
         fields: [
             typeField(),
             titleField(),

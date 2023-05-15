@@ -18,6 +18,21 @@ describe("`search` CRUD", () => {
         const recordA = responseA.data.search.createRecord.data;
         expect(recordA).toEqual({ ...recordMocks.recordA, id: recordA.id });
 
+        const [recordAResponse] = await search.getRecord({ id: recordA.id });
+        expect(recordAResponse).toEqual({
+            data: {
+                search: {
+                    getRecord: {
+                        data: {
+                            ...recordMocks.recordA,
+                            id: recordA.id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
         const [responseB] = await search.createRecord({ data: recordMocks.recordB });
         const recordB = responseB.data.search.createRecord.data;
         expect(recordB).toEqual({ ...recordMocks.recordB, id: recordB.id });
@@ -36,7 +51,13 @@ describe("`search` CRUD", () => {
             ...recordMocks.recordE,
             id: recordE.id,
             content: null,
-            data: {},
+            data: {
+                customCreatedOn: null,
+                customLocked: null,
+                customVersion: null,
+                someText: null,
+                identity: null
+            },
             tags: []
         });
 
@@ -49,15 +70,24 @@ describe("`search` CRUD", () => {
             }
         });
 
-        expect(listResponsePageFolder1.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
-                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
-                ]),
-                error: null
-            })
-        );
+        expect(listResponsePageFolder1).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            { ...recordMocks.recordA, id: recordA.id },
+                            { ...recordMocks.recordB, id: recordB.id }
+                        ],
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 2
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         // List records -> type: "page" / folderId: "folder-2"
         const [listResponsePageFolder2] = await search.listRecords({
@@ -84,21 +114,36 @@ describe("`search` CRUD", () => {
             }
         });
 
-        expect(listResponsePost.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordD, id: recordD.id }),
-                    expect.objectContaining({
-                        ...recordMocks.recordE,
-                        id: recordE.id,
-                        content: null,
-                        data: {},
-                        tags: []
-                    })
-                ]),
-                error: null
-            })
-        );
+        expect(listResponsePost).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            { ...recordMocks.recordD, id: recordD.id },
+                            {
+                                ...recordMocks.recordE,
+                                id: recordE.id,
+                                content: null,
+                                data: {
+                                    customCreatedOn: null,
+                                    customLocked: null,
+                                    customVersion: null,
+                                    identity: null,
+                                    someText: null
+                                },
+                                tags: []
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 2
+                        }
+                    }
+                }
+            }
+        });
 
         // Let's check cursor based pagination meta.
         const [listResponsePageWithLimit] = await search.listRecords({
@@ -191,14 +236,21 @@ describe("`search` CRUD", () => {
             where: { type: "page", tags_startsWith: "scope:" }
         });
 
-        expect(tagsStartsWithResponse.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id })
-                ]),
-                error: null
-            })
-        );
+        expect(tagsStartsWithResponse).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [{ ...recordMocks.recordA, id: recordA.id }],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
 
         // Let's filter records using `tags_not_startsWith`
         const [tagsNotStartsWithResponse] = await search.listRecords({

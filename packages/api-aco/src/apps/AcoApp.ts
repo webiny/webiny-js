@@ -1,16 +1,18 @@
 import WebinyError from "@webiny/error";
 import structuredClone from "@ungap/structured-clone";
-import { IAcoApp, IAcoAppParams } from "~/types";
 import {
     AcoContext,
     AcoSearchRecordCrudBase,
     CreateSearchRecordParams,
+    IAcoApp,
+    IAcoAppParams,
     ListSearchRecordsParams,
     SearchRecord
 } from "~/types";
 import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import lodashUpperFirst from "lodash/upperFirst";
 import lodashCamelCase from "lodash/camelCase";
+import { DEFAULT_FIELDS } from "~/record/record.model";
 
 const createApiName = (name: string) => {
     return lodashUpperFirst(lodashCamelCase(name));
@@ -20,7 +22,7 @@ export class AcoApp implements IAcoApp {
     public readonly name: string;
     public readonly context: AcoContext;
     public readonly model: CmsModel;
-    private fields: CmsModelField[];
+    private readonly fields: CmsModelField[];
 
     public get search(): AcoSearchRecordCrudBase {
         return {
@@ -91,7 +93,19 @@ export class AcoApp implements IAcoApp {
     }
 
     public removeField(id: string): void {
+        if (DEFAULT_FIELDS.includes(id)) {
+            throw new WebinyError(
+                `Cannot remove the default field from the ACO App.`,
+                "REMOVE_DEFAULT_FIELD_ERROR",
+                {
+                    fieldId: id
+                }
+            );
+        }
         const index = this.fields.findIndex(field => field.id === id);
+        if (index === -1) {
+            return;
+        }
         this.fields.splice(index, 1);
     }
 }

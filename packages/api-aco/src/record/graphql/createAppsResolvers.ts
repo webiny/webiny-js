@@ -1,7 +1,7 @@
 import { CmsEntry, CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
 import { createFieldResolversFactory } from "@webiny/api-headless-cms/graphql/schema/createFieldResolvers";
 import { IAcoApp } from "~/types";
-import { resolve } from "~/utils/resolve";
+import { resolve, resolveList } from "~/utils/resolve";
 import { parseIdentifier } from "@webiny/utils";
 import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
 
@@ -38,26 +38,32 @@ export const createAppsResolvers = (params: Params): Resolvers => {
             });
         };
         resolvers.SearchQuery[`list${apiName}`] = async (_: unknown, args: any) => {
-            return resolve(() => {
+            return resolveList(() => {
                 return app.search.list(args);
-            });
-        };
-        resolvers.SearchMutation[`create${apiName}`] = async (_: unknown, args: any) => {
-            return resolve(() => {
-                return app.search.create(args.data || {});
             });
         };
         /**
          * Mutations
          */
+        resolvers.SearchMutation[`create${apiName}`] = async (_: unknown, args: any) => {
+            return resolve(() => {
+                const { id } = parseIdentifier(args.data?.id);
+                return app.search.create({
+                    ...args.data,
+                    id
+                });
+            });
+        };
         resolvers.SearchMutation[`update${apiName}`] = async (_: unknown, args: any) => {
             return resolve(() => {
-                return app.search.update(args.id, args.data || {});
+                const { id } = parseIdentifier(args.id);
+                return app.search.update(id, args.data || {});
             });
         };
         resolvers.SearchMutation[`delete${apiName}`] = async (_: unknown, args: any) => {
             return resolve(() => {
-                return app.search.delete(args.id);
+                const { id } = parseIdentifier(args.id);
+                return app.search.delete(id);
             });
         };
         const createFieldResolvers = createFieldResolversFactory({
@@ -70,27 +76,17 @@ export const createAppsResolvers = (params: Params): Resolvers => {
         const fieldResolvers = createFieldResolvers({
             graphQLType: apiName,
             fields: app.model.fields,
-            isRoot: true
+            isRoot: true,
+            extraResolvers: {
+                id: (entry: CmsEntry) => {
+                    const { id } = parseIdentifier(entry.id);
+                    return removeAcoRecordPrefix(id);
+                }
+            }
         });
 
         Object.assign(resolvers, fieldResolvers);
-        /**
-         * Should not happen but let's be safe.
-         * The code should explode before this check if something was wrong.
-         */
-        if (!resolvers[apiName]) {
-            continue;
-        }
-        Object.assign(resolvers[apiName], {
-            id: async (parent: CmsEntry) => {
-                const { id } = parseIdentifier(parent.id);
-                return removeAcoRecordPrefix(id);
-            },
-            entryId: async (parent: CmsEntry) => {
-                const { id } = parseIdentifier(parent.id);
-                return removeAcoRecordPrefix(id);
-            }
-        });
+        delete resolvers[apiName].entryId;
     }
 
     return resolvers;

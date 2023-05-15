@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { getRecordFieldValues } from "~/utils/getFieldValues";
 import { AcoSearchRecordStorageOperations } from "./record.types";
@@ -33,7 +33,7 @@ export const createSearchRecordOperations = (
         async getRecord(model, { id }) {
             return security.withoutAuthorization(async () => {
                 const record = await getRecord(model, id);
-                return getRecordFieldValues(record, baseFields);
+                return getRecordFieldValues(record);
             });
         },
         listRecords(model, params) {
@@ -48,7 +48,7 @@ export const createSearchRecordOperations = (
                     }
                 });
 
-                return [entries.map(entry => getRecordFieldValues(entry, baseFields)), meta];
+                return [entries.map(entry => getRecordFieldValues(entry)), meta];
             });
         },
         createRecord(model, { data: SearchRecordData }) {
@@ -61,7 +61,7 @@ export const createSearchRecordOperations = (
                     id: attachAcoRecordPrefix(rest.id)
                 });
 
-                return getRecordFieldValues(entry, baseFields);
+                return getRecordFieldValues(entry);
             });
         },
         updateRecord(this: AcoSearchRecordStorageOperations, model, { id, data }) {
@@ -79,7 +79,7 @@ export const createSearchRecordOperations = (
                     input
                 );
 
-                return getRecordFieldValues(entry, baseFields);
+                return getRecordFieldValues(entry);
             });
         },
         deleteRecord(model, { id }) {

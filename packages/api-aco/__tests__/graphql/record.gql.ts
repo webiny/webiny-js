@@ -8,15 +8,15 @@ const DATA_FIELD = /* GraphQL */ `
             folderId
         }
         data {
-            title
-            createdBy {
+            someText
+            identity {
                 id
                 displayName
                 type
             }
-            createdOn
-            version
-            locked
+            customCreatedOn
+            customVersion
+            customLocked
         }
         tags
     }
@@ -39,7 +39,7 @@ const LIST_META_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_RECORD = /* GraphQL */ `
-    mutation CreateRecord($data: AcoSearchRecordWebinyInput!) {
+    mutation CreateRecord($data: AcoSearchRecordWebinyCreateInput!) {
         search {
             createRecord: createAcoSearchRecordWebiny(data: $data) {
                 data ${DATA_FIELD}
@@ -50,7 +50,7 @@ export const CREATE_RECORD = /* GraphQL */ `
 `;
 
 export const UPDATE_RECORD = /* GraphQL */ `
-    mutation UpdateRecord($id: ID!, $data: AcoSearchRecordWebinyInput!) {
+    mutation UpdateRecord($id: ID!, $data: AcoSearchRecordWebinyUpdateInput!) {
         search {
             updateRecord: updateAcoSearchRecordWebiny(id: $id, data: $data) {
                 data ${DATA_FIELD}

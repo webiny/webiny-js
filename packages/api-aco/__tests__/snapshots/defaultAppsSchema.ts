@@ -10,20 +10,24 @@ export const createDefaultAppsSchemaSnapshot = () => {
           folderId_not_in: [String]
           folderId_contains: String
           folderId_not_contains: String
+          folderId_startsWith: String
+          folderId_not_startsWith: String
         }
 
-        type AcoSearchRecordWebiny_Data_CreatedBy {
+        type AcoSearchRecordWebiny_Data_Identity {
           id: String
           displayName: String
           type: String
         }
-        input AcoSearchRecordWebiny_Data_CreatedByWhereInput {
+        input AcoSearchRecordWebiny_Data_IdentityWhereInput {
           id: String
           id_not: String
           id_in: [String]
           id_not_in: [String]
           id_contains: String
           id_not_contains: String
+          id_startsWith: String
+          id_not_startsWith: String
 
           displayName: String
           displayName_not: String
@@ -31,6 +35,8 @@ export const createDefaultAppsSchemaSnapshot = () => {
           displayName_not_in: [String]
           displayName_contains: String
           displayName_not_contains: String
+          displayName_startsWith: String
+          displayName_not_startsWith: String
 
           type: String
           type_not: String
@@ -38,52 +44,60 @@ export const createDefaultAppsSchemaSnapshot = () => {
           type_not_in: [String]
           type_contains: String
           type_not_contains: String
+          type_startsWith: String
+          type_not_startsWith: String
         }
 
         type AcoSearchRecordWebiny_Data {
-          title: String
-          createdBy: AcoSearchRecordWebiny_Data_CreatedBy
-          createdOn: DateTime
-          version: Number
-          locked: Boolean
+          someText: String
+          identity: AcoSearchRecordWebiny_Data_Identity
+          customCreatedOn: DateTime
+          customVersion: Number
+          customLocked: Boolean
         }
         input AcoSearchRecordWebiny_DataWhereInput {
-          title: String
-          title_not: String
-          title_in: [String]
-          title_not_in: [String]
-          title_contains: String
-          title_not_contains: String
+          someText: String
+          someText_not: String
+          someText_in: [String]
+          someText_not_in: [String]
+          someText_contains: String
+          someText_not_contains: String
+          someText_startsWith: String
+          someText_not_startsWith: String
 
-          createdBy: AcoSearchRecordWebiny_Data_CreatedByWhereInput
+          identity: AcoSearchRecordWebiny_Data_IdentityWhereInput
 
-          createdOn: DateTime
-          createdOn_not: DateTime
-          createdOn_in: [DateTime]
-          createdOn_not_in: [DateTime]
-          createdOn_lt: DateTime
-          createdOn_lte: DateTime
-          createdOn_gt: DateTime
-          createdOn_gte: DateTime
+          customCreatedOn: DateTime
+          customCreatedOn_not: DateTime
+          customCreatedOn_in: [DateTime]
+          customCreatedOn_not_in: [DateTime]
+          customCreatedOn_lt: DateTime
+          customCreatedOn_lte: DateTime
+          customCreatedOn_gt: DateTime
+          customCreatedOn_gte: DateTime
 
-          version: Number
-          version_not: Number
-          version_in: [Number]
-          version_not_in: [Number]
-          version_lt: Number
-          version_lte: Number
-          version_gt: Number
-          version_gte: Number
+          customVersion: Number
+          customVersion_not: Number
+          customVersion_in: [Number]
+          customVersion_not_in: [Number]
+          customVersion_lt: Number
+          customVersion_lte: Number
+          customVersion_gt: Number
+          customVersion_gte: Number
           # there must be two numbers sent in the array
-          version_between: [Number!]
+          customVersion_between: [Number!]
           # there must be two numbers sent in the array
-          version_not_between: [Number!]
+          customVersion_not_between: [Number!]
 
-          locked: Boolean
-          locked_not: Boolean
+          customLocked: Boolean
+          customLocked_not: Boolean
         }
 
-        type AcoSearchRecordWebinyData {
+        type AcoSearchRecordWebiny {
+          id: ID!
+          savedOn: DateTime!
+          createdOn: DateTime!
+          createdBy: AcoUser!
           type: String
           title: String
           content: String
@@ -92,38 +106,25 @@ export const createDefaultAppsSchemaSnapshot = () => {
           tags: [String]
         }
 
-        type AcoSearchRecordWebiny {
-          id: ID!
-          type: String!
-          location: AcoSearchLocationType!
-          title: String!
-          content: String
-          data: AcoSearchRecordWebinyData!
-          tags: [String!]!
-          savedOn: DateTime
-          createdOn: DateTime
-          createdBy: AcoUser
-        }
-
         input AcoSearchRecordWebiny_LocationInput {
           folderId: String!
         }
 
-        input AcoSearchRecordWebiny_Data_CreatedByInput {
+        input AcoSearchRecordWebiny_Data_IdentityInput {
           id: String
           displayName: String
           type: String
         }
 
         input AcoSearchRecordWebiny_DataInput {
-          title: String
-          createdBy: AcoSearchRecordWebiny_Data_CreatedByInput
-          createdOn: DateTime
-          version: Number
-          locked: Boolean
+          someText: String
+          identity: AcoSearchRecordWebiny_Data_IdentityInput
+          customCreatedOn: DateTime
+          customVersion: Number
+          customLocked: Boolean
         }
 
-        input AcoSearchRecordWebinyInput {
+        input AcoSearchRecordWebinyCreateInput {
           id: ID
           type: String!
           title: String!
@@ -132,13 +133,13 @@ export const createDefaultAppsSchemaSnapshot = () => {
           data: AcoSearchRecordWebiny_DataInput!
           tags: [String!]
         }
-
-        input AcoSearchRecordWebinyListWhereInput {
-          type: String!
-          location: AcoSearchLocationInput
-          tags_in: [String!]
-          tags_startsWith: String
-          tags_not_startsWith: String
+        
+        input AcoSearchRecordWebinyUpdateInput {
+          title: String
+          content: String
+          location: AcoSearchRecordWebiny_LocationInput
+          data: AcoSearchRecordWebiny_DataInput
+          tags: [String!]
         }
 
         type AcoSearchRecordWebinyResponse {
@@ -146,10 +147,106 @@ export const createDefaultAppsSchemaSnapshot = () => {
           error: AcoError
         }
 
+        input AcoSearchRecordWebinyListWhereInput {
+          id: ID
+          id_not: ID
+          id_in: [ID!]
+          id_not_in: [ID!]
+          entryId: String
+          entryId_not: String
+          entryId_in: [String!]
+          entryId_not_in: [String!]
+          createdOn: DateTime
+          createdOn_gt: DateTime
+          createdOn_gte: DateTime
+          createdOn_lt: DateTime
+          createdOn_lte: DateTime
+          createdOn_between: [DateTime!]
+          createdOn_not_between: [DateTime!]
+          savedOn: DateTime
+          savedOn_gt: DateTime
+          savedOn_gte: DateTime
+          savedOn_lt: DateTime
+          savedOn_lte: DateTime
+          savedOn_between: [DateTime!]
+          savedOn_not_between: [DateTime!]
+          createdBy: String
+          createdBy_not: String
+          createdBy_in: [String!]
+          createdBy_not_in: [String!]
+          ownedBy: String
+          ownedBy_not: String
+          ownedBy_in: [String!]
+          ownedBy_not_in: [String!]
+          status: String
+          status_not: String
+          status_in: [String!]
+          status_not_in: [String!]
+        
+          type: String
+          type_not: String
+          type_in: [String]
+          type_not_in: [String]
+          type_contains: String
+          type_not_contains: String
+          type_startsWith: String
+          type_not_startsWith: String
+        
+          title: String
+          title_not: String
+          title_in: [String]
+          title_not_in: [String]
+          title_contains: String
+          title_not_contains: String
+          title_startsWith: String
+          title_not_startsWith: String
+        
+          content: String
+          content_not: String
+          content_in: [String]
+          content_not_in: [String]
+          content_contains: String
+          content_not_contains: String
+          content_startsWith: String
+          content_not_startsWith: String
+        
+          location: AcoSearchRecordWebiny_LocationWhereInput
+          data: AcoSearchRecordWebiny_DataWhereInput
+        
+          tags: String
+          tags_not: String
+          tags_in: [String]
+          tags_not_in: [String]
+          tags_contains: String
+          tags_not_contains: String
+          tags_startsWith: String
+          tags_not_startsWith: String
+        
+          AND: [AcoSearchRecordWebinyListWhereInput!]
+          OR: [AcoSearchRecordWebinyListWhereInput!]
+        }
+
         type AcoSearchRecordWebinyListResponse {
           data: [AcoSearchRecordWebiny!]
           error: AcoError
           meta: AcoMeta
+        }
+        
+        enum AcoSearchRecordWebinyListSorter {
+          id_ASC
+          id_DESC
+          savedOn_ASC
+          savedOn_DESC
+          createdOn_ASC
+          createdOn_DESC
+          type_ASC
+          type_DESC
+          title_ASC
+          title_DESC
+          content_ASC
+          content_DESC
+          tags_ASC
+          tags_DESC
         }
 
         extend type SearchQuery {
@@ -167,11 +264,11 @@ export const createDefaultAppsSchemaSnapshot = () => {
 
         extend type SearchMutation {
           createAcoSearchRecordWebiny(
-            data: AcoSearchRecordWebinyInput!
+            data: AcoSearchRecordWebinyCreateInput!
           ): AcoSearchRecordWebinyResponse!
           updateAcoSearchRecordWebiny(
             id: ID!
-            data: AcoSearchRecordWebinyInput!
+            data: AcoSearchRecordWebinyUpdateInput!
           ): AcoSearchRecordWebinyResponse!
           deleteAcoSearchRecordWebiny(id: ID!): AcoBooleanResponse!
         }

@@ -2,22 +2,22 @@ import { IAcoAppRegisterParams } from "~/types";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createAcoApp } from "~/plugins";
 
-export const createMockAppTitleField = (): CmsModelField => {
+export const createMockAppTextField = (): CmsModelField => {
     return {
-        id: "title",
-        fieldId: "title",
+        id: "someText",
+        fieldId: "someText",
         type: "text",
-        storageId: "text@title",
-        label: "Title"
+        storageId: "text@someText",
+        label: "Some Text"
     };
 };
-export const createMockAppCreatedByField = (): CmsModelField => {
+export const createMockAppIdentityField = (): CmsModelField => {
     return {
-        id: "createdBy",
-        fieldId: "createdBy",
+        id: "identity",
+        fieldId: "identity",
         type: "object",
-        storageId: "object@createdBy",
-        label: "Created By",
+        storageId: "object@identity",
+        label: "Identity",
         settings: {
             fields: [
                 {
@@ -45,31 +45,34 @@ export const createMockAppCreatedByField = (): CmsModelField => {
         }
     };
 };
-export const createMockAppCreatedOnField = (): CmsModelField => {
+export const createMockAppCustomCreatedOnField = (): CmsModelField => {
     return {
-        id: "createdOn",
-        fieldId: "createdOn",
+        id: "customCreatedOn",
+        fieldId: "customCreatedOn",
         type: "datetime",
-        storageId: "datetime@createdOn",
-        label: "Created On"
+        storageId: "datetime@customCreatedOn",
+        label: "Custom Created On",
+        settings: {
+            type: "dateTimeWithoutTimezone"
+        }
     };
 };
-export const createMockAppVersionField = (): CmsModelField => {
+export const createMockAppCustomVersionField = (): CmsModelField => {
     return {
-        id: "version",
-        fieldId: "version",
+        id: "customVersion",
+        fieldId: "customVersion",
         type: "number",
-        storageId: "number@version",
-        label: "Version"
+        storageId: "number@customVersion",
+        label: "Custom Version"
     };
 };
-export const createMockAppLockedField = (): CmsModelField => {
+export const createMockAppCustomLockedField = (): CmsModelField => {
     return {
-        id: "locked",
-        fieldId: "locked",
+        id: "customLocked",
+        fieldId: "customLocked",
         type: "boolean",
-        storageId: "boolean@locked",
-        label: "Locked"
+        storageId: "boolean@customLocked",
+        label: "Custom Locked"
     };
 };
 
@@ -82,11 +85,11 @@ export const createMockApp = (
         name: MOCK_APP_NAME,
         apiName: MOCK_APP_API_NAME,
         fields: [
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppCreatedOnField(),
-            createMockAppVersionField(),
-            createMockAppLockedField()
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomCreatedOnField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField()
         ],
         ...params
     };

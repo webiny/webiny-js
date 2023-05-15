@@ -1,11 +1,11 @@
 import { useHandler } from "./utils/useHandler";
 import {
     createMockApp,
-    createMockAppCreatedByField,
-    createMockAppCreatedOnField,
-    createMockAppLockedField,
-    createMockAppTitleField,
-    createMockAppVersionField,
+    createMockAppIdentityField,
+    createMockAppCustomCreatedOnField,
+    createMockAppCustomLockedField,
+    createMockAppTextField,
+    createMockAppCustomVersionField,
     MOCK_APP_NAME
 } from "./mocks/app";
 import { AcoApp } from "~/apps";
@@ -39,11 +39,11 @@ describe("aco apps", () => {
         const expectedModel: CmsModel = {
             ...createSearchModelDefinition({
                 fields: [
-                    createMockAppTitleField(),
-                    createMockAppCreatedByField(),
-                    createMockAppCreatedOnField(),
-                    createMockAppVersionField(),
-                    createMockAppLockedField()
+                    createMockAppTextField(),
+                    createMockAppIdentityField(),
+                    createMockAppCustomCreatedOnField(),
+                    createMockAppCustomVersionField(),
+                    createMockAppCustomLockedField()
                 ]
             }),
             name: `ACO - Search Record ${MOCK_APP_NAME}`,
@@ -88,11 +88,11 @@ describe("aco apps", () => {
             storageId: "text@customField"
         });
         const expected = [
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppCreatedOnField(),
-            createMockAppVersionField(),
-            createMockAppLockedField(),
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomCreatedOnField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField(),
             {
                 id: "customField",
                 fieldId: "customField",
@@ -105,11 +105,11 @@ describe("aco apps", () => {
         const expectedModel: CmsModel = {
             ...createSearchModelDefinition({
                 fields: [
-                    createMockAppTitleField(),
-                    createMockAppCreatedByField(),
-                    createMockAppCreatedOnField(),
-                    createMockAppVersionField(),
-                    createMockAppLockedField(),
+                    createMockAppTextField(),
+                    createMockAppIdentityField(),
+                    createMockAppCustomCreatedOnField(),
+                    createMockAppCustomVersionField(),
+                    createMockAppCustomLockedField(),
                     {
                         id: "customField",
                         fieldId: "customField",
@@ -142,28 +142,28 @@ describe("aco apps", () => {
 
         appCheck1.removeField("customField");
         expect(appCheck1.getFields()).toEqual([
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppCreatedOnField(),
-            createMockAppVersionField(),
-            createMockAppLockedField()
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomCreatedOnField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField()
         ]);
 
         expect(createdApp.getFields()).toEqual([
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppCreatedOnField(),
-            createMockAppVersionField(),
-            createMockAppLockedField()
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomCreatedOnField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField()
         ]);
 
         const appCheck2 = context.aco.getApp(MOCK_APP_NAME);
         expect(appCheck2.getFields()).toEqual([
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppCreatedOnField(),
-            createMockAppVersionField(),
-            createMockAppLockedField()
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomCreatedOnField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField()
         ]);
     });
 
@@ -242,11 +242,11 @@ describe("aco apps", () => {
 
         expect(app).toBeInstanceOf(AcoApp);
         expect(app.getFields()).toEqual([
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppCreatedOnField(),
-            createMockAppVersionField(),
-            createMockAppLockedField(),
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomCreatedOnField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField(),
             {
                 id: "customField",
                 fieldId: "customField",
@@ -261,7 +261,7 @@ describe("aco apps", () => {
         const { handler } = useHandler({
             plugins: [
                 createAcoAppModifier(MOCK_APP_NAME, async ({ removeField }) => {
-                    removeField("createdOn");
+                    removeField("customCreatedOn");
                 })
             ]
         });
@@ -272,10 +272,10 @@ describe("aco apps", () => {
 
         expect(app).toBeInstanceOf(AcoApp);
         expect(app.getFields()).toEqual([
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppVersionField(),
-            createMockAppLockedField()
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField()
         ]);
     });
 
@@ -294,11 +294,11 @@ describe("aco apps", () => {
 
         expect(app).toBeInstanceOf(AcoApp);
         expect(app.getFields()).toEqual([
-            createMockAppTitleField(),
-            createMockAppCreatedByField(),
-            createMockAppCreatedOnField(),
-            createMockAppVersionField(),
-            createMockAppLockedField()
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            createMockAppCustomCreatedOnField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField()
         ]);
     });
 });

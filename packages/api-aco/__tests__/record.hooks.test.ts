@@ -10,20 +10,20 @@ const content = "Record Lifecycle Events Content";
 const folderId = "folderId-lifecycle-events";
 
 const data = {
-    title: "Some strange title",
-    createdBy: {
+    someText: "Some strange title",
+    identity: {
         id: "theJohnDoeUserId",
         displayName: "John Doe",
         type: "admin"
     },
-    createdOn: new Date("2023-05-15"),
-    version: 18,
-    locked: false
+    customCreatedOn: new Date("2023-05-15").toISOString(),
+    customVersion: 18,
+    customLocked: false
 };
 const tags = ["tag1", "tag2"];
 
 describe("Search Record Lifecycle Events", () => {
-    const { introspect, search } = useGraphQlHandler({
+    const { search } = useGraphQlHandler({
         plugins: [
             createMockAcoApp({
                 name: "WebinyApp",
@@ -107,7 +107,7 @@ describe("Search Record Lifecycle Events", () => {
                 },
                 data: {
                     ...data,
-                    any: "string"
+                    someText: "Some even stranger title"
                 }
             }
         });
@@ -124,7 +124,7 @@ describe("Search Record Lifecycle Events", () => {
                             },
                             data: {
                                 ...data,
-                                any: "string"
+                                someText: "Some even stranger title"
                             }
                         },
                         error: null

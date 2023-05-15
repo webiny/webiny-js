@@ -196,7 +196,7 @@ describe("record graphql generator", () => {
         const { handler } = useHandler({
             plugins: [
                 createMockAcoApp({
-                    apiName: "CustomWebiny"
+                    apiName: "CustomTestingApp"
                 }),
                 createAcoAppModifier(MOCK_APP_NAME, async ({ addField }) => {
                     addField({

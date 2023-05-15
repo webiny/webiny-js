@@ -1,7 +1,5 @@
 import { createAdminSettingsContext } from "@webiny/api-admin-settings";
-
 import { createAcoContext } from "~/createAcoContext";
-import { createAcoFields } from "~/createAcoFields";
 import { createAcoGraphQL } from "~/createAcoGraphQL";
 import { createFields } from "~/fields";
 
@@ -13,7 +11,6 @@ export const createAco = () => {
         ...createFields(),
         ...createAdminSettingsContext(),
         createAcoContext(),
-        createAcoFields(),
         createAcoGraphQL()
     ];
 };
