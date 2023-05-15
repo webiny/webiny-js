@@ -35,7 +35,6 @@ import {
 import { I18NLocale, ListLocalesParams, File, Tenant } from "../types";
 
 import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "../constants";
-import { MigrationInProgress, MigrationNotFinished } from "@webiny/data-migration/MigrationRunner";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -412,20 +411,6 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
 
                     migrationStatus[groupId] = true;
                     await context.createCheckpoint(migrationStatus);
-                } catch (error) {
-                    if (
-                        error instanceof MigrationInProgress ||
-                        error instanceof MigrationNotFinished
-                    ) {
-                        logger.error(`I knew this error, ${JSON.stringify(error)}`);
-                    } else {
-                        logger.error(
-                            `Error while executing migration in catch block, ${JSON.stringify(
-                                error
-                            )}`
-                        );
-                        throw error;
-                    }
                 } finally {
                     await esPutIndexSettings({
                         elasticsearchClient: this.elasticsearchClient,
