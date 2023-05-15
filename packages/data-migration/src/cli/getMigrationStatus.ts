@@ -1,6 +1,6 @@
+import { executeWithRetry } from "@webiny/utils";
 import LambdaClient from "aws-sdk/clients/lambda";
 import { MigrationEventHandlerResponse } from "~/types";
-import { executeWithRetry } from "@webiny/utils";
 
 interface GetMigrationStatusParams {
     lambdaClient: LambdaClient;

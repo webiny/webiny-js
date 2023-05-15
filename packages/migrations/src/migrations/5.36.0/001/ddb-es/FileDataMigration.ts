@@ -343,23 +343,9 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                                 ddbEsItems.push(this.ddbEsEntryEntity.putBatch(latestDdbEs));
                             }
 
-                            // const executeDdb = () => {
-                            //     return batchWriteAll({
-                            //         table: this.ddbEntryEntity.table,
-                            //         items: ddbItems
-                            //     });
-                            // };
-                            //
-                            // const executeDdbEs = () => {
-                            //     return batchWriteAll({
-                            //         table: this.ddbEsEntryEntity.table,
-                            //         items: ddbEsItems
-                            //     });
-                            // };
-
                             const executeDdb = () => {
                                 return Promise.all(
-                                    chunk(ddbItems, 5000).map(ddbItemsChunk => {
+                                    chunk(ddbItems, 500).map(ddbItemsChunk => {
                                         return batchWriteAll({
                                             table: this.ddbEntryEntity.table,
                                             items: ddbItemsChunk
@@ -370,7 +356,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
 
                             const executeDdbEs = () => {
                                 return Promise.all(
-                                    chunk(ddbEsItems, 5000).map(ddbEsItemsChunk => {
+                                    chunk(ddbEsItems, 500).map(ddbEsItemsChunk => {
                                         return batchWriteAll({
                                             table: this.ddbEsEntryEntity.table,
                                             items: ddbEsItemsChunk
