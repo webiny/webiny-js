@@ -25,8 +25,8 @@ import {
     //esFindOne,
     //esGetIndexExist,
     esGetIndexName,
-    // esGetIndexSettings,
-    // esPutIndexSettings,
+    esGetIndexSettings,
+    esPutIndexSettings,
     esQueryAllWithCallback,
     queryAll
     //queryOne
@@ -187,27 +187,27 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                     isHeadlessCmsModel: true
                 });
 
-                // const index = esGetIndexName({
-                //     tenant: tenant.data.id,
-                //     locale: locale.code,
-                //     type: "acosearchrecord",
-                //     isHeadlessCmsModel: true
-                // });
-                //
-                // const settings = await esGetIndexSettings({
-                //     elasticsearchClient: this.elasticsearchClient,
-                //     index,
-                //     fields: ["number_of_replicas", "refresh_interval"]
-                // });
-                //
-                // await esPutIndexSettings({
-                //     elasticsearchClient: this.elasticsearchClient,
-                //     index,
-                //     settings: {
-                //         number_of_replicas: 0,
-                //         refresh_interval: -1
-                //     }
-                // });
+                const index = esGetIndexName({
+                    tenant: tenant.data.id,
+                    locale: locale.code,
+                    type: "acosearchrecord",
+                    isHeadlessCmsModel: true
+                });
+
+                const settings = await esGetIndexSettings({
+                    elasticsearchClient: this.elasticsearchClient,
+                    index,
+                    fields: ["number_of_replicas", "refresh_interval"]
+                });
+
+                await esPutIndexSettings({
+                    elasticsearchClient: this.elasticsearchClient,
+                    index,
+                    settings: {
+                        number_of_replicas: 0,
+                        refresh_interval: -1
+                    }
+                });
 
                 try {
                     await esQueryAllWithCallback<File>({
@@ -226,7 +226,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                                     ]
                                 }
                             },
-                            size: 5000,
+                            size: 10000,
                             sort: [
                                 {
                                     "id.keyword": "asc"
@@ -427,14 +427,14 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                         throw error;
                     }
                 } finally {
-                    // await esPutIndexSettings({
-                    //     elasticsearchClient: this.elasticsearchClient,
-                    //     index,
-                    //     settings: {
-                    //         number_of_replicas: settings.number_of_replicas || null,
-                    //         refresh_interval: settings.refresh_interval || null
-                    //     }
-                    // });
+                    await esPutIndexSettings({
+                        elasticsearchClient: this.elasticsearchClient,
+                        index,
+                        settings: {
+                            number_of_replicas: settings.number_of_replicas || null,
+                            refresh_interval: settings.refresh_interval || null
+                        }
+                    });
                 }
             }
         }
