@@ -1,7 +1,9 @@
-import { CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
 import { createFieldResolversFactory } from "@webiny/api-headless-cms/graphql/schema/createFieldResolvers";
 import { IAcoApp } from "~/types";
 import { resolve } from "~/utils/resolve";
+import { parseIdentifier } from "@webiny/utils";
+import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
 
 interface Params {
     apps: IAcoApp[];
@@ -72,6 +74,23 @@ export const createAppsResolvers = (params: Params): Resolvers => {
         });
 
         Object.assign(resolvers, fieldResolvers);
+        /**
+         * Should not happen but let's be safe.
+         * The code should explode before this check if something was wrong.
+         */
+        if (!resolvers[apiName]) {
+            continue;
+        }
+        Object.assign(resolvers[apiName], {
+            id: async (parent: CmsEntry) => {
+                const { id } = parseIdentifier(parent.id);
+                return removeAcoRecordPrefix(id);
+            },
+            entryId: async (parent: CmsEntry) => {
+                const { id } = parseIdentifier(parent.id);
+                return removeAcoRecordPrefix(id);
+            }
+        });
     }
 
     return resolvers;

@@ -32,21 +32,13 @@ const createAppSchema = (params: AppParams): string => {
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
 
 
-        type ${apiName}Data {
-            ${fieldTypes.map(f => f.fields).join("\n")}
-        }
-
         type ${apiName} {
             id: ID!
-            type: String!
-            location: AcoSearchLocationType!
-            title: String!
-            content: String
-            data: ${apiName}Data!
-            tags: [String!]!
+            entryId: ID!
             savedOn: DateTime
             createdOn: DateTime
             createdBy: AcoUser
+            ${fieldTypes.map(f => f.fields).join("\n")}
         }
 
         ${inputFields.map(f => f.typeDefs).join("\n")}

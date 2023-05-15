@@ -105,6 +105,7 @@ export type IAcoAppsOptions = CreateAcoParams;
 export interface IAcoApps {
     list: () => IAcoApp[];
     register: (app: IAcoAppParams) => Promise<IAcoApp>;
+    registerModels: () => void;
 }
 
 export interface IAcoAppRegisterParams extends Omit<IAcoAppParams, "model"> {

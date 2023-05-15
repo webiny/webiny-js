@@ -28,6 +28,7 @@ import { createAco } from "~/index";
 import { createStorageOperations } from "./storageOperations";
 import { createIdentity } from "./identity";
 import { getIntrospectionQuery } from "graphql";
+import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -108,6 +109,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async getFolder(variables = {}) {
             return invoke({ body: { query: GET_FOLDER, variables } });
+        },
+        async getAppModel(variables: { id: string }) {
+            return invoke({ body: { query: GET_APP_MODEL, variables } });
         }
     };
 

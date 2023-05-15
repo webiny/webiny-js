@@ -1,19 +1,36 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
 import { assignRecordLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
+import { createMockAcoApp } from "~tests/mocks/app";
 
 const id = "id-lifecycle-events";
 const type = "demo-lifecycle-events";
 const title = "Record Lifecycle Events Title";
 const content = "Record Lifecycle Events Content";
 const folderId = "folderId-lifecycle-events";
+
 const data = {
-    tags: ["tag1", "tag2"]
+    title: "Some strange title",
+    createdBy: {
+        id: "theJohnDoeUserId",
+        displayName: "John Doe",
+        type: "admin"
+    },
+    createdOn: new Date("2023-05-15"),
+    version: 18,
+    locked: false
 };
+const tags = ["tag1", "tag2"];
 
 describe("Search Record Lifecycle Events", () => {
-    const { search } = useGraphQlHandler({
-        plugins: [assignRecordLifecycleEvents()]
+    const { introspect, search } = useGraphQlHandler({
+        plugins: [
+            createMockAcoApp({
+                name: "WebinyApp",
+                apiName: "Webiny"
+            }),
+            assignRecordLifecycleEvents()
+        ]
     });
 
     beforeEach(async () => {
@@ -30,7 +47,8 @@ describe("Search Record Lifecycle Events", () => {
                 location: {
                     folderId
                 },
-                data
+                data,
+                tags
             }
         });
 
@@ -46,7 +64,8 @@ describe("Search Record Lifecycle Events", () => {
                             location: {
                                 folderId
                             },
-                            data
+                            data,
+                            tags
                         },
                         error: null
                     }
@@ -132,7 +151,8 @@ describe("Search Record Lifecycle Events", () => {
                 location: {
                     folderId
                 },
-                data
+                data,
+                tags
             }
         });
 

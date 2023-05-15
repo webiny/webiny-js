@@ -1,7 +1,7 @@
 import prettier from "prettier";
 import { createDefaultAppsSchemaSnapshot } from "./snapshots/defaultAppsSchema";
 import { createCustomAppsSchemaSnapshot } from "./snapshots/customAppsSchema";
-import { createMockApp, MOCK_APP_NAME } from "./mocks/app";
+import { createMockAcoApp, createMockApp, MOCK_APP_NAME } from "./mocks/app";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { useHandler } from "./utils/useHandler";
 import { IntrospectionField, IntrospectionInterfaceType } from "graphql";
@@ -12,12 +12,8 @@ import { CmsFieldTypePlugins, CmsModelFieldToGraphQLPlugin } from "@webiny/api-h
 interface GraphQlType {
     kind: Uppercase<string>;
     name: string;
-    description: string | null;
-    inputFields: null;
     fields: IntrospectionField[];
     interfaces: IntrospectionInterfaceType[];
-    enumValues: null;
-    possibleTypes: null;
 }
 
 const getTypesFromResult = (result: any): GraphQlType[] => {
@@ -163,11 +159,9 @@ describe("record graphql generator", () => {
     it("should generate the default graphql schema when an app is present - via method", async () => {
         const { handler } = useHandler({
             plugins: [
-                createAcoApp(
-                    createMockApp({
-                        apiName: "Webiny"
-                    })
-                )
+                createMockAcoApp({
+                    apiName: "Webiny"
+                })
             ]
         });
 
@@ -201,11 +195,9 @@ describe("record graphql generator", () => {
     it("should generate a custom graphql schema when an app is present - via method", async () => {
         const { handler } = useHandler({
             plugins: [
-                createAcoApp(
-                    createMockApp({
-                        apiName: "CustomWebiny"
-                    })
-                ),
+                createMockAcoApp({
+                    apiName: "CustomWebiny"
+                }),
                 createAcoAppModifier(MOCK_APP_NAME, async ({ addField }) => {
                     addField({
                         id: "customWebinyTextField",

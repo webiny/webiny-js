@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import { AcoApp } from "./AcoApp";
 import { AcoAppModifierPlugin } from "~/plugins";
 import { AcoContext, IAcoApp, IAcoAppParams, IAcoApps, IAcoAppsOptions } from "~/types";
+import { CmsModelPlugin } from "@webiny/api-headless-cms";
 
 export class AcoApps implements IAcoApps {
     private readonly apps: Map<string, IAcoApp> = new Map();
@@ -20,7 +21,7 @@ export class AcoApps implements IAcoApps {
         }
         throw new WebinyError(`App "${name}" is not registered.`, "APP_NOT_REGISTERED", {
             name,
-            apps: this.apps.keys()
+            apps: Array.from(this.apps.keys())
         });
     }
 
@@ -57,5 +58,18 @@ export class AcoApps implements IAcoApps {
 
         this.apps.set(app.name, app);
         return app;
+    }
+
+    public registerModels(): void {
+        for (const app of this.apps.values()) {
+            const plugin = new CmsModelPlugin({
+                ...app.model,
+                singularApiName: undefined,
+                pluralApiName: undefined,
+                isPrivate: true,
+                noValidate: true
+            });
+            this.context.plugins.register(plugin);
+        }
     }
 }

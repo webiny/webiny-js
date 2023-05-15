@@ -1,8 +1,16 @@
 import { recordMocks } from "./mocks/record.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
+import { createMockAcoApp } from "~tests/mocks/app";
 
 describe("`search` CRUD", () => {
-    const { search } = useGraphQlHandler();
+    const { search } = useGraphQlHandler({
+        plugins: [
+            createMockAcoApp({
+                name: "Webiny",
+                apiName: "Webiny"
+            })
+        ]
+    });
 
     it("should be able to create, read, update and delete `records`", async () => {
         // Let's create some search records.

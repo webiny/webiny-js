@@ -59,8 +59,10 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         throw new WebinyError(`There is no default record model in ${SEARCH_RECORD_MODEL_ID}`);
     }
 
+    /**
+     * First we need to create all the apps.
+     */
     const apps = new AcoApps(context, params);
-
     const plugins = context.plugins.byType<AcoCreateAppPlugin>(AcoCreateAppPlugin.type);
     for (const plugin of plugins) {
         await apps.register({
@@ -68,6 +70,10 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
             ...plugin.app
         });
     }
+    /**
+     * And create the plugins for the app models.
+     */
+    apps.registerModels();
 
     context.aco = {
         folder: createFolderCrudMethods(params),
