@@ -23,7 +23,7 @@ export const esQueryAllWithCallback = async <TItem>({
     while (true) {
         const bodyWithCursor = { ...body, search_after: cursor };
 
-        const search = () => {
+        const search = (): Promise<ElasticsearchSearchResponse<TItem>> => {
             return elasticsearchClient.search({
                 index,
                 body: bodyWithCursor
