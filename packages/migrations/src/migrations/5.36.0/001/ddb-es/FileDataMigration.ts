@@ -345,7 +345,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
 
                             const executeDdb = () => {
                                 return Promise.all(
-                                    chunk(ddbItems, 1000).map(ddbItemsChunk => {
+                                    chunk(ddbItems, 2000).map(ddbItemsChunk => {
                                         return batchWriteAll({
                                             table: this.ddbEntryEntity.table,
                                             items: ddbItemsChunk
@@ -356,7 +356,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
 
                             const executeDdbEs = () => {
                                 return Promise.all(
-                                    chunk(ddbEsItems, 1000).map(ddbEsItemsChunk => {
+                                    chunk(ddbEsItems, 2000).map(ddbEsItemsChunk => {
                                         return batchWriteAll({
                                             table: this.ddbEsEntryEntity.table,
                                             items: ddbEsItemsChunk
