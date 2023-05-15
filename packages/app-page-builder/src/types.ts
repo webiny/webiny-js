@@ -517,7 +517,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     onReceived?: (params: {
         state: EventActionHandlerCallableState;
         meta: EventActionHandlerMeta;
-        source: PbEditorElement | DragObjectWithTypeWithTarget;
+        source: PbElement | DragObjectWithTypeWithTarget;
         target: PbEditorElement;
         position: number;
     }) => EventActionHandlerActionCallableResponse;
