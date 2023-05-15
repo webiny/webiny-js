@@ -344,26 +344,40 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                             }
 
                             const executeDdb = () => {
-                                return Promise.all(
-                                    chunk(ddbItems, 2000).map(ddbItemsChunk => {
-                                        return batchWriteAll({
-                                            table: this.ddbEntryEntity.table,
-                                            items: ddbItemsChunk
-                                        });
-                                    })
-                                );
+                                return batchWriteAll({
+                                    table: this.ddbEntryEntity.table,
+                                    items: ddbItems
+                                });
                             };
 
                             const executeDdbEs = () => {
-                                return Promise.all(
-                                    chunk(ddbEsItems, 2000).map(ddbEsItemsChunk => {
-                                        return batchWriteAll({
-                                            table: this.ddbEsEntryEntity.table,
-                                            items: ddbEsItemsChunk
-                                        });
-                                    })
-                                );
+                                return batchWriteAll({
+                                    table: this.ddbEsEntryEntity.table,
+                                    items: ddbEsItems
+                                });
                             };
+
+                            // const executeDdb = () => {
+                            //     return Promise.all(
+                            //         chunk(ddbItems, 2000).map(ddbItemsChunk => {
+                            //             return batchWriteAll({
+                            //                 table: this.ddbEntryEntity.table,
+                            //                 items: ddbItemsChunk
+                            //             });
+                            //         })
+                            //     );
+                            // };
+
+                            // const executeDdbEs = () => {
+                            //     return Promise.all(
+                            //         chunk(ddbEsItems, 2000).map(ddbEsItemsChunk => {
+                            //             return batchWriteAll({
+                            //                 table: this.ddbEsEntryEntity.table,
+                            //                 items: ddbEsItemsChunk
+                            //             });
+                            //         })
+                            //     );
+                            // };
 
                             await executeWithRetry(executeDdb, {
                                 onFailedAttempt: error => {
