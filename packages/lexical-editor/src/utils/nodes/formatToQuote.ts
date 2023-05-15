@@ -5,18 +5,18 @@ import {
     LexicalEditor
 } from "lexical";
 import { $setBlocksType } from "@lexical/selection";
-import { $createBaseQuoteNode } from "~/nodes/BaseQuoteNode";
+import { $createQuoteNode } from "~/nodes/QuoteNode";
 
 /*
  * Will change the selected root HTML tag to specified quoteblock tag.
  * For example if the selection is paragraph <p> with content inside after formatting the root tag
  * will be quoteblock with same content inside.
  * */
-export const formatToBaseQuote = (editor: LexicalEditor, themeStyleId?: string) => {
+export const formatToQuote = (editor: LexicalEditor, themeStyleId?: string) => {
     editor.update(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
-            $setBlocksType(selection, () => $createBaseQuoteNode(themeStyleId));
+            $setBlocksType(selection, () => $createQuoteNode(themeStyleId));
         }
     });
 };

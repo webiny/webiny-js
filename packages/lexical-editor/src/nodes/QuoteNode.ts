@@ -1,29 +1,31 @@
 import {
-    $createParagraphNode,
     DOMConversion,
     DOMConversionMap,
     EditorConfig,
     LexicalNode,
     NodeKey,
-    ParagraphNode,
     Spread
 } from "lexical";
 import { WebinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { ThemeEmotionMap } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
-import { QuoteNode, SerializedQuoteNode } from "@lexical/rich-text";
+import {
+    QuoteNode as BaseQuoteNode,
+    SerializedQuoteNode as BaseSerializedQuoteNode
+} from "@lexical/rich-text";
 import { TextNodeThemeStyles, ThemeStyleValue, TypographyStylesNode } from "~/nodes/types";
 
-export type SerializedWebinyQuoteNode = Spread<
+export type SerializedQuoteNode = Spread<
     {
-        styleId: string;
+        styleId?: string;
+        styles: ThemeStyleValue[];
         type: "webiny-quote";
     },
-    SerializedQuoteNode
+    BaseSerializedQuoteNode
 >;
 
-export class BaseQuoteNode extends QuoteNode implements TextNodeThemeStyles, TypographyStylesNode {
+export class QuoteNode extends BaseQuoteNode implements TextNodeThemeStyles, TypographyStylesNode {
     __styles: ThemeStyleValue[] = [];
 
     constructor(themeStyleId?: string, key?: NodeKey) {
@@ -44,7 +46,7 @@ export class BaseQuoteNode extends QuoteNode implements TextNodeThemeStyles, Typ
     }
 
     /*
-     * Checks if the current typography style id is exist in the theme styles map
+     * Checks if the current typoypography style id is exist in the theme styles map
      */
     protected typographyStyleExist(themeEmotionMap: ThemeEmotionMap): boolean {
         const styleId = this.getTypographyStyleId();
@@ -97,8 +99,8 @@ export class BaseQuoteNode extends QuoteNode implements TextNodeThemeStyles, Typ
         return "webiny-quote";
     }
 
-    static override clone(node: BaseQuoteNode): BaseQuoteNode {
-        return new BaseQuoteNode(node.getTypographyStyleId(), node.__key);
+    static override clone(node: QuoteNode): QuoteNode {
+        return new QuoteNode(node.getTypographyStyleId(), node.__key);
     }
 
     addThemeStylesToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
@@ -125,7 +127,7 @@ export class BaseQuoteNode extends QuoteNode implements TextNodeThemeStyles, Typ
         const element = super.createDOM(config);
         const wTheme = config.theme as WebinyTheme;
         const emotionThemeMap = wTheme?.emotionMap;
-
+        debugger;
         if (!emotionThemeMap) {
             return element;
         }
@@ -135,7 +137,6 @@ export class BaseQuoteNode extends QuoteNode implements TextNodeThemeStyles, Typ
             this.setDefaultTypography(emotionThemeMap);
         }
 
-        addClassNamesToElement(element, config.theme.quote);
         this.addThemeStylesToHTMLElement(element, config.theme);
         return element;
     }
@@ -155,52 +156,44 @@ export class BaseQuoteNode extends QuoteNode implements TextNodeThemeStyles, Typ
         };
     }
 
-    static override importJSON(serializedNode: SerializedWebinyQuoteNode): BaseQuoteNode {
-        const node = $createBaseQuoteNode(serializedNode.styleId);
+    static override importJSON(serializedNode: SerializedQuoteNode): QuoteNode {
+        const node = $createQuoteNode();
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
         node.setDirection(serializedNode.direction);
+        if (!!serializedNode?.styles?.length) {
+            node.setThemeStyles(serializedNode.styles);
+            return node;
+        }
+        // for old nodes data migrate the style id into the list
+        const styles = [
+            { styleId: serializedNode.styleId, type: "typography" }
+        ] as ThemeStyleValue[];
+        node.setThemeStyles(styles);
         return node;
     }
 
-    override exportJSON(): SerializedWebinyQuoteNode {
+    override exportJSON(): SerializedQuoteNode {
         return {
             ...super.exportJSON(),
             type: "webiny-quote",
-            styleId: this.getTypographyStyleId() || ""
+            styles: this.__styles,
+            styleId: this.getTypographyStyleId()
         };
-    }
-
-    // Mutation
-
-    override insertNewAfter(): ParagraphNode {
-        const newBlock = $createParagraphNode();
-        const direction = this.getDirection();
-        newBlock.setDirection(direction);
-        this.insertAfter(newBlock);
-        return newBlock;
-    }
-
-    override collapseAtStart(): true {
-        const paragraph = $createParagraphNode();
-        const children = this.getChildren();
-        children.forEach(child => paragraph.append(child));
-        this.replace(paragraph);
-        return true;
     }
 }
 
 function convertBlockquoteElement() {
-    const node = $createBaseQuoteNode();
+    const node = $createQuoteNode();
     return {
         node
     };
 }
 
-export function $createBaseQuoteNode(themeStyleId?: string, key?: NodeKey): BaseQuoteNode {
-    return new BaseQuoteNode(themeStyleId, key);
+export function $createQuoteNode(themeStyleId?: string, key?: NodeKey): QuoteNode {
+    return new QuoteNode(themeStyleId, key);
 }
 
-export function $isBaseQuoteNode(node: LexicalNode | null | undefined): node is BaseQuoteNode {
-    return node instanceof BaseQuoteNode;
+export function $isQuoteNode(node: LexicalNode | null | undefined): node is QuoteNode {
+    return node instanceof QuoteNode;
 }
