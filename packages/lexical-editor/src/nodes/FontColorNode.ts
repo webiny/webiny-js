@@ -11,6 +11,8 @@ import {
     TextNode
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
+import {TextNodeThemeStyles} from "~/nodes/types";
+import {ThemeTypographyStyleItems} from "../../../../typings/emotion";
 
 export const ADD_FONT_COLOR_COMMAND: LexicalCommand<FontColorPayload> =
     createCommand("ADD_FONT_COLOR_COMMAND");
@@ -87,9 +89,9 @@ export class FontColorNode extends TextNode {
     addColorValueToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
         const hasThemeColor = this.__themeColor !== "custom";
         // get the updated color from webiny theme
-        if (hasThemeColor && theme?.styles?.colors) {
+        /*if (hasThemeColor && theme?.styles?.colors) {
             this.__color = theme.styles.colors[this.__themeColor];
-        }
+        }*/
 
         element.setAttribute(FontColorNodeAttrName, this.__themeColor);
         element.style.color = this.__color;
@@ -104,8 +106,6 @@ export class FontColorNode extends TextNode {
         if (hasThemeColor && theme?.styles?.colors) {
             this.__color = theme.styles.colors[this.__themeColor];
         }
-
-        dom.setAttribute(FontColorNodeAttrName, this.__themeColor);
         dom.style.color = this.__color;
         return isUpdated;
     }

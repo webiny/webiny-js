@@ -1,4 +1,5 @@
-export type ThemeStyleType = "typography" | "colors" | "fonts";
+export type ThemeTextColorType = "font-color" | "background-color" | string;
+export type ThemeStyleType = "typography" | ThemeTextColorType;
 
 export interface ThemeStyleValue {
     styleId: string;
@@ -15,4 +16,14 @@ export interface TypographyStylesNode {
     getTypographyStyleId: () => string | undefined;
     clearTypographyStyle: () => void;
     hasTypographyStyle: () => boolean;
+}
+
+export interface TextColorStylesNode {
+    setColor: (colorId: string, colorType: ThemeTextColorType) => void;
+    getColor(): ThemeStyleValue | undefined;
+    // Returns HEX value
+    getColorValue: () => string | undefined;
+    clearColor: (type: ThemeTextColorType) => void;
+    hasColor: (type: ThemeTextColorType) => boolean;
+    getColorType: ThemeTextColorType | undefined;
 }

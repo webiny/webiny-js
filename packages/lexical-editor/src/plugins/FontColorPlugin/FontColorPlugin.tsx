@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
-    $applyStylesToNode,
     $createFontColorNode,
     ADD_FONT_COLOR_COMMAND,
     FontColorPayload
@@ -15,9 +14,12 @@ import {
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
 import { $createParagraphNode } from "~/nodes/ParagraphNode";
+import {$patchStyleText} from "@lexical/selection";
+import {useRichTextEditor} from "~/hooks/useRichTextEditor";
 
 export const FontColorPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();
+    const { theme } = useRichTextEditor();
 
     useEffect(() => {
         return editor.registerCommand<FontColorPayload>(
@@ -26,18 +28,24 @@ export const FontColorPlugin: React.FC = () => {
                 editor.update(() => {
                     const { color, themeColorName } = payload;
                     const selection = $getSelection();
-
+                    debugger;
                     if ($isRangeSelection(selection)) {
                         const fontColorNode = $createFontColorNode(
                             selection.getTextContent(),
                             color,
                             themeColorName
                         );
-                        $applyStylesToNode(fontColorNode, selection);
-                        $insertNodes([fontColorNode]);
-                        if ($isRootOrShadowRoot(fontColorNode.getParentOrThrow())) {
-                            $wrapNodeInElement(fontColorNode, $createParagraphNode).selectEnd();
+                        if(themeColorName) {
+                            // $applyStylesToNode(fontColorNode, selection);
+                            $insertNodes([fontColorNode]);
+                            if ($isRootOrShadowRoot(fontColorNode.getParentOrThrow())) {
+                                $wrapNodeInElement(fontColorNode, $createParagraphNode).selectEnd();
+                            }
+                            $patchStyleText(fontColorNode.select(), {
+                                color: "green"
+                            });
                         }
+
                     }
                 });
                 return true;
