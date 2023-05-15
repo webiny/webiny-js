@@ -21,7 +21,7 @@ const lexicalText = JSON.stringify({
                 styles: [],
                 format: "",
                 indent: 0,
-                type: "base-heading-node",
+                type: "heading-element",
                 version: 1,
                 tag: "h1"
             }

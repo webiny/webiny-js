@@ -5,16 +5,19 @@ import { HashtagNode } from "@lexical/hashtag";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { MarkNode } from "@lexical/mark";
 import { OverflowNode } from "@lexical/overflow";
-import { HeadingNode } from "@lexical/rich-text";
 import { FontColorNode } from "~/nodes/FontColorNode";
 import { TypographyElementNode } from "~/nodes/TypographyElementNode";
 import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
 import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
 import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
-import { BaseParagraphNode } from "~/nodes/BaseParagraphNode";
-import { ParagraphNode } from "lexical";
-import { BaseHeadingNode } from "~/nodes/BaseHeadingNode";
+import { ParagraphNode as BaseParagraphNode } from "lexical";
+import { HeadingNode } from "~/nodes/HeadingNode";
+import { ParagraphNode } from "~/nodes/ParagraphNode";
+import { HeadingNode as BaseHeadingNode } from "@lexical/rich-text";
 
+/*
+ * This is a list of all the nodes that Webiny's Lexical implementation supports OOTB.
+ * */
 export const WebinyNodes: ReadonlyArray<
     | Klass<LexicalNode>
     | {
@@ -34,22 +37,22 @@ export const WebinyNodes: ReadonlyArray<
     MarkNode,
     FontColorNode,
     TypographyElementNode,
-    BaseParagraphNode,
+    /*
+     * In order to provide additional Webiny-related functionality, we override Lexical's ParagraphNode and HeadingNode nodes.
+     * More info on overriding can be found here: https://lexical.dev/docs/concepts/node-replacement.
+     * */
+    ParagraphNode,
     {
-        replace: ParagraphNode,
+        replace: BaseParagraphNode,
         with: () => {
-            return new BaseParagraphNode();
+            return new ParagraphNode();
         }
     },
-    /*
-     * We inherit and replace the native HeadingNode, so we can take advantage from the native lexical processing
-     * of the node, copy/paste (html cleaning) and provide custom theme styling and behavior to the custom hading node.
-     * */
-    BaseHeadingNode,
+    HeadingNode,
     {
-        replace: HeadingNode,
-        with: (node: HeadingNode) => {
-            return new BaseHeadingNode(node.getTag());
+        replace: BaseHeadingNode,
+        with: (node: BaseHeadingNode) => {
+            return new HeadingNode(node.getTag());
         }
     }
 ];

@@ -12,7 +12,7 @@ import {
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { TypographyHTMLTag, TypographyValue } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
-import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 // Command and payload
 export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(
@@ -143,7 +143,7 @@ export class TypographyElementNode extends ElementNode {
     }
 
     override collapseAtStart(): true {
-        const paragraph = $createBaseParagraphNode();
+        const paragraph = $createParagraphNode();
         const children = this.getChildren();
         children.forEach(child => paragraph.append(child));
         this.replace(paragraph);

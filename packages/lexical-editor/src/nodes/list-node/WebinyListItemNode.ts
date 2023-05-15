@@ -1,6 +1,6 @@
 import {
     $isElementNode,
-    $isParagraphNode,
+    $isParagraphNode as $isBaseParagraphNode,
     $isRangeSelection,
     DOMConversionMap,
     DOMConversionOutput,
@@ -28,7 +28,7 @@ import {
     $handleOutdent,
     updateChildrenListItemValue
 } from "~/nodes/list-node/formatList";
-import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 export type SerializedWebinyListItemNode = Spread<
     {
@@ -247,7 +247,7 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override collapseAtStart(selection: RangeSelection): true {
-        const paragraph = $createBaseParagraphNode();
+        const paragraph = $createParagraphNode();
         const children = this.getChildren();
         children.forEach(child => paragraph.append(child));
         const listNode = this.getParentOrThrow();
@@ -370,7 +370,7 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override canMergeWith(node: LexicalNode): boolean {
-        return $isParagraphNode(node) || $isWebinyListItemNode(node);
+        return $isBaseParagraphNode(node) || $isWebinyListItemNode(node);
     }
 
     override extractWithChild(

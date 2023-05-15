@@ -5,7 +5,7 @@ import {
     LexicalEditor
 } from "lexical";
 import { $setBlocksType } from "@lexical/selection";
-import { $createBaseHeadingNode } from "~/nodes/BaseHeadingNode";
+import { $createHeadingNode } from "~/nodes/HeadingNode";
 import { HeadingTagType } from "@lexical/rich-text";
 
 /*
@@ -13,7 +13,7 @@ import { HeadingTagType } from "@lexical/rich-text";
  * For example if the selection is p with content inside after formatting the root tag
  * will be h1 with heading 1 theme style and the same content inside.
  * */
-export const formatToBaseHeading = (
+export const formatToHeading = (
     editor: LexicalEditor,
     tag: HeadingTagType,
     typographyStyleId?: string
@@ -21,7 +21,7 @@ export const formatToBaseHeading = (
     editor.update(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
-            $setBlocksType(selection, () => $createBaseHeadingNode(tag, typographyStyleId));
+            $setBlocksType(selection, () => $createHeadingNode(tag, typographyStyleId));
         }
     });
 };

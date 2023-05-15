@@ -4,7 +4,7 @@ import {
     ElementNode,
     LexicalNode,
     NodeKey,
-    ParagraphNode,
+    ParagraphNode as BaseParagraphNode,
     SerializedElementNode,
     Spread
 } from "lexical";
@@ -13,7 +13,7 @@ import { styleObjectToString } from "~/utils/styleObjectToString";
 import { QuoteBlockHtmlTag, WebinyThemeNode } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
 import { CSSObject } from "@emotion/react";
-import { $createBaseParagraphNode } from "~/nodes/BaseParagraphNode";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 function convertBlockquoteElement() {
     const node = $createWebinyQuoteNode();
@@ -113,8 +113,8 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
 
     // Mutation
 
-    override insertNewAfter(): ParagraphNode {
-        const newBlock = $createBaseParagraphNode();
+    override insertNewAfter(): BaseParagraphNode {
+        const newBlock = $createParagraphNode();
         const direction = this.getDirection();
         newBlock.setDirection(direction);
         this.insertAfter(newBlock);
@@ -122,7 +122,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
     }
 
     override collapseAtStart(): true {
-        const paragraph = $createBaseParagraphNode();
+        const paragraph = $createParagraphNode();
         const children = this.getChildren();
         children.forEach(child => paragraph.append(child));
         this.replace(paragraph);

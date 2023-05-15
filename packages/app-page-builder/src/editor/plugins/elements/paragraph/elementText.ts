@@ -25,7 +25,7 @@ const lexicalText = JSON.stringify({
                 format: "",
                 indent: 0,
                 tag: "p",
-                type: "base-paragraph-node",
+                type: "paragraph-element",
                 version: 1
             }
         ],

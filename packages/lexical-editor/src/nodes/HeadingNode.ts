@@ -1,37 +1,33 @@
-import {
-    $applyNodeReplacement,
-    DOMConversionMap,
-    DOMConversionOutput,
-    ElementFormatType,
-    LexicalNode,
-    NodeKey,
-    ParagraphNode,
-    SerializedParagraphNode,
-    Spread
-} from "lexical";
+import { $applyNodeReplacement, LexicalNode, NodeKey, RangeSelection, Spread } from "lexical";
 import { EditorConfig } from "lexical";
 import { TypographyStylesNode, ThemeStyleValue, TextNodeThemeStyles } from "~/nodes/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { addClassNamesToElement } from "@lexical/utils";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 import { ThemeEmotionMap } from "~/types";
+import {
+    HeadingNode as BaseHeadingNode,
+    HeadingTagType,
+    SerializedHeadingNode as BaseSerializedHeadingNode
+} from "@lexical/rich-text";
+import { $createParagraphNode, ParagraphNode } from "~/nodes/ParagraphNode";
 
-export type SerializeBaseParagraphNode = Spread<
+export type SerializeHeadingNode = Spread<
     {
         styles: ThemeStyleValue[];
-        type: "base-paragraph-node";
+        type: "heading-element";
     },
-    SerializedParagraphNode
+    BaseSerializedHeadingNode
 >;
 
-export class BaseParagraphNode
-    extends ParagraphNode
+export class HeadingNode
+    extends BaseHeadingNode
     implements TextNodeThemeStyles, TypographyStylesNode
 {
     __styles: ThemeStyleValue[] = [];
 
-    constructor(typographyStyleId?: string, key?: NodeKey) {
-        super(key);
+    constructor(tag: HeadingTagType, typographyStyleId?: string, key?: NodeKey) {
+        super(tag, key);
 
         if (typographyStyleId) {
             this.__styles.push({ styleId: typographyStyleId, type: "typography" });
@@ -39,7 +35,7 @@ export class BaseParagraphNode
     }
 
     protected setDefaultTypography(themeEmotionMap: ThemeEmotionMap) {
-        const typographyStyle = findTypographyStyleByHtmlTag("p", themeEmotionMap);
+        const typographyStyle = findTypographyStyleByHtmlTag(this.__tag, themeEmotionMap);
         if (typographyStyle) {
             this.__styles.push({ styleId: typographyStyle.id, type: "typography" });
         }
@@ -47,11 +43,13 @@ export class BaseParagraphNode
 
     setTypography(typographyStyleId: string): this {
         const self = super.getWritable();
-        const themeStyle = {
-            styleId: typographyStyleId,
-            type: "typography"
-        } as ThemeStyleValue;
-        self.__styles.push(themeStyle);
+        if (!this.hasTypographyStyle()) {
+            const themeStyle = {
+                styleId: typographyStyleId,
+                type: "typography"
+            } as ThemeStyleValue;
+            self.__styles.push(themeStyle);
+        }
         return self;
     }
 
@@ -82,11 +80,11 @@ export class BaseParagraphNode
     }
 
     static override getType(): string {
-        return "base-paragraph-node";
+        return "heading-element";
     }
 
-    static override clone(node: BaseParagraphNode): BaseParagraphNode {
-        return new BaseParagraphNode(node.getTypographyStyleId(), node.__key);
+    static override clone(node: HeadingNode): HeadingNode {
+        return new HeadingNode(node.getTag(), node.getTypographyStyleId(), node.__key);
     }
 
     protected updateElementWithThemeClasses(element: HTMLElement, theme: WebinyTheme): HTMLElement {
@@ -117,42 +115,13 @@ export class BaseParagraphNode
         return element;
     }
 
-    // View
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
         return this.updateElementWithThemeClasses(element, config.theme as WebinyTheme);
     }
 
-    override updateDOM(
-        prevNode: BaseParagraphNode,
-        dom: HTMLElement,
-        config: EditorConfig
-    ): boolean {
-        const prevTypoStyleId = prevNode.getTypographyStyleId();
-        const nextTypoStyleId = this.getTypographyStyleId();
-
-        if (!nextTypoStyleId) {
-            this.updateElementWithThemeClasses(dom, config.theme as WebinyTheme);
-            return false;
-        }
-
-        if (prevTypoStyleId !== nextTypoStyleId && nextTypoStyleId) {
-            this.updateElementWithThemeClasses(dom, config.theme as WebinyTheme);
-        }
-        return false;
-    }
-
-    static override importDOM(): DOMConversionMap | null {
-        return {
-            p: () => ({
-                conversion: convertParagraphElement,
-                priority: 0
-            })
-        };
-    }
-
-    static override importJSON(serializedNode: SerializeBaseParagraphNode): BaseParagraphNode {
-        const node = $createBaseParagraphNode();
+    static override importJSON(serializedNode: SerializeHeadingNode): BaseHeadingNode {
+        const node = $createHeadingNode(serializedNode.tag);
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
         node.setDirection(serializedNode.direction);
@@ -160,31 +129,43 @@ export class BaseParagraphNode
         return node;
     }
 
-    override exportJSON(): SerializeBaseParagraphNode {
+    override exportJSON(): SerializeHeadingNode {
         return {
             ...super.exportJSON(),
             styles: this.__styles,
-            type: "base-paragraph-node",
+            type: "heading-element",
             version: 1
         };
     }
-}
 
-function convertParagraphElement(element: HTMLElement): DOMConversionOutput {
-    const node = $createBaseParagraphNode();
-    if (element.style) {
-        node.setFormat(element.style.textAlign as ElementFormatType);
+    // Mutation
+    override insertNewAfter(
+        selection?: RangeSelection,
+        restoreSelection = true
+    ): ParagraphNode | HeadingNode {
+        // Next line for headings are always headings with the same tag
+        const newElement = $createHeadingNode(this.getTag());
+        const direction = this.getDirection();
+        newElement.setDirection(direction);
+        this.insertAfter(newElement, restoreSelection);
+        return newElement;
     }
 
-    return { node };
+    override collapseAtStart(): true {
+        const newElement = !this.isEmpty()
+            ? $createHeadingNode(this.getTag())
+            : $createParagraphNode();
+        const children = this.getChildren();
+        children.forEach(child => newElement.append(child));
+        this.replace(newElement);
+        return true;
+    }
 }
 
-export function $createBaseParagraphNode(typographyStyleId?: string): BaseParagraphNode {
-    return $applyNodeReplacement(new BaseParagraphNode(typographyStyleId));
+export function $createHeadingNode(tag: HeadingTagType, typographyStyleId?: string): HeadingNode {
+    return $applyNodeReplacement(new HeadingNode(tag, typographyStyleId));
 }
 
-export function $isBaseParagraphNode(
-    node: LexicalNode | null | undefined
-): node is BaseParagraphNode {
-    return node instanceof BaseParagraphNode;
+export function $isHeadingNode(node: LexicalNode | null | undefined): node is HeadingNode {
+    return node instanceof HeadingNode;
 }

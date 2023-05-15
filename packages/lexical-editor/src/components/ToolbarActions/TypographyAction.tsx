@@ -18,8 +18,8 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
-import { $isBaseParagraphNode } from "~/nodes/BaseParagraphNode";
-import { $isBaseHeadingNode } from "~/nodes/BaseHeadingNode";
+import { $isParagraphNode, ParagraphNode } from "~/nodes/ParagraphNode";
+import { $isHeadingNode, HeadingNode } from "~/nodes/HeadingNode";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -54,8 +54,8 @@ export const TypographyAction: TypographyAction = () => {
     const [typography, setTypography] = useState<TypographyValue>();
     const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
-    const isBaseParagraphSelected = textBlockSelection?.state?.baseParagraph.isSelected || false;
-    const isBaseHeadingSelected = textBlockSelection?.state?.baseHeading.isSelected || false;
+    const isParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
+    const isHeadingSelected = textBlockSelection?.state?.heading.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
@@ -113,10 +113,13 @@ export const TypographyAction: TypographyAction = () => {
             }
 
             if (
-                $isBaseParagraphNode(textBlockSelection?.element) ||
-                $isBaseHeadingNode(textBlockSelection?.element)
+                $isParagraphNode(textBlockSelection?.element) ||
+                $isHeadingNode(textBlockSelection?.element)
             ) {
-                const el = textBlockSelection.element;
+                const el = $isHeadingNode(textBlockSelection?.element)
+                    ? (textBlockSelection?.element as HeadingNode)
+                    : (textBlockSelection?.element as ParagraphNode);
+
                 const styleId = el.getTypographyStyleId();
                 if (!styleId) {
                     return;
@@ -154,7 +157,7 @@ export const TypographyAction: TypographyAction = () => {
                 }
             }
         }
-    }, [isTypographySelected, textType, isBaseParagraphSelected, isBaseHeadingSelected]);
+    }, [isTypographySelected, textType, isParagraphSelected, isHeadingSelected]);
 
     return (
         <TypographyActionContext.Provider
