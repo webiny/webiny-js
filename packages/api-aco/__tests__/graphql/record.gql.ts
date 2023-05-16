@@ -20,6 +20,7 @@ const SEARCH_DATA_FIELD = /* GraphQL */ `
 const TAG_DATA_FIELD = /* GraphQL */ `
     {
         tag
+        count
     }
 `;
 

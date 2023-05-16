@@ -4,7 +4,7 @@ import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorage
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getRecordFieldValues } from "~/utils/getFieldValues";
-import { AcoSearchRecordStorageOperations } from "./record.types";
+import { AcoSearchRecordStorageOperations, SearchRecordTag } from "./record.types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { attachAcoRecordPrefix } from "~/utils/acoRecordId";
 
@@ -62,7 +62,7 @@ export const createSearchRecordOperations = (
             return withModel(async model => {
                 const { where } = params;
 
-                const allTags = await cms.getUniqueFieldValues(model, {
+                const items = await cms.getUniqueFieldValues(model, {
                     where: {
                         ...(where || {}),
                         latest: true
@@ -70,13 +70,26 @@ export const createSearchRecordOperations = (
                     fieldId: "tags"
                 });
 
-                const tags = allTags
-                    .flatMap(item => (Array.isArray(item) ? item : [item])) // flatten the nested arrays
-                    .filter((item, index, array) => item && array.indexOf(item) === index) // remove duplicates and falsy values
-                    .sort() // sort the values
-                    .map(tag => ({
-                        tag
-                    })); // create tag item object
+                const tags = Object.values(
+                    items.reduce<Record<string, SearchRecordTag>>((collection, item) => {
+                        const tags = Array.isArray(item) ? item : [];
+
+                        for (const tag of tags) {
+                            collection[tag] = {
+                                tag,
+                                count: (collection[tag]?.count || 0) + 1
+                            };
+                        }
+
+                        return collection;
+                    }, {})
+                )
+                    .sort((a, b) => {
+                        return a.tag < b.tag ? -1 : 1;
+                    })
+                    .sort((a, b) => {
+                        return a.count > b.count ? -1 : 1;
+                    });
 
                 const meta = {
                     hasMoreItems: false,

@@ -24,6 +24,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
 
         type TagItem {
             tag: String!
+            count: Int!
         }
 
         type SearchLocationType {

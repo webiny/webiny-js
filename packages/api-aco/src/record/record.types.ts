@@ -21,6 +21,7 @@ export interface SearchRecord<TData extends GenericSearchData = GenericSearchDat
 
 export type SearchRecordTag = {
     tag: string;
+    count: number;
 };
 
 export interface ListSearchRecordsWhere {

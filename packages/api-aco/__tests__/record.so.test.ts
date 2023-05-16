@@ -403,15 +403,19 @@ describe("`search` CRUD", () => {
         await search.createRecord({ data: recordMocks.recordE });
 
         // Let's search for tags.
-        const [responseWithNot] = await search.listTags({
+        const [response] = await search.listTags({
             where: {
                 type: "post"
             }
         });
 
-        expect(responseWithNot.data.search.listTags).toEqual(
+        expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
-                data: [{ tag: "post-tag1" }, { tag: "post-tag2" }, { tag: "scope:post" }],
+                data: [
+                    { tag: "post-tag1", count: 1 },
+                    { tag: "post-tag2", count: 1 },
+                    { tag: "scope:post", count: 1 }
+                ],
                 meta: expect.objectContaining({
                     cursor: null,
                     totalCount: 3,
@@ -431,13 +435,13 @@ describe("`search` CRUD", () => {
         await search.createRecord({ data: recordMocks.recordE });
 
         // Let's search for tags.
-        const [responseWithNot] = await search.listTags({
+        const [response] = await search.listTags({
             where: {
                 tags_in: "scope:page"
             }
         });
 
-        expect(responseWithNot.data.search.listTags).toEqual(
+        expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
                 data: [{ tag: "page-tag1" }, { tag: "page-tag2" }, { tag: "scope:page" }],
                 meta: expect.objectContaining({
@@ -459,21 +463,21 @@ describe("`search` CRUD", () => {
         await search.createRecord({ data: recordMocks.recordE });
 
         // Let's search for tags.
-        const [responseWithNot] = await search.listTags({
+        const [response] = await search.listTags({
             where: {
                 tags_startsWith: "scope:"
             }
         });
 
-        expect(responseWithNot.data.search.listTags).toEqual(
+        expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
                 data: [
-                    { tag: "page-tag1" },
-                    { tag: "page-tag2" },
-                    { tag: "post-tag1" },
-                    { tag: "post-tag2" },
-                    { tag: "scope:page" },
-                    { tag: "scope:post" }
+                    { tag: "page-tag1", count: 1 },
+                    { tag: "page-tag2", count: 1 },
+                    { tag: "post-tag1", count: 1 },
+                    { tag: "post-tag2", count: 1 },
+                    { tag: "scope:page", count: 1 },
+                    { tag: "scope:post", count: 1 }
                 ],
                 meta: expect.objectContaining({
                     cursor: null,
@@ -494,15 +498,18 @@ describe("`search` CRUD", () => {
         await search.createRecord({ data: recordMocks.recordE });
 
         // Let's search for tags.
-        const [responseWithNot] = await search.listTags({
+        const [response] = await search.listTags({
             where: {
                 tags_not_startsWith: "scope:"
             }
         });
 
-        expect(responseWithNot.data.search.listTags).toEqual(
+        expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
-                data: [{ tag: "page-tag1" }, { tag: "page-tag3" }],
+                data: [
+                    { tag: "page-tag1", count: 1 },
+                    { tag: "page-tag3", count: 1 }
+                ],
                 meta: expect.objectContaining({
                     cursor: null,
                     totalCount: 2,
