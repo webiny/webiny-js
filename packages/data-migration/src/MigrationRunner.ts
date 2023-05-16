@@ -34,8 +34,8 @@ const getRunItemDuration = (runItem: MigrationRunItem) => {
     return new Date(runItem.finishedOn).getTime() - new Date(runItem.startedOn).getTime();
 };
 
-export class MigrationNotFinished extends Error {}
-export class MigrationInProgress extends Error {}
+class MigrationNotFinished extends Error {}
+class MigrationInProgress extends Error {}
 
 export class MigrationRunner {
     private readonly logger: Logger;
