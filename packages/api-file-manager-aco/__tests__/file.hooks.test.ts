@@ -1,29 +1,30 @@
-import { File } from "@webiny/api-file-manager/types";
+// @ts-ignore mdbid doesn't have TS types.
+import mdbid from "mdbid";
 
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { assignPageLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { FM_FILE_TYPE, ROOT_FOLDER } from "~/contants";
 import { addMimeTag } from "~/utils/createRecordPayload";
 
-const id = "any-id";
-
-const fileData = {
-    id,
-    key: `${id}/filenameA.png`,
-    name: "filenameA.png",
-    size: 123456,
-    type: "image/png",
-    aliases: ["alias-1.jpg", "alias-2.jpg"],
-    tags: ["file", "webiny"]
-};
-
 describe("Files -> Search records", () => {
     const { fileManager, search } = useGraphQlHandler({
         plugins: [assignPageLifecycleEvents()]
     });
 
-    const createDummyFile = async () => {
-        const [response] = await fileManager.createFile({ data: fileData });
+    const createDummyFile = async (extra = {}) => {
+        const id = mdbid();
+
+        const fileData = {
+            id,
+            key: `${id}/filenameA.png`,
+            name: "filenameA.png",
+            size: 123456,
+            type: "image/png",
+            aliases: ["alias-1.jpg", "alias-2.jpg"],
+            tags: ["file", "webiny"]
+        };
+
+        const [response] = await fileManager.createFile({ data: { ...fileData, ...extra } });
 
         const file = response.data?.fileManager?.createFile?.data;
 
@@ -36,10 +37,10 @@ describe("Files -> Search records", () => {
         return file;
     };
 
-    let dummyFile: File;
-
+    // let dummyFile: File;
+    //
     beforeEach(async () => {
-        dummyFile = await createDummyFile();
+        // dummyFile = await createDummyFile();
         tracker.reset();
     });
 
@@ -60,7 +61,7 @@ describe("Files -> Search records", () => {
             location: {
                 folderId: ROOT_FOLDER
             },
-            tags: addMimeTag(tags, fileData.type),
+            tags: addMimeTag(tags, type),
             data: {
                 id,
                 key,
@@ -71,6 +72,25 @@ describe("Files -> Search records", () => {
                 createdBy,
                 aliases,
                 meta
+            }
+        });
+    });
+
+    it("should NOT create a search record in case of `private` files", async () => {
+        const { id } = await createDummyFile({ meta: { private: true } });
+
+        expect(tracker.isExecutedOnce("file:beforeCreate")).toEqual(true);
+        expect(tracker.isExecutedOnce("file:afterCreate")).toEqual(true);
+
+        const [searchResponse] = await search.getRecord({ id });
+        const searchRecordResult = searchResponse.data?.search?.getRecord;
+
+        expect(searchRecordResult).toMatchObject({
+            data: null,
+            error: {
+                code: "NOT_FOUND",
+                data: { id },
+                message: "Record not found."
             }
         });
     });
@@ -148,8 +168,72 @@ describe("Files -> Search records", () => {
         });
     });
 
+    it("should NOT batch create a search record in case of `private` files", async () => {
+        const file1 = {
+            id: "file-1",
+            key: `file-1/filenameA.png`,
+            name: "filenameA.png",
+            size: 123456,
+            type: "image/png",
+            tags: ["image", "file-1"],
+            aliases: ["/any/alias"],
+            meta: {
+                private: true
+            }
+        };
+
+        const file2 = {
+            id: "file-2",
+            key: `file-2/filenameA.png`,
+            name: "filenameB.png",
+            size: 987654,
+            type: "image/png",
+            tags: ["image", "file-2"],
+            meta: { any: "meta" },
+            aliases: []
+        };
+
+        await fileManager.createFiles({
+            data: [file1, file2]
+        });
+
+        const [searchResponse1] = await search.getRecord({ id: file1.id });
+        const searchRecordResult1 = searchResponse1.data?.search?.getRecord;
+
+        expect(searchRecordResult1).toMatchObject({
+            data: null,
+            error: {
+                code: "NOT_FOUND",
+                data: { id: file1.id },
+                message: "Record not found."
+            }
+        });
+
+        const [searchResponse2] = await search.getRecord({ id: file2.id });
+        const searchRecord2 = searchResponse2.data?.search?.getRecord?.data;
+
+        expect(searchRecord2).toMatchObject({
+            id: file2.id,
+            type: FM_FILE_TYPE,
+            title: file2.name,
+            location: {
+                folderId: ROOT_FOLDER
+            },
+            tags: addMimeTag(file2.tags, file2.type),
+            data: {
+                id: file2.id,
+                key: file2.key,
+                size: file2.size,
+                type: file2.type,
+                name: file2.name,
+                meta: file2.meta,
+                aliases: file2.aliases
+            }
+        });
+    });
+
     it("should update an existing search record", async () => {
-        const { id } = dummyFile;
+        const { id } = await createDummyFile();
 
         const [update] = await fileManager.updateFile({
             id,
@@ -174,7 +258,7 @@ describe("Files -> Search records", () => {
     });
 
     it("should delete a search record on file deletion", async () => {
-        const { id } = dummyFile;
+        const { id } = await createDummyFile();
 
         await fileManager.deleteFile({
             id
