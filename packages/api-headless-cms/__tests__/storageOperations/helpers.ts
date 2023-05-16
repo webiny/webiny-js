@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import {
     CmsEntry,
     CmsIdentity,
@@ -11,7 +6,7 @@ import {
     HeadlessCmsStorageOperations
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { createIdentifier, generateAlphaNumericLowerCaseId } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericLowerCaseId, mdbid } from "@webiny/utils";
 import crypto from "crypto";
 import { PluginsContainer } from "@webiny/plugins";
 

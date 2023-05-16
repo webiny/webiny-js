@@ -1,5 +1,4 @@
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 import useGqlHandler from "./useGqlHandler";
 import { assignFileLifecycleEvents, tracker } from "./mocks/lifecycleEvents";
 

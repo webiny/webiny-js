@@ -1,9 +1,5 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
+import { mdbid } from "@webiny/utils";
 import { ErrorResponse, Response, ListResponse } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";

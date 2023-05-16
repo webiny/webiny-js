@@ -1,9 +1,5 @@
 import lodashMerge from "lodash/merge";
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {

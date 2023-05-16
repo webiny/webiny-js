@@ -39,8 +39,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "dayjs": "^1.10.4",
-    "lodash": "^4.5.0",
-    "mdbid": "^1.0.0"
+    "lodash": "^4.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
@@ -57,7 +56,6 @@
     "get-yarn-workspaces": "^1.0.2",
     "graphql": "^15.7.2",
     "jest": "^28.1.0",
-    "mdbid": "^1.0.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",

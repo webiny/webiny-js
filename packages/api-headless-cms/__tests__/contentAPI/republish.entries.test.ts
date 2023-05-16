@@ -1,5 +1,4 @@
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 import models from "./mocks/contentModels";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsContext, CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";

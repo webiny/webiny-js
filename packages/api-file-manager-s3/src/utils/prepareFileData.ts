@@ -1,6 +1,5 @@
-// @ts-ignore `mdbid` has no type declarations
-import mdbid from "mdbid";
 import sanitizeFilename from "sanitize-filename";
+import { mdbid } from "@webiny/utils";
 import { PresignedPostPayloadData, FileData } from "~/types";
 import { mimeTypes } from "./mimeTypes";
 

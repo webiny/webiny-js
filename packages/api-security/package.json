@@ -19,10 +19,10 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/pubsub": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "commodo-fields-object": "^1.0.6",
     "deep-equal": "^2.0.5",
-    "mdbid": "^1.0.0",
     "minimatch": "^5.1.0"
   },
   "devDependencies": {
