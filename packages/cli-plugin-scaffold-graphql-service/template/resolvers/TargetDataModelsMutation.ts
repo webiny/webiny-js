@@ -1,9 +1,5 @@
 import { TargetDataModelEntity } from "../types";
-/**
- * Package mdbid is missing types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 import { TargetDataModel } from "../entities";
 import TargetDataModelsResolver from "./TargetDataModelsResolver";
 

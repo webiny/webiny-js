@@ -60,7 +60,6 @@
     "get-yarn-workspaces": "^1.0.2",
     "graphql": "^15.7.2",
     "jest": "^28.1.0",
-    "mdbid": "^1.0.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",

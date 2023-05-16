@@ -1,9 +1,4 @@
 /**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
-/**
  * Package deep-equal does not have types.
  */
 // @ts-ignore
@@ -19,6 +14,7 @@ import { object } from "commodo-fields-object";
 // @ts-ignore
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
+import { mdbid } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { GetGroupParams, Group, GroupInput, GroupTenantLink, Security } from "~/types";
