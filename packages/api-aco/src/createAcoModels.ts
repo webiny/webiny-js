@@ -1,9 +1,9 @@
 import { CmsGroupPlugin } from "@webiny/api-headless-cms";
 import { CmsContext } from "@webiny/api-headless-cms/types";
-
 import { createFolderModelDefinition } from "~/folder/folder.model";
 import { modelFactory } from "~/utils/modelFactory";
 import { isInstallationPending } from "~/utils/isInstallationPending";
+import { createSearchModelDefinition } from "~/record/record.model";
 
 export const createAcoModels = (context: CmsContext) => {
     /**
@@ -36,7 +36,7 @@ export const createAcoModels = (context: CmsContext) => {
     /**
      * Create  CmsModel plugins.
      */
-    const modelDefinitions = [createFolderModelDefinition()];
+    const modelDefinitions = [createFolderModelDefinition(), createSearchModelDefinition()];
     const cmsModelPlugins = modelDefinitions.map(modelDefinition => {
         return modelFactory({
             group: cmsGroupPlugin.contentModelGroup,
