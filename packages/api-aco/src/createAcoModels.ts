@@ -1,11 +1,9 @@
 import { CmsGroupPlugin } from "@webiny/api-headless-cms";
 import { CmsContext } from "@webiny/api-headless-cms/types";
-import WebinyError from "@webiny/error";
-
 import { createFolderModelDefinition } from "~/folder/folder.model";
 import { createSearchModelDefinition } from "~/record/record.model";
-import { modelFactory } from "~/utils/modelFactory";
 import { isInstallationPending } from "~/utils/isInstallationPending";
+import { modelFactory } from "~/utils/modelFactory";
 
 export const createAcoModels = (context: CmsContext) => {
     /**
@@ -19,14 +17,6 @@ export const createAcoModels = (context: CmsContext) => {
 
     if (isInstallationPending({ tenancy: context.tenancy, i18n: context.i18n })) {
         return;
-    }
-
-    const locale = context.i18n.getContentLocale();
-    if (!locale) {
-        throw new WebinyError(
-            "Missing content locale in api-aco/storageOperations/index.ts",
-            "LOCALE_ERROR"
-        );
     }
 
     const groupId = "contentModelGroup_aco";

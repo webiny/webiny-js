@@ -19,7 +19,7 @@ export const colors = {
     color6: "#ffffff" // White background.
 };
 
-// Fonts.
+// Fonts (imported in global.scss).
 export const fonts = {
     font1: "'IBM Plex Sans', sans-serif;", // Primary.
     font2: "'Lato', sans-serif;" // Secondary.
@@ -114,7 +114,7 @@ export const typography = {
         }
     ],
     lists: [{ id: "list", name: "List 1", tag: "ul", styles: { ...paragraphs, fontSize: 17 } }]
-} as const; // https://github.com/emotion-js/emotion/issues/1373#issuecomment-498059774 ;
+};
 
 // Buttons.
 const buttons = (overrides: CSSObject) => ({
@@ -151,13 +151,12 @@ const theme = createTheme({
             document: {
                 a: { color: colors.color1 },
                 b: { fontWeight: "bold" },
-                i: { fontStyle: "italic" }
-            },
-            quote: {
-                "blockquote > q": {
-                    quotes: "auto",
-                    "&:before": { content: "open-quote" },
-                    "&:after": { content: "close-quote" }
+                i: { fontStyle: "italic" },
+                myCustomElement: {
+                    background: colors.color1,
+                    border: `1px solid ${colors.color1}`,
+                    borderRadius: 4,
+                    color: colors.color6
                 }
             },
             button: {
@@ -176,42 +175,6 @@ const theme = createTheme({
                     color: colors.color1,
                     "&:hover": { transform: "translateY(-1px)" }
                 })
-            },
-
-            list: {
-                "ul, ol": {
-                    li: {
-                        marginBottom: "12px",
-                        marginLeft: "1.875rem",
-                        position: "relative"
-                    }
-                },
-                ul: {
-                    li: {
-                        "&:before,&:after": {
-                            position: "absolute",
-                            content: '""',
-                            borderRadius: "50%"
-                        },
-                        "&:before": {
-                            backgroundColor: "#90c418",
-                            height: "1.25rem",
-                            width: "1.25rem",
-                            left: "-1.875rem",
-                            top: "0.125rem"
-                        },
-                        "&:after": {
-                            backgroundColor: "#ffffff",
-                            height: "0.5rem",
-                            left: "-1.5rem",
-                            top: "0.5rem",
-                            width: "0.5rem"
-                        }
-                    }
-                },
-                ol: {
-                    listStyleType: "decimal"
-                }
             }
         }
     }

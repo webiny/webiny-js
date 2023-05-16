@@ -10,15 +10,7 @@ const clearLine = () => {
     }
 };
 
-/**
- * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
- */
 module.exports = async (params, context) => {
-    // No need to upload the app if we're doing a preview.
-    if (params.inputs.preview) {
-        return;
-    }
-
     const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
     context.info("Executing data migration Lambda function...");

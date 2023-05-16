@@ -11396,6 +11396,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly":
+  version: 0.0.0-use.local
+  resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
+  dependencies:
+    chalk: ^4.1.0
+    find-up: 5.0.0
+    fs-extra: ^7.0.1
+    get-yarn-workspaces: 1.0.2
+    load-json-file: ^6.2.0
+    lodash.get: ^4.4.2
+    ts-node: ^10.5.0
+    type-fest: ^3.10.0
+    write-json-file: ^4.3.0
+  bin:
+    prepublish-only: ./src/index.js
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-aco-so-ddb-es@workspace:packages/api-aco-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-so-ddb-es@workspace:packages/api-aco-so-ddb-es"
@@ -11444,6 +11462,7 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-admin-settings": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -12105,6 +12124,7 @@ __metadata:
     slugify: ^1.4.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
+    write-json-file: ^4.3.0
     zod: ^3.20.2
   languageName: unknown
   linkType: soft
@@ -14709,7 +14729,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     babel-plugin-lodash: ^3.3.4
     jest: ^28.1.0
-    merge: ^1.2.1
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -14800,7 +14819,6 @@ __metadata:
     "@webiny/utils": 0.0.0
     babel-plugin-lodash: ^3.3.4
     fastify: 4.11.0
-    merge: ^1.2.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -15499,7 +15517,6 @@ __metadata:
     isnumeric: ^0.3.3
     jest: ^28.1.0
     lodash: ^4.17.4
-    merge: ^1.2.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -31147,7 +31164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge@npm:^1.2.0, merge@npm:^1.2.1":
+"merge@npm:^1.2.0":
   version: 1.2.1
   resolution: "merge@npm:1.2.1"
   checksum: 2298c4fdcf64561f320b92338681f7ffcafafb579a6e294066ae3e7bd10ae25df363903d2f028072733b9f79a1f75d2b999aef98ad5d73de13641da39cda0913
@@ -40919,6 +40936,15 @@ __metadata:
   version: 0.8.1
   resolution: "type-fest@npm:0.8.1"
   checksum: d61c4b2eba24009033ae4500d7d818a94fd6d1b481a8111612ee141400d5f1db46f199c014766b9fa9b31a6a7374d96fc748c6d688a78a3ce5a33123839becb7
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "type-fest@npm:3.10.0"
+  peerDependencies:
+    typescript: ">=4.7.0"
+  checksum: df3bd25809ea79ac7712da7c11648251118c23f65b226eba263797e42be60ba34085874ec492202b8ecf2e5a2273b27ddcbfe3be2c275dfcef3f0e2ee90ea179
   languageName: node
   linkType: hard
 

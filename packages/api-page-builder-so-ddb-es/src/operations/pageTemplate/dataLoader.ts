@@ -3,7 +3,7 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { PageTemplate } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
 import { createPrimaryPK } from "./keys";
-import { DataContainer } from "~/types";
+import { DataContainer, DataLoaderInterface } from "~/types";
 
 interface Params {
     entity: Entity<any>;
@@ -11,7 +11,7 @@ interface Params {
 
 type DataLoaderGetItem = Pick<PageTemplate, "id" | "tenant" | "locale">;
 
-export class PageTemplateDataLoader {
+export class PageTemplateDataLoader implements DataLoaderInterface {
     private _getDataLoader: DataLoader<any, any> | undefined = undefined;
 
     private readonly entity: Entity<any>;
