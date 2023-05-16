@@ -106,7 +106,7 @@ export const FormSubmissionCreateDataModel = withFields({
             url: fields({
                 value: {},
                 instanceOf: withFields({
-                    location: string({}),
+                    location: string(),
                     query: object()
                 })()
             })

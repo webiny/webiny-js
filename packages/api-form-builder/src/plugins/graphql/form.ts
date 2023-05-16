@@ -563,12 +563,12 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                          * Add meta fields.
                          */
                         for (let i = 0; i < submissions.length; i++) {
-                            const flattenExportMeta = flattenSubmissionMeta(
+                            const flattenedSubmissionMeta = flattenSubmissionMeta(
                                 submissions[i].meta.url || {},
                                 "meta_url"
                             );
 
-                            for (const metaKey in flattenExportMeta) {
+                            for (const metaKey in flattenedSubmissionMeta) {
                                 if (!fields[metaKey]) {
                                     fields[metaKey] = metaKey;
                                 }
@@ -584,12 +584,12 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                                 submissions[i].data
                             );
 
-                            const flattenExportMeta = flattenSubmissionMeta(
+                            const flattenedSubmissionMeta = flattenSubmissionMeta(
                                 submissions[i].meta.url || {},
                                 "meta_url"
                             );
-                            for (const metaKey in flattenExportMeta) {
-                                submissionData[metaKey] = flattenExportMeta[metaKey];
+                            for (const metaKey in flattenedSubmissionMeta) {
+                                submissionData[metaKey] = flattenedSubmissionMeta[metaKey];
                             }
 
                             const row: Record<string, string> = {};
