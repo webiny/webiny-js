@@ -15012,6 +15012,7 @@ __metadata:
     camelcase: 5.3.1
     case-sensitive-paths-webpack-plugin: 2.4.0
     chalk: ^4.1.0
+    crypto-browserify: ^3.12.0
     css-loader: 6.5.1
     css-minimizer-webpack-plugin: ^3.2.0
     eslint: ^8.16.1
@@ -15026,6 +15027,7 @@ __metadata:
     listr2: ^5.0.8
     lodash: ^4.6.2
     mini-css-extract-plugin: 2.4.5
+    os-browserify: ^0.3.0
     path-browserify: ^1.0.1
     postcss-flexbugs-fixes: 5.0.2
     postcss-loader: 6.2.1
@@ -20660,7 +20662,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-browserify@npm:^3.11.0":
+"crypto-browserify@npm:^3.11.0, crypto-browserify@npm:^3.12.0":
   version: 3.12.0
   resolution: "crypto-browserify@npm:3.12.0"
   dependencies:
