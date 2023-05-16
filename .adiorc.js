@@ -28,6 +28,8 @@ module.exports = {
             "follow-redirects",
             "child_process",
             "os",
+            "buffer",
+            "assert",
             "fs",
             "readline",
             "util",

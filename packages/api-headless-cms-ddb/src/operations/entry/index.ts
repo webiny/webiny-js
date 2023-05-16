@@ -3,7 +3,6 @@ import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
     CmsEntryListWhere,
-    CmsEntryStorageOperations,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -20,6 +19,7 @@ import {
 } from "~/operations/entry/keys";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import {
+    DbItem,
     queryAll,
     QueryAllParams,
     queryOne,
@@ -33,6 +33,8 @@ import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny
 import { FilterItemFromStorage } from "./filtering/types";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { CmsEntryStorageOperations } from "~/types";
 
 const createType = (): string => {
     return "cms.entry";
@@ -374,12 +376,13 @@ export const createEntriesStorageOperations = (
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createPartitionKey({
-                id: entry.id,
+                id,
                 locale: model.locale,
                 tenant: model.tenant
             }),
@@ -388,7 +391,7 @@ export const createEntriesStorageOperations = (
             }
         };
 
-        let records = [];
+        let records: DbItem<CmsEntry>[] = [];
         try {
             records = await queryAll(queryAllParams);
         } catch (ex) {
@@ -397,7 +400,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "LOAD_ALL_RECORDS_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -423,7 +426,7 @@ export const createEntriesStorageOperations = (
                 {
                     error: ex,
                     partitionKey: queryAllParams.partitionKey,
-                    entry
+                    id
                 }
             );
         }
@@ -494,6 +497,75 @@ export const createEntriesStorageOperations = (
                 latestEntry
             });
         }
+    };
+
+    const deleteMultipleEntries: CmsEntryStorageOperations["deleteMultipleEntries"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entries } = params;
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need all the revisions of the entries we want to delete.
+         */
+        const revisions = await dataLoaders.getAllEntryRevisions({
+            model,
+            ids: entries
+        });
+        /**
+         * Then we need to construct the queries for all the revisions and entries.
+         */
+        const items: Record<string, DocumentClient.WriteRequest>[] = [];
+        for (const id of entries) {
+            /**
+             * Latest item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            /**
+             * Published item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
+        }
+        /**
+         * Exact revisions of all the entries
+         */
+        for (const revision of revisions) {
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id: revision.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: createRevisionSortKey({
+                        version: revision.version
+                    })
+                })
+            );
+        }
+
+        await batchWriteAll({
+            table: entity.table,
+            items
+        });
     };
 
     const getLatestRevisionByEntryId: CmsEntryStorageOperations["getLatestRevisionByEntryId"] =
@@ -1020,6 +1092,7 @@ export const createEntriesStorageOperations = (
         update,
         delete: deleteEntry,
         deleteRevision,
+        deleteMultipleEntries,
         getPreviousRevision,
         getPublishedByIds,
         getLatestByIds,
@@ -1032,6 +1105,7 @@ export const createEntriesStorageOperations = (
         publish,
         list,
         unpublish,
+        dataLoaders,
         getUniqueFieldValues
     };
 };

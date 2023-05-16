@@ -1060,4 +1060,66 @@ describe("entry references", () => {
             }
         });
     });
+
+    /**
+     * Test is commented because we do not have access to the data loaders in the storage operations.
+     */
+    /**
+    it("should not produce multiple requests to the database when loading references", async () => {
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["category", "article"]);
+
+        const categoryManager = useCategoryManageHandler(manageOpts);
+        const articleManager = useArticleManageHandler({
+            ...manageOpts,
+            plugins: []
+        });
+        const articleRead = useArticleReadHandler({
+            ...readOpts
+        });
+
+        const techCategory = await createCategoryItem({
+            manager: categoryManager,
+            data: {
+                title: "Tech category",
+                slug: "tech-category"
+            },
+            publish: true
+        });
+
+        const totalCount = 10;
+        for (let current = 1; current <= totalCount; current++) {
+            await createArticleItem({
+                manager: articleManager,
+                data: {
+                    title: `Tech article #${current}`,
+                    body: null,
+                    category: {
+                        id: techCategory.id,
+                        modelId: "category"
+                    }
+                },
+                publish: true
+            });
+        }
+
+        const [result] = await articleRead.listArticles({
+            limit: 1000
+        });
+
+        expect(result.data.listArticles.data).toHaveLength(totalCount);
+        expect(result).toMatchObject({
+            data: {
+                listArticles: {
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+    */
 });

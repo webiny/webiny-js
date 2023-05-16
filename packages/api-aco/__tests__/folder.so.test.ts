@@ -431,4 +431,67 @@ describe("`folder` CRUD", () => {
             }
         });
     });
+
+    it("should enforce security rules", async () => {
+        const { aco: anonymousAco } = useGraphQlHandler({ identity: null });
+        const { aco } = useGraphQlHandler();
+
+        const notAuthorizedResponse = {
+            data: null,
+            error: {
+                code: "SECURITY_NOT_AUTHORIZED",
+                message: "Not authorized!",
+                data: null
+            }
+        };
+
+        // Create with anonymous identity
+        {
+            const [responseA] = await anonymousAco.createFolder({ data: folderMocks.folderA });
+            const folderA = responseA.data.aco.createFolder;
+            expect(folderA).toEqual(notAuthorizedResponse);
+        }
+
+        // Let's create some a dummy folder
+        const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
+        const folderA = responseA.data.aco.createFolder.data;
+        expect(folderA).toEqual({ id: folderA.id, parentId: null, ...folderMocks.folderA });
+
+        // List with anonymous identity
+        {
+            const [listResponse] = await anonymousAco.listFolders({ where: { type: "page" } });
+            expect(listResponse.data.aco.listFolders).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Get with anonymous identity
+        {
+            const [getResponse] = await anonymousAco.getFolder({ id: folderA.id });
+            expect(getResponse.data.aco.getFolder).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Update with anonymous identity
+        {
+            const [updateResponse] = await anonymousAco.updateFolder({
+                id: folderA.id,
+                data: { title: `${folderA.title} + update` }
+            });
+            expect(updateResponse.data.aco.updateFolder).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Delete with anonymous identity
+        {
+            const [deleteResponse] = await anonymousAco.deleteFolder({
+                id: folderA.id
+            });
+            expect(deleteResponse.data.aco.deleteFolder).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+    });
 });

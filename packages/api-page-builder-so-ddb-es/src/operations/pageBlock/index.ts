@@ -1,7 +1,6 @@
 import WebinyError from "@webiny/error";
 import {
     PageBlock,
-    PageBlockStorageOperations,
     PageBlockStorageOperationsCreateParams,
     PageBlockStorageOperationsDeleteParams,
     PageBlockStorageOperationsGetParams,
@@ -17,6 +16,7 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageBlockDynamoDbFieldPlugin } from "~/plugins/definitions/PageBlockDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "./keys";
+import { PageBlockStorageOperations } from "~/types";
 
 const createType = (): string => {
     return "pb.pageBlock";
@@ -205,6 +205,7 @@ export const createPageBlockStorageOperations = ({
     };
 
     return {
+        dataLoader,
         get,
         list,
         create,

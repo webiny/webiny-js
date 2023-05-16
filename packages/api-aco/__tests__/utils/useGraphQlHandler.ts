@@ -1,4 +1,6 @@
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
@@ -30,7 +32,7 @@ import { createStorageOperations } from "~tests/utils/storageOperations";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
 }
@@ -44,11 +46,14 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-const defaultIdentity: SecurityIdentity = {
-    id: "12345678",
-    type: "admin",
-    displayName: "John Doe"
-};
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+    sslEnabled: false,
+    region: "local",
+    accessKeyId: "test",
+    secretAccessKey: "test"
+});
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [], storageOperationPlugins } = params;
@@ -61,12 +66,17 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         plugins: [
             ...ops.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
+            ...createTenancyAndSecurity({
+                permissions,
+                identity
+            }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: ops.storageOperations
+                storageOperations: createHeadlessCmsStorageOperations({
+                    documentClient
+                })
             }),
             createHeadlessCmsGraphQL(),
             createAco(),

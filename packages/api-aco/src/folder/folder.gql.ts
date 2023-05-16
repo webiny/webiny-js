@@ -1,6 +1,7 @@
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 
+import { checkPermissions } from "~/utils/checkPermissions";
 import { resolve } from "~/utils/resolve";
 
 import { AcoContext } from "~/types";
@@ -66,10 +67,14 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     resolvers: {
         AcoQuery: {
             getFolder: async (_, { id }, context) => {
-                return resolve(() => context.aco.folder.get(id));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.get(id);
+                });
             },
             listFolders: async (_, args: any, context) => {
                 try {
+                    await checkPermissions(context);
                     const [entries, meta] = await context.aco.folder.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
@@ -79,13 +84,22 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         AcoMutation: {
             createFolder: async (_, { data }, context) => {
-                return resolve(() => context.aco.folder.create(data));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.create(data);
+                });
             },
             updateFolder: async (_, { id, data }, context) => {
-                return resolve(() => context.aco.folder.update(id, data));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.update(id, data);
+                });
             },
             deleteFolder: async (_, { id }, context) => {
-                return resolve(() => context.aco.folder.delete(id));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.folder.delete(id);
+                });
             }
         }
     }

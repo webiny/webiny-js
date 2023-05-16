@@ -2,7 +2,6 @@ import lodashCloneDeep from "lodash/cloneDeep";
 import WebinyError from "@webiny/error";
 import {
     CmsEntry,
-    CmsEntryStorageOperations,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -36,10 +35,11 @@ import {
     ElasticsearchSearchResponse,
     SearchBody as ElasticsearchSearchBody
 } from "@webiny/api-elasticsearch/types";
-import { CmsIndexEntry } from "~/types";
+import { CmsEntryStorageOperations, CmsIndexEntry } from "~/types";
 import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 const getEntryData = (input: CmsEntry): CmsEntry => {
     const output: any = {
@@ -585,10 +585,11 @@ export const createEntriesStorageOperations = (
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
-            id: entry.id,
+            id,
             locale: model.locale,
             tenant: model.tenant
         });
@@ -637,7 +638,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -653,7 +654,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -788,6 +789,100 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
+    };
+
+    const deleteMultipleEntries: CmsEntryStorageOperations["deleteMultipleEntries"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entries } = params;
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need all the revisions of the entries we want to delete.
+         */
+        const revisions = await dataLoaders.getAllEntryRevisions({
+            model,
+            ids: entries
+        });
+        /**
+         * Then we need to construct the queries for all the revisions and entries.
+         */
+        const items: Record<string, DocumentClient.WriteRequest>[] = [];
+        const esItems: Record<string, DocumentClient.WriteRequest>[] = [];
+        for (const id of entries) {
+            /**
+             * Latest item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            esItems.push(
+                esEntity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            /**
+             * Published item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
+            esItems.push(
+                esEntity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
+        }
+        /**
+         * Exact revisions of all the entries
+         */
+        for (const revision of revisions) {
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id: revision.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: createRevisionSortKey({
+                        version: revision.version
+                    })
+                })
+            );
+        }
+
+        await batchWriteAll({
+            table: entity.table,
+            items
+        });
+        await batchWriteAll({
+            table: esEntity.table,
+            items: esItems
+        });
     };
 
     const list: CmsEntryStorageOperations["list"] = async (initialModel, params) => {
@@ -1510,6 +1605,7 @@ export const createEntriesStorageOperations = (
         update,
         delete: deleteEntry,
         deleteRevision,
+        deleteMultipleEntries,
         get,
         publish,
         unpublish,
@@ -1522,6 +1618,7 @@ export const createEntriesStorageOperations = (
         getLatestByIds,
         getPublishedByIds,
         getPreviousRevision,
-        getUniqueFieldValues
+        getUniqueFieldValues,
+        dataLoaders
     };
 };

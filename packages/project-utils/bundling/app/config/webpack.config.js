@@ -215,6 +215,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                 .map(ext => `.${ext}`)
                 .filter(ext => useTypeScript || !ext.includes("ts")),
             alias: {
+                os: require.resolve("os-browserify/browser"),
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 "react-native": require.resolve("react-native-web"),
@@ -228,8 +229,10 @@ module.exports = function (webpackEnv, { paths, options }) {
                 ...(modules.webpackAliases || {})
             },
             fallback: {
+                crypto: require.resolve("crypto-browserify"),
                 path: require.resolve("path-browserify"),
-                buffer: require.resolve("buffer/")
+                buffer: require.resolve("buffer/"),
+                assert: require.resolve("assert/")
             }
         },
 
