@@ -69,7 +69,9 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 );
             });
 
-            const groupAuthorizer = createTenantLinksPermissionsAuthorizer({ identityType: "admin" })(context);
+            const groupAuthorizer = createTenantLinksPermissionsAuthorizer({
+                identityType: "admin"
+            })(context);
             context.security.addAuthorizer(async () => {
                 if (fullAccess) {
                     return [{ name: "*" }];

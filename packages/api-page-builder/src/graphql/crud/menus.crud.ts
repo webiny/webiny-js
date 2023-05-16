@@ -15,7 +15,8 @@ import {
     OnMenuAfterDeleteTopicParams,
     MenusCrud,
     PageBuilderContextObject,
-    PageBuilderStorageOperations, PbSecurityPermission
+    PageBuilderStorageOperations,
+    PbSecurityPermission
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
@@ -80,7 +81,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         onMenuBeforeDelete,
         onMenuAfterDelete,
         async getMenu(slug, options) {
-            let permissions:PbSecurityPermission[] = [];
+            let permissions: PbSecurityPermission[] = [];
             const { auth = true } = options || {};
             if (auth !== false) {
                 permissions = await checkBasePermissions(context, PERMISSION_NAME, {
@@ -304,7 +305,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,menu);
+            checkOwnPermissions(identity, permissions, menu);
 
             try {
                 await onMenuBeforeDelete.publish({

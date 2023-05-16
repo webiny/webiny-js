@@ -113,7 +113,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,pageElement);
+            checkOwnPermissions(identity, permissions, pageElement);
 
             return pageElement;
         },
@@ -211,7 +211,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,original);
+            checkOwnPermissions(identity, permissions, original);
 
             const validation = await createPageElementsUpdateValidation().safeParseAsync(input);
             if (!validation.success) {
@@ -264,7 +264,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,pageElement);
+            checkOwnPermissions(identity, permissions, pageElement);
 
             try {
                 await onPageElementBeforeDelete.publish({

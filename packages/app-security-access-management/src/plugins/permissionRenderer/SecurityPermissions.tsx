@@ -139,7 +139,10 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind name={"apiKeyAccessScope"}>
-                                                <Select label={t`Access Scope`} disabled={cannotUseAacl}>
+                                                <Select
+                                                    label={t`Access Scope`}
+                                                    disabled={cannotUseAacl}
+                                                >
                                                     <option
                                                         value={NO_ACCESS}
                                                     >{t`No access`}</option>
@@ -158,7 +161,10 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind name={"groupAccessScope"}>
-                                                <Select label={t`Access Scope`} disabled={cannotUseAacl}>
+                                                <Select
+                                                    label={t`Access Scope`}
+                                                    disabled={cannotUseAacl}
+                                                >
                                                     <option
                                                         value={NO_ACCESS}
                                                     >{t`No access`}</option>

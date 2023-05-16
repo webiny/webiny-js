@@ -22,7 +22,7 @@ interface ContentModelPermissionProps {
     title: string;
     locales: string[];
     selectedContentModelGroups?: Record<string, string[]>;
-    disabled?: boolean
+    disabled?: boolean;
 }
 export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
     Bind,
@@ -78,7 +78,9 @@ export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
                             <Bind name={`${entity}AccessScope`} defaultValue={"full"}>
                                 <Select
                                     label={t`Access Scope`}
-                                    disabled={disabled || data[`contentModelGroupAccessScope`] === "own"}
+                                    disabled={
+                                        disabled || data[`contentModelGroupAccessScope`] === "own"
+                                    }
                                     description={t`The list of available models is defined by the options set in the content model groups section above.`}
                                 >
                                     <option value={"full"}>{t`All models`}</option>

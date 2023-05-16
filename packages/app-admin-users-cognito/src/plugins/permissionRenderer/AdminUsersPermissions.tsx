@@ -2,7 +2,11 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import { CannotUseAaclAlert, PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
+import {
+    CannotUseAaclAlert,
+    PermissionInfo,
+    gridNoPaddingClass
+} from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
@@ -132,7 +136,9 @@ export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
                                                     <Select
                                                         {...props}
                                                         label={t`Access Scope`}
-                                                        disabled={cannotUseAAcl || disableUserAccessScope}
+                                                        disabled={
+                                                            cannotUseAAcl || disableUserAccessScope
+                                                        }
                                                         value={
                                                             disableUserAccessScope
                                                                 ? NO_ACCESS

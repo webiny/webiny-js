@@ -1,6 +1,9 @@
 import { PbSecurityPermission } from "~/graphql/types";
 
-export default (permissions: PbSecurityPermission | PbSecurityPermission[], rwd?: string): boolean => {
+export default (
+    permissions: PbSecurityPermission | PbSecurityPermission[],
+    rwd?: string
+): boolean => {
     if (!Array.isArray(permissions)) {
         permissions = [permissions];
     }

@@ -125,9 +125,12 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                                         {({ getValue, onChange }) =>
                                             pwOptions.map(({ id, name }) => (
                                                 <Checkbox
-                                                    disabled={disabled || [undefined, "no"].includes(
-                                                        data[`${entity}AccessScope`]
-                                                    )}
+                                                    disabled={
+                                                        disabled ||
+                                                        [undefined, "no"].includes(
+                                                            data[`${entity}AccessScope`]
+                                                        )
+                                                    }
                                                     key={id}
                                                     label={name}
                                                     value={getValue(id)}

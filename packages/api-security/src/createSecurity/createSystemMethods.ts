@@ -47,7 +47,7 @@ export const createSystemMethods = ({
             const system: SystemRecord = {
                 tenant: getTenant(),
                 version,
-                installedOn: new Date().toISOString(),
+                installedOn: new Date().toISOString()
             };
 
             if (original) {

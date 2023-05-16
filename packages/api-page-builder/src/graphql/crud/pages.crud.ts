@@ -681,7 +681,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             const { id: pageId } = parseIdentifier(id);
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,page, "ownedBy");
+            checkOwnPermissions(identity, permissions, page, "ownedBy");
 
             const settings = await this.getCurrentSettings();
             const pages = settings?.pages || {};
@@ -1044,7 +1044,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,page, "ownedBy");
+            checkOwnPermissions(identity, permissions, page, "ownedBy");
 
             if (options && options.decompress === false) {
                 return page;

@@ -115,7 +115,7 @@ export const createBlockCategoriesCrud = (
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,blockCategory);
+            checkOwnPermissions(identity, permissions, blockCategory);
 
             return blockCategory;
         },
@@ -228,7 +228,7 @@ export const createBlockCategoriesCrud = (
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,original);
+            checkOwnPermissions(identity, permissions, original);
 
             const validationResult = await createBlockCategoryUpdateValidation().safeParseAsync(
                 input
@@ -281,7 +281,7 @@ export const createBlockCategoriesCrud = (
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,blockCategory);
+            checkOwnPermissions(identity, permissions, blockCategory);
 
             // Before deleting, we need to check if there are any page blocks in this block category.
             // If so, prevent delete operation.

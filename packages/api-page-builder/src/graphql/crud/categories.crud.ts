@@ -136,7 +136,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,category);
+            checkOwnPermissions(identity, permissions, category);
 
             return category;
         },
@@ -255,7 +255,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,original);
+            checkOwnPermissions(identity, permissions, original);
 
             const validationResult = await createCategoryUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -306,7 +306,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,category);
+            checkOwnPermissions(identity, permissions, category);
 
             // Before deleting, let's check if there is a page that's in this category.
             // If so, let's prevent this.

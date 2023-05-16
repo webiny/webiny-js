@@ -8,7 +8,9 @@ interface Options {
 
 export const customAuthorizer = (opts: Options) => {
     return new ContextPlugin<AdminUsersContext>(context => {
-        const groupAuthorizer = createTenantLinksPermissionsAuthorizer({ identityType: "admin" })(context);
+        const groupAuthorizer = createTenantLinksPermissionsAuthorizer({ identityType: "admin" })(
+            context
+        );
         context.security.addAuthorizer(async () => {
             if (opts.fullAccess) {
                 return [{ name: "*" }];

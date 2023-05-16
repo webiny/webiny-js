@@ -1,5 +1,8 @@
 import { createAuthenticator, AuthenticatorConfig } from "~/createAuthenticator";
-import { createTenantLinksPermissionsAuthorizer, GroupAuthorizerConfig } from "~/createTenantLinksPermissionsAuthorizer";
+import {
+    createTenantLinksPermissionsAuthorizer,
+    GroupAuthorizerConfig
+} from "~/createTenantLinksPermissionsAuthorizer";
 import { createIdentityType } from "~/createIdentityType";
 import { extendTenancy } from "./extendTenancy";
 

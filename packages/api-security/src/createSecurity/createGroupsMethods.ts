@@ -58,7 +58,10 @@ async function checkPermission(security: Security): Promise<void> {
 }
 
 async function updateTenantLinks(security: Security, tenant: string, group: Group): Promise<void> {
-    const links = await security.listTenantLinksByType<GroupTenantLink>({ tenant, type: "permissions" });
+    const links = await security.listTenantLinksByType<GroupTenantLink>({
+        tenant,
+        type: "permissions"
+    });
 
     if (!links.length) {
         return;

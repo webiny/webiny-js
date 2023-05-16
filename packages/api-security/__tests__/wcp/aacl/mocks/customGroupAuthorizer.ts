@@ -40,7 +40,6 @@ export const customGroupAuthorizer = () => {
             const team1 = [{ name: "pb.category", rwd: "rd" }];
             const team2 = [{ name: "pb.category", own: true, rwd: "rw" }];
 
-
             const permissions = [{ name: "pb.category", own: true, rwd: "rw" }];
         });
     });

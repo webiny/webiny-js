@@ -28,7 +28,7 @@ export interface Authorizer {
 }
 
 export interface SecurityConfig {
-    advancedAccessControlLayer?: boolean,
+    advancedAccessControlLayer?: boolean;
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
 }
@@ -254,7 +254,7 @@ export interface Team {
     slug: string;
     description: string;
     system: boolean;
-    groups: string[]
+    groups: string[];
     webinyVersion: string;
 }
 

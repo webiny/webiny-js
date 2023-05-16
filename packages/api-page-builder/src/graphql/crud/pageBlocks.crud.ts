@@ -97,7 +97,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,pageBlock);
+            checkOwnPermissions(identity, permissions, pageBlock);
 
             return pageBlock;
         },
@@ -271,7 +271,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions,pageBlock);
+            checkOwnPermissions(identity, permissions, pageBlock);
 
             try {
                 await onPageBlockBeforeDelete.publish({
