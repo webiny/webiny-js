@@ -229,10 +229,10 @@ module.exports = function (webpackEnv, { paths, options }) {
                 ...(modules.webpackAliases || {})
             },
             fallback: {
-                crypto: require.resolve("crypto-browserify"),
-                path: require.resolve("path-browserify"),
+                assert: require.resolve("assert-browserify"),
                 buffer: require.resolve("buffer/"),
-                assert: require.resolve("assert/")
+                crypto: require.resolve("crypto-browserify"),
+                path: require.resolve("path-browserify")
             }
         },
 

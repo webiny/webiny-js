@@ -29,7 +29,6 @@ module.exports = {
             "child_process",
             "os",
             "buffer",
-            "assert",
             "fs",
             "readline",
             "util",
