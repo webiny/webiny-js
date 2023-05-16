@@ -12,9 +12,7 @@ export const onFileAfterBatchCreateHook = ({ fileManager, aco }: FmAcoContext) =
         try {
             for (const file of files) {
                 if (file.meta.private) {
-                    console.log(
-                        `Skipping ACO search record, the file ${file.name} is marked as "private"`
-                    );
+                    // Skipping ACO search record creation while file is marked as private
                     continue;
                 }
                 const payload = createFileRecordPayload(file, meta);
