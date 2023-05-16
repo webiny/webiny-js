@@ -284,7 +284,7 @@ export const createCustomAppsSchemaSnapshot = () => {
             search: String
             limit: Int
             after: String
-            sort: AcoSort
+            sort: [AcoSearchRecordCustomTestingAppListSorter!]
           ): AcoSearchRecordCustomTestingAppListResponse!
         }
 

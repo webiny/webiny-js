@@ -5,7 +5,7 @@ import { IAcoApp } from "~/types";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum";
 
-interface AppParams {
+interface Params {
     app: IAcoApp;
     models: CmsModel[];
     plugins: CmsFieldTypePlugins;
@@ -34,7 +34,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
     }, []);
 };
 
-const createAppSchema = (params: AppParams): string => {
+export const createAppSchema = (params: Params): string => {
     const { app, models, plugins: fieldTypePlugins } = params;
     const { model } = app;
     const { singularApiName: apiName, fields } = model;
@@ -122,7 +122,7 @@ const createAppSchema = (params: AppParams): string => {
                 search: String
                 limit: Int
                 after: String
-                sort: AcoSort
+                sort: [${apiName}ListSorter!]
             ): ${apiName}ListResponse!
         }
 
@@ -132,23 +132,4 @@ const createAppSchema = (params: AppParams): string => {
             delete${apiName}(id: ID!): AcoBooleanResponse!
         }
     `;
-};
-
-interface Params {
-    models: CmsModel[];
-    apps: IAcoApp[];
-    plugins: CmsFieldTypePlugins;
-}
-
-export const createAppsSchema = (params: Params): string => {
-    const { apps, models, plugins } = params;
-    return apps
-        .map(app => {
-            return createAppSchema({
-                app,
-                models,
-                plugins
-            });
-        })
-        .join("\n");
 };

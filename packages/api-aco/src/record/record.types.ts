@@ -1,4 +1,4 @@
-import { AcoBaseFields, ListMeta, ListSort } from "~/types";
+import { AcoBaseFields, ListMeta } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
@@ -33,7 +33,7 @@ export interface ListSearchRecordsWhere {
 export interface ListSearchRecordsParams {
     where?: ListSearchRecordsWhere;
     search?: string;
-    sort?: ListSort;
+    sort?: string[];
     limit?: number;
     after?: string | null;
 }

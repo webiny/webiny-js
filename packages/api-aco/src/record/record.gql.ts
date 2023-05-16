@@ -1,12 +1,16 @@
-import { AcoContext } from "~/types";
+import { AcoContext, IAcoApp } from "~/types";
 import { CmsFieldTypePlugins, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { createAppsSchema } from "./graphql/createAppsSchema";
-import { createAppsResolvers } from "./graphql/createAppsResolvers";
+import { createAppSchema } from "./graphql/createAppSchema";
+import { createAppResolvers } from "./graphql/createAppResolvers";
 
-export const createSchema = async (context: AcoContext) => {
-    const apps = context.aco.listApps();
+interface Params {
+    context: AcoContext;
+    app: IAcoApp;
+}
 
+export const createSchema = async (params: Params) => {
+    const { context, app } = params;
     const plugins = context.plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce<CmsFieldTypePlugins>((fields, plugin) => {
@@ -19,18 +23,20 @@ export const createSchema = async (context: AcoContext) => {
         });
     });
 
-    return context.benchmark.measure("aco.schema.generate", async () => {
-        return new GraphQLSchemaPlugin({
-            typeDefs: createAppsSchema({
+    return context.benchmark.measure(`aco.schema.generate.${app.name}`, async () => {
+        const plugin = new GraphQLSchemaPlugin({
+            typeDefs: createAppSchema({
                 models,
-                apps,
+                app,
                 plugins
             }),
-            resolvers: createAppsResolvers({
+            resolvers: createAppResolvers({
                 models,
-                apps,
+                app,
                 plugins
             })
         });
+        plugin.name = `aco.graphql.appSchema.searchRecord.${app.name}`;
+        return plugin;
     });
 };

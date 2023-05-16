@@ -3,6 +3,7 @@ import { AcoApp } from "./AcoApp";
 import { AcoAppModifierPlugin } from "~/plugins";
 import { AcoContext, IAcoApp, IAcoAppParams, IAcoApps, IAcoAppsOptions } from "~/types";
 import { CmsModelPlugin } from "@webiny/api-headless-cms";
+import { createSchema } from "~/record/record.gql";
 
 export class AcoApps implements IAcoApps {
     private readonly apps: Map<string, IAcoApp> = new Map();
@@ -69,8 +70,14 @@ export class AcoApps implements IAcoApps {
                 noValidate: true
             })
         );
-
         this.apps.set(app.name, app);
+
+        const searchRecordSchema = await createSchema({
+            context: this.context,
+            app
+        });
+        this.context.plugins.register(searchRecordSchema);
+
         return app;
     }
 }

@@ -39,6 +39,12 @@ describe("Pages -> Search records", () => {
         tracker.reset();
     });
 
+    it("should have Page Builder Search record GraphQL Query and Mutation", async () => {
+        const { introspect } = useGraphQlHandler({});
+        const [result] = await introspect();
+        expect(result).not.toBeNull();
+    });
+
     it("should create a search record on page creation", async () => {
         const { pageBuilder, search } = useGraphQlHandler({
             plugins: [assignPageLifecycleEvents()]
@@ -57,28 +63,36 @@ describe("Pages -> Search records", () => {
         expect(tracker.isExecutedOnce("page:afterCreate")).toEqual(true);
 
         const [searchResponse] = await search.getRecord({ id: pid });
-        const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
-        expect(searchRecord).toMatchObject({
-            id: pid,
-            type: PB_PAGE_TYPE,
-            title,
-            content: title,
-            location: {
-                folderId: ROOT_FOLDER
-            },
-            tags: [],
+        expect(searchResponse).toEqual({
             data: {
-                id,
-                pid,
-                title,
-                createdBy,
-                createdOn,
-                savedOn,
-                status,
-                version,
-                locked,
-                path
+                search: {
+                    getRecord: {
+                        data: {
+                            id: pid,
+                            type: PB_PAGE_TYPE,
+                            title,
+                            content: title,
+                            location: {
+                                folderId: ROOT_FOLDER
+                            },
+                            tags: [],
+                            data: {
+                                id,
+                                pid,
+                                title,
+                                createdBy,
+                                createdOn,
+                                savedOn,
+                                status,
+                                version,
+                                locked,
+                                path
+                            }
+                        },
+                        error: null
+                    }
+                }
             }
         });
 

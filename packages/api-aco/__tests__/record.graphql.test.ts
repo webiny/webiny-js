@@ -6,7 +6,7 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { useHandler } from "./utils/useHandler";
 import { IntrospectionField, IntrospectionInterfaceType } from "graphql";
 import { createAcoApp, createAcoAppModifier } from "~/plugins";
-import { createAppsSchema } from "~/record/graphql/createAppsSchema";
+import { createAppSchema } from "~/record/graphql/createAppSchema";
 import { CmsFieldTypePlugins, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 interface GraphQlType {
@@ -179,11 +179,16 @@ describe("record graphql generator", () => {
             return (await context.cms.listModels()).filter(model => !model.isPrivate);
         });
 
-        const sdl = createAppsSchema({
-            models,
-            plugins,
-            apps: context.aco.listApps()
-        });
+        const sdl = context.aco
+            .listApps()
+            .map(app =>
+                createAppSchema({
+                    models,
+                    plugins,
+                    app
+                })
+            )
+            .join("\n");
         expect(sdl).not.toBeNull();
         const schema = prettier.format(sdl.trim(), { parser: "graphql" });
         const snapshot = prettier.format(createDefaultAppsSchemaSnapshot().trim(), {
@@ -231,11 +236,16 @@ describe("record graphql generator", () => {
             return (await context.cms.listModels()).filter(model => !model.isPrivate);
         });
 
-        const sdl = createAppsSchema({
-            models,
-            plugins,
-            apps: context.aco.listApps()
-        });
+        const sdl = context.aco
+            .listApps()
+            .map(app =>
+                createAppSchema({
+                    models,
+                    plugins,
+                    app
+                })
+            )
+            .join("\n");
         expect(sdl).not.toBeNull();
         const schema = prettier.format(sdl.trim(), { parser: "graphql" });
         const snapshot = prettier.format(createCustomAppsSchemaSnapshot().trim(), {

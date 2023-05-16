@@ -29,6 +29,7 @@ import {
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import { createAco } from "@webiny/api-aco";
+import { getIntrospectionQuery } from "graphql";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -153,6 +154,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         params,
         handler,
         invoke,
+        introspect: () => {
+            return invoke({
+                body: {
+                    query: getIntrospectionQuery()
+                }
+            });
+        },
         pageBuilder,
         search
     };

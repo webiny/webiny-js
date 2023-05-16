@@ -72,7 +72,7 @@ export const DELETE_RECORD = /* GraphQL */ `
 `;
 
 export const LIST_RECORDS = /* GraphQL */ `
-    query ListRecords($where: AcoSearchRecordWebinyListWhereInput, $search: String, $limit: Int, $after: String, $sort: AcoSort) {
+    query ListRecords($where: AcoSearchRecordWebinyListWhereInput, $search: String, $limit: Int, $after: String, $sort: [AcoSearchRecordWebinyListSorter!]) {
         search {
             listRecords: listAcoSearchRecordWebiny(where: $where, search: $search, limit: $limit, after: $after, sort: $sort) {
                 data ${DATA_FIELD}

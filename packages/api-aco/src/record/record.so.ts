@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
-import { createListSort } from "~/utils/createListSort";
 import { getRecordFieldValues } from "~/utils/getFieldValues";
 import { AcoSearchRecordStorageOperations } from "./record.types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
@@ -42,7 +41,7 @@ export const createSearchRecordOperations = (
 
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
-                    sort: createListSort(sort),
+                    sort,
                     where: {
                         ...(where || {})
                     }
