@@ -58,6 +58,8 @@ export default /* GraphQL */ `
         nestedObjectNestedTitle_not_in: [String]
         nestedObjectNestedTitle_contains: String
         nestedObjectNestedTitle_not_contains: String
+        nestedObjectNestedTitle_startsWith: String
+        nestedObjectNestedTitle_not_startsWith: String
     }
 
     type PageModelApiName_Content_Objecting_NestedObject {
@@ -71,6 +73,8 @@ export default /* GraphQL */ `
         objectTitle_not_in: [String]
         objectTitle_contains: String
         objectTitle_not_contains: String
+        objectTitle_startsWith: String
+        objectTitle_not_startsWith: String
 
         objectNestedObject: PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
@@ -124,6 +128,8 @@ export default /* GraphQL */ `
         nestedObjectNestedTitle_not_in: [String]
         nestedObjectNestedTitle_contains: String
         nestedObjectNestedTitle_not_contains: String
+        nestedObjectNestedTitle_startsWith: String
+        nestedObjectNestedTitle_not_startsWith: String
     }
 
     type PageModelApiName_Objective_Objecting_NestedObject {
@@ -138,6 +144,8 @@ export default /* GraphQL */ `
         objectTitle_not_in: [String]
         objectTitle_contains: String
         objectTitle_not_contains: String
+        objectTitle_startsWith: String
+        objectTitle_not_startsWith: String
 
         objectNestedObject: PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }

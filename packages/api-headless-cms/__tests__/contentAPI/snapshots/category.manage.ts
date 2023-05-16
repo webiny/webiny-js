@@ -87,6 +87,8 @@ export default /* GraphQL */ `
         title_not_in: [String]
         title_contains: String
         title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
 
         slug: String
         slug_not: String
@@ -94,6 +96,8 @@ export default /* GraphQL */ `
         slug_not_in: [String]
         slug_contains: String
         slug_not_contains: String
+        slug_startsWith: String
+        slug_not_startsWith: String
     
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
         OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]

@@ -43,85 +43,92 @@ export default /* GraphQL */ `
     }
 
     type ProductApiSingular_Variant_Options {
-    name: String
-    price: Number
-    image: String
-    category: RefField
-    categories: [RefField!]
-    longText: [String]
+        name: String
+        price: Number
+        image: String
+        category: RefField
+        categories: [RefField!]
+        longText: [String]
     }
     input ProductApiSingular_Variant_OptionsWhereInput {
-    name: String
-    name_not: String
-    name_in: [String]
-    name_not_in: [String]
-    name_contains: String
-    name_not_contains: String
-
-    price: Number
-    price_not: Number
-    price_in: [Number]
-    price_not_in: [Number]
-    price_lt: Number
-    price_lte: Number
-    price_gt: Number
-    price_gte: Number
-    # there must be two numbers sent in the array
-    price_between: [Number!]
-    # there must be two numbers sent in the array
-    price_not_between: [Number!]
-
-    category: RefFieldWhereInput
-
-    categories: RefFieldWhereInput
-
-    longText_contains: String
-    longText_not_contains: String
+        name: String
+        name_not: String
+        name_in: [String]
+        name_not_in: [String]
+        name_contains: String
+        name_not_contains: String
+        name_startsWith: String
+        name_not_startsWith: String
+    
+    
+        price: Number
+        price_not: Number
+        price_in: [Number]
+        price_not_in: [Number]
+        price_lt: Number
+        price_lte: Number
+        price_gt: Number
+        price_gte: Number
+        # there must be two numbers sent in the array
+        price_between: [Number!]
+        # there must be two numbers sent in the array
+        price_not_between: [Number!]
+    
+        category: RefFieldWhereInput
+    
+        categories: RefFieldWhereInput
+    
+        longText_contains: String
+        longText_not_contains: String
     }
 
     type ProductApiSingular_Variant {
-    name: String
-    price: Number
-    images: [String]
-    category: RefField
-    options: [ProductApiSingular_Variant_Options!]
+        name: String
+        price: Number
+        images: [String]
+        category: RefField
+        options: [ProductApiSingular_Variant_Options!]
     }
     input ProductApiSingular_VariantWhereInput {
-    name: String
-    name_not: String
-    name_in: [String]
-    name_not_in: [String]
-    name_contains: String
-    name_not_contains: String
-
-    price: Number
-    price_not: Number
-    price_in: [Number]
-    price_not_in: [Number]
-    price_lt: Number
-    price_lte: Number
-    price_gt: Number
-    price_gte: Number
-    # there must be two numbers sent in the array
-    price_between: [Number!]
-    # there must be two numbers sent in the array
-    price_not_between: [Number!]
-
-    category: RefFieldWhereInput
-
-    options: ProductApiSingular_Variant_OptionsWhereInput
+        name: String
+        name_not: String
+        name_in: [String]
+        name_not_in: [String]
+        name_contains: String
+        name_not_contains: String
+        name_startsWith: String
+        name_not_startsWith: String
+    
+        price: Number
+        price_not: Number
+        price_in: [Number]
+        price_not_in: [Number]
+        price_lt: Number
+        price_lte: Number
+        price_gt: Number
+        price_gte: Number
+        # there must be two numbers sent in the array
+        price_between: [Number!]
+        # there must be two numbers sent in the array
+        price_not_between: [Number!]
+    
+        category: RefFieldWhereInput
+    
+        options: ProductApiSingular_Variant_OptionsWhereInput
     }
 
     type ProductApiSingular_FieldsObject {
-    text: String
+        text: String
     }
     input ProductApiSingular_FieldsObjectWhereInput {
-    text: String
-    text_not: String
-    text_in: [String]
-    text_not_in: [String]
-    text_contains: String
-    text_not_contains: String
+        text: String
+        text_not: String
+        text_in: [String]
+        text_not_in: [String]
+        text_contains: String
+        text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
     }
     
     input ProductApiSingular_Variant_OptionsInput {
@@ -218,7 +225,9 @@ export default /* GraphQL */ `
         title_not_in: [String]
         title_contains: String
         title_not_contains: String
-        
+        title_startsWith: String
+        title_not_startsWith: String
+    
         category: RefFieldWhereInput
 
         price: Number
@@ -265,7 +274,8 @@ export default /* GraphQL */ `
         color_not_in: [String]
         color_contains: String
         color_not_contains: String
-        
+        color_startsWith: String
+        color_not_startsWith: String
         
         availableSizes: String
         availableSizes_not: String
@@ -273,6 +283,8 @@ export default /* GraphQL */ `
         availableSizes_not_in: [String]
         availableSizes_contains: String
         availableSizes_not_contains: String
+        availableSizes_startsWith: String
+        availableSizes_not_startsWith: String
         
         variant: ProductApiSingular_VariantWhereInput
         fieldsObject: ProductApiSingular_FieldsObjectWhereInput

@@ -39,6 +39,8 @@ export default /* GraphQL */ `
         name_not_in: [String]
         name_contains: String
         name_not_contains: String
+        name_startsWith: String
+        name_not_startsWith: String
 
         price: Number
         price_not: Number
@@ -75,6 +77,8 @@ export default /* GraphQL */ `
         name_not_in: [String]
         name_contains: String
         name_not_contains: String
+        name_startsWith: String
+        name_not_startsWith: String
 
         price: Number
         price_not: Number
@@ -104,6 +108,8 @@ export default /* GraphQL */ `
         text_not_in: [String]
         text_contains: String
         text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
     }
 
     input ProductApiSingularGetWhereInput {
@@ -156,6 +162,8 @@ export default /* GraphQL */ `
         title_not_in: [String]
         title_contains: String
         title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
 
         category: RefFieldWhereInput
 
@@ -203,6 +211,8 @@ export default /* GraphQL */ `
         color_not_in: [String]
         color_contains: String
         color_not_contains: String
+        color_startsWith: String
+        color_not_startsWith: String
 
         availableSizes: String
         availableSizes_not: String
@@ -210,6 +220,8 @@ export default /* GraphQL */ `
         availableSizes_not_in: [String]
         availableSizes_contains: String
         availableSizes_not_contains: String
+        availableSizes_startsWith: String
+        availableSizes_not_startsWith: String
 
         variant: ProductApiSingular_VariantWhereInput
         fieldsObject: ProductApiSingular_FieldsObjectWhereInput
