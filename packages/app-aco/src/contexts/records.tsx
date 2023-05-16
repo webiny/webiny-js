@@ -291,7 +291,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 });
 
                 setTags(tags => {
-                    if (data.tags.length === 0) {
+                    if (!data.tags || data.tags.length === 0) {
                         return tags;
                     }
 
@@ -344,7 +344,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             setTags(tags => {
-                if (data.tags.length === 0) {
+                if (!data.tags || data.tags.length === 0) {
                     return tags;
                 }
 
@@ -393,7 +393,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             }));
 
             setTags(tags => {
-                if (data.tags.length === 0) {
+                if (!data.tags || data.tags.length === 0) {
                     return tags;
                 }
 
