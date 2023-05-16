@@ -58,6 +58,7 @@ import {
     zeroPad
 } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
+import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
 
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
@@ -631,7 +632,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async deletePage(this: PageBuilderContextObject, id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
@@ -680,7 +681,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             const { id: pageId } = parseIdentifier(id);
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, page, "ownedBy");
+            checkOwnPermissions(identity, permissions,page, "ownedBy");
 
             const settings = await this.getCurrentSettings();
             const pages = settings?.pages || {};
@@ -1019,7 +1020,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async getPage(id, options): Promise<any> {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
@@ -1043,7 +1044,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, page, "ownedBy");
+            checkOwnPermissions(identity, permissions,page, "ownedBy");
 
             if (options && options.decompress === false) {
                 return page;
@@ -1142,9 +1143,9 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
         async listLatestPages(params, options = {}) {
             const { auth } = options;
-            let permission: PbSecurityPermission | null = null;
+            let permissions: PbSecurityPermission[] = [];
             if (auth !== false) {
-                permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
             }
@@ -1162,7 +1163,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
              * If users can only manage own records, let's add the special filter.
              */
             let createdBy: string | undefined = undefined;
-            if (permission && permission.own === true) {
+            if (!canAccessAllRecords(permissions)) {
                 const identity = context.security.getIdentity();
                 createdBy = identity.id;
             }

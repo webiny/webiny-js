@@ -26,6 +26,7 @@ import {
     createBlockCategoryUpdateValidation
 } from "~/graphql/crud/blockCategories/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
+import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
 
 const PERMISSION_NAME = "pb.blockCategory";
 
@@ -41,7 +42,7 @@ export const createBlockCategoriesCrud = (
 ): BlockCategoriesCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const getPermission = (name: string) => context.security.getPermission(name);
+    const getPermissions = (name: string) => context.security.getPermissions(name);
 
     const onBeforeBlockCategoryCreate = createTopic<OnBeforeBlockCategoryCreateTopicParams>();
     const onAfterBlockCategoryCreate = createTopic<OnAfterBlockCategoryCreateTopicParams>();
@@ -86,13 +87,13 @@ export const createBlockCategoriesCrud = (
 
             await context.i18n.checkI18NContentPermission();
 
-            let permission;
-            const blocksPermission = await getPermission(PERMISSION_NAME);
-            if (blocksPermission && hasRwd(blocksPermission, "r")) {
-                permission = blocksPermission;
+            let permissions: PbSecurityPermission[] = [];
+            const blocksPermissions = await getPermissions(PERMISSION_NAME);
+            if (blocksPermissions.length && hasRwd(blocksPermissions, "r")) {
+                permissions = blocksPermissions;
             }
 
-            if (!permission) {
+            if (!permissions.length) {
                 throw new NotAuthorizedError();
             }
 
@@ -114,7 +115,7 @@ export const createBlockCategoriesCrud = (
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, blockCategory);
+            checkOwnPermissions(identity, permissions,blockCategory);
 
             return blockCategory;
         },
@@ -122,13 +123,13 @@ export const createBlockCategoriesCrud = (
         async listBlockCategories() {
             await context.i18n.checkI18NContentPermission();
 
-            let permission: PbSecurityPermission | null = null;
-            const blocksPermission = await getPermission(PERMISSION_NAME);
-            if (blocksPermission && hasRwd(blocksPermission, "r")) {
-                permission = blocksPermission;
+            let permissions: PbSecurityPermission[] = [];
+            const blocksPermissions = await getPermissions(PERMISSION_NAME);
+            if (blocksPermissions.length && hasRwd(blocksPermissions, "r")) {
+                permissions = blocksPermissions;
             }
 
-            if (!permission) {
+            if (!permissions.length) {
                 throw new NotAuthorizedError();
             }
 
@@ -140,7 +141,7 @@ export const createBlockCategoriesCrud = (
                 sort: ["createdOn_ASC"]
             };
             // If user can only manage own records, add the createdBy to where values.
-            if (permission.own) {
+            if (!canAccessAllRecords(permissions)) {
                 const identity = context.security.getIdentity();
 
                 params.where.createdBy = identity.id;
@@ -217,7 +218,7 @@ export const createBlockCategoriesCrud = (
             }
         },
         async updateBlockCategory(this: PageBuilderContextObject, slug, input) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
@@ -227,7 +228,7 @@ export const createBlockCategoriesCrud = (
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original);
+            checkOwnPermissions(identity, permissions,original);
 
             const validationResult = await createBlockCategoryUpdateValidation().safeParseAsync(
                 input
@@ -270,7 +271,7 @@ export const createBlockCategoriesCrud = (
             }
         },
         async deleteBlockCategory(this: PageBuilderContextObject, slug) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
@@ -280,7 +281,7 @@ export const createBlockCategoriesCrud = (
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, blockCategory);
+            checkOwnPermissions(identity, permissions,blockCategory);
 
             // Before deleting, we need to check if there are any page blocks in this block category.
             // If so, prevent delete operation.

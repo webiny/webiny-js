@@ -27,6 +27,7 @@ import {
     createPageElementsUpdateValidation
 } from "~/graphql/crud/pageElements/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
+import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
 
 const PERMISSION_NAME = "pb.page";
 
@@ -82,7 +83,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         onPageElementBeforeDelete,
         onPageElementAfterDelete,
         async getPageElement(id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
@@ -112,13 +113,13 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageElement);
+            checkOwnPermissions(identity, permissions,pageElement);
 
             return pageElement;
         },
 
         async listPageElements(params) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
@@ -133,7 +134,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             };
 
             // If user can only manage own records, let's add that to the listing.
-            if (permission.own) {
+            if (!canAccessAllRecords(permissions)) {
                 const identity = context.security.getIdentity();
                 listParams.where.createdBy = identity.id;
             }
@@ -201,7 +202,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         },
 
         async updatePageElement(this: PageBuilderContextObject, id, input) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
             const original = await this.getPageElement(id);
@@ -210,7 +211,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original);
+            checkOwnPermissions(identity, permissions,original);
 
             const validation = await createPageElementsUpdateValidation().safeParseAsync(input);
             if (!validation.success) {
@@ -253,7 +254,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         },
 
         async deletePageElement(this: PageBuilderContextObject, slug) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
@@ -263,7 +264,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageElement);
+            checkOwnPermissions(identity, permissions,pageElement);
 
             try {
                 await onPageElementBeforeDelete.publish({

@@ -15,7 +15,7 @@ import {
     OnMenuAfterDeleteTopicParams,
     MenusCrud,
     PageBuilderContextObject,
-    PageBuilderStorageOperations
+    PageBuilderStorageOperations, PbSecurityPermission
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
@@ -24,6 +24,7 @@ import {
     createMenuUpdateValidation
 } from "~/graphql/crud/menus/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
+import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
 
 const PERMISSION_NAME = "pb.menu";
 
@@ -79,10 +80,10 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         onMenuBeforeDelete,
         onMenuAfterDelete,
         async getMenu(slug, options) {
-            let permission = undefined;
+            let permissions:PbSecurityPermission[] = [];
             const { auth = true } = options || {};
             if (auth !== false) {
-                permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
             }
@@ -113,11 +114,11 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
                 );
             }
 
-            if (!permission) {
+            if (!permissions.length) {
                 return menu;
             }
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, menu);
+            checkOwnPermissions(identity, permissions, menu);
 
             return menu;
         },
@@ -140,7 +141,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         },
 
         async listMenus(params) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
@@ -155,7 +156,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             };
 
             // If user can only manage own records, let's add that to the listing.
-            if (permission.own) {
+            if (!canAccessAllRecords(permissions)) {
                 const identity = context.security.getIdentity();
                 listParams.where.createdBy = identity.id;
             }
@@ -238,7 +239,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         },
 
         async updateMenu(this: PageBuilderContextObject, slug, input) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
@@ -248,7 +249,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original);
+            checkOwnPermissions(identity, permissions, original);
 
             const validationResult = await createMenuUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -293,7 +294,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             }
         },
         async deleteMenu(this: PageBuilderContextObject, slug) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
@@ -303,7 +304,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, menu);
+            checkOwnPermissions(identity, permissions,menu);
 
             try {
                 await onMenuBeforeDelete.publish({

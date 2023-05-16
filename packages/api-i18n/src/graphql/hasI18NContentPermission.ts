@@ -26,6 +26,6 @@ export const hasI18NContentPermission = async (context: I18NContext): Promise<bo
     }
 
     return contentPermissions.some(current => {
-        return !Array.isArray(current.locales) || current.locales.includes(locale)
+        return !Array.isArray(current.locales) || current.locales.includes(locale.code)
     })
 };

@@ -28,6 +28,7 @@ import {
     createPageBlocksUpdateValidation
 } from "~/graphql/crud/pageBlocks/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
+import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
 
 const PERMISSION_NAME = "pb.block";
 
@@ -59,7 +60,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         onPageBlockAfterDelete,
 
         async getPageBlock(id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
@@ -96,13 +97,13 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageBlock);
+            checkOwnPermissions(identity, permissions,pageBlock);
 
             return pageBlock;
         },
 
         async listPageBlocks(this: PageBuilderContextObject, params) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
@@ -126,7 +127,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             };
 
             // If user can only manage own records, let's add that to the listing.
-            if (permission.own) {
+            if (!canAccessAllRecords(permissions)) {
                 const identity = context.security.getIdentity();
                 listParams.where.createdBy = identity.id;
             }
@@ -201,7 +202,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         },
 
         async updatePageBlock(this: PageBuilderContextObject, id, input) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
             const original = await this.getPageBlock(id);
@@ -210,7 +211,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original);
+            checkOwnPermissions(identity, permissions, original);
 
             const validationResult = await createPageBlocksUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -260,7 +261,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         },
 
         async deletePageBlock(this: PageBuilderContextObject, slug) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
@@ -270,7 +271,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             }
 
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageBlock);
+            checkOwnPermissions(identity, permissions,pageBlock);
 
             try {
                 await onPageBlockBeforeDelete.publish({

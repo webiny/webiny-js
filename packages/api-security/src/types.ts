@@ -102,9 +102,11 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     getPermission<TPermission extends SecurityPermission = SecurityPermission>(
         permission: string
     ): Promise<TPermission | null>;
+
     getPermissions<TPermission extends SecurityPermission = SecurityPermission>(
         permission: string
     ): Promise<TPermission[]>;
+
     listPermissions(): Promise<SecurityPermission[]>;
 
     hasFullAccess(): Promise<boolean>;

@@ -107,7 +107,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             }
 
             // We must resolve permissions first
-            const perms = await this.getPermissions();
+            const perms = await this.listPermissions();
 
             const exactMatch = (perms || []).find(p => p.name === permission);
             if (exactMatch) {
@@ -123,13 +123,16 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             return null;
         },
 
-        async getPermissions<TPermission extends SecurityPermission = SecurityPermission>(this: Security, permission: string): Promise<TPermission[]> {
+        async getPermissions<TPermission extends SecurityPermission = SecurityPermission>(
+            this: Security,
+            permission: string
+        ): Promise<TPermission[]> {
             if (!performAuthorization) {
                 return [{ name: "*" }] as TPermission[];
             }
 
-            const permissions = await loadPermissions(this);
-            return permissions.filter<TPermission>((current) => {
+            const permissions = await this.listPermissions();
+            return permissions.filter(current => {
                 const exactMatch = current.name === permission;
                 if (exactMatch) {
                     return true;
@@ -137,7 +140,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
                 // Try matching using patterns.
                 return minimatch(permission, current.name);
-            })
+            }) as TPermission[];
         },
 
         async listPermissions(this: Security): Promise<SecurityPermission[]> {

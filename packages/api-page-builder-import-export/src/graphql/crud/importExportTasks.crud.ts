@@ -27,6 +27,7 @@ import {
 import { PbImportExportContext } from "~/graphql/types";
 import WebinyError from "@webiny/error";
 import { PageElementStorageOperationsListParams } from "@webiny/api-page-builder/types";
+import canAccessAllRecords from "@webiny/api-page-builder/graphql/crud/utils/canAccessAllRecords";
 
 const validStatus = `${ImportExportTaskStatus.PENDING}:${ImportExportTaskStatus.PROCESSING}:${ImportExportTaskStatus.COMPLETED}:${ImportExportTaskStatus.FAILED}`;
 
@@ -117,7 +118,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async listTasks(params) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
 
@@ -136,7 +137,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                 };
 
                 // If user can only manage own records, let's add that to the listing.
-                if (permission.own) {
+                if (!canAccessAllRecords(permissions)) {
                     const identity = context.security.getIdentity();
                     listParams.where.createdBy = identity.id;
                 }
@@ -423,7 +424,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async listSubTasks(parent, status, limit) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
 
@@ -441,7 +442,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                 };
 
                 // If user can only manage own records, let's add that to the listing.
-                if (permission.own) {
+                if (!canAccessAllRecords(permissions)) {
                     const identity = context.security.getIdentity();
                     listParams.where.createdBy = identity.id;
                 }

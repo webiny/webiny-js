@@ -1,8 +1,8 @@
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { PbSecurityPermission } from "~/graphql/types";
-
-const FULL_ACCESS_NAMES = ["*", "pb.*"];
+import hasFullAccess from "./hasFullAccess";
+import canAccessAllRecords from "./canAccessAllRecords";
 
 export default (
     identity: SecurityIdentity,
@@ -11,15 +11,13 @@ export default (
     entityField = "createdBy"
 ): void => {
     // First pass - check if we have full access to Page Builder.
-    const hasFullAccess = permissions.some(p => FULL_ACCESS_NAMES.includes(p.name));
-    if (hasFullAccess) {
+    if (hasFullAccess(permissions)) {
         return;
     }
 
     // Second pass - if there's at least one permission that doesn't
     // prevent us from accessing non-owned records, then we grant access.
-    const canAccessAllRecords = permissions.some(p => !p.own);
-    if (canAccessAllRecords) {
+    if (canAccessAllRecords(permissions)) {
         return;
     }
 
