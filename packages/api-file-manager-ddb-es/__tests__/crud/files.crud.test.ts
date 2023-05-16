@@ -1,56 +1,8 @@
 import useGqlHandler from "../useGqlHandler";
+import { extraFields, fileData, simpleRichTextData } from "~tests/crud/mocks/data";
+import { createExpectedTags, createMockFileData } from "~tests/crud/mocks/file";
 
-const richTextData = {
-    editor: "webiny",
-    data: [
-        {
-            tag: "h1",
-            content: "h1 title"
-        },
-        {
-            tag: "p",
-            content: "paragraph text"
-        },
-        {
-            tag: "div",
-            content: [
-                {
-                    tag: "p",
-                    content: "content paragraph text"
-                },
-                {
-                    tag: "a",
-                    content: "some url",
-                    href: "https://www.webiny.com/"
-                }
-            ]
-        }
-    ]
-};
-const simpleRichTextData = {
-    editor: "webiny",
-    data: [
-        {
-            tag: "h1",
-            content: "title"
-        }
-    ]
-};
-
-const fileData = {
-    id: "12345678",
-    key: "12345678/filenameA.png",
-    name: "filenameA.png",
-    size: 123456,
-    type: "image/png",
-    tags: ["sketch"],
-    aliases: [],
-    richText: richTextData
-};
-/**
- * Add fields that are added via the plugins, so we get them back in the result.
- */
-const extraFields = ["richText {editor data}"];
+jest.retryTimes(0);
 
 describe("Files CRUD ddb/es", () => {
     const {
@@ -58,9 +10,12 @@ describe("Files CRUD ddb/es", () => {
         updateFile,
         getFile,
         listFiles,
+        listTags,
         clearElasticsearch,
         until,
-        createElasticsearchIndice
+        createElasticsearchIndice,
+        elasticsearch,
+        getIndexName
     } = useGqlHandler();
 
     const locale = "en-US";
@@ -187,6 +142,111 @@ describe("Files CRUD ddb/es", () => {
                             ...fileData,
                             richText: simpleRichTextData
                         },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    const disableIndexing = {
+        number_of_replicas: 0,
+        refresh_interval: -1
+    };
+    const enableIndexing = {
+        /**
+         * You can set to what ever you want
+         */
+        number_of_replicas: 1,
+        refresh_interval: "1s"
+    };
+
+    it("should list tags when having a large number of files and tags", async () => {
+        const index = getIndexName({
+            tenant,
+            locale
+        });
+        /**
+         * Let's create an index, make it not actually index anything, so we can insert data faster.
+         */
+        await elasticsearch.indices.create({
+            index
+        });
+        await elasticsearch.indices.putSettings({
+            index,
+            body: {
+                index: disableIndexing
+            }
+        });
+
+        const operations: any[] = [];
+        /**
+         * TODO change to test larger amount of files
+         */
+        const maxFiles = 100;
+        /**
+         * Now let's insert a large amount of files.
+         */
+        for (let i = 0; i < maxFiles; i++) {
+            const fileId = `file_${i}`;
+            const file = createMockFileData({
+                index: i,
+                tenant,
+                locale
+            });
+            operations.push({ index: { _id: fileId, _index: index } }, file);
+        }
+
+        let result: any;
+        let error: any = null;
+        try {
+            result = await elasticsearch.bulk({
+                body: operations
+            });
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toEqual(null);
+        expect(result).toMatchObject({
+            body: {
+                errors: false
+            },
+            statusCode: 200
+        });
+        /**
+         * Then let's re-enable indexing.
+         */
+        await elasticsearch.indices.putSettings({
+            index,
+            body: {
+                index: enableIndexing
+            }
+        });
+        /**
+         * ... Refresh the index.
+         */
+        await elasticsearch.indices.refresh({
+            index
+        });
+
+        const expectedTags = createExpectedTags({
+            amount: maxFiles,
+            tenant,
+            locale
+        });
+        /**
+         * And then list the tags.
+         */
+        const [response] = await listTags();
+        /**
+         * Must be the amount of files + 2 (one for tenant and one for locale).
+         */
+        expect(response.data.fileManager.listTags.data).toHaveLength(maxFiles + 2);
+        expect(response).toEqual({
+            data: {
+                fileManager: {
+                    listTags: {
+                        data: expectedTags,
                         error: null
                     }
                 }

@@ -1,8 +1,9 @@
 import { getIntrospectionQuery } from "graphql";
 import { createHandler } from "@webiny/handler-aws/gateway";
-import { until, sleep } from "./helpers";
+import { sleep, until } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
+    ContentModelGroupsMutationVariables,
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
     DELETE_CONTENT_MODEL_GROUP_MUTATION,
     GET_CONTENT_MODEL_GROUP_QUERY,
@@ -12,27 +13,31 @@ import {
 import {
     CREATE_CONTENT_MODEL_FROM_MUTATION,
     CREATE_CONTENT_MODEL_MUTATION,
+    CreateContentModelFromMutationVariables,
+    CreateContentModelMutationResponse,
     CreateContentModelMutationVariables,
     DELETE_CONTENT_MODEL_MUTATION,
     GET_CONTENT_MODEL_QUERY,
     LIST_CONTENT_MODELS_QUERY,
-    UPDATE_CONTENT_MODEL_MUTATION,
-    CreateContentModelMutationResponse,
-    CreateContentModelFromMutationVariables
+    UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
 import { PluginsContainer } from "@webiny/plugins/types";
 
 import {
     GET_CONTENT_ENTRIES_QUERY,
     GET_CONTENT_ENTRY_QUERY,
-    GET_LATEST_CONTENT_ENTRY_QUERY,
     GET_LATEST_CONTENT_ENTRIES_QUERY,
+    GET_LATEST_CONTENT_ENTRY_QUERY,
     GET_PUBLISHED_CONTENT_ENTRIES_QUERY,
     GET_PUBLISHED_CONTENT_ENTRY_QUERY,
     SEARCH_CONTENT_ENTRIES_QUERY,
     SearchContentEntriesVariables
 } from "./graphql/contentEntry";
-import { createHandlerCore, CreateHandlerCoreParams } from "~tests/testHelpers/plugins";
+import { createHandlerCore, CreateHandlerCoreParams } from "./plugins";
+import { acceptIncomingChanges } from "./acceptIncommingChanges";
+import { StorageOperationsCmsModelPlugin } from "~/plugins";
+import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -50,8 +55,17 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
 
     const core = createHandlerCore(params);
 
+    const plugins = new PluginsContainer(
+        core.plugins.concat([...createOutputBenchmarkLogs(), acceptIncomingChanges()])
+    );
+
+    const storageOperationsCmsModelPlugin = new StorageOperationsCmsModelPlugin(
+        createCmsModelFieldConvertersAttachFactory(plugins)
+    );
+    plugins.register(storageOperationsCmsModelPlugin);
+
     const handler = createHandler({
-        plugins: core.plugins,
+        plugins: plugins.all(),
         http: {
             debug: false
         }
@@ -91,7 +105,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         invoke,
         tenant: core.tenant,
         identity,
-        plugins: new PluginsContainer(core.plugins),
+        plugins,
         storageOperations: core.storageOperations,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
@@ -104,7 +118,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             return invoke({ body: { query: INSTALL_MUTATION } });
         },
         // content model group
-        async createContentModelGroupMutation(variables: Record<string, any>) {
+        async createContentModelGroupMutation(variables: ContentModelGroupsMutationVariables) {
             return invoke({ body: { query: CREATE_CONTENT_MODEL_GROUP_MUTATION, variables } });
         },
         async getContentModelGroupQuery(variables: Record<string, any>) {

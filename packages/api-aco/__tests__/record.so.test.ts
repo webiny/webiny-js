@@ -24,7 +24,13 @@ describe("`search` CRUD", () => {
 
         const [responseE] = await search.createRecord({ data: recordMocks.recordE });
         const recordE = responseE.data.search.createRecord.data;
-        expect(recordE).toEqual({ ...recordMocks.recordE, id: recordE.id });
+        expect(recordE).toEqual({
+            ...recordMocks.recordE,
+            id: recordE.id,
+            content: null,
+            data: {},
+            tags: []
+        });
 
         // Let's check whether both of the record exists, listing them by `type` and `location`.
         // List records -> type: "page" / folderId: "folder-1"
@@ -63,18 +69,24 @@ describe("`search` CRUD", () => {
         );
 
         // List records -> type: "post" / folderId: "folder-1"
-        const [listResponsePostFolder1] = await search.listRecords({
+        const [listResponsePost] = await search.listRecords({
             where: { type: "post" },
             sort: {
                 createdOn: "ASC"
             }
         });
 
-        expect(listResponsePostFolder1.data.search.listRecords).toEqual(
+        expect(listResponsePost.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     expect.objectContaining({ ...recordMocks.recordD, id: recordD.id }),
-                    expect.objectContaining({ ...recordMocks.recordE, id: recordE.id })
+                    expect.objectContaining({
+                        ...recordMocks.recordE,
+                        id: recordE.id,
+                        content: null,
+                        data: {},
+                        tags: []
+                    })
                 ]),
                 error: null
             })
@@ -146,6 +158,49 @@ describe("`search` CRUD", () => {
                 data: expect.arrayContaining([
                     expect.objectContaining({ ...recordMocks.recordB, id: recordB.id }),
                     expect.objectContaining({ ...recordMocks.recordC, id: recordC.id })
+                ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using `tags_in`
+        const [tagsInResponse] = await search.listRecords({
+            where: { type: "page", tags_in: ["page-tag1"] }
+        });
+
+        expect(tagsInResponse.data.search.listRecords).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
+                ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using `tags_startsWith`
+        const [tagsStartsWithResponse] = await search.listRecords({
+            where: { type: "page", tags_startsWith: "scope:" }
+        });
+
+        expect(tagsStartsWithResponse.data.search.listRecords).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id })
+                ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using `tags_not_startsWith`
+        const [tagsNotStartsWithResponse] = await search.listRecords({
+            where: { type: "page", tags_not_startsWith: "scope:" }
+        });
+
+        expect(tagsNotStartsWithResponse.data.search.listRecords).toEqual(
+            expect.objectContaining({
+                data: expect.arrayContaining([
+                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
                 ]),
                 error: null
             })
@@ -254,5 +309,72 @@ describe("`search` CRUD", () => {
                 }
             }
         });
+    });
+
+    it("should enforce security rules", async () => {
+        const { search: anonymousSearch } = useGraphQlHandler({ identity: null });
+        const { search } = useGraphQlHandler();
+
+        const notAuthorizedResponse = {
+            data: null,
+            error: {
+                code: "SECURITY_NOT_AUTHORIZED",
+                message: "Not authorized!",
+                data: null
+            }
+        };
+
+        // Create with anonymous identity
+        {
+            const [responseA] = await anonymousSearch.createRecord({ data: recordMocks.recordA });
+            const recordA = responseA.data.search.createRecord;
+            expect(recordA).toEqual(notAuthorizedResponse);
+        }
+
+        // Let's create some a dummy record
+        const [responseA] = await search.createRecord({ data: recordMocks.recordA });
+        const recordA = responseA.data.search.createRecord.data;
+        expect(recordA).toEqual({ ...recordMocks.recordA, id: recordA.id });
+
+        // List with anonymous identity
+        {
+            const [listResponse] = await anonymousSearch.listRecords({
+                where: { type: "page", location: { folderId: "folder-1" } }
+            });
+            expect(listResponse.data.search.listRecords).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Get with anonymous identity
+        {
+            const [getResponse] = await anonymousSearch.getRecord({
+                id: recordA.id
+            });
+            expect(getResponse.data.search.getRecord).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Update with anonymous identity
+        {
+            const [updateResponse] = await anonymousSearch.updateRecord({
+                id: recordA.id,
+                data: { title: `${recordA.title} + update` }
+            });
+            expect(updateResponse.data.search.updateRecord).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Delete with anonymous identity
+        {
+            const [deleteResponse] = await anonymousSearch.deleteRecord({
+                id: recordA.id
+            });
+            expect(deleteResponse.data.search.deleteRecord).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
     });
 });

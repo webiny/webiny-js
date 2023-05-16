@@ -1,10 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../handler-graphql" },
+    { "path": "../utils" },
     { "path": "../api" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
@@ -25,6 +26,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],

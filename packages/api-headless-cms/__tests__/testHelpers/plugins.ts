@@ -13,6 +13,7 @@ import { ContextPlugin } from "@webiny/api";
 import { TestContext } from "~tests/testHelpers/types";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
+import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -20,6 +21,7 @@ export interface CreateHandlerCoreParams {
     identity?: SecurityIdentity;
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path?: string;
 }
 export const createHandlerCore = (params: CreateHandlerCoreParams) => {
@@ -33,6 +35,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         identity,
         plugins = [],
         topPlugins = [],
+        bottomPlugins = [],
         setupTenancyAndSecurityGraphQL
     } = params;
 
@@ -42,6 +45,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         storageOperations: ops.storageOperations,
         tenant,
         plugins: [
+            enableBenchmarkOnEnvironmentVariable(),
             topPlugins,
             createWcpContext(),
             ...ops.plugins,
@@ -91,7 +95,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             }),
             createHeadlessCmsGraphQL(),
             plugins,
-            graphQLHandlerPlugins()
+            graphQLHandlerPlugins(),
+            bottomPlugins
         ]
     };
 };

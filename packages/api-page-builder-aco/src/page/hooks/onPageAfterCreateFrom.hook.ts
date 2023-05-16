@@ -11,13 +11,9 @@ export const onPageAfterCreateFromHook = (context: PbAcoContext) => {
      * Intercept page revision creation and update the related record.
      * Here we perform an update since all the page revisions are related to the same search record entry.
      */
-    pageBuilder.onPageAfterCreateFrom.subscribe(async ({ original, page }) => {
+    pageBuilder.onPageAfterCreateFrom.subscribe(async ({ page }) => {
         try {
-            const { location } = await aco.search.get<PbPageRecordData>(original.pid);
-
-            const payload = await updatePageRecordPayload(context, page, {
-                location
-            });
+            const payload = await updatePageRecordPayload(context, page);
             await aco.search.update<PbPageRecordData>(page.pid, payload);
         } catch (error) {
             throw WebinyError.from(error, {

@@ -62,7 +62,7 @@ export interface ElasticsearchFieldPluginParams {
     toSearchValue?: (params: ToSearchValueParams) => any;
 }
 
-export abstract class ElasticsearchFieldPlugin extends Plugin {
+export class ElasticsearchFieldPlugin extends Plugin {
     public static override readonly type: string = "elasticsearch.fieldDefinition";
     public static readonly ALL: string = "*";
 

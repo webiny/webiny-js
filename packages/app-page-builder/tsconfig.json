@@ -1,10 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [
     { "path": "../app" },
     { "path": "../app-aco" },
     { "path": "../app-admin" },
+    { "path": "../app-file-manager" },
     { "path": "../app-i18n" },
     { "path": "../app-page-builder-elements" },
     { "path": "../app-plugin-admin-welcome-screen" },
@@ -34,6 +35,8 @@
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-file-manager/*": ["../app-file-manager/src/*"],
+      "@webiny/app-file-manager": ["../app-file-manager/src"],
       "@webiny/app-i18n/*": ["../app-i18n/src/*"],
       "@webiny/app-i18n": ["../app-i18n/src"],
       "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],

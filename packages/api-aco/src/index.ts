@@ -4,7 +4,10 @@ import { createAcoContext } from "~/createAcoContext";
 import { createAcoFields } from "~/createAcoFields";
 import { createAcoGraphQL } from "~/createAcoGraphQL";
 
-export const createACO = () => {
+export { SEARCH_RECORD_MODEL_ID } from "./record/record.model";
+export { FOLDER_MODEL_ID } from "./folder/folder.model";
+
+export const createAco = () => {
     return [
         ...createAdminSettingsContext(),
         createAcoContext(),

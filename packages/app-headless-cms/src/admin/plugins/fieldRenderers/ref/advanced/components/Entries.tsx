@@ -8,7 +8,6 @@ import { positionValues as PositionValues } from "react-custom-scrollbars";
 const Container = styled("div")(() => ({
     minWidth: "100%",
     height: "460px",
-    maxHeight: 460,
     backgroundColor: "var(--mdc-theme-background)",
     boxSizing: "border-box",
     display: "flex",
@@ -44,10 +43,10 @@ export const Entries: React.VFC<Props> = props => {
     );
 
     if (entries.length === 0) {
-        return null;
+        return <>No entries found.</>;
     }
     return (
-        <Container>
+        <Container className={"entries"}>
             <Scrollbar data-testid="advanced-ref-field-entries" onScrollFrame={loadMoreOnScroll}>
                 {entries.map((entry, index) => {
                     return (

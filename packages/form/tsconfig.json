@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src", "__tests__"],
   "references": [{ "path": "../validation" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

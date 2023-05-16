@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
@@ -11,7 +11,8 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 
 import PageTemplatesDataList from "./PageTemplatesDataList";
 import PageTemplateDetails from "./PageTemplateDetails";
-import { PageBuilderSecurityPermission } from "~/types";
+import CreatePageTemplateDialog from "./CreatePageTemplateDialog";
+import { PageBuilderSecurityPermission, PbPageTemplate } from "~/types";
 import { LIST_PAGE_TEMPLATES, CREATE_PAGE_TEMPLATE, DELETE_PAGE_TEMPLATE } from "./graphql";
 
 const t = i18n.ns("app-page-builder/admin/views/page-templates");
@@ -28,6 +29,7 @@ const PageTemplates: React.FC = () => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState<boolean>(false);
 
     const pbPageTemplatePermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.template");
@@ -73,14 +75,16 @@ const PageTemplates: React.FC = () => {
         return true;
     }, []);
 
-    const onCreatePageTemplate = async () => {
+    const onCreatePageTemplate = async (
+        formData: Pick<PbPageTemplate, "title" | "slug" | "description">
+    ) => {
         const { data: res } = await client.mutate({
             mutation: CREATE_PAGE_TEMPLATE,
             variables: {
                 data: {
-                    title: "New template",
-                    slug: "new-template",
-                    description: "Blank template",
+                    title: formData.title,
+                    slug: formData.slug,
+                    description: formData.description,
                     tags: [],
                     layout: "static", // Hardcoded until better UI is in place
                     pageCategory: "static"
@@ -95,10 +99,6 @@ const PageTemplates: React.FC = () => {
             showSnackbar(error.message);
         }
     };
-
-    const handleNewTemplateClick = useCallback(() => {
-        onCreatePageTemplate();
-    }, []);
 
     const [deleteIt, deleteMutation] = useMutation(DELETE_PAGE_TEMPLATE, {
         refetchQueries: [{ query: LIST_PAGE_TEMPLATES }]
@@ -122,27 +122,35 @@ const PageTemplates: React.FC = () => {
     }, []);
 
     return (
-        <SplitView>
-            <LeftPanel>
-                <PageTemplatesDataList
-                    canCreate={canCreate}
-                    canEdit={canEdit}
-                    canDelete={canDelete}
-                    onCreate={handleNewTemplateClick}
-                    onDelete={handleDeleteTemplateClick}
-                    isLoading={deleteMutation?.loading}
+        <>
+            <SplitView>
+                <LeftPanel>
+                    <PageTemplatesDataList
+                        canCreate={canCreate}
+                        canEdit={canEdit}
+                        canDelete={canDelete}
+                        onCreate={() => setIsCreateDialogOpen(true)}
+                        onDelete={handleDeleteTemplateClick}
+                        isLoading={deleteMutation?.loading}
+                    />
+                </LeftPanel>
+                <RightPanel>
+                    <PageTemplateDetails
+                        canCreate={canCreate}
+                        canEdit={canEdit}
+                        canDelete={canDelete}
+                        onCreate={() => setIsCreateDialogOpen(true)}
+                        onDelete={handleDeleteTemplateClick}
+                    />
+                </RightPanel>
+            </SplitView>
+            {isCreateDialogOpen && (
+                <CreatePageTemplateDialog
+                    onClose={() => setIsCreateDialogOpen(false)}
+                    onSubmit={onCreatePageTemplate}
                 />
-            </LeftPanel>
-            <RightPanel>
-                <PageTemplateDetails
-                    canCreate={canCreate}
-                    canEdit={canEdit}
-                    canDelete={canDelete}
-                    onCreate={handleNewTemplateClick}
-                    onDelete={handleDeleteTemplateClick}
-                />
-            </RightPanel>
-        </SplitView>
+            )}
+        </>
     );
 };
 

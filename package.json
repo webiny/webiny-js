@@ -17,7 +17,8 @@
       "apps/api/pageBuilder/updateSettings",
       "apps/api/pageBuilder/import/*",
       "apps/api/pageBuilder/export/*",
-      "scripts/buildPackages"
+      "scripts/buildPackages",
+      "scripts/prepublishOnly"
     ]
   },
   "author": "Webiny Ltd.",
@@ -139,7 +140,7 @@
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
     "lint-staged": "lint-staged",
     "postinstall": "yarn node ./scripts/linkWorkspaces.js",
-    "prepublishOnly": "yarn node scripts/prepublishOnly.js",
+    "prepublishOnly": "node scripts/prepublishOnly",
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
@@ -213,6 +214,7 @@
     ]
   },
   "resolutions": {
+    "@emotion/react": "11.10.8",
     "@types/react": "17.0.39",
     "@types/jsdom": "link:./typings/void",
     "@typescript/lib-dom": "npm:@types/web@*",

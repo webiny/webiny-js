@@ -1,12 +1,12 @@
 import WebinyError from "@webiny/error";
 import {
-    CmsEntry,
     CmsContext,
-    CmsModelFieldToGraphQLPlugin,
+    CmsEntry,
     CmsModel,
-    CmsModelField
+    CmsModelField,
+    CmsModelFieldToGraphQLPlugin
 } from "~/types";
-import { createReadTypeName } from "~/utils/createTypeName";
+import { createTypeName } from "~/utils/createTypeName";
 import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./helpers";
 
@@ -20,7 +20,7 @@ interface RefFieldValue {
 }
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${model.singularApiName}_${createReadTypeName(field.fieldId)}`;
+    return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 };
 
 interface CreateListFilterParams {
@@ -109,20 +109,15 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                 const gqlType =
                     fieldModels.length > 1
                         ? createUnionTypeName(model, field)
-                        : createReadTypeName(
-                              getModelSingularApiName({ models, modelId: fieldModels[0].modelId })
-                          );
-
+                        : getModelSingularApiName({ models, modelId: fieldModels[0].modelId });
                 const typeDefs =
                     fieldModels.length > 1
                         ? `union ${gqlType} = ${getFieldModels(field)
                               .map(({ modelId }) =>
-                                  createReadTypeName(
-                                      getModelSingularApiName({
-                                          models,
-                                          modelId
-                                      })
-                                  )
+                                  getModelSingularApiName({
+                                      models,
+                                      modelId
+                                  })
                               )
                               .join(" | ")}`
                         : "";
@@ -147,12 +142,10 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                 for (const item of fieldModels) {
                     modelIdToTypeName.set(
                         item.modelId,
-                        createReadTypeName(
-                            getModelSingularApiName({
-                                models,
-                                modelId: item.modelId
-                            })
-                        )
+                        getModelSingularApiName({
+                            models,
+                            modelId: item.modelId
+                        })
                     );
                 }
 

@@ -20,7 +20,7 @@ const documentClient = new DocumentClient({
 
 interface Config {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
 }
 
 export const defaultIdentity = {
@@ -60,11 +60,13 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 },
                 status: "any",
                 createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString()
+                savedOn: new Date().toISOString(),
+                tags: []
             });
 
             context.security.addAuthenticator(async () => {
-                return identity || defaultIdentity;
+                // `undefined` results in the default identity being set; `null` means "anonymous request".
+                return identity === undefined ? defaultIdentity : identity;
             });
 
             context.security.addAuthorizer(async () => {

@@ -1,14 +1,12 @@
 import { plugins } from "@webiny/plugins";
-import { AppFileManagerStoragePlugin } from "@webiny/app/types";
+import { FileUploaderPlugin } from "@webiny/app/types";
 
-export const getFileUploader = (): AppFileManagerStoragePlugin["upload"] => {
-    const fileStoragePlugin = plugins.byName<AppFileManagerStoragePlugin>(
-        "app-file-manager-storage"
-    );
+export const getFileUploader = (): FileUploaderPlugin => {
+    const fileStoragePlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
 
     if (!fileStoragePlugin) {
-        throw Error('Missing plugin: "app-file-manager-storage".');
+        throw Error('Missing plugin: "file-uploader".');
     }
 
-    return fileStoragePlugin.upload;
+    return fileStoragePlugin;
 };

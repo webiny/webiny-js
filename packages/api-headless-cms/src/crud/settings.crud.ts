@@ -1,9 +1,9 @@
 import {
     CmsContext,
-    CmsSettingsPermission,
     CmsSettings,
-    HeadlessCmsStorageOperations,
-    CmsSettingsContext
+    CmsSettingsContext,
+    CmsSettingsPermission,
+    HeadlessCmsStorageOperations
 } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
@@ -23,14 +23,14 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSetting
     };
 
     return {
-        getSettings: async (): Promise<CmsSettings | null> => {
+        getSettings: async () => {
             await checkPermissions();
             return await storageOperations.settings.get({
                 tenant: getTenant().id,
                 locale: getLocale().code
             });
         },
-        updateModelLastChange: async (): Promise<void> => {
+        updateModelLastChange: async () => {
             const original = await storageOperations.settings.get({
                 tenant: getTenant().id,
                 locale: getLocale().code
@@ -52,26 +52,22 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSetting
                 settings
             });
         },
-        getModelLastChange: async (): Promise<Date> => {
+        getModelLastChange: async () => {
             try {
                 const settings = await storageOperations.settings.get({
                     tenant: getTenant().id,
                     locale: getLocale().code
                 });
-                if (!settings?.contentModelLastChange) {
-                    return new Date();
-                }
-                return settings.contentModelLastChange;
+
+                return settings?.contentModelLastChange || null;
             } catch (ex) {
                 console.log({
-                    error: {
-                        message: ex.message,
-                        code: ex.code || "COULD_NOT_FETCH_CONTENT_MODEL_LAST_CHANGE",
-                        data: ex
-                    }
+                    message: ex.message,
+                    code: ex.code || "COULD_NOT_FETCH_CONTENT_MODEL_LAST_CHANGE",
+                    data: ex
                 });
             }
-            return new Date();
+            return null;
         }
     };
 };

@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import zod from "zod";
 import uniqid from "uniqid";
 
@@ -21,6 +16,7 @@ import {
     PageTemplateStorageOperationsListParams,
     PageBlockVariable,
     PbContext,
+    PbPageElement,
     Page,
     PageContentWithTemplate
 } from "~/types";
@@ -29,6 +25,7 @@ import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
+import { mdbid } from "@webiny/utils";
 
 const createSchema = zod.object({
     title: zod.string().max(100),
@@ -67,6 +64,7 @@ export interface CreatePageTemplatesCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createPageTemplatesCrud = (
     params: CreatePageTemplatesCrudParams
 ): PageTemplatesCrud => {
@@ -90,10 +88,8 @@ export const createPageTemplatesCrud = (
         onPageTemplateBeforeDelete,
         onPageTemplateAfterDelete,
 
-        async getPageTemplate({ where }) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+        async getPageTemplate({ where }, options = { auth: true }) {
+            const { auth } = options;
 
             const params = {
                 where: {
@@ -102,6 +98,13 @@ export const createPageTemplatesCrud = (
                     locale: getLocaleCode()
                 }
             };
+
+            let permission;
+            if (auth) {
+                permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+            }
 
             let pageTemplate: PageTemplate | null = null;
             try {
@@ -121,8 +124,10 @@ export const createPageTemplatesCrud = (
                 throw new NotFoundError(`Page template not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, pageTemplate);
+            if (auth && permission) {
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, pageTemplate);
+            }
 
             return pageTemplate;
         },
@@ -164,6 +169,19 @@ export const createPageTemplatesCrud = (
 
         async createPageTemplate(this: PageBuilderContextObject, input: PageTemplateInput) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+
+            let pageTemplateExists = true;
+            try {
+                await this.getPageTemplate({
+                    where: { slug: input.slug }
+                });
+            } catch {
+                pageTemplateExists = false;
+            }
+
+            if (pageTemplateExists) {
+                throw new NotFoundError(`Page Template with slug "${input.slug}" already exists.`);
+            }
 
             const identity = context.security.getIdentity();
 
@@ -377,6 +395,55 @@ export const createPageTemplatesCrud = (
             });
 
             return page;
+        },
+        async createTemplateFromPage(pageId, data) {
+            const page = await context.pageBuilder.getPage(pageId);
+            if (!page) {
+                throw new NotFoundError(`Page "${pageId}" was not found!`);
+            }
+
+            // Here we gather template variables by going through all the blocks in the page and propagating
+            // their variables to "template level" variables (`content.data.template.variables`). Note that
+            // blocks are always located in page content's root. That's why we're not recursively iterating
+            // through all the page content elements.
+            const templateVariables: Array<{ blockId: string; variables?: PageBlockVariable[] }> =
+                [];
+
+            const templateElements = page.content?.elements?.map((block: PbPageElement) => {
+                templateVariables.push({
+                    blockId: block.id,
+                    variables: block.data.variables
+                });
+
+                return {
+                    ...block,
+                    data: {
+                        ...block.data,
+                        templateBlockId: block.id
+                    }
+                };
+            });
+
+            const template = await this.createPageTemplate({
+                title: data.title,
+                slug: data.slug,
+                description: data.description,
+                tags: page.settings.general?.tags || [],
+                layout: page.settings.general?.layout || "static",
+                pageCategory: page.category,
+                content: {
+                    ...page.content,
+                    data: {
+                        ...(page.content?.data || {}),
+                        template: {
+                            variables: templateVariables
+                        }
+                    },
+                    elements: templateElements
+                }
+            });
+
+            return template;
         },
         copyTemplateDataToPage(template: PageTemplate, page: Page) {
             const content = {

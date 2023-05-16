@@ -23,6 +23,11 @@ export const executeDataMigrations = {
             return;
         }
 
+        // No need to run migrations if we're doing a preview.
+        if (params.inputs.preview) {
+            return;
+        }
+
         const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
         context.info("Executing data migrations Lambda function...");
@@ -35,6 +40,9 @@ export const executeDataMigrations = {
             const response = await runMigration({
                 lambdaClient,
                 functionName: apiOutput["migrationLambdaArn"],
+                payload: {
+                    version: process.env.WEBINY_VERSION || context.version
+                },
                 statusCallback: ({ status, migrations }) => {
                     clearLine();
                     if (status === "running") {

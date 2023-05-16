@@ -1,9 +1,10 @@
-import { CmsFieldTypePlugins, CmsModel } from "~/types";
+import { CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins/CmsGraphQLSchemaSorterPlugin";
 
 interface RenderSortEnumParams {
     model: CmsModel;
+    fields: CmsModelField[];
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }
@@ -13,6 +14,7 @@ interface RenderSortEnum {
 
 export const renderSortEnum: RenderSortEnum = ({
     model,
+    fields,
     fieldTypePlugins,
     sorterPlugins
 }): string => {
@@ -25,7 +27,7 @@ export const renderSortEnum: RenderSortEnum = ({
         "createdOn_DESC"
     ];
 
-    for (const field of model.fields) {
+    for (const field of fields) {
         const plugin = fieldTypePlugins[getBaseFieldType(field)];
         if (!plugin) {
             continue;

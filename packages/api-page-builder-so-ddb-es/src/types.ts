@@ -1,4 +1,10 @@
-import { PageBuilderStorageOperations as BasePageBuilderStorageOperations } from "@webiny/api-page-builder/types";
+import {
+    BlockCategoryStorageOperations as BaseBlockCategoryStorageOperations,
+    CategoryStorageOperations as BaseCategoryStorageOperations,
+    PageBlockStorageOperations as BasePageBlockStorageOperations,
+    PageBuilderStorageOperations as BasePageBuilderStorageOperations,
+    PageTemplateStorageOperations as BasePageTemplateStorageOperations
+} from "@webiny/api-page-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Client } from "@elastic/elasticsearch";
@@ -66,4 +72,24 @@ export interface DataContainer<T> {
     SK: string;
     TYPE: string;
     data: T;
+}
+
+export interface DataLoaderInterface {
+    clear: () => void;
+}
+
+export interface PageTemplateStorageOperations extends BasePageTemplateStorageOperations {
+    dataLoader: DataLoaderInterface;
+}
+
+export interface BlockCategoryStorageOperations extends BaseBlockCategoryStorageOperations {
+    dataLoader: DataLoaderInterface;
+}
+
+export interface CategoryStorageOperations extends BaseCategoryStorageOperations {
+    dataLoader: DataLoaderInterface;
+}
+
+export interface PageBlockStorageOperations extends BasePageBlockStorageOperations {
+    dataLoader: DataLoaderInterface;
 }

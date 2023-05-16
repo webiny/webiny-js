@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     BindComponentRenderProp,
     CmsEditorContentEntry,
-    CmsEditorFieldRendererProps,
+    CmsModelFieldRendererProps,
     CmsModel
 } from "~/types";
 import { Options } from "./Options";
@@ -18,10 +18,7 @@ import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components
 import { Loader } from "./Loader";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/advanced/components/NewReferencedEntryDialog";
 
-const Container = styled("div")({
-    borderLeft: "3px solid var(--mdc-theme-background)"
-    //paddingLeft: "10px"
-});
+const Container = styled("div")({});
 
 const FieldLabel = styled("h3")({
     fontSize: 24,
@@ -31,7 +28,7 @@ const FieldLabel = styled("h3")({
     paddingBottom: "5px"
 });
 
-interface Props extends CmsEditorFieldRendererProps {
+interface Props extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
 }
 

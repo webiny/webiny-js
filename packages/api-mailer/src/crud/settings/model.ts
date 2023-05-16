@@ -79,6 +79,7 @@ export const createSettingsModel = (group: CmsGroupPlugin) => {
         layout: [["host", "port", "user", "password", "from", "replyTo"]],
         description: "Mailer Settings",
         titleFieldId: "",
-        isPrivate: true
+        isPrivate: true,
+        noValidate: true
     });
 };

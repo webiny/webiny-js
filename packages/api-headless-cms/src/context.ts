@@ -7,6 +7,8 @@ import { createSettingsCrud } from "~/crud/settings.crud";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
+import { StorageOperationsCmsModelPlugin } from "~/plugins";
+import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -47,56 +49,63 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             return context.tenancy.getCurrentTenant();
         };
 
-        if (storageOperations.beforeInit) {
+        context.plugins.register(
+            new StorageOperationsCmsModelPlugin(
+                createCmsModelFieldConvertersAttachFactory(context.plugins)
+            )
+        );
+
+        await context.benchmark.measure("headlessCms.createContext", async () => {
             await storageOperations.beforeInit(context);
-        }
 
-        context.cms = {
-            type,
-            locale,
-            getLocale,
-            READ: type === "read",
-            PREVIEW: type === "preview",
-            MANAGE: type === "manage",
-            storageOperations,
-            ...createSystemCrud({
-                context,
-                getTenant,
+            context.cms = {
+                type,
+                locale,
                 getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            ...createSettingsCrud({
-                context,
-                getTenant,
-                getLocale,
-                storageOperations
-            }),
-            ...createModelGroupsCrud({
-                context,
-                getTenant,
-                getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            ...createModelsCrud({
-                context,
-                getLocale,
-                getTenant,
-                getIdentity,
-                storageOperations
-            }),
-            ...createContentEntryCrud({
-                context,
-                getIdentity,
-                getTenant,
-                storageOperations
-            })
-        };
+                READ: type === "read",
+                PREVIEW: type === "preview",
+                MANAGE: type === "manage",
+                storageOperations,
+                ...createSystemCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createSettingsCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    storageOperations
+                }),
+                ...createModelGroupsCrud({
+                    context,
+                    getTenant,
+                    getLocale,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createModelsCrud({
+                    context,
+                    getLocale,
+                    getTenant,
+                    getIdentity,
+                    storageOperations
+                }),
+                ...createContentEntryCrud({
+                    context,
+                    getIdentity,
+                    getTenant,
+                    getLocale,
+                    storageOperations
+                })
+            };
 
-        if (!storageOperations.init) {
-            return;
-        }
-        await storageOperations.init(context);
+            if (!storageOperations.init) {
+                return;
+            }
+            await storageOperations.init(context);
+        });
     });
 };

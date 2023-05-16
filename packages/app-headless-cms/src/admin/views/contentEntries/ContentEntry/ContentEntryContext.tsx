@@ -74,7 +74,7 @@ export const useContentEntryProviderProps = (): UseContentEntryProviderProps => 
     };
 };
 
-export const Provider: React.FC<ContentEntryContextProviderProps> = ({
+export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = ({
     children,
     isNewEntry,
     getContentId
@@ -197,4 +197,4 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-Provider.displayName = "ContentEntryProvider";
+ContentEntryProvider.displayName = "ContentEntryProvider";

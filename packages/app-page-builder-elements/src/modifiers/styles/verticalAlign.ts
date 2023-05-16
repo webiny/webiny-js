@@ -11,8 +11,8 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
             return returnStyles;
         }
 
-        // Blocks are flex-displayed, with the flex-direction set to "column".
-        if (element.type === "block") {
+        // Blocks and cells are flex-displayed, with the flex-direction set to "column".
+        if (element.type === "block" || element.type === "cell") {
             return {
                 ...returnStyles,
                 [breakpointName]: {

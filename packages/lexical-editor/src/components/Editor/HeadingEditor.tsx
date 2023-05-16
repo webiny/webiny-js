@@ -4,6 +4,7 @@ import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLink
 import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 import { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
 import { RichTextEditor, RichTextEditorProps } from "~/components/Editor/RichTextEditor";
+import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 
 interface HeadingEditorProps extends RichTextEditorProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
@@ -18,6 +19,7 @@ export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, 
             {...rest}
         >
             <LinkPlugin />
+            <WebinyQuotePlugin />
             <ClickableLinkPlugin />
             <FloatingLinkEditorPlugin anchorElem={document.body} />
         </RichTextEditor>

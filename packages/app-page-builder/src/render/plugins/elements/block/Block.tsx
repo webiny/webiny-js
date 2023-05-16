@@ -17,47 +17,42 @@ const Block: React.FC<BlockProps> = ({ element }) => {
     } = usePageBuilder();
 
     return (
-        <ClassNames>
-            {({ css }) => {
-                return (
-                    <>
-                        {element.data.blockId && (
-                            <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
-                        )}
-                        <ElementAnimation>
-                            <ElementRoot element={element}>
-                                {({
-                                    elementStyle,
-                                    elementAttributes,
-                                    customClasses,
-                                    combineClassNames
-                                }) => {
-                                    const containerStyle = elementStyle;
-                                    // Use per-device style
-                                    const width =
-                                        elementStyle[
-                                            `--${kebabCase(
-                                                displayMode
-                                            )}-align-items` as unknown as keyof CSSProperties
-                                        ];
-                                    /**
-                                     * We're swapping "justifyContent" & "alignItems" value here because
-                                     * ".webiny-pb-layout-block" has "flex-direction: column"
-                                     */
-                                    const alignItems =
-                                        elementStyle[
-                                            `--${kebabCase(
-                                                displayMode
-                                            )}-justify-content` as unknown as keyof CSSProperties
-                                        ];
-                                    const justifyContent =
-                                        elementStyle[
-                                            `--${kebabCase(
-                                                displayMode
-                                            )}-align-items` as unknown as keyof CSSProperties
-                                        ];
+        <>
+            {element.data.blockId && (
+                <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
+            )}
+            <ElementAnimation>
+                <ElementRoot element={element}>
+                    {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
+                        const containerStyle = elementStyle;
+                        // Use per-device style
+                        const width =
+                            elementStyle[
+                                `--${kebabCase(
+                                    displayMode
+                                )}-align-items` as unknown as keyof CSSProperties
+                            ];
+                        /**
+                         * We're swapping "justifyContent" & "alignItems" value here because
+                         * ".webiny-pb-layout-block" has "flex-direction: column"
+                         */
+                        const alignItems =
+                            elementStyle[
+                                `--${kebabCase(
+                                    displayMode
+                                )}-justify-content` as unknown as keyof CSSProperties
+                            ];
+                        const justifyContent =
+                            elementStyle[
+                                `--${kebabCase(
+                                    displayMode
+                                )}-align-items` as unknown as keyof CSSProperties
+                            ];
 
-                                    // TODO @ts-refactor style type
+                        // TODO @ts-refactor style type
+                        return (
+                            <ClassNames>
+                                {({ css }) => {
                                     return (
                                         <div
                                             style={{ width: "100%", display: "flex" }}
@@ -90,12 +85,12 @@ const Block: React.FC<BlockProps> = ({ element }) => {
                                         </div>
                                     );
                                 }}
-                            </ElementRoot>
-                        </ElementAnimation>
-                    </>
-                );
-            }}
-        </ClassNames>
+                            </ClassNames>
+                        );
+                    }}
+                </ElementRoot>
+            </ElementAnimation>
+        </>
     );
 };
 

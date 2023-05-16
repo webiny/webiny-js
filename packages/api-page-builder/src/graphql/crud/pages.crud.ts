@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import uniqid from "uniqid";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
@@ -50,6 +45,7 @@ import {
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
 import {
+    mdbid,
     createIdentifier,
     createZodError,
     parseIdentifier,
@@ -374,7 +370,21 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 locked: false,
                 publishedOn: null,
                 createdFrom: null,
-                settings,
+                settings: {
+                    ...settings,
+                    general: {
+                        ...settings.general,
+                        tags: settings.general?.tags || undefined
+                    },
+                    social: {
+                        ...settings.social,
+                        meta: settings.social?.meta || []
+                    },
+                    seo: {
+                        ...settings.seo,
+                        meta: settings.seo?.meta || []
+                    }
+                },
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
                 ownedBy: owner,
@@ -509,7 +519,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             }
         },
 
-        async updatePage(id, input, meta): Promise<any> {
+        async updatePage(id, input): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -542,7 +552,15 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 ...data,
                 settings: {
                     ...original.settings,
-                    ...(data.settings || {})
+                    ...(data.settings || {}),
+                    seo: {
+                        ...(data.settings?.seo || {}),
+                        meta: data.settings?.seo?.meta || []
+                    },
+                    social: {
+                        ...(data.settings?.social || {}),
+                        meta: data.settings?.social?.meta || []
+                    }
                 },
                 version: Number(original.version),
                 savedOn: new Date().toISOString()
@@ -559,8 +577,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageBeforeUpdate.publish({
                     original,
                     page,
-                    input,
-                    meta
+                    input
                 });
 
                 const result = await storageOperations.pages.update({
@@ -572,8 +589,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageAfterUpdate.publish({
                     original,
                     page: result,
-                    input,
-                    meta
+                    input
                 });
 
                 /**

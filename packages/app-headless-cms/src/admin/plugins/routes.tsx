@@ -7,6 +7,7 @@ import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
 import { ContentEntriesView } from "../views/contentEntries/experiment/ContentEntriesViewConfig";
+import { ContentEntriesContainer } from "~/admin/views/contentEntries/ContentEntriesContainer";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
@@ -56,7 +57,9 @@ const plugins: RoutePlugin[] = [
                             <Helmet>
                                 <title>{t`Content`}</title>
                             </Helmet>
-                            <ContentEntriesView />
+                            <ContentEntriesContainer>
+                                <ContentEntriesView />
+                            </ContentEntriesContainer>
                         </AdminLayout>
                     </SecureRoute>
                 )}

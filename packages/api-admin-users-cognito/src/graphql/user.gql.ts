@@ -4,11 +4,11 @@
 // @ts-ignore
 import md5 from "md5";
 import {
-    Response,
-    NotFoundResponse,
     ErrorResponse,
+    ListErrorResponse,
     ListResponse,
-    ListErrorResponse
+    NotFoundResponse,
+    Response
 } from "@webiny/handler-graphql/responses";
 import { AdminUser, AdminUsersContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
@@ -169,13 +169,11 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
 
                 // Current user might not have permissions to execute `getUser` (this method can load any user in the system),
                 // but loading your own user record should be allowed. For that reason, let's temporarily disable authorization.
-                context.security.disableAuthorization();
 
-                // Get user record using the identity ID.
-                const user = await context.adminUsers.getUser({ where: { id: identity.id } });
-
-                // Now we can re-enable authorization.
-                context.security.enableAuthorization();
+                const user = await context.security.withoutAuthorization(async () => {
+                    // Get user record using the identity ID.
+                    return await context.adminUsers.getUser({ where: { id: identity.id } });
+                });
 
                 if (!user) {
                     return new NotFoundResponse(`User with ID ${identity.id} was not found!`);
@@ -202,25 +200,25 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                 }
 
                 // Current user might not have permissions for `adminUsers`.
-                context.security.disableAuthorization();
 
-                let user = await adminUsers.getUser({ where: { id: identity.id } });
-                if (!user) {
-                    // TODO: check if current identity belongs to a different tenant.
-                    // TODO: If so, switch to that other tenant, and update his profile there.
-                    return new NotFoundResponse("User not found!");
-                }
+                return await context.security.withoutAuthorization(async () => {
+                    let user = await adminUsers.getUser({ where: { id: identity.id } });
+                    if (!user) {
+                        // TODO: check if current identity belongs to a different tenant.
+                        // TODO: If so, switch to that other tenant, and update his profile there.
+                        return new NotFoundResponse("User not found!");
+                    }
 
-                try {
-                    user = await adminUsers.updateUser(user.id, args.data);
+                    try {
+                        user = await adminUsers.updateUser(user.id, args.data);
 
-                    // Now we can re-enable authorization.
-                    context.security.enableAuthorization();
+                        // Now we can re-enable authorization.
 
-                    return new Response(user);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                        return new Response(user);
+                    } catch (ex) {
+                        return new ErrorResponse(ex);
+                    }
+                });
             },
             createUser: async (_, { data }: any, context) => {
                 try {

@@ -24,16 +24,17 @@ import {
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
 import {
+    CmsElasticsearchModelFieldPlugin,
     CmsEntryElasticsearchBodyModifierPlugin,
     CmsEntryElasticsearchFullTextSearchPlugin,
     CmsEntryElasticsearchIndexPlugin,
     CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
     CmsEntryElasticsearchQueryModifierPlugin,
-    CmsEntryElasticsearchSortModifierPlugin,
-    CmsEntryElasticsearchFieldPlugin
+    CmsEntryElasticsearchSortModifierPlugin
 } from "~/plugins";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
+import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 
 export * from "./plugins";
 
@@ -117,6 +118,13 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         ...(userPlugins || [])
     ]);
 
+    const entries = createEntriesStorageOperations({
+        entity: entities.entries,
+        esEntity: entities.entriesEs,
+        plugins,
+        elasticsearch
+    });
+
     return {
         name: "dynamodb:elasticsearch",
         beforeInit: async context => {
@@ -147,11 +155,13 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 CmsEntryElasticsearchQueryBuilderValueSearchPlugin.type,
                 CmsEntryElasticsearchQueryModifierPlugin.type,
                 CmsEntryElasticsearchSortModifierPlugin.type,
-                CmsEntryElasticsearchFieldPlugin.type
+                CmsElasticsearchModelFieldPlugin.type,
+                StorageOperationsCmsModelPlugin.type
             ];
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);
             }
+            entries.dataLoaders.clearAll();
         },
         init: async context => {
             /**
@@ -204,11 +214,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entity: entities.models,
             elasticsearch
         }),
-        entries: createEntriesStorageOperations({
-            entity: entities.entries,
-            esEntity: entities.entriesEs,
-            plugins,
-            elasticsearch
-        })
+        entries
     };
 };

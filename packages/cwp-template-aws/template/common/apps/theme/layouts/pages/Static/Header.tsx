@@ -3,8 +3,6 @@ import { HeaderDesktop } from "./HeaderDesktop";
 import { HeaderMobile } from "./HeaderMobile";
 import styled from "@emotion/styled";
 
-import { colors, typography } from "../../../theme";
-
 export const Header: React.FC = () => {
     return (
         <HeaderWrapper data-testid={"pb-desktop-mobile-headers"}>
@@ -26,8 +24,8 @@ const HeaderWrapper = styled.header`
     top: 0;
 
     a {
-        ${typography.paragraph1}
-        color: ${colors.color1};
+        ${props => props.theme.styles.typography["paragraphs"].stylesById("paragraph1")}
+        color: ${props => props.theme.styles.colors["color1"]};
         text-decoration: none;
     }
 `;

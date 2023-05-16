@@ -20,10 +20,14 @@ const lexicalText = JSON.stringify({
                         version: 1
                     }
                 ],
+                styleId: "paragraph1",
+                name: "Paragraph 1",
                 direction: "ltr",
+                typographyStyles: {},
                 format: "",
                 indent: 0,
-                type: "paragraph",
+                tag: "p",
+                type: "typography-el-node",
                 version: 1
             }
         ],

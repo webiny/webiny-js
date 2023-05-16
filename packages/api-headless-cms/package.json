@@ -60,12 +60,12 @@
     "get-yarn-workspaces": "^1.0.2",
     "graphql": "^15.7.2",
     "jest": "^28.1.0",
-    "mdbid": "^1.0.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",
     "ttypescript": "^1.5.12",
-    "typescript": "4.7.4"
+    "typescript": "4.7.4",
+    "write-json-file": "^4.3.0"
   },
   "publishConfig": {
     "access": "public",

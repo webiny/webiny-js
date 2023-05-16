@@ -1,6 +1,9 @@
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { parseIdentifier } from "@webiny/utils";
 
+import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
+import { checkPermissions } from "~/utils/checkPermissions";
 import { resolve } from "~/utils/resolve";
 
 import { AcoContext } from "~/types";
@@ -13,7 +16,8 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             location: SearchLocationType!
             title: String!
             content: String
-            data: JSON
+            data: JSON!
+            tags: [String!]!
             savedOn: DateTime
             createdOn: DateTime
             createdBy: AcoUser
@@ -34,6 +38,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             content: String
             location: SearchLocationInput!
             data: JSON
+            tags: [String!]
         }
 
         input SearchRecordUpdateInput {
@@ -41,11 +46,15 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             content: String
             location: SearchLocationInput
             data: JSON
+            tags: [String!]
         }
 
         input SearchRecordListWhereInput {
             type: String!
             location: SearchLocationInput
+            tags_in: [String!]
+            tags_startsWith: String
+            tags_not_startsWith: String
         }
 
         type SearchRecordResponse {
@@ -77,12 +86,22 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         }
     `,
     resolvers: {
+        SearchRecord: {
+            id: async parent => {
+                const { id } = parseIdentifier(parent.id);
+                return removeAcoRecordPrefix(id);
+            }
+        },
         SearchQuery: {
             getRecord: async (_, { id }, context) => {
-                return resolve(() => context.aco.search.get(id));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.get(id);
+                });
             },
             listRecords: async (_, args: any, context) => {
                 try {
+                    await checkPermissions(context);
                     const [entries, meta] = await context.aco.search.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
@@ -92,13 +111,22 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
         },
         SearchMutation: {
             createRecord: async (_, { data }, context) => {
-                return resolve(() => context.aco.search.create(data));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.create(data);
+                });
             },
             updateRecord: async (_, { id, data }, context) => {
-                return resolve(() => context.aco.search.update(id, data));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.update(id, data);
+                });
             },
             deleteRecord: async (_, { id }, context) => {
-                return resolve(() => context.aco.search.delete(id));
+                return resolve(() => {
+                    checkPermissions(context);
+                    return context.aco.search.delete(id);
+                });
             }
         }
     }
