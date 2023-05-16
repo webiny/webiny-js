@@ -11,7 +11,7 @@ export const FileList = styled("div")`
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     column-gap: 16px;
     row-gap: 16px;
-    margin: 16px 16px 48px;
+    margin: 16px;
 `;
 
 const COMPONENT_WIDTH = 200;

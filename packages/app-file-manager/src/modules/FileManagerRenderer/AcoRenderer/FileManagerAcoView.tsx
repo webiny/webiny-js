@@ -77,7 +77,7 @@ const FileListWrapper = styled("div")({
     float: "right",
     display: "inline-block",
     width: "calc(100vw - 270px)",
-    height: "calc(100vh - 64px)",
+    height: "calc(100vh - 94px)",
     position: "relative",
     ".mdc-data-table": {
         display: "inline-table"
