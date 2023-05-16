@@ -43,6 +43,7 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     setDragging: (state: boolean) => void;
     showFileDetails: (id: string) => void;
     showingFileDetails: string | null;
+    loadingFileDetails: boolean;
     hideFileDetails: () => void;
     folderId?: string;
     setFolderId: (folderId: string | undefined) => void;
@@ -86,6 +87,11 @@ export const FileManagerAcoViewProvider = ({
             return fileInState;
         }
 
+        dispatch({
+            type: "loadingFileDetails",
+            state: true
+        });
+
         const file = await fileManager.getFile(id);
 
         if (!file) {
@@ -113,6 +119,11 @@ export const FileManagerAcoViewProvider = ({
                 return result;
             });
         }
+
+        dispatch({
+            type: "loadingFileDetails",
+            state: false
+        });
 
         return file;
     };
@@ -305,6 +316,7 @@ export const FileManagerAcoViewProvider = ({
             dispatch({ type: "showFileDetails", id: null });
         },
         showingFileDetails: state.showingFileDetails,
+        loadingFileDetails: state.loadingFileDetails,
         folderId: state.folderId,
         setFolderId(state = undefined) {
             dispatch({

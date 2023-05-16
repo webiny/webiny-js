@@ -24,7 +24,7 @@ import { RecordActionMove } from "./RecordActionMove";
 
 import { ACO_TYPE } from "~/constants";
 
-import { menuStyles } from "./styled";
+import { menuStyles, actionsColumnStyles } from "./styled";
 import { FileItem } from "@webiny/app/types";
 import { Settings } from "~/types";
 
@@ -38,6 +38,7 @@ interface TableProps {
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
+    selectableItems: boolean;
 }
 
 interface Entry {
@@ -61,7 +62,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         onFolderClick,
         onSelectRow,
         sorting,
-        onSortingChange
+        onSortingChange,
+        selectableItems
     } = props;
 
     const [data, setData] = useState<Entry[]>([]);
@@ -83,7 +85,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 fileType: data.type,
                 size: data.size,
                 original: data || {},
-                selectable: true
+                selectable: selectableItems
             }));
     }, [records]);
 
@@ -148,12 +150,12 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         createdBy: {
             header: "Author"
         },
-
         original: {
             header: "",
             meta: {
                 alignEnd: true
             },
+            className: actionsColumnStyles,
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;

@@ -27,3 +27,7 @@ export const ListItemGraphic = styled(ListItemGraphicBase)`
 export const menuStyles = css(`
     width: 200px;
 `);
+
+export const actionsColumnStyles = css(`
+    max-width: 80px!important;
+`);
