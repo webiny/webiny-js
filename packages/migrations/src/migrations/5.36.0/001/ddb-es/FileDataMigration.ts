@@ -11,10 +11,6 @@ import {
     createDdbEntryEntity,
     createDdbEsEntryEntity
 } from "~/migrations/5.36.0/001/entities/createEntryEntity";
-import {
-    createDdbFileEntity,
-    createDdbEsFileEntity
-} from "~/migrations/5.36.0/001/entities/createFileEntity";
 import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
 import { getCompressedData } from "~/migrations/5.36.0/001/utils/getCompressedData";
 
@@ -46,8 +42,6 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
     private readonly elasticsearchClient: Client;
     private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
-    private readonly ddbFileEntity: ReturnType<typeof createDdbFileEntity>;
-    private readonly ddbEsFileEntity: ReturnType<typeof createDdbEsFileEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
@@ -55,8 +49,6 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
-        this.ddbFileEntity = createDdbFileEntity(table);
-        this.ddbEsFileEntity = createDdbEsFileEntity(esTable);
         this.localeEntity = createLocaleEntity(table);
         this.tenantEntity = createTenantEntity(table);
     }
