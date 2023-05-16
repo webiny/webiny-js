@@ -231,7 +231,8 @@ module.exports = function (webpackEnv, { paths, options }) {
             fallback: {
                 crypto: require.resolve("crypto-browserify"),
                 path: require.resolve("path-browserify"),
-                buffer: require.resolve("buffer/")
+                buffer: require.resolve("buffer/"),
+                assert: require.resolve("assert/")
             }
         },
 
