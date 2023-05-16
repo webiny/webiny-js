@@ -56,6 +56,7 @@ const CloseButton = styled(IconButton)`
     position: absolute;
     right: 10px;
     top: 8px;
+    z-index: 10;
 `;
 
 const style: any = {
