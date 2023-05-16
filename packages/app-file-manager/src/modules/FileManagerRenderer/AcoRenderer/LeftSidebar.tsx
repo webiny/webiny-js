@@ -27,7 +27,7 @@ const style = {
     divider: css({
         height: "1px",
         backgroundColor: "var(--mdc-theme-on-background)",
-        margin: "12px 8px"
+        margin: "12px 8px 16px"
     })
 };
 
