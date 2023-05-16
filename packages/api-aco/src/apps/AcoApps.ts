@@ -40,12 +40,13 @@ export class AcoApps implements IAcoApps {
                 }
             );
         }
+        /**
+         * We need to create the app and run the modifiers on it.
+         */
         const app = AcoApp.create(this.context, options);
-
         const modifiers = this.context.plugins.byType<AcoAppModifierPlugin>(
             AcoAppModifierPlugin.type
         );
-
         for (const modifier of modifiers) {
             if (modifier.canUse(app) === false) {
                 continue;
@@ -55,21 +56,21 @@ export class AcoApps implements IAcoApps {
                 app
             });
         }
-
-        this.apps.set(app.name, app);
-        return app;
-    }
-
-    public registerModels(): void {
-        for (const app of this.apps.values()) {
-            const plugin = new CmsModelPlugin({
+        /**
+         * Also, we need to register the app model as the plugin one, so it can be used in the CMS.
+         * We do not need to validate model or show it in the API.
+         */
+        this.context.plugins.register(
+            new CmsModelPlugin({
                 ...app.model,
                 singularApiName: undefined,
                 pluralApiName: undefined,
                 isPrivate: true,
                 noValidate: true
-            });
-            this.context.plugins.register(plugin);
-        }
+            })
+        );
+
+        this.apps.set(app.name, app);
+        return app;
     }
 }

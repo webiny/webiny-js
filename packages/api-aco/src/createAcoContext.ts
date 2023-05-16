@@ -70,10 +70,6 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
             ...plugin.app
         });
     }
-    /**
-     * And create the plugins for the app models.
-     */
-    apps.registerModels();
 
     context.aco = {
         folder: createFolderCrudMethods(params),

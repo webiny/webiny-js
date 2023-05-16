@@ -8,6 +8,7 @@ import { PB_PAGE_TYPE } from "~/contants";
 export const onPageAfterCreateHook = (context: PbAcoContext) => {
     const { aco, pageBuilder } = context;
     const app = aco.getApp(PB_PAGE_TYPE);
+
     /**
      * Intercept page creation and create a new search record.
      * The `location.folderId` info is coming from transient `meta` data.

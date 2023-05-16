@@ -15,9 +15,6 @@ export interface PageBuilderAcoModifyCreatePayloadPluginCallable<
     (params: ModifyPayloadParams<T, P>): Promise<void>;
 }
 
-/**
- * @deprecated
- */
 export class PageBuilderAcoModifyCreatePayloadPlugin<
     T extends PbCreatePayload = PbCreatePayload,
     P extends Page = Page

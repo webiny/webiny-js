@@ -32,7 +32,7 @@ const convertValueFromIndex = (
     value: string | number,
     field: CmsModelDateTimeField
 ): string | null => {
-    const type = field.settings.type;
+    const type = field.settings?.type;
     if (type === "time") {
         return convertNumberToTime(value as number);
     } else if (!value) {
@@ -49,7 +49,7 @@ const convertValueFromIndex = (
 const convertValueToIndex = (value: string, field: CmsModelDateTimeField) => {
     if (!value) {
         return null;
-    } else if (field.settings.type === "time") {
+    } else if (field.settings?.type === "time") {
         return convertTimeToNumber(value);
     }
     return value;

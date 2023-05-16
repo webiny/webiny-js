@@ -8,7 +8,7 @@ export interface AcoAppModifierPluginModifyParams<T extends Context = AcoContext
 }
 
 export interface AcoAppModifierPluginParamsCallable<T extends Context = AcoContext> {
-    (params: AppModifier<T>): Promise<void>;
+    (params: AppModifier<T>): Promise<void> | void;
 }
 
 export interface AcoAppModifierPluginParams<T extends Context = AcoContext> {
