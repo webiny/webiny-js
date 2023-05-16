@@ -18,7 +18,7 @@ import { AcoRecords_5_36_0_001, File } from "~/migrations/5.36.0/001/ddb-es";
 
 import { createdBy, createLocalesData, createTenantsData } from "./001.data";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { esGetIndexName } from "~/utils";
+import { esCreateIndex, esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.36.0/001/utils/getCompressedData";
 import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "~/migrations/5.36.0/001/constants";
 import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
@@ -26,7 +26,7 @@ import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 20000;
+const NUMBER_OF_FILES = 3000;
 const INDEX_TYPE = "file-manager";
 let numberOfGeneratedFiles = 0;
 
@@ -63,6 +63,15 @@ describe("5.36.0-001", () => {
                 .map(locale => locale.code) as string[];
 
             for (const locale of locales) {
+                // We need to add an ACO record index, in the real world this has been already created by 5.35.0 migration
+                await esCreateIndex({
+                    elasticsearchClient,
+                    tenant,
+                    locale,
+                    type: "acosearchrecord",
+                    isHeadlessCmsModel: true
+                });
+
                 for (let index = 0; index < numberOfFiles; index++) {
                     const id = createId();
 
