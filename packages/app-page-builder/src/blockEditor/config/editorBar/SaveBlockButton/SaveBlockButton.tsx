@@ -14,6 +14,8 @@ import { DisplayMode } from "~/types";
 
 const SpinnerWrapper = styled.div`
     position: relative;
+    width: 18px !important;
+    margin-left: -4px !important;
 `;
 
 const DefaultSaveBlockButton: React.FC = () => {
