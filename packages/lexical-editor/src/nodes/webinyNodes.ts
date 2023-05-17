@@ -39,12 +39,7 @@ export const WebinyNodes: ReadonlyArray<
     FontColorNode,
     TypographyElementNode,
     ParagraphNode,
-    {
-        replace: BaseTextNode,
-        with: (node: BaseTextNode) => {
-            return new TextNode(node.getTextContent())
-        }
-    },
+    TextNode,
     /*
      * In order to provide additional Webiny-related functionality, we override Lexical's ParagraphNode node.
      * More info on overriding can be found here: https://lexical.dev/docs/concepts/node-replacement.

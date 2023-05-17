@@ -1,17 +1,16 @@
 import {
-    createCommand,
     EditorConfig,
-    LexicalCommand,
-    LexicalEditor,
     LexicalNode,
     NodeKey,
-    RangeSelection,
     SerializedTextNode as BaseSerializedTextNode,
     Spread,
     TextNode as BaseTextNode
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import {TextNodeThemeStyles, ThemeStyleValue} from "~/nodes/types";
+import {FontColorNode} from "~/nodes/FontColorNode";
+import {errorOnReadOnly} from "lexical/LexicalUpdates";
+import {$getCompositionKey} from "lexical/LexicalUtils";
 
 export type SerializedFontColorNode = Spread<
     {
@@ -71,6 +70,11 @@ export class TextNode extends BaseTextNode implements TextNodeThemeStyles {
         return self.__styles;
     }
 
+    override createDOM(config: EditorConfig): HTMLElement {
+        const element = super.createDOM(config);
+        return this.addColorValueToHTMLElement(element, config.theme);
+    }
+
     setThemeStyles(styles: ThemeStyleValue[]): this {
         // getWritable() creates a clone of the node
         // if needed, to ensure we don't try and mutate
@@ -81,3 +85,4 @@ export class TextNode extends BaseTextNode implements TextNodeThemeStyles {
     }
 
 }
+

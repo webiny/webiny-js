@@ -1,4 +1,5 @@
 import {
+    $createTextNode, $getSelection, $isRangeSelection, $setCompositionKey,
     createCommand,
     EditorConfig,
     LexicalCommand,
@@ -11,8 +12,9 @@ import {
     TextNode
 } from "lexical";
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
-import {TextNodeThemeStyles} from "~/nodes/types";
-import {ThemeTypographyStyleItems} from "../../../../typings/emotion";
+import {errorOnReadOnly} from "lexical/LexicalUpdates";
+import {$getCompositionKey, internalMarkSiblingsAsDirty} from "lexical/LexicalUtils";
+import {$updateElementSelectionOnCreateDeleteNode} from "lexical/LexicalSelection";
 
 export const ADD_FONT_COLOR_COMMAND: LexicalCommand<FontColorPayload> =
     createCommand("ADD_FONT_COLOR_COMMAND");
@@ -86,29 +88,158 @@ export class FontColorNode extends TextNode {
         };
     }
 
-    addColorValueToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
-        const hasThemeColor = this.__themeColor !== "custom";
-        // get the updated color from webiny theme
-        /*if (hasThemeColor && theme?.styles?.colors) {
-            this.__color = theme.styles.colors[this.__themeColor];
-        }*/
-
-        element.setAttribute(FontColorNodeAttrName, this.__themeColor);
-        element.style.color = this.__color;
-        return element;
+    setThemeStyle(color: string, themeColor?: ThemeColor): this {
+        const self = this.getWritable();
+        self.__themeColor = themeColor || "custom";
+        self.__color = color;
+        return self;
     }
 
-    override updateDOM(prevNode: FontColorNode, dom: HTMLElement, config: EditorConfig): boolean {
-        const theme = config.theme;
-        const isUpdated = super.updateDOM(prevNode, dom, config);
+/*    override splitText(...splitOffsets: number[]): Array<FontColorNode> {
+        errorOnReadOnly();
+        const self = this.getLatest();
+        const textContent = self.getTextContent();
+        const key = self.__key;
+        const compositionKey = $getCompositionKey();
+        const offsetsSet = new Set(splitOffsets);
+        const parts = [];
+        const textLength = textContent.length;
+        let string = '';
+        for (let i = 0; i < textLength; i++) {
+            if (string !== '' && offsetsSet.has(i)) {
+                parts.push(string);
+                string = '';
+            }
+            string += textContent[i];
+        }
+        if (string !== '') {
+            parts.push(string);
+        }
+        const partsLength = parts.length;
+        if (partsLength === 0) {
+            return [];
+        } else if (parts[0] === textContent) {
+            return [self];
+        }
+        const firstPart = parts[0];
+        const parent = self.getParentOrThrow();
+        let writableNode;
+        const format = self.getFormat();
+        const style = self.getStyle();
+        const detail = self.__detail;
+        let hasReplacedSelf = false;
+
+        if (self.isSegmented()) {
+            // Create a new TextNode
+            writableNode = $createFontColorNode(firstPart, this.__color, this.__themeColor);
+            writableNode.__format = format;
+            writableNode.__style = style;
+            writableNode.__detail = detail;
+            hasReplacedSelf = true;
+        } else {
+            // For the first part, update the existing node
+            writableNode = self.getWritable();
+            writableNode.__text = firstPart;
+        }
+
+        // Handle selection
+        const selection = $getSelection();
+
+        // Then handle all other parts
+        const splitNodes: FontColorNode[] = [writableNode];
+        let textSize = firstPart.length;
+
+        for (let i = 1; i < partsLength; i++) {
+            const part = parts[i];
+            const partSize = part.length;
+            const sibling = $createFontColorNode(part, this.__color, this.__themeColor).getWritable();
+            sibling.__format = format;
+            sibling.__style = style;
+            sibling.__detail = detail;
+            const siblingKey = sibling.__key;
+            const nextTextSize = textSize + partSize;
+
+            if ($isRangeSelection(selection)) {
+                const anchor = selection.anchor;
+                const focus = selection.focus;
+
+                if (
+                    anchor.key === key &&
+                    anchor.type === 'text' &&
+                    anchor.offset > textSize &&
+                    anchor.offset <= nextTextSize
+                ) {
+                    anchor.key = siblingKey;
+                    anchor.offset -= textSize;
+                    selection.dirty = true;
+                }
+                if (
+                    focus.key === key &&
+                    focus.type === 'text' &&
+                    focus.offset > textSize &&
+                    focus.offset <= nextTextSize
+                ) {
+                    focus.key = siblingKey;
+                    focus.offset -= textSize;
+                    selection.dirty = true;
+                }
+            }
+            if (compositionKey === key) {
+                $setCompositionKey(siblingKey);
+            }
+            textSize = nextTextSize;
+            splitNodes.push(sibling);
+        }
+
+        // Insert the nodes into the parent's children
+        internalMarkSiblingsAsDirty(this);
+        const writableParent = parent.getWritable();
+        const insertionIndex = this.getIndexWithinParent();
+        if (hasReplacedSelf) {
+            writableParent.splice(insertionIndex, 0, splitNodes);
+            this.remove();
+        } else {
+            writableParent.splice(insertionIndex, 1, splitNodes);
+        }
+
+        if ($isRangeSelection(selection)) {
+            $updateElementSelectionOnCreateDeleteNode(
+                selection,
+                parent,
+                insertionIndex,
+                partsLength - 1,
+            );
+        }
+
+        return splitNodes;
+    }*/
+
+    addColorValueToHTMLElement(element: HTMLElement, theme: WebinyEditorTheme): HTMLElement {
         const hasThemeColor = this.__themeColor !== "custom";
+
         // get the updated color from webiny theme
         if (hasThemeColor && theme?.styles?.colors) {
             this.__color = theme.styles.colors[this.__themeColor];
         }
-        dom.style.color = this.__color;
-        return isUpdated;
+
+        element.setAttribute(FontColorNodeAttrName, this.__themeColor);
+        element.style.color = this.__color;
+
+        return element;
     }
+
+    /* override updateDOM(prevNode: FontColorNode, dom: HTMLElement, config: EditorConfig): boolean {
+         const theme = config.theme;
+         const isUpdated = super.updateDOM(prevNode, dom, config);
+         const hasThemeColor = this.__themeColor !== "custom";
+         // get the updated color from webiny theme
+         if (hasThemeColor && theme?.styles?.colors) {
+             this.__color = theme.styles.colors[this.__themeColor];
+         }
+         dom.style.color = this.__color;
+         return isUpdated;
+        return
+    }*/
 
     getColorStyle(): { color: string; themeColor: ThemeColor } {
         return {
@@ -121,6 +252,11 @@ export class FontColorNode extends TextNode {
         const element = super.createDOM(config);
         return this.addColorValueToHTMLElement(element, config.theme);
     }
+
+    override updateDOM(prevNode: FontColorNode, dom: HTMLElement, config: EditorConfig): boolean {
+        this.addColorValueToHTMLElement(dom, config.theme);
+        return true;
+    }
 }
 
 export const $createFontColorNode = (
@@ -132,7 +268,7 @@ export const $createFontColorNode = (
     return new FontColorNode(text, color, themeColor, key);
 };
 
-export const $isFontColorNode = (node: LexicalNode): boolean => {
+export const $isFontColorNode = (node:  LexicalNode | null | undefined): boolean => {
     return node instanceof FontColorNode;
 };
 
