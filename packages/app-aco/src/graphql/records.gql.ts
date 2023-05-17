@@ -1,4 +1,6 @@
 import gql from "graphql-tag";
+import { AcoModel, AcoModelField } from "~/types";
+import { plugins } from "@webiny/plugins";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -7,20 +9,43 @@ const ERROR_FIELD = /* GraphQL */ `
         message
     }
 `;
+interface CreateFieldsListParams {
+    model: AcoModel;
+    fields: AcoModelField[];
+}
+const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => {
+    const fieldPlugins: Record<string, any> = plugins
+        .byType("cms-editor-field-type")
+        .reduce((acc: any, item: any) => ({ ...acc, [item.field.type]: item.field }), {});
 
-const DATA_FIELD = /* GraphQL */ `
-    {
-        id
-        type
-        location {
-            folderId
-        }
-        title
-        content
-        data
-        savedOn
-    }
-`;
+    return fields
+        .map(field => {
+            if (!fieldPlugins[field.type]) {
+                console.log(`Unknown field plugin for field type "${field.type}".`);
+                return null;
+            }
+            const { graphql } = fieldPlugins[field.type];
+
+            if (graphql && graphql.queryField) {
+                const { queryField } = graphql;
+                const selection =
+                    typeof queryField === "string" ? queryField : queryField({ model, field });
+
+                return `${field.fieldId} ${selection}`;
+            }
+
+            return field.fieldId;
+        })
+        .filter(Boolean)
+        .join("\n");
+};
+
+const createAppFields = (model: AcoModel) => {
+    return createFieldsList({
+        model,
+        fields: model.fields
+    });
+};
 
 const LIST_META_FIELD = /* GraphQL */ `
     {
@@ -30,58 +55,81 @@ const LIST_META_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_RECORD = gql`
-    mutation CreateRecord($data: SearchRecordCreateInput!) {
-        search {
-            createRecord(data: $data) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
+export const createCreateRecord = (model: AcoModel) => {
+    const { singularApiName } = model;
+    return gql`
+        mutation Create${singularApiName}($data: ${singularApiName}CreateInput!) {
+            search {
+                createRecord: create${singularApiName}(data: $data) {
+                    data {
+                        ${createAppFields(model)}
+                    }
+                    error ${ERROR_FIELD}
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-export const LIST_RECORDS = gql`
-    query ListRecords ($type: String!, $location: SearchLocationInput!, $limit: Int, $after: String, $sort: AcoSort!) {
-        search {
-            listRecords(where: { type: $type, location: $location }, limit: $limit, after: $after, sort: $sort) {
-                data ${DATA_FIELD}
-                meta ${LIST_META_FIELD}
-                error ${ERROR_FIELD}
+export const createListRecords = (model: AcoModel) => {
+    const { singularApiName, pluralApiName } = model;
+    return gql`
+        query List${pluralApiName}($where: ${singularApiName}ListWhereInput, $limit: Int, $after: String, $sort: [${singularApiName}ListSorter!]) {
+            search {
+                listRecords: list${pluralApiName}(where: $where, limit: $limit, after: $after, sort: $sort) {
+                    data {
+                        ${createAppFields(model)}
+                    }
+                    meta ${LIST_META_FIELD}
+                    error ${ERROR_FIELD}
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-export const GET_RECORD = gql`
-    query GetRecord ($id: ID!) {
-        search {
-            getRecord(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
+export const createGetRecord = (model: AcoModel) => {
+    const { singularApiName } = model;
+    return gql`
+        query Get${singularApiName}($id: ID!) {
+            search {
+                getRecord: get${singularApiName}(id: $id) {
+                    data {
+                        ${createAppFields(model)}
+                    }
+                    error ${ERROR_FIELD}
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-export const UPDATE_RECORD = gql`
-    mutation UpdateRecord($id: ID!, $data: SearchRecordUpdateInput!) {
-        search {
-            updateRecord(id: $id, data: $data) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
+export const createUpdateRecord = (model: AcoModel) => {
+    const { singularApiName } = model;
+    return gql`
+        mutation Update${singularApiName}($id: ID!, $data: ${singularApiName}UpdateInput!) {
+            search {
+                updateRecord: update${singularApiName}(id: $id, data: $data) {
+                    data {
+                        ${createAppFields(model)}
+                    }
+                    error ${ERROR_FIELD}
+                }
             }
         }
-    }
-`;
+    `;
+};
 
-export const DELETE_RECORD = gql`
-    mutation DeleteRecord($id: ID!) {
-        search {
-            deleteRecord(id: $id) {
-                data
-                error ${ERROR_FIELD}
+export const createDeleteRecord = (model: AcoModel) => {
+    const { singularApiName } = model;
+    return gql`
+        mutation Delete${singularApiName}($id: ID!) {
+            search {
+                deleteRecord: delete${singularApiName}(id: $id) {
+                    data
+                    error ${ERROR_FIELD}
+                }
             }
         }
-    }
-`;
+    `;
+};

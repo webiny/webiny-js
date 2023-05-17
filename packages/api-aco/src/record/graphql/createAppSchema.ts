@@ -37,7 +37,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
 export const createAppSchema = (params: Params): string => {
     const { app, models, plugins: fieldTypePlugins } = params;
     const { model } = app;
-    const { singularApiName: apiName, fields } = model;
+    const { singularApiName, pluralApiName, fields } = model;
 
     const fieldTypes = renderFields({
         models,
@@ -75,7 +75,7 @@ export const createAppSchema = (params: Params): string => {
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
 
 
-        type ${apiName} {
+        type ${singularApiName} {
             id: ID!
             savedOn: DateTime!
             createdOn: DateTime!
@@ -85,51 +85,51 @@ export const createAppSchema = (params: Params): string => {
 
         ${inputCreateFields.map(f => f.typeDefs).join("\n")}
 
-        input ${apiName}CreateInput {
+        input ${singularApiName}CreateInput {
             id: ID
             ${inputCreateFields.map(f => f.fields).join("\n")}
         }
 
-        input ${apiName}UpdateInput {
+        input ${singularApiName}UpdateInput {
             ${inputUpdateFields.map(f => f.fields).join("\n")}
         }
 
-        type ${apiName}Response {
-            data: ${apiName}
+        type ${singularApiName}Response {
+            data: ${singularApiName}
             error: AcoError
         }
 
-        input ${apiName}ListWhereInput {
+        input ${singularApiName}ListWhereInput {
             ${listFilterFieldsRender}
-            AND: [${apiName}ListWhereInput!]
-            OR: [${apiName}ListWhereInput!]
+            AND: [${singularApiName}ListWhereInput!]
+            OR: [${singularApiName}ListWhereInput!]
         }
 
-        type ${apiName}ListResponse {
-            data: [${apiName}!]
+        type ${singularApiName}ListResponse {
+            data: [${singularApiName}!]
             error: AcoError
             meta: AcoMeta
         }
 
-        enum ${apiName}ListSorter {
+        enum ${singularApiName}ListSorter {
             ${sortEnumRender}
         }
 
         extend type SearchQuery {
-            get${apiName}(id: ID!): ${apiName}Response!
-            list${apiName}(
-                where: ${apiName}ListWhereInput
+            get${singularApiName}(id: ID!): ${singularApiName}Response!
+            list${pluralApiName}(
+                where: ${singularApiName}ListWhereInput
                 search: String
                 limit: Int
                 after: String
-                sort: [${apiName}ListSorter!]
-            ): ${apiName}ListResponse!
+                sort: [${singularApiName}ListSorter!]
+            ): ${singularApiName}ListResponse!
         }
 
         extend type SearchMutation {
-            create${apiName}(data: ${apiName}CreateInput!): ${apiName}Response!
-            update${apiName}(id: ID!, data: ${apiName}UpdateInput!): ${apiName}Response!
-            delete${apiName}(id: ID!): AcoBooleanResponse!
+            create${singularApiName}(data: ${singularApiName}CreateInput!): ${singularApiName}Response!
+            update${singularApiName}(id: ID!, data: ${singularApiName}UpdateInput!): ${singularApiName}Response!
+            delete${singularApiName}(id: ID!): AcoBooleanResponse!
         }
     `;
 };

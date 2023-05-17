@@ -1,9 +1,7 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { FolderTree } from "@webiny/app-aco";
-
 import { FOLDER_TYPE } from "~/admin/constants/folders";
 import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
-
 import { SidebarContainer } from "./styled";
 
 interface Props {
@@ -11,7 +9,7 @@ interface Props {
     defaultFolderName: string;
 }
 
-export const Sidebar = ({ folderId, defaultFolderName }: Props): ReactElement => {
+export const Sidebar: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const { navigateToPageHome, navigateToFolder } = usePageViewNavigation();
 
     return (

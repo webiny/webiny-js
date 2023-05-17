@@ -1,17 +1,18 @@
 import React from "react";
-
-import { createProviderPlugin } from "@webiny/app-admin";
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
+import { AcoAppProvider } from "~/contexts/app";
 
-export const ACOProvider = createProviderPlugin(Component => {
-    return function FoldersProvider({ children }) {
-        return (
+interface Props {
+    children: React.ReactNode;
+    id: string;
+}
+export const AcoProvider: React.VFC<Props> = ({ children, id }) => {
+    return (
+        <AcoAppProvider id={id}>
             <FoldersContextProvider>
-                <SearchRecordsContextProvider>
-                    <Component>{children}</Component>
-                </SearchRecordsContextProvider>
+                <SearchRecordsContextProvider>{children}</SearchRecordsContextProvider>
             </FoldersContextProvider>
-        );
-    };
-});
+        </AcoAppProvider>
+    );
+};

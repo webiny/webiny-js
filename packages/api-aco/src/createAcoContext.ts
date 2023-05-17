@@ -54,7 +54,9 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
         })
     };
 
-    const defaultRecordModel = await context.cms.getModel(SEARCH_RECORD_MODEL_ID);
+    const defaultRecordModel = await context.security.withoutAuthorization(async () => {
+        return context.cms.getModel(SEARCH_RECORD_MODEL_ID);
+    });
     if (!defaultRecordModel) {
         throw new WebinyError(`There is no default record model in ${SEARCH_RECORD_MODEL_ID}`);
     }

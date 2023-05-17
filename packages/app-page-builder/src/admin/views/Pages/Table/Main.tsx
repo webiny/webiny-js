@@ -35,7 +35,7 @@ interface Props {
     defaultFolderName: string;
 }
 
-export const Main = ({ folderId, defaultFolderName }: Props) => {
+export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const location = useLocation();
     const history = useHistory();
 
@@ -47,7 +47,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useAcoList(FOLDER_TYPE, folderId);
+    } = useAcoList(folderId);
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);

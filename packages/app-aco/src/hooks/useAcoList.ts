@@ -1,20 +1,21 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-
 import useDeepCompareEffect from "use-deep-compare-effect";
-
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FoldersContext } from "~/contexts/folders";
+import { AcoAppContext } from "~/contexts/app";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
-
 import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
 
-export const useAcoList = (type: string, originalFolderId?: string) => {
+export const useAcoList = (originalFolderId?: string) => {
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
+    const appContext = useContext(AcoAppContext);
 
-    if (!folderContext || !searchContext) {
+    if (!folderContext || !searchContext || !appContext) {
         throw new Error("useAcoList must be used within a ACOProvider");
     }
+
+    const type = appContext.app.id;
 
     const [folders, setFolders] = useState<FolderItem[]>([]);
     const [records, setRecords] = useState<SearchRecordItem[]>([]);

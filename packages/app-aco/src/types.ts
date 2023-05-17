@@ -33,25 +33,20 @@ export type Loading<T extends string> = { [P in T]?: boolean };
 
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
 
-export interface Error {
+export interface AcoError {
     code: string;
     message: string;
-    data: any;
+    data?: Record<string, any> | null;
 }
 
 export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
-
-export enum ListDbSortDirection {
-    ASC = "ASC",
-    DESC = "DESC"
-}
 
 export enum ListTableSortDirection {
     asc = "asc",
     desc = "desc"
 }
 
-export type ListDbSort = Record<string, ListDbSortDirection>;
+export type ListDbSort = (`${string}_ASC` | `${string}_DESC`)[];
 
 export interface ListTableSort {
     fields: string[];
@@ -68,7 +63,7 @@ export interface ListFoldersResponse {
     aco: {
         listFolders: {
             data: FolderItem[] | null;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -81,7 +76,7 @@ export interface GetFolderResponse {
     aco: {
         getFolder: {
             data: FolderItem | null;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -94,7 +89,7 @@ export interface UpdateFolderResponse {
     aco: {
         updateFolder: {
             data: FolderItem;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -108,7 +103,7 @@ export interface CreateFolderResponse {
     aco: {
         createFolder: {
             data: FolderItem;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -125,7 +120,7 @@ export interface DeleteFolderResponse {
     aco: {
         deleteFolder: {
             data: boolean;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -135,7 +130,7 @@ export interface ListSearchRecordsResponse {
         listRecords: {
             data: SearchRecordItem[] | null;
             meta: ListMeta | null;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -152,7 +147,7 @@ export interface GetSearchRecordResponse {
     search: {
         getRecord: {
             data: SearchRecordItem | null;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -165,7 +160,7 @@ export interface CreateSearchRecordResponse {
     search: {
         createRecord: {
             data: SearchRecordItem;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -178,7 +173,7 @@ export interface UpdateSearchRecordResponse {
     search: {
         updateRecord: {
             data: SearchRecordItem;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -196,11 +191,37 @@ export interface DeleteSearchRecordResponse {
     search: {
         deleteRecord: {
             data: boolean;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
 
 export interface DndItemData extends FolderItem {
     isFocused?: boolean;
+}
+
+/**
+ * Apps.
+ */
+export interface AcoModel {
+    modelId: string;
+    name: string;
+    singularApiName: string;
+    pluralApiName: string;
+    fields: AcoModelField[];
+}
+
+export interface AcoModelField {
+    type: string;
+    fieldId: string;
+    id: string;
+    label: string;
+    [key: string]: any;
+}
+
+export interface AcoApp {
+    id: string;
+    name: string;
+    model: AcoModel;
+    getFields: () => AcoModelField[];
 }
