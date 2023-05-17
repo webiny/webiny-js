@@ -98,8 +98,21 @@ const createDeleteIndexCallable = client => {
 const attachCustomEvents = client => {
     const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
+    const originalExists = client.indices.exists;
+
+    const registerIndex = input => {
+        const names = Array.isArray(input) ? input : [input];
+        for (const name of names) {
+            registeredIndexes.add(name);
+        }
+    };
 
     const deleteIndexCallable = createDeleteIndexCallable(client);
+
+    client.indices.exists = async (params, options = {}) => {
+        registerIndex(params.index);
+        return originalExists.apply(client.indices, [params, options]);
+    };
 
     client.indices.create = async (params, options = {}) => {
         /**
@@ -132,12 +145,7 @@ const attachCustomEvents = client => {
             }
         }
     };
-    client.indices.registerIndex = input => {
-        const names = Array.isArray(input) ? input : [input];
-        for (const name of names) {
-            registeredIndexes.add(name);
-        }
-    };
+    client.indices.registerIndex = registerIndex;
 
     return client;
 };

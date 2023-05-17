@@ -12,7 +12,8 @@ export const generateInitialLexicalValue = (): LexicalValue => {
                     direction: null,
                     format: "",
                     indent: 0,
-                    type: "paragraph",
+                    styles: [],
+                    type: "base-paragraph-node",
                     version: 1
                 }
             ],

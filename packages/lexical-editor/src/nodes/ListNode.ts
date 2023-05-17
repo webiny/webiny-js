@@ -12,9 +12,9 @@ import {
 import { WebinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
-import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
+import { $getListDepth, wrapInListItem } from "~/utils/nodes/listNode";
 import { ListType } from "@lexical/list";
-import { $isWebinyListItemNode, BaseListItemNode } from "~/nodes/list-node/BaseListItemNode";
+import { $isListItemNode, ListItemNode } from "~/nodes/ListItemNode";
 import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 const TypographyStyleAttrName = "data-theme-list-style-id";
@@ -31,7 +31,7 @@ export type SerializedWebinyListNode = Spread<
     SerializedElementNode
 >;
 
-export class BaseListNode extends ElementNode {
+export class ListNode extends ElementNode {
     /** @internal */
     __tag: ListNodeTagType;
     /** @internal */
@@ -83,8 +83,8 @@ export class BaseListNode extends ElementNode {
         return dom;
     }
 
-    static override clone(node: BaseListNode): BaseListNode {
-        return new BaseListNode(node.getListType(), node.getStyleId(), node.getStart(), node.__key);
+    static override clone(node: ListNode): ListNode {
+        return new ListNode(node.getListType(), node.getStyleId(), node.getStart(), node.__key);
     }
 
     getTag(): ListNodeTagType {
@@ -103,8 +103,8 @@ export class BaseListNode extends ElementNode {
         return this.__themeStyleId;
     }
 
-    static override importJSON(serializedNode: SerializedWebinyListNode): BaseListNode {
-        const node = $createWebinyListNode(
+    static override importJSON(serializedNode: SerializedWebinyListNode): ListNode {
+        const node = $createListNode(
             serializedNode.listType,
             serializedNode.themeStyleId,
             serializedNode.start
@@ -170,7 +170,7 @@ export class BaseListNode extends ElementNode {
         return !!this.__themeStyleId;
     }
 
-    override updateDOM(prevNode: BaseListNode, dom: HTMLElement, config: EditorConfig): boolean {
+    override updateDOM(prevNode: ListNode, dom: HTMLElement, config: EditorConfig): boolean {
         const wTheme = config.theme as WebinyTheme;
 
         if (prevNode.__tag !== this.__tag) {
@@ -188,14 +188,14 @@ export class BaseListNode extends ElementNode {
     }
 
     override extractWithChild(child: LexicalNode): boolean {
-        return $isWebinyListItemNode(child);
+        return $isListItemNode(child);
     }
 }
 
 function setListThemeClassNames(
     dom: HTMLElement,
     editorTheme: WebinyEditorTheme,
-    node: BaseListNode,
+    node: ListNode,
     themeStyleId: string
 ): void {
     const editorThemeClasses = editorTheme;
@@ -257,14 +257,14 @@ function setListThemeClassNames(
  * ensuring that they are all ListItemNodes and contain either a single nested ListNode
  * or some other inline content.
  */
-function normalizeChildren(nodes: Array<BaseListNode>): Array<BaseListItemNode> {
-    const normalizedListItems: Array<BaseListItemNode> = [];
+function normalizeChildren(nodes: Array<ListNode>): Array<ListItemNode> {
+    const normalizedListItems: Array<ListItemNode> = [];
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
-        if ($isWebinyListItemNode(node)) {
+        if ($isListItemNode(node)) {
             normalizedListItems.push(node);
             node.getChildren().forEach(child => {
-                if ($isWebinyListNode(child)) {
+                if ($isListNode(child)) {
                     normalizedListItems.push(wrapInListItem(child));
                 }
             });
@@ -280,9 +280,9 @@ function convertWebinyListNode(domNode: Node): DOMConversionOutput {
     let node = null;
 
     if (nodeName === "ol") {
-        node = $createWebinyListNode("number");
+        node = $createListNode("number");
     } else if (nodeName === "ul") {
-        node = $createWebinyListNode("bullet");
+        node = $createListNode("bullet");
     }
 
     return {
@@ -297,14 +297,10 @@ const TAG_TO_WEBINY_LIST_TYPE: Record<string, ListType> = {
     ul: "bullet"
 };
 
-export function $createWebinyListNode(
-    listType: ListType,
-    themeStyleId?: string,
-    start = 1
-): BaseListNode {
-    return new BaseListNode(listType, themeStyleId, start);
+export function $createListNode(listType: ListType, themeStyleId?: string, start = 1): ListNode {
+    return new ListNode(listType, themeStyleId, start);
 }
 
-export function $isWebinyListNode(node: LexicalNode | null | undefined): node is BaseListNode {
-    return node instanceof BaseListNode;
+export function $isListNode(node: LexicalNode | null | undefined): node is ListNode {
+    return node instanceof ListNode;
 }

@@ -23,6 +23,12 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
                 totalCount: Int
             }
 
+            input CmsDeleteEntryOptions {
+                # force delete an entry that might have some records left behind in the database
+                # see CmsDeleteEntryOptions in types.ts
+                force: Boolean
+            }
+
             type CmsDeleteResponse {
                 data: Boolean
                 error: CmsError

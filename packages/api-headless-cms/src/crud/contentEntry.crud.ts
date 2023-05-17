@@ -10,9 +10,12 @@ import {
     CmsContext,
     CmsEntry,
     CmsEntryContext,
+    CmsEntryListParams,
     CmsEntryListWhere,
+    CmsEntryMeta,
     CmsEntryPermission,
     CmsEntryStatus,
+    CmsEntryValues,
     CmsModel,
     CmsModelField,
     CmsStorageEntry,
@@ -501,7 +504,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id: entryId
         });
     };
-    const listEntries: CmsEntryContext["listEntries"] = async (model, params) => {
+
+    const listEntries = async <T = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryListParams
+    ): Promise<[CmsEntry<T>[], CmsEntryMeta]> => {
         const permission = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
@@ -573,7 +580,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 cursor: hasMoreItems ? cursor : null
             };
 
-            return [items, meta];
+            return [items as CmsEntry<T>[], meta];
         } catch (ex) {
             throw new WebinyError(
                 "Error while fetching entries from storage.",
@@ -1180,16 +1187,36 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
 
-    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, entryId) => {
+    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
         const permission = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
+        const { force } = options || {};
 
-        const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
-            id: entryId
-        });
-
-        if (!storageEntry) {
-            throw new NotFoundError(`Entry "${entryId}" was not found!`);
+        const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
+            id
+        })) as CmsEntry;
+        /**
+         * If there is no entry, and we do not force the deletion, just throw an error.
+         */
+        if (!storageEntry && !force) {
+            throw new NotFoundError(`Entry "${id}" was not found!`);
+        }
+        /**
+         * In the case we are forcing the deletion, we do not need the storageEntry to exist as it might be an error when loading single database record.
+         *
+         * This happens, sometimes, in the Elasticsearch system as the entry might get deleted from the DynamoDB but not from the Elasticsearch.
+         * This is due to high load on the Elasticsearch at the time of the deletion.
+         */
+        //
+        else if (!storageEntry && force) {
+            const { id: entryId } = parseIdentifier(id);
+            return await deleteEntryHelper({
+                model,
+                entry: {
+                    id,
+                    entryId
+                } as CmsEntry
+            });
         }
 
         checkOwnership(context, permission, storageEntry);
@@ -1467,12 +1494,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        async listEntries(model, params) {
+        async listEntries<T = CmsEntryValues>(
+            model: CmsModel,
+            params: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             return context.benchmark.measure("headlessCms.crud.entries.listEntries", async () => {
                 return listEntries(model, params);
             });
         },
-        async listLatestEntries(this: HeadlessCms, model, params) {
+        async listLatestEntries<T = CmsEntryValues>(
+            this: HeadlessCms,
+            model: CmsModel,
+            params?: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             const where = params?.where || ({} as CmsEntryListWhere);
 
             return this.listEntries(model, {
@@ -1484,7 +1518,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        async listPublishedEntries(model, params) {
+        async listPublishedEntries<T = CmsEntryValues>(
+            model: CmsModel,
+            params?: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             const where = params?.where || ({} as CmsEntryListWhere);
 
             return this.listEntries(model, {

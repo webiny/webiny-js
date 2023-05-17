@@ -1,21 +1,17 @@
 import type { LexicalNode } from "lexical";
 
-import { $isWebinyListNode, BaseListNode } from "~/nodes/list-node/BaseListNode";
-import {
-    $createWebinyListItemNode,
-    $isWebinyListItemNode,
-    BaseListItemNode
-} from "~/nodes/list-node/BaseListItemNode";
+import { $isListNode, ListNode } from "~/nodes/ListNode";
+import { $createListItemNode, $isListItemNode, ListItemNode } from "~/nodes/ListItemNode";
 
-export function $getListDepth(listNode: BaseListNode): number {
+export function $getListDepth(listNode: ListNode): number {
     let depth = 1;
     let parent = listNode.getParent();
 
     while (parent !== null) {
-        if ($isWebinyListItemNode(parent)) {
+        if ($isListItemNode(parent)) {
             const parentList = parent.getParent();
 
-            if ($isWebinyListNode(parentList)) {
+            if ($isListNode(parentList)) {
                 depth++;
                 parent = parentList?.getParent() || null;
                 continue;
@@ -29,20 +25,20 @@ export function $getListDepth(listNode: BaseListNode): number {
     return depth;
 }
 
-export function $getTopListNode(listItem: LexicalNode): BaseListNode {
-    let list = listItem.getParent<BaseListNode>();
+export function $getTopListNode(listItem: LexicalNode): ListNode {
+    let list = listItem.getParent<ListNode>();
 
-    if (!$isWebinyListNode(list)) {
+    if (!$isListNode(list)) {
         console.log("A WebinyListItemNode must have a ListNode for a parent.");
-        return listItem as BaseListNode;
+        return listItem as ListNode;
     }
 
-    let parent: BaseListNode | null = list;
+    let parent: ListNode | null = list;
 
     while (parent !== null) {
         parent = parent.getParent();
 
-        if ($isWebinyListNode(parent)) {
+        if ($isListNode(parent)) {
             list = parent;
         }
     }
@@ -50,15 +46,15 @@ export function $getTopListNode(listItem: LexicalNode): BaseListNode {
     return list;
 }
 
-export function $getAllListItems(node: BaseListNode): Array<BaseListItemNode> {
-    let listItemNodes: Array<BaseListItemNode> = [];
-    const listChildren: Array<BaseListItemNode> = node.getChildren().filter($isWebinyListItemNode);
+export function $getAllListItems(node: ListNode): Array<ListItemNode> {
+    let listItemNodes: Array<ListItemNode> = [];
+    const listChildren: Array<ListItemNode> = node.getChildren().filter($isListItemNode);
 
     for (let i = 0; i < listChildren.length; i++) {
         const listItemNode = listChildren[i];
         const firstChild = listItemNode?.getFirstChild();
 
-        if ($isWebinyListNode(firstChild)) {
+        if ($isListNode(firstChild)) {
             listItemNodes = listItemNodes.concat($getAllListItems(firstChild));
         } else {
             listItemNodes.push(listItemNode);
@@ -69,15 +65,15 @@ export function $getAllListItems(node: BaseListNode): Array<BaseListItemNode> {
 }
 
 export function isNestedListNode(node: LexicalNode | null | undefined): boolean {
-    return $isWebinyListItemNode(node) && $isWebinyListNode(node?.getFirstChild());
+    return $isListItemNode(node) && $isListNode(node?.getFirstChild());
 }
 
 // TODO: rewrite with $findMatchingParent or *nodeOfType
-export function findNearestWebinyListItemNode(node: LexicalNode): BaseListItemNode | null {
+export function findNearestWebinyListItemNode(node: LexicalNode): ListItemNode | null {
     let currentNode: LexicalNode | null = node;
 
     while (currentNode !== null) {
-        if ($isWebinyListItemNode(currentNode)) {
+        if ($isListItemNode(currentNode)) {
             return currentNode;
         }
         currentNode = currentNode.getParent();
@@ -86,15 +82,13 @@ export function findNearestWebinyListItemNode(node: LexicalNode): BaseListItemNo
     return null;
 }
 
-export function getUniqueWebinyListItemNodes(
-    nodeList: Array<LexicalNode>
-): Array<BaseListItemNode> {
-    const keys = new Set<BaseListItemNode>();
+export function getUniqueWebinyListItemNodes(nodeList: Array<LexicalNode>): Array<ListItemNode> {
+    const keys = new Set<ListItemNode>();
 
     for (let i = 0; i < nodeList.length; i++) {
         const node = nodeList[i];
 
-        if ($isWebinyListItemNode(node)) {
+        if ($isListItemNode(node)) {
             keys.add(node);
         }
     }
@@ -102,7 +96,7 @@ export function getUniqueWebinyListItemNodes(
     return Array.from(keys);
 }
 
-export function $removeHighestEmptyListParent(sublist: BaseListItemNode | BaseListNode) {
+export function $removeHighestEmptyListParent(sublist: ListItemNode | ListNode) {
     // Nodes may be repeatedly indented, to create deeply nested lists that each
     // contain just one bullet.
     // Our goal is to remove these (empty) deeply nested lists. The easiest
@@ -112,12 +106,9 @@ export function $removeHighestEmptyListParent(sublist: BaseListItemNode | BaseLi
     let emptyListPtr = sublist;
 
     while (emptyListPtr.getNextSibling() == null && emptyListPtr.getPreviousSibling() == null) {
-        const parent = emptyListPtr.getParent<BaseListItemNode | BaseListNode>();
+        const parent = emptyListPtr.getParent<ListItemNode | ListNode>();
 
-        if (
-            parent == null ||
-            !($isWebinyListItemNode(emptyListPtr) || $isWebinyListNode(emptyListPtr))
-        ) {
+        if (parent == null || !($isListItemNode(emptyListPtr) || $isListNode(emptyListPtr))) {
             break;
         }
 
@@ -127,7 +118,7 @@ export function $removeHighestEmptyListParent(sublist: BaseListItemNode | BaseLi
     emptyListPtr.remove();
 }
 
-export function wrapInListItem(node: LexicalNode): BaseListItemNode {
-    const listItemWrapper = $createWebinyListItemNode();
+export function wrapInListItem(node: LexicalNode): ListItemNode {
+    const listItemWrapper = $createListItemNode();
     return listItemWrapper.append(node);
 }

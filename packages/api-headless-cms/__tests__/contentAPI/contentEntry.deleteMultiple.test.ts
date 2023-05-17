@@ -149,15 +149,27 @@ describe("delete multiple entries", () => {
                 }
             });
         }
+
         /**
          * ... then the read API.
          */
         for (const revision of revisions) {
-            const [result] = await reader.getCategory({
+            let [result] = await reader.getCategory({
                 where: {
                     id: revision.id
                 }
             });
+            /**
+             * In case of the entry still existing, let's run a check again (Elasticsearch is not realtime).
+             */
+            if (result.data.getCategory.data) {
+                [result] = await reader.getCategory({
+                    where: {
+                        id: revision.id
+                    }
+                });
+            }
+
             expect(result).toMatchObject({
                 data: {
                     getCategory: {
