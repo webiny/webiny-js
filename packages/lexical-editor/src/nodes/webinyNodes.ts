@@ -11,7 +11,12 @@ import { TypographyElementNode } from "~/nodes/TypographyElementNode";
 import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
 import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
 import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
+import { ParagraphNode } from "~/nodes/ParagraphNode";
+import { ParagraphNode as BaseParagraphNode } from "lexical";
 
+/*
+ * This is a list of all the nodes that Webiny's Lexical implementation supports OOTB.
+ * */
 export const WebinyNodes: ReadonlyArray<
     | Klass<LexicalNode>
     | {
@@ -20,7 +25,6 @@ export const WebinyNodes: ReadonlyArray<
       }
 > = [
     HeadingNode,
-    // Don't forget to register your custom node separately!
     WebinyListNode,
     WebinyListItemNode,
     WebinyQuoteNode,
@@ -32,5 +36,16 @@ export const WebinyNodes: ReadonlyArray<
     OverflowNode,
     MarkNode,
     FontColorNode,
-    TypographyElementNode
+    TypographyElementNode,
+    ParagraphNode,
+    /*
+     * In order to provide additional Webiny-related functionality, we override Lexical's ParagraphNode node.
+     * More info on overriding can be found here: https://lexical.dev/docs/concepts/node-replacement.
+     * */
+    {
+        replace: BaseParagraphNode,
+        with: () => {
+            return new ParagraphNode();
+        }
+    }
 ];

@@ -1,6 +1,6 @@
 import { TextFormatting, TextBlockSelection, ToolbarState, TypographyValue } from "~/types";
 import {
-    $isParagraphNode,
+    $isParagraphNode as $isBaseParagraphNode,
     $isRangeSelection,
     $isRootOrShadowRoot,
     ElementNode,
@@ -17,6 +17,7 @@ import { $isHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";
 import { $isWebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
+import { $isParagraphNode } from "~/nodes/ParagraphNode";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -45,6 +46,7 @@ const getDefaultToolbarState = (): ToolbarState => {
         typography: { isSelected: false },
         fontColor: { isSelected: false },
         quote: { isSelected: false },
+        paragraph: { isSelected: false },
         textType: undefined
     };
 };
@@ -83,9 +85,16 @@ export const getToolbarState = (
     if ($isHeadingNode(node) || $isHeadingNode(element)) {
         state.textType = "heading";
     }
-    if ($isParagraphNode(element)) {
+
+    if ($isBaseParagraphNode(element)) {
         state.textType = "paragraph";
     }
+
+    if ($isParagraphNode(element)) {
+        state.textType = "paragraph";
+        state.paragraph.isSelected = true;
+    }
+
     if ($isTypographyElementNode(element)) {
         state.typography.isSelected = true;
         const value = element?.getTypographyValue() as TypographyValue;
