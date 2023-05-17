@@ -567,7 +567,6 @@ describe("`search` CRUD", () => {
         );
     });
 
-
     it("should enforce security rules", async () => {
         const { search: anonymousSearch } = useGraphQlHandler({ identity: null });
         const { search } = useGraphQlHandler();
