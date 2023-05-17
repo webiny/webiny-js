@@ -5,7 +5,7 @@ import { NodeModel } from "@minoru/react-dnd-treeview";
 import { useFolders } from "~/hooks/useFolders";
 
 import { CreateButton } from "./ButtonCreate";
-import { Empty } from "~/components/Tree/Empty";
+import { Empty } from "./Empty";
 import { Loader } from "./Loader";
 import { List } from "./List";
 import { Title } from "./Title";

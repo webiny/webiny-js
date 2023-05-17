@@ -1,9 +1,9 @@
 import React from "react";
 
 import { ReactComponent as Dashboard } from "@material-design-icons/svg/filled/home.svg";
+import { Typography } from "@webiny/ui/Typography";
 
 import { Container, IconContainer } from "./styled";
-import { Typography } from "@webiny/ui/Typography";
 
 type TitleProps = {
     title: string;

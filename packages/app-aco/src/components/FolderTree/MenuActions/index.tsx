@@ -7,11 +7,11 @@ import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 
-import { Container, ListItemGraphic } from "~/components/Tree/MenuActions/styled";
+import { Container, ListItemGraphic } from "./styled";
 
 import { FolderItem } from "~/types";
 
-const t = i18n.ns("app-aco/components/tree/menu-actions");
+const t = i18n.ns("app-aco/components/folder-tree/menu-actions");
 
 interface MenuActionsProps {
     folder: FolderItem;

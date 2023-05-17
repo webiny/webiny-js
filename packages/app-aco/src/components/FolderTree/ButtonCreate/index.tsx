@@ -9,7 +9,7 @@ type CreateButtonProps = {
     onClick: () => void;
 };
 
-const t = i18n.ns("app-aco/components/tree/button-create");
+const t = i18n.ns("app-aco/components/folder-tree/button-create");
 
 export const CreateButton: React.VFC<CreateButtonProps> = ({ onClick }) => {
     return (

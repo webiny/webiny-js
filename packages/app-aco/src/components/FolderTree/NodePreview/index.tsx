@@ -1,7 +1,7 @@
 import React from "react";
 import { DragLayerMonitorProps } from "@minoru/react-dnd-treeview";
 
-import { FolderNode } from "~/components/Tree/Node";
+import { FolderNode } from "../Node";
 import { Container } from "./styled";
 
 import { DndItemData } from "~/types";

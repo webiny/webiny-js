@@ -13,9 +13,9 @@ import { DndProvider } from "react-dnd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
-import { Node } from "~/components/Tree/Node";
-import { NodePreview } from "~/components/Tree/NodePreview";
-import { Placeholder } from "~/components/Tree/Placeholder";
+import { Node } from "../Node";
+import { NodePreview } from "../NodePreview";
+import { Placeholder } from "../Placeholder";
 
 import { createTreeData, createInitialOpenList } from "./utils";
 

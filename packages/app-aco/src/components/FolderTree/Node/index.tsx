@@ -4,7 +4,7 @@ import { ReactComponent as Folder } from "@material-symbols/svg-400/rounded/fold
 import { ReactComponent as FolderOpen } from "@material-symbols/svg-400/rounded/folder_open-fill.svg";
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 
-import { MenuActions } from "~/components/Tree/MenuActions";
+import { MenuActions } from "../MenuActions";
 
 import { Container, ArrowIcon, FolderIcon, Text, Content } from "./styled";
 

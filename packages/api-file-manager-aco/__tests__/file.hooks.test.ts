@@ -37,10 +37,7 @@ describe("Files -> Search records", () => {
         return file;
     };
 
-    // let dummyFile: File;
-    //
     beforeEach(async () => {
-        // dummyFile = await createDummyFile();
         tracker.reset();
     });
 

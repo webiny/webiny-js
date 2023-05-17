@@ -6,7 +6,7 @@ import { FmAcoContext, FmFileRecordData } from "~/types";
 
 export const onFileAfterUpdateHook = ({ aco, fileManager }: FmAcoContext) => {
     /**
-     * Intercept page update event and update the related search record.
+     * Intercept file update event and update the related search record.
      */
     fileManager.onFileAfterUpdate.subscribe(async ({ file }) => {
         try {
