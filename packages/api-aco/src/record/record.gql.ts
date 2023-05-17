@@ -141,6 +141,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             },
             listTags: async (_, args: any, context) => {
                 try {
+                    await checkPermissions(context);
                     const [tags, meta] = await context.aco.search.listTags(args);
                     return new ListResponse(tags, meta);
                 } catch (e) {

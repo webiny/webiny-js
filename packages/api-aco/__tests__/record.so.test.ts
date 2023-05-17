@@ -376,13 +376,13 @@ describe("`search` CRUD", () => {
         expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
                 data: [
-                    { tag: "page-tag1" },
-                    { tag: "page-tag2" },
-                    { tag: "page-tag3" },
-                    { tag: "post-tag1" },
-                    { tag: "post-tag2" },
-                    { tag: "scope:page" },
-                    { tag: "scope:post" }
+                    { tag: "page-tag1", count: 2 },
+                    { tag: "page-tag2", count: 1 },
+                    { tag: "page-tag3", count: 1 },
+                    { tag: "post-tag1", count: 1 },
+                    { tag: "post-tag2", count: 1 },
+                    { tag: "scope:page", count: 1 },
+                    { tag: "scope:post", count: 1 }
                 ],
                 meta: expect.objectContaining({
                     cursor: null,
@@ -443,7 +443,11 @@ describe("`search` CRUD", () => {
 
         expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
-                data: [{ tag: "page-tag1" }, { tag: "page-tag2" }, { tag: "scope:page" }],
+                data: [
+                    { tag: "page-tag1", count: 1 },
+                    { tag: "page-tag2", count: 1 },
+                    { tag: "scope:page", count: 1 }
+                ],
                 meta: expect.objectContaining({
                     cursor: null,
                     totalCount: 3,
@@ -590,7 +594,7 @@ describe("`search` CRUD", () => {
         // Let's create some a dummy record
         const [responseA] = await search.createRecord({ data: recordMocks.recordA });
         const recordA = responseA.data.search.createRecord.data;
-        expect(recordA).toEqual({ ...recordMocks.recordA, id: recordA.id });
+        expect(recordA).toEqual({ ...recordMocks.recordA, id: recordA.id, createdBy: userMock });
 
         // List with anonymous identity
         {
@@ -629,6 +633,14 @@ describe("`search` CRUD", () => {
                 id: recordA.id
             });
             expect(deleteResponse.data.search.deleteRecord).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // ListTags with anonymous identity
+        {
+            const [listTags] = await anonymousSearch.listTags();
+            expect(listTags.data.search.listTags).toEqual(
                 expect.objectContaining(notAuthorizedResponse)
             );
         }

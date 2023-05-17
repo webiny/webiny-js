@@ -455,7 +455,12 @@ describe("`folder` CRUD", () => {
         // Let's create some a dummy folder
         const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;
-        expect(folderA).toEqual({ id: folderA.id, parentId: null, ...folderMocks.folderA });
+        expect(folderA).toEqual({
+            id: folderA.id,
+            parentId: null,
+            createdBy: userMock,
+            ...folderMocks.folderA
+        });
 
         // List with anonymous identity
         {
