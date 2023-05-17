@@ -18,6 +18,14 @@ interface BenchmarkMeasurementStart
     memoryStart: number;
 }
 
+const createDefaultOutputCallable = (): BenchmarkOutputCallable => {
+    return async ({ benchmark }) => {
+        console.log(`Benchmark total time elapsed: ${benchmark.elapsed}ms`);
+        console.log("Benchmark measurements:");
+        console.log(benchmark.measurements);
+    };
+};
+
 export class Benchmark implements BenchmarkInterface {
     public readonly measurements: BenchmarkMeasurement[] = [];
 
@@ -31,18 +39,6 @@ export class Benchmark implements BenchmarkInterface {
 
     public get elapsed(): number {
         return this.totalElapsed;
-    }
-
-    public constructor() {
-        /**
-         * The default output is to the console.
-         * This one is executed after all other user defined outputs.
-         */
-        this.onOutputCallables.push(async () => {
-            console.log(`Benchmark total time elapsed: ${this.elapsed}ms`);
-            console.log("Benchmark measurements:");
-            console.log(this.measurements);
-        });
     }
 
     public enableOn(cb: BenchmarkEnableOnCallable): void {
@@ -64,7 +60,7 @@ export class Benchmark implements BenchmarkInterface {
     /**
      * When running the output, we need to reverse the callables array, so that the last one added is the first one executed.
      *
-     * The first one is our built-in console.log output, which we want to be the last one executed - and we need to stop output if user wants to end it.
+     * The last one is our built-in console.log output.
      */
     public async output(): Promise<void> {
         /**
@@ -73,7 +69,8 @@ export class Benchmark implements BenchmarkInterface {
         if (this.outputDone || this.measurements.length === 0) {
             return;
         }
-        const callables = this.onOutputCallables.reverse();
+        const callables = [...this.onOutputCallables].reverse();
+        callables.push(createDefaultOutputCallable());
         for (const cb of callables) {
             const result = await cb({
                 benchmark: this,

@@ -1,9 +1,4 @@
 import DataLoader from "dataloader";
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import WebinyError from "@webiny/error";
 import {
     CmsGroupContext,
@@ -38,7 +33,7 @@ import {
     createGroupCreateValidation,
     createGroupUpdateValidation
 } from "~/crud/contentModelGroup/validation";
-import { createZodError } from "@webiny/utils";
+import { createZodError, mdbid } from "@webiny/utils";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;

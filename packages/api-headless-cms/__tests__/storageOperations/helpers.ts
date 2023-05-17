@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import {
     CmsEntry,
     CmsIdentity,
@@ -11,7 +6,7 @@ import {
     HeadlessCmsStorageOperations
 } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { createIdentifier, generateAlphaNumericLowerCaseId } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericLowerCaseId, mdbid } from "@webiny/utils";
 import crypto from "crypto";
 import { PluginsContainer } from "@webiny/plugins";
 
@@ -245,4 +240,38 @@ export const deletePersonModel = async (params: DeletePersonModelParams) => {
         console.log(ex.message);
         console.log(JSON.stringify(ex));
     }
+};
+
+interface WaitPersonRecordsParams {
+    records: PersonEntriesResult;
+    storageOperations: HeadlessCmsStorageOperations;
+    name: string;
+    until: Function;
+    model: CmsModel;
+}
+
+export const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void> => {
+    const { records, storageOperations, until, model, name } = params;
+    await until(
+        () => {
+            return storageOperations.entries.list(model, {
+                where: {
+                    latest: true
+                },
+                sort: ["version_ASC"],
+                limit: 10000
+            });
+        },
+        ({ items }: any) => {
+            /**
+             * There must be item for each result last revision id.
+             */
+            return Object.values(records).every(record => {
+                return items.some((item: any) => item.id === record.last.id);
+            });
+        },
+        {
+            name
+        }
+    );
 };

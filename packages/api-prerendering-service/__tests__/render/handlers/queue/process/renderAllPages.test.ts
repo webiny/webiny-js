@@ -1,7 +1,6 @@
 import useHandler from "./useHandler";
 import mocks from "./mocks/renderAllPages";
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 
 describe("Render All Pages Test", () => {
     const plugin = {

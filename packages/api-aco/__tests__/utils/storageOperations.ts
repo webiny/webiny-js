@@ -1,11 +1,11 @@
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { AcoStorageOperations } from "~/types";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 
 interface GetStorageOperationsParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
 }
 interface GetStorageOperationsResponse {
-    storageOperations: AcoStorageOperations;
+    storageOperations: HeadlessCmsStorageOperations;
     plugins: Plugin[] | Plugin[][] | PluginCollection;
 }
 

@@ -227,7 +227,13 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 process.env.WCP_PROJECT_ENVIRONMENT ||
                 process.env.WEBINY_MULTI_TENANCY === "true"
             ) {
-                applyTenantRouter(app, deliveryCloudfront);
+                const { originLambda } = applyTenantRouter(app, deliveryCloudfront);
+
+                app.addHandler(() => {
+                    app.addOutputs({
+                        websiteRouterOriginRequestFunction: originLambda.output.name
+                    });
+                });
             }
 
             app.addOutputs({

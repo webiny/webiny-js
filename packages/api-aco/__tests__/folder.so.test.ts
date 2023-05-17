@@ -1,5 +1,6 @@
 import { folderMocks } from "./mocks/folder.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
+import { userMock } from "~tests/mocks/user.mock";
 
 describe("`folder` CRUD", () => {
     const { aco } = useGraphQlHandler();
@@ -8,19 +9,29 @@ describe("`folder` CRUD", () => {
         // Let's create some folders.
         const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;
-        expect(folderA).toEqual({ id: folderA.id, parentId: null, ...folderMocks.folderA });
+        expect(folderA).toEqual({
+            id: folderA.id,
+            parentId: null,
+            createdBy: userMock,
+            ...folderMocks.folderA
+        });
 
         const [responseB] = await aco.createFolder({ data: folderMocks.folderB });
         const folderB = responseB.data.aco.createFolder.data;
-        expect(folderB).toEqual({ id: folderB.id, ...folderMocks.folderB });
+        expect(folderB).toEqual({ id: folderB.id, createdBy: userMock, ...folderMocks.folderB });
 
         const [responseC] = await aco.createFolder({ data: folderMocks.folderC });
         const folderC = responseC.data.aco.createFolder.data;
-        expect(folderC).toEqual({ id: folderC.id, parentId: null, ...folderMocks.folderC });
+        expect(folderC).toEqual({
+            id: folderC.id,
+            parentId: null,
+            createdBy: userMock,
+            ...folderMocks.folderC
+        });
 
         const [responseD] = await aco.createFolder({ data: folderMocks.folderD });
         const folderD = responseD.data.aco.createFolder.data;
-        expect(folderD).toEqual({ id: folderD.id, ...folderMocks.folderD });
+        expect(folderD).toEqual({ id: folderD.id, createdBy: userMock, ...folderMocks.folderD });
 
         // Let's check whether both of the folder exists, listing them by `type`.
         const [listResponse] = await aco.listFolders({ where: { type: "page" } });
@@ -61,6 +72,25 @@ describe("`folder` CRUD", () => {
                         parentId: "parent-folder-b"
                     })
                 ]),
+                error: null
+            })
+        );
+
+        // Let's filter records using `createdBy`
+        const [existingUserResponse] = await aco.listFolders({
+            where: { type: "page", createdBy: userMock.id }
+        });
+
+        expect(existingUserResponse.data.aco.listFolders.data.length).toEqual(3);
+        expect(existingUserResponse.data.aco.listFolders.error).toBeNull();
+
+        const [nonExistingUserResponse] = await aco.listFolders({
+            where: { type: "page", createdBy: "any-id" }
+        });
+
+        expect(nonExistingUserResponse.data.aco.listFolders).toEqual(
+            expect.objectContaining({
+                data: [],
                 error: null
             })
         );
@@ -348,6 +378,7 @@ describe("`folder` CRUD", () => {
         expect(folder).toEqual({
             id: folder.id,
             parentId: folder.parentId,
+            createdBy: userMock,
             ...folderMocks.folderA
         });
     });
@@ -399,5 +430,73 @@ describe("`folder` CRUD", () => {
                 }
             }
         });
+    });
+
+    it("should enforce security rules", async () => {
+        const { aco: anonymousAco } = useGraphQlHandler({ identity: null });
+        const { aco } = useGraphQlHandler();
+
+        const notAuthorizedResponse = {
+            data: null,
+            error: {
+                code: "SECURITY_NOT_AUTHORIZED",
+                message: "Not authorized!",
+                data: null
+            }
+        };
+
+        // Create with anonymous identity
+        {
+            const [responseA] = await anonymousAco.createFolder({ data: folderMocks.folderA });
+            const folderA = responseA.data.aco.createFolder;
+            expect(folderA).toEqual(notAuthorizedResponse);
+        }
+
+        // Let's create some a dummy folder
+        const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
+        const folderA = responseA.data.aco.createFolder.data;
+        expect(folderA).toEqual({
+            id: folderA.id,
+            parentId: null,
+            createdBy: userMock,
+            ...folderMocks.folderA
+        });
+
+        // List with anonymous identity
+        {
+            const [listResponse] = await anonymousAco.listFolders({ where: { type: "page" } });
+            expect(listResponse.data.aco.listFolders).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Get with anonymous identity
+        {
+            const [getResponse] = await anonymousAco.getFolder({ id: folderA.id });
+            expect(getResponse.data.aco.getFolder).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Update with anonymous identity
+        {
+            const [updateResponse] = await anonymousAco.updateFolder({
+                id: folderA.id,
+                data: { title: `${folderA.title} + update` }
+            });
+            expect(updateResponse.data.aco.updateFolder).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
+
+        // Delete with anonymous identity
+        {
+            const [deleteResponse] = await anonymousAco.deleteFolder({
+                id: folderA.id
+            });
+            expect(deleteResponse.data.aco.deleteFolder).toEqual(
+                expect.objectContaining(notAuthorizedResponse)
+            );
+        }
     });
 });

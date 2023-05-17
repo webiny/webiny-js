@@ -21,6 +21,7 @@ export interface CreateHandlerCoreParams {
     identity?: SecurityIdentity;
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path?: string;
 }
 export const createHandlerCore = (params: CreateHandlerCoreParams) => {
@@ -34,6 +35,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         identity,
         plugins = [],
         topPlugins = [],
+        bottomPlugins = [],
         setupTenancyAndSecurityGraphQL
     } = params;
 
@@ -93,7 +95,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             }),
             createHeadlessCmsGraphQL(),
             plugins,
-            graphQLHandlerPlugins()
+            graphQLHandlerPlugins(),
+            bottomPlugins
         ]
     };
 };

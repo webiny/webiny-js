@@ -71,6 +71,9 @@ export const createSearchRecordCrudMethods = ({
             await storageOperations.deleteRecord({ id });
             await onSearchRecordAfterDelete.publish({ record });
             return true;
+        },
+        async listTags(params) {
+            return storageOperations.listTags(params);
         }
     };
 };

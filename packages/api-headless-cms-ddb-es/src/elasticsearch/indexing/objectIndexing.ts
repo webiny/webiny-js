@@ -15,6 +15,7 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import { PluginsContainer } from "@webiny/plugins";
+import { getFieldIdentifiers } from "~/helpers";
 
 interface ProcessToIndex {
     (params: {
@@ -63,21 +64,28 @@ const processToIndex: ProcessToIndex = ({
         if (!plugin || !plugin.toIndex) {
             return values;
         }
+
+        const identifiers = getFieldIdentifiers(sourceValue, sourceRawValue, field);
+        if (!identifiers) {
+            return values;
+        }
+
         const { value, rawValue } = plugin.toIndex({
             model,
             field,
-            value: sourceValue[field.storageId],
-            rawValue: sourceRawValue[field.storageId],
+            value: sourceValue[identifiers.valueIdentifier || identifiers.rawValueIdentifier],
+            rawValue: sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier],
             getFieldIndexPlugin,
             getFieldTypePlugin,
             plugins
         });
 
         if (value !== undefined) {
-            values.value[field.storageId] = value;
+            values.value[identifiers.valueIdentifier || identifiers.rawValueIdentifier] = value;
         }
         if (rawValue !== undefined) {
-            values.rawValue[field.storageId] = rawValue;
+            values.rawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier] =
+                rawValue;
         }
 
         return values;
@@ -99,18 +107,23 @@ const processFromIndex: ProcessFromIndex = ({
         if (!plugin || !plugin.fromIndex) {
             return values;
         }
+        const identifiers = getFieldIdentifiers(sourceValue, sourceRawValue, field);
+        if (!identifiers) {
+            return values;
+        }
+
         const value = plugin.fromIndex({
             plugins,
             model,
             field,
-            value: sourceValue[field.storageId],
-            rawValue: sourceRawValue[field.storageId],
+            value: sourceValue[identifiers.valueIdentifier || identifiers.rawValueIdentifier],
+            rawValue: sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier],
             getFieldIndexPlugin,
             getFieldTypePlugin
         });
 
         if (value !== undefined) {
-            values[field.storageId] = value;
+            values[identifiers.valueIdentifier || identifiers.rawValueIdentifier] = value;
         }
 
         return values;
@@ -138,7 +151,9 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         getFieldTypePlugin
     }) {
         if (!initialValue) {
-            return { value: null };
+            return {
+                value: null
+            };
         }
 
         const fields = (field.settings?.fields || []) as CmsModelField[];

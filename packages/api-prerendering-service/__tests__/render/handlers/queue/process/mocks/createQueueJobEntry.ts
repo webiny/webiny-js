@@ -1,5 +1,4 @@
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 import { QueueJob, RenderJob } from "~/types";
 
 interface Args {

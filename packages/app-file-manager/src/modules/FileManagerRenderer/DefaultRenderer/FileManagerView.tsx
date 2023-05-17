@@ -324,6 +324,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                             <FileDetails
                                 file={files.find(item => item.id === showingFileDetails)!}
                                 onClose={hideFileDetails}
+                                open={Boolean(showingFileDetails)}
+                                loading={false} // We don't need to show the loader here
                             />
                         ) : null}
 

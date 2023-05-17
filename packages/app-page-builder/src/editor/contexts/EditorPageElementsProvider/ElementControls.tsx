@@ -28,11 +28,24 @@ export const ElementControls = () => {
         return null;
     }
 
-    // If the current element is a child of a pre-made block (via the Blocks module),
+    // If the current element is a child of a pre-made block,
     // then we don't want to render any controls for any child elements.
     const isBlockChild = meta?.parentBlockElement;
     if (isBlockChild) {
         return null;
+    }
+
+    // If the current element is a child of a pre-made template block,
+    // then we don't want to render any controls for any child elements.
+    const isTemplateBlockChild = meta?.parentTemplateBlockElement;
+    if (isTemplateBlockChild) {
+        // We don't want to prevent block editing in the template editor. We only want to do it
+        // in the page editor, when working with pages that were created from a template. In the
+        // page editor, within the `data.template` object, we have a `slug` property, which is not
+        // available in the template editor. That give us the ability to distinguish between the two.
+        if (meta.parentDocumentElement.data.template.slug) {
+            return null;
+        }
     }
 
     const handler = useEventActionHandler();

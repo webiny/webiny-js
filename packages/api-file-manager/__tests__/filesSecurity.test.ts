@@ -1,7 +1,6 @@
-// @ts-ignore
-import mdbid from "mdbid";
-import useGqlHandler from "./useGqlHandler";
+import { mdbid } from "@webiny/utils";
 import { SecurityPermission, SecurityIdentity } from "@webiny/api-security/types";
+import useGqlHandler from "./useGqlHandler";
 
 jest.setTimeout(10000);
 

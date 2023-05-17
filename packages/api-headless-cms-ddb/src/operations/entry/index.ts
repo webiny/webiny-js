@@ -3,7 +3,6 @@ import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
     CmsEntryListWhere,
-    CmsEntryStorageOperations,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -20,6 +19,7 @@ import {
 } from "~/operations/entry/keys";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import {
+    DbItem,
     queryAll,
     QueryAllParams,
     queryOne,
@@ -33,6 +33,8 @@ import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny
 import { FilterItemFromStorage } from "./filtering/types";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { CmsEntryStorageOperations } from "~/types";
 
 const createType = (): string => {
     return "cms.entry";
@@ -74,10 +76,13 @@ const convertFromStorageEntry = (params: ConvertStorageEntryParams): CmsStorageE
     };
 };
 
+const MAX_LIST_LIMIT = 10000;
+
 export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
@@ -371,12 +376,13 @@ export const createEntriesStorageOperations = (
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createPartitionKey({
-                id: entry.id,
+                id,
                 locale: model.locale,
                 tenant: model.tenant
             }),
@@ -385,7 +391,7 @@ export const createEntriesStorageOperations = (
             }
         };
 
-        let records = [];
+        let records: DbItem<CmsEntry>[] = [];
         try {
             records = await queryAll(queryAllParams);
         } catch (ex) {
@@ -394,7 +400,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "LOAD_ALL_RECORDS_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -420,7 +426,7 @@ export const createEntriesStorageOperations = (
                 {
                     error: ex,
                     partitionKey: queryAllParams.partitionKey,
-                    entry
+                    id
                 }
             );
         }
@@ -491,6 +497,75 @@ export const createEntriesStorageOperations = (
                 latestEntry
             });
         }
+    };
+
+    const deleteMultipleEntries: CmsEntryStorageOperations["deleteMultipleEntries"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entries } = params;
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need all the revisions of the entries we want to delete.
+         */
+        const revisions = await dataLoaders.getAllEntryRevisions({
+            model,
+            ids: entries
+        });
+        /**
+         * Then we need to construct the queries for all the revisions and entries.
+         */
+        const items: Record<string, DocumentClient.WriteRequest>[] = [];
+        for (const id of entries) {
+            /**
+             * Latest item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            /**
+             * Published item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
+        }
+        /**
+         * Exact revisions of all the entries
+         */
+        for (const revision of revisions) {
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id: revision.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: createRevisionSortKey({
+                        version: revision.version
+                    })
+                })
+            );
+        }
+
+        await batchWriteAll({
+            table: entity.table,
+            items
+        });
     };
 
     const getLatestRevisionByEntryId: CmsEntryStorageOperations["getLatestRevisionByEntryId"] =
@@ -691,7 +766,8 @@ export const createEntriesStorageOperations = (
             fields,
             search
         } = params;
-        const limit = initialLimit <= 0 || initialLimit >= 10000 ? 10000 : initialLimit;
+        const limit =
+            initialLimit <= 0 || initialLimit >= MAX_LIST_LIMIT ? MAX_LIST_LIMIT : initialLimit;
 
         const type = initialWhere.published ? "P" : "L";
 
@@ -985,12 +1061,38 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const getUniqueFieldValues: CmsEntryStorageOperations["getUniqueFieldValues"] = async (
+        model,
+        params
+    ) => {
+        const { where, fieldId } = params;
+
+        const field = model.fields.find(f => f.fieldId === fieldId);
+        if (!field) {
+            throw new WebinyError(
+                `Could not find field with given "fieldId" value.`,
+                "FIELD_NOT_FOUND",
+                {
+                    fieldId
+                }
+            );
+        }
+
+        const { items } = await list(model, {
+            where,
+            limit: MAX_LIST_LIMIT
+        });
+
+        return Array.from(new Set(items.map(item => item.values[field.fieldId])));
+    };
+
     return {
         create,
         createRevisionFrom,
         update,
         delete: deleteEntry,
         deleteRevision,
+        deleteMultipleEntries,
         getPreviousRevision,
         getPublishedByIds,
         getLatestByIds,
@@ -1002,6 +1104,8 @@ export const createEntriesStorageOperations = (
         getRevisions,
         publish,
         list,
-        unpublish
+        unpublish,
+        dataLoaders,
+        getUniqueFieldValues
     };
 };

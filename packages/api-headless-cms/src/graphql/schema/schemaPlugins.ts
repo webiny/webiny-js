@@ -1,12 +1,12 @@
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext, CmsModel } from "~/types";
+import { CmsContext, CmsModel } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
-import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { createFieldTypePluginRecords } from "~/graphql/schema/createFieldTypePluginRecords";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
@@ -29,12 +29,7 @@ export const generateSchemaPlugins = async (
     }
 
     // Structure plugins for faster access
-    const fieldTypePlugins = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce<CmsFieldTypePlugins>((acc, pl) => {
-            acc[pl.fieldType] = pl;
-            return acc;
-        }, {});
+    const fieldTypePlugins = createFieldTypePluginRecords(plugins);
 
     const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
         CmsGraphQLSchemaSorterPlugin.type
@@ -48,13 +43,6 @@ export const generateSchemaPlugins = async (
 
     models
         .filter(model => {
-            /**
-             * TODO @bruno Remove before 5.35.0
-             * Temporary check for the development.
-             */
-            if (!model.singularApiName || !model.pluralApiName) {
-                return false;
-            }
             return model.fields.length > 0;
         })
         .forEach(model => {

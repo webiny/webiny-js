@@ -23,6 +23,7 @@ import {
     DELETE_RECORD,
     GET_RECORD,
     LIST_RECORDS,
+    LIST_TAGS,
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
 
@@ -31,7 +32,7 @@ import { createStorageOperations } from "~tests/utils/storageOperations";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
 }
@@ -44,12 +45,6 @@ interface InvokeParams {
     };
     headers?: Record<string, string>;
 }
-
-const defaultIdentity: SecurityIdentity = {
-    id: "12345678",
-    type: "admin",
-    displayName: "John Doe"
-};
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
@@ -71,7 +66,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         plugins: [
             ...ops.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
+            ...createTenancyAndSecurity({
+                permissions,
+                identity
+            }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
@@ -140,6 +138,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async listRecords(variables = {}) {
             return invoke({ body: { query: LIST_RECORDS, variables } });
+        },
+        async listTags(variables = {}) {
+            return invoke({ body: { query: LIST_TAGS, variables } });
         },
         async getRecord(variables = {}) {
             return invoke({ body: { query: GET_RECORD, variables } });

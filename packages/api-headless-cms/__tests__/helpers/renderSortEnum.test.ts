@@ -23,6 +23,7 @@ describe("Render GraphQL sort enum", () => {
 
         const result = renderSortEnum({
             model,
+            fields: model.fields,
             fieldTypePlugins,
             sorterPlugins: [sortPlugin]
         });
@@ -60,6 +61,7 @@ describe("Render GraphQL sort enum", () => {
 
         const result = renderSortEnum({
             model,
+            fields: model.fields,
             fieldTypePlugins,
             sorterPlugins: [sortPlugin]
         });

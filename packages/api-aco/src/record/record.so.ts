@@ -4,7 +4,7 @@ import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorage
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getRecordFieldValues } from "~/utils/getFieldValues";
-import { AcoSearchRecordStorageOperations } from "./record.types";
+import { AcoSearchRecordStorageOperations, SearchRecordTag } from "./record.types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { attachAcoRecordPrefix } from "~/utils/acoRecordId";
 
@@ -56,6 +56,48 @@ export const createSearchRecordOperations = (
                 });
 
                 return [entries.map(entry => getRecordFieldValues(entry, baseFields)), meta];
+            });
+        },
+        listTags(params) {
+            return withModel(async model => {
+                const { where } = params;
+
+                const items = await cms.getUniqueFieldValues(model, {
+                    where: {
+                        ...(where || {}),
+                        latest: true
+                    },
+                    fieldId: "tags"
+                });
+
+                const tags = Object.values(
+                    items.reduce<Record<string, SearchRecordTag>>((collection, item) => {
+                        const tags = Array.isArray(item) ? item : [];
+
+                        for (const tag of tags) {
+                            collection[tag] = {
+                                tag,
+                                count: (collection[tag]?.count || 0) + 1
+                            };
+                        }
+
+                        return collection;
+                    }, {})
+                )
+                    .sort((a, b) => {
+                        return a.tag < b.tag ? -1 : 1;
+                    })
+                    .sort((a, b) => {
+                        return a.count > b.count ? -1 : 1;
+                    });
+
+                const meta = {
+                    hasMoreItems: false,
+                    totalCount: tags.length,
+                    cursor: null
+                };
+
+                return [tags, meta];
             });
         },
         createRecord({ data: SearchRecordData }) {
