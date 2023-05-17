@@ -72,7 +72,7 @@ export const createSearchRecordOperations = (
 
                 const tags = Object.values(
                     items.reduce<Record<string, SearchRecordTag>>((collection, item) => {
-                        const tags = Array.isArray(item) ? item : [];
+                        const tags = Array.isArray(item) ? item : [item];
 
                         for (const tag of tags) {
                             collection[tag] = {
