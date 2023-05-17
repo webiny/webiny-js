@@ -75,7 +75,7 @@ export const Grid: React.FC<GridProps> = ({
                 {records.map(record =>
                     renderFile({
                         file: record,
-                        showFileDetails: onRecordClick,
+                        showFileDetails: () => onRecordClick(record.id),
                         selected: selected.some(current => current.id === record.id),
                         onSelect: async () => {
                             if (typeof onChange === "function") {
