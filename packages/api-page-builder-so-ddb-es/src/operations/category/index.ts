@@ -1,7 +1,6 @@
 import WebinyError from "@webiny/error";
 import {
     Category,
-    CategoryStorageOperations,
     CategoryStorageOperationsCreateParams,
     CategoryStorageOperationsDeleteParams,
     CategoryStorageOperationsGetParams,
@@ -17,6 +16,7 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { CategoryDynamoDbElasticFieldPlugin } from "~/plugins/definitions/CategoryDynamoDbElasticFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "~/operations/category/keys";
+import { CategoryStorageOperations } from "~/types";
 
 const createType = (): string => {
     return "pb.category";
@@ -205,6 +205,7 @@ export const createCategoryStorageOperations = ({
     };
 
     return {
+        dataLoader,
         get,
         create,
         update,

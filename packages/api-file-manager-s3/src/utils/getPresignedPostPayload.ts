@@ -52,7 +52,9 @@ export const getPresignedPostPayload = (
 
     // Make sure file key contains a file extension
     const extensions = mimeTypes[contentType];
-    if (!extensions.some(ext => key.endsWith(`.${ext}`))) {
+    // We only need this variable to compare extensions in a case-insensitive way.
+    const lowerKey = key.toLowerCase();
+    if (!extensions.some(ext => lowerKey.endsWith(`.${ext}`))) {
         key = key + `.${extensions[0]}`;
     }
 

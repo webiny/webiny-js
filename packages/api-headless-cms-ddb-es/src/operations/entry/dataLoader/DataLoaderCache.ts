@@ -25,7 +25,13 @@ export class DataLoaderCache {
         this.cache[key] = dataLoader;
     }
 
-    public clearAll(params: ClearAllParams): void {
+    public clearAll(params?: ClearAllParams): void {
+        if (!params) {
+            for (const current in this.cache) {
+                this.cache[current].clearAll();
+            }
+            return;
+        }
         const key = this.createKey({
             ...params,
             name: ""
