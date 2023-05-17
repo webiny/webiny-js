@@ -1,3 +1,4 @@
+import { executeWithRetry } from "@webiny/utils";
 import LambdaClient from "aws-sdk/clients/lambda";
 import { MigrationEventHandlerResponse } from "~/types";
 
@@ -12,13 +13,17 @@ export const getMigrationStatus = async ({
     functionName,
     lambdaClient
 }: GetMigrationStatusParams) => {
-    const response = await lambdaClient
-        .invoke({
-            FunctionName: functionName,
-            InvocationType: "RequestResponse",
-            Payload: JSON.stringify({ ...payload, command: "status" })
-        })
-        .promise();
+    const getStatus = () => {
+        return lambdaClient
+            .invoke({
+                FunctionName: functionName,
+                InvocationType: "RequestResponse",
+                Payload: JSON.stringify({ ...payload, command: "status" })
+            })
+            .promise();
+    };
+
+    const response = await executeWithRetry(getStatus);
 
     return JSON.parse(response.Payload as string) as MigrationEventHandlerResponse;
 };

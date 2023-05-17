@@ -65,7 +65,7 @@ export type FileManagerProps = {
      * @deprecated This prop is no longer used. The file structure was reduced to a bare minimum so picking is no longer necessary.
      */
     onChangePick?: string[];
-    onClose?: Function;
+    onClose?: () => void;
     onUploadCompletion?: (files: FileManagerFileItem[]) => void;
     own?: boolean;
     scope?: string;
