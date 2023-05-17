@@ -14708,7 +14708,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     babel-plugin-lodash: ^3.3.4
     jest: ^28.1.0
-    merge: ^1.2.1
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -14799,7 +14798,6 @@ __metadata:
     "@webiny/utils": 0.0.0
     babel-plugin-lodash: ^3.3.4
     fastify: 4.11.0
-    merge: ^1.2.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -15498,7 +15496,6 @@ __metadata:
     isnumeric: ^0.3.3
     jest: ^28.1.0
     lodash: ^4.17.4
-    merge: ^1.2.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     typescript: 4.7.4
@@ -31146,7 +31143,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge@npm:^1.2.0, merge@npm:^1.2.1":
+"merge@npm:^1.2.0":
   version: 1.2.1
   resolution: "merge@npm:1.2.1"
   checksum: 2298c4fdcf64561f320b92338681f7ffcafafb579a6e294066ae3e7bd10ae25df363903d2f028072733b9f79a1f75d2b999aef98ad5d73de13641da39cda0913
