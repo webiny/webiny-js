@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
-import { Theme } from "@webiny/theme/types";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
@@ -8,7 +7,7 @@ import { useRenderer } from "~/hooks/useRenderer";
 const arrowIcon =
     'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNOC4xMiA5LjI5IDEyIDEzLjE3bDMuODgtMy44OGEuOTk2Ljk5NiAwIDEgMSAxLjQxIDEuNDFsLTQuNTkgNC41OWEuOTk2Ljk5NiAwIDAgMS0xLjQxIDBMNi43IDEwLjdhLjk5Ni45OTYgMCAwIDEgMC0xLjQxYy4zOS0uMzggMS4wMy0uMzkgMS40MiAweiIvPjwvc3ZnPg==")';
 
-const AccordionItem = styled.div<{ theme: Theme }>`
+const AccordionItem = styled.div`
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -16,13 +15,13 @@ const AccordionItem = styled.div<{ theme: Theme }>`
     border-bottom: 2px solid ${props => props.theme.styles.colors.color5};
 `;
 
-const AccordionItemHeader = styled.div<{ theme: Theme; open?: boolean }>`
+const AccordionItemHeader = styled.div<{ open?: boolean }>`
     position: relative;
     cursor: pointer;
     padding: 12px 10px 32px 10px;
 
     .accordion-item-title {
-        ${props => props.theme.styles.typography.paragraph1};
+        ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
         color: ${props =>
             props.open ? props.theme.styles.colors.color1 : props.theme.styles.colors.color3};
         font-size: 20px;
