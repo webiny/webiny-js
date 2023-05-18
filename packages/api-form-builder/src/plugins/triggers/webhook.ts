@@ -25,6 +25,8 @@ const plugin: FbFormTriggerHandlerPlugin = {
                         ...data,
                         meta: {
                             submittedOn: format(new Date(meta.submittedOn), "yyyy-MM-dd HH:mm:ss"),
+                            // We don't spread the full `meta` object in order to ensure sensitive data
+                            // doesn't end up being included (at the moment, that's IP address).
                             url: meta.url
                         }
                     }
