@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo, useState } from "react";
+import React, { forwardRef, useMemo, useState, useEffect } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
@@ -11,8 +11,6 @@ import { Menu } from "@webiny/ui/Menu";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
-import useDeepCompareEffect from "use-deep-compare-effect";
-
 import { FolderName, PageName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
@@ -21,11 +19,8 @@ import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
-
-import statusLabels from "~/admin/constants/pageStatusesLabels";
-import { FOLDER_TYPE } from "~/admin/constants/folders";
-
-import { PbPageDataItem } from "~/types";
+import { statuses as statusLabels } from "~/admin/constants/pageStatusesLabels";
+import { PbPageDataItem, PbPageDataStatus } from "~/types";
 import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
 import { menuStyles } from "./styled";
 
@@ -45,7 +40,7 @@ interface Entry {
     title: string;
     createdBy: string;
     savedOn: string;
-    status?: string;
+    status?: PbPageDataStatus;
     version?: number;
     original: PbPageDataItem | FolderItem;
     selectable: boolean;
@@ -91,11 +86,11 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             }));
     }, [folders]);
 
-    useDeepCompareEffect(() => {
+    useEffect(() => {
         const foldersData = createFoldersData(folders);
         const pagesData = createRecordsData(records);
         setData([...foldersData, ...pagesData]);
-    }, [{ ...folders }, { ...records }]);
+    }, [folders, records]);
 
     const columns: Columns<Entry> = {
         title: {
@@ -205,7 +200,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             )}
             {selectedSearchRecord && (
                 <EntryDialogMove
-                    type={FOLDER_TYPE}
                     searchRecord={selectedSearchRecord}
                     open={moveSearchRecordDialogOpen}
                     onClose={() => setMoveSearchRecordDialogOpen(false)}

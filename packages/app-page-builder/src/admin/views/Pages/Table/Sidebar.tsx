@@ -1,6 +1,5 @@
 import React from "react";
 import { FolderTree } from "@webiny/app-aco";
-import { FOLDER_TYPE } from "~/admin/constants/folders";
 import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 import { SidebarContainer } from "./styled";
 
@@ -15,7 +14,6 @@ export const Sidebar: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     return (
         <SidebarContainer>
             <FolderTree
-                type={FOLDER_TYPE}
                 title={defaultFolderName}
                 focusedFolderId={folderId}
                 onTitleClick={() => navigateToPageHome()}

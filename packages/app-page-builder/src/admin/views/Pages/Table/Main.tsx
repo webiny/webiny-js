@@ -20,11 +20,9 @@ import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 
-import { FOLDER_TYPE } from "~/admin/constants/folders";
-
 import { MainContainer, Wrapper } from "./styled";
 
-import { ListMeta, ListDbSort, SearchRecordItem } from "@webiny/app-aco/types";
+import { ListDbSort, ListDbSortItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 
@@ -34,6 +32,20 @@ interface Props {
     folderId?: string;
     defaultFolderName: string;
 }
+
+const createSort = (sorting?: Sorting): ListDbSort => {
+    if (!sorting?.length) {
+        return [];
+    }
+    return sorting.reduce<ListDbSort>((items, sort) => {
+        const item = `${sort.id}_${sort.desc ? "DESC" : "ASC"}` as ListDbSortItem;
+        if (items.includes(item)) {
+            return items;
+        }
+        items.push(item);
+        return items;
+    }, []);
+};
 
 export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const location = useLocation();
@@ -73,7 +85,7 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
 
     const [selected, setSelected] = useState<string[]>([]);
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [sort, setSort] = useState<ListDbSort>();
+    // const [sort, setSort] = useState<ListDbSort>(["savedOn_DESC"]);
 
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
@@ -98,24 +110,20 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     });
 
     useEffect(() => {
-        const sort = tableSorting.reduce((current, next) => {
-            return { ...current, [next.id]: next.desc ? "DESC" : "ASC" };
-        }, {});
-
-        setSort(sort);
-    }, [tableSorting]);
-
-    useEffect(() => {
+        if (!tableSorting?.length) {
+            return;
+        }
+        const sort = createSort(tableSorting);
         const listSortedRecords = async () => {
             await listItems({ sort });
         };
 
         listSortedRecords();
-    }, [sort]);
+    }, [tableSorting]);
 
     const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
-            await listItems({ after: cursor, sort });
+            await listItems({ after: cursor, sort: createSort(tableSorting) });
         }
     };
 
@@ -200,7 +208,6 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
                 </Wrapper>
             </MainContainer>
             <FolderDialogCreate
-                type={FOLDER_TYPE}
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
                 currentParentId={folderId || null}
