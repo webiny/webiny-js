@@ -9,12 +9,13 @@ import {
     SerializedElementNode,
     Spread
 } from "lexical";
-import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
+import { WebinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import { ListNodeTagType } from "@lexical/list/LexicalListNode";
-import { $getListDepth, wrapInListItem } from "~/utils/nodes/list-node";
+import { $getListDepth, wrapInListItem } from "~/utils/nodes/listNode";
 import { ListType } from "@lexical/list";
-import { $isWebinyListItemNode, WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { $isListItemNode, ListItemNode } from "~/nodes/ListItemNode";
+import { findTypographyStyleByHtmlTag } from "~/utils/findTypographyStyleByHtmlTag";
 
 const TypographyStyleAttrName = "data-theme-list-style-id";
 
@@ -30,7 +31,7 @@ export type SerializedWebinyListNode = Spread<
     SerializedElementNode
 >;
 
-export class WebinyListNode extends ElementNode {
+export class ListNode extends ElementNode {
     /** @internal */
     __tag: ListNodeTagType;
     /** @internal */
@@ -40,25 +41,38 @@ export class WebinyListNode extends ElementNode {
 
     __themeStyleId: string;
 
-    constructor(listType: ListType, themeStyleId: string, start: number, key?: NodeKey) {
+    constructor(listType: ListType, themeStyleId?: string, start?: number, key?: NodeKey) {
         super(key);
-        this.__themeStyleId = themeStyleId;
+        this.__themeStyleId = themeStyleId || "";
         const _listType = TAG_TO_WEBINY_LIST_TYPE[listType] || listType;
         this.__listType = _listType;
         this.__tag = _listType === "number" ? "ol" : "ul";
-        this.__start = start;
+        this.__start = start || 1;
     }
 
     static override getType() {
         return "webiny-list";
     }
 
+    /*
+     *
+     * */
+    isStyleExistInTheme(theme: WebinyTheme): boolean {
+        return theme?.emotionMap ? !!theme?.emotionMap[this.__themeStyleId] : false;
+    }
+
     override createDOM(config: EditorConfig): HTMLElement {
         const tag = this.__tag;
         const dom = document.createElement(tag);
+        const wTheme = config.theme as WebinyTheme;
 
         if (this.__start !== 1) {
             dom.setAttribute("start", String(this.__start));
+        }
+
+        // if styleId is not set or user removed from theme, set default style.
+        if (!this.hasThemeStyle() || !this.isStyleExistInTheme(wTheme)) {
+            this.setDefaultThemeListStyleByTag(this.__tag, wTheme);
         }
 
         // @ts-expect-error Internal field.
@@ -69,13 +83,8 @@ export class WebinyListNode extends ElementNode {
         return dom;
     }
 
-    static override clone(node: WebinyListNode): WebinyListNode {
-        return new WebinyListNode(
-            node.getListType(),
-            node.getStyleId(),
-            node.getStart(),
-            node.__key
-        );
+    static override clone(node: ListNode): ListNode {
+        return new ListNode(node.getListType(), node.getStyleId(), node.getStart(), node.__key);
     }
 
     getTag(): ListNodeTagType {
@@ -94,8 +103,8 @@ export class WebinyListNode extends ElementNode {
         return this.__themeStyleId;
     }
 
-    static override importJSON(serializedNode: SerializedWebinyListNode): WebinyListNode {
-        const node = $createWebinyListNode(
+    static override importJSON(serializedNode: SerializedWebinyListNode): ListNode {
+        const node = $createListNode(
             serializedNode.listType,
             serializedNode.themeStyleId,
             serializedNode.start
@@ -137,25 +146,56 @@ export class WebinyListNode extends ElementNode {
         };
     }
 
-    override updateDOM(prevNode: WebinyListNode, dom: HTMLElement, config: EditorConfig): boolean {
+    /*
+     * Set default styleId from first style that is found in the theme that contains current ul or ol tag
+     */
+    setDefaultThemeListStyleByTag(tag: string, theme: WebinyTheme) {
+        if (!tag) {
+            return;
+        }
+
+        const themeEmotionMap = theme?.emotionMap;
+        if (!themeEmotionMap) {
+            return;
+        }
+
+        const style = findTypographyStyleByHtmlTag(tag, themeEmotionMap);
+
+        if (style) {
+            this.__themeStyleId = style.id;
+        }
+    }
+
+    hasThemeStyle(): boolean {
+        return !!this.__themeStyleId;
+    }
+
+    override updateDOM(prevNode: ListNode, dom: HTMLElement, config: EditorConfig): boolean {
+        const wTheme = config.theme as WebinyTheme;
+
         if (prevNode.__tag !== this.__tag) {
             return true;
         }
-        // update styles for different tag styles
+
+        // if styleId is not set or user removed from theme, set default style.
+        if (!this.hasThemeStyle() || !this.isStyleExistInTheme(wTheme)) {
+            this.setDefaultThemeListStyleByTag(this.__tag, wTheme);
+        }
+
         setListThemeClassNames(dom, config.theme, this, this.__themeStyleId);
         dom.setAttribute(TypographyStyleAttrName, this.__themeStyleId);
         return false;
     }
 
     override extractWithChild(child: LexicalNode): boolean {
-        return $isWebinyListItemNode(child);
+        return $isListItemNode(child);
     }
 }
 
 function setListThemeClassNames(
     dom: HTMLElement,
     editorTheme: WebinyEditorTheme,
-    node: WebinyListNode,
+    node: ListNode,
     themeStyleId: string
 ): void {
     const editorThemeClasses = editorTheme;
@@ -178,7 +218,7 @@ function setListThemeClassNames(
             nestedListClassName = nestedListTheme.list;
         }
 
-        if (listClassName !== undefined) {
+        if (listClassName) {
             classesToAdd.push(listClassName);
         }
 
@@ -217,14 +257,14 @@ function setListThemeClassNames(
  * ensuring that they are all ListItemNodes and contain either a single nested ListNode
  * or some other inline content.
  */
-function normalizeChildren(nodes: Array<WebinyListNode>): Array<WebinyListItemNode> {
-    const normalizedListItems: Array<WebinyListItemNode> = [];
+function normalizeChildren(nodes: Array<ListNode>): Array<ListItemNode> {
+    const normalizedListItems: Array<ListItemNode> = [];
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
-        if ($isWebinyListItemNode(node)) {
+        if ($isListItemNode(node)) {
             normalizedListItems.push(node);
             node.getChildren().forEach(child => {
-                if ($isWebinyListNode(child)) {
+                if ($isListNode(child)) {
                     normalizedListItems.push(wrapInListItem(child));
                 }
             });
@@ -240,9 +280,9 @@ function convertWebinyListNode(domNode: Node): DOMConversionOutput {
     let node = null;
 
     if (nodeName === "ol") {
-        node = $createWebinyListNode("number", "");
+        node = $createListNode("number");
     } else if (nodeName === "ul") {
-        node = $createWebinyListNode("bullet", "");
+        node = $createListNode("bullet");
     }
 
     return {
@@ -257,14 +297,10 @@ const TAG_TO_WEBINY_LIST_TYPE: Record<string, ListType> = {
     ul: "bullet"
 };
 
-export function $createWebinyListNode(
-    listType: ListType,
-    themeStyleId: string,
-    start = 1
-): WebinyListNode {
-    return new WebinyListNode(listType, themeStyleId, start);
+export function $createListNode(listType: ListType, themeStyleId?: string, start = 1): ListNode {
+    return new ListNode(listType, themeStyleId, start);
 }
 
-export function $isWebinyListNode(node: LexicalNode | null | undefined): node is WebinyListNode {
-    return node instanceof WebinyListNode;
+export function $isListNode(node: LexicalNode | null | undefined): node is ListNode {
+    return node instanceof ListNode;
 }

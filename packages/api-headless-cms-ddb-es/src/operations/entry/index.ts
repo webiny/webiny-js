@@ -2,7 +2,6 @@ import lodashCloneDeep from "lodash/cloneDeep";
 import WebinyError from "@webiny/error";
 import {
     CmsEntry,
-    CmsEntryStorageOperations,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -33,7 +32,7 @@ import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
-import { CmsIndexEntry } from "~/types";
+import { CmsEntryStorageOperations, CmsIndexEntry } from "~/types";
 import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
@@ -1526,6 +1525,7 @@ export const createEntriesStorageOperations = (
         getByIds,
         getLatestByIds,
         getPublishedByIds,
-        getPreviousRevision
+        getPreviousRevision,
+        dataLoaders
     };
 };

@@ -3,7 +3,6 @@ import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
     CmsEntryListWhere,
-    CmsEntryStorageOperations,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -35,6 +34,7 @@ import { FilterItemFromStorage } from "./filtering/types";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { CmsEntryStorageOperations } from "~/types";
 
 const createType = (): string => {
     return "cms.entry";
@@ -1075,6 +1075,7 @@ export const createEntriesStorageOperations = (
         getRevisions,
         publish,
         list,
-        unpublish
+        unpublish,
+        dataLoaders
     };
 };

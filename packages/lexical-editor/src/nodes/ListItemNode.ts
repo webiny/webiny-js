@@ -1,7 +1,5 @@
 import {
-    $createParagraphNode,
     $isElementNode,
-    $isParagraphNode,
     $isRangeSelection,
     DOMConversionMap,
     DOMConversionOutput,
@@ -17,18 +15,14 @@ import {
     SerializedElementNode
 } from "lexical";
 import { Spread } from "lexical";
-import {
-    $createWebinyListNode,
-    $isWebinyListNode,
-    WebinyListNode
-} from "~/nodes/list-node/WebinyListNode";
-import { $createListNode } from "@lexical/list";
+import { $createListNode, $isListNode, ListNode } from "~/nodes/ListNode";
 import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import {
     $handleIndent,
     $handleOutdent,
     updateChildrenListItemValue
-} from "~/nodes/list-node/formatList";
+} from "~/nodes/ListNode/formatList";
+import { $createParagraphNode, $isParagraphNode } from "~/nodes/ParagraphNode";
 
 export type SerializedWebinyListItemNode = Spread<
     {
@@ -41,7 +35,7 @@ export type SerializedWebinyListItemNode = Spread<
 >;
 
 /** @noInheritDoc */
-export class WebinyListItemNode extends ElementNode {
+export class ListItemNode extends ElementNode {
     /** @internal */
     __value: number;
     /** @internal */
@@ -51,8 +45,8 @@ export class WebinyListItemNode extends ElementNode {
         return "webiny-listitem";
     }
 
-    static override clone(node: WebinyListItemNode): WebinyListItemNode {
-        return new WebinyListItemNode(node.__value, node.__checked, node.__key);
+    static override clone(node: ListItemNode): ListItemNode {
+        return new ListItemNode(node.__value, node.__checked, node.__key);
     }
 
     constructor(value?: number, checked?: boolean, key?: NodeKey) {
@@ -65,7 +59,7 @@ export class WebinyListItemNode extends ElementNode {
         const element = document.createElement("li");
         const parent = this.getParent();
 
-        if ($isWebinyListNode(parent)) {
+        if ($isListNode(parent)) {
             updateChildrenListItemValue(parent);
             updateListItemChecked(element, this, null, parent);
         }
@@ -75,14 +69,10 @@ export class WebinyListItemNode extends ElementNode {
         return element;
     }
 
-    override updateDOM(
-        prevNode: WebinyListItemNode,
-        dom: HTMLElement,
-        config: EditorConfig
-    ): boolean {
+    override updateDOM(prevNode: ListItemNode, dom: HTMLElement, config: EditorConfig): boolean {
         const parent = this.getParent();
 
-        if ($isWebinyListNode(parent)) {
+        if ($isListNode(parent)) {
             updateChildrenListItemValue(parent);
             updateListItemChecked(dom, this, prevNode, parent);
         }
@@ -103,8 +93,8 @@ export class WebinyListItemNode extends ElementNode {
         };
     }
 
-    static override importJSON(serializedNode: SerializedWebinyListItemNode): WebinyListItemNode {
-        const node = new WebinyListItemNode(serializedNode.value, serializedNode.checked);
+    static override importJSON(serializedNode: SerializedWebinyListItemNode): ListItemNode {
+        const node = new ListItemNode(serializedNode.value, serializedNode.checked);
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
         node.setDirection(serializedNode.direction);
@@ -138,13 +128,13 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override replace<N extends LexicalNode>(replaceWithNode: N): N {
-        if ($isWebinyListItemNode(replaceWithNode)) {
+        if ($isListItemNode(replaceWithNode)) {
             return super.replace(replaceWithNode);
         }
 
         const list = this.getParentOrThrow();
 
-        if ($isWebinyListNode(list)) {
+        if ($isListNode(list)) {
             const childrenKeys = list.__children;
             const childrenLength = childrenKeys.length;
             const index = childrenKeys.indexOf(this.__key);
@@ -155,7 +145,7 @@ export class WebinyListItemNode extends ElementNode {
                 list.insertAfter(replaceWithNode);
             } else {
                 // Split the list
-                const newList = $createWebinyListNode(list.getListType(), list.getStyleId());
+                const newList = $createListNode(list.getListType(), list.getStyleId());
                 const children = list.getChildren();
 
                 for (let i = index + 1; i < childrenLength; i++) {
@@ -178,18 +168,18 @@ export class WebinyListItemNode extends ElementNode {
     override insertAfter(node: LexicalNode): LexicalNode {
         const listNode = this.getParentOrThrow();
 
-        if (!$isWebinyListNode(listNode)) {
+        if (!$isListNode(listNode)) {
             console.log("insertAfter: webiny list node is not parent of list item node");
             return listNode;
         }
 
         const siblings = this.getNextSiblings();
 
-        if ($isWebinyListItemNode(node)) {
+        if ($isListItemNode(node)) {
             const after = super.insertAfter(node);
             const afterListNode = node.getParentOrThrow();
 
-            if ($isWebinyListNode(afterListNode)) {
+            if ($isListNode(afterListNode)) {
                 afterListNode;
             }
 
@@ -198,9 +188,9 @@ export class WebinyListItemNode extends ElementNode {
 
         // Attempt to merge if the list is of the same type.
 
-        if ($isWebinyListNode(node) && node.getListType() === listNode.getListType()) {
+        if ($isListNode(node) && node.getListType() === listNode.getListType()) {
             let child = node;
-            const children = node.getChildren<WebinyListNode>();
+            const children = node.getChildren<ListNode>();
 
             for (let i = children.length - 1; i >= 0; i--) {
                 child = children[i];
@@ -233,14 +223,14 @@ export class WebinyListItemNode extends ElementNode {
         if (nextSibling !== null) {
             const parent = nextSibling.getParent();
 
-            if ($isWebinyListNode(parent)) {
+            if ($isListNode(parent)) {
                 updateChildrenListItemValue(parent);
             }
         }
     }
 
-    override insertNewAfter(): WebinyListItemNode | ParagraphNode {
-        const newElement = $createWebinyListItemNode(this.__checked == null ? undefined : false);
+    override insertNewAfter(): ListItemNode | ParagraphNode {
+        const newElement = $createListItemNode(this.__checked == null ? undefined : false);
         this.insertAfter(newElement);
 
         return newElement;
@@ -252,7 +242,7 @@ export class WebinyListItemNode extends ElementNode {
         children.forEach(child => paragraph.append(child));
         const listNode = this.getParentOrThrow();
         const listNodeParent = listNode.getParentOrThrow();
-        const isIndented = $isWebinyListItemNode(listNodeParent);
+        const isIndented = $isListItemNode(listNodeParent);
 
         if (listNode.getChildrenSize() === 1) {
             if (isIndented) {
@@ -319,7 +309,7 @@ export class WebinyListItemNode extends ElementNode {
         // ListItemNode should always have a ListNode for a parent.
         let listNodeParent = parent.getParentOrThrow();
         let indentLevel = 0;
-        while ($isWebinyListItemNode(listNodeParent)) {
+        while ($isListItemNode(listNodeParent)) {
             listNodeParent = listNodeParent.getParentOrThrow().getParentOrThrow();
             indentLevel++;
         }
@@ -349,10 +339,10 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override insertBefore(nodeToInsert: LexicalNode): LexicalNode {
-        if ($isWebinyListItemNode(nodeToInsert)) {
+        if ($isListItemNode(nodeToInsert)) {
             const parent = this.getParentOrThrow();
 
-            if ($isWebinyListNode(parent)) {
+            if ($isListNode(parent)) {
                 const siblings = this.getNextSiblings();
                 updateChildrenListItemValue(parent, siblings);
             }
@@ -362,15 +352,15 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override canInsertAfter(node: LexicalNode): boolean {
-        return $isWebinyListNode(node);
+        return $isListNode(node);
     }
 
     override canReplaceWith(replacement: LexicalNode): boolean {
-        return $isWebinyListItemNode(replacement);
+        return $isListItemNode(replacement);
     }
 
     override canMergeWith(node: LexicalNode): boolean {
-        return $isParagraphNode(node) || $isWebinyListItemNode(node);
+        return $isParagraphNode(node) || $isListItemNode(node);
     }
 
     override extractWithChild(
@@ -395,7 +385,7 @@ export class WebinyListItemNode extends ElementNode {
 function $setListItemThemeClassNames(
     dom: HTMLElement,
     editorThemeClasses: EditorThemeClasses,
-    node: WebinyListItemNode
+    node: ListItemNode
 ): void {
     const classesToAdd = [];
     const classesToRemove = [];
@@ -414,7 +404,7 @@ function $setListItemThemeClassNames(
 
     if (listTheme) {
         const parentNode = node.getParent();
-        const isCheckList = $isWebinyListNode(parentNode) && parentNode?.getListType() === "check";
+        const isCheckList = $isListNode(parentNode) && parentNode?.getListType() === "check";
         const checked = node.getChecked();
 
         if (!isCheckList || checked) {
@@ -433,7 +423,7 @@ function $setListItemThemeClassNames(
     if (nestedListItemClassName !== undefined) {
         const nestedListItemClasses = nestedListItemClassName.split(" ");
 
-        if (node.getChildren().some(child => $isWebinyListNode(child))) {
+        if (node.getChildren().some(child => $isListNode(child))) {
             classesToAdd.push(...nestedListItemClasses);
         } else {
             classesToRemove.push(...nestedListItemClasses);
@@ -451,15 +441,15 @@ function $setListItemThemeClassNames(
 
 function updateListItemChecked(
     dom: HTMLElement,
-    listItemNode: WebinyListItemNode,
-    prevListItemNode: WebinyListItemNode | null,
-    listNode: WebinyListNode
+    listItemNode: ListItemNode,
+    prevListItemNode: ListItemNode | null,
+    listNode: ListNode
 ): void {
     const isCheckList = listNode.getListType() === "check";
 
     if (isCheckList) {
         // Only add attributes for leaf list items
-        if ($isWebinyListNode(listItemNode.getFirstChild())) {
+        if ($isListNode(listItemNode.getFirstChild())) {
             dom.removeAttribute("role");
             dom.removeAttribute("tabIndex");
             dom.removeAttribute("aria-checked");
@@ -480,15 +470,13 @@ function updateListItemChecked(
 }
 
 function convertListItemElement(): DOMConversionOutput {
-    return { node: $createWebinyListItemNode() };
+    return { node: $createListItemNode() };
 }
 
-export function $createWebinyListItemNode(checked?: boolean): WebinyListItemNode {
-    return new WebinyListItemNode(undefined, checked);
+export function $createListItemNode(checked?: boolean): ListItemNode {
+    return new ListItemNode(undefined, checked);
 }
 
-export function $isWebinyListItemNode(
-    node: LexicalNode | null | undefined
-): node is WebinyListItemNode {
-    return node instanceof WebinyListItemNode;
+export function $isListItemNode(node: LexicalNode | null | undefined): node is ListItemNode {
+    return node instanceof ListItemNode;
 }
