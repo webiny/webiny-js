@@ -5,6 +5,7 @@ import { CacheKeyParams, DataLoaderCache } from "~/operations/entry/dataLoader/D
 import { Entity } from "dynamodb-toolbox";
 import { DataLoaders, getDataLoaderFactory } from "~/operations/entry/dataLoader";
 import { parseIdentifier } from "@webiny/utils";
+import { DataLoadersHandlerInterface, DataLoadersHandlerInterfaceClearAllParams } from "~/types";
 
 interface DataLoaderParams {
     model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
@@ -23,7 +24,7 @@ export interface ClearAllParams {
     model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
 }
 
-export class DataLoadersHandler {
+export class DataLoadersHandler implements DataLoadersHandlerInterface {
     private readonly entity: Entity<any>;
     private readonly cache: DataLoaderCache = new DataLoaderCache();
 
@@ -139,10 +140,7 @@ export class DataLoadersHandler {
         );
     }
 
-    public clearAll({ model }: ClearAllParams): void {
-        this.cache.clearAll({
-            tenant: model.tenant,
-            locale: model.locale
-        });
+    public clearAll(params?: DataLoadersHandlerInterfaceClearAllParams): void {
+        this.cache.clearAll(params?.model);
     }
 }

@@ -2,6 +2,7 @@ import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import {
     CmsContext as BaseCmsContext,
     CmsEntry,
+    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
@@ -186,4 +187,15 @@ export interface StorageOperationsFactory {
 
 export interface CmsContext extends BaseCmsContext {
     [key: string]: any;
+}
+
+export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
+    dataLoaders: DataLoadersHandlerInterface;
+}
+
+export interface DataLoadersHandlerInterfaceClearAllParams {
+    model: Pick<CmsModel, "tenant" | "locale">;
+}
+export interface DataLoadersHandlerInterface {
+    clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

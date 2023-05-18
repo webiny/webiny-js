@@ -45,9 +45,6 @@ export class QuoteNode extends BaseQuoteNode implements TextNodeThemeStyles, Typ
         }
     }
 
-    /*
-     * Checks if the current typoypography style id is exist in the theme styles map
-     */
     protected typographyStyleExist(themeEmotionMap: ThemeEmotionMap): boolean {
         const styleId = this.getTypographyStyleId();
         if (!styleId) {
@@ -59,6 +56,10 @@ export class QuoteNode extends BaseQuoteNode implements TextNodeThemeStyles, Typ
 
     setTypography(typographyStyleId: string): this {
         const self = super.getWritable();
+        if (!typographyStyleId) {
+            return self;
+        }
+
         if (!this.hasTypographyStyle()) {
             const themeStyle = {
                 styleId: typographyStyleId,
@@ -127,7 +128,7 @@ export class QuoteNode extends BaseQuoteNode implements TextNodeThemeStyles, Typ
         const element = super.createDOM(config);
         const wTheme = config.theme as WebinyTheme;
         const emotionThemeMap = wTheme?.emotionMap;
-        debugger;
+
         if (!emotionThemeMap) {
             return element;
         }
@@ -166,10 +167,12 @@ export class QuoteNode extends BaseQuoteNode implements TextNodeThemeStyles, Typ
             return node;
         }
         // for old nodes data migrate the style id into the list
-        const styles = [
-            { styleId: serializedNode.styleId, type: "typography" }
-        ] as ThemeStyleValue[];
-        node.setThemeStyles(styles);
+        if (!!serializedNode?.styleId) {
+            const styles = [
+                { styleId: serializedNode.styleId, type: "typography" }
+            ] as ThemeStyleValue[];
+            node.setThemeStyles(styles);
+        }
         return node;
     }
 

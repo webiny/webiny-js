@@ -81,6 +81,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         ...(userPlugins || [])
     ]);
 
+    const entries = createEntriesStorageOperations({
+        entity: entities.entries,
+        plugins
+    });
+
     return {
         name: "dynamodb",
         beforeInit: async context => {
@@ -103,6 +108,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * Pass the plugins to the parent context.
              */
             context.plugins.register([dynamoDbPlugins()]);
+
+            entries.dataLoaders.clearAll();
         },
         getEntities: () => entities,
         getTable: () => tableInstance,
@@ -119,9 +126,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         models: createModelsStorageOperations({
             entity: entities.models
         }),
-        entries: createEntriesStorageOperations({
-            entity: entities.entries,
-            plugins
-        })
+        entries
     };
 };

@@ -62,24 +62,23 @@ const createPulumiCommand = ({
         const cwd = path.join(process.cwd(), inputs.folder);
 
         // Get project application metadata.
-        const projectApplication = getProjectApplication({
-            cwd: path.join(cwd, inputs.folder)
-        });
+        const projectApplication = getProjectApplication({ cwd });
 
-        // If needed, let's create a project application workspace.
-        if (createProjectApplicationWorkspaceParam !== false) {
-            if (projectApplication.type === "v5-workspaces") {
+        if (projectApplication.type === "v5-workspaces") {
+            // If needed, let's create a project application workspace.
+            if (createProjectApplicationWorkspaceParam !== false) {
                 await createProjectApplicationWorkspace({
                     projectApplication,
                     context,
                     inputs,
                     env: inputs.env
                 });
+            }
 
-                // Check if there are any plugins that need to be registered.
-                if (projectApplication.config.plugins) {
-                    context.plugins.register(projectApplication.config.plugins);
-                }
+            // Check if there are any plugins that need to be registered. This needs to happen
+            // always, no matter the value of `createProjectApplicationWorkspaceParam` parameter.
+            if (projectApplication.config.plugins) {
+                context.plugins.register(projectApplication.config.plugins);
             }
         }
 
