@@ -1,22 +1,16 @@
 import React, { useState } from "react";
-
 import { NodeModel } from "@minoru/react-dnd-treeview";
-
 import { useFolders } from "~/hooks/useFolders";
-
 import { CreateButton } from "./ButtonCreate";
 import { Empty } from "~/components/Tree/Empty";
 import { Loader } from "./Loader";
 import { List } from "./List";
 import { Title } from "./Title";
 import { FolderDialogCreate } from "~/components";
-
 import { Container } from "./styled";
-
 import { DndItemData } from "~/types";
 
-type Props = {
-    type: string;
+interface Props {
     title: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     enableCreate?: boolean;
@@ -24,10 +18,9 @@ type Props = {
     onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
-};
+}
 
 export const FolderTree: React.FC<Props> = ({
-    type,
     title,
     focusedFolderId,
     hiddenFolderIds,
@@ -36,7 +29,7 @@ export const FolderTree: React.FC<Props> = ({
     onFolderClick,
     onTitleClick
 }) => {
-    const { folders } = useFolders(type);
+    const { folders } = useFolders();
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
     // Little CSS trick here: since the folder title has absolute position, user can drag a folder over it and move it to root folder.
@@ -52,7 +45,6 @@ export const FolderTree: React.FC<Props> = ({
             return (
                 <>
                     <List
-                        type={type}
                         folders={folders}
                         onFolderClick={onFolderClick}
                         focusedFolderId={focusedFolderId}
@@ -80,7 +72,6 @@ export const FolderTree: React.FC<Props> = ({
             {renderList()}
             {enableCreate && (
                 <FolderDialogCreate
-                    type={type}
                     open={createDialogOpen}
                     onClose={() => setCreateDialogOpen(false)}
                     currentParentId={undefined}

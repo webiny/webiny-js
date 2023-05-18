@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { FolderItem } from "~/types";
 
-export const useFolders = (type: string) => {
+export const useFolders = () => {
     const context = useContext(FoldersContext);
     if (!context) {
         throw new Error("useFolders must be used within a FoldersProvider");
@@ -20,10 +20,10 @@ export const useFolders = (type: string) => {
          * fetch the outdated list from Apollo Cache. Since the state is managed locally, we fetch the folders only
          * at the first mount.
          */
-        if (!folders[type]) {
-            listFolders(type);
+        if (folders) {
+            listFolders();
         }
-    }, [type]);
+    }, []);
 
     return useMemo(
         () => ({
@@ -33,20 +33,20 @@ export const useFolders = (type: string) => {
              * fetching of `folders`, which is managed by the FoldersContext.
              */
             loading,
-            folders: folders[type],
+            folders,
             getFolder(id: string) {
                 return getFolder(id);
             },
-            createFolder(folder: Omit<FolderItem, "id">) {
+            createFolder(folder: Omit<FolderItem, "id" | "type">) {
                 return createFolder(folder);
             },
-            updateFolder(folder: FolderItem) {
+            updateFolder(folder: Omit<FolderItem, "type">) {
                 return updateFolder(folder);
             },
-            deleteFolder(folder: FolderItem) {
+            deleteFolder(folder: Pick<FolderItem, "id">) {
                 return deleteFolder(folder);
             }
         }),
-        [folders[type], loading]
+        [folders, loading]
     );
 };

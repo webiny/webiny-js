@@ -46,7 +46,8 @@ export enum ListTableSortDirection {
     desc = "desc"
 }
 
-export type ListDbSort = (`${string}_ASC` | `${string}_DESC`)[];
+export type ListDbSortItem = `${string}_ASC` | `${string}_DESC`;
+export type ListDbSort = ListDbSortItem[];
 
 export interface ListTableSort {
     fields: string[];
@@ -70,6 +71,9 @@ export interface ListFoldersResponse {
 
 export interface ListFoldersQueryVariables {
     type: string;
+    limit: number;
+    sort?: Record<string, any>;
+    after?: string | null;
 }
 
 export interface GetFolderResponse {
@@ -136,8 +140,11 @@ export interface ListSearchRecordsResponse {
 }
 
 export interface ListSearchRecordsQueryVariables {
-    type: string;
-    location: Location;
+    where: {
+        type: string;
+        location: Location;
+        [key: string]: any;
+    };
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
@@ -221,7 +228,6 @@ export interface AcoModelField {
 
 export interface AcoApp {
     id: string;
-    name: string;
     model: AcoModel;
     getFields: () => AcoModelField[];
 }

@@ -13,16 +13,19 @@ interface CreateFieldsListParams {
     model: AcoModel;
     fields: AcoModelField[];
 }
+
+const defaultFields = ["id", "createdOn", "savedOn", "createdBy {id type displayName}"];
+
 const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => {
     const fieldPlugins: Record<string, any> = plugins
         .byType("cms-editor-field-type")
         .reduce((acc: any, item: any) => ({ ...acc, [item.field.type]: item.field }), {});
 
     return fields
-        .map(field => {
+        .reduce<string[]>((collection, field) => {
             if (!fieldPlugins[field.type]) {
                 console.log(`Unknown field plugin for field type "${field.type}".`);
-                return null;
+                return collection;
             }
             const { graphql } = fieldPlugins[field.type];
 
@@ -31,12 +34,14 @@ const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => 
                 const selection =
                     typeof queryField === "string" ? queryField : queryField({ model, field });
 
-                return `${field.fieldId} ${selection}`;
+                collection.push(`${field.fieldId} ${selection}`);
+                return collection;
             }
 
-            return field.fieldId;
-        })
-        .filter(Boolean)
+            collection.push(field.fieldId);
+
+            return collection;
+        }, defaultFields)
         .join("\n");
 };
 

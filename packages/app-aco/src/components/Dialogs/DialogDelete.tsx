@@ -21,13 +21,13 @@ const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-
 import { FolderItem } from "~/types";
 
 type Props = {
-    folder: FolderItem;
+    folder: Pick<FolderItem, "id" | "title">;
     open: boolean;
     onClose: DialogOnClose;
 };
 
-export const FolderDialogDelete = ({ folder, open, onClose }: Props) => {
-    const { deleteFolder, loading } = useFolders(folder.type);
+export const FolderDialogDelete: React.VFC<Props> = ({ folder, open, onClose }) => {
+    const { deleteFolder, loading } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [dialogOpen, setDialogOpen] = useState(false);
 

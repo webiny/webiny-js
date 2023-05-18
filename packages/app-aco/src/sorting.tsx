@@ -3,7 +3,7 @@ import orderBy from "lodash/orderBy";
 import { ListDbSort, ListTableSort, ListTableSortDirection } from "~/types";
 
 export const validateOrGetDefaultDbSort = (initial?: ListDbSort): ListDbSort => {
-    if (!Array.isArray(initial)) {
+    if (!Array.isArray(initial) || initial.length === 0) {
         return ["savedOn_DESC"];
     }
 

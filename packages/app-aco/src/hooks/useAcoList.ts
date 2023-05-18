@@ -1,10 +1,23 @@
-import useDeepCompareEffect from "use-deep-compare-effect";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { AcoAppContext } from "~/contexts/app";
-import { SearchRecordsContext } from "~/contexts/records";
+import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
-import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
+import { FolderItem, ListDbSort, ListMeta, SearchRecordItem } from "~/types";
+
+interface ListItemsParams extends Omit<ListRecordsParams, "folderId"> {
+    folderId?: string;
+}
+
+interface UseAcoListResponse {
+    folders: FolderItem[];
+    records: SearchRecordItem[];
+    listTitle: string | undefined;
+    isListLoading?: boolean;
+    isListLoadingMore?: boolean;
+    meta: ListMeta;
+    listItems: (params: ListItemsParams) => Promise<any>;
+}
 
 export const useAcoList = (originalFolderId?: string) => {
     const folderContext = useContext(FoldersContext);
@@ -15,12 +28,10 @@ export const useAcoList = (originalFolderId?: string) => {
         throw new Error("useAcoList must be used within a ACOProvider");
     }
 
-    const type = appContext.app.id;
-
     const [folders, setFolders] = useState<FolderItem[]>([]);
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
-    const [sort, setSort] = useState<ListDbSort>();
+    const [sort, setSort] = useState<ListDbSort>(validateOrGetDefaultDbSort());
 
     const { folders: originalFolders, loading: foldersLoading, listFolders } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
@@ -28,7 +39,7 @@ export const useAcoList = (originalFolderId?: string) => {
     const folderId = originalFolderId || "ROOT";
 
     const getCurrentFolderList = (
-        folders: FolderItem[],
+        folders?: FolderItem[] | null,
         currentFolderId?: string
     ): FolderItem[] | [] => {
         if (!folders) {
@@ -36,9 +47,8 @@ export const useAcoList = (originalFolderId?: string) => {
         }
         if (currentFolderId) {
             return folders.filter(folder => folder.parentId === currentFolderId);
-        } else {
-            return folders.filter(folder => !folder.parentId);
         }
+        return folders.filter(folder => !folder.parentId);
     };
 
     /**
@@ -52,34 +62,34 @@ export const useAcoList = (originalFolderId?: string) => {
      * We also pass the current `sort` state to `listRecords` so we are able to fetch records according to the previous `sort` value set by the user.
      */
     useEffect(() => {
-        if (!originalFolders[type]) {
-            listFolders(type);
+        if (!originalFolders) {
+            listFolders();
         }
 
-        listRecords({ type, folderId, sort });
-    }, [type, folderId]);
+        listRecords({ folderId, sort });
+    }, [folderId]);
 
     /**
      * Any time we receive a `folders` list update:
-     * - we return the list filtered by the current `type` and parent `folderId`, sorted according to the current `sort` value;
+     * - we return the list filtered by the parent `folderId`, sorted according to the current `sort` value;
      * - we return the current folder name.
      */
-    useDeepCompareEffect(() => {
-        const subFolders = getCurrentFolderList(originalFolders[type], originalFolderId);
+    useEffect(() => {
+        const subFolders = getCurrentFolderList(originalFolders, originalFolderId);
         setFolders(sortTableItems(subFolders, sort));
 
-        const currentFolder = originalFolders[type]?.find(folder => folder.id === originalFolderId);
+        const currentFolder = originalFolders?.find(folder => folder.id === originalFolderId);
         setListTitle(currentFolder?.title || undefined);
-    }, [{ ...originalFolders[type] }, folderId]);
+    }, [originalFolders]);
 
     /**
      * Any time we receive a `records` list or `folderId` update:
      * - we return the `records` list filtered by the current `folderId`.
      */
-    useDeepCompareEffect(() => {
+    useEffect(() => {
         const subRecords = originalRecords.filter(record => record.location.folderId === folderId);
         setRecords(subRecords);
-    }, [{ ...originalRecords }, folderId]);
+    }, [originalRecords, folderId]);
 
     /**
      * Any time we receive a new `sort` value:
@@ -89,7 +99,7 @@ export const useAcoList = (originalFolderId?: string) => {
         setFolders(folders => sortTableItems(folders, sort));
     }, [sort]);
 
-    return useMemo(
+    return useMemo<UseAcoListResponse>(
         () => ({
             folders,
             records,
@@ -101,13 +111,18 @@ export const useAcoList = (originalFolderId?: string) => {
                 foldersLoading.LIST,
             isListLoadingMore: recordsLoading.LIST_MORE,
             meta: meta[folderId] || {},
-            listItems(params: { after?: string; limit?: number; sort?: ListDbSort }) {
+            listItems(params) {
+                const { sort: sortInput = [] } = params;
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
-                if (params.sort && Object.values(params.sort).length > 0) {
-                    setSort(validateOrGetDefaultDbSort(params.sort));
+                if (sortInput.length > 0) {
+                    setSort(validateOrGetDefaultDbSort(sortInput));
                 }
 
-                return listRecords({ ...params, type, folderId });
+                return listRecords({
+                    ...params,
+                    sort: sortInput,
+                    folderId
+                });
             }
         }),
         [folders, records, foldersLoading, recordsLoading, meta]

@@ -4,8 +4,8 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { DialogTitle, DialogActions, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { DialogActions, DialogContent, DialogOnClose, DialogTitle } from "@webiny/ui/Dialog";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
@@ -19,19 +19,18 @@ import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { FolderItem } from "~/types";
 
-type Props = {
-    type: string;
+interface Props {
     open: boolean;
     onClose: DialogOnClose;
     currentParentId?: string | null;
-};
+}
 
 const t = i18n.ns("app-aco/components/tree/dialog-create");
 
 type SubmitData = Omit<FolderItem, "id">;
 
-export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, currentParentId }) => {
-    const { loading, createFolder } = useFolders(type);
+export const FolderDialogCreate: React.FC<Props> = ({ onClose, open, currentParentId }) => {
+    const { loading, createFolder } = useFolders();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
@@ -40,7 +39,6 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
         try {
             await createFolder({
                 ...data,
-                type,
                 parentId: parentId || null
             });
             setDialogOpen(false);
@@ -112,7 +110,6 @@ export const FolderDialogCreate: React.FC<Props> = ({ type, onClose, open, curre
                                         <DialogFoldersContainer>
                                             <FolderTree
                                                 title={t`Root folder`}
-                                                type={type}
                                                 focusedFolderId={parentId || undefined}
                                                 onFolderClick={data =>
                                                     setParentId(data?.id || null)

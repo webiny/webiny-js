@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import {
     DropOptions,
     getBackendOptions,
@@ -10,23 +9,16 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
-import useDeepCompareEffect from "use-deep-compare-effect";
-
 import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
 import { Node } from "~/components/Tree/Node";
 import { NodePreview } from "~/components/Tree/NodePreview";
 import { Placeholder } from "~/components/Tree/Placeholder";
-
-import { createTreeData, createInitialOpenList } from "./utils";
-
+import { createInitialOpenList, createTreeData } from "./utils";
 import { useFolders } from "~/hooks";
-
 import { ROOT_ID } from "./constants";
-
 import { DndItemData, FolderItem } from "~/types";
 
-type Props = {
-    type: string;
+interface Props {
     folders: FolderItem[];
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
@@ -34,10 +26,9 @@ type Props = {
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     onDragStart: () => void;
     onDragEnd: () => void;
-};
+}
 
-export const List = ({
-    type,
+export const List: React.VFC<Props> = ({
     folders,
     onFolderClick,
     focusedFolderId,
@@ -45,8 +36,8 @@ export const List = ({
     enableActions,
     onDragStart,
     onDragEnd
-}: Props) => {
-    const { updateFolder } = useFolders(type);
+}) => {
+    const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
@@ -55,7 +46,7 @@ export const List = ({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
 
-    useDeepCompareEffect(() => {
+    useEffect(() => {
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
         }
@@ -65,7 +56,7 @@ export const List = ({
          *  in case of folder value update (e.g. name) from any component within the UI does not trigger the tree data update.
          *  TODO: need investigation.
          */
-    }, [{ ...folders }, focusedFolderId]);
+    }, [folders, focusedFolderId]);
 
     useEffect(() => {
         if (folders) {

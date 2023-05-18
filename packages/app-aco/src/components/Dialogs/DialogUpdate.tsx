@@ -35,7 +35,7 @@ type SubmitData = Pick<FolderItem, "title" | "slug">;
 const t = i18n.ns("app-aco/components/tree/dialog-update");
 
 export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) => {
-    const { loading, updateFolder } = useFolders(folder.type);
+    const { loading, updateFolder } = useFolders();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
@@ -106,7 +106,6 @@ export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) =
                                             <DialogFoldersContainer>
                                                 <FolderTree
                                                     title={t`Root folder`}
-                                                    type={folder.type}
                                                     focusedFolderId={parentId || undefined}
                                                     hiddenFolderIds={[folder.id]}
                                                     onFolderClick={data =>

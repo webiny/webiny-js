@@ -40,26 +40,26 @@ const createApp = (data?: GraphQlAcoApp | null): AcoApp | null => {
     };
 };
 
-export const AcoAppProvider: React.VFC<Props> = ({ children, id, model }) => {
+export const AcoAppProvider: React.VFC<Props> = ({ children, id, model: inputModel }) => {
     const client = useApolloClient();
     const [state, setState] = useState<AcoAppProviderState>({
         loading: false,
         app: null,
-        model,
+        model: inputModel,
         error: null
     });
 
     useEffect(() => {
-        if (!model) {
+        if (!inputModel) {
             return;
         }
         setState(prev => {
             return {
                 ...prev,
-                model
+                model: inputModel
             };
         });
-    }, [model?.modelId]);
+    }, [inputModel?.modelId]);
 
     useEffect(() => {
         client
@@ -104,23 +104,23 @@ export const AcoAppProvider: React.VFC<Props> = ({ children, id, model }) => {
                         ...prev,
                         loading: false,
                         app,
-                        model: model || app.model,
+                        model: inputModel || app.model,
                         error: null
                     };
                 });
             });
     }, [id]);
 
-    const { app, model: stateModel, error, loading } = state;
+    const { app, model, error, loading } = state;
 
     const value = useMemo<AcoAppProviderContext>(() => {
         return {
             app: app as AcoApp,
             loading,
-            model: stateModel as AcoModel,
+            model: model as AcoModel,
             error
         };
-    }, [app?.id]);
+    }, [app?.id, loading, error, model]);
     /**
      * Do not render anything yet if there is no application.
      */
@@ -139,7 +139,7 @@ export const AcoAppProvider: React.VFC<Props> = ({ children, id, model }) => {
                 There is no app <strong>{id}</strong>!
             </div>
         );
-    } else if (!stateModel) {
+    } else if (!model) {
         return (
             <div>
                 There is no model in app <strong>{id}</strong>!

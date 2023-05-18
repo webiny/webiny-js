@@ -1,6 +1,5 @@
 import React, { ReactNode, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import unionBy from "lodash/unionBy";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
 
@@ -33,17 +32,19 @@ import {
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks/useAcoApp";
 
-interface SearchRecordsContext {
+export interface ListRecordsParams {
+    folderId?: string;
+    where?: Record<string, any>;
+    limit?: number;
+    after?: string;
+    sort?: ListDbSort;
+}
+
+export interface SearchRecordsContext {
     records: SearchRecordItem[];
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
-    listRecords: (params: {
-        type?: string;
-        folderId?: string;
-        limit?: number;
-        after?: string;
-        sort?: ListDbSort;
-    }) => Promise<SearchRecordItem[]>;
+    listRecords: (params: ListRecordsParams) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
@@ -68,13 +69,27 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
+const mergeRecords = (records: SearchRecordItem[], newRecords: SearchRecordItem[]) => {
+    return newRecords.reduce((acc, record) => {
+        const index = acc.findIndex(r => r.id === record.id);
+        if (index === -1) {
+            acc.push(record);
+            return acc;
+        }
+        acc[index] = record;
+        return acc;
+    }, records);
+};
+
 export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
     const client = useApolloClient();
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
 
-    const { model } = useAcoApp();
+    const { app, model } = useAcoApp();
+
+    const type = app.id;
 
     const { CREATE_RECORD, DELETE_RECORD, GET_RECORD, LIST_RECORDS, UPDATE_RECORD } =
         useMemo(() => {
@@ -93,8 +108,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             loading,
             meta,
             async listRecords(params) {
-                const { type, folderId, after, limit, sort: sorting } = params;
-
+                const { folderId, where: initialWhere = {}, after, limit, sort: sorting } = params;
                 /**
                  * Both folderId and type are optional to init `useRecords` but required to list records:
                  * this allows us to use `useRecords` methods like `getRecord` without passing useless params.
@@ -129,7 +143,18 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     () =>
                         client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                             query: LIST_RECORDS,
-                            variables: { type, location: { folderId }, limit, after, sort },
+                            variables: {
+                                where: {
+                                    ...initialWhere,
+                                    type,
+                                    location: {
+                                        folderId
+                                    }
+                                },
+                                limit,
+                                after,
+                                sort
+                            },
                             fetchPolicy: "network-only"
                         })
                 );
@@ -141,7 +166,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 }
 
                 // Adjusting sorting while merging records with data received from the server.
-                setRecords(records => sortTableItems(unionBy(data, records, "id"), sort));
+                setRecords(records => sortTableItems(mergeRecords(data, records), sort));
 
                 setMeta(meta => ({
                     ...meta,

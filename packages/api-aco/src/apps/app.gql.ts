@@ -28,7 +28,7 @@ export const appGql = new GraphQLSchemaPlugin<AcoContext>({
             error: AcoError
         }
         type GetAppModelResponse {
-            data: JSON!
+            data: JSON
             error: AcoError
         }
         extend type AcoQuery {

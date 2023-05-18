@@ -20,17 +20,16 @@ import { DialogContainer, DialogFoldersContainer } from "./styled";
 
 import { SearchRecordItem } from "~/types";
 
-type Props = {
-    type: string;
+interface Props {
     searchRecord: SearchRecordItem;
     open: boolean;
     onClose: DialogOnClose;
-};
+}
 
 const t = i18n.ns("app-aco/components/tree/dialog-move");
 
-export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, open }) => {
-    const { updateRecord, loading } = useRecords(type, searchRecord.location.folderId || "ROOT");
+export const EntryDialogMove: React.FC<Props> = ({ searchRecord, onClose, open }) => {
+    const { updateRecord, loading } = useRecords(searchRecord.location.folderId || "ROOT");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [folderId, setFolderId] = useState<string>();
     const { showSnackbar } = useSnackbar();
@@ -73,7 +72,6 @@ export const EntryDialogMove: React.FC<Props> = ({ type, searchRecord, onClose, 
                         <DialogFoldersContainer>
                             <FolderTree
                                 title={t`Root folder`}
-                                type={type}
                                 focusedFolderId={folderId || searchRecord.location.folderId}
                                 onFolderClick={data => setFolderId(data?.id)}
                                 onTitleClick={() => setFolderId("ROOT")}
