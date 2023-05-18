@@ -101,7 +101,6 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
-                //TODO: send plain JSON object
                 onChange(JSON.stringify(editorState.toJSON()));
             }
         });

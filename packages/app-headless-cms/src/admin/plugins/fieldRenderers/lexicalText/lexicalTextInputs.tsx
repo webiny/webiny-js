@@ -4,11 +4,11 @@ import { i18n } from "@webiny/app/i18n";
 import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
-import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
+import { createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
-import {LexicalEditor} from "@webiny/app-admin/components/LexicalEditor";
+import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -77,14 +77,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
-                            {/*<RichTextEditor
-                                key={getKey(field, bind, index)}
-                                {...rteProps}
-                                {...bind.index}
-                                label={`Value ${index + 1}`}
-                                placeholder={field.placeholderText}
-                                description={field.helpText}
-                            />*/}
                             <LexicalEditor />
                         </EditorWrapper>
                     )}

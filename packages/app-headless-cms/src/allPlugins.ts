@@ -2,6 +2,7 @@ import headlessCmsPlugins from "~/admin/plugins";
 import textField from "~/admin/plugins/fields/text";
 import longTextField from "~/admin/plugins/fields/longText";
 import richTextField from "~/admin/plugins/fields/richText";
+import lexicalTextField from "~/admin/plugins/fields/lexicalText";
 import numberField from "~/admin/plugins/fields/number";
 import booleanField from "~/admin/plugins/fields/boolean";
 import dateTimeField from "~/admin/plugins/fields/dateTime";
@@ -13,6 +14,7 @@ import numberFieldRenderer from "~/admin/plugins/fieldRenderers/number";
 import textFieldRenderer from "~/admin/plugins/fieldRenderers/text";
 import longTextFieldRenderer from "~/admin/plugins/fieldRenderers/longText";
 import richTextFieldRenderer from "~/admin/plugins/fieldRenderers/richText";
+import lexicalTextFieldRenderer from "~/admin/plugins/fieldRenderers/lexicalText";
 import booleanFieldRenderer from "~/admin/plugins/fieldRenderers/boolean";
 import dateTimeFieldRenderer from "~/admin/plugins/fieldRenderers/dateTime";
 import fileFieldRenderer from "~/admin/plugins/fieldRenderers/file";
@@ -57,6 +59,7 @@ export default [
     textFieldRenderer,
     longTextFieldRenderer,
     richTextFieldRenderer,
+    lexicalTextFieldRenderer,
     booleanFieldRenderer,
     dateTimeFieldRenderer,
     fileFieldRenderer,
