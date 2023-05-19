@@ -367,8 +367,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                     folders={folders}
                     records={files}
                     loading={isListLoading}
-                    onRecordClick={id => showFileDetails(id)}
-                    onFolderClick={id => setFolderId(id)}
+                    onRecordClick={showFileDetails}
+                    onFolderClick={setFolderId}
                     onSelectRow={rows => {
                         const files = rows
                             .filter(row => row.type === "RECORD")
@@ -388,8 +388,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                 folders={folders}
                 records={files.map(file => file.data)}
                 loading={isListLoading}
-                onRecordClick={id => showFileDetails(id)}
-                onFolderClick={id => setFolderId(id)}
+                onRecordClick={showFileDetails}
+                onFolderClick={setFolderId}
                 selected={selected}
                 multiple={multiple}
                 toggleSelected={toggleSelected}
