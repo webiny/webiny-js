@@ -4,6 +4,7 @@ import { ImageContainerPlugin, ImagesListPlugin } from "./elements";
 import { EditorBarPlugins } from "./editorBar";
 import { BlockEditingPlugin } from "./blockEditing";
 import { BlockElementPlugin } from "./BlockElementPlugin";
+import { DataSettingsSidebarTabsPlugin } from "./DataSettingsSidebarTabsPlugin";
 import { BlockElementSidebarPlugin } from "./BlockElementSidebarPlugin";
 import { ElementSettingsTabContentPlugin } from "./ElementSettingsTabContentPlugin";
 import { ToolbarActionsPlugin } from "./ToolbarActionsPlugin";
@@ -16,6 +17,7 @@ export const PageEditorConfig = React.memo(() => {
             <EventActionPlugins />
             <BlockEditingPlugin />
             <BlockElementPlugin />
+            <DataSettingsSidebarTabsPlugin />
             <BlockElementSidebarPlugin />
             <ElementSettingsTabContentPlugin />
             <ImageContainerPlugin />

@@ -33,6 +33,36 @@ const BASE_CONTENT_MODEL_FIELDS = `
     }
 `;
 
+const CONTENT_MODEL_FIELD = `
+    description
+    modelId
+    singularApiName
+    pluralApiName
+    name
+    icon
+    savedOn
+    plugin
+    tags
+    fields {
+        id
+        type
+        fieldId
+        settings
+        label
+        helpText
+        placeholderText
+    }
+    group {
+        id
+        name
+    }
+    createdBy {
+        id
+        displayName
+        type
+    }
+`;
+
 /**
  * ############################
  * List groups with models Query
@@ -90,6 +120,19 @@ export const LIST_CONTENT_MODELS = gql`
         listContentModels {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
+            }
+            error {
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const GET_CONTENT_MODEL = gql`
+    query CmsGetContentModel($modelId: ID!) {
+        getContentModel(modelId: $modelId) {
+            data {
+                ${CONTENT_MODEL_FIELD}
             }
             error {
                 ${ERROR_FIELDS}

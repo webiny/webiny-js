@@ -76,6 +76,7 @@ export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
+    readApolloClient: ApolloClient<any>;
     publishEntryRevision: (params: PublishEntryRevisionParams) => Promise<OnEntryPublishResponse>;
     onEntryRevisionPublish: (fn: OnEntryRevisionPublishSubscriber) => () => void;
     deleteEntry: (params: DeleteEntryParams) => Promise<OnEntryDeleteResponse>;
@@ -89,7 +90,8 @@ export const CmsContext = React.createContext<CmsContext>({
     createApolloClient: () => {
         return null;
     },
-    apolloClient: null
+    apolloClient: null,
+    readApolloClient: null
     /**
      * Safe to cast.
      */
@@ -100,6 +102,7 @@ interface ApolloClientsCache {
 }
 
 const apolloClientsCache: ApolloClientsCache = {};
+const readApolloClientsCache: ApolloClientsCache = {};
 
 export interface CmsProviderProps {
     createApolloClient: (params: { uri: string }) => ApolloClient<any>;
@@ -121,6 +124,12 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         });
     }
 
+    if (currentLocale && !readApolloClientsCache[currentLocale]) {
+        readApolloClientsCache[currentLocale] = props.createApolloClient({
+            uri: `${apiUrl}/cms/read/${currentLocale}`
+        });
+    }
+
     if (!currentLocale) {
         return <CircularProgress />;
     }
@@ -134,10 +143,20 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         return apolloClientsCache[locale];
     };
 
+    const getReadApolloClient = (locale: string) => {
+        if (!readApolloClientsCache[locale]) {
+            readApolloClientsCache[locale] = props.createApolloClient({
+                uri: `${apiUrl}/cms/read/${locale}`
+            });
+        }
+        return readApolloClientsCache[locale];
+    };
+
     const value: CmsContext = {
         getApolloClient,
         createApolloClient: props.createApolloClient,
         apolloClient: getApolloClient(currentLocale),
+        readApolloClient: getReadApolloClient(currentLocale),
         publishEntryRevision: async params => {
             return await composeAsync([...onEntryRevisionPublish.current].reverse())({
                 locale: currentLocale,

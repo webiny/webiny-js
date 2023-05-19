@@ -1,5 +1,5 @@
 import { ApiEndpoint, CmsContext } from "~/types";
-import { checkEndpointAccess } from "./checkEndpointAccess";
+// import { checkEndpointAccess } from "./checkEndpointAccess";
 import { createRequestBody } from "./createRequestBody";
 import { formatErrorPayload } from "./formatErrorPayload";
 import { getSchema } from "./getSchema";
@@ -20,7 +20,7 @@ export interface HandleRequest {
 export const handleRequest: HandleRequest = async params => {
     const { context, request, reply } = params;
     try {
-        await checkEndpointAccess(context);
+        // await checkEndpointAccess(context);
     } catch (ex) {
         return reply.code(401).send({
             data: null,

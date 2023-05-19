@@ -8,7 +8,7 @@ interface ActiveElementSetter {
     (element: PbEditorElement | string | null): void;
 }
 
-type MaybeElement = PbEditorElement | null;
+export type MaybeElement = PbEditorElement | null;
 
 export function useActiveElement<TElement = MaybeElement>(): [TElement, ActiveElementSetter] {
     const [activeElementId, setActiveElementId] = useRecoilState(activeElementAtom);

@@ -894,16 +894,29 @@ export interface PageTemplate {
     layout?: string;
     pageCategory: string;
     content?: any;
+    modelId?: string;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
     tenant: string;
     locale: string;
+    templatePageData?: {
+        modelId?: string;
+        entryId?: string;
+    };
 }
 
 export type PageTemplateInput = Pick<
     PageTemplate,
-    "title" | "description" | "content" | "slug" | "tags" | "layout" | "pageCategory"
+    | "title"
+    | "description"
+    | "content"
+    | "slug"
+    | "tags"
+    | "layout"
+    | "pageCategory"
+    | "modelId"
+    | "templatePageData"
 > & { id?: string };
 
 /**

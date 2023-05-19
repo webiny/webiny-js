@@ -12,7 +12,12 @@ export { EditorConfig } from "./components/Editor/EditorConfig";
 export * from "./components/Editor/EditorBar";
 export * from "./components/Editor/EditorContent";
 export { EditorProvider } from "./contexts/EditorProvider";
-export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/EditorSidebar";
+export {
+    EditorSidebarTabs,
+    EditorSidebarTab,
+    EditorSidebarTabsProps,
+    EditorSidebarTabProps
+} from "./components/Editor/EditorSidebar";
 export { SidebarActions } from "./components/Editor/Sidebar/ElementSettingsTabContent";
 export { ToolbarActions } from "./components/Editor/Toolbar";
 export { ElementSettingsRenderer } from "./plugins/elementSettings/advanced/ElementSettings";

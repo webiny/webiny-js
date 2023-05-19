@@ -10,6 +10,8 @@ const PAGE_TEMPLATE_BASE_FIELDS = `
     layout
     content
     pageCategory
+    modelId
+    templatePageData
     createdOn
     savedOn
     createdBy {

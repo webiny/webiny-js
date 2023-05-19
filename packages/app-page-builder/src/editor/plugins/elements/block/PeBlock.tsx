@@ -11,6 +11,7 @@ import styled from "@emotion/styled";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useElementById } from "~/editor/hooks/useElementById";
 import { PbEditorElement } from "~/types";
+import { DynamicElementWrapper } from "~/editor/components/DynamicElementWrapper";
 
 const EmptyCell = styled.div<{ isActive: boolean }>`
     display: flex;
@@ -65,12 +66,12 @@ const PeBlock = createRenderer(
         const childrenElements = elementWithChildren?.elements;
         if (Array.isArray(childrenElements) && childrenElements.length > 0) {
             return (
-                <>
+                <DynamicElementWrapper element={element}>
                     <Elements element={elementWithChildren} />
                     {element.data.blockId && (
                         <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
                     )}
-                </>
+                </DynamicElementWrapper>
             );
         }
 

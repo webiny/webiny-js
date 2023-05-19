@@ -34,7 +34,8 @@ const createSchema = zod.object({
     description: zod.string().max(100),
     layout: zod.string().max(100).optional(),
     pageCategory: zod.string().max(100),
-    content: zod.any()
+    content: zod.any(),
+    modelId: zod.string().max(100).optional()
 });
 
 const updateSchema = zod.object({
@@ -44,7 +45,11 @@ const updateSchema = zod.object({
     description: zod.string().max(100).optional(),
     layout: zod.string().max(100).optional(),
     pageCategory: zod.string().max(100).optional(),
-    content: zod.any()
+    content: zod.any(),
+    templatePageData: zod.object({
+        modelId: zod.string().max(100).optional(),
+        entryId: zod.string().max(100).optional()
+    })
 });
 
 const PERMISSION_NAME = "pb.template";

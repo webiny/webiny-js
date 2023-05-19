@@ -66,6 +66,8 @@ export default (args: PbEditorElementPluginArgs = {}): Plugin[] => {
                     ? args.settings(defaultSettings)
                     : defaultSettings,
             target: ["cell", "block"],
+            allowDynamicSource: true,
+            allowedFields: ["object", "ref", "dynamicZone", "file:image"],
             create(options) {
                 const defaultValue: Partial<PbEditorElement> = {
                     type: this.elementType,

@@ -95,7 +95,7 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
         useEffect(() => {
             if (isReferenceBlock) {
                 setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 1));
-            } else if (sidebar.activeTabIndex === 1) {
+            } else if (sidebar.activeTabIndex !== 0) {
                 setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 0));
             }
         }, [element?.id]);

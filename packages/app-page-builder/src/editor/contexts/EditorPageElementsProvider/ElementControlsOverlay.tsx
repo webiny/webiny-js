@@ -246,8 +246,12 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             return `block | ${blockName}`;
         }
 
+        if (element.data.dynamicSource?.path) {
+            return `${element.type} | ${element.data.dynamicSource.path}`;
+        }
+
         return element.type;
-    }, [element.data.blockId]);
+    }, [element.data.blockId, element.data.dynamicSource?.path]);
 
     // Z-index of element controls overlay depends on the depth of the page element.
     // The deeper the page element is in the content hierarchy, the greater the index.

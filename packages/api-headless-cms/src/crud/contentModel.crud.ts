@@ -38,8 +38,10 @@ import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
-import { checkOwnership, validateOwnership } from "~/utils/ownership";
-import { checkModelAccess, validateModelAccess } from "~/utils/access";
+// import { checkOwnership, validateOwnership } from "~/utils/ownership";
+// import { checkModelAccess, validateModelAccess } from "~/utils/access";
+import { validateOwnership } from "~/utils/ownership";
+import { validateModelAccess } from "~/utils/access";
 import {
     createModelCreateFromValidation,
     createModelCreateValidation,
@@ -205,12 +207,12 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
         return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
-            const permission = await checkModelPermissions("r");
+            // const permission = await checkModelPermissions("r");
 
             const model = await modelsGet(modelId);
 
-            checkOwnership(context, permission, model);
-            await checkModelAccess(context, model);
+            // checkOwnership(context, permission, model);
+            // await checkModelAccess(context, model);
 
             return model;
         });

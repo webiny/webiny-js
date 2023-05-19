@@ -648,6 +648,18 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     onSave?: (data: GenericFormData) => Promise<GenericFormData>;
 };
 
+export type PbEditorPageElementDataSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-data-settings";
+    elementType: string;
+    render(params: {
+        Bind: BindComponent;
+        data: any;
+        submit: () => void;
+        sourceModelId?: string;
+    }): ReactElement;
+    onSave?: (data: GenericFormData) => Promise<GenericFormData>;
+};
+
 export type PbEditorEventActionPlugin = Plugin & {
     type: "pb-editor-event-action-plugin";
     name: string;
@@ -864,6 +876,11 @@ export interface PbPageTemplate {
     description: string;
     layout: string;
     content: any;
+    modelId?: string;
+    templatePageData?: {
+        modelId?: string;
+        entryId?: string;
+    };
     createdOn: string;
     savedOn: string;
     createdBy: PbIdentity;

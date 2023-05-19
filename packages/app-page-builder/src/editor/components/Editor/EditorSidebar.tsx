@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import { makeComposable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
-import { Tabs, Tab, TabProps } from "@webiny/ui/Tabs";
+import { Tabs, Tab, TabsProps, TabProps } from "@webiny/ui/Tabs";
 import {
     highlightSidebarTabMutation,
     updateSidebarActiveTabIndexMutation
@@ -62,14 +62,14 @@ export const EditorSidebar: React.FC = React.memo(() => {
 
     return (
         <Elevation z={1} className={rightSideBar}>
-            <Tabs value={sidebar.activeTabIndex} updateValue={setActiveTabIndex}>
+            <EditorSidebarTabs value={sidebar.activeTabIndex} updateValue={setActiveTabIndex}>
                 <EditorSidebarTab label={"Style"}>
                     <StyleSettingsTabContent />
                 </EditorSidebarTab>
                 <EditorSidebarTab label={"Element"} disabled={!element}>
                     <ElementSettingsTabContent />
                 </EditorSidebarTab>
-            </Tabs>
+            </EditorSidebarTabs>
             {sidebar.highlightTab && <PanelHighLight />}
         </Elevation>
     );
@@ -83,5 +83,14 @@ export const EditorSidebarTab = makeComposable<EditorSidebarTabProps>(
     "EditorSidebarTab",
     ({ children, ...props }) => {
         return <Tab {...props}>{children}</Tab>;
+    }
+);
+
+export type EditorSidebarTabsProps = TabsProps;
+
+export const EditorSidebarTabs = makeComposable<EditorSidebarTabsProps>(
+    "EditorSidebarTabs",
+    ({ children, ...props }) => {
+        return <Tabs {...props}>{children}</Tabs>;
     }
 );

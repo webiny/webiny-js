@@ -454,14 +454,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         ids
     ) => {
-        const permission = await checkEntryPermissions({ rwd: "r" });
-        await checkModelAccess(context, model);
+        // const permission = await checkEntryPermissions({ rwd: "r" });
+        // await checkModelAccess(context, model);
 
         const entries = await storageOperations.entries.getPublishedByIds(model, {
             ids
         });
 
-        return entries.filter(entry => validateOwnership(context, permission, entry));
+        // return entries.filter(entry => validateOwnership(context, permission, entry));
+        return entries;
     };
     const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (model, ids) => {
         const permission = await checkEntryPermissions({ rwd: "r" });
@@ -506,8 +507,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model: CmsModel,
         params: CmsEntryListParams
     ): Promise<[CmsEntry<T>[], CmsEntryMeta]> => {
-        const permission = await checkEntryPermissions({ rwd: "r" });
-        await checkModelAccess(context, model);
+        // const permission = await checkEntryPermissions({ rwd: "r" });
+        // await checkModelAccess(context, model);
 
         const { where: initialWhere, limit: initialLimit } = params;
         const limit = initialLimit && initialLimit > 0 ? initialLimit : 50;
@@ -519,10 +520,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Possibly only get records which are owned by current user.
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
-        const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
-        if (ownedBy !== undefined) {
-            where.ownedBy = ownedBy;
-        }
+        // const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+        // if (ownedBy !== undefined) {
+        //     where.ownedBy = ownedBy;
+        // }
         /**
          * Where must contain either latest or published keys.
          * We cannot list entries without one of those

@@ -18,6 +18,7 @@ import { EditorContent } from "~/editor";
 import { isLegacyRenderingEngine } from "~/utils";
 import { Element as PeElement } from "@webiny/app-page-builder-elements";
 import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
+import { makeComposable } from "@webiny/react-composition";
 
 const BREADCRUMB_HEIGHT = 33;
 
@@ -84,7 +85,7 @@ const BaseContainer = styled(LegacyBaseContainer)`
     container-name: page-editor-canvas;
 `;
 
-const Content: React.FC = () => {
+const Content = makeComposable("Content", () => {
     const rootElementId = useRecoilValue(rootElementAtom);
     const rootElement = useRecoilValue(elementsAtom(rootElementId)) as PbEditorElement;
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
@@ -156,6 +157,6 @@ const Content: React.FC = () => {
             </ContentContainer>
         </Elevation>
     );
-};
+});
 
 export default Content;

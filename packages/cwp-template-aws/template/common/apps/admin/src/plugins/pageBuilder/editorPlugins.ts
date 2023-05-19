@@ -60,6 +60,8 @@ import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/respon
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
 // default presets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+// Dynamic source element settings
+import dynamicPagesPlugins from "@webiny/app-dynamic-pages/plugins/index";
 
 export default [
     // Elements
@@ -123,5 +125,7 @@ export default [
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings
-    pageSettingsPlugins
+    pageSettingsPlugins,
+    // Dynamic source element settings
+    dynamicPagesPlugins()
 ];

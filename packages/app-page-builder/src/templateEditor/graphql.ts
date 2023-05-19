@@ -19,7 +19,9 @@ const DATA_FIELD = `
         pageCategory
         description
         content
+        modelId
         createdOn
+        templatePageData
         savedOn
         createdBy {
             id
