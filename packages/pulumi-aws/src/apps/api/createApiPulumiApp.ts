@@ -23,9 +23,9 @@ export interface CreateApiPulumiAppParams {
     elasticSearch?: PulumiAppParam<
         | boolean
         | {
-        domainName: string;
-        indexPrefix: string;
-    }
+              domainName: string;
+              indexPrefix: string;
+          }
     >;
 
     /**
@@ -255,7 +255,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             }
         }
     }
-
 
     return withCommonLambdaEnvVariables(app);
 };
