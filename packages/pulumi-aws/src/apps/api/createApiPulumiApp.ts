@@ -17,6 +17,18 @@ export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
 export interface CreateApiPulumiAppParams {
     /**
+     * Enables ElasticSearch infrastructure.
+     * Note that it requires also changes in application code.
+     */
+    elasticSearch?: PulumiAppParam<
+        | boolean
+        | Partial<{
+              domainName: string;
+              indexPrefix: string;
+          }>
+    >;
+
+    /**
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the Core application.
      */
@@ -230,6 +242,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             };
         }
     });
+
+    if (projectAppParams.elasticSearch) {
+        const elasticSearch = app.getParam(projectAppParams.elasticSearch);
+        if (typeof elasticSearch === "object") {
+            if (elasticSearch.domainName) {
+                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+            }
+
+            if (elasticSearch.indexPrefix) {
+                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+            }
+        }
+    }
 
     return withCommonLambdaEnvVariables(app);
 };
