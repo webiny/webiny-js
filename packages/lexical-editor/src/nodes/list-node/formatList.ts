@@ -1,5 +1,4 @@
 import {
-    $createParagraphNode,
     $getSelection,
     $isElementNode,
     $isLeafNode,
@@ -11,7 +10,7 @@ import {
     LexicalEditor,
     LexicalNode,
     NodeKey,
-    ParagraphNode
+    ParagraphNode as BaseParagraphNode
 } from "lexical";
 import { $createWebinyListNode, $isWebinyListNode, WebinyListNode } from "./WebinyListNode";
 import {
@@ -29,6 +28,7 @@ import {
     WebinyListItemNode
 } from "~/nodes/list-node/WebinyListItemNode";
 import { ListType } from "@lexical/list";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 const DEFAULT_LIST_START_NUMBER = 1;
 
@@ -207,7 +207,7 @@ export function removeList(editor: LexicalEditor): void {
             }
 
             for (const listNode of listNodes) {
-                let insertionPoint: WebinyListNode | ParagraphNode = listNode;
+                let insertionPoint: WebinyListNode | BaseParagraphNode = listNode;
 
                 const listItems = $getAllListItems(listNode);
 

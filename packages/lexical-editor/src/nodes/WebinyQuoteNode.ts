@@ -1,11 +1,10 @@
 import {
-    $createParagraphNode,
     DOMConversionMap,
     EditorConfig,
     ElementNode,
     LexicalNode,
     NodeKey,
-    ParagraphNode,
+    ParagraphNode as BaseParagraphNode,
     SerializedElementNode,
     Spread
 } from "lexical";
@@ -14,6 +13,7 @@ import { styleObjectToString } from "~/utils/styleObjectToString";
 import { QuoteBlockHtmlTag, WebinyThemeNode } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
 import { CSSObject } from "@emotion/react";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 function convertBlockquoteElement() {
     const node = $createWebinyQuoteNode();
@@ -113,7 +113,7 @@ export class WebinyQuoteNode extends ElementNode implements WebinyThemeNode {
 
     // Mutation
 
-    override insertNewAfter(): ParagraphNode {
+    override insertNewAfter(): BaseParagraphNode {
         const newBlock = $createParagraphNode();
         const direction = this.getDirection();
         newBlock.setDirection(direction);

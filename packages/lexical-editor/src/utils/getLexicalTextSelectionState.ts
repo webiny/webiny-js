@@ -1,6 +1,6 @@
 import { TextFormatting, TextBlockSelection, ToolbarState, TypographyValue } from "~/types";
 import {
-    $isParagraphNode,
+    $isParagraphNode as $isBaseParagraphNode,
     $isRangeSelection,
     $isRootOrShadowRoot,
     ElementNode,
@@ -13,10 +13,12 @@ import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isLinkNode } from "@lexical/link";
 import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
-import { $isHeadingNode } from "@lexical/rich-text";
+import { $isHeadingNode as $isBaseHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";
 import { $isWebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
+import { $isParagraphNode } from "~/nodes/ParagraphNode";
+import { $isHeadingNode } from "~/nodes/HeadingNode";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -45,6 +47,8 @@ const getDefaultToolbarState = (): ToolbarState => {
         typography: { isSelected: false },
         fontColor: { isSelected: false },
         quote: { isSelected: false },
+        paragraph: { isSelected: false },
+        heading: { isSelected: false },
         textType: undefined
     };
 };
@@ -75,17 +79,31 @@ export const getToolbarState = (
     if ($isFontColorNode(node)) {
         state.fontColor.isSelected = true;
     }
+
     if ($isWebinyListNode(element)) {
         const parentList = $getNearestNodeOfType<WebinyListNode>(anchorNode, WebinyListNode);
         const type = parentList ? parentList.getListType() : element.getListType();
         state.textType = type;
     }
-    if ($isHeadingNode(node) || $isHeadingNode(element)) {
+
+    if ($isBaseHeadingNode(element)) {
         state.textType = "heading";
     }
-    if ($isParagraphNode(element)) {
+
+    if ($isHeadingNode(element)) {
+        state.textType = "heading";
+        state.heading.isSelected = true;
+    }
+
+    if ($isBaseParagraphNode(element)) {
         state.textType = "paragraph";
     }
+
+    if ($isParagraphNode(element)) {
+        state.textType = "paragraph";
+        state.paragraph.isSelected = true;
+    }
+
     if ($isTypographyElementNode(element)) {
         state.typography.isSelected = true;
         const value = element?.getTypographyValue() as TypographyValue;
@@ -96,9 +114,11 @@ export const getToolbarState = (
             state.textType = "paragraph";
         }
     }
+
     if ($isTypographyElementNode(element)) {
         state.fontColor.isSelected = true;
     }
+
     if ($isWebinyQuoteNode(element)) {
         state.textType = "quoteblock";
         state.quote.isSelected = true;
