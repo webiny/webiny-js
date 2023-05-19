@@ -16,9 +16,9 @@ import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListN
 import { $isHeadingNode as $isBaseHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";
-import { $isWebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
 import { $isParagraphNode } from "~/nodes/ParagraphNode";
 import { $isHeadingNode } from "~/nodes/HeadingNode";
+import { $isQuoteNode } from "~/nodes/QuoteNode";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -119,7 +119,7 @@ export const getToolbarState = (
         state.fontColor.isSelected = true;
     }
 
-    if ($isWebinyQuoteNode(element)) {
+    if ($isQuoteNode(element)) {
         state.textType = "quoteblock";
         state.quote.isSelected = true;
     }

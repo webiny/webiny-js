@@ -1,18 +1,18 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
-import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
-import { useWebinyQuote } from "~/hooks/useWebinyQuote";
+import { QuoteNode } from "~/nodes/QuoteNode";
+import { useQuote } from "~/hooks/useQuote";
 
-export function WebinyQuotePlugin(): null {
+export function QuotePlugin(): null {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
-        if (!editor.hasNodes([WebinyQuoteNode])) {
-            throw new Error("WebinyQuoteNodePlugin: WebinyQuoteNode is e not registered on editor");
+        if (!editor.hasNodes([QuoteNode])) {
+            throw new Error("QuoteNodePlugin: QuoteNode is e not registered on editor");
         }
     }, [editor]);
 
-    useWebinyQuote(editor);
+    useQuote(editor);
 
     return null;
 }

@@ -18,8 +18,9 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
-import { $isParagraphNode, ParagraphNode } from "~/nodes/ParagraphNode";
-import { $isHeadingNode, HeadingNode } from "~/nodes/HeadingNode";
+import { $isParagraphNode } from "~/nodes/ParagraphNode";
+import { $isHeadingNode } from "~/nodes/HeadingNode";
+import { $isQuoteNode } from "~/nodes/QuoteNode";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -57,6 +58,7 @@ export const TypographyAction: TypographyAction = () => {
     const isParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
     const isHeadingSelected = textBlockSelection?.state?.heading.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
+    const isQuoteSelected = textBlockSelection?.state?.quote.isSelected || false;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -114,13 +116,11 @@ export const TypographyAction: TypographyAction = () => {
 
             if (
                 $isParagraphNode(textBlockSelection?.element) ||
-                $isHeadingNode(textBlockSelection?.element)
+                $isHeadingNode(textBlockSelection?.element) ||
+                $isQuoteNode(textBlockSelection?.element)
             ) {
-                const el = $isHeadingNode(textBlockSelection?.element)
-                    ? (textBlockSelection?.element as HeadingNode)
-                    : (textBlockSelection?.element as ParagraphNode);
-
-                const styleId = el.getTypographyStyleId();
+                const elementWithThemeStyle = textBlockSelection?.element;
+                const styleId = elementWithThemeStyle.getTypographyStyleId();
                 if (!styleId) {
                     return;
                 }
@@ -157,7 +157,7 @@ export const TypographyAction: TypographyAction = () => {
                 }
             }
         }
-    }, [isTypographySelected, textType, isParagraphSelected, isHeadingSelected]);
+    }, [isTypographySelected, textType, isQuoteSelected, isParagraphSelected, isHeadingSelected]);
 
     return (
         <TypographyActionContext.Provider
