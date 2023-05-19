@@ -1,5 +1,4 @@
 import {
-    $createParagraphNode,
     createCommand,
     EditorConfig,
     ElementNode,
@@ -13,6 +12,7 @@ import {
 import { WebinyEditorTheme } from "~/themes/webinyLexicalTheme";
 import { TypographyHTMLTag, TypographyValue } from "~/types";
 import { addClassNamesToElement } from "@lexical/utils";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 // Command and payload
 export const ADD_TYPOGRAPHY_ELEMENT_COMMAND: LexicalCommand<TypographyPayload> = createCommand(
