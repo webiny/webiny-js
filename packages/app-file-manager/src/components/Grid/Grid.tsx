@@ -69,13 +69,13 @@ export const Grid: React.FC<GridProps> = ({
     return (
         <>
             <FolderList>
-                <FolderGrid folders={folders} onFolderClick={folder => onFolderClick(folder.id)} />
+                <FolderGrid folders={folders} onFolderClick={onFolderClick} />
             </FolderList>
             <FileList>
                 {records.map(record =>
                     renderFile({
                         file: record,
-                        showFileDetails: () => onRecordClick(record.id),
+                        showFileDetails: onRecordClick,
                         selected: selected.some(current => current.id === record.id),
                         onSelect: async () => {
                             if (typeof onChange === "function") {

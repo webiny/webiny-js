@@ -13,7 +13,7 @@ import { FolderItem } from "~/types";
 
 export interface FolderProps {
     folder: FolderItem;
-    onFolderClick: (folder: FolderItem) => void;
+    onFolderClick: (id: string) => void;
     onMenuEditClick: (folder: FolderItem) => void;
     onMenuDeleteClick: (folder: FolderItem) => void;
 }
@@ -24,10 +24,10 @@ export const Folder: React.VFC<FolderProps> = ({
     onMenuEditClick,
     onMenuDeleteClick
 }) => {
-    const { title } = folder;
+    const { id, title } = folder;
     return (
         <FolderContainer>
-            <FolderContent onClick={() => onFolderClick(folder)}>
+            <FolderContent onClick={() => onFolderClick(id)}>
                 <div>
                     <FolderIcon />
                 </div>
