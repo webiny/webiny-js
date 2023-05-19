@@ -96,8 +96,7 @@ export const useLoadDynamicData = ({
                 });
                 const listQuery = await readApolloClient.query({
                     query,
-                    variables: params,
-                    fetchPolicy: "no-cache"
+                    variables: params
                 });
                 const newData = get(listQuery, `data.result.data`, null);
 

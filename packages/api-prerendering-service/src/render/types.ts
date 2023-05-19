@@ -26,7 +26,7 @@ export interface RenderApolloState {
 export interface RenderResult {
     content: string;
     meta: {
-        apolloState: RenderApolloState;
+        apolloState: { main: RenderApolloState; cms: RenderApolloState };
         gqlCache: {
             [key: string]: any;
         };

@@ -204,8 +204,12 @@ export const defaultRenderUrlFunction = async (
         await browserPage.goto(url, { waitUntil: "networkidle0" });
 
         const apolloState = await browserPage.evaluate(() => {
-            // @ts-ignore
-            return window.getApolloState();
+            return {
+                // @ts-ignore
+                main: window.getApolloState(),
+                // @ts-ignore
+                cms: window.getCmsApolloState()
+            };
         });
 
         return {

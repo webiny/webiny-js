@@ -1,7 +1,7 @@
 import { NodeAPI } from "posthtml";
-import { RenderApolloState, RenderUrlPostHtmlParams } from "~/render/types";
+import { RenderUrlPostHtmlParams, RenderResult } from "~/render/types";
 
-const stringifyApolloState = (state?: RenderApolloState | null): string | undefined => {
+const stringifyApolloState = (state?: RenderResult["meta"]["apolloState"]): string | undefined => {
     if (state === undefined || state === null) {
         return state || undefined;
     }

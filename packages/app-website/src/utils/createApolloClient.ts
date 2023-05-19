@@ -39,7 +39,7 @@ export const createApolloClient = () => {
     });
 
     // @ts-ignore
-    cache.restore("__APOLLO_STATE__" in window ? window.__APOLLO_STATE__ : {});
+    cache.restore("__APOLLO_STATE__" in window ? window.__APOLLO_STATE__.main : {});
 
     const uri = process.env.REACT_APP_GRAPHQL_API_URL;
     const link = ApolloLink.from([new ApolloDynamicLink(), new BatchHttpLink({ uri })]);
