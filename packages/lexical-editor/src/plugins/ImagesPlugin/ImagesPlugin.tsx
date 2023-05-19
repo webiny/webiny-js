@@ -1,10 +1,11 @@
-/**
+/*
+/!**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- */
+ *!/
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
 import {
@@ -112,7 +113,7 @@ export function InsertImageUploadedDialogBody({
             <FileInput
                 label="Image Upload"
                 onChange={loadImage}
-                accept="image/*"
+                accept="image/!*"
                 data-test-id="image-modal-file-upload"
             />
             <TextInput
@@ -383,3 +384,4 @@ function getDragSelection(event: DragEvent): Range | null | undefined {
 
     return range;
 }
+*/

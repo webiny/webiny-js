@@ -11,7 +11,9 @@
     { "path": "../react-router" },
     { "path": "../ui" },
     { "path": "../ui-composer" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../lexical-editor" },
+    { "path": "../app-page-builder-elements" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -39,7 +41,11 @@
       "@webiny/ui-composer/*": ["../ui-composer/src/*"],
       "@webiny/ui-composer": ["../ui-composer/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
+      "@webiny/lexical-editor": ["../lexical-editor/src"],
+      "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
+      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"]
     },
     "baseUrl": "."
   }

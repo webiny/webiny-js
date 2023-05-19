@@ -8,7 +8,7 @@ import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/compone
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
-import {LexicalEditor} from "@webiny/app-admin/components/LexicalEditor";
+import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 

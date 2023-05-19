@@ -5,7 +5,7 @@ import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } fr
 import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
-import {LexicalEditor} from "@webiny/app-admin/components/LexicalEditor";
+import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 

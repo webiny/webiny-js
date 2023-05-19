@@ -29,6 +29,7 @@ import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
+    staticToolbar?: React.ReactNode;
     tag?: string;
     onChange?: (json: LexicalValue) => void;
     value: LexicalValue | null;
@@ -108,6 +109,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
+            <div className={"toolbar"}>Toolbar</div>
             <div ref={scrollRef} style={{ ...sizeStyle }}>
                 {/* data */}
                 <OnChangePlugin onChange={handleOnChange} />
