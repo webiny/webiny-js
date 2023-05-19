@@ -15286,6 +15286,7 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/api-file-manager": 0.0.0
+    "@webiny/api-file-manager-aco": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-ddb-es": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
@@ -16577,6 +16578,7 @@ __metadata:
   dependencies:
     "@webiny/api-aco": 0.0.0
     "@webiny/api-file-manager": 0.0.0
+    "@webiny/api-file-manager-aco": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
     "@webiny/api-form-builder": 0.0.0
