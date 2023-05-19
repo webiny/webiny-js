@@ -483,17 +483,14 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                         }
                     >
                         <>
-                            {showingFileDetails && (
-                                <FileDetails
-                                    loading={loadingFileDetails}
-                                    file={currentFile}
-                                    open={Boolean(showingFileDetails)}
-                                    onClose={hideFileDetails}
-                                    scope={scope}
-                                    own={own}
-                                />
-                            )}
-
+                            <FileDetails
+                                loading={loadingFileDetails}
+                                file={currentFile}
+                                open={Boolean(showingFileDetails)}
+                                onClose={hideFileDetails}
+                                scope={scope}
+                                own={own}
+                            />
                             <LeftSidebar
                                 title={defaultFolderName}
                                 currentFolder={folderId}
@@ -502,7 +499,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                 own={own}
                                 toggleTag={tag => toggleTag({ tag, listWhere })}
                             />
-
                             <FileListWrapper
                                 {...getDropZoneProps({
                                     onDragEnter: () =>
