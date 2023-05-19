@@ -6,7 +6,7 @@ import { createStorageOperations as securityStorageOperations } from "@webiny/ap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
+import tenantLinksPermissionsAuthorization from "@webiny/api-security/plugins/tenantLinksPermissionsAuthorization";
 import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
@@ -87,7 +87,7 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
      * Authorization plugin to fetch permissions from a security group associated with the identity.
      */
-    groupAuthorization({ identityType: "admin" }),
+    tenantLinksPermissionsAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to fetch permissions from the parent tenant.

@@ -523,7 +523,6 @@ export const createStorageOperations = (
         async updateTeam({ team }): Promise<Team> {
             const keys = createTeamKeys(team);
 
-            console.log("doeo team", JSON.stringify(team, null, 2));
             try {
                 await entities.teams.put({
                     ...cleanupItem(entities.teams, team),

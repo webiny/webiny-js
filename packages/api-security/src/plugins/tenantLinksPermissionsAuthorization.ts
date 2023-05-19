@@ -1,6 +1,7 @@
-import { GroupTenantLink, SecurityContext } from "~/types";
+import { GroupTenantLink, SecurityContext, SecurityPermission } from "~/types";
 import { ContextPlugin } from "@webiny/api";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 
 type Context = SecurityContext & TenancyContext;
 
@@ -24,6 +25,12 @@ export const tenantLinksPermissionsAuthorization =
             tenant: tenant.id
         });
 
+        // Let's go through all the groups and teams permissions, and let's filter
+        // out the ones that are not related to current locale.
+
+        const permissions: Record<string, SecurityPermission[]> = {}
+
+
         if (!tenantLink || !tenantLink.data || !tenantLink.data.permissions) {
             return null;
         }
@@ -32,7 +39,7 @@ export const tenantLinksPermissionsAuthorization =
     };
 
 export default (config: Config) => {
-    return new ContextPlugin<SecurityContext & TenancyContext>(context => {
+    return new ContextPlugin<SecurityContext & TenancyContext & I18NContext>(context => {
         context.security.addAuthorizer(tenantLinksPermissionsAuthorization(config)(context));
     });
 };

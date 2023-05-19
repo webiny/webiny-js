@@ -14,6 +14,7 @@ export type SecurityAuthenticationPlugin = Plugin & {
 
 export interface SecurityAuthorizationPlugin extends Plugin {
     type: "security-authorization";
+
     getPermissions(context: SecurityContext): Promise<SecurityPermission[]>;
 }
 
@@ -78,8 +79,11 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onLogin: Topic<LoginEvent<TIdentity>>;
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
     onIdentity: Topic<IdentityEvent<TIdentity>>;
+
     getStorageOperations(): SecurityStorageOperations;
+
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
+
     /**
      * Replace in favor of withoutAuthorization.
      *
@@ -87,6 +91,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
      * @deprecated
      */
     enableAuthorization(): void;
+
     /**
      * Replace in favor of withoutAuthorization.
      *
@@ -94,8 +99,11 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
      * @deprecated
      */
     disableAuthorization(): void;
+
     addAuthorizer(authorizer: Authorizer): void;
+
     getAuthorizers(): Authorizer[];
+
     // getPermission: GetPermission;
     // getPermissions(): Promise<SecurityPermission[]>;
 
@@ -110,75 +118,126 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     listPermissions(): Promise<SecurityPermission[]>;
 
     hasFullAccess(): Promise<boolean>;
+
     // API Keys
     getApiKey(id: string): Promise<ApiKey | null>;
+
     getApiKeyByToken(token: string): Promise<ApiKey | null>;
+
     listApiKeys(): Promise<ApiKey[]>;
+
     createApiKey(data: ApiKeyInput): Promise<ApiKey>;
+
     updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
+
     deleteApiKey(id: string): Promise<boolean>;
+
     // Groups
     getGroup(params: GetGroupParams): Promise<Group>;
+
     listGroups(params?: ListGroupsParams): Promise<Group[]>;
+
     createGroup(input: GroupInput): Promise<Group>;
+
     updateGroup(id: string, input: Partial<GroupInput>): Promise<Group>;
+
     deleteGroup(id: string): Promise<void>;
+
     // Teams
     getTeam(params: GetTeamParams): Promise<Team>;
+
     listTeams(params?: ListTeamsParams): Promise<Team[]>;
+
     createTeam(input: TeamInput): Promise<Team>;
+
     updateTeam(id: string, input: Partial<TeamInput>): Promise<Team>;
+
     deleteTeam(id: string): Promise<void>;
+
     // Links
     createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
+
     updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void>;
+
     deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void>;
+
     listTenantLinksByType<TLink extends TenantLink = TenantLink>(
         params: ListTenantLinksByTypeParams
     ): Promise<TLink[]>;
+
     listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]>;
+
     listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
+
     getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
         params: GetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
+
     // System
     getVersion(): Promise<string | null>;
+
     setVersion(version: string): Promise<System>;
+
     install(this: Security): Promise<void>;
 }
 
 export interface SecurityStorageOperations {
     getGroup(params: StorageOperationsGetGroupParams): Promise<Group | null>;
+
     listGroups(params: StorageOperationsListGroupsParams): Promise<Group[]>;
+
     createGroup(params: StorageOperationsCreateGroupParams): Promise<Group>;
+
     updateGroup(params: StorageOperationsUpdateGroupParams): Promise<Group>;
+
     deleteGroup(params: StorageOperationsDeleteGroupParams): Promise<void>;
+
     getTeam(params: StorageOperationsGetTeamParams): Promise<Team | null>;
+
     listTeams(params: StorageOperationsListTeamsParams): Promise<Team[]>;
+
     createTeam(params: StorageOperationsCreateTeamParams): Promise<Team>;
+
     updateTeam(params: StorageOperationsUpdateTeamParams): Promise<Team>;
+
     deleteTeam(params: StorageOperationsDeleteTeamParams): Promise<void>;
+
     getSystemData(params: StorageOperationsGetSystemParams): Promise<System | null>;
+
     createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
+
     updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
+
     createTenantLinks(params: StorageOperationsCreateTenantLinkParams[]): Promise<void>;
+
     updateTenantLinks(params: StorageOperationsUpdateTenantLinkParams[]): Promise<void>;
+
     deleteTenantLinks(params: StorageOperationsDeleteTenantLinkParams[]): Promise<void>;
+
     listTenantLinksByType<TLink extends TenantLink = TenantLink>(
         params: ListTenantLinksByTypeParams
     ): Promise<TLink[]>;
+
     listTenantLinksByTenant(params: StorageOperationsListTenantLinksParams): Promise<TenantLink[]>;
+
     listTenantLinksByIdentity(
         params: StorageOperationsListTenantLinksByIdentityParams
     ): Promise<TenantLink[]>;
+
     getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
         params: StorageOperationsGetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
+
     getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey>;
+
     getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey | null>;
+
     listApiKeys(params: StorageOperationsListApiKeysParams): Promise<ApiKey[]>;
+
     createApiKey(params: StorageOperationsCreateApiKeyParams): Promise<ApiKey>;
+
     updateApiKey(params: StorageOperationsUpdateApiKeyParams): Promise<ApiKey>;
+
     deleteApiKey(params: StorageOperationsDeleteApiKeyParams): Promise<void>;
 }
 
@@ -355,9 +414,13 @@ export interface TenantLink<TData = any> {
     webinyVersion: string;
 }
 
-export type GroupTenantLink = TenantLink<{ group: string; permissions: SecurityPermission[] }>;
+export type GroupTenantLink = TenantLink<{
+    groups: [{ id: string; permissions: SecurityPermission[] }];
+}>;
 
-export type TeamTenantLink = TenantLink<{ team: string; permissions: SecurityPermission[] }>;
+export type TeamTenantLink = TenantLink<{
+    teams: [{ id: string; permissions: SecurityPermission[] }];
+}>;
 
 export interface ApiKey {
     id: string;

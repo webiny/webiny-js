@@ -16,10 +16,9 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { GetTeamParams, Team, TeamInput, TeamTenantLink, Security } from "~/types";
+import {GetTeamParams, Team, TeamInput, TeamTenantLink, Security} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
-import { mergeSecurityGroupsPermissions } from "~/createSecurity/mergeSecurityPermissions";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -46,7 +45,11 @@ async function checkPermission(security: Security): Promise<void> {
     }
 }
 
-async function updateTenantLinks(security: Security, tenant: string, team: Team): Promise<void> {
+async function updateTenantLinks(
+    security: Security,
+    tenant: string,
+    updatedTeam: Team
+): Promise<void> {
     const links = await security.listTenantLinksByType<TeamTenantLink>({
         tenant,
         type: "permissions"
@@ -56,22 +59,36 @@ async function updateTenantLinks(security: Security, tenant: string, team: Team)
         return;
     }
 
-    const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
-    const permissions = mergeSecurityGroupsPermissions(teamGroups);
-
     await security.updateTenantLinks(
         links
-            .filter(link => link.data && link.data.team === team.id)
-            .map(link => ({
-                ...link,
-                data: {
-                    ...link.data,
-                    team: {
-                        id: team.id,
-                        permissions
-                    }
+            .filter(link => {
+                const linkTeams = link.data?.teams;
+                if (!Array.isArray(linkTeams) || !linkTeams.length) {
+                    return false;
                 }
-            }))
+
+                return linkTeams.some(item => item.id === updatedTeam.id);
+            })
+            .map(link => {
+                const linkGroups = link.data!.teams;
+
+                return {
+                    ...link,
+                    data: {
+                        ...link.data,
+                        groups: linkGroups.map(linkTeam => {
+                            if (linkTeam.id !== updatedTeam.id) {
+                                return linkTeam;
+                            }
+
+                            return {
+                                id: updatedTeam.id,
+                                permissions: updatedTeam.permissions
+                            };
+                        })
+                    }
+                };
+            })
     );
 }
 

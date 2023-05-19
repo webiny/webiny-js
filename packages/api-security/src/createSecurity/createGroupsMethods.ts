@@ -57,7 +57,11 @@ async function checkPermission(security: Security): Promise<void> {
     }
 }
 
-async function updateTenantLinks(security: Security, tenant: string, group: Group): Promise<void> {
+async function updateTenantLinks(
+    security: Security,
+    tenant: string,
+    updatedGroup: Group
+): Promise<void> {
     const links = await security.listTenantLinksByType<GroupTenantLink>({
         tenant,
         type: "permissions"
@@ -69,15 +73,34 @@ async function updateTenantLinks(security: Security, tenant: string, group: Grou
 
     await security.updateTenantLinks(
         links
-            .filter(link => link.data && link.data.group === group.id)
-            .map(link => ({
-                ...link,
-                data: {
-                    ...link.data,
-                    group: group.id,
-                    permissions: group.permissions
+            .filter(link => {
+                const linkGroups = link.data?.groups;
+                if (!Array.isArray(linkGroups) || !linkGroups.length) {
+                    return false;
                 }
-            }))
+
+                return linkGroups.some(item => item.id === updatedGroup.id);
+            })
+            .map(link => {
+                const linkGroups = link.data!.groups;
+
+                return {
+                    ...link,
+                    data: {
+                        ...link.data,
+                        groups: linkGroups.map(linkGroup => {
+                            if (linkGroup.id !== updatedGroup.id) {
+                                return linkGroup;
+                            }
+
+                            return {
+                                id: updatedGroup.id,
+                                permissions: updatedGroup.permissions
+                            };
+                        })
+                    }
+                };
+            })
     );
 }
 
