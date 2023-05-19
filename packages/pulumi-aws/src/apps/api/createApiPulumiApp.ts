@@ -22,10 +22,10 @@ export interface CreateApiPulumiAppParams {
      */
     elasticSearch?: PulumiAppParam<
         | boolean
-        | {
+        | Partial<{
               domainName: string;
               indexPrefix: string;
-          }
+          }>
     >;
 
     /**
