@@ -20,7 +20,7 @@ import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
-import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
+import { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
@@ -116,7 +116,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                 <ClearEditorPlugin />
                 <FontColorPlugin />
                 <TypographyPlugin />
-                <WebinyQuotePlugin />
+                <QuotePlugin />
                 <HistoryPlugin externalHistoryState={historyState} />
                 {/* Events */}
                 {onBlur && <BlurEventPlugin onBlur={onBlur} />}
