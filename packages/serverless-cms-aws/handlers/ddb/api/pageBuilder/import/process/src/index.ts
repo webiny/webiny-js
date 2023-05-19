@@ -23,11 +23,8 @@ import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
-import {
-    CmsParametersPlugin,
-    createHeadlessCmsContext,
-    createHeadlessCmsGraphQL
-} from "@webiny/api-headless-cms";
+import { createAcoFileManagerImportExportContext } from "@webiny/api-file-manager-aco";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 
 const documentClient = new DocumentClient({
@@ -86,9 +83,9 @@ export const handler = createHandler({
                 locale
             };
         }),
-        createHeadlessCmsGraphQL(),
         createAco(),
-        createAcoPageBuilderImportExportContext()
+        createAcoPageBuilderImportExportContext(),
+        createAcoFileManagerImportExportContext()
     ],
     http: { debug }
 });

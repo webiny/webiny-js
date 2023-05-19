@@ -11,3 +11,8 @@ export const createFileHooks = (context: FmAcoContext) => {
     onFileAfterDeleteHook(context);
     onFileAfterUpdateHook(context);
 };
+
+export const createImportExportFileHooks = (context: FmAcoContext) => {
+    onFileAfterCreateHook(context);
+    onFileAfterBatchCreateHook(context);
+};
