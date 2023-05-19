@@ -24,6 +24,14 @@ import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
+import {
+    CmsParametersPlugin,
+    createHeadlessCmsContext,
+    createHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
@@ -77,7 +85,22 @@ export const handler = createHandler({
                 process: process.env.AWS_LAMBDA_FUNCTION_NAME,
                 combine: process.env.EXPORT_COMBINE_HANDLER
             }
-        })
+        }),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
+        createHeadlessCmsGraphQL(),
+        createAco(),
+        createAcoPageBuilderImportExportContext()
     ],
     http: { debug }
 });
