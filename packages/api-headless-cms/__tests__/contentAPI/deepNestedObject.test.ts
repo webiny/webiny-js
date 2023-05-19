@@ -5,8 +5,8 @@ import { ContextPlugin } from "@webiny/api";
 import { CmsContext } from "~/types";
 
 const LIST_CARS_QUERY = `
-    query ListCarsQuery {
-        listCars {
+    query ListCarsQuery($where: CarsListWhereInput, $sort: [CarsListSorter], $limit: Int, $after: String) {
+        listCars(where: $where, sort: $sort, limit: $limit, after: $after) {
             data {
                 id
                 carsVehicle
@@ -552,20 +552,6 @@ describe("Cars Model Deep Nested Object Fields", () => {
             }
         });
 
-        await handler.until(
-            () =>
-                handler
-                    .invoke({
-                        body: {
-                            query: LIST_CARS_QUERY
-                        }
-                    })
-                    .then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCars.data.length > 0;
-            }
-        );
-
         const [getResult] = await handler.invoke({
             body: {
                 query: GET_CAR_QUERY,
@@ -601,6 +587,55 @@ describe("Cars Model Deep Nested Object Fields", () => {
                             carsVehicle: "Acura-ILX-2019--"
                         }
                     ],
+                    error: null
+                }
+            }
+        });
+
+        const [listSpecificationsHeroLabelResult] = await handler.invoke({
+            body: {
+                query: LIST_CARS_QUERY,
+                variables: {
+                    where: {
+                        specifications: {
+                            heroLabel1: "N/A"
+                        }
+                    }
+                }
+            }
+        });
+
+        expect(listSpecificationsHeroLabelResult).toEqual({
+            data: {
+                listCars: {
+                    data: [
+                        {
+                            id: mutationResult.data.createCars.data.id,
+                            carsVehicle: "Acura-ILX-2019--"
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+
+        const [listSpecificationsHeroLabelNoResult] = await handler.invoke({
+            body: {
+                query: LIST_CARS_QUERY,
+                variables: {
+                    where: {
+                        specifications: {
+                            heroLabel1: "N/AB"
+                        }
+                    }
+                }
+            }
+        });
+
+        expect(listSpecificationsHeroLabelNoResult).toEqual({
+            data: {
+                listCars: {
+                    data: [],
                     error: null
                 }
             }

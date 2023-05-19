@@ -2,10 +2,11 @@ import * as React from "react";
 import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { useBind } from "@webiny/form";
 import { Field } from "./components/Field";
-import { FieldMessage } from "./components/FieldMessage";
+import { FieldErrorMessage } from "./components/FieldErrorMessage";
+import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
+import { StyledInput } from "./Input";
 import styled from "@emotion/styled";
-import theme from "../../../../theme";
 
 interface RadioProps {
     field: FormRenderFbFormModelField;
@@ -14,14 +15,14 @@ interface RadioProps {
 const RadioGroup = styled.div`
     align-items: center;
     display: flex;
-    margin: 5px 50px 5px 2px;
+    margin: 7px 50px 7px 2px;
     width: 100%;
 `;
 
 const RadioButton = styled.input`
     margin-left: 0;
     line-height: 100%;
-    background-color: ${theme.styles.colors["color5"]};
+    background-color: ${props => props.theme.styles.colors["color5"]};
     min-width: 25px;
     width: 25px;
     height: 25px;
@@ -29,7 +30,7 @@ const RadioButton = styled.input`
     -webkit-appearance: none;
 
     &:focus {
-        border-color: ${theme.styles.colors["color2"]};
+        border-color: ${props => props.theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }
@@ -47,18 +48,29 @@ const RadioButton = styled.input`
     }
 `;
 
+const OtherInput = styled(StyledInput)`
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: -4px;
+    margin-bottom: -4px;
+    margin-left: 16px;
+`;
+
 export const RadioField: React.FC<RadioProps> = ({ field }) => {
     const { validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators
+    });
+    const { value: otherOptionValue, onChange: otherOptionOnChange } = useBind({
+        name: `${field.fieldId}Other`
     });
 
     const fieldId = field.fieldId;
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
-
+            <FieldLabel field={field} />
+            {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             {(field.options || []).map(option => {
                 return (
                     <RadioGroup key={option.value}>
@@ -74,11 +86,29 @@ export const RadioField: React.FC<RadioProps> = ({ field }) => {
                     </RadioGroup>
                 );
             })}
-            <FieldMessage
-                isValid={validation.isValid}
-                errorMessage={validation.message}
-                helperMessage={field.helpText}
-            />
+            {field.settings["otherOption"] && (
+                <RadioGroup>
+                    <RadioButton
+                        name={fieldId}
+                        type="radio"
+                        id={"radio-" + fieldId + "other"}
+                        value="other"
+                        checked={value === "other"}
+                        onChange={() => onChange("other")}
+                    />
+                    <label htmlFor={"radio-" + fieldId + "other"}>Other</label>
+                    {value === "other" && (
+                        <OtherInput
+                            name={`${fieldId}Other`}
+                            id={`${fieldId}Other`}
+                            value={otherOptionValue}
+                            onChange={e => otherOptionOnChange(e.target.value)}
+                            autoFocus
+                        />
+                    )}
+                </RadioGroup>
+            )}
+            <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
 };

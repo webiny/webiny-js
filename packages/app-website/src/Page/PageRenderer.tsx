@@ -13,6 +13,7 @@ import { WebsiteScripts } from "./WebsiteScripts";
 import { MainContent } from "./MainContent";
 import { Layout } from "./Layout";
 import { PageProvider } from "@webiny/app-page-builder-elements";
+import { ApolloError } from "apollo-client";
 
 interface Head {
     favicon?: {
@@ -28,7 +29,7 @@ interface Head {
  */
 interface PageRendererProps {
     page: PbPageData | null;
-    error: PbErrorResponse | null;
+    error: ApolloError | PbErrorResponse | null;
     settings: SettingsQueryResponseData;
 }
 
@@ -45,7 +46,7 @@ export const PageRenderer = makeComposable<PageRendererProps>(
 
         const head: Head = {
             favicon: settings.favicon,
-            title: page.title || settings.name,
+            title: page.settings?.seo?.title || page.title || settings.name,
             seo: {
                 title: "",
                 description: "",

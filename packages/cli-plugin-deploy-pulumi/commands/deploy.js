@@ -55,7 +55,6 @@ module.exports = (params, context) => {
 
             await runHook({
                 hook: "hook-before-deploy",
-                skip: inputs.preview,
                 args: hookArgs,
                 context
             });
@@ -116,7 +115,6 @@ module.exports = (params, context) => {
 
             await runHook({
                 hook: "hook-after-deploy",
-                skip: inputs.preview,
                 args: hookArgs,
                 context
             });

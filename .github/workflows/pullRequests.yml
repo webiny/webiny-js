@@ -4,7 +4,6 @@ on: [pull_request]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   validate-commits:
@@ -25,7 +24,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -66,7 +65,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -81,7 +80,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -116,7 +115,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -129,7 +128,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages (full)
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   jest-tests:
     needs: init
@@ -170,7 +169,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Run tests
         run: yarn test ${{ matrix.package }}
@@ -183,7 +182,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:
@@ -206,7 +205,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml

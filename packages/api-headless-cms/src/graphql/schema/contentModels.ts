@@ -1,14 +1,15 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
 import { CmsContext, CmsModel } from "~/types";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 import { toSlug } from "~/utils/toSlug";
 
 interface Params {
     context: CmsContext;
 }
-export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<CmsContext> => {
+
+export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
@@ -43,9 +44,9 @@ export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<Cms
         },
         CmsContentModel: {
             group: async (model: CmsModel) => {
-                context.security.disableAuthorization();
-                const groups = await context.cms.listGroups();
-                context.security.enableAuthorization();
+                const groups = await context.security.withoutAuthorization(async () => {
+                    return context.cms.listGroups();
+                });
 
                 const group = groups.find(group => group.id === model.group.id);
                 return {
@@ -159,30 +160,44 @@ export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<Cms
 
             input CmsContentModelCreateInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
+                icon: String
                 description: String
                 layout: [[ID!]!]
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]
+                defaultFields: Boolean
             }
 
             input CmsContentModelCreateFromInput {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String
                 group: RefInput!
+                icon: String
                 description: String
                 locale: String
             }
 
             input CmsContentModelUpdateInput {
                 name: String
+                singularApiName: String
+                pluralApiName: String
                 group: RefInput
+                icon: String
                 description: String
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]
             }
 
@@ -212,7 +227,7 @@ export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<Cms
         `;
     }
 
-    const plugin = new GraphQLSchemaPlugin<CmsContext>({
+    const plugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsFieldValidation {
                 name: String!
@@ -256,16 +271,21 @@ export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<Cms
 
             type CmsContentModel {
                 name: String!
+                singularApiName: String!
+                pluralApiName: String!
                 modelId: String!
                 description: String
                 group: CmsContentModelGroup!
+                icon: String
                 createdOn: DateTime
                 savedOn: DateTime
-                createdBy: CmsCreatedBy
+                createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
                 lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
+                descriptionFieldId: String
+                imageFieldId: String
                 tags: [String!]!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
@@ -292,7 +312,6 @@ export const createModelsSchema = ({ context }: Params): GraphQLSchemaPlugin<Cms
         `,
         resolvers
     });
-
-    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.models`;
+    plugin.name = `headless-cms.graphql.schema.${context.cms.type}.content-models`;
     return plugin;
 };

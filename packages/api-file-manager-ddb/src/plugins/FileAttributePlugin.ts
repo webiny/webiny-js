@@ -7,7 +7,7 @@ export class FileAttributePlugin extends AttributePlugin {
     public constructor(params: Omit<AttributePluginParams, "entity">) {
         super({
             ...params,
-            entity: "Files"
+            entity: "FM.File"
         });
     }
 }

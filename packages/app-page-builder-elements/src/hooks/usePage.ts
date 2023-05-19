@@ -11,3 +11,7 @@ export function usePage() {
 
     return context;
 }
+
+export function useOptionalPage() {
+    return useContext(PageContext);
+}

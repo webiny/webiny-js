@@ -12,14 +12,17 @@ import PagesOld from "../views/Pages/Pages";
 import Pages from "~/admin/views/Pages/Table";
 import BlockCategories from "../views/BlockCategories/BlockCategories";
 import PageBlocks from "../views/PageBlocks/PageBlocks";
+import PageTemplates from "~/admin/views/PageTemplates/PageTemplates";
 
 import { PageEditor } from "~/pageEditor/Editor";
 import { BlockEditor } from "~/blockEditor/Editor";
+import { TemplateEditor } from "~/templateEditor/Editor";
 
 const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
 const ROLE_PB_PAGES = "pb.page";
 const ROLE_PB_BLOCK = "pb.block";
+const ROLE_PB_TEMPLATE = "pb.template";
 
 const plugins: RoutePlugin[] = [
     {
@@ -58,6 +61,30 @@ const plugins: RoutePlugin[] = [
             />
         )
     },
+    /**
+     * @deprecated since version 5.35
+     * The old Page Datalist view will be removed completely within version 5.36
+     */
+    {
+        name: "route-pb-pages-old",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/pages-old"
+                render={({ location }) => (
+                    <SecureRoute permission={ROLE_PB_PAGES}>
+                        <EditorPluginsLoader location={location}>
+                            <AdminLayout>
+                                <Helmet title={"Page Builder - Pages Old"} />
+                                <PagesOld />
+                            </AdminLayout>
+                        </EditorPluginsLoader>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
     {
         name: "route-pb-pages",
         type: "route",
@@ -70,26 +97,6 @@ const plugins: RoutePlugin[] = [
                         <EditorPluginsLoader location={location}>
                             <AdminLayout>
                                 <Helmet title={"Page Builder - Pages"} />
-                                <PagesOld />
-                            </AdminLayout>
-                        </EditorPluginsLoader>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
-        name: "route-pb-pages-table",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path="/page-builder/pages-table"
-                render={({ location }) => (
-                    <SecureRoute permission={ROLE_PB_PAGES}>
-                        <EditorPluginsLoader location={location}>
-                            <AdminLayout>
-                                <Helmet title={"Page Builder - Pages Table"} />
                                 <Pages />
                             </AdminLayout>
                         </EditorPluginsLoader>
@@ -111,6 +118,48 @@ const plugins: RoutePlugin[] = [
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit page"} />
                                 <PageEditor />
+                            </EditorPluginsLoader>
+                        </SecureRoute>
+                    );
+                }}
+            />
+        )
+    },
+    {
+        name: "route-pb-page-templates",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/page-templates"
+                render={({ location }) => {
+                    return (
+                        <SecureRoute permission={ROLE_PB_TEMPLATE}>
+                            <EditorPluginsLoader location={location}>
+                                <AdminLayout>
+                                    <Helmet title={"Page Builder - Page Templates"} />
+                                    <PageTemplates />
+                                </AdminLayout>
+                            </EditorPluginsLoader>
+                        </SecureRoute>
+                    );
+                }}
+            />
+        )
+    },
+    {
+        name: "route-pb-template-editor",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/template-editor/:id"
+                render={({ location }) => {
+                    return (
+                        <SecureRoute permission={ROLE_PB_TEMPLATE}>
+                            <EditorPluginsLoader location={location}>
+                                <Helmet title={"Page Builder - Edit template"} />
+                                <TemplateEditor />
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );

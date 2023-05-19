@@ -5,7 +5,6 @@ import {
     createLimit,
     createSort,
     decodeCursor,
-    ElasticsearchFieldPlugin,
     getElasticsearchOperatorPluginsByLocale
 } from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
@@ -83,13 +82,10 @@ interface CreateElasticsearchBodyParams {
     limit: number;
     after: string | null;
     sort: string[];
+    fieldPlugins: Record<string, PageElasticsearchFieldPlugin>;
 }
 
-const createElasticsearchQuery = (
-    params: CreateElasticsearchBodyParams & {
-        fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
-    }
-) => {
+const createElasticsearchQuery = (params: CreateElasticsearchBodyParams) => {
     const { plugins, where: initialWhere, fieldPlugins } = params;
     const query = createInitialQueryValue({
         where: initialWhere
@@ -172,7 +168,7 @@ const createElasticsearchQuery = (
 };
 
 export const createElasticsearchQueryBody = (
-    params: CreateElasticsearchBodyParams
+    params: Omit<CreateElasticsearchBodyParams, "fieldPlugins">
 ): esSearchBody & Pick<Required<esSearchBody>, "sort"> => {
     const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 
@@ -201,7 +197,9 @@ export const createElasticsearchQueryBody = (
     for (const plugin of queryModifiers) {
         plugin.modifyQuery({
             query,
-            where
+            where,
+            sort,
+            limit
         });
     }
 
@@ -210,7 +208,8 @@ export const createElasticsearchQueryBody = (
     );
     for (const plugin of sortModifiers) {
         plugin.modifySort({
-            sort
+            sort,
+            where
         });
     }
 
@@ -230,7 +229,7 @@ export const createElasticsearchQueryBody = (
          * Which is correct in some cases. In our case, it is not.
          * https://www.elastic.co/guide/en/elasticsearch/reference/7.13/paginate-search-results.html
          */
-        search_after: decodeCursor(after) as any,
+        search_after: decodeCursor(after),
         sort
     };
 
@@ -239,7 +238,8 @@ export const createElasticsearchQueryBody = (
     );
     for (const plugin of bodyModifiers) {
         plugin.modifyBody({
-            body
+            body,
+            where
         });
     }
 

@@ -75,7 +75,7 @@ export class HeadlessCMSGraphQL extends ApplicationGraphQL {
     }
 
     public override getArn(settings: ApwSettings): string {
-        return settings.cmsGraphqlFunctionArn;
+        return settings.mainGraphqlFunctionArn;
     }
 
     public override getGraphQLBody(data: ApwScheduleActionData): ApplicationGraphQLBody | null {

@@ -5,7 +5,4 @@
 **/.out/
 **/*.d.ts
 idea.js
-scripts
-packages/ui/src/RichTextEditor/editorjs/**
-packages-v6/pb-editor/**
-packages-v6/core/**/artifacts/**
+scripts/**/*.js

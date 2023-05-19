@@ -44,7 +44,7 @@ export default class Zipper {
         const files = exportInfo.files.map(({ key }) => {
             return {
                 stream: s3Stream.readStream(key),
-                filename: `${prefix}\\${this.filesDirName}\\${path.basename(key)}`
+                filename: `${prefix}\\${this.filesDirName}\\${key}`
             };
         });
 
@@ -99,7 +99,7 @@ export class ZipOfZip {
     constructor(keys: string[], filename: string) {
         this.keys = keys;
         this.filename = filename;
-        this.archiveFileName = uniqueId("", `-${filename}`);
+        this.archiveFileName = uniqueId("EXPORTS/", `-${filename}`);
     }
 
     getFileStreams(): FileStreamDetails[] {

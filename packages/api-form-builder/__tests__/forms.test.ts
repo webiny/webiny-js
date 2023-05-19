@@ -36,7 +36,8 @@ describe('Form Builder "Form" Test', () => {
             // Run FM installer (we'll need to have FM settings to perform submissions export)
             await installFileManager({ srcPrefix: "https://some.domain.com/files/" });
         } catch (e) {
-            console.log(e);
+            console.error(e);
+            process.exit(1);
         }
     });
 
@@ -367,8 +368,18 @@ describe('Form Builder "Form" Test', () => {
         const csvFile = path.join(__dirname, data.key);
         const json = await csv({ output: "csv" }).fromFile(csvFile);
         expect(json.length).toBe(2);
-        expect(json[0].sort()).toEqual(Object.values(formSubmissionDataB.data).sort());
-        expect(json[1].sort()).toEqual(Object.values(formSubmissionDataA.data).sort());
+        expect(json[0].sort()).toEqual(
+            Object.values({
+                ...formSubmissionDataB.data,
+                "Date submitted (UTC)": expect.any(String)
+            }).sort()
+        );
+        expect(json[1].sort()).toEqual(
+            Object.values({
+                ...formSubmissionDataA.data,
+                "Date submitted (UTC)": expect.any(String)
+            }).sort()
+        );
         fs.unlinkSync(csvFile);
     });
 

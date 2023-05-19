@@ -64,6 +64,8 @@ describe("richTextField", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -124,7 +126,7 @@ describe("richTextField", () => {
             ...manageOpts
         });
 
-        const { until, getProduct } = useProductReadHandler({
+        const { getProduct } = useProductReadHandler({
             ...readOpts
         });
 
@@ -197,18 +199,6 @@ describe("richTextField", () => {
         await publishProduct({
             revision: product.id
         });
-
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () =>
-                getProduct({
-                    where: {
-                        id: product.id
-                    }
-                }).then(([data]) => data),
-            ({ data }: any) => data.getProduct.data.id === product.id,
-            { name: "get created product" }
-        );
 
         const [response] = await getProduct({
             where: {

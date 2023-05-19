@@ -7,7 +7,7 @@ const variablesRegistry: EnvVariables = {};
 
 export let sealEnvVariables: () => void;
 
-const magicPrefixes = ["WEBINY_", "WCP_", "OKTA_", "AUTH0_"];
+const magicPrefixes = ["WEBINY_", "WEBINY_API_", "WCP_", "OKTA_", "AUTH0_"];
 
 const variablesPromise = new Promise<EnvVariables>(resolve => {
     sealEnvVariables = () => {

@@ -3,8 +3,7 @@ import { createModel } from "./helpers";
 import {
     createNumbersEntryMutation,
     createNumbersModel,
-    getNumbersEntryQuery,
-    listNumbersEntryQuery
+    getNumbersEntryQuery
 } from "./mocks/numbersModel";
 
 // eslint-disable-next-line
@@ -57,7 +56,7 @@ describe("numbers model", () => {
         );
         expect(createResponse).toEqual({
             data: {
-                createNumbers: {
+                createNumberModel: {
                     data: {
                         id: expect.stringMatching(/^([a-zA-Z0-9]+)#0001$/),
                         integer: integerValue,
@@ -80,22 +79,12 @@ describe("numbers model", () => {
             }
         });
 
-        await handler.until(
-            () => handler.invoke(listNumbersEntryQuery()).then(([data]) => data),
-            ({ data }: any) => {
-                return data.listNumbers.data.length === 1;
-            },
-            {
-                name: "list numbers"
-            }
-        );
-
-        const revision = createResponse.data.createNumbers.data.id;
+        const revision = createResponse.data.createNumberModel.data.id;
         const [getResponse] = await handler.invoke(getNumbersEntryQuery(revision));
 
         expect(getResponse).toEqual({
             data: {
-                getNumbers: {
+                getNumberModel: {
                     data: {
                         id: revision,
                         integer: integerValue,

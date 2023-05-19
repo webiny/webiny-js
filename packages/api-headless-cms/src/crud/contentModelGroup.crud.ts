@@ -1,14 +1,10 @@
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-import { validation } from "@webiny/validation";
+import DataLoader from "dataloader";
 /**
  * Package mdbid does not have types.
  */
 // @ts-ignore
 import mdbid from "mdbid";
+import WebinyError from "@webiny/error";
 import {
     CmsGroupContext,
     CmsGroupListParams,
@@ -16,7 +12,6 @@ import {
     CmsGroup,
     CmsContext,
     HeadlessCmsStorageOperations,
-    CmsGroupCreateInput,
     OnGroupBeforeCreateTopicParams,
     OnGroupAfterCreateTopicParams,
     OnGroupBeforeUpdateTopicParams,
@@ -28,7 +23,6 @@ import {
     OnGroupDeleteErrorTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
-import WebinyError from "@webiny/error";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
@@ -37,24 +31,14 @@ import { createTopic } from "@webiny/pubsub";
 import { assignBeforeGroupUpdate } from "./contentModelGroup/beforeUpdate";
 import { assignBeforeGroupCreate } from "./contentModelGroup/beforeCreate";
 import { assignBeforeGroupDelete } from "./contentModelGroup/beforeDelete";
-import DataLoader from "dataloader";
 import { checkPermissions as baseCheckPermissions } from "~/utils/permissions";
 import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { validateGroupAccess } from "~/utils/access";
-import { toSlug } from "~/utils/toSlug";
-
-const CreateContentModelGroupModel = withFields({
-    name: string({ validation: validation.create("required,maxLength:100") }),
-    slug: string({ validation: validation.create("maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:255") }),
-    icon: string({ validation: validation.create("required,maxLength:255") })
-})();
-
-const UpdateContentModelGroupModel = withFields({
-    name: string({ validation: validation.create("maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:255") }),
-    icon: string({ validation: validation.create("maxLength:255") })
-})();
+import {
+    createGroupCreateValidation,
+    createGroupUpdateValidation
+} from "~/crud/contentModelGroup/validation";
+import { createZodError } from "@webiny/utils";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
@@ -63,6 +47,7 @@ export interface CreateModelGroupsCrudParams {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
+
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
@@ -131,7 +116,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         return baseCheckPermissions(context, "cms.contentModelGroup", { rwd: check });
     };
 
-    const groupsGet = async (id: string) => {
+    const getGroupViaDataLoader = async (id: string) => {
         const groups = await dataLoaders.listGroups.load("listGroups");
 
         const group = groups.find(g => g.id === id);
@@ -142,7 +127,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         return group;
     };
 
-    const groupsList = async (params: CmsGroupListParams) => {
+    const listGroupsViaDataLoader = async (params: CmsGroupListParams) => {
         const { where } = params || {};
 
         try {
@@ -194,6 +179,192 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         plugins: context.plugins,
         storageOperations
     });
+    /**
+     * CRUD Methods
+     */
+    const getGroup: CmsGroupContext["getGroup"] = async id => {
+        const permission = await checkPermissions("r");
+
+        const group = await getGroupViaDataLoader(id);
+        checkOwnership(context, permission, group);
+        validateGroupAccess(context, permission, group);
+
+        return group;
+    };
+    const listGroups: CmsGroupContext["listGroups"] = async params => {
+        const { where } = params || {};
+
+        const { tenant, locale } = where || {};
+        const permission = await checkPermissions("r");
+
+        const response = await listGroupsViaDataLoader({
+            ...(params || {}),
+            where: {
+                ...(where || {}),
+                tenant: tenant || getTenant().id,
+                locale: locale || getLocale().code
+            }
+        });
+
+        return response.filter(group => {
+            if (!validateOwnership(context, permission, group)) {
+                return false;
+            }
+            return validateGroupAccess(context, permission, group);
+        });
+    };
+    const createGroup: CmsGroupContext["createGroup"] = async input => {
+        await checkPermissions("w");
+
+        const result = await createGroupCreateValidation().safeParseAsync(input);
+
+        if (!result.success) {
+            throw createZodError(result.error);
+        }
+        const data = result.data;
+
+        const identity = getIdentity();
+
+        const id = mdbid();
+        const group: CmsGroup = {
+            ...data,
+            id,
+            tenant: getTenant().id,
+            locale: getLocale().code,
+            createdOn: new Date().toISOString(),
+            savedOn: new Date().toISOString(),
+            createdBy: {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            },
+            webinyVersion: context.WEBINY_VERSION
+        };
+        try {
+            await onGroupBeforeCreate.publish({
+                group
+            });
+
+            const result = await storageOperations.groups.create({
+                group
+            });
+
+            clearGroupsCache();
+
+            await onGroupAfterCreate.publish({
+                group: result
+            });
+
+            return group;
+        } catch (ex) {
+            await onGroupCreateError.publish({
+                input,
+                group,
+                error: ex
+            });
+            throw new WebinyError(
+                ex.message || "Could not save data model group.",
+                ex.code || "ERROR_ON_CREATE",
+                {
+                    ...(ex.data || {}),
+                    group,
+                    input
+                }
+            );
+        }
+    };
+    const updateGroup: CmsGroupContext["updateGroup"] = async (id, input) => {
+        const permission = await checkPermissions("w");
+
+        const original = await getGroupViaDataLoader(id);
+
+        checkOwnership(context, permission, original);
+
+        const result = await createGroupUpdateValidation().safeParseAsync(input);
+
+        if (!result.success) {
+            throw createZodError(result.error);
+        }
+        const data = result.data;
+
+        /**
+         * No need to continue if no values were changed
+         */
+        if (Object.keys(data).length === 0) {
+            return original;
+        }
+
+        const group: CmsGroup = {
+            ...original,
+            ...data,
+            locale: getLocale().code,
+            tenant: getTenant().id,
+            savedOn: new Date().toISOString()
+        };
+
+        try {
+            await onGroupBeforeUpdate.publish({
+                original,
+                group
+            });
+
+            const updatedGroup = await storageOperations.groups.update({
+                group
+            });
+            clearGroupsCache();
+
+            await onGroupAfterUpdate.publish({
+                original,
+                group: updatedGroup
+            });
+
+            return updatedGroup;
+        } catch (ex) {
+            await onGroupUpdateError.publish({
+                input,
+                original,
+                group,
+                error: ex
+            });
+            throw new WebinyError(ex.message, ex.code || "UPDATE_ERROR", {
+                error: ex,
+                original,
+                group,
+                input
+            });
+        }
+    };
+    const deleteGroup: CmsGroupContext["deleteGroup"] = async id => {
+        const permission = await checkPermissions("d");
+
+        const group = await getGroupViaDataLoader(id);
+
+        checkOwnership(context, permission, group);
+
+        try {
+            await onGroupBeforeDelete.publish({
+                group
+            });
+
+            await storageOperations.groups.delete({ group });
+            clearGroupsCache();
+
+            await onGroupAfterDelete.publish({
+                group
+            });
+        } catch (ex) {
+            await onGroupDeleteError.publish({
+                group,
+                error: ex
+            });
+            throw new WebinyError(ex.message, ex.code || "DELETE_ERROR", {
+                ...(ex.data || {}),
+                id
+            });
+        }
+
+        return true;
+    };
 
     return {
         /**
@@ -219,189 +390,29 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         onGroupDeleteError,
         clearGroupsCache,
         getGroup: async id => {
-            const permission = await checkPermissions("r");
-
-            const group = await groupsGet(id);
-            checkOwnership(context, permission, group);
-            validateGroupAccess(context, permission, group);
-
-            return group;
+            return context.benchmark.measure("headlessCms.crud.groups.getGroup", async () => {
+                return getGroup(id);
+            });
         },
         listGroups: async params => {
-            const { where } = params || {};
-
-            const { tenant, locale } = where || {};
-            const permission = await checkPermissions("r");
-
-            const response = await groupsList({
-                ...(params || {}),
-                where: {
-                    ...(where || {}),
-                    tenant: tenant || getTenant().id,
-                    locale: locale || getLocale().code
-                }
-            });
-
-            return response.filter(group => {
-                if (!validateOwnership(context, permission, group)) {
-                    return false;
-                }
-                return validateGroupAccess(context, permission, group);
+            return context.benchmark.measure("headlessCms.crud.groups.listGroups", async () => {
+                return listGroups(params);
             });
         },
-        createGroup: async inputData => {
-            await checkPermissions("w");
-
-            const createdData = new CreateContentModelGroupModel().populate({
-                ...inputData,
-                slug: inputData.slug ? toSlug(inputData.slug) : "",
-                description: inputData.description || ""
+        createGroup: async input => {
+            return context.benchmark.measure("headlessCms.crud.groups.createGroup", async () => {
+                return createGroup(input);
             });
-            await createdData.validate();
-            const input: CmsGroupCreateInput & { slug: string; description: string } =
-                await createdData.toJSON();
-
-            const identity = getIdentity();
-
-            const id = mdbid();
-            const group: CmsGroup = {
-                ...input,
-                id,
-                tenant: getTenant().id,
-                locale: getLocale().code,
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
-                webinyVersion: context.WEBINY_VERSION
-            };
-            try {
-                await onGroupBeforeCreate.publish({
-                    group
-                });
-
-                const result = await storageOperations.groups.create({
-                    group
-                });
-
-                clearGroupsCache();
-
-                await onGroupAfterCreate.publish({
-                    group: result
-                });
-
-                return group;
-            } catch (ex) {
-                await onGroupCreateError.publish({
-                    input,
-                    group,
-                    error: ex
-                });
-                throw new WebinyError(
-                    ex.message || "Could not save data model group.",
-                    ex.code || "ERROR_ON_CREATE",
-                    {
-                        ...(ex.data || {}),
-                        group,
-                        input
-                    }
-                );
-            }
         },
-        updateGroup: async (id, inputData) => {
-            const permission = await checkPermissions("w");
-
-            const original = await groupsGet(id);
-
-            checkOwnership(context, permission, original);
-
-            const input = new UpdateContentModelGroupModel().populate(inputData);
-            await input.validate();
-
-            const updatedDataJson: Partial<CmsGroup> = await input.toJSON({
-                onlyDirty: true
+        updateGroup: async (id, input) => {
+            return context.benchmark.measure("headlessCms.crud.groups.updateGroup", async () => {
+                return updateGroup(id, input);
             });
-
-            /**
-             * No need to continue if no values were changed
-             */
-            if (Object.keys(updatedDataJson).length === 0) {
-                return original;
-            }
-
-            const group: CmsGroup = {
-                ...original,
-                ...updatedDataJson,
-                locale: getLocale().code,
-                tenant: getTenant().id,
-                savedOn: new Date().toISOString()
-            };
-
-            try {
-                await onGroupBeforeUpdate.publish({
-                    original,
-                    group
-                });
-
-                const updatedGroup = await storageOperations.groups.update({
-                    group
-                });
-                clearGroupsCache();
-
-                await onGroupAfterUpdate.publish({
-                    original,
-                    group: updatedGroup
-                });
-
-                return updatedGroup;
-            } catch (ex) {
-                await onGroupUpdateError.publish({
-                    input,
-                    original,
-                    group,
-                    error: ex
-                });
-                throw new WebinyError(ex.message, ex.code || "UPDATE_ERROR", {
-                    error: ex,
-                    original,
-                    group,
-                    input
-                });
-            }
         },
         deleteGroup: async id => {
-            const permission = await checkPermissions("d");
-
-            const group = await groupsGet(id);
-
-            checkOwnership(context, permission, group);
-
-            try {
-                await onGroupBeforeDelete.publish({
-                    group
-                });
-
-                await storageOperations.groups.delete({ group });
-                clearGroupsCache();
-
-                await onGroupAfterDelete.publish({
-                    group
-                });
-            } catch (ex) {
-                await onGroupDeleteError.publish({
-                    group,
-                    error: ex
-                });
-                throw new WebinyError(ex.message, ex.code || "DELETE_ERROR", {
-                    ...(ex.data || {}),
-                    id
-                });
-            }
-
-            return true;
+            return context.benchmark.measure("headlessCms.crud.groups.deleteGroup", async () => {
+                return deleteGroup(id);
+            });
         }
     };
 };

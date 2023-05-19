@@ -1,6 +1,9 @@
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { PluginsContainer } from "@webiny/plugins";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import {
+    CompressionPlugin,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 
 import { ENTITIES, StorageOperationsFactory } from "~/types";
 import { createTable } from "~/definitions/table";
@@ -28,8 +31,8 @@ import { createSystemStorageOperations } from "~/operations/system";
 
 import { createPageEntity } from "~/definitions/pageEntity";
 import {
-    createPagesElasticsearchFields,
-    createPagesDynamoDbFields
+    createPagesDynamoDbFields,
+    createPagesElasticsearchFields
 } from "~/operations/pages/fields";
 import { createPageStorageOperations } from "~/operations/pages";
 import { createPageElasticsearchEntity } from "~/definitions/pageElasticsearchEntity";
@@ -41,6 +44,31 @@ import { createBlockCategoryStorageOperations } from "~/operations/blockCategory
 import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
+
+import { createPageTemplateEntity } from "~/definitions/pageTemplateEntity";
+import { createPageTemplateDynamoDbFields } from "~/operations/pageTemplate/fields";
+import { createPageTemplateStorageOperations } from "~/operations/pageTemplate";
+
+import { PbContext } from "@webiny/api-page-builder/types";
+import {
+    BlockCategoryDynamoDbElasticFieldPlugin,
+    CategoryDynamoDbElasticFieldPlugin,
+    IndexPageDataPlugin,
+    MenuDynamoDbElasticFieldPlugin,
+    PageBlockDynamoDbFieldPlugin,
+    PageDynamoDbElasticsearchFieldPlugin,
+    PageElasticsearchBodyModifierPlugin,
+    PageElasticsearchFieldPlugin,
+    PageElasticsearchIndexPlugin,
+    PageElasticsearchQueryModifierPlugin,
+    PageElasticsearchSortModifierPlugin,
+    PageElementDynamoDbElasticFieldPlugin,
+    SearchLatestPagesPlugin,
+    SearchPagesPlugin,
+    SearchPublishedPagesPlugin
+} from "./plugins";
+
+export * from "./plugins";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -70,10 +98,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
-        /**
-         * Elasticsearch operators.
-         */
-        getElasticsearchOperators(),
         /**
          * Category fields required for filtering/sorting.
          */
@@ -105,14 +129,17 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Page Block fields required for filtering/sorting.
          */
-        createPageBlockDynamoDbFields()
+        createPageBlockDynamoDbFields(),
+        /**
+         * Page Template fields required for filtering/sorting.
+         */
+        createPageTemplateDynamoDbFields()
     ]);
 
     const entities = {
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
+            table: tableInstance
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
@@ -153,11 +180,63 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entityName: ENTITIES.PAGE_BLOCKS,
             table: tableInstance,
             attributes: attributes ? attributes[ENTITIES.PAGE_BLOCKS] : {}
+        }),
+        pageTemplates: createPageTemplateEntity({
+            entityName: ENTITIES.PAGE_TEMPLATES,
+            table: tableInstance,
+            attributes: attributes ? attributes[ENTITIES.PAGE_TEMPLATES] : {}
         })
     };
 
+    const categories = createCategoryStorageOperations({
+        entity: entities.categories,
+        plugins
+    });
+    const blockCategories = createBlockCategoryStorageOperations({
+        entity: entities.blockCategories,
+        plugins
+    });
+    const pageBlocks = createPageBlockStorageOperations({
+        entity: entities.pageBlocks,
+        plugins
+    });
+    const pageTemplates = createPageTemplateStorageOperations({
+        entity: entities.pageTemplates,
+        plugins
+    });
+
     return {
-        init: async context => {
+        beforeInit: async (context: PbContext) => {
+            const types: string[] = [
+                // Elasticsearch
+                CompressionPlugin.type,
+                ElasticsearchQueryBuilderOperatorPlugin.type,
+                // Page Builder
+                BlockCategoryDynamoDbElasticFieldPlugin.type,
+                CategoryDynamoDbElasticFieldPlugin.type,
+                IndexPageDataPlugin.type,
+                MenuDynamoDbElasticFieldPlugin.type,
+                PageBlockDynamoDbFieldPlugin.type,
+                PageDynamoDbElasticsearchFieldPlugin.type,
+                PageElasticsearchBodyModifierPlugin.type,
+                PageElasticsearchFieldPlugin.type,
+                PageElasticsearchIndexPlugin.type,
+                PageElasticsearchQueryModifierPlugin.type,
+                PageElasticsearchSortModifierPlugin.type,
+                PageElementDynamoDbElasticFieldPlugin.type,
+                SearchLatestPagesPlugin.type,
+                SearchPagesPlugin.type,
+                SearchPublishedPagesPlugin.type
+            ];
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
+            pageTemplates.dataLoader.clear();
+            pageBlocks.dataLoader.clear();
+            blockCategories.dataLoader.clear();
+            categories.dataLoader.clear();
+        },
+        init: async (context: PbContext) => {
             context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
@@ -176,10 +255,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         settings: createSettingsStorageOperations({
             entity: entities.settings
         }),
-        categories: createCategoryStorageOperations({
-            entity: entities.categories,
-            plugins
-        }),
         menus: createMenuStorageOperations({
             entity: entities.menus,
             plugins
@@ -194,13 +269,9 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             elasticsearch,
             plugins
         }),
-        blockCategories: createBlockCategoryStorageOperations({
-            entity: entities.blockCategories,
-            plugins
-        }),
-        pageBlocks: createPageBlockStorageOperations({
-            entity: entities.pageBlocks,
-            plugins
-        })
+        categories,
+        blockCategories,
+        pageBlocks,
+        pageTemplates
     };
 };

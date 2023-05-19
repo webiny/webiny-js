@@ -31,7 +31,7 @@ const PageBuilderProviderPlugin = createProviderPlugin(Component => {
 
 const PageBuilderMenu: React.FC = () => {
     return (
-        <HasPermission any={["pb.menu", "pb.category", "pb.page", "pb.block"]}>
+        <HasPermission any={["pb.menu", "pb.category", "pb.page", "pb.template", "pb.block"]}>
             <Menu name="pageBuilder" label={"Page Builder"} icon={<PagesIcon />}>
                 <Menu name="pageBuilder.pages" label={"Pages"}>
                     <HasPermission name={"pb.category"}>
@@ -46,6 +46,13 @@ const PageBuilderMenu: React.FC = () => {
                             name="pageBuilder.pages.pages"
                             label={"Pages"}
                             path="/page-builder/pages"
+                        />
+                    </HasPermission>
+                    <HasPermission name={"pb.template"}>
+                        <Menu
+                            name="pageBuilder.pages.pageTemplates"
+                            label={"Templates"}
+                            path="/page-builder/page-templates"
                         />
                     </HasPermission>
                     <HasPermission name={"pb.menu"}>

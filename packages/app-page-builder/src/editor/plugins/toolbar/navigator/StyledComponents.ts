@@ -39,7 +39,7 @@ export const ElementTypeContainer = styled("div")(`
     }
 `);
 
-export const Collapsable = styled<"div", { highlightItem: HighlightItem }>("div")(
+export const Collapsable = styled.div<{ highlightItem: HighlightItem }>(
     ({ highlightItem }) => ` 
   position: relative;
   background-color: transparent;

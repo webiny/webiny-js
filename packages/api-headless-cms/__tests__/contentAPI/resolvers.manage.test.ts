@@ -49,12 +49,8 @@ describe("MANAGE - Resolvers", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const {
-        until,
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const { createContentModelMutation, createContentModelGroupMutation } =
+        useGraphQLHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
@@ -86,7 +82,11 @@ describe("MANAGE - Resolvers", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
-                group: contentModelGroup.id
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
+                group: contentModelGroup.id,
+                fields: model.fields,
+                layout: model.layout
             }
         });
 
@@ -98,28 +98,13 @@ describe("MANAGE - Resolvers", () => {
             process.exit(1);
         }
 
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
-        } else if (update.data.updateContentModel.error) {
-            console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
-            process.exit(1);
-        }
-        return update.data.updateContentModel.data;
+        return create.data.createContentModel.data;
     };
 
     const createCategories = async (): Promise<CreateCategoriesResult> => {
         await setupModel();
         // Use "manage" API to create and publish entries
-        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         const values: Record<string, string> = {
             animals: "Animals",
@@ -138,37 +123,17 @@ describe("MANAGE - Resolvers", () => {
             });
             categories[slug] = response.data.createCategory.data;
         }
-        // Wait until the previous revision is indexed
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data.length === Object.keys(values).length;
-            },
-            {
-                name: "list all categories after creation in setupCategories"
-            }
-        );
 
         return categories;
     };
 
     test(`get category`, async () => {
         await setupModel();
-        const { createCategory, getCategory, listCategories } =
-            useCategoryManageHandler(manageOpts);
+        const { createCategory, getCategory } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id, entryId } = create.data.createCategory.data;
-
-        // Need to wait until the new entry is propagated
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const [response] = await getCategory({ revision: id });
 
@@ -209,20 +174,11 @@ describe("MANAGE - Resolvers", () => {
 
     test(`error when getting category without specific groups and models permissions`, async () => {
         await setupModel();
-        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id } = create.data.createCategory.data;
-
-        // Need to wait until the new entry is propagated to Elastic Search index
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const { getCategory } = useCategoryManageHandler({
             ...manageOpts,
@@ -246,20 +202,11 @@ describe("MANAGE - Resolvers", () => {
 
     test(`get category with specific groups and models permissions`, async () => {
         await setupModel();
-        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id, entryId } = create.data.createCategory.data;
-
-        // Need to wait until the new entry is propagated to Elastic Search index
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const { getCategory } = useCategoryManageHandler({
             ...manageOpts,
@@ -310,7 +257,7 @@ describe("MANAGE - Resolvers", () => {
     test(`list categories (no parameters)`, async () => {
         await setupModel();
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory, listCategories } =
+        const { createCategory, publishCategory, listCategories } =
             useCategoryManageHandler(manageOpts);
 
         // Create an entry
@@ -325,17 +272,6 @@ describe("MANAGE - Resolvers", () => {
         if (error) {
             throw new WebinyError(error);
         }
-
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data[0].meta.status === "published";
-            },
-            {
-                name: "wait for entry to be published"
-            }
-        );
 
         const [response] = await listCategories();
 
@@ -437,7 +373,7 @@ describe("MANAGE - Resolvers", () => {
 
     test(`should create category`, async () => {
         await setupModel();
-        const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
         const [create1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const category1 = create1.data.createCategory.data;
@@ -475,14 +411,6 @@ describe("MANAGE - Resolvers", () => {
                 data: {}
             }
         });
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === category1.id,
-            {
-                name: "list categories after create"
-            }
-        );
     });
 
     test(`should return validation error`, async () => {
@@ -515,7 +443,7 @@ describe("MANAGE - Resolvers", () => {
         const model = modelsWithoutValidation.find(m => m.modelId === "category");
         await setupModel(model);
 
-        const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
         const [result] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const category = result.data.createCategory.data;
@@ -554,32 +482,35 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === category.id,
-            {
-                name: "list categories after create"
+        const [listResponse] = await listCategories();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: category.id
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
             }
-        );
+        });
     });
 
     test(`create category revision`, async () => {
         await setupModel();
 
-        const { until, createCategory, createCategoryFrom, listCategories } =
+        const { createCategory, createCategoryFrom, listCategories } =
             useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
         const { id } = create.data.createCategory.data;
-
-        // Wait until the new category is propagated to ES index (listCategories works with ES directly in MANAGE API)
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id,
-            {
-                name: "list categories after create"
-            }
-        );
 
         const [revision] = await createCategoryFrom({ revision: id });
 
@@ -634,20 +565,7 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        // Wait until the new category revision is propagated to ES index
-        const response = await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                const entry = data.listCategories.data[0];
-                if (!entry) {
-                    return false;
-                }
-                return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
-            },
-            {
-                name: "list after create revision"
-            }
-        );
+        const [response] = await listCategories();
 
         expect(response).toEqual({
             data: {
@@ -666,7 +584,7 @@ describe("MANAGE - Resolvers", () => {
 
     test(`update category`, async () => {
         await setupModel();
-        const { until, createCategory, updateCategory, listCategories } =
+        const { createCategory, updateCategory, listCategories } =
             useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
@@ -724,40 +642,39 @@ describe("MANAGE - Resolvers", () => {
         const updatedOn = new Date(updatedCategory.savedOn).getTime();
         expect(createdOn).toBeLessThan(updatedOn);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories({}).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === updatedCategory.id,
-            {
-                name: "create category"
+        const [listResponse] = await listCategories();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: updatedCategory.id,
+                            savedOn: updatedCategory.savedOn,
+                            slug: "hardware-store",
+                            title: "New title"
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
             }
-        );
+        });
     });
 
     test(`delete category`, async () => {
         await setupModel();
-        const {
-            until,
-            createCategory,
-            createCategoryFrom,
-            getCategory,
-            listCategories,
-            deleteCategory
-        } = useCategoryManageHandler(manageOpts);
+        const { createCategory, createCategoryFrom, getCategory, listCategories, deleteCategory } =
+            useCategoryManageHandler(manageOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const rev1Category = revision1.data.createCategory.data;
         const { id } = revision1.data.createCategory.data;
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length > 0,
-            {
-                name: "create first revision"
-            }
-        );
-
         // Create 2 more revisions
         const [revision2] = await createCategoryFrom({ revision: id });
 
@@ -795,15 +712,6 @@ describe("MANAGE - Resolvers", () => {
         });
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "after create 2 more revisions"
-            }
-        );
-
         // Delete latest revision
         const [deleteId3Response] = await deleteCategory({ revision: id3 });
 
@@ -815,17 +723,6 @@ describe("MANAGE - Resolvers", () => {
                 }
             }
         });
-
-        // Wait until the previous revision is indexed
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data[0].id === id2;
-            },
-            {
-                name: "after delete latest revision"
-            }
-        );
 
         // Make sure revision #2 is now "latest"
         const [list2] = await listCategories();
@@ -856,28 +753,14 @@ describe("MANAGE - Resolvers", () => {
 
     test(`publish and unpublish a category`, async () => {
         await setupModel();
-        const {
-            until,
-            createCategory,
-            createCategoryFrom,
-            listCategories: listLatestCategories,
-            publishCategory,
-            unpublishCategory
-        } = useCategoryManageHandler(manageOpts);
+        const { createCategory, createCategoryFrom, publishCategory, unpublishCategory } =
+            useCategoryManageHandler(manageOpts);
 
         const { listCategories: listPublishedCategories } = useCategoryReadHandler(readOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id } = revision1.data.createCategory.data;
-
-        await until(
-            () => listLatestCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length > 0,
-            {
-                name: "create first revision"
-            }
-        );
 
         // Create 2 more revisions
         const [revision2] = await createCategoryFrom({ revision: id });
@@ -904,15 +787,6 @@ describe("MANAGE - Resolvers", () => {
 
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed
-        await until(
-            () => listLatestCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "create 2 more revisions"
-            }
-        );
-
         // Publish latest revision
         const [res] = await publishCategory({ revision: id3 });
 
@@ -924,15 +798,6 @@ describe("MANAGE - Resolvers", () => {
                 }
             }
         });
-
-        // Wait until the previous revision is indexed
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "publish latest revision"
-            }
-        );
 
         const [unpublish] = await unpublishCategory({ revision: id3 });
 
@@ -947,15 +812,6 @@ describe("MANAGE - Resolvers", () => {
 
         expect(unpublish.data.unpublishCategory.data.meta.status).toBe("unpublished");
 
-        // Wait until there are no categories available in READ API
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data.length === 0,
-            {
-                name: "unpublish revision"
-            }
-        );
-
         // Publish the latest revision again
         const [publish2] = await publishCategory({ revision: id3 });
 
@@ -968,14 +824,25 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        // Wait until the previous revision is indexed
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === id3,
-            {
-                name: "publish latest revision again"
+        const [listResponse] = await listPublishedCategories();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: id3
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
             }
-        );
+        });
     });
 
     test(`list categories (contains, not_contains, in, not_in)`, async () => {
@@ -1418,24 +1285,6 @@ describe("MANAGE - Resolvers", () => {
             });
         }
 
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                if (data.listCategories.data.length !== 1) {
-                    return false;
-                }
-                const [last] = data.listCategories.data;
-                if (!last || last.meta.version !== 6 || last.meta.status !== "published") {
-                    return false;
-                }
-
-                return true;
-            },
-            {
-                name: "list categories after creating revisions"
-            }
-        );
-
         const [listResponse] = await listCategories();
 
         expect(listResponse).toMatchObject({
@@ -1577,8 +1426,6 @@ describe("MANAGE - Resolvers", () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom } =
             useCategoryManageHandler(manageOpts);
 
-        const { listCategories: listPublishedCategories } = useCategoryReadHandler(readOpts);
-
         await setupModel();
 
         const title = "Webiny Serverless Framework";
@@ -1612,16 +1459,6 @@ describe("MANAGE - Resolvers", () => {
                 }
             }
         });
-
-        await until(
-            () => listPublishedCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data.length === 1;
-            },
-            {
-                name: "list categories after publishing"
-            }
-        );
 
         const [exactResponse] = await getCategory({
             revision: webiny.id

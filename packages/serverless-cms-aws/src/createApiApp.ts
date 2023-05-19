@@ -1,27 +1,26 @@
-import { PulumiAppParam } from "@webiny/pulumi";
 import { createApiPulumiApp, CreateApiPulumiAppParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
+    executeDataMigrations,
+    generateCommonHandlers,
     generateDdbHandlers,
     generateDdbEsHandlers,
-    generateCommonHandlers,
     injectWcpTelemetryClientCode
 } from "./api/plugins";
 
 export { ApiOutput } from "@webiny/pulumi-aws";
 
 export interface CreateApiAppParams extends CreateApiPulumiAppParams {
-    /**
-     * Enables ElasticSearch infrastructure.
-     * Note that it requires also changes in application code.
-     */
-    elasticSearch?: PulumiAppParam<boolean>;
-
     plugins?: PluginCollection;
 }
 
 export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
-    const builtInPlugins = [injectWcpTelemetryClientCode, generateCommonHandlers];
+    const builtInPlugins = [
+        injectWcpTelemetryClientCode,
+        generateCommonHandlers,
+        executeDataMigrations
+    ];
+
     if (projectAppParams.elasticSearch) {
         builtInPlugins.push(generateDdbEsHandlers);
     } else {

@@ -1,11 +1,10 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import checkBasePermissions from "@webiny/api-file-manager/plugins/crud/utils/checkBasePermissions";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import getPresignedPostPayload from "../utils/getPresignedPostPayload";
+import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload";
 import WebinyError from "@webiny/error";
-
-const BATCH_UPLOAD_MAX_FILES = 20;
+import { checkPermission } from "~/plugins/checkPermission";
+import { PresignedPostPayloadData } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     type: "graphql-schema",
@@ -15,20 +14,21 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             input PreSignedPostPayloadInput {
                 name: String!
                 type: String!
-                size: Int!
+                size: Long!
             }
 
             type GetPreSignedPostPayloadResponseDataFile {
-                name: String
-                type: String
-                size: Int
-                key: String
+                id: ID!
+                name: String!
+                type: String!
+                size: Long!
+                key: String!
             }
 
             type GetPreSignedPostPayloadResponseData {
                 # Contains data that is necessary for initiating a file upload.
-                data: JSON
-                file: UploadFileResponseDataFile
+                data: JSON!
+                file: UploadFileResponseDataFile!
             }
 
             type GetPreSignedPostPayloadResponse {
@@ -38,7 +38,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
             type GetPreSignedPostPayloadsResponse {
                 error: FileError
-                data: [GetPreSignedPostPayloadResponseData]!
+                data: [GetPreSignedPostPayloadResponseData!]!
             }
 
             extend type FmQuery {
@@ -54,22 +54,20 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             FmQuery: {
                 getPreSignedPostPayload: async (_, args: any, context) => {
                     try {
-                        await checkBasePermissions(context, { rwd: "w" });
+                        await checkPermission(context, { rwd: "w" });
 
-                        const { data } = args;
-                        const settings = await context.fileManager.settings.getSettings();
+                        const file = args.data as PresignedPostPayloadData;
+
+                        const settings = await context.fileManager.getSettings();
                         if (!settings) {
                             throw new WebinyError(
                                 "Missing File Manager Settings.",
                                 "FILE_MANAGER_SETTINGS_ERROR",
-                                {
-                                    file: data
-                                }
+                                { file }
                             );
                         }
-                        const response = await getPresignedPostPayload(data, settings);
 
-                        return new Response(response);
+                        return new Response(getPresignedPostPayload(file, settings));
                     } catch (e) {
                         return new ErrorResponse({
                             message: e.message,
@@ -78,49 +76,26 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         });
                     }
                 },
-                getPreSignedPostPayloads: async (_, args: any, context) => {
-                    await checkBasePermissions(context, { rwd: "w" });
+                getPreSignedPostPayloads: async (_, args, context) => {
+                    await checkPermission(context, { rwd: "w" });
 
-                    const { data: files } = args;
-                    if (!Array.isArray(files)) {
-                        return new ErrorResponse({
-                            code: "UPLOAD_FILES_NON_ARRAY",
-                            message: `"data" argument must be an array.`
-                        });
-                    }
-
-                    if (files.length === 0) {
-                        return new ErrorResponse({
-                            code: "UPLOAD_FILES_MIN_FILES",
-                            message: `"data" argument must contain at least one file.`
-                        });
-                    }
-
-                    if (files.length > BATCH_UPLOAD_MAX_FILES) {
-                        return new ErrorResponse({
-                            code: "UPLOAD_FILES_MAX_FILES",
-                            message: `"data" argument must not contain more than ${BATCH_UPLOAD_MAX_FILES} files.`
-                        });
-                    }
+                    const files = args.data as PresignedPostPayloadData[];
 
                     try {
-                        const settings = await context.fileManager.settings.getSettings();
+                        const settings = await context.fileManager.getSettings();
                         if (!settings) {
                             throw new WebinyError(
                                 "Missing File Manager Settings.",
                                 "FILE_MANAGER_SETTINGS_ERROR",
-                                {
-                                    files
-                                }
+                                { files }
                             );
                         }
 
-                        const promises = [];
-                        for (const item of files) {
-                            promises.push(getPresignedPostPayload(item, settings));
-                        }
+                        const presignedPayloads = files.map(file => {
+                            return getPresignedPostPayload(file, settings);
+                        });
 
-                        return new Response(await Promise.all(promises));
+                        return new Response(presignedPayloads);
                     } catch (e) {
                         return new ErrorResponse({
                             message: e.message,

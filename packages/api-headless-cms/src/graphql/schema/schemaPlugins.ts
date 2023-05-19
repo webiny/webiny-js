@@ -1,20 +1,21 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext, CmsModel } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
-import { getSchemaFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
+import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { CmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
 }
+
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
-): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
+): Promise<CmsGraphQLSchemaPlugin[]> => {
     const { context, models } = params;
     const { plugins, cms } = context;
 
@@ -39,25 +40,27 @@ export const generateSchemaPlugins = async (
         CmsGraphQLSchemaSorterPlugin.type
     );
 
-    const schemas = getSchemaFromFieldPlugins({
+    const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldTypePlugins,
         type
     });
 
-    const newPlugins: GraphQLSchemaPlugin<CmsContext>[] = [];
-    for (const schema of schemas) {
-        newPlugins.push(new GraphQLSchemaPlugin(schema));
-    }
-
     models
-        .filter(model => model.fields.length > 0)
+        .filter(model => {
+            return model.fields.length > 0;
+        })
         .forEach(model => {
             switch (type) {
                 case "manage":
                     {
-                        const plugin = new GraphQLSchemaPlugin({
-                            typeDefs: createManageSDL({ model, fieldTypePlugins, sorterPlugins }),
+                        const plugin = new CmsGraphQLSchemaPlugin({
+                            typeDefs: createManageSDL({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                sorterPlugins
+                            }),
                             resolvers: createManageResolvers({
                                 models,
                                 model,
@@ -66,15 +69,20 @@ export const generateSchemaPlugins = async (
                             })
                         });
                         plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
-                        newPlugins.push(plugin);
+                        schemaPlugins.push(plugin);
                     }
 
                     break;
                 case "preview":
                 case "read":
                     {
-                        const plugin = new GraphQLSchemaPlugin({
-                            typeDefs: createReadSDL({ model, fieldTypePlugins, sorterPlugins }),
+                        const plugin = new CmsGraphQLSchemaPlugin({
+                            typeDefs: createReadSDL({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                sorterPlugins
+                            }),
                             resolvers: cms.READ
                                 ? createReadResolvers({
                                       models,
@@ -90,7 +98,7 @@ export const generateSchemaPlugins = async (
                                   })
                         });
                         plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;
-                        newPlugins.push(plugin);
+                        schemaPlugins.push(plugin);
                     }
                     break;
                 default:
@@ -98,5 +106,5 @@ export const generateSchemaPlugins = async (
             }
         });
 
-    return newPlugins.filter(pl => !!pl.schema.typeDefs);
+    return schemaPlugins.filter(pl => !!pl.schema.typeDefs);
 };

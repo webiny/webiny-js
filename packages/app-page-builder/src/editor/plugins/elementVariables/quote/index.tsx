@@ -1,6 +1,6 @@
 import React from "react";
 import { PbEditorPageElementVariableRendererPlugin } from "~/types";
-import QuoteVariableInput from "~/editor/plugins/elementSettings/variable/QuoteVariableInput";
+import RichVariableInput from "~/editor/plugins/elementSettings/variable/RichVariableInput";
 import { useElementVariables } from "~/editor/hooks/useElementVariableValue";
 
 export default {
@@ -12,7 +12,7 @@ export default {
         return variables?.length > 0 ? variables[0].value : null;
     },
     renderVariableInput(variableId: string) {
-        return <QuoteVariableInput variableId={variableId} />;
+        return <RichVariableInput variableId={variableId} />;
     },
     setElementValue(element, variables) {
         const newText = variables?.length > 0 ? variables[0].value : null;

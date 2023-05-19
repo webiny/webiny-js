@@ -1,9 +1,11 @@
 import { ApwContentReviewStepStatus } from "~/types";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe("Retract sign off for a step in content review process", function () {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
     const {
         getContentReviewQuery,
         createContentReviewMutation,
@@ -256,7 +258,8 @@ describe("Retract sign off for a step in content review process", function () {
     });
 
     test(`should throw error when trying to retract sign off by a non-reviewer`, async () => {
-        const gqlHandlerForIdentityA = usePageBuilderHandler({
+        const gqlHandlerForIdentityA = useGraphQlHandler({
+            path: "/graphql",
             identity: {
                 id: "123456789",
                 type: "admin",

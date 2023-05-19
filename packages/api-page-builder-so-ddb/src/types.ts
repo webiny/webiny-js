@@ -1,4 +1,10 @@
-import { PageBuilderStorageOperations as BasePageBuilderStorageOperations } from "@webiny/api-page-builder/types";
+import {
+    BlockCategoryStorageOperations as BaseBlockCategoryStorageOperations,
+    CategoryStorageOperations as BaseCategoryStorageOperations,
+    PageBlockStorageOperations as BasePageBlockStorageOperations,
+    PageBuilderStorageOperations as BasePageBuilderStorageOperations,
+    PageTemplateStorageOperations as BasePageTemplateStorageOperations
+} from "@webiny/api-page-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Plugin } from "@webiny/plugins/types";
@@ -20,7 +26,8 @@ export enum ENTITIES {
     PAGE_ELEMENTS = "PbPageElements",
     PAGES = "PbPages",
     BLOCK_CATEGORIES = "PbBlockCategories",
-    PAGE_BLOCKS = "PbPageBlocks"
+    PAGE_BLOCKS = "PbPageBlocks",
+    PAGE_TEMPLATES = "PbPageTemplates"
 }
 
 export interface TableModifier {
@@ -37,7 +44,8 @@ export interface PageBuilderStorageOperations extends BasePageBuilderStorageOper
         | "pageElements"
         | "pages"
         | "blockCategories"
-        | "pageBlocks",
+        | "pageBlocks"
+        | "pageTemplates",
         Entity<any>
     >;
 }
@@ -51,4 +59,31 @@ export interface StorageOperationsFactoryParams {
 
 export interface StorageOperationsFactory {
     (params: StorageOperationsFactoryParams): PageBuilderStorageOperations;
+}
+
+export interface DataContainer<T> {
+    PK: string;
+    SK: string;
+    TYPE: string;
+    data: T;
+}
+
+export interface DataLoaderInterface {
+    clear: () => void;
+}
+
+export interface PageTemplateStorageOperations extends BasePageTemplateStorageOperations {
+    dataLoader: DataLoaderInterface;
+}
+
+export interface BlockCategoryStorageOperations extends BaseBlockCategoryStorageOperations {
+    dataLoader: DataLoaderInterface;
+}
+
+export interface CategoryStorageOperations extends BaseCategoryStorageOperations {
+    dataLoader: DataLoaderInterface;
+}
+
+export interface PageBlockStorageOperations extends BasePageBlockStorageOperations {
+    dataLoader: DataLoaderInterface;
 }

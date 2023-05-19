@@ -2,6 +2,8 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws/raw";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createFormBuilder } from "@webiny/api-form-builder";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import {
     createPageBuilderGraphQL,
     createPageBuilderContext
@@ -13,9 +15,12 @@ import exportProcessPlugins from "@webiny/api-page-builder-import-export/export/
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch, { createElasticsearchClient } from "@webiny/api-elasticsearch";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
+import elasticSearch, {
+    createElasticsearchClient,
+    createGzipCompression
+} from "@webiny/api-elasticsearch";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
@@ -35,6 +40,7 @@ export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
+        createGzipCompression(),
         elasticSearch(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
@@ -43,8 +49,12 @@ export const handler = createHandler({
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbElasticStorageOperation(),
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({
+                documentClient,
+                elasticsearchClient
+            })
+        }),
         fileManagerS3(),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
@@ -53,6 +63,12 @@ export const handler = createHandler({
             })
         }),
         createPageBuilderGraphQL(),
+        createFormBuilder({
+            storageOperations: createFormBuilderStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),

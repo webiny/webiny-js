@@ -77,7 +77,7 @@ describe("sorting + cursor", () => {
 
     const mainManager = useGraphQLHandler(manageOpts);
 
-    const { until, createFruit, publishFruit } = useFruitManageHandler({
+    const { createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts
     });
 
@@ -123,20 +123,6 @@ describe("sorting + cursor", () => {
         return createFruits();
     };
 
-    const waitFruits = async (name: string, { listFruits }: any) => {
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listFruits({}).then(([data]: any) => data),
-            ({ data }: any) => {
-                return data.listFruits.data.length === 4;
-            },
-            {
-                name: `list all fruits - ${name}`,
-                tries: 10
-            }
-        );
-    };
-
     test("should load items with after cursor with special characters", async () => {
         const { apple, graham, banana, strawberry } = await setupFruits();
 
@@ -144,8 +130,6 @@ describe("sorting + cursor", () => {
             ...readOpts
         });
         const { listFruits } = handler;
-
-        await waitFruits("should filter fruits by date and sort asc", handler);
 
         const [appleListResponse] = await listFruits({
             sort: ["name_ASC"],
@@ -259,8 +243,6 @@ describe("sorting + cursor", () => {
             ]
         });
         const { listFruits } = handler;
-
-        await waitFruits("should filter fruits by date and sort asc", handler);
 
         const [resultAsc] = await listFruits({
             sort: ["customSorter_ASC"]

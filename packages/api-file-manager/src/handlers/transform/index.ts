@@ -2,7 +2,8 @@ import S3 from "aws-sdk/clients/s3";
 import transformImage from "./transformImage";
 import optimizeImage from "./optimizeImage";
 import { getEnvironment, getObjectParams } from "../utils";
-import { getImageKey } from "./utils";
+import * as newUtils from "./utils";
+import * as legacyUtils from "./legacyUtils";
 import { TransformHandlerEventPayload } from "~/handlers/types";
 import { createEvent } from "@webiny/handler";
 
@@ -17,10 +18,14 @@ export const createTransformFilePlugins = () => {
 
                 let optimizedImageObject: S3.Types.GetObjectOutput;
 
+                const utils = key.includes("/") ? newUtils : legacyUtils;
+
                 const params = {
                     initial: getObjectParams(key),
-                    optimized: getObjectParams(getImageKey({ key })),
-                    optimizedTransformed: getObjectParams(getImageKey({ key, transformations }))
+                    optimized: getObjectParams(utils.getImageKey({ key })),
+                    optimizedTransformed: getObjectParams(
+                        utils.getImageKey({ key, transformations })
+                    )
                 };
 
                 // 1. Get optimized image.
@@ -68,10 +73,17 @@ export const createTransformFilePlugins = () => {
                     error: false,
                     message: ""
                 };
-            } catch (e) {
+            } catch (ex) {
+                console.error(
+                    JSON.stringify({
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.data
+                    })
+                );
                 return {
                     error: true,
-                    message: e.message
+                    message: ex.message
                 };
             }
         })

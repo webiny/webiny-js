@@ -3,28 +3,28 @@ import { FormRenderFbFormModelField } from "@webiny/app-form-builder/types";
 import { useBind } from "@webiny/form";
 import styled from "@emotion/styled";
 
-import { FieldMessage } from "./components/FieldMessage";
+import { FieldErrorMessage } from "./components/FieldErrorMessage";
+import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
 import { Field } from "./components/Field";
-import theme from "../../../../theme";
 
 interface InputProps {
     field: FormRenderFbFormModelField;
     type?: string;
 }
 
-const StyledInput = styled.input`
-    border: 1px solid ${theme.styles.colors["color5"]};
-    background-color: ${theme.styles.colors["color5"]};
+export const StyledInput = styled.input`
+    border: 1px solid ${props => props.theme.styles.colors["color5"]};
+    background-color: ${props => props.theme.styles.colors["color5"]};
     width: 100%;
     padding: 10px;
-    border-radius: ${theme.styles.borderRadius};
+    border-radius: ${props => props.theme.styles.borderRadius};
     box-sizing: border-box;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    ${theme.styles.typography["paragraph1"]};
+    ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
 
     &:focus {
-        border-color: ${theme.styles.colors["color2"]};
+        border-color: ${props => props.theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }
@@ -47,7 +47,8 @@ export const InputField: React.FC<InputProps> = ({ field, type }) => {
 
     return (
         <Field>
-            <FieldLabel>{field.label}</FieldLabel>
+            <FieldLabel field={field} />
+            {field.helpText && <FieldHelperMessage>{field.helpText}</FieldHelperMessage>}
             <StyledInput
                 onBlur={onBlur}
                 onChange={e => onChange(e.target.value)}
@@ -57,11 +58,7 @@ export const InputField: React.FC<InputProps> = ({ field, type }) => {
                 name={field.fieldId}
                 id={field.fieldId}
             />
-            <FieldMessage
-                isValid={validation.isValid}
-                errorMessage={validation.message}
-                helperMessage={field.helpText}
-            />
+            <FieldErrorMessage isValid={validation.isValid} message={validation.message} />
         </Field>
     );
 };

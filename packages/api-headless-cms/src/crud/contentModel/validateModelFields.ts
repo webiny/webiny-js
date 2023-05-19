@@ -1,91 +1,25 @@
+import gql from "graphql-tag";
+import WebinyError from "@webiny/error";
 import {
-    CmsContext,
     CmsModel,
+    CmsContext,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelFieldToGraphQLPluginValidateChildFieldsValidate,
     CmsModelLockedFieldPlugin,
     LockedField
 } from "~/types";
-import WebinyError from "@webiny/error";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
-import gql from "graphql-tag";
 import { createFieldStorageId } from "./createFieldStorageId";
 import { GraphQLError } from "graphql";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
-import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { getContentModelTitleFieldId } from "./fields/titleField";
+import { getContentModelDescriptionFieldId } from "./fields/descriptionField";
+import { getContentModelImageFieldId } from "./fields/imageField";
+import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { generateAlphaNumericId } from "@webiny/utils";
-
-const defaultTitleFieldId = "id";
-
-const allowedTitleFieldTypes = ["text", "number"];
-
-const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: string): string => {
-    /**
-     * If there are no fields defined, we will return the default field
-     */
-    if (fields.length === 0) {
-        return defaultTitleFieldId;
-    }
-    /**
-     * if there is no title field defined either in input data or existing content model data
-     * we will take first text field that has no multiple values enabled
-     * or if initial titleFieldId is the default one also try to find first available text field
-     */
-    if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
-        const titleField = fields.find(field => {
-            return getBaseFieldType(field) === "text" && !field.multipleValues;
-        });
-        return titleField?.fieldId || defaultTitleFieldId;
-    }
-    /**
-     * check existing titleFieldId for existence in the model
-     * for correct type
-     * and that it is not multiple values field
-     */
-    const target = fields.find(f => f.fieldId === titleFieldId);
-    if (!target) {
-        throw new WebinyError(
-            `Field selected for the title field does not exist in the model.`,
-            "VALIDATION_ERROR",
-            {
-                fieldId: titleFieldId,
-                fields
-            }
-        );
-    }
-
-    if (allowedTitleFieldTypes.includes(target.type) === false) {
-        throw new WebinyError(
-            `Only ${allowedTitleFieldTypes.join(
-                ", "
-            )} and id fields can be used as an entry title.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
-    }
-
-    if (target.multipleValues) {
-        throw new WebinyError(
-            `Fields that accept multiple values cannot be used as the entry title.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
-    }
-
-    return target.fieldId;
-};
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
@@ -158,6 +92,7 @@ interface ValidateFieldsParams {
     originalFields: CmsModelField[];
     lockedFields: LockedField[];
 }
+
 const validateFields = (params: ValidateFieldsParams) => {
     const { plugins, fields, originalFields, lockedFields } = params;
 
@@ -271,16 +206,20 @@ const validateFields = (params: ValidateFieldsParams) => {
         });
     }
 };
+
 interface CreateGraphQLSchemaParams {
     context: CmsContext;
     model: CmsModel;
 }
+
 const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<any> => {
     const { context, model } = params;
 
-    context.security.disableAuthorization();
-    const models = await context.cms.listModels();
-    context.security.enableAuthorization();
+    const models = await context.security.withoutAuthorization(async () => {
+        return (await context.cms.listModels()).filter((model): model is CmsModel => {
+            return model.isPrivate !== true;
+        });
+    });
 
     const modelPlugins = await buildSchemaPlugins({
         context,
@@ -288,9 +227,10 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
     });
 
     const plugins = context.plugins
-        .byType<GraphQLSchemaPlugin<CmsContext>>(GraphQLSchemaPlugin.type)
-        .reduce<Record<string, GraphQLSchemaPlugin<CmsContext>>>((collection, plugin) => {
-            const name = plugin.name || `${plugin.type}-${generateAlphaNumericId(16)}`;
+        .byType<CmsGraphQLSchemaPlugin>(CmsGraphQLSchemaPlugin.type)
+        .reduce<Record<string, CmsGraphQLSchemaPlugin>>((collection, plugin) => {
+            const name =
+                plugin.name || `${CmsGraphQLSchemaPlugin.type}-${generateAlphaNumericId(16)}`;
             collection[name] = plugin;
             return collection;
         }, {});
@@ -315,13 +255,15 @@ const extractErrorObject = (error: any) => {
 };
 
 interface ValidateModelFieldsParams {
+    models: CmsModel[];
     model: CmsModel;
     original?: CmsModel;
     context: CmsContext;
 }
+
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
-    const { model, original, context } = params;
-    const { titleFieldId } = model;
+    const { models, model, original, context } = params;
+    const { titleFieldId, descriptionFieldId, imageFieldId } = model;
     const { plugins } = context;
 
     /**
@@ -352,6 +294,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
          * Make sure that this model can be safely converted to a GraphQL SDL
          */
         const schema = createManageSDL({
+            models,
             model,
             fieldTypePlugins: fieldTypePlugins.reduce(
                 (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),
@@ -387,6 +330,8 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
     }
 
     model.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
+    model.descriptionFieldId = getContentModelDescriptionFieldId(fields, descriptionFieldId);
+    model.imageFieldId = getContentModelImageFieldId(fields, imageFieldId);
 
     const cmsLockedFieldPlugins =
         plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");

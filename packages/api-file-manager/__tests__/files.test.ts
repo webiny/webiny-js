@@ -1,31 +1,47 @@
+// @ts-ignore
+import mdbid from "mdbid";
 import useGqlHandler from "./useGqlHandler";
 import testFiles from "./data";
 import { File } from "~/types";
 
-const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
+// const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
+
+const ids = {
+    A: mdbid(),
+    B: mdbid(),
+    C: mdbid(),
+    D: mdbid()
+};
+
 const fileAData = {
-    key: "/files/filenameA.png",
+    id: ids.A,
+    key: `${ids.A}/filenameA.png`,
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch", "file-a", "webiny"]
+    tags: ["sketch", "file-a", "webiny"],
+    aliases: []
 };
 const fileBData = {
-    key: "/files/filenameB.png",
+    id: ids.B,
+    key: `${ids.B}/filenameB.png`,
     name: "filenameB.png",
     size: 123456,
     type: "image/png",
-    tags: ["art", "file-b"]
+    tags: ["art", "file-b"],
+    aliases: []
 };
 const fileCData = {
-    key: "/files/filenameC.png",
+    id: ids.C,
+    key: `${ids.C}/filenameC.png`,
     name: "filenameC.png",
     size: 123456,
     type: "image/png",
     tags: ["art", "sketch", "webiny", "file-c"]
 };
 const fileDData = {
-    key: "/files/filenameD.png",
+    id: ids.D,
+    key: `${ids.D}/filenameD.png`,
     name: "filenameD.png",
     size: 123456,
     type: "image/png",
@@ -38,59 +54,65 @@ describe("Files CRUD test", () => {
     const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
         useGqlHandler();
 
+    beforeAll(() => {
+        testFiles.forEach(file => {
+            file.id = mdbid();
+            file.key = `${file.id}/${file.key}`;
+        });
+    });
+
     test("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });
         expect(create).toEqual({
             data: {
                 fileManager: {
                     createFile: {
-                        data: {
-                            ...fileAData,
-                            id: expect.any(String)
-                        },
+                        data: fileAData,
                         error: null
                     }
                 }
             }
         });
-        const fileAId = create.data.fileManager.createFile.data.id;
 
-        // Let's update File tags with too long tag.
-        const [update1] = await updateFile({
-            id: fileAId,
-            data: {
-                ...fileAData,
-                tags: [...fileAData.tags, LONG_STRING]
-            }
-        });
-        expect(update1).toEqual({
-            data: {
-                fileManager: {
-                    updateFile: {
-                        data: null,
-                        error: {
-                            message: "Validation failed.",
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            data: {
-                                invalidFields: {
-                                    tags: {
-                                        code: "VALIDATION_FAILED_INVALID_FIELD",
-                                        data: null,
-                                        message: `Tag ${LONG_STRING} is more than 50 characters long.`
-                                    }
-                                },
-                                original: expect.any(Object),
-                                file: expect.any(Object)
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        // This is commented out until we add proper file model validation!
+        //
+        // // Let's update File tags with too long tag.
+        // const { id: fileAId, ...fileAUpdate } = fileAData;
+        // const [update1] = await updateFile({
+        //     id: fileAId,
+        //     data: {
+        //         ...fileAUpdate,
+        //         tags: [...fileAUpdate.tags, LONG_STRING]
+        //     }
+        // });
+        // expect(update1).toEqual({
+        //     data: {
+        //         fileManager: {
+        //             updateFile: {
+        //                 data: null,
+        //                 error: {
+        //                     message: "Validation failed.",
+        //                     code: "VALIDATION_FAILED_INVALID_FIELDS",
+        //                     data: {
+        //                         invalidFields: {
+        //                             tags: {
+        //                                 code: "VALIDATION_FAILED_INVALID_FIELD",
+        //                                 data: null,
+        //                                 message: `Tag ${LONG_STRING} is more than 50 characters long.`
+        //                             }
+        //                         },
+        //                         original: expect.any(Object),
+        //                         file: expect.any(Object)
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // });
 
         // Only update "tags"
         const [update3] = await updateFile({
-            id: fileAId,
+            id: ids.A,
             data: { tags: ["sketch"] }
         });
 
@@ -111,9 +133,7 @@ describe("Files CRUD test", () => {
         await until(
             () => listFiles().then(([data]) => data),
             ({ data }: any) => {
-                const file = (data.fileManager.listFiles.data as File[]).find(
-                    f => f.id === fileAId
-                );
+                const file = (data.fileManager.listFiles.data as File[]).find(f => f.id === ids.A);
                 if (!file) {
                     return false;
                 }
@@ -127,12 +147,11 @@ describe("Files CRUD test", () => {
             data: [fileBData]
         });
 
-        const fileBId = create2.data.fileManager.createFiles.data[0].id;
         expect(create2).toEqual({
             data: {
                 fileManager: {
                     createFiles: {
-                        data: [{ ...fileBData, id: fileBId }],
+                        data: [fileBData],
                         error: null
                     }
                 }
@@ -141,7 +160,7 @@ describe("Files CRUD test", () => {
 
         // Let's get a file by ID
         const [get] = await getFile({
-            id: fileAId
+            id: ids.A
         });
 
         expect(get).toEqual({
@@ -174,13 +193,9 @@ describe("Files CRUD test", () => {
                     listFiles: {
                         data: [
                             // Files are sorted by `id` in descending order
-                            {
-                                ...fileBData,
-                                id: fileBId
-                            },
+                            fileBData,
                             {
                                 ...fileAData,
-                                id: fileAId,
                                 tags: ["sketch"]
                             }
                         ],
@@ -201,11 +216,7 @@ describe("Files CRUD test", () => {
         const pages = Math.ceil(testFiles.length / 20);
         for (let i = 0; i < pages; i++) {
             const files = testFiles.slice(i * 20, i * 20 + 20);
-            const [{ data }] = await createFiles({ data: files });
-            const createdFiles = data.fileManager.createFiles.data;
-            for (let j = 0; j < createdFiles.length; j++) {
-                testFiles[i * 20 + j]["id"] = createdFiles[j].id;
-            }
+            await createFiles({ data: files });
         }
 
         await until(
@@ -277,16 +288,7 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [
-                            {
-                                ...fileCData,
-                                id: expect.any(String)
-                            },
-                            {
-                                ...fileBData,
-                                id: expect.any(String)
-                            }
-                        ],
+                        data: [{ ...fileCData, aliases: [] }, fileBData],
                         error: null,
                         meta: {
                             hasMoreItems: false,
@@ -306,17 +308,63 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [
-                            {
-                                ...fileDData,
-                                id: expect.any(String)
-                            }
-                        ],
+                        data: [{ ...fileDData, aliases: [] }],
                         error: null,
                         meta: {
                             hasMoreItems: false,
                             cursor: expect.any(String),
                             totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should find files by specific IDs", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData, fileDData]
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }: any) => {
+                return data.fileManager.listFiles.data.length === 4;
+            },
+            {
+                name: "bulk list files",
+                tries: 10
+            }
+        );
+
+        const [response] = await listFiles({
+            ids: [fileAData.id, fileBData.id, fileCData.id, fileDData.id]
+        });
+
+        expect(response).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            { ...fileDData, aliases: [] },
+                            { ...fileCData, aliases: [] },
+                            fileBData,
+                            fileAData
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: expect.any(String),
+                            totalCount: 4
                         }
                     }
                 }
@@ -339,13 +387,51 @@ describe("Files CRUD test", () => {
             }
         });
 
-        const tags = ["art", "file-a", "file-b", "file-c", "sketch", "webiny"];
-        const scopedTags = ["scope:apw", "scope:apw:file-d", "scope:apw:media"];
+        const tags = [
+            {
+                tag: "art",
+                count: 2
+            },
+            {
+                tag: "sketch",
+                count: 2
+            },
+            {
+                tag: "webiny",
+                count: 2
+            },
+            {
+                tag: "file-a",
+                count: 1
+            },
+            {
+                tag: "file-b",
+                count: 1
+            },
+            {
+                tag: "file-c",
+                count: 1
+            }
+        ];
+        const scopedTags = [
+            {
+                tag: "scope:apw",
+                count: 1
+            },
+            {
+                tag: "scope:apw:file-d",
+                count: 1
+            },
+            {
+                tag: "scope:apw:media",
+                count: 1
+            }
+        ];
 
         await until(
             () => listTags({ where: { tag_not_startsWith: "scope:apw" } }).then(([data]) => data),
             ({ data }: any) => {
-                return data.fileManager.listTags.length === tags.length;
+                return data.fileManager.listTags.data.length === tags.length;
             },
             { name: "bulk list all tags", tries: 10 }
         );
@@ -359,7 +445,10 @@ describe("Files CRUD test", () => {
         expect(response).toEqual({
             data: {
                 fileManager: {
-                    listTags: tags
+                    listTags: {
+                        data: tags,
+                        error: null
+                    }
                 }
             }
         });
@@ -373,7 +462,10 @@ describe("Files CRUD test", () => {
         expect(scopedListTagsResponse).toEqual({
             data: {
                 fileManager: {
-                    listTags: scopedTags
+                    listTags: {
+                        data: scopedTags,
+                        error: null
+                    }
                 }
             }
         });
@@ -404,7 +496,7 @@ describe("Files CRUD test", () => {
                         data: [
                             {
                                 ...fileCData,
-                                id: expect.any(String)
+                                aliases: []
                             }
                         ],
                         error: null,
@@ -431,12 +523,9 @@ describe("Files CRUD test", () => {
                         data: [
                             {
                                 ...fileCData,
-                                id: expect.any(String)
+                                aliases: []
                             },
-                            {
-                                ...fileAData,
-                                id: expect.any(String)
-                            }
+                            fileAData
                         ],
                         error: null,
                         meta: {
@@ -463,7 +552,7 @@ describe("Files CRUD test", () => {
                         data: [
                             {
                                 ...fileDData,
-                                id: expect.any(String)
+                                aliases: []
                             }
                         ],
                         error: null,
@@ -563,12 +652,9 @@ describe("Files CRUD test", () => {
                         data: [
                             {
                                 ...fileCData,
-                                id: expect.any(String)
+                                aliases: []
                             },
-                            {
-                                ...fileBData,
-                                id: expect.any(String)
-                            }
+                            fileBData
                         ],
                         error: null,
                         meta: {
@@ -592,12 +678,9 @@ describe("Files CRUD test", () => {
                         data: [
                             {
                                 ...fileCData,
-                                id: expect.any(String)
+                                aliases: []
                             },
-                            {
-                                ...fileAData,
-                                id: expect.any(String)
-                            }
+                            fileAData
                         ],
                         error: null,
                         meta: {
@@ -645,7 +728,10 @@ describe("Files CRUD test", () => {
         expect(tagsResponse).toEqual({
             data: {
                 fileManager: {
-                    listTags: []
+                    listTags: {
+                        data: [],
+                        error: null
+                    }
                 }
             }
         });

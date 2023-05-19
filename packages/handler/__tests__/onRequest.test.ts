@@ -92,13 +92,13 @@ describe("fastify onRequest event", () => {
             ]
         });
 
-        const log = console.log;
+        const log = console.error;
         /**
          * This way we can check if the log, which should not be sent, was sent.
          */
         let logged = false;
 
-        console.log = values => {
+        console.error = values => {
             if (typeof values === "string") {
                 try {
                     const obj = JSON.parse(values);

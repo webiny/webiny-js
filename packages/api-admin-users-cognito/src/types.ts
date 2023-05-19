@@ -236,7 +236,7 @@ export interface StorageOperationsUpdateSystemParams {
 export interface AdminUsersStorageOperations {
     getUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsGetUserParams
-    ): Promise<TUser>;
+    ): Promise<TUser | null>;
     listUsers<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsListUsersParams
     ): Promise<TUser[]>;

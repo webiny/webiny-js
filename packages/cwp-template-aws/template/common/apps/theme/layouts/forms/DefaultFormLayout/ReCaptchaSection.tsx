@@ -1,6 +1,6 @@
 import React from "react";
 import { validation } from "@webiny/validation";
-import { FieldMessage } from "./fields/components/FieldMessage";
+import { FieldErrorMessage } from "./fields/components/FieldErrorMessage";
 import { useBind } from "@webiny/form";
 import { Row } from "./Row";
 import { Cell } from "./Cell";
@@ -23,9 +23,9 @@ export const ReCaptchaSection: React.FC<Props> = ({ component: ReCaptchaComponen
                     <Row>
                         <Cell>
                             <ReCaptchaComponent onChange={bind.onChange} />
-                            <FieldMessage
+                            <FieldErrorMessage
                                 isValid={bind.validation.isValid}
-                                errorMessage={errorMessage}
+                                message={errorMessage}
                             />
                         </Cell>
                     </Row>

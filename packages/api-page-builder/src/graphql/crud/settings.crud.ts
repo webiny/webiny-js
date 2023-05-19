@@ -11,17 +11,17 @@ import {
     SettingsStorageOperationsGetParams,
     SettingsUpdateTopicMetaParams
 } from "~/types";
-import { DefaultSettingsModel } from "~/utils/models";
 import mergeWith from "lodash/mergeWith";
 import WebinyError from "@webiny/error";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
 import { createTopic } from "@webiny/pubsub";
+import { createSettingsCreateValidation } from "~/graphql/crud/settings/validation";
+import { createZodError, removeUndefinedValues } from "@webiny/utils";
 
 interface SettingsParams {
     tenant: string;
     locale: string;
-    type: string;
 }
 
 /**
@@ -38,6 +38,7 @@ export interface CreateSettingsCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCrud => {
     const { storageOperations, getLocaleCode, getTenantId } = params;
 
@@ -51,7 +52,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
         },
         {
             cacheKeyFn: (key: SettingsParams) => {
-                return [`T#${key.tenant}`, `L#${key.locale}`, `TYPE#${key.type}`].join("#");
+                return [`T#${key.tenant}`, `L#${key.locale}`].join("#");
             }
         }
     );
@@ -98,8 +99,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
 
             const key = {
                 tenant: getTenantId(),
-                locale: getLocaleCode(),
-                type: SETTINGS_TYPE.DEFAULT
+                locale: getLocaleCode()
             };
 
             try {
@@ -116,21 +116,33 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
             return await storageOperations.settings.getDefaults();
         },
 
-        async updateSettings(this: PageBuilderContextObject, rawData) {
+        async updateSettings(this: PageBuilderContextObject, input) {
             const params = {
                 tenant: getTenantId(),
                 locale: getLocaleCode(),
                 type: SETTINGS_TYPE.DEFAULT
             };
 
-            let original = (await this.getSettings()) as Settings;
+            let original = await this.getSettings();
             if (!original) {
-                original = await new DefaultSettingsModel().populate({}).toJSON();
-
                 const data: SettingsStorageOperationsCreateParams = {
-                    input: rawData,
+                    input: input,
                     settings: {
-                        ...original,
+                        name: "",
+                        prerendering: {
+                            app: {
+                                url: ""
+                            },
+                            storage: {
+                                name: ""
+                            },
+                            meta: {}
+                        },
+                        websiteUrl: "",
+                        pages: {
+                            home: null,
+                            notFound: null
+                        },
                         ...params
                     }
                 };
@@ -149,10 +161,12 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                 }
             }
 
-            const settingsModel = new DefaultSettingsModel().populate(original).populate(rawData);
-            await settingsModel.validate();
+            const validation = await createSettingsCreateValidation().safeParseAsync(input);
+            if (!validation.success) {
+                throw createZodError(validation.error);
+            }
+            const data = removeUndefinedValues(validation.data);
 
-            const data = await settingsModel.toJSON();
             const settings: Settings = {
                 ...original,
                 ...data,
@@ -169,27 +183,27 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
             const changedPages: SettingsUpdateTopicMetaParams["diff"]["pages"] = [];
             for (let i = 0; i < specialTypes.length; i++) {
                 const specialType = specialTypes[i] as PageSpecialType;
-                const p = lodashGet(original, `pages.${specialType}`);
-                const n = lodashGet(settings, `pages.${specialType}`);
+                const previousPage = lodashGet(original, `pages.${specialType}`);
+                const nextPage = lodashGet(settings, `pages.${specialType}`);
 
-                if (p !== n) {
-                    // Only throw if previously we had a page (p), and now all of a sudden
-                    // we don't (!n). Allows updating settings without sending these.
-                    if (p && !n) {
+                if (previousPage !== nextPage) {
+                    // Only throw if previously we had a page (previousPage), and now all of a sudden
+                    // we don't (!nextPage). Allows updating settings without sending these.
+                    if (previousPage && !nextPage) {
                         throw new WebinyError(
                             `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
                             "CANNOT_UNSET_SPECIAL_PAGE"
                         );
                     }
 
-                    // Only load if the next page (n) has been sent, which is always a
-                    // must if previously a page was defined (p).
-                    if (n) {
+                    // Only load if the next page (nextPage) has been sent, which is always a
+                    // must if previously a page was defined (previousPage).
+                    if (nextPage) {
                         const page = await this.getPublishedPageById({
-                            id: n
+                            id: nextPage
                         });
 
-                        changedPages.push([specialType, p, n, page]);
+                        changedPages.push([specialType, previousPage, nextPage, page]);
                     }
                 }
             }
@@ -207,7 +221,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                 });
 
                 const result = await storageOperations.settings.update({
-                    input: rawData,
+                    input: input,
                     original,
                     settings
                 });

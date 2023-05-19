@@ -1,4 +1,5 @@
 import { PbContext } from "@webiny/api-page-builder/types";
+import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import {
     ExportRevisionType,
     ImportExportTask,
@@ -23,6 +24,7 @@ export interface ExportPagesParams {
 export interface ImportPagesParams {
     category: string;
     zipFileUrl: string;
+    meta?: Record<string, any>;
 }
 
 export type PagesImportExportCrud = {
@@ -46,6 +48,36 @@ export interface ImportBlocksParams {
 export type BlocksImportExportCrud = {
     exportBlocks(params: ExportBlocksParams): Promise<{ task: ImportExportTask }>;
     importBlocks(params: ImportBlocksParams): Promise<{ task: ImportExportTask }>;
+};
+
+export interface ExportTemplatesParams {
+    ids?: string[];
+    sort?: string[];
+}
+
+export interface ImportTemplatesParams {
+    zipFileUrl: string;
+}
+
+export type TemplatesImportExportCrud = {
+    exportTemplates(params: ExportTemplatesParams): Promise<{ task: ImportExportTask }>;
+    importTemplates(params: ImportTemplatesParams): Promise<{ task: ImportExportTask }>;
+};
+
+export interface ExportFormsParams {
+    ids?: string[];
+    revisionType: ExportRevisionType;
+    search?: { query?: string };
+    sort?: string[];
+}
+
+export interface ImportFormsParams {
+    zipFileUrl: string;
+}
+
+export type FormsImportExportCrud = {
+    exportForms(params: ExportFormsParams): Promise<{ task: ImportExportTask }>;
+    importForms(params: ImportFormsParams): Promise<{ task: ImportExportTask }>;
 };
 
 type ImportExportTaskCreateData = Omit<ImportExportTask, "id" | "createdOn" | "createdBy">;
@@ -91,7 +123,11 @@ export interface PbImportExportContext extends PbContext {
     pageBuilder: PbContext["pageBuilder"] & {
         pages: PagesImportExportCrud;
         blocks: BlocksImportExportCrud;
+        templates: TemplatesImportExportCrud;
         importExportTask: ImportExportTaskCrud;
+    };
+    formBuilder: FormBuilderContext["formBuilder"] & {
+        forms: FormsImportExportCrud;
     };
 }
 

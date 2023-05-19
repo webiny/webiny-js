@@ -36,6 +36,8 @@ describe("contentEntryHooks", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -400,7 +402,7 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on get and list", async () => {
-        const { createCategory, getCategory, listCategories, until } = useCategoryManageHandler({
+        const { createCategory, getCategory, listCategories } = useCategoryManageHandler({
             ...manageOpts,
             plugins: [assignEntryEvents()]
         });
@@ -414,21 +416,6 @@ describe("contentEntryHooks", () => {
 
         const category = createResponse.data.createCategory.data;
         const { id } = category;
-
-        await until(
-            () => listCategories(),
-            ([response]: any) => {
-                if (response.data.listCategories.data.length === 0) {
-                    return false;
-                }
-                return response.data.listCategories.data.some((category: any) => {
-                    return category.id === id;
-                });
-            },
-            {
-                name: "list categories after create"
-            }
-        );
 
         pubSubTracker.reset();
 

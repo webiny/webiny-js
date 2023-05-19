@@ -2,10 +2,15 @@ import { AdminUsersStorageOperations, CreateAdminUsersStorageOperations, ENTITIE
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import { createSystemEntity, createUserEntity } from "~/definitions/entities";
-import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { get } from "@webiny/db-dynamodb/utils/get";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { AdminUser, StorageOperationsListUsersParams } from "@webiny/api-admin-users-cognito/types";
+import {
+    AdminUser,
+    StorageOperationsGetUserParams,
+    StorageOperationsListUsersParams
+} from "@webiny/api-admin-users-cognito/types";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 const cleanupAttributes = ["TYPE"];
@@ -34,7 +39,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
 
     const entities = {
         system: createSystemEntity(table, attributes ? attributes[ENTITIES.SYSTEM] : {}),
-        users: createUserEntity(table, attributes ? attributes[ENTITIES.USERS] : {})
+        users: createUserEntity(table)
     };
 
     const createUserKeys = (user: Pick<AdminUser, "tenant" | "id">) => ({
@@ -67,9 +72,9 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
 
             try {
                 await entities.users.put({
-                    ...cleanupItem(entities.users, user),
+                    ...keys,
                     TYPE: "adminUsers.user",
-                    ...keys
+                    data: user
                 });
 
                 return user;
@@ -111,26 +116,28 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
         },
-        async getUser({ where: { tenant, id, email } }) {
+        async getUser<TUser extends AdminUser = AdminUser>({
+            where: { tenant, id, email }
+        }: StorageOperationsGetUserParams) {
             try {
-                let result;
                 if (id) {
-                    const response = await entities.users.get(createUserKeys({ tenant, id }));
-                    if (response.Item) {
-                        result = response.Item;
-                    }
-                } else if (email) {
-                    result = await queryOne({
+                    const response = await get<{ data: TUser }>({
                         entity: entities.users,
-                        partitionKey: `T#${tenant}#ADMIN_USERS`,
-                        options: {
-                            index: "GSI1",
-                            eq: email
-                        }
+                        keys: createUserKeys({ tenant, id })
                     });
+                    return response ? response.data : null;
                 }
 
-                return cleanupItem(entities.users, result, cleanupAttributes);
+                const response = await queryOne<{ data: TUser }>({
+                    entity: entities.users,
+                    partitionKey: `T#${tenant}#ADMIN_USERS`,
+                    options: {
+                        index: "GSI1",
+                        eq: email
+                    }
+                });
+
+                return response ? response.data : null;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load user.",
@@ -155,14 +162,13 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
         },
-        // TODO @ts-refactor verify that this is correct
         async listUsers<TUser extends AdminUser = AdminUser>({
             where,
             sort
         }: StorageOperationsListUsersParams) {
             let items;
             try {
-                items = await queryAll<TUser>({
+                items = await queryAll<{ data: TUser }>({
                     entity: entities.users,
                     partitionKey: `T#${where.tenant}#ADMIN_USERS`,
                     options: {
@@ -177,7 +183,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
 
-            return cleanupItems(entities.users, sortItems({ items, sort }), cleanupAttributes);
+            return sortItems({ items, sort }).map(item => item.data);
         },
         async updateUser({ user }) {
             const keys = {
@@ -187,8 +193,9 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
 
             try {
                 await entities.users.put({
-                    ...cleanupItem(entities.users, user),
-                    ...keys
+                    ...keys,
+                    TYPE: "adminUsers.user",
+                    data: user
                 });
                 return user;
             } catch (err) {

@@ -1,9 +1,11 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Total comments count test`, () => {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
     const {
         createChangeRequestMutation,
         createContentReviewMutation,

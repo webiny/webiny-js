@@ -40,7 +40,7 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
                 ): PbExportPageResponse
 
                 # Import pages
-                importPages(category: String!, zipFileUrl: String): PbImportPageResponse
+                importPages(category: String!, zipFileUrl: String, meta: JSON): PbImportPageResponse
             }
         `,
         resolvers: {

@@ -1,11 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { CoreOptions } from "medium-editor";
 import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import ReactMediumEditor from "~/editor/components/MediumEditor";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useVariable } from "~/hooks/useVariable";
+import { makeComposable } from "@webiny/react-composition";
 
 const InputWrapper = styled("div")`
     display: grid;
@@ -62,7 +64,7 @@ const ButtonPrimaryStyled = styled(ButtonPrimary)`
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
-        buttons: ["bold", "italic", "underline", "anchor"]
+        buttons: ["anchor"]
     },
     anchor: {
         targetCheckbox: true,
@@ -74,56 +76,64 @@ interface RichVariableInputProps {
     variableId: string;
 }
 
-const RichVariableInput: React.FC<RichVariableInputProps> = ({ variableId }) => {
-    const { value, onChange, onBlur } = useVariable(variableId);
-    const [initialValue, setInitialValue] = useState(value);
-    const [isOpen, setIsOpen] = useState(false);
+const RichVariableInput = makeComposable<RichVariableInputProps>(
+    "RichVariableInput",
+    ({ variableId }) => {
+        const [element] = useActiveElement();
+        const { value, onChange, onBlur } = useVariable(variableId);
+        const [initialValue, setInitialValue] = useState(value);
+        const [isOpen, setIsOpen] = useState(false);
 
-    const onOpen = useCallback(() => {
-        setIsOpen(true);
-    }, []);
+        useEffect(() => {
+            setInitialValue(value);
+        }, [element?.id]);
 
-    const onUpdate = useCallback(() => {
-        onBlur();
-        setInitialValue(value);
-    }, [value, onBlur]);
+        const onOpen = useCallback(() => {
+            setIsOpen(true);
+        }, []);
 
-    const onClose = useCallback(() => {
-        onUpdate();
-        setIsOpen(false);
-    }, [onUpdate]);
+        const onUpdate = useCallback(() => {
+            onBlur();
+            setInitialValue(value);
+        }, [value, onBlur]);
 
-    return (
-        <InputWrapper>
-            <IconButton icon={<ExpandIcon />} onClick={onOpen} />
-            <EditorWrapper className="webiny-pb-page-element-text">
-                <ReactMediumEditor
-                    tag="p"
-                    value={initialValue}
-                    onChange={onUpdate}
-                    onSelect={onChange}
-                    options={DEFAULT_EDITOR_OPTIONS}
-                />
-            </EditorWrapper>
-            <Dialog open={isOpen} onClose={onClose}>
-                <DialogContent>
-                    <ModalEditorWrapper className="webiny-pb-page-element-text">
-                        <ReactMediumEditor
-                            tag="p"
-                            value={initialValue}
-                            onChange={onChange}
-                            onSelect={onChange}
-                            options={DEFAULT_EDITOR_OPTIONS}
-                            autoFocus={isOpen}
-                        />
-                    </ModalEditorWrapper>
-                </DialogContent>
-                <DialogActions>
-                    <ButtonPrimaryStyled onClick={onClose}>Save</ButtonPrimaryStyled>
-                </DialogActions>
-            </Dialog>
-        </InputWrapper>
-    );
-};
+        const onClose = useCallback(() => {
+            onUpdate();
+            setIsOpen(false);
+        }, [onUpdate]);
+
+        return (
+            <InputWrapper>
+                <IconButton icon={<ExpandIcon />} onClick={onOpen} />
+                <EditorWrapper className="webiny-pb-page-element-text">
+                    <ReactMediumEditor
+                        tag="p"
+                        value={initialValue}
+                        onChange={onUpdate}
+                        onSelect={onChange}
+                        options={DEFAULT_EDITOR_OPTIONS}
+                    />
+                </EditorWrapper>
+                <Dialog open={isOpen} onClose={onClose}>
+                    <DialogContent>
+                        <ModalEditorWrapper className="webiny-pb-page-element-text">
+                            <ReactMediumEditor
+                                tag="p"
+                                value={initialValue}
+                                onChange={onChange}
+                                onSelect={onChange}
+                                options={DEFAULT_EDITOR_OPTIONS}
+                                autoFocus={isOpen}
+                            />
+                        </ModalEditorWrapper>
+                    </DialogContent>
+                    <DialogActions>
+                        <ButtonPrimaryStyled onClick={onClose}>Save</ButtonPrimaryStyled>
+                    </DialogActions>
+                </Dialog>
+            </InputWrapper>
+        );
+    }
+);
 
 export default RichVariableInput;

@@ -82,6 +82,7 @@ export interface ElasticsearchSearchResponseHit<T> {
 }
 export interface ElasticsearchSearchResponseAggregationBucket<T> {
     key: T;
+    doc_count: number;
 }
 export interface ElasticsearchSearchResponse<T = any> {
     body: {

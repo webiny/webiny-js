@@ -6,9 +6,6 @@
       "path": "../../../packages/api-aco/tsconfig.build.json"
     },
     {
-      "path": "../../../packages/api-aco-so-ddb/tsconfig.build.json"
-    },
-    {
       "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json"
     },
     {
@@ -49,6 +46,9 @@
     },
     {
       "path": "../../../packages/api-page-builder/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-page-builder-aco/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-page-builder-import-export/tsconfig.build.json"
@@ -110,8 +110,6 @@
       "~/*": ["./src/*"],
       "@webiny/api-aco/*": ["../../../packages/api-aco/src/*"],
       "@webiny/api-aco": ["../../../packages/api-aco/src"],
-      "@webiny/api-aco-so-ddb/*": ["../../../packages/api-aco-so-ddb/src/*"],
-      "@webiny/api-aco-so-ddb": ["../../../packages/api-aco-so-ddb/src"],
       "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
       "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-admin-users-cognito-so-ddb/*": [
@@ -144,6 +142,8 @@
       "@webiny/api-i18n-ddb": ["../../../packages/api-i18n-ddb/src"],
       "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "@webiny/api-page-builder-aco/*": ["../../../packages/api-page-builder-aco/src/*"],
+      "@webiny/api-page-builder-aco": ["../../../packages/api-page-builder-aco/src"],
       "@webiny/api-page-builder-import-export/*": [
         "../../../packages/api-page-builder-import-export/src/*"
       ],

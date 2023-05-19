@@ -3,18 +3,24 @@ import { AdminAppPermissionRendererPlugin } from "~/types";
 import { Accordion } from "@webiny/ui/Accordion";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
+import { PermissionRendererPlugin } from "~/plugins/PermissionRendererPlugin";
 
 interface PermissionsProps extends BindComponentRenderProp {
     id: string;
+    plugins?: PermissionRendererPlugin[];
 }
 
 interface PermissionPlugins {
-    systemPlugins: AdminAppPermissionRendererPlugin[];
-    permissionPlugins: AdminAppPermissionRendererPlugin[];
+    systemPlugins: (AdminAppPermissionRendererPlugin | PermissionRendererPlugin)[];
+    permissionPlugins: (AdminAppPermissionRendererPlugin | PermissionRendererPlugin)[];
 }
 
-export const Permissions: React.FC<PermissionsProps> = ({ id, value, onChange }) => {
+export const Permissions: React.FC<PermissionsProps> = ({ id, value, onChange, ...props }) => {
     const { systemPlugins, permissionPlugins } = useMemo<PermissionPlugins>(() => {
+        if (props.plugins) {
+            return { permissionPlugins: props.plugins, systemPlugins: [] };
+        }
+
         return plugins
             .byType<AdminAppPermissionRendererPlugin>("admin-app-permissions-renderer")
             .reduce(

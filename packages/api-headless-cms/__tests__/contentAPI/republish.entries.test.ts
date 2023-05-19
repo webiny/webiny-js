@@ -1,15 +1,12 @@
-import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";
-import models from "./mocks/contentModels";
-import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
-import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 // @ts-ignore
 import mdbid from "mdbid";
-import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
+import models from "./mocks/contentModels";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { CmsContext, CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";
+import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { PluginsContainer } from "@webiny/plugins";
-import { createGraphQLFields } from "~/graphqlFields";
-import { attachCmsModelFieldConverters } from "~/utils/converters/valueKeyStorageConverter";
+
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
 
@@ -25,15 +22,13 @@ describe("Republish entries", () => {
     const {
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation,
-        until,
-        plugins
+        createContentModelGroupMutation
     } = useGraphQLHandler(manageOpts);
 
     const { createCategory, publishCategory, republishCategory } =
         useCategoryManageHandler(manageOpts);
 
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
+    // This function is not directly within `beforeEach` as we don't always create the same content model.
     // We call this function manually at the beginning of each test, where needed.
     const setupGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
@@ -60,6 +55,8 @@ describe("Republish entries", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -76,14 +73,11 @@ describe("Republish entries", () => {
                 layout: model.layout
             }
         });
-        return attachCmsModelFieldConverters({
-            plugins,
-            model: {
-                ...update.data.updateContentModel.data,
-                tenant: "root",
-                locale: "en-US"
-            }
-        });
+        return {
+            ...update.data.updateContentModel.data,
+            tenant: "root",
+            locale: "en-US"
+        };
     };
 
     const createPublishedCategories = async () => {
@@ -194,23 +188,6 @@ describe("Republish entries", () => {
         } = categories;
 
         /**
-         * Wait for the categories to be published
-         */
-        await until(
-            () => listCategories(),
-            ([response]: any) => {
-                return response.data.listCategories.data.length === 3;
-                // if (!result) {
-                //     console.log("after publishing categories not passing");
-                //     console.log(JSON.stringify(response.data));
-                // }
-                // return result;
-            },
-            {
-                name: "after publishing categories"
-            }
-        );
-        /**
          * Now we republish all categories and expect they did not change.
          */
         const [appleRepublishResponse] = await republishCategory({
@@ -261,31 +238,6 @@ describe("Republish entries", () => {
         });
         orangePublished.savedOn = orangeRepublishResponse.data.republishCategory.data.savedOn;
 
-        const times = [applePublished.savedOn, bananaPublished.savedOn, orangePublished.savedOn];
-        /**
-         * Wait for the categories to be published
-         */
-        await until(
-            () =>
-                listCategories({
-                    sort: ["createdOn_ASC"]
-                }),
-            ([response]: any) => {
-                const items = response.data.listCategories.data;
-                if (items.length !== 3) {
-                    return false;
-                }
-                for (const key in times) {
-                    if (items[key].savedOn !== times[key]) {
-                        return false;
-                    }
-                }
-                return true;
-            },
-            {
-                name: "after republishing categories"
-            }
-        );
         const [response] = await listCategories({
             sort: ["createdOn_ASC"]
         });
@@ -356,7 +308,7 @@ describe("Republish entries", () => {
     });
 
     /**
-     * This test checks values directly in the storage operations so we make sure there are required values in ref objects.
+     * This test checks values directly in the storage operations, so we make sure there are required values in ref objects.
      * We check in both latest and published records because in different storages that can be two different records.
      */
     test("storage operations - should republish entries without changing them", async () => {
@@ -366,16 +318,13 @@ describe("Republish entries", () => {
 
         const { applePublished, bananaPublished } = await createPublishedCategories();
 
-        const { listProducts: listReadProducts } = useProductReadHandler(readOpts);
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
 
-        const { storageOperations } = useCategoryManageHandler(manageOpts);
+        const { storageOperations, plugins } = useCategoryManageHandler(manageOpts);
 
-        if (storageOperations.beforeInit) {
-            await storageOperations.beforeInit({
-                plugins: new PluginsContainer(createGraphQLFields())
-            } as any);
-        }
+        await storageOperations.beforeInit({
+            plugins
+        } as CmsContext);
 
         const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",
@@ -440,31 +389,6 @@ describe("Republish entries", () => {
             }
         });
 
-        /**
-         * Wait for the products to be published
-         */
-        await until(
-            () =>
-                listReadProducts({
-                    sort: ["createdOn_ASC"]
-                }),
-            ([response]: any) => {
-                const items = response.data.listProducts.data as any[];
-                if (items.length !== 2) {
-                    return false;
-                }
-
-                const targets: string[] = [galaRecord.id, goldenRecord.id];
-
-                return items.every(item => {
-                    return targets.includes(item.id);
-                });
-            },
-            {
-                name: "after publishing product"
-            }
-        );
-
         const [republishGalaResponse] = await republishProduct({
             revision: galaRecord.id
         });
@@ -491,31 +415,7 @@ describe("Republish entries", () => {
                 }
             }
         });
-        const galaSavedOn = republishGalaResponse.data.republishProduct.data.savedOn;
-        const goldenSavedOn = republishGoldenResponse.data.republishProduct.data.savedOn;
-        /**
-         * Wait for the products to be published
-         */
-        await until(
-            () =>
-                listReadProducts({
-                    sort: ["createdOn_ASC"]
-                }),
-            ([response]: any) => {
-                const items: any[] = response.data.listProducts.data;
-                if (items.length !== 2) {
-                    return false;
-                }
-                const requiredIdList: string[] = [galaRecord.id, goldenRecord.id];
-                const requiredTimes: string[] = [galaSavedOn, goldenSavedOn];
-                return items.every(item => {
-                    return requiredIdList.includes(item.id) && requiredTimes.includes(item.savedOn);
-                });
-            },
-            {
-                name: "after re-publishing product"
-            }
-        );
+
         /**
          * And now we need to go directly into storage and check that values on the product records are ok.
          * We must call both latest and published.
@@ -524,6 +424,7 @@ describe("Republish entries", () => {
             where: {
                 latest: true
             },
+            limit: 10000,
             sort: ["createdOn_ASC"]
         });
 
@@ -596,6 +497,7 @@ describe("Republish entries", () => {
             where: {
                 published: true
             },
+            limit: 10000,
             sort: ["createdOn_ASC"]
         });
 

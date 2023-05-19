@@ -20,6 +20,7 @@
     "@webiny/api-headless-cms": "latest",
     "@webiny/api-headless-cms-ddb-es": "latest",
     "@webiny/api-page-builder": "latest",
+    "@webiny/api-page-builder-aco": "latest",
     "@webiny/api-page-builder-so-ddb-es": "latest",
     "@webiny/api-page-builder-import-export": "latest",
     "@webiny/api-page-builder-import-export-so-ddb": "latest",

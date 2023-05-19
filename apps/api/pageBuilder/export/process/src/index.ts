@@ -7,6 +7,8 @@ import {
     createPageBuilderGraphQL,
     createPageBuilderContext
 } from "@webiny/api-page-builder/graphql";
+import { createFormBuilder } from "@webiny/api-form-builder";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -14,8 +16,8 @@ import exportProcessPlugins from "@webiny/api-page-builder-import-export/export/
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "./security";
@@ -39,8 +41,9 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbStorageOperation(),
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({ documentClient })
+        }),
         fileManagerS3(),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
@@ -48,6 +51,11 @@ export const handler = createHandler({
             })
         }),
         createPageBuilderGraphQL(),
+        createFormBuilder({
+            storageOperations: createFormBuilderStorageOperations({
+                documentClient
+            })
+        }),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),

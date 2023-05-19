@@ -2,7 +2,9 @@ import { File } from "@webiny/api-file-manager/types";
 import { FileManagerContext as BaseFileManagerContext } from "@webiny/api-file-manager/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
-export interface FileManagerContext extends BaseFileManagerContext, ElasticsearchContext {}
+export interface FileManagerContextWithElasticsearch
+    extends BaseFileManagerContext,
+        ElasticsearchContext {}
 
 export interface FileIndexTransformToConfig {
     /**

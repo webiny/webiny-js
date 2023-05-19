@@ -1,14 +1,22 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB } from "./mocks";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 
-function Mock(prefix = "") {
-    this.name = `${prefix}name`;
-    this.blockCategory = `block-category`;
-    this.preview = { src: `https://test.com/${prefix}name/src.jpg` };
-    this.content = { some: `${prefix}content` };
+class Mock {
+    public name: string;
+    public blockCategory: string;
+    public preview: { src: string };
+    public content: { some: string };
+
+    constructor(prefix = "") {
+        this.name = `${prefix}name`;
+        this.blockCategory = `block-category`;
+        this.preview = { src: `https://test.com/${prefix}name/src.jpg` };
+        this.content = { some: `${prefix}content` };
+    }
 }
 
-const NOT_AUTHORIZED_RESPONSE = operation => ({
+const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
     data: {
         pageBuilder: {
             [operation]: {
@@ -51,7 +59,7 @@ describe("Page blocks Security Test", () => {
     });
 
     test(`"listPageBlocks" only returns entries to which the identity has access to`, async () => {
-        await createBlockCategory({
+        const [createBlockCategoryResponse] = await createBlockCategory({
             data: {
                 slug: `block-category`,
                 name: `block-category-name`,
@@ -59,9 +67,49 @@ describe("Page blocks Security Test", () => {
                 description: `block-category-description`
             }
         });
+        expect(createBlockCategoryResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    createBlockCategory: {
+                        data: {
+                            slug: "block-category"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
-        await createPageBlock({ data: new Mock("list-page-blocks-one-") });
-        await createPageBlock({ data: new Mock("list-page-blocks-two-") });
+        const [createPageBlockOneResponse] = await createPageBlock({
+            data: new Mock("list-page-blocks-one-")
+        });
+        expect(createPageBlockOneResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    createPageBlock: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const [createPageBlockTwoResponse] = await createPageBlock({
+            data: new Mock("list-page-blocks-two-")
+        });
+        expect(createPageBlockTwoResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    createPageBlock: {
+                        data: {
+                            id: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         const identityBHandler = useGqlHandler({ identity: identityB });
         await identityBHandler.createPageBlock({
@@ -451,7 +499,7 @@ describe("Page blocks Security Test", () => {
         }
     });
 
-    const deletePageBlockInsufficientPermissions = [
+    const deletePageBlockInsufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
         // [[], null],
         // [[], identityA],
         [[{ name: "content.i18n" }, { name: "pb.block", rwd: "r" }], identityA],
@@ -463,7 +511,7 @@ describe("Page blocks Security Test", () => {
 
     test.each(deletePageBlockInsufficientPermissions)(
         `do not allow "deletePageBlock" if identity has not sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("delete-page-block-");
 
             await createBlockCategory({
@@ -484,7 +532,7 @@ describe("Page blocks Security Test", () => {
         }
     );
 
-    const deletePageBlockSufficientPermissions = [
+    const deletePageBlockSufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
         [
             [
                 { name: "content.i18n" },
@@ -522,7 +570,7 @@ describe("Page blocks Security Test", () => {
 
     test.each(deletePageBlockSufficientPermissions)(
         `allow "deletePageBlock" if identity has sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("delete-page-block-");
 
             await createBlockCategory({
@@ -536,7 +584,7 @@ describe("Page blocks Security Test", () => {
 
             const { createPageBlock, deletePageBlock } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [createPageBlockResponse] = await createPageBlock({ data: mock });
             const id = createPageBlockResponse.data.pageBuilder.createPageBlock.data.id;
@@ -556,7 +604,7 @@ describe("Page blocks Security Test", () => {
         }
     );
 
-    const getPageBlockInsufficientPermissions = [
+    const getPageBlockInsufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
         [[], null],
         [[], identityA],
         [[{ name: "content.i18n" }, { name: "pb.block", rwd: "w" }], identityA],
@@ -567,7 +615,7 @@ describe("Page blocks Security Test", () => {
 
     test.each(getPageBlockInsufficientPermissions)(
         `do not allow "getPageBlock" if identity has no sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("get-page-block-");
 
             await createBlockCategory({
@@ -587,7 +635,7 @@ describe("Page blocks Security Test", () => {
         }
     );
 
-    const getPageBlockSufficientPermissions = [
+    const getPageBlockSufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
         [[{ name: "content.i18n" }, { name: "pb.block" }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.block", own: true }], identityA],
         [[{ name: "content.i18n" }, { name: "pb.block", rwd: "r" }], identityA],
@@ -605,7 +653,7 @@ describe("Page blocks Security Test", () => {
 
     test.each(getPageBlockSufficientPermissions)(
         `allow "getPageBlock" if identity has sufficient permissions`,
-        async (permissions: any, identity: any) => {
+        async (permissions, identity) => {
             const mock = new Mock("get-page-block-");
 
             await createBlockCategory({

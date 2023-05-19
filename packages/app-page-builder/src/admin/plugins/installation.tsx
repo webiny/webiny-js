@@ -1,4 +1,4 @@
-import React, { useState, useCallback, lazy } from "react";
+import React, { useState, useCallback } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -41,14 +41,6 @@ const INSTALL = gql`
         }
     }
 `;
-
-// const installationSteps: Record<number, string> = {
-//     1: t`Creating page categories...`,
-//     2: t`Creating page blocks...`,
-//     3: t`Creating pages...`,
-//     4: t`Creating menus...`,
-//     5: t`Finalizing...`
-// };
 
 interface PbInstallerProps {
     onInstalled: () => void;
@@ -135,27 +127,7 @@ const adminInstallationPlugin: AdminInstallationPlugin = {
     },
     render({ onInstalled }) {
         return <PBInstaller onInstalled={onInstalled} />;
-    },
-    upgrades: [
-        {
-            version: "5.0.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.0.0"));
-            }
-        },
-        {
-            version: "5.15.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.15.0"));
-            }
-        },
-        {
-            version: "5.34.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.34.0"));
-            }
-        }
-    ]
+    }
 };
 
 export default adminInstallationPlugin;

@@ -67,6 +67,8 @@ describe("READ - resolvers - api key", () => {
             data: {
                 name: category.name,
                 modelId: category.modelId,
+                singularApiName: category.singularApiName,
+                pluralApiName: category.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -92,7 +94,7 @@ describe("READ - resolvers - api key", () => {
 
     test("get entry", async () => {
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -123,11 +125,6 @@ describe("READ - resolvers - api key", () => {
         const headers = {
             authorization: API_TOKEN
         };
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => getCategory(queryArgs, headers).then(([data]) => data),
-            ({ data }: any) => data.getCategory.data.id === categoryId
-        );
 
         const [result] = await getCategory(queryArgs, headers);
 
@@ -150,7 +147,7 @@ describe("READ - resolvers - api key", () => {
 
     test("get entries", async () => {
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -181,11 +178,6 @@ describe("READ - resolvers - api key", () => {
         const headers = {
             authorization: API_TOKEN
         };
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories(queryArgs, headers).then(([data]) => data),
-            ({ data }: any) => data.listCategories.data[0].id === categoryId
-        );
 
         const [result] = await listCategories(queryArgs, headers);
 
@@ -214,12 +206,7 @@ describe("READ - resolvers - api key", () => {
 
     test("cant get entry - missing whole permission", async () => {
         // Use "manage" API to create and publish entries
-        const {
-            until,
-            createCategory,
-            publishCategory,
-            getCategory: getCategoryViaManager
-        } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -243,14 +230,6 @@ describe("READ - resolvers - api key", () => {
         const headers = {
             authorization: API_TOKEN
         };
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () =>
-                getCategoryViaManager({
-                    revision: categoryId
-                }).then(([data]) => data),
-            ({ data }: any) => data.getCategory.data.id === categoryId
-        );
 
         const [result] = await getCategory(queryArgs, headers);
 
@@ -272,12 +251,7 @@ describe("READ - resolvers - api key", () => {
 
     test("cant list entries - missing whole permission", async () => {
         // Use "manage" API to create and publish entries
-        const {
-            until,
-            createCategory,
-            publishCategory,
-            getCategory: getCategoryViaManager
-        } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -301,14 +275,6 @@ describe("READ - resolvers - api key", () => {
         const headers = {
             authorization: API_TOKEN
         };
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () =>
-                getCategoryViaManager({
-                    revision: categoryId
-                }).then(([data]) => data),
-            ({ data }: any) => data.getCategory.data.id === categoryId
-        );
 
         const [result] = await listCategories(queryArgs, headers);
 
@@ -333,12 +299,7 @@ describe("READ - resolvers - api key", () => {
 
     test.each(notAllowedRwd)(`cant get entry - missing "r" permission - having "%s"`, async rwd => {
         // Use "manage" API to create and publish entries
-        const {
-            until,
-            createCategory,
-            publishCategory,
-            getCategory: getCategoryViaManager
-        } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -367,14 +328,6 @@ describe("READ - resolvers - api key", () => {
         const headers = {
             authorization: API_TOKEN
         };
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () =>
-                getCategoryViaManager({
-                    revision: categoryId
-                }).then(([data]) => data),
-            ({ data }: any) => data.getCategory.data.id === categoryId
-        );
 
         const [result] = await getCategory(queryArgs, headers);
 
@@ -398,12 +351,7 @@ describe("READ - resolvers - api key", () => {
         `cant list entries - missing "r" permission - having "%s"`,
         async rwd => {
             // Use "manage" API to create and publish entries
-            const {
-                until,
-                createCategory,
-                publishCategory,
-                getCategory: getCategoryViaManager
-            } = useCategoryManageHandler(manageOpts);
+            const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
             // Create an entry
             const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -432,14 +380,6 @@ describe("READ - resolvers - api key", () => {
             const headers = {
                 authorization: API_TOKEN
             };
-            // If this `until` resolves successfully, we know entry is accessible via the "read" API
-            await until(
-                () =>
-                    getCategoryViaManager({
-                        revision: categoryId
-                    }).then(([data]) => data),
-                ({ data }: any) => data.getCategory.data.id === categoryId
-            );
 
             const [result] = await listCategories(queryArgs, headers);
 

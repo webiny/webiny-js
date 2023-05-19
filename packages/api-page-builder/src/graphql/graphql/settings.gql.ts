@@ -48,7 +48,6 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     social: PbSocialMedia
                     htmlTags: PbHtmlTags
                     pages: PbSettingsPages
-                    prerendering: PbSettingsPrerendering
                 }
 
                 type PbDefaultSettings {
@@ -120,7 +119,6 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     social: PbSocialMediaInput
                     htmlTags: PbHtmlTagsInput
                     pages: PbSettingsPagesInput
-                    prerendering: PbSettingsPrerenderingInput
                 }
 
                 input PbSettingsPagesInput {

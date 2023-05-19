@@ -1,30 +1,28 @@
 import { CmsFieldTypePlugins, CmsModel } from "~/types";
-import { createManageTypeName, createTypeName } from "~/utils/createTypeName";
 import { renderListFilterFields } from "~/utils/renderListFilterFields";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
-import { pluralizedTypeName } from "~/utils/pluralizedTypeName";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
 
 interface CreateManageSDLParams {
+    models: CmsModel[];
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
     sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
 }
+
 interface CreateManageSDL {
     (params: CreateManageSDLParams): string;
 }
 
 export const createManageSDL: CreateManageSDL = ({
+    models,
     model,
     fieldTypePlugins,
     sorterPlugins
 }): string => {
-    const typeName = createTypeName(model.modelId);
-    const mTypeName = createManageTypeName(typeName);
-
     const listFilterFieldsRender = renderListFilterFields({
         model,
         type: "manage",
@@ -33,27 +31,30 @@ export const createManageSDL: CreateManageSDL = ({
 
     const sortEnumRender = renderSortEnum({ model, fieldTypePlugins, sorterPlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-    const inputFields = renderInputFields({ model, fieldTypePlugins });
-    const fields = renderFields({ model, type: "manage", fieldTypePlugins });
+    const inputFields = renderInputFields({ models, model, fieldTypePlugins });
+    const fields = renderFields({ models, model, type: "manage", fieldTypePlugins });
 
     if (inputFields.length === 0) {
         return "";
     }
 
+    const { singularApiName: singularName, pluralApiName: pluralName } = model;
+
     return /* GraphQL */ `
-        """${model.description || model.modelId}"""
-        type ${mTypeName} {
+        """${model.description || singularName}"""
+        type ${singularName} {
             id: ID!
             entryId: String!
             createdOn: DateTime!
             savedOn: DateTime!
-            createdBy: CmsCreatedBy!
-            ownedBy: CmsOwnedBy!
-            meta: ${mTypeName}Meta
+            createdBy: CmsIdentity!
+            ownedBy: CmsIdentity!
+            modifiedBy: CmsIdentity
+            meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
         }
 
-        type ${mTypeName}Meta {
+        type ${singularName}Meta {
             modelId: String
             version: Int
             locked: Boolean
@@ -63,8 +64,10 @@ export const createManageSDL: CreateManageSDL = ({
             CAUTION: this field is resolved by making an extra query to DB.
             RECOMMENDATION: Use it only with "get" queries (avoid in "list")
             """
-            revisions: [${mTypeName}]
+            revisions: [${singularName}!]
             title: String
+            description: String
+            image: String
             """
             Custom meta data stored in the root of the entry object.
             """
@@ -75,7 +78,7 @@ export const createManageSDL: CreateManageSDL = ({
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
-        
+
         ${inputFields
             .map(f => f.typeDefs)
             .filter(Boolean)
@@ -83,7 +86,7 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${
             inputFields &&
-            `input ${mTypeName}Input {
+            `input ${singularName}Input {
                 id: ID
             ${inputFields.map(f => f.fields).join("\n")}
         }`
@@ -91,7 +94,7 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${
             getFilterFieldsRender &&
-            `input ${mTypeName}GetWhereInput {
+            `input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
         }`
         }
@@ -99,65 +102,67 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${
             listFilterFieldsRender &&
-            `input ${mTypeName}ListWhereInput {
+            `input ${singularName}ListWhereInput {
                 ${listFilterFieldsRender}
-                AND: [${mTypeName}ListWhereInput!]
-                OR: [${mTypeName}ListWhereInput!]
+                AND: [${singularName}ListWhereInput!]
+                OR: [${singularName}ListWhereInput!]
         }`
         }
 
-        type ${mTypeName}Response {
-            data: ${mTypeName}
-            error: CmsError
-        }
-        
-        type ${mTypeName}ArrayResponse {
-            data: [${mTypeName}]
+        type ${singularName}Response {
+            data: ${singularName}
             error: CmsError
         }
 
-        type ${mTypeName}ListResponse {
-            data: [${mTypeName}]
+        type ${singularName}ArrayResponse {
+            data: [${singularName}]
+            error: CmsError
+        }
+
+        type ${singularName}ListResponse {
+            data: [${singularName}]
             meta: CmsListMeta
             error: CmsError
         }
 
         ${
             sortEnumRender &&
-            `enum ${mTypeName}ListSorter {
+            `enum ${singularName}ListSorter {
             ${sortEnumRender}
         }`
         }
 
         extend type Query {
-            get${typeName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${mTypeName}Response
-            
-            get${typeName}Revisions(id: ID!): ${mTypeName}ArrayResponse
-            
-            get${pluralizedTypeName(typeName)}ByIds(revisions: [ID!]!): ${mTypeName}ArrayResponse
-
-            list${pluralizedTypeName(typeName)}(
-                where: ${mTypeName}ListWhereInput
-                sort: [${mTypeName}ListSorter]
+            get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
+    
+            get${singularName}Revisions(id: ID!): ${singularName}ArrayResponse
+    
+            get${pluralName}ByIds(revisions: [ID!]!): ${singularName}ArrayResponse
+    
+            list${pluralName} (
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
                 limit: Int
                 after: String
-            ): ${mTypeName}ListResponse
+            ): ${singularName}ListResponse
         }
 
-        extend type Mutation{
-            create${typeName}(data: ${mTypeName}Input!): ${mTypeName}Response
+        extend type Mutation {
+            create${singularName}(data: ${singularName}Input!): ${singularName}Response
+    
+            create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
+    
+            update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
 
-            create${typeName}From(revision: ID!, data: ${mTypeName}Input): ${mTypeName}Response
+        delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
-            update${typeName}(revision: ID!, data: ${mTypeName}Input!): ${mTypeName}Response
-
-            delete${typeName}(revision: ID!): CmsDeleteResponse
-
-            publish${typeName}(revision: ID!): ${mTypeName}Response
-        
-            republish${typeName}(revision: ID!): ${mTypeName}Response
-
-            unpublish${typeName}(revision: ID!): ${mTypeName}Response
+            deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
+    
+            publish${singularName}(revision: ID!): ${singularName}Response
+    
+            republish${singularName}(revision: ID!): ${singularName}Response
+    
+            unpublish${singularName}(revision: ID!): ${singularName}Response
         }
     `;
 };

@@ -26,39 +26,11 @@ const createEntity = (entityName: string, table: Table, attributes: Attributes):
     });
 };
 
-export const createUserEntity = (table: Table, attributes: Attributes = {}) => {
+export const createUserEntity = (table: Table) => {
     return createEntity(ENTITIES.USERS, table, {
-        id: {
-            type: "string"
-        },
-        tenant: {
-            type: "string"
-        },
-        email: {
-            type: "string"
-        },
-        firstName: {
-            type: "string"
-        },
-        lastName: {
-            type: "string"
-        },
-        avatar: {
+        data: {
             type: "map"
-        },
-        createdBy: {
-            type: "map"
-        },
-        createdOn: {
-            type: "string"
-        },
-        group: {
-            type: "string"
-        },
-        webinyVersion: {
-            type: "string"
-        },
-        ...attributes
+        }
     });
 };
 

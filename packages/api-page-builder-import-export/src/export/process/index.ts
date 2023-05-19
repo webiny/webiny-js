@@ -2,7 +2,9 @@ import { PbImportExportContext } from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { blocksHandler } from "~/export/process/blocksHandler";
+import { formsHandler } from "~/export/process/formsHandler";
 import { pagesHandler } from "~/export/process/pagesHandler";
+import { templatesHandler } from "~/export/process/templatesHandler";
 
 export interface Configuration {
     handlers: {
@@ -26,10 +28,19 @@ export interface Response {
 export default (configuration: Configuration) => {
     return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
-            if (payload.type === "block") {
-                return await blocksHandler(configuration, payload, context);
-            } else {
-                return await pagesHandler(configuration, payload, context);
+            switch (payload.type) {
+                case "block": {
+                    return await blocksHandler(configuration, payload, context);
+                }
+                case "form": {
+                    return await formsHandler(configuration, payload, context);
+                }
+                case "template": {
+                    return await templatesHandler(configuration, payload, context);
+                }
+                default: {
+                    return await pagesHandler(configuration, payload, context);
+                }
             }
         }
     );

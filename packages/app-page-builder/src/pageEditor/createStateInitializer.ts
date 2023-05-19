@@ -4,7 +4,8 @@ import {
     PageAtomType,
     PageWithContent,
     revisionsAtom,
-    RevisionsAtomType
+    RevisionsAtomType,
+    templateModeAtom
 } from "~/pageEditor/state";
 import { EditorStateInitializerFactory } from "~/editor/Editor";
 
@@ -22,6 +23,7 @@ export const createStateInitializer = (
 
             set(pageAtom, pageData);
             set(revisionsAtom, revisions);
+            set(templateModeAtom, !!page?.content?.data?.template);
         }
     });
 };

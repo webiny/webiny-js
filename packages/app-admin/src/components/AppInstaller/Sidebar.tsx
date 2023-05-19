@@ -2,7 +2,6 @@ import React, { Fragment } from "react";
 import classSet from "classnames";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
-import { config as appConfig } from "@webiny/app/config";
 import signInDivider from "./assets/sign-in-divider.svg";
 import { Installer } from "./useInstaller";
 import { Brand } from "~/base/ui/Brand";
@@ -124,33 +123,19 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ allInstallers, installer, showLogin }) => {
-    const upgrades = allInstallers.filter(installer => installer.type === "upgrade");
     const installations = allInstallers.filter(installer => installer.type === "install");
-    const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
 
     return (
         <Tags tags={{ location: "installer" }}>
             <Logo>
                 <Brand />
             </Logo>
-            {upgrades.length > 0 ? (
-                <Installations
-                    title={
-                        <span>
-                            The following apps will be upgraded to <strong>{wbyVersion}</strong>:
-                        </span>
-                    }
-                    allInstallers={upgrades}
-                    installer={installer}
-                    showLogin={showLogin}
-                />
-            ) : null}
             {installations.length > 0 && (
                 <Installations
                     title={"The following apps will be installed and configured:"}
                     allInstallers={installations}
                     installer={installer}
-                    showLogin={upgrades.length > 0 ? false : showLogin}
+                    showLogin={showLogin}
                 />
             )}
         </Tags>

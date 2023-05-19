@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -47,7 +47,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   cache-dependencies-packages-next:
     name: Cache dependencies and packages ("next" folder)
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:
@@ -80,4 +80,4 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js
+        run: yarn build

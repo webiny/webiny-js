@@ -1,12 +1,10 @@
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { preparePageData } from "./install/welcomeToWebinyPageData";
 import { preparePageDataLegacy } from "./install/welcomeToWebinyPageDataLegacy";
 import { notFoundPageData } from "./install/notFoundPageData";
 import { notFoundPageDataLegacy } from "./install/notFoundPageDataLegacy";
-import savePageAssets from "./install/utils/savePageAssets";
+import { savePageAssets } from "./install/utils/savePageAssets";
 import {
     Category,
     OnSystemAfterInstallTopicParams,
@@ -153,12 +151,13 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         title: "Main Menu",
                         slug: "main-menu",
                         description:
-                            "The main menu of the website, containing links to most important pages."
+                            "The main menu of the website, containing links to most important pages.",
+                        items: []
                     });
                 }
 
                 // 5. Create sample pages.
-                const fmSettings = await fileManager.settings.getSettings();
+                const fmSettings = await fileManager.getSettings();
 
                 let welcomeToWebinyPageContent, notFoundPageContent;
                 if (featureFlags.pbLegacyRenderingEngine === true) {
@@ -229,30 +228,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
             await onSystemAfterInstall.publish({
                 tenant: getTenantId()
             });
-        },
-        async upgradeSystem(version) {
-            const identity = context.security.getIdentity();
-            if (!identity) {
-                throw new NotAuthorizedError();
-            }
-
-            const upgradePlugins = context.plugins
-                .byType<UpgradePlugin>("api-upgrade")
-                .filter(pl => pl.app === "page-builder");
-
-            const plugin = getApplicablePlugin({
-                deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await this.getSystemVersion(),
-                upgradePlugins,
-                upgradeToVersion: version
-            });
-
-            await plugin.apply(context);
-
-            // Store new app version
-            await this.setSystemVersion(version);
-
-            return true;
         }
     };
 };

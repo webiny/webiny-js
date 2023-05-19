@@ -5,8 +5,6 @@ import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "../SplitView";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
@@ -17,14 +15,7 @@ declare global {
     }
 }
 
-import {
-    Wrapper,
-    alertClass,
-    InnerContent,
-    InstallContent,
-    installerSplitView,
-    SuccessDialog
-} from "./styled";
+import { Wrapper, InnerContent, InstallContent, installerSplitView, SuccessDialog } from "./styled";
 import { config as appConfig } from "@webiny/app/config";
 
 export const AppInstaller: React.FC = ({ children }) => {
@@ -49,16 +40,8 @@ export const AppInstaller: React.FC = ({ children }) => {
 
     const [finished, setFinished] = useState(false);
     const { identity } = useSecurity();
-    const {
-        loading,
-        installers,
-        installer,
-        isFirstInstall,
-        showNextInstaller,
-        showLogin,
-        onUser,
-        skippingVersions
-    } = useInstaller({ isInstalled: isInstallerCompleted() });
+    const { loading, installers, installer, isFirstInstall, showNextInstaller, showLogin, onUser } =
+        useInstaller({ isInstalled: isInstallerCompleted() });
 
     useEffect(() => {
         if (identity) {
@@ -116,57 +99,6 @@ export const AppInstaller: React.FC = ({ children }) => {
         );
     }
 
-    if (skippingVersions) {
-        return renderBody(
-            <Elevation z={1} className={alertClass}>
-                <Grid>
-                    <Cell span={12}>
-                        <Typography use={"headline4"}>Important!</Typography>
-                    </Cell>
-                    <Cell span={12}>
-                        <Typography use={"body1"} tag={"div"}>
-                            We&apos;ve detected that your current application is running Webiny{" "}
-                            <strong>v{skippingVersions.latest}</strong>. However, your API is
-                            running <strong>v{skippingVersions.current}</strong>. Unfortunately, we
-                            can&apos;t upgrade your system by skipping versions in between.
-                            <br />
-                            <br />
-                            Here&apos;s a list of versions you skipped, that contain upgrades you
-                            need to install:
-                            <ul>
-                                {skippingVersions.availableUpgrades
-                                    .filter(v => v !== skippingVersions.latest)
-                                    .map(v => (
-                                        <li key={v}>v{v}</li>
-                                    ))}
-                            </ul>
-                            For instructions on how to upgrade Webiny, please consult our{" "}
-                            <a
-                                href={"https://docs.webiny.com/docs/how-to-guides/upgrade-webiny"}
-                                target={"_blank"}
-                                rel={"noreferrer noopener"}
-                            >
-                                Upgrade Webiny
-                            </a>{" "}
-                            guide. Note that some versions may have a dedicated article with upgrade
-                            instructions, so look out for those in the upgrade guide.
-                            <br />
-                            <br />
-                            If you run into problems, find us on our{" "}
-                            <a
-                                href={"https://www.webiny.com/slack"}
-                                target={"_blank"}
-                                rel={"noreferrer noopener"}
-                            >
-                                Slack community.
-                            </a>
-                        </Typography>
-                    </Cell>
-                </Grid>
-            </Elevation>
-        );
-    }
-
     return renderLayout(
         renderBody(
             <Elevation z={1}>
@@ -188,7 +120,7 @@ export const AppInstaller: React.FC = ({ children }) => {
                             setFinished(true);
                         }}
                     >
-                        {isFirstInstall ? "Finish install" : "Finish upgrade"}
+                        Finish install
                     </ButtonPrimary>
                 </SuccessDialog>
             </Elevation>

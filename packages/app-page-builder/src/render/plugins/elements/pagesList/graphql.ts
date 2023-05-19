@@ -7,7 +7,7 @@ export const LIST_PUBLISHED_PAGES = gql`
         $sort: [PbListPagesSort!]
         $after: String
         $exclude: [String]
-    ) {
+    ) @ps(cache: true) {
         pageBuilder {
             listPublishedPages(
                 where: $where

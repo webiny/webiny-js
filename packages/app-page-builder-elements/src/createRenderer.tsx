@@ -3,7 +3,7 @@ import { usePageElements } from "~/hooks/usePageElements";
 import { Renderer, Element, RendererLoader, RendererProps } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
-import { CSSObject, ClassNames } from "@emotion/core";
+import { CSSObject, ClassNames } from "@emotion/react";
 import { createObjectHash } from "~/utils";
 
 type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;

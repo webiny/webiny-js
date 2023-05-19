@@ -16,3 +16,18 @@ Or if you prefer yarn:
 ```
 yarn add @webiny/api-aco
 ```
+## Testing
+
+To run tests api-aco tests with targeted storage operations loaded use:
+
+### DynamoDB
+
+```
+yarn test packages/api-aco/* --keyword=cms:ddb --keyword=aco:base
+```
+
+### DynamoDB + ElasticSearch
+
+```
+yarn test packages/api-aco/* --keyword=cms:ddb-es --keyword=aco:base
+```

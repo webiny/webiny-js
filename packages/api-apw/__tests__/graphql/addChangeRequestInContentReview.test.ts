@@ -1,7 +1,7 @@
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createSetupForPageContentReview } from "../utils/helpers";
 import { ApwContentReview, PageWithWorkflow } from "~/types";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 
 const richTextMock = [
     {
@@ -29,7 +29,9 @@ const richTextMock = [
 ];
 
 describe(`Add change requests on a step in a "Content Review"`, () => {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
     const {
         createChangeRequestMutation,
         listChangeRequestsQuery,

@@ -29,6 +29,8 @@ type Props = {
     type: string;
     folders: FolderItem[];
     focusedFolderId?: string;
+    hiddenFolderIds?: string[];
+    enableActions?: boolean;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     onDragStart: () => void;
     onDragEnd: () => void;
@@ -39,6 +41,8 @@ export const List = ({
     folders,
     onFolderClick,
     focusedFolderId,
+    hiddenFolderIds,
+    enableActions,
     onDragStart,
     onDragEnd
 }: Props) => {
@@ -53,7 +57,7 @@ export const List = ({
 
     useDeepCompareEffect(() => {
         if (folders) {
-            setTreeData(createTreeData(folders, focusedFolderId));
+            setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
         }
 
         /**
@@ -91,7 +95,7 @@ export const List = ({
     };
 
     const sort = (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
-        return a.data!.name.localeCompare(b.data!.name, undefined, { numeric: true });
+        return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
     };
 
     const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
@@ -114,6 +118,7 @@ export const List = ({
                             node={node}
                             depth={depth}
                             isOpen={isOpen}
+                            enableActions={enableActions}
                             onToggle={onToggle}
                             onClick={data => onFolderClick(data)}
                             onUpdateFolder={data => {

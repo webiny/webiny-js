@@ -20,18 +20,3 @@ export const INSTALL_MUTATION = /* GraphQL */ `
         }
     }
 `;
-
-export const UPGRADE_MUTATION = /* GraphQL */ `
-    mutation CmsUpgrade($version: String!) {
-        cms {
-            upgrade(version: $version) {
-                data
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;

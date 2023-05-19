@@ -7,7 +7,6 @@ on:
 env:
   NODE_OPTIONS: --max_old_space_size=4096
   AWS_REGION: eu-central-1
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   init:
@@ -20,7 +19,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -39,7 +38,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -59,7 +58,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         with:
@@ -78,7 +77,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:
@@ -125,7 +124,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:

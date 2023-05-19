@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 
 export const Container = styled("div")`
     position: relative;
-    margin: 0 0 32px;
+    margin: 0;
 
     & .treeRoot {
         box-sizing: border-box;
@@ -11,7 +11,7 @@ export const Container = styled("div")`
     }
 
     & .dropTarget {
-        background: var(--mdc-theme-background);
+        background: var(--mdc-theme-on-background);
     }
 
     & .draggingSource {

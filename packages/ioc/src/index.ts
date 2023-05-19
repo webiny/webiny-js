@@ -1,3 +1,3 @@
-export * from "./Container";
-export * from "./useContainer";
-export * from "./useService";
+import "reflect-metadata";
+export { AbstractDecorator } from "./AbstractDecorator";
+export * from "./container";

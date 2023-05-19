@@ -45,6 +45,7 @@ const SETTINGS_FIELDS = /* GraphQL */ `
         }
         successMessage
         submitButtonLabel
+        fullWidthSubmitButton
         termsOfServiceMessage {
             enabled
             message

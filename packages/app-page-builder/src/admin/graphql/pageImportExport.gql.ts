@@ -21,12 +21,14 @@ stats {
 export const IMPORT_PAGES = gql`
     mutation PbImportPage(
         $category: String!,
-        $zipFileUrl: String
+        $zipFileUrl: String,
+        $meta: JSON
     ) {
         pageBuilder {
             importPages(
                 category: $category,
-                zipFileUrl: $zipFileUrl
+                zipFileUrl: $zipFileUrl,
+                meta: $meta
             ) {
                 data {
                     task {

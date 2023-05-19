@@ -52,6 +52,7 @@ export const FormSettingsModel = withFields({
      * Note: We've replaced "i18nString()" with "string()"
      */
     submitButtonLabel: string({}),
+    fullWidthSubmitButton: boolean(),
     /**
      * Note: We've replaced "i18nObject()" with "object()"
      */

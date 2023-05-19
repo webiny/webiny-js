@@ -1,8 +1,8 @@
+export { useElementVariables } from "./elementProcessors/useElementVariables";
+
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { createCrud, CreateCrudParams } from "./crud";
 import graphql from "./graphql";
-import upgrades from "./upgrades";
-import { subscriptions } from "~/graphql/subscriptions";
 import { createElementProcessors } from "~/graphql/elementProcessors";
 
 export const createPageBuilderGraphQL = (): GraphQLSchemaPlugin[] => {
@@ -11,5 +11,5 @@ export const createPageBuilderGraphQL = (): GraphQLSchemaPlugin[] => {
 
 export type ContextParams = CreateCrudParams;
 export const createPageBuilderContext = (params: ContextParams) => {
-    return [createCrud(params), upgrades(), subscriptions(), createElementProcessors()];
+    return [createCrud(params), createElementProcessors()];
 };

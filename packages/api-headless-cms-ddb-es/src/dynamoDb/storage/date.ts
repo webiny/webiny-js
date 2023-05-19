@@ -39,7 +39,7 @@ const convertValueToStorage = (field: PartialCmsModelField, value: any): any => 
 };
 
 export const createDateStorageTransformPlugin = () => {
-    return new StorageTransformPlugin({
+    const plugin = new StorageTransformPlugin({
         fieldType: "datetime",
         fromStorage: async ({ value, field }) => {
             const { type } = field.settings || {};
@@ -73,4 +73,7 @@ export const createDateStorageTransformPlugin = () => {
             });
         }
     });
+    plugin.name = `headless-cms.dynamodb.storageTransform.date`;
+
+    return plugin;
 };

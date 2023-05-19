@@ -2,24 +2,26 @@ import { pageModel } from "./mocks/pageWithDynamicZonesModel";
 import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
-import { until } from "../testHelpers/helpers";
+import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandler";
+
+const singularPageApiName = pageModel.singularApiName;
 
 const contentEntryQueryData = {
     content: [
         {
             text: "Simple Text #1",
-            __typename: "Page_Content_SimpleText"
+            __typename: `${singularPageApiName}_Content_SimpleText`
         },
         {
             title: "Hero Title #1",
-            __typename: "Page_Content_Hero"
+            __typename: `${singularPageApiName}_Content_Hero`
         },
         {
             title: "Hero Title #2",
-            __typename: "Page_Content_Hero"
+            __typename: `${singularPageApiName}_Content_Hero`
         },
         {
-            __typename: "Page_Content_Objecting",
+            __typename: `${singularPageApiName}_Content_Objecting`,
             nestedObject: {
                 objectNestedObject: [
                     {
@@ -36,7 +38,7 @@ const contentEntryQueryData = {
     header: {
         title: "Header #1",
         image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
-        __typename: "Page_Header_ImageHeader"
+        __typename: `${singularPageApiName}_Header_ImageHeader`
     },
     objective: {
         nestedObject: {
@@ -65,8 +67,26 @@ const contentEntryQueryData = {
                 }
             ]
         },
-        __typename: "Page_Objective_Objecting"
-    }
+        __typename: `${singularPageApiName}_Objective_Objecting`
+    },
+    reference: {
+        author: {
+            id: "john-doe#0001",
+            modelId: "author",
+            __typename: "RefField"
+        },
+        __typename: `${singularPageApiName}_Reference_Author`
+    },
+    references: [
+        {
+            author: {
+                id: "john-doe#0001",
+                modelId: "author",
+                __typename: "RefField"
+            },
+            __typename: `${singularPageApiName}_References_Author`
+        }
+    ]
 };
 
 const contentEntryMutationData = {
@@ -131,7 +151,44 @@ const contentEntryMutationData = {
                 ]
             }
         }
-    }
+    },
+    reference: {
+        Author: {
+            author: {
+                id: "john-doe#0001",
+                modelId: "author"
+            }
+        }
+    },
+    references: [
+        {
+            Author: {
+                author: {
+                    id: "john-doe#0001",
+                    modelId: "author"
+                }
+            }
+        }
+    ]
+};
+
+interface SetupAuthorParams {
+    manager: ReturnType<typeof useAuthorManageHandler>;
+}
+
+const setupAuthor = async ({ manager }: SetupAuthorParams) => {
+    const [authorResponse] = await manager.createAuthor({
+        data: {
+            id: "john-doe",
+            fullName: "John Doe"
+        }
+    });
+
+    const [authorPublishResponse] = await manager.publishAuthor({
+        revision: authorResponse.data.createAuthor.data.id
+    });
+
+    return authorPublishResponse.data.publishAuthor.data;
 };
 
 describe("dynamicZone field", () => {
@@ -139,11 +196,19 @@ describe("dynamicZone field", () => {
     const previewOpts = { path: "preview/en-US" };
 
     const manage = usePageManageHandler(manageOpts);
-    const preview = usePageReadHandler(previewOpts);
 
-    test("should create a page with dynamic zone fields", async () => {
-        await setupGroupAndModels({ manager: manage, models: [pageModel as any] });
+    const authorManager = useAuthorManageHandler({
+        ...manageOpts
+    });
 
+    beforeEach(async () => {
+        await setupGroupAndModels({ manager: manage, models: ["author", pageModel as any] });
+        await setupAuthor({
+            manager: authorManager
+        });
+    });
+
+    it("should create a page with dynamic zone fields", async () => {
         const [createPageResponse] = await manage.createPage({
             data: contentEntryMutationData
         });
@@ -153,23 +218,13 @@ describe("dynamicZone field", () => {
                 createPage: {
                     data: {
                         id: expect.any(String),
-                        content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header,
-                        objective: contentEntryQueryData.objective
+                        ...contentEntryQueryData
                     },
                     error: null
                 }
             }
         });
-
         const page = createPageResponse.data.createPage.data;
-
-        await manage.until(
-            () => manage.listPages().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listPages.data.length === 1;
-            }
-        );
 
         const [manageList] = await manage.listPages();
 
@@ -179,9 +234,7 @@ describe("dynamicZone field", () => {
                     data: [
                         {
                             id: page.id,
-                            content: contentEntryQueryData.content,
-                            header: contentEntryQueryData.header,
-                            objective: contentEntryQueryData.objective
+                            ...contentEntryQueryData
                         }
                     ],
                     meta: {
@@ -204,45 +257,48 @@ describe("dynamicZone field", () => {
                 getPage: {
                     data: {
                         id: page.id,
-                        content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header,
-                        objective: contentEntryQueryData.objective
+                        ...contentEntryQueryData
                     },
                     error: null
                 }
             }
         });
 
+        const preview = usePageReadHandler(previewOpts);
+
         // Test `read` get
-        const previewGet = await until(
-            () => {
-                return preview
-                    .getPage({
-                        where: {
-                            id: page.id
-                        }
-                    })
-                    .then(([data]) => data);
-            },
-            ({ data }: any) => {
-                return data.getPage.data !== null;
-            },
-            {
-                name: "get page from /read endpoint",
-                tries: 20,
-                debounce: 2000,
-                wait: 2000
-            }
-        );
+        const previewGet = await preview
+            .getPage({
+                where: {
+                    id: page.id
+                }
+            })
+            .then(([data]) => data);
 
         expect(previewGet).toEqual({
             data: {
                 getPage: {
                     data: {
                         id: page.id,
-                        content: contentEntryQueryData.content,
-                        header: contentEntryQueryData.header,
-                        objective: contentEntryQueryData.objective
+                        ...contentEntryQueryData,
+                        reference: {
+                            author: {
+                                entryId: "john-doe",
+                                fullName: "John Doe",
+                                id: contentEntryQueryData.reference.author.id,
+                                modelId: contentEntryQueryData.reference.author.modelId
+                            }
+                        },
+                        references: [
+                            {
+                                author: {
+                                    entryId: "john-doe",
+                                    fullName: "John Doe",
+                                    id: contentEntryQueryData.references[0].author.id,
+                                    modelId: contentEntryQueryData.references[0].author.modelId
+                                }
+                            }
+                        ]
                     },
                     error: null
                 }

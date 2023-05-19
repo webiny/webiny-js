@@ -3,7 +3,7 @@ import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { PbBlockVariable } from "~/types";
 
-export function useVariable(variableId: string) {
+export function useVariable<TValue = any>(variableId: string) {
     const [element] = useActiveElement();
     const updateElement = useUpdateElement();
     const variable = element?.data?.variables?.find(
@@ -11,7 +11,7 @@ export function useVariable(variableId: string) {
     );
 
     const onChange = useCallback(
-        (value: any, history = false) => {
+        (value: TValue, history = false) => {
             if (element) {
                 const newVariables = element?.data?.variables?.map((variable: PbBlockVariable) => {
                     if (variable?.id === variableId) {
@@ -23,6 +23,7 @@ export function useVariable(variableId: string) {
 
                     return variable;
                 });
+
                 updateElement(
                     {
                         ...element,
@@ -46,5 +47,5 @@ export function useVariable(variableId: string) {
         }
     }, [element, updateElement]);
 
-    return { value: variable?.value, onChange, onBlur };
+    return { value: variable?.value as TValue, onChange, onBlur };
 }

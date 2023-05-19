@@ -3,26 +3,10 @@ import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
     CmsEntryListWhere,
-    CmsEntryStorageOperations,
-    CmsEntryStorageOperationsCreateParams,
-    CmsEntryStorageOperationsCreateRevisionFromParams,
-    CmsEntryStorageOperationsDeleteParams,
-    CmsEntryStorageOperationsDeleteRevisionParams,
-    CmsEntryStorageOperationsGetByIdsParams,
-    CmsEntryStorageOperationsGetLatestByIdsParams,
-    CmsEntryStorageOperationsGetLatestRevisionParams,
-    CmsEntryStorageOperationsGetParams,
-    CmsEntryStorageOperationsGetPreviousRevisionParams,
-    CmsEntryStorageOperationsGetPublishedByIdsParams,
-    CmsEntryStorageOperationsGetRevisionParams,
-    CmsEntryStorageOperationsGetRevisionsParams,
-    CmsEntryStorageOperationsListParams,
-    CmsEntryStorageOperationsPublishParams,
-    CmsEntryStorageOperationsUnpublishParams,
-    CmsEntryStorageOperationsUpdateParams,
-    StorageOperationsCmsModel,
+    CmsModel,
+    CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
-    CmsStorageEntry
+    StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
 import {
@@ -35,6 +19,7 @@ import {
 } from "~/operations/entry/keys";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import {
+    DbItem,
     queryAll,
     QueryAllParams,
     queryOne,
@@ -44,10 +29,12 @@ import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils/cursor";
 import { zeroPad } from "@webiny/utils/zeroPad";
-import { StorageTransformPlugin } from "@webiny/api-headless-cms";
+import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { FilterItemFromStorage } from "./filtering/types";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { CmsEntryStorageOperations } from "~/types";
 
 const createType = (): string => {
     return "cms.entry";
@@ -98,6 +85,22 @@ export const createEntriesStorageOperations = (
 ): CmsEntryStorageOperations => {
     const { entity, plugins } = params;
 
+    let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
+    const getStorageOperationsCmsModelPlugin = () => {
+        if (storageOperationsCmsModelPlugin) {
+            return storageOperationsCmsModelPlugin;
+        }
+        storageOperationsCmsModelPlugin = plugins.oneByType<StorageOperationsCmsModelPlugin>(
+            StorageOperationsCmsModelPlugin.type
+        );
+        return storageOperationsCmsModelPlugin;
+    };
+
+    const getStorageOperationsModel = (model: CmsModel): StorageOperationsCmsModel => {
+        const plugin = getStorageOperationsCmsModelPlugin();
+        return plugin.getModel(model);
+    };
+
     const dataLoaders = new DataLoadersHandler({
         entity
     });
@@ -129,11 +132,9 @@ export const createEntriesStorageOperations = (
         };
     };
 
-    const create = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsCreateParams
-    ) => {
+    const create: CmsEntryStorageOperations["create"] = async (initialModel, params) => {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
@@ -152,7 +153,7 @@ export const createEntriesStorageOperations = (
         /**
          * We need to:
          *  - create new main entry item
-         *  - create new or update latest entry item
+         *  - create new or update the latest entry item
          */
         const items = [
             entity.putBatch({
@@ -214,11 +215,12 @@ export const createEntriesStorageOperations = (
         return initialStorageEntry;
     };
 
-    const createRevisionFrom = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsCreateRevisionFromParams
+    const createRevisionFrom: CmsEntryStorageOperations["createRevisionFrom"] = async (
+        initialModel,
+        params
     ) => {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
@@ -278,11 +280,10 @@ export const createEntriesStorageOperations = (
         return initialStorageEntry;
     };
 
-    const update = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsUpdateParams
-    ) => {
+    const update: CmsEntryStorageOperations["update"] = async (initialModel, params) => {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
         const partitionKey = createPartitionKey({
             id: entry.id,
             locale: model.locale,
@@ -330,7 +331,7 @@ export const createEntriesStorageOperations = (
         }
 
         /**
-         * We need the latest entry to update it as well if neccessary.
+         * We need the latest entry to update it as well if necessary.
          */
         const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
@@ -370,16 +371,15 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const deleteEntry = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsDeleteParams
-    ) => {
+    const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const id = entry.id || entry.entryId;
+        const model = getStorageOperationsModel(initialModel);
 
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createPartitionKey({
-                id: entry.id,
+                id,
                 locale: model.locale,
                 tenant: model.tenant
             }),
@@ -388,7 +388,7 @@ export const createEntriesStorageOperations = (
             }
         };
 
-        let records = [];
+        let records: DbItem<CmsEntry>[] = [];
         try {
             records = await queryAll(queryAllParams);
         } catch (ex) {
@@ -397,7 +397,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "LOAD_ALL_RECORDS_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -423,17 +423,20 @@ export const createEntriesStorageOperations = (
                 {
                     error: ex,
                     partitionKey: queryAllParams.partitionKey,
-                    entry
+                    id
                 }
             );
         }
     };
 
-    const deleteRevision = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsDeleteRevisionParams
+    const deleteRevision: CmsEntryStorageOperations["deleteRevision"] = async (
+        initialModel,
+        params
     ) => {
         const { entry, latestEntry, latestStorageEntry: initialLatestStorageEntry } = params;
+
+        const model = getStorageOperationsModel(initialModel);
+
         const partitionKey = createPartitionKey({
             id: entry.id,
             locale: model.locale,
@@ -493,45 +496,116 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const getLatestRevisionByEntryId = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetLatestRevisionParams
+    const deleteMultipleEntries: CmsEntryStorageOperations["deleteMultipleEntries"] = async (
+        initialModel,
+        params
     ) => {
-        const items = await dataLoaders.getLatestRevisionByEntryId({
+        const { entries } = params;
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need all the revisions of the entries we want to delete.
+         */
+        const revisions = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: [params.id]
+            ids: entries
         });
-        const item = items.shift() || null;
-        if (!item) {
-            return null;
+        /**
+         * Then we need to construct the queries for all the revisions and entries.
+         */
+        const items: Record<string, DocumentClient.WriteRequest>[] = [];
+        for (const id of entries) {
+            /**
+             * Latest item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            /**
+             * Published item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
         }
-        return convertFromStorageEntry({
-            storageEntry: item,
-            model
-        });
-    };
-    const getPublishedRevisionByEntryId = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetLatestRevisionParams
-    ) => {
-        const items = await dataLoaders.getPublishedRevisionByEntryId({
-            model,
-            ids: [params.id]
-        });
-        const item = items.shift() || null;
-        if (!item) {
-            return null;
+        /**
+         * Exact revisions of all the entries
+         */
+        for (const revision of revisions) {
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id: revision.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: createRevisionSortKey({
+                        version: revision.version
+                    })
+                })
+            );
         }
-        return convertFromStorageEntry({
-            storageEntry: item,
-            model
+
+        await batchWriteAll({
+            table: entity.table,
+            items
         });
     };
 
-    const getRevisionById = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetRevisionParams
+    const getLatestRevisionByEntryId: CmsEntryStorageOperations["getLatestRevisionByEntryId"] =
+        async (initialModel, params) => {
+            const model = getStorageOperationsModel(initialModel);
+
+            const items = await dataLoaders.getLatestRevisionByEntryId({
+                model,
+                ids: [params.id]
+            });
+            const item = items.shift() || null;
+            if (!item) {
+                return null;
+            }
+            return convertFromStorageEntry({
+                storageEntry: item,
+                model
+            });
+        };
+    const getPublishedRevisionByEntryId: CmsEntryStorageOperations["getPublishedRevisionByEntryId"] =
+        async (initialModel, params) => {
+            const model = getStorageOperationsModel(initialModel);
+
+            const items = await dataLoaders.getPublishedRevisionByEntryId({
+                model,
+                ids: [params.id]
+            });
+            const item = items.shift() || null;
+            if (!item) {
+                return null;
+            }
+            return convertFromStorageEntry({
+                storageEntry: item,
+                model
+            });
+        };
+
+    const getRevisionById: CmsEntryStorageOperations["getRevisionById"] = async (
+        initialModel,
+        params
     ) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const items = await dataLoaders.getRevisionById({
             model,
             ids: [params.id]
@@ -546,10 +620,12 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getRevisions = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetRevisionsParams
+    const getRevisions: CmsEntryStorageOperations["getRevisions"] = async (
+        initialModel,
+        params
     ) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const items = await dataLoaders.getAllEntryRevisions({
             model,
             ids: [params.id]
@@ -563,10 +639,9 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getByIds = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetByIdsParams
-    ) => {
+    const getByIds: CmsEntryStorageOperations["getByIds"] = async (initialModel, params) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const items = await dataLoaders.getRevisionById({
             model,
             ids: params.ids
@@ -580,10 +655,12 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getLatestByIds = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetLatestByIdsParams
+    const getLatestByIds: CmsEntryStorageOperations["getLatestByIds"] = async (
+        initialModel,
+        params
     ) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const items = await dataLoaders.getLatestRevisionByEntryId({
             model,
             ids: params.ids
@@ -597,10 +674,12 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getPublishedByIds = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetPublishedByIdsParams
+    const getPublishedByIds: CmsEntryStorageOperations["getPublishedByIds"] = async (
+        initialModel,
+        params
     ) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const items = await dataLoaders.getPublishedRevisionByEntryId({
             model,
             ids: params.ids
@@ -614,10 +693,12 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getPreviousRevision = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetPreviousRevisionParams
+    const getPreviousRevision: CmsEntryStorageOperations["getPreviousRevision"] = async (
+        initialModel,
+        params
     ) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const { entryId, version } = params;
         const queryParams: QueryOneParams = {
             entity,
@@ -671,10 +752,9 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const list = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsListParams
-    ) => {
+    const list: CmsEntryStorageOperations["list"] = async (initialModel, params) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const {
             limit: initialLimit = 10,
             where: initialWhere,
@@ -796,10 +876,9 @@ export const createEntriesStorageOperations = (
         };
     };
 
-    const get = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsGetParams
-    ) => {
+    const get: CmsEntryStorageOperations["get"] = async (initialModel, params) => {
+        const model = getStorageOperationsModel(initialModel);
+
         const { items } = await list(model, {
             ...params,
             limit: 1
@@ -807,11 +886,9 @@ export const createEntriesStorageOperations = (
         return items.shift() || null;
     };
 
-    const publish = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsPublishParams
-    ) => {
+    const publish: CmsEntryStorageOperations["publish"] = async (initialModel, params) => {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
@@ -820,7 +897,7 @@ export const createEntriesStorageOperations = (
         });
 
         /**
-         * We need the latest and published entries to see if something needs to be updated along side the publishing one.
+         * We need the latest and published entries to see if something needs to be updated alongside the publishing one.
          */
         const initialLatestStorageEntry = await getLatestRevisionByEntryId(model, entry);
         const initialPublishedStorageEntry = await getPublishedRevisionByEntryId(model, entry);
@@ -833,7 +910,7 @@ export const createEntriesStorageOperations = (
          * We need to update:
          *  - current entry revision sort key
          *  - published sort key
-         *  - latest sort key - if entry updated is actually latest
+         *  - the latest sort key - if entry updated is actually latest
          *  - previous published entry to unpublished status - if any previously published entry
          */
         const items = [
@@ -906,11 +983,9 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const unpublish = async (
-        model: StorageOperationsCmsModel,
-        params: CmsEntryStorageOperationsUnpublishParams
-    ) => {
+    const unpublish: CmsEntryStorageOperations["unpublish"] = async (initialModel, params) => {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
@@ -926,7 +1001,7 @@ export const createEntriesStorageOperations = (
          * We need to:
          *  - delete currently published entry
          *  - update current entry revision with new data
-         *  - update latest entry status - if entry being unpublished is latest
+         *  - update the latest entry status - if entry being unpublished is latest
          */
         const items = [
             entity.deleteBatch({
@@ -944,7 +1019,7 @@ export const createEntriesStorageOperations = (
         ];
 
         /**
-         * We need the latest entry to see if something needs to be updated along side the unpublishing one.
+         * We need the latest entry to see if something needs to be updated alongside the unpublishing one.
          */
         const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
@@ -988,6 +1063,7 @@ export const createEntriesStorageOperations = (
         update,
         delete: deleteEntry,
         deleteRevision,
+        deleteMultipleEntries,
         getPreviousRevision,
         getPublishedByIds,
         getLatestByIds,
@@ -999,6 +1075,7 @@ export const createEntriesStorageOperations = (
         getRevisions,
         publish,
         list,
-        unpublish
+        unpublish,
+        dataLoaders
     };
 };

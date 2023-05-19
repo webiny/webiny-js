@@ -1,6 +1,10 @@
+import { CmsModel, CmsModelField } from "~/types";
+
 const DATA_FIELD = /* GraphQL*/ `
     {
         modelId
+        singularApiName
+        pluralApiName
         name
         description
         group {
@@ -8,8 +12,11 @@ const DATA_FIELD = /* GraphQL*/ `
             name
             slug
         }
+        icon
         layout
         titleFieldId
+        descriptionFieldId
+        imageFieldId
         fields {
             id
             label
@@ -76,6 +83,52 @@ export const LIST_CONTENT_MODELS_QUERY = /* GraphQL */ `
         }
     }
 `;
+
+export interface CreateContentModelMutationVariables {
+    data: {
+        name: string;
+        modelId?: string;
+        group: string | { id: string; name: string };
+        singularApiName: string;
+        pluralApiName: string;
+        description?: string;
+        fields?: Omit<CmsModelField, "storageId">[];
+        layout?: string[][];
+        titleFieldId?: string;
+        defaultFields?: boolean;
+        icon?: string;
+    };
+}
+export interface CreateContentModelFromMutationVariables {
+    modelId: string;
+    data: {
+        name: string;
+        modelId?: string;
+        group: string | { id: string; name: string };
+        singularApiName: string;
+        pluralApiName: string;
+        description?: string;
+        fields?: Omit<CmsModelField, "storageId">[];
+        layout?: string[][];
+        titleFieldId?: string;
+        locale?: `${Lowercase<string>}-${Uppercase<string>}`;
+        icon?: string;
+    };
+}
+
+export interface CreateContentModelMutationResponse {
+    errors?: any[];
+    data: {
+        createContentModel: {
+            data: CmsModel;
+            error: {
+                message: string;
+                code: any;
+                data: any;
+            };
+        };
+    };
+}
 
 export const CREATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
     mutation CreateContentModelMutation($data: CmsContentModelCreateInput!) {

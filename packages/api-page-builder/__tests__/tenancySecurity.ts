@@ -1,4 +1,3 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
@@ -7,20 +6,11 @@ import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/a
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-
-// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
+import { documentClient } from "./documentClient";
 
 interface Config {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
 }
 
 export const defaultIdentity = {
@@ -60,7 +50,8 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 },
                 status: "any",
                 createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString()
+                savedOn: new Date().toISOString(),
+                tags: []
             });
 
             context.security.addAuthenticator(async () => {

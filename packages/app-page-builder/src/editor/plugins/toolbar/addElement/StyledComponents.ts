@@ -20,7 +20,10 @@ export const ElementPreviewCanvas = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)",
     color: "var(--mdc-theme-on-surface)",
     padding: 15,
-    boxSizing: "border-box"
+    boxSizing: "border-box",
+    "> *": {
+        width: "100%"
+    }
 });
 
 export const Backdrop = styled("div")({

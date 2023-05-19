@@ -27,19 +27,19 @@ const plugins: PluginCollection = [
         });
 
         view.addSection({
+            id: "seo",
+            title: "SEO",
+            description: "Control SEO settings like page title, description, and keywords.",
+            icon: <SeoIcon />,
+            view: new SEOSettingsView()
+        });
+
+        view.addSection({
             id: "social",
             title: "Social media",
             description: "Set share images and settings for social media websites.",
             icon: <SocialIcon />,
             view: new SocialSettingsView()
-        });
-
-        view.addSection({
-            id: "seo",
-            title: "SEO",
-            description: "Control SEO settings like description and keywords.",
-            icon: <SeoIcon />,
-            view: new SEOSettingsView()
         });
     }),
     /**

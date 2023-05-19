@@ -9,10 +9,9 @@ import {
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { createInitialTextValue } from "../utils/textUtils";
 import Heading from "./Heading";
+import { defaultText, displayText } from "./elementText";
 
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
-    const defaultText = "Heading";
-
     const defaultSettings = [
         [
             "pb-editor-page-element-style-settings-text",
@@ -31,7 +30,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         title: "Heading",
         group: "pb-editor-element-group-basic",
         preview() {
-            return <h2>{defaultText}</h2>;
+            return <h2>{displayText}</h2>;
         }
     };
 

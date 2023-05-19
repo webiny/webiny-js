@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from "react";
+import React, { ReactElement, useEffect, useMemo } from "react";
+
 import {
     DataTableContent,
     DataTableHead,
@@ -9,13 +10,21 @@ import {
     DataTableCellProps
 } from "@rmwc/data-table";
 
-import { flexRender, getCoreRowModel, useReactTable, ColumnDef } from "@tanstack/react-table";
+import {
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    ColumnDef,
+    getSortedRowModel,
+    OnChangeFn,
+    SortingState
+} from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
 
 import "@rmwc/data-table/data-table.css";
-import { Table } from "./styled";
+import { ColumnDirectionIcon, ColumnDirectionWrapper, ColumnHeaderWrapper, Table } from "./styled";
 
 interface Column<T> {
     /*
@@ -34,11 +43,26 @@ interface Column<T> {
      * Column class names.
      */
     className?: string;
+    /*
+     * Enable column sorting.
+     */
+    enableSorting?: boolean;
 }
 
 export type Columns<T> = {
     [P in keyof T]?: Column<T>;
 };
+
+export type DefaultData = {
+    /*
+     * Define if a specific row can be selected.
+     */
+    selectable?: boolean;
+};
+
+export type Sorting = SortingState;
+
+export type OnSortingChange = OnChangeFn<Sorting>;
 
 interface Props<T> {
     /*
@@ -65,6 +89,22 @@ interface Props<T> {
      * The number of rows to affix to the top of the table when scrolling.
      */
     stickyRows?: number;
+    /*
+     * Show or hide borders.
+     */
+    bordered?: boolean;
+    /*
+     * Sorting state.
+     */
+    sorting?: Sorting;
+    /*
+     * Callback that receives current sorting state.
+     */
+    onSortingChange?: OnSortingChange;
+}
+
+export interface ColumnDirectionProps {
+    direction?: "asc" | "desc";
 }
 
 const defineColumns = <T,>(
@@ -79,7 +119,7 @@ const defineColumns = <T,>(
         }));
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
-            const { id, header, meta, cell } = column;
+            const { id, header, meta, cell, enableSorting = false } = column;
 
             return {
                 accessorKey: id,
@@ -91,6 +131,7 @@ const defineColumns = <T,>(
                         return info.getValue();
                     }
                 },
+                enableSorting,
                 meta
             };
         });
@@ -107,17 +148,23 @@ const defineColumns = <T,>(
                                   onChange={e => table.toggleAllPageRowsSelected(e)}
                               />
                           ),
-                      cell: ({ row }) => (
-                          <Checkbox
-                              indeterminate={row.getIsSomeSelected()}
-                              value={row.getIsSelected()}
-                              onChange={row.getToggleSelectedHandler()}
-                          />
-                      ),
+                      cell: info => {
+                          if (!info.row.getCanSelect()) {
+                              return <></>;
+                          }
+                          return (
+                              <Checkbox
+                                  indeterminate={info.row.getIsSomeSelected()}
+                                  value={info.row.getIsSelected()}
+                                  onChange={info.row.getToggleSelectedHandler()}
+                              />
+                          );
+                      },
                       meta: {
                           hasFormControl: true,
                           className: "datatable-select-column"
-                      }
+                      },
+                      enableSorting: false
                   }
               ]
             : [];
@@ -146,13 +193,28 @@ const defineData = <T,>(
     }, [data, loadingInitial]);
 };
 
-export const DataTable = <T,>({
-    columns,
+const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {
+    if (direction) {
+        return (
+            <ColumnDirectionWrapper>
+                <ColumnDirectionIcon direction={direction} />
+            </ColumnDirectionWrapper>
+        );
+    }
+
+    return null;
+};
+
+export const DataTable = <T extends Object & DefaultData>({
     data,
-    loadingInitial,
+    columns,
     onSelectRow,
+    loadingInitial,
     stickyColumns,
-    stickyRows
+    stickyRows,
+    bordered,
+    sorting,
+    onSortingChange
 }: Props<T>) => {
     const [rowSelection, setRowSelection] = React.useState({});
 
@@ -160,11 +222,16 @@ export const DataTable = <T,>({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, onSelectRow, loadingInitial),
         getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         state: {
-            rowSelection
+            rowSelection,
+            sorting
         },
-        enableRowSelection: !!onSelectRow,
-        onRowSelectionChange: setRowSelection
+        enableRowSelection: row => row.original.selectable || false,
+        onRowSelectionChange: setRowSelection,
+        enableSorting: !!onSortingChange,
+        manualSorting: true,
+        onSortingChange
     });
 
     useEffect(() => {
@@ -175,24 +242,28 @@ export const DataTable = <T,>({
     }, [rowSelection]);
 
     return (
-        <Table stickyColumns={stickyColumns} stickyRows={stickyRows}>
+        <Table stickyColumns={stickyColumns} stickyRows={stickyRows} bordered={bordered}>
             <DataTableContent>
                 <DataTableHead>
                     {table.getHeaderGroups().map(headerGroup => (
                         <DataTableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <DataTableHeadCell
-                                    key={header.id}
-                                    {...header.column.columnDef.meta}
-                                >
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                              header.column.columnDef.header,
-                                              header.getContext()
-                                          )}
-                                </DataTableHeadCell>
-                            ))}
+                            {headerGroup.headers.map(
+                                ({ id, isPlaceholder, column, getContext }) => (
+                                    <DataTableHeadCell key={id} {...column.columnDef.meta}>
+                                        {isPlaceholder ? null : (
+                                            <ColumnHeaderWrapper
+                                                onClick={column.getToggleSortingHandler()}
+                                                sortable={column.getCanSort()}
+                                            >
+                                                {flexRender(column.columnDef.header, getContext())}
+                                                <ColumnDirection
+                                                    direction={column.getIsSorted() || undefined}
+                                                />
+                                            </ColumnHeaderWrapper>
+                                        )}
+                                    </DataTableHeadCell>
+                                )
+                            )}
                         </DataTableRow>
                     ))}
                 </DataTableHead>

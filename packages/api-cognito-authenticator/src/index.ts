@@ -18,26 +18,17 @@ interface Key {
     kid?: string;
 }
 
-/**
- * This was extrapolated from packages/api-security-cognito/src/index.ts.
- * TODO @ts-refactor @pavel
- * Verify that this is correct and remove ts-refactor
- */
-interface TokenData {
+export interface TokenData {
     token_use: string;
     sub: string;
-    given_name: string;
-    family_name: string;
-    email: string;
 }
 
-export interface Authenticator {
-    (token: string): Promise<TokenData | null>;
+export interface Authenticator<TTokenData extends TokenData = TokenData> {
+    (token: string): Promise<TTokenData | null>;
 }
 
-export const createAuthenticator =
-    (config: Config): Authenticator =>
-    async idToken => {
+export const createAuthenticator = (config: Config) => {
+    return async <TTokenData extends TokenData = TokenData>(idToken: string) => {
         const getJWKsURL = () => {
             const { region, userPoolId } = config;
             return `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
@@ -80,7 +71,7 @@ export const createAuthenticator =
          * TODO @ts-refactor @pavel
          * Figure out correct types for the verify method. Maybe write your own, without using utils.promisify?
          */
-        const token: TokenData = await (verify as any)(idToken, jwkToPem(jwk));
+        const token: TTokenData = await (verify as any)(idToken, jwkToPem(jwk));
         if (token.token_use !== "id") {
             const error: any = new Error("idToken is invalid!");
             error.code = "SECURITY_COGNITO_INVALID_TOKEN";
@@ -89,3 +80,4 @@ export const createAuthenticator =
 
         return token;
     };
+};

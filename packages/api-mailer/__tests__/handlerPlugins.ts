@@ -10,7 +10,7 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import { createMailer } from "~/index";
+import { createMailerContext, createMailerGraphQL } from "~/index";
 import { contextSecurity } from "./graphQLHandler";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -77,7 +77,8 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
                 documentClient
             })
         }),
-        ...createMailer(),
+        ...createMailerContext(),
+        ...createMailerGraphQL(),
         plugins
     ];
 };

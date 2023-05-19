@@ -1,5 +1,6 @@
 import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
-import { CmsEntryListParams } from "~/types";
+import { CmsEntryListParams, CmsModel } from "~/types";
+import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 
 const categoryFields = `
     id
@@ -42,133 +43,168 @@ const errorFields = `
     }
 `;
 
-const getCategoryQuery = /* GraphQL */ `
-    query GetCategory($revision: ID, $entryId: ID, $status: CmsEntryStatusType) {
-        getCategory(revision: $revision, entryId: $entryId, status: $status) {
-            data {
-                ${categoryFields}
+const getCategoryQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetCategory($revision: ID, $entryId: ID, $status: CmsEntryStatusType) {
+            getCategory: get${model.singularApiName}(revision: $revision, entryId: $entryId, status: $status) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const getCategoriesByIdsQuery = /* GraphQL */ `
-    query GetCategories($revisions: [ID!]!) {
-        getCategoriesByIds(revisions: $revisions) {
-            data {
-                ${categoryFields}
+const getCategoriesByIdsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetCategories($revisions: [ID!]!) {
+            getCategoriesByIds: get${model.pluralApiName}ByIds(revisions: $revisions) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const listCategoriesQuery = /* GraphQL */ `
-    query ListCategories(
-        $where: CategoryListWhereInput
-        $sort: [CategoryListSorter]
-        $limit: Int
-        $after: String
-    ) {
-        listCategories(where: $where, sort: $sort, limit: $limit, after: $after) {
-            data {
-                ${categoryFields}
+const listCategoriesQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query ListCategories(
+            $where: ${model.singularApiName}ListWhereInput
+            $sort: [${model.singularApiName}ListSorter]
+            $limit: Int
+            $after: String
+        ) {
+            listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+                data {
+                    ${categoryFields}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                ${errorFields}
             }
-            meta {
-                cursor
-                hasMoreItems
-                totalCount
-            }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createCategoryMutation = /* GraphQL */ `
-    mutation CreateCategory($data: CategoryInput!) {
-        createCategory(data: $data) {
-            data {
-                ${categoryFields}
+const createCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateCategory($data: ${model.singularApiName}Input!) {
+            createCategory: create${model.singularApiName}(data: $data) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const createCategoryFromMutation = /* GraphQL */ `
-    mutation CreateCategoryFrom($revision: ID!) {
-        createCategoryFrom(revision: $revision) {
-            data {
-                ${categoryFields}
+const createCategoryFromMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateCategoryFrom($revision: ID!) {
+            createCategoryFrom: create${model.singularApiName}From(revision: $revision) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const updateCategoryMutation = /* GraphQL */ `
-    mutation UpdateCategory($revision: ID!, $data: CategoryInput!) {
-        updateCategory(revision: $revision, data: $data) {
-            data {
-                ${categoryFields}
+const updateCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdateCategory($revision: ID!, $data: ${model.singularApiName}Input!) {
+            updateCategory: update${model.singularApiName}(revision: $revision, data: $data) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const deleteCategoryMutation = /* GraphQL */ `
-    mutation DeleteCategory($revision: ID!) {
-        deleteCategory(revision: $revision) {
-            data
-            ${errorFields}
-        }
-    }
-`;
-
-const publishCategoryMutation = /* GraphQL */ `
-    mutation PublishCategory($revision: ID!) {
-        publishCategory(revision: $revision) {
-            data {
-                ${categoryFields}
+const deleteCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DeleteCategory($revision: ID!) {
+            deleteCategory: delete${model.singularApiName}(revision: $revision) {
+                data
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const republishCategoryMutation = /* GraphQL */ `
-    mutation RepublishCategory($revision: ID!) {
-        republishCategory(revision: $revision) {
-            data {
-                ${categoryFields}
+const deleteCategoriesMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DeleteCategories($entries: [ID!]!) {
+            deleteCategories: deleteMultiple${model.pluralApiName}(entries: $entries) {
+                data {
+                    id
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
 
-const unpublishCategoryMutation = /* GraphQL */ `
-    mutation UnpublishCategory($revision: ID!) {
-        unpublishCategory(revision: $revision) {
-            data {
-                ${categoryFields}
+const publishCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation PublishCategory($revision: ID!) {
+            publishCategory: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
             }
-            ${errorFields}
         }
-    }
-`;
+    `;
+};
+
+const republishCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation RepublishCategory($revision: ID!) {
+            republishCategory: republish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const unpublishCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UnpublishCategory($revision: ID!) {
+            unpublishCategory: unpublish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
 
 export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
+
+    const model = getCmsModel("category");
 
     return {
         ...contentHandler,
         async getCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: getCategoryQuery,
+                    query: getCategoryQuery(model),
                     variables
                 },
                 headers
@@ -179,7 +215,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             headers: Record<string, any> = {}
         ) {
             return await contentHandler.invoke({
-                body: { query: getCategoriesByIdsQuery, variables },
+                body: { query: getCategoriesByIdsQuery(model), variables },
                 headers
             });
         },
@@ -188,13 +224,13 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             headers: Record<string, any> = {}
         ) {
             return await contentHandler.invoke({
-                body: { query: listCategoriesQuery, variables },
+                body: { query: listCategoriesQuery(model), variables },
                 headers
             });
         },
         async createCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createCategoryMutation, variables },
+                body: { query: createCategoryMutation(model), variables },
                 headers
             });
         },
@@ -203,14 +239,14 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             headers: Record<string, any> = {}
         ) {
             return await contentHandler.invoke({
-                body: { query: createCategoryFromMutation, variables },
+                body: { query: createCategoryFromMutation(model), variables },
                 headers
             });
         },
         async updateCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: updateCategoryMutation,
+                    query: updateCategoryMutation(model),
                     variables
                 },
                 headers
@@ -219,16 +255,26 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
         async deleteCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: deleteCategoryMutation,
+                    query: deleteCategoryMutation(model),
                     variables
                 },
                 headers
             });
         },
+        async deleteCategories(entries: string[]) {
+            return await contentHandler.invoke({
+                body: {
+                    query: deleteCategoriesMutation(model),
+                    variables: {
+                        entries
+                    }
+                }
+            });
+        },
         async publishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: publishCategoryMutation,
+                    query: publishCategoryMutation(model),
                     variables
                 },
                 headers
@@ -237,7 +283,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
         async republishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: republishCategoryMutation,
+                    query: republishCategoryMutation(model),
                     variables
                 },
                 headers
@@ -246,7 +292,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
         async unpublishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
-                    query: unpublishCategoryMutation,
+                    query: unpublishCategoryMutation(model),
                     variables
                 },
                 headers

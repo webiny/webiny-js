@@ -2,6 +2,8 @@ import React from "react";
 import kebabCase from "lodash/kebabCase";
 import PagesList from "./PagesList";
 import GridPageList from "./components/GridPageList";
+import { Link } from "@webiny/react-router";
+
 import {
     PbRenderElementPluginArgs,
     PbRenderElementPlugin,
@@ -35,7 +37,17 @@ export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
             type: "pb-page-element-pages-list-component",
             title: "Grid list",
             componentName: "default",
-            component: isLegacyRenderingEngine ? GridPageList : createDefaultPagesListComponent()
+            component: isLegacyRenderingEngine
+                ? GridPageList
+                : createDefaultPagesListComponent({
+                      linkComponent: ({ href, children, ...rest }) => {
+                          return (
+                              <Link to={href!} {...rest}>
+                                  {children}
+                              </Link>
+                          );
+                      }
+                  })
         } as PbPageElementPagesListComponentPlugin
     ];
 };

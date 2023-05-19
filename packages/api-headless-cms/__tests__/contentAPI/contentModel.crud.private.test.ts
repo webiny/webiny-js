@@ -1,7 +1,8 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsGroup, CmsGroupCreateInput, CmsModel } from "~/types";
+import { CreateContentModelMutationVariables } from "~tests/testHelpers/graphql/contentModel";
 
 const privateGroup = new CmsGroupPlugin({
     isPrivate: true,
@@ -46,7 +47,7 @@ describe("Private Groups and Models", function () {
         listContentModelsQuery
     } = useGraphQLHandler(manageHandlerOpts);
 
-    const createGroup = async (data: Record<string, any>): Promise<CmsGroup> => {
+    const createGroup = async (data: CmsGroupCreateInput): Promise<CmsGroup> => {
         const [createResponse] = await createContentModelGroupMutation({
             data
         });
@@ -70,7 +71,9 @@ describe("Private Groups and Models", function () {
         });
     };
 
-    const createModel = async (data: Record<string, any>): Promise<CmsModel> => {
+    const createModel = async (
+        data: CreateContentModelMutationVariables["data"]
+    ): Promise<CmsModel> => {
         const [createResponse] = await createContentModelMutation({
             data
         });
@@ -81,6 +84,8 @@ describe("Private Groups and Models", function () {
         return createModel({
             name: "Animals",
             modelId: "animals",
+            singularApiName: "Animal",
+            pluralApiName: "Animals",
             group: {
                 id: group.id,
                 name: group.name

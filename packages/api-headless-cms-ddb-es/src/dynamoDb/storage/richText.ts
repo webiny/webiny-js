@@ -34,7 +34,7 @@ const transformArray = (value: any) => {
 };
 
 export const createRichTextStorageTransformPlugin = () => {
-    return new StorageTransformPlugin({
+    const plugin = new StorageTransformPlugin({
         fieldType: "rich-text",
         fromStorage: async ({ field, value: storageValue }) => {
             if (!storageValue) {
@@ -104,4 +104,7 @@ export const createRichTextStorageTransformPlugin = () => {
             };
         }
     });
+    plugin.name = `headless-cms.dynamodb.storageTransform.rich-text`;
+
+    return plugin;
 };

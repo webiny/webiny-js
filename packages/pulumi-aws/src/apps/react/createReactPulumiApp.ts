@@ -1,7 +1,7 @@
 import * as aws from "@pulumi/aws";
 
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
-import { tagResources } from "~/utils";
+import { addDomainsUrlsOutputs, tagResources } from "~/utils";
 import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import * as pulumi from "@pulumi/pulumi";
@@ -116,10 +116,19 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
                 applyCustomDomain(cloudfront, domains);
             }
 
-            app.addOutputs({
-                appStorage: bucket.bucket.output.id,
-                appDomain: cloudfront.output.domainName,
-                appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
+            app.addOutput("appStorage", bucket.bucket.output.id);
+
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: cloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontAppDomain",
+                        distributionUrl: "cloudfrontAppUrl",
+                        usedDomain: "appDomain",
+                        usedUrl: "appUrl"
+                    }
+                });
             });
 
             tagResources({

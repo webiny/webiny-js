@@ -1,6 +1,6 @@
 export interface FolderItem {
     id: string;
-    name: string;
+    title: string;
     slug: string;
     type: string;
     parentId: string | null;
@@ -9,12 +9,24 @@ export interface FolderItem {
         id: string;
         displayName: string;
     };
+    savedOn: string;
 }
 
-export interface LinkItem {
-    id: string;
-    linkId: string;
+export type GenericSearchData = {
+    [key: string]: any;
+};
+
+export interface Location {
     folderId: string;
+}
+
+export interface SearchRecordItem<TData extends GenericSearchData = GenericSearchData> {
+    id: string;
+    type: string;
+    title: string;
+    content: string;
+    location: Location;
+    data: TData;
 }
 
 export type Loading<T extends string> = { [P in T]?: boolean };
@@ -29,6 +41,23 @@ export interface Error {
 
 export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
 
+export enum ListDbSortDirection {
+    ASC = "ASC",
+    DESC = "DESC"
+}
+
+export enum ListTableSortDirection {
+    asc = "asc",
+    desc = "desc"
+}
+
+export type ListDbSort = Record<string, ListDbSortDirection>;
+
+export interface ListTableSort {
+    fields: string[];
+    orders: ListTableSortDirection[];
+}
+
 export interface ListMeta {
     cursor: string | null;
     totalCount: number;
@@ -36,7 +65,7 @@ export interface ListMeta {
 }
 
 export interface ListFoldersResponse {
-    folders: {
+    aco: {
         listFolders: {
             data: FolderItem[] | null;
             error: Error | null;
@@ -49,7 +78,7 @@ export interface ListFoldersQueryVariables {
 }
 
 export interface GetFolderResponse {
-    folders: {
+    aco: {
         getFolder: {
             data: FolderItem | null;
             error: Error | null;
@@ -62,7 +91,7 @@ export interface GetFolderQueryVariables {
 }
 
 export interface UpdateFolderResponse {
-    folders: {
+    aco: {
         updateFolder: {
             data: FolderItem;
             error: Error | null;
@@ -72,11 +101,11 @@ export interface UpdateFolderResponse {
 
 export interface UpdateFolderVariables {
     id: string;
-    data: Partial<Omit<FolderItem, "id">>;
+    data: Partial<Omit<FolderItem, "id" | "createdOn" | "createdBy" | "savedOn">>;
 }
 
 export interface CreateFolderResponse {
-    folders: {
+    aco: {
         createFolder: {
             data: FolderItem;
             error: Error | null;
@@ -85,7 +114,7 @@ export interface CreateFolderResponse {
 }
 
 export interface CreateFolderVariables {
-    data: Omit<FolderItem, "id">;
+    data: Omit<FolderItem, "id" | "createdOn" | "createdBy" | "savedOn">;
 }
 
 export interface DeleteFolderVariables {
@@ -93,7 +122,7 @@ export interface DeleteFolderVariables {
 }
 
 export interface DeleteFolderResponse {
-    folders: {
+    aco: {
         deleteFolder: {
             data: boolean;
             error: Error | null;
@@ -101,69 +130,71 @@ export interface DeleteFolderResponse {
     };
 }
 
-export interface ListLinksResponse {
-    folders: {
-        listLinks: {
-            data: LinkItem[] | null;
+export interface ListSearchRecordsResponse {
+    search: {
+        listRecords: {
+            data: SearchRecordItem[] | null;
             meta: ListMeta | null;
             error: Error | null;
         };
     };
 }
 
-export interface ListLinksQueryVariables {
-    folderId: string;
+export interface ListSearchRecordsQueryVariables {
+    type: string;
+    location: Location;
     limit?: number;
     after?: string | null;
+    sort?: ListDbSort;
 }
 
-export interface GetLinkResponse {
-    folders: {
-        getLink: {
-            data: LinkItem | null;
+export interface GetSearchRecordResponse {
+    search: {
+        getRecord: {
+            data: SearchRecordItem | null;
             error: Error | null;
         };
     };
 }
 
-export interface GetLinkQueryVariables {
+export interface GetSearchRecordQueryVariables {
     id: string;
 }
 
-export interface CreateLinkResponse {
-    folders: {
-        createLink: {
-            data: LinkItem;
+export interface CreateSearchRecordResponse {
+    search: {
+        createRecord: {
+            data: SearchRecordItem;
             error: Error | null;
         };
     };
 }
 
-export interface CreateLinkVariables {
-    data: Omit<LinkItem, "linkId">;
+export interface CreateSearchRecordVariables {
+    data: Omit<SearchRecordItem, "id" | "createdOn" | "createdBy" | "savedOn">;
 }
 
-export interface UpdateLinkResponse {
-    folders: {
-        updateLink: {
-            data: LinkItem;
+export interface UpdateSearchRecordResponse {
+    search: {
+        updateRecord: {
+            data: SearchRecordItem;
             error: Error | null;
         };
     };
 }
 
-export interface UpdateLinkVariables {
+export interface UpdateSearchRecordVariables {
     id: string;
-    data: Pick<LinkItem, "folderId">;
+    data: Pick<SearchRecordItem, "location" | "title" | "content" | "data">;
 }
 
-export interface DeleteLinkVariables {
+export interface DeleteSearchRecordVariables {
     id: string;
 }
 
-export interface DeleteLinkResponse {
-    folders: {
-        deleteLink: {
+export interface DeleteSearchRecordResponse {
+    search: {
+        deleteRecord: {
             data: boolean;
             error: Error | null;
         };

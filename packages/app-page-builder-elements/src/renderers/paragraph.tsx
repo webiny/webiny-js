@@ -1,15 +1,19 @@
 import React from "react";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-
-export type ParagraphRenderer = ReturnType<typeof createParagraph>;
+import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
+import { usePageElements } from "~/hooks/usePageElements";
 
 export const createParagraph = () => {
     return createRenderer(() => {
         const { getElement } = useRenderer();
         const element = getElement();
+        const { theme } = usePageElements();
 
         const __html = element.data.text.data.text;
+        if (isValidLexicalData(__html)) {
+            return <LexicalHtmlRenderer theme={theme} value={__html} />;
+        }
 
         // If the text already contains `p` tags (happens when c/p-ing text into the editor),
         // we don't want to wrap it with another pair of `p` tag.

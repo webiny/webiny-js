@@ -1,6 +1,6 @@
 import { ApwContentReviewStepStatus } from "~/types";
 import { createSetupForPageContentReview } from "../utils/helpers";
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { createTransport } from "@webiny/api-mailer";
 
 jest.mock("~/plugins/hooks/notifications/appUrl", () => {
@@ -21,9 +21,12 @@ describe("Content Review crud test", () => {
         email: "testing@webiny.com"
     };
 
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
 
-    const rootGqlHandler = usePageBuilderHandler({
+    const rootGqlHandler = useGraphQlHandler({
+        path: "/graphql",
         identity: identityRoot
     });
 
@@ -416,7 +419,8 @@ describe("Content Review crud test", () => {
             return null;
         });
 
-        const handler = usePageBuilderHandler({
+        const handler = useGraphQlHandler({
+            path: "/graphql",
             identity: {
                 id: "mockIdentityId",
                 type: "admin",

@@ -24,7 +24,7 @@ export interface StorageValue {
 }
 
 export const createLongTextStorageTransformPlugin = () => {
-    return new StorageTransformPlugin<string | string[], StorageValue>({
+    const plugin = new StorageTransformPlugin<string | string[], StorageValue>({
         fieldType: "long-text",
         fromStorage: async ({ field, value: storageValue }) => {
             const typeOf = typeof storageValue;
@@ -98,4 +98,7 @@ export const createLongTextStorageTransformPlugin = () => {
             return result;
         }
     });
+    plugin.name = plugin.name = `headless-cms.dynamodb.storageTransform.long-text`;
+
+    return plugin;
 };

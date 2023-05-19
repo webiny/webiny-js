@@ -7,7 +7,7 @@ const {
 } = require("@webiny/api-dynamodb-to-elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
-const { createGzipCompression } = require("@webiny/api-elasticsearch");
+const { createGzipCompression, getElasticsearchOperators } = require("@webiny/api-elasticsearch");
 const { ContextPlugin } = require("@webiny/api");
 const {
     elasticIndexManager
@@ -77,14 +77,15 @@ class CmsTestEnvironment extends NodeEnvironment {
         /**
          * We need to create model index before entry create because of the direct storage operations tests.
          * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
+         *
+         * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
          */
-        const onEntryBeforeCreate = new ContextPlugin(async context => {
+        const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
             context.waitFor(["cms"], async () => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
                     const index = createIndexName(model);
                     const response = await elasticsearchClient.indices.exists({
-                        index,
-                        ignore_unavailable: true
+                        index
                     });
                     if (response.body) {
                         return;
@@ -102,13 +103,6 @@ class CmsTestEnvironment extends NodeEnvironment {
                         console.log(JSON.stringify(ex));
                     }
                 });
-            });
-        });
-        /**
-         * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
-         */
-        const refreshIndexSubscription = new ContextPlugin(async context => {
-            context.waitFor(["cms"], async () => {
                 context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
@@ -121,7 +115,13 @@ class CmsTestEnvironment extends NodeEnvironment {
                 context.cms.onEntryAfterPublish.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
+                context.cms.onEntryAfterRepublish.subscribe(async ({ model }) => {
+                    await refreshIndex(model);
+                });
                 context.cms.onEntryAfterUnpublish.subscribe(async ({ model }) => {
+                    await refreshIndex(model);
+                });
+                context.cms.onEntryRevisionAfterDelete.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
                 context.cms.onEntryAfterDelete.subscribe(async ({ model }) => {
@@ -131,6 +131,8 @@ class CmsTestEnvironment extends NodeEnvironment {
         });
 
         const plugins = [
+            elasticsearchClientContext,
+            getElasticsearchOperators(),
             createGzipCompression(),
             /**
              * TODO remove when all apps are created with their own storage operations factory and drivers.
@@ -141,7 +143,7 @@ class CmsTestEnvironment extends NodeEnvironment {
                     documentClient
                 })
             }),
-            refreshIndexSubscription
+            createOrRefreshIndexSubscription
         ];
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
@@ -156,8 +158,6 @@ class CmsTestEnvironment extends NodeEnvironment {
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
                         plugins: testPlugins.concat([
-                            createGzipCompression(),
-                            onEntryBeforeCreate,
                             createCmsEntryElasticsearchBodyModifierPlugin({
                                 modifyBody: ({ body }) => {
                                     if (!body.sort.customSorter) {

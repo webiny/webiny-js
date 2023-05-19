@@ -5,18 +5,29 @@ import {
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
-    ApiHeadlessCMS,
+    ApiMigration,
     ApiPageBuilder,
     CoreOutput,
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources } from "~/utils";
-import { withCommonLambdaEnvVariables } from "~/utils";
+import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
 export interface CreateApiPulumiAppParams {
+    /**
+     * Enables ElasticSearch infrastructure.
+     * Note that it requires also changes in application code.
+     */
+    elasticSearch?: PulumiAppParam<
+        | boolean
+        | Partial<{
+              domainName: string;
+              indexPrefix: string;
+          }>
+    >;
+
     /**
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the Core application.
@@ -101,7 +112,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager);
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName
+                }
+            });
 
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
@@ -112,30 +127,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     DB_TABLE: core.primaryDynamodbTableName,
                     S3_BUCKET: core.fileManagerBucketId,
                     WEBINY_LOGS_FORWARD_URL
-                }
-            });
-
-            const headlessCms = app.addModule(ApiHeadlessCMS, {
-                env: {
-                    COGNITO_REGION: String(process.env.AWS_REGION),
-                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                    ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
-
-                    // Not required. Useful for testing purposes / ephemeral environments.
-                    // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-
-                    S3_BUCKET: core.fileManagerBucketId,
-                    // TODO: move to okta plugin
-                    OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                    WEBINY_LOGS_FORWARD_URL,
-                    /**
-                     * APW
-                     */
-                    APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
-                        apwScheduler.scheduleAction.lambda.output.arn
                 }
             });
 
@@ -180,23 +171,29 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     function: graphql.functions.graphql.output.arn
                 },
                 "files-any": {
-                    path: "/files/{path}",
+                    path: "/files/{path+}",
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
                 "cms-post": {
                     path: "/cms/{key+}",
                     method: "POST",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
                 },
                 "cms-options": {
                     path: "/cms/{key+}",
                     method: "OPTIONS",
-                    function: headlessCms.functions.graphql.output.arn
+                    function: graphql.functions.graphql.output.arn
+                },
+                "files-catch-all": {
+                    path: "/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
                 }
             });
 
             const cloudfront = app.addModule(ApiCloudfront);
+            const migration = app.addModule(ApiMigration);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -205,8 +202,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             app.addOutputs({
                 region: process.env.AWS_REGION,
-                apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
-                apiDomain: cloudfront.output.domainName,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
@@ -215,7 +210,21 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
+                migrationLambdaArn: migration.function.output.arn
+            });
+
+            app.addHandler(() => {
+                addDomainsUrlsOutputs({
+                    app,
+                    cloudfrontDistribution: cloudfront,
+                    map: {
+                        distributionDomain: "cloudfrontApiDomain",
+                        distributionUrl: "cloudfrontApiUrl",
+                        usedDomain: "apiDomain",
+                        usedUrl: "apiUrl"
+                    }
+                });
             });
 
             tagResources({
@@ -226,13 +235,26 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             return {
                 fileManager,
                 graphql,
-                headlessCms,
                 apiGateway,
                 cloudfront,
-                apwScheduler
+                apwScheduler,
+                migration
             };
         }
     });
+
+    if (projectAppParams.elasticSearch) {
+        const elasticSearch = app.getParam(projectAppParams.elasticSearch);
+        if (typeof elasticSearch === "object") {
+            if (elasticSearch.domainName) {
+                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+            }
+
+            if (elasticSearch.indexPrefix) {
+                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+            }
+        }
+    }
 
     return withCommonLambdaEnvVariables(app);
 };

@@ -34,6 +34,22 @@ import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
 import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
 import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
+import { createPageTemplateEntity } from "~/definitions/pageTemplateEntity";
+import { createPageTemplateDynamoDbFields } from "~/operations/pageTemplate/fields";
+import { createPageTemplateStorageOperations } from "~/operations/pageTemplate";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import {
+    BlockCategoryDynamoDbFieldPlugin,
+    CategoryDynamoDbFieldPlugin,
+    MenuDynamoDbFieldPlugin,
+    PageBlockDynamoDbFieldPlugin,
+    PageDynamoDbFieldPlugin,
+    PageElementDynamoDbFieldPlugin,
+    PageTemplateDynamoDbFieldPlugin
+} from "~/plugins";
+
+export * from "./plugins";
+
 export const createStorageOperations: StorageOperationsFactory = params => {
     const { documentClient, table, attributes, plugins: userPlugins } = params;
 
@@ -74,14 +90,17 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Page Block fields required for filtering/sorting.
          */
-        createPageBlockDynamoDbFields()
+        createPageBlockDynamoDbFields(),
+        /**
+         * Page Template fields required for filtering/sorting.
+         */
+        createPageTemplateDynamoDbFields()
     ]);
 
     const entities = {
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
+            table: tableInstance
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
@@ -117,10 +136,50 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entityName: ENTITIES.PAGE_BLOCKS,
             table: tableInstance,
             attributes: attributes ? attributes[ENTITIES.PAGE_BLOCKS] : {}
+        }),
+        pageTemplates: createPageTemplateEntity({
+            entityName: ENTITIES.PAGE_TEMPLATES,
+            table: tableInstance,
+            attributes: attributes ? attributes[ENTITIES.PAGE_TEMPLATES] : {}
         })
     };
 
+    const categories = createCategoryStorageOperations({
+        entity: entities.categories,
+        plugins
+    });
+    const blockCategories = createBlockCategoryStorageOperations({
+        entity: entities.blockCategories,
+        plugins
+    });
+    const pageBlocks = createPageBlockStorageOperations({
+        entity: entities.pageBlocks,
+        plugins
+    });
+    const pageTemplates = createPageTemplateStorageOperations({
+        entity: entities.pageTemplates,
+        plugins
+    });
+
     return {
+        beforeInit: async (context: PbContext) => {
+            const types: string[] = [
+                BlockCategoryDynamoDbFieldPlugin.type,
+                CategoryDynamoDbFieldPlugin.type,
+                MenuDynamoDbFieldPlugin.type,
+                PageBlockDynamoDbFieldPlugin.type,
+                PageDynamoDbFieldPlugin.type,
+                PageElementDynamoDbFieldPlugin.type,
+                PageTemplateDynamoDbFieldPlugin.type
+            ];
+            for (const type of types) {
+                plugins.mergeByType(context.plugins, type);
+            }
+            pageTemplates.dataLoader.clear();
+            pageBlocks.dataLoader.clear();
+            blockCategories.dataLoader.clear();
+            categories.dataLoader.clear();
+        },
         getEntities: () => entities,
         getTable: () => tableInstance,
         system: createSystemStorageOperations({
@@ -128,10 +187,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         }),
         settings: createSettingsStorageOperations({
             entity: entities.settings
-        }),
-        categories: createCategoryStorageOperations({
-            entity: entities.categories,
-            plugins
         }),
         menus: createMenuStorageOperations({
             entity: entities.menus,
@@ -145,13 +200,9 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entity: entities.pages,
             plugins
         }),
-        blockCategories: createBlockCategoryStorageOperations({
-            entity: entities.blockCategories,
-            plugins
-        }),
-        pageBlocks: createPageBlockStorageOperations({
-            entity: entities.pageBlocks,
-            plugins
-        })
+        categories,
+        blockCategories,
+        pageBlocks,
+        pageTemplates
     };
 };

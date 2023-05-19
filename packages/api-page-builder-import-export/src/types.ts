@@ -230,3 +230,26 @@ export interface ImportExportTaskStorageOperations {
         params: ImportExportTaskStorageOperationsUpdateSubTaskParams
     ): Promise<ImportExportTask>;
 }
+
+export interface FileUploadsData {
+    /**
+     * Location of export data file. Export data contains the relevant entity data (block, page, template), and an
+     * array of file objects, exported from the DB, that need to be imported.
+     *
+     * Example:
+     * 'IMPORTS/8lf6y7xp5/8lf6x9v68-header-1/8lf6x9v69-header-1/Header #1.json'
+     */
+    data: string;
+    /**
+     * Example:
+     * '8ldspraka-9l9iaffak-1.jpeg': 'IMPORTS/8lf6y7xp5/8lf6x9v68-header-1/assets/8ldspraka-9l9iaffak-1.jpeg',
+     * '8ldwyq8ao-pb-editor-page-element-rzfKWtdTWN.png': 'IMPORTS/8lf6y7xp5/8lf6x9v69-header-1/assets/8ldwyq8ao-pb-editor-page-element-rzfKWtdTWN.png'
+     */
+    assets: Record<string, string>;
+}
+
+export interface ImportData {
+    assets: Record<string, string>;
+    data: string;
+    key: string;
+}

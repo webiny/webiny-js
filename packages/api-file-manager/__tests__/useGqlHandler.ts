@@ -6,7 +6,6 @@ import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { until } from "@webiny/project-utils/testing/helpers/until";
-import filesPlugins from "~/plugins";
 
 // Graphql
 import {
@@ -25,8 +24,10 @@ import {
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
+import { FilePhysicalStoragePlugin } from "~/plugins/FilePhysicalStoragePlugin";
 import { PluginCollection } from "@webiny/plugins/types";
+import { getStorageOperations } from "~tests/storageOperations";
+import { createFileManagerContext, createFileManagerGraphQL } from "~/index";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -45,29 +46,24 @@ interface InvokeParams {
 
 export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
-    // @ts-ignore
-    if (typeof __getStorageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
-    }
-    // @ts-ignore
-    const storageOperations = __getStorageOperationsPlugins();
-    if (typeof storageOperations !== "function") {
-        throw new Error(
-            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
-        );
-    }
+
+    const { storageOperations, plugins: storagePlugins } = getStorageOperations({});
+
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
+            ...storagePlugins,
             createWcpContext(),
             createWcpGraphQL(),
-            storageOperations(),
             i18nDynamoDbStorageOperations(),
             graphqlHandlerPlugins(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
             mockLocalesPlugins(),
-            filesPlugins(),
+            createFileManagerContext({
+                storageOperations
+            }),
+            createFileManagerGraphQL(),
             /**
              * Mock physical file storage plugin.
              */

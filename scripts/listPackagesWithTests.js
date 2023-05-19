@@ -61,6 +61,20 @@ const CUSTOM_HANDLERS = {
             //     // "packages/api-apw/* --keyword=cms:ddb --keyword=apw:base",
             //     // "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
         ];
+    },
+    // Setup "api-aco" tests.
+    "api-aco": () => {
+        return [
+            "packages/api-aco/* --keyword=cms:ddb --keyword=aco:base",
+            "packages/api-aco/* --keyword=cms:ddb-es --keyword=aco:base"
+        ];
+    },
+    // Setup "api-page-builder-aco" tests.
+    "api-page-builder-aco": () => {
+        return [
+            "packages/api-page-builder-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base",
+            "packages/api-page-builder-aco/* --keyword=cms:ddb-es --keyword=aco:base --keyword=pb:ddb-es --keyword=pb:base --keyword=api-page-builder-aco:base"
+        ];
     }
 };
 
@@ -83,8 +97,8 @@ function hasTestFiles(folder) {
             if (hasTFiles) {
                 return true;
             }
-        } else {
-            return testFilePattern.test(filepath);
+        } else if (testFilePattern.test(filepath)) {
+            return true;
         }
     }
     return false;

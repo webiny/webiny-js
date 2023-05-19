@@ -4,5 +4,6 @@ export const HANDLERS_PATHS = [
     ["pageBuilder", "import", "create"],
     ["pageBuilder", "import", "process"],
     ["apw", "executeAction"],
-    ["apw", "scheduleAction"]
+    ["apw", "scheduleAction"],
+    ["migration"]
 ];

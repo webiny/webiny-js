@@ -1,4 +1,4 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { defaultIdentity } from "../utils/defaultIdentity";
 
 const identityRoot = {
@@ -10,16 +10,19 @@ const identityRoot = {
 const updatedDisplayName = "Robert Downey";
 
 describe("Reviewer crud test", () => {
-    const { securityIdentity, reviewer, until } = usePageBuilderHandler({
+    const { securityIdentity, reviewer, until } = useGraphQlHandler({
+        path: "/graphql",
         plugins: [defaultIdentity()]
     });
 
-    const { securityIdentity: securityIdentityRoot } = usePageBuilderHandler({
+    const { securityIdentity: securityIdentityRoot } = useGraphQlHandler({
+        path: "/graphql",
         plugins: [defaultIdentity()],
         identity: identityRoot
     });
 
-    const { securityIdentity: securityIdentityRootUpdated } = usePageBuilderHandler({
+    const { securityIdentity: securityIdentityRootUpdated } = useGraphQlHandler({
+        path: "/graphql",
         plugins: [defaultIdentity()],
         identity: {
             ...identityRoot,
@@ -378,7 +381,8 @@ describe("Reviewer crud test", () => {
     });
 
     it("should update reviewer when login info changes", async () => {
-        const { securityIdentity: baseSecurityIdentity, reviewer } = usePageBuilderHandler({
+        const { securityIdentity: baseSecurityIdentity, reviewer } = useGraphQlHandler({
+            path: "/graphql",
             identity: {
                 id: "mockUpdateIdentityId",
                 type: "admin",
@@ -427,7 +431,8 @@ describe("Reviewer crud test", () => {
         const email = "mock@webiny.local";
 
         const { securityIdentity: updatedSecurityIdentity, reviewer: updatedReviewer } =
-            usePageBuilderHandler({
+            useGraphQlHandler({
+                path: "/graphql",
                 identity: {
                     id: "mockUpdateIdentityId",
                     type: "admin",

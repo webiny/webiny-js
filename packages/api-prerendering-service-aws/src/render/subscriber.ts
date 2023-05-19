@@ -22,7 +22,6 @@ export default (params: HandlerConfig) => {
         }
 
         const event = payload.detail;
-        const tenant = event.tenant;
         const variant = event.variant;
 
         // Check if a specific variant rerender is requested.
@@ -41,23 +40,31 @@ export default (params: HandlerConfig) => {
         // Event might contain specific paths to exclude from full rerender.
         const exclude = event.exclude || [];
 
-        if (event.path === "*") {
-            const renders = await storageOperations.listRenders({
-                where: { tenant }
-            });
+        let tenants = [event.tenant];
+        if (event.tenant === "*") {
+            // If `*` is passed, we need to process this event on all tenants.
+            tenants = await storageOperations.getTenantIds();
+        }
 
-            renders.forEach(addRender);
-        } else if (event.tag) {
-            const renders = await storageOperations.listRenders({
-                where: {
-                    tenant,
-                    tag: event.tag
-                }
-            });
+        for (const tenant of tenants) {
+            if (event.path === "*") {
+                const renders = await storageOperations.listRenders({
+                    where: { tenant }
+                });
 
-            renders.forEach(addRender);
-        } else {
-            addRender(event);
+                renders.forEach(addRender);
+            } else if (event.tag) {
+                const renders = await storageOperations.listRenders({
+                    where: {
+                        tenant,
+                        tag: event.tag
+                    }
+                });
+
+                renders.forEach(addRender);
+            } else {
+                addRender({ ...event, tenant });
+            }
         }
 
         const entries: SendMessageBatchRequestEntry[] = [];

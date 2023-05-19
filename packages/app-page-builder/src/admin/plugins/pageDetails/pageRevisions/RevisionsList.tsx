@@ -17,7 +17,7 @@ const Wrapper = styled(Elevation)`
     display: flex;
     flex-direction: column;
     overflow: auto;
-    max-height: calc(100vh - 160px);
+    max-height: calc(100vh - 100px);
 
     .mdc-list .mdc-list-item {
         border-bottom: 1px solid var(--mdc-theme-on-background);

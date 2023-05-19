@@ -1,7 +1,7 @@
 // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
 // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
 // React hook is checked instead (a `null` value means the provider React component wasn't mounted).
-import { type CSSObject } from "@emotion/core";
+import { type CSSObject } from "@emotion/react";
 
 import {
     AssignAttributesCallback,
@@ -13,7 +13,7 @@ import {
     StylesCallback
 } from "~/types";
 
-import { StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
+import { StylesObject, ThemeBreakpoints, Typography, TypographyStyle } from "@webiny/theme/types";
 
 let usingPageElementsFlag = false;
 
@@ -182,4 +182,24 @@ export const createObjectHash = (object: Record<string, any>) => {
     }
 
     return hash;
+};
+
+/*
+ * Desc: CSSObject style
+ * */
+export const getTypographyStyleById = (
+    typographyId: string,
+    typography?: Typography
+): CSSObject | undefined => {
+    if (!typography) {
+        return undefined;
+    }
+    for (const key in typography) {
+        const typographyStyles = typography[key] as TypographyStyle[];
+        const typographyStyle = typographyStyles.find(x => x.id === typographyId);
+        if (typographyStyle) {
+            return typographyStyle.styles;
+        }
+    }
+    return undefined;
 };

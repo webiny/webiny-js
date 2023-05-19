@@ -13,11 +13,10 @@ export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
     padding: 4px 32px 4px 0;
-    background: ${props => props.isFocused && "var(--mdc-theme-background)"};
+    background: ${props => props.isFocused && "var(--mdc-theme-on-background)"};
     color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;
     position: relative;
-
     &:hover .folder-tree-menu-action {
         visibility: visible;
     }
@@ -30,6 +29,7 @@ export const Icon = styled("div")`
     height: 24px;
     width: 24px;
     cursor: pointer;
+    fill: var(--mdc-theme-text-secondary-on-background);
 `;
 
 export const ArrowIcon = styled(Icon)<ArrowIconContainerProps>`
@@ -47,6 +47,7 @@ export const Content = styled("div")`
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
+    width: 100%;
 `;
 
 export const Text = styled(Typography)`
@@ -54,4 +55,7 @@ export const Text = styled(Typography)`
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 24px;
+    &.focused {
+        font-weight: 600;
+    }
 `;

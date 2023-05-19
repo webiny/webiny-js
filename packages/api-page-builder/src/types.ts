@@ -1,5 +1,4 @@
 import { DefaultSettingsCrudOptions, PbContext } from "~/graphql/types";
-import { UpgradePlugin } from "@webiny/api-upgrade";
 
 export * from "./graphql/types";
 
@@ -12,7 +11,7 @@ export interface PageElement {
     type: "element" | "block";
     category: string;
     content: any;
-    preview: File;
+    preview?: Partial<File>;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -24,7 +23,7 @@ export interface PageElement {
 export interface Menu {
     title: string;
     slug: string;
-    description: string;
+    description?: string;
     items: any[];
     createdOn: string;
     createdBy: CreatedBy;
@@ -55,21 +54,21 @@ export type PageSpecialType = "home" | "notFound";
 
 export interface PageSettings {
     social?: {
-        title: string;
-        description: string;
-        image: File;
-        meta: Array<{ property: string; content: string }>;
+        title?: string | null;
+        description?: string | null;
+        image?: File | null;
+        meta?: Array<{ property: string; content: string }>;
     };
     seo?: {
-        title: string;
-        description: string;
-        meta: Array<{ name: string; content: string }>;
+        title?: string | null;
+        description?: string | null;
+        meta?: Array<{ name: string; content: string }>;
     };
     general?: {
-        tags: string[];
-        snippet: string;
-        layout: string;
-        image: File;
+        tags?: string[];
+        snippet?: string;
+        layout?: string;
+        image?: File;
     };
     /**
      * Basically we can have anything in page settings.
@@ -89,7 +88,7 @@ export interface Page {
     content: Record<string, any> | null;
     publishedOn: string | null;
     version: number;
-    settings?: PageSettings;
+    settings: PageSettings;
     locked: boolean;
     status: PageStatus;
     createdOn: string;
@@ -391,10 +390,10 @@ export interface SystemStorageOperations {
  */
 export interface Settings {
     name: string;
-    websiteUrl: string;
-    websitePreviewUrl: string;
-    favicon: File;
-    logo: File;
+    websiteUrl?: string | null;
+    websitePreviewUrl?: string | null;
+    favicon?: Partial<File>;
+    logo?: Partial<File>;
     prerendering: {
         app: {
             url: string;
@@ -404,21 +403,20 @@ export interface Settings {
         };
         meta: Record<string, any>;
     };
-    social: {
-        facebook: string;
-        twitter: string;
-        instagram: string;
-        image: File;
+    social?: {
+        facebook?: string;
+        twitter?: string;
+        instagram?: string;
+        image?: Partial<File>;
     };
-    htmlTags: {
-        header: string;
-        footer: string;
+    htmlTags?: {
+        header?: string;
+        footer?: string;
     };
-    pages: {
-        home: string;
-        notFound: string;
+    pages?: {
+        home?: string | null;
+        notFound?: string | null;
     };
-    type: string;
     tenant: string | undefined | false;
     locale: string | undefined | false;
 }
@@ -434,7 +432,6 @@ export interface DefaultSettings {
  */
 export interface SettingsStorageOperationsGetParams {
     where: {
-        type: string;
         tenant: string;
         locale: string;
     };
@@ -689,13 +686,10 @@ export interface PageBuilderStorageOperations {
     pages: PageStorageOperations;
     blockCategories: BlockCategoryStorageOperations;
     pageBlocks: PageBlockStorageOperations;
+    pageTemplates: PageTemplateStorageOperations;
 
     beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
-    /**
-     * An upgrade to run if necessary.
-     */
-    upgrade?: UpgradePlugin | null;
 }
 
 /**
@@ -800,7 +794,7 @@ export interface PageBlock {
     name: string;
     blockCategory: string;
     content: any;
-    preview: File;
+    preview: Partial<File>;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;
@@ -886,4 +880,110 @@ export interface PageBlockStorageOperations {
     create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
     update(params: PageBlockStorageOperationsUpdateParams): Promise<PageBlock>;
     delete(params: PageBlockStorageOperationsDeleteParams): Promise<PageBlock>;
+}
+
+/**
+ * @category RecordModel
+ */
+export interface PageTemplate {
+    id: string;
+    title: string;
+    slug: string;
+    tags: string[];
+    description: string;
+    layout?: string;
+    pageCategory: string;
+    content?: any;
+    createdOn: string;
+    savedOn: string;
+    createdBy: CreatedBy;
+    tenant: string;
+    locale: string;
+}
+
+export type PageTemplateInput = Pick<
+    PageTemplate,
+    "title" | "description" | "content" | "slug" | "tags" | "layout" | "pageCategory"
+> & { id?: string };
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsGetParams {
+    where: {
+        id?: string;
+        slug?: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export type PageTemplateStorageOperationsListResponse = [PageTemplate[], MetaResponse];
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsCreateParams {
+    input: Record<string, any>;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: PageTemplate;
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperationsDeleteParams {
+    pageTemplate: PageTemplate;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageTemplateStorageOperations
+ */
+export interface PageTemplateStorageOperations {
+    /**
+     * Get a single page block item by given params.
+     */
+    get(params: PageTemplateStorageOperationsGetParams): Promise<PageTemplate | null>;
+    /**
+     * Get all page block items by given params.
+     */
+    list(
+        params: PageTemplateStorageOperationsListParams
+    ): Promise<PageTemplateStorageOperationsListResponse>;
+
+    create(params: PageTemplateStorageOperationsCreateParams): Promise<PageTemplate>;
+    update(params: PageTemplateStorageOperationsUpdateParams): Promise<PageTemplate>;
+    delete(params: PageTemplateStorageOperationsDeleteParams): Promise<PageTemplate>;
 }

@@ -18,6 +18,7 @@
     "@commodo/fields": "beta",
     "@webiny/api": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-form-builder": "0.0.0",
     "@webiny/api-page-builder": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/error": "0.0.0",

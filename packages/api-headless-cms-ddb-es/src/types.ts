@@ -2,6 +2,7 @@ import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import {
     CmsContext as BaseCmsContext,
     CmsEntry,
+    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
@@ -117,7 +118,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * unmappedType: "date"
      * ```
      */
-    unmappedType?: (field: CmsModelField) => string;
+    unmappedType?: (field: Pick<CmsModelField, "fieldId" | "type">) => string;
     /**
      * This is meant to do some transformation of the entry, preferably only to fieldType it was defined for. Nothing is stopping you to do anything you want to other fields, but try to separate field transformations.
      * It returns `Partial<CmsContentIndexEntryType>`. Always return a top-level property of the entry since it is merged via spread operator.
@@ -186,4 +187,15 @@ export interface StorageOperationsFactory {
 
 export interface CmsContext extends BaseCmsContext {
     [key: string]: any;
+}
+
+export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
+    dataLoaders: DataLoadersHandlerInterface;
+}
+
+export interface DataLoadersHandlerInterfaceClearAllParams {
+    model: Pick<CmsModel, "tenant" | "locale">;
+}
+export interface DataLoadersHandlerInterface {
+    clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

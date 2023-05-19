@@ -22,9 +22,10 @@ export const createCommentStorageOperations = ({
     security
 }: CreateApwStorageOperationsParams): ApwCommentStorageOperations => {
     const getCommentModel = async () => {
-        security.disableAuthorization();
-        const model = await cms.getModel(COMMENT_MODEL_ID);
-        security.enableAuthorization();
+        const model = await security.withoutAuthorization(async () => {
+            return cms.getModel(COMMENT_MODEL_ID);
+        });
+
         if (!model) {
             throw new WebinyError(
                 `Could not find "${COMMENT_MODEL_ID}" model.`,
@@ -35,9 +36,10 @@ export const createCommentStorageOperations = ({
     };
     const getComment: ApwCommentStorageOperations["getComment"] = async ({ id }) => {
         const model = await getCommentModel();
-        security.disableAuthorization();
-        const entry = await cms.getEntryById(model, id);
-        security.enableAuthorization();
+        const entry = await security.withoutAuthorization(async () => {
+            return cms.getEntryById(model, id);
+        });
+
         return getFieldValues({
             entry,
             fields: baseFields,
@@ -53,12 +55,9 @@ export const createCommentStorageOperations = ({
         },
         async listComments(params) {
             const model = await getCommentModel();
-            security.disableAuthorization();
-            const [entries, meta] = await cms.listLatestEntries(
-                model,
-                params as CmsEntryListParams
-            );
-            security.enableAuthorization();
+            const [entries, meta] = await security.withoutAuthorization(async () => {
+                return cms.listLatestEntries(model, params as CmsEntryListParams);
+            });
             const values = await Promise.all(
                 entries.map(entry =>
                     getFieldValues<ApwComment>({
@@ -75,15 +74,16 @@ export const createCommentStorageOperations = ({
         async createComment(this: ApwStorageOperations, params) {
             const model = await getCommentModel();
             const refModel = await this.getChangeRequestModel();
-            security.disableAuthorization();
-            const entry = await cms.createEntry(model, {
-                ...params.data,
-                changeRequest: {
-                    id: params.data.changeRequest,
-                    modelId: refModel.modelId
-                }
+
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.createEntry(model, {
+                    ...params.data,
+                    changeRequest: {
+                        id: params.data.changeRequest,
+                        modelId: refModel.modelId
+                    }
+                });
             });
-            security.enableAuthorization();
 
             const values = await getFieldValues({
                 entry,
@@ -101,12 +101,13 @@ export const createCommentStorageOperations = ({
              */
             const existingEntry = await getComment({ id: params.id });
 
-            security.disableAuthorization();
-            const entry = await cms.updateEntry(model, params.id, {
-                ...existingEntry,
-                ...params.data
+            const entry = await security.withoutAuthorization(async () => {
+                return cms.updateEntry(model, params.id, {
+                    ...existingEntry,
+                    ...params.data
+                });
             });
-            security.enableAuthorization();
+
             const values = await getFieldValues({
                 entry,
                 fields: baseFields,
@@ -117,9 +118,9 @@ export const createCommentStorageOperations = ({
         },
         async deleteComment(params) {
             const model = await getCommentModel();
-            security.disableAuthorization();
-            await cms.deleteEntry(model, params.id);
-            security.enableAuthorization();
+            await security.withoutAuthorization(async () => {
+                return cms.deleteEntry(model, params.id);
+            });
             return true;
         }
     };

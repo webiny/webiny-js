@@ -22,8 +22,8 @@
     "elastic-ts": "^0.8.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^3.0.2",

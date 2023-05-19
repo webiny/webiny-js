@@ -1,5 +1,4 @@
 import { createGraphQL as baseCreateGraphQL, CreateGraphQLParams } from "~/graphql";
-import { createUpgrades } from "~/upgrades";
 import { createDefaultModelManager } from "~/modelManager";
 import { createGraphQLFields } from "~/graphqlFields";
 import { createValidators } from "~/validators";
@@ -31,7 +30,7 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
         /**
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
-        baseCreateGraphQL(params)
+        ...baseCreateGraphQL(params)
     ];
 };
 
@@ -48,10 +47,11 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
         createValidators(),
         createDefaultStorageTransform(),
         createObjectStorageTransform(),
-        createDynamicZoneStorageTransform(),
-        createUpgrades()
+        createDynamicZoneStorageTransform()
     ];
 };
 export * from "~/graphqlFields";
 export * from "~/plugins";
+export * from "~/utils/incrementEntryIdVersion";
+export * from "./graphql/handleRequest";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };

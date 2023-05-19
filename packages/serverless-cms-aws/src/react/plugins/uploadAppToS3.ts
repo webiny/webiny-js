@@ -28,6 +28,11 @@ export const uploadAppToS3 = ({ folder, ...config }: UploadAppToS3Config) => ({
     type: "hook-after-deploy",
     name: "hook-after-deploy-upload-app-to-s3",
     async hook(params: Record<string, any>, context: CliContext) {
+        // No need to upload the app if we're doing a preview.
+        if (params.inputs.preview) {
+            return;
+        }
+
         const { projectApplication } = params;
 
         context.info("Uploading React application...");

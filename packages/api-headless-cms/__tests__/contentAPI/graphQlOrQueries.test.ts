@@ -15,7 +15,7 @@ describe(`graphql "or" queries`, () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
     });
-    const { createCategory, listCategories, until } = manager;
+    const { createCategory, listCategories } = manager;
 
     const createCategories = async () => {
         await setupGroupAndModels({
@@ -34,19 +34,6 @@ describe(`graphql "or" queries`, () => {
 
     beforeEach(async () => {
         await createCategories();
-
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }: any) => {
-                return data.listCategories.data.length === categories.length;
-            },
-            {
-                name: "list all categories",
-                tries: 20,
-                debounce: 2000,
-                wait: 2000
-            }
-        );
     });
 
     it(`should filter via root level "OR" condition and return records`, async () => {

@@ -2,14 +2,8 @@ import React from "react";
 import { ImageEditor } from "~/ImageEditor";
 import { Tooltip } from "~/Tooltip";
 import { css } from "emotion";
-import {
-    Dialog,
-    DialogAccept,
-    DialogCancel,
-    DialogActions,
-    DialogContent,
-    DialogOnClose
-} from "../Dialog";
+import { Dialog, DialogCancel, DialogActions, DialogContent, DialogOnClose } from "../Dialog";
+import { ButtonPrimary } from "~/Button";
 
 interface ImageEditorDialogProps {
     dialogZIndex?: number;
@@ -72,10 +66,11 @@ class ImageEditorDialog extends React.Component<ImageEditorDialogProps, ImageEdi
                                             content={"Please close currently active tool."}
                                             placement={"top"}
                                         >
-                                            <DialogAccept disabled>Save</DialogAccept>
+                                            <ButtonPrimary disabled>Save</ButtonPrimary>
                                         </Tooltip>
                                     ) : (
-                                        <DialogAccept
+                                        <ButtonPrimary
+                                            data-testid="dialog-accept"
                                             onClick={() => {
                                                 const url = this.imageEditor.current
                                                     ? this.imageEditor.current.getCanvasDataUrl()
@@ -87,7 +82,7 @@ class ImageEditorDialog extends React.Component<ImageEditorDialogProps, ImageEdi
                                             }}
                                         >
                                             Save
-                                        </DialogAccept>
+                                        </ButtonPrimary>
                                     )}
                                 </DialogActions>
                             </>

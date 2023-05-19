@@ -29,7 +29,35 @@ export default async ({
 
     formData!.fields.forEach(field => {
         if (field.fieldId in rawFormSubmissionFieldValues) {
-            formSubmissionData[field.fieldId] = rawFormSubmissionFieldValues[field.fieldId];
+            if (
+                field.type === "radio" &&
+                field.settings.otherOption &&
+                rawFormSubmissionFieldValues[field.fieldId] === "other"
+            ) {
+                // If user picked "other" radio button,
+                // then we need to replace value with the one typed in the input field
+                formSubmissionData[field.fieldId] = `Other: ${
+                    rawFormSubmissionFieldValues[`${field.fieldId}Other`]
+                }`;
+            } else if (
+                field.type === "checkbox" &&
+                field.settings.otherOption &&
+                rawFormSubmissionFieldValues[field.fieldId]?.some(
+                    (value: string) => value === "other"
+                )
+            ) {
+                // If user picked "other" checkbox,
+                // then we need to replace value with the one typed in the input field
+                const indexOfOther = rawFormSubmissionFieldValues[field.fieldId]?.indexOf("other");
+                const newValuesArray = rawFormSubmissionFieldValues[field.fieldId];
+                newValuesArray[indexOfOther] = `Other: ${
+                    rawFormSubmissionFieldValues[`${field.fieldId}Other`]
+                }`;
+
+                formSubmissionData[field.fieldId] = newValuesArray;
+            } else {
+                formSubmissionData[field.fieldId] = rawFormSubmissionFieldValues[field.fieldId];
+            }
         }
     });
 

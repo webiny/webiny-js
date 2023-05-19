@@ -1,1 +1,1 @@
-export { FileManager } from "./FileManager";
+export { FileManager } from "~/base/ui/FileManager";

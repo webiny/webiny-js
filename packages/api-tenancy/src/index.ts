@@ -49,7 +49,21 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
         context.tenancy = await createTenancy({
             tenant: tenantId,
             multiTenancy,
-            storageOperations
+            storageOperations,
+            incrementWcpTenants: async () => {
+                if (!context.wcp) {
+                    return;
+                }
+
+                await context.wcp.incrementTenants();
+            },
+            decrementWcpTenants: async () => {
+                if (!context.wcp) {
+                    return;
+                }
+
+                await context.wcp.decrementTenants();
+            }
         });
 
         // Even though we don't have a full GraphQL schema when using the `context` plugins,

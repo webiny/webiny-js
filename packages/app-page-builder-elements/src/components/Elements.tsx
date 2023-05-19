@@ -37,6 +37,20 @@ export const Elements: React.FC<ElementsProps> = props => {
         parentBlockElement = currentRendererMeta.parentBlockElement;
     }
 
+    let parentTemplateBlockElement: ElementType;
+    if (props.element.data.templateBlockId) {
+        parentTemplateBlockElement = props.element;
+    } else {
+        parentTemplateBlockElement = currentRendererMeta.parentTemplateBlockElement;
+    }
+
+    let parentDocumentElement: ElementType;
+    if (props.element.type === "document") {
+        parentDocumentElement = props.element;
+    } else {
+        parentDocumentElement = currentRendererMeta.parentDocumentElement;
+    }
+
     return (
         <>
             {elements.map((element, index) => {
@@ -47,8 +61,12 @@ export const Elements: React.FC<ElementsProps> = props => {
                         key={key}
                         element={element}
                         meta={{
+                            // @ts-ignore
+                            depth: (currentRendererMeta.depth || 0) + 1,
                             parentElement: props.element,
                             parentBlockElement,
+                            parentTemplateBlockElement,
+                            parentDocumentElement,
                             isFirstElement: index === 0,
                             isLastElement: index === elements.length - 1,
                             elementIndex: index,

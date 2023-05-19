@@ -7,7 +7,6 @@ on:
 env:
   NODE_OPTIONS: --max_old_space_size=4096
   AWS_REGION: eu-central-1
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   init:
@@ -21,7 +20,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -44,7 +43,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -64,7 +63,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -79,7 +78,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -114,7 +113,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -127,7 +126,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages (full)
-        run: node scripts/buildWithCache.js
+        run: yarn build
 
   jest-tests:
     name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
@@ -166,7 +165,7 @@ jobs:
           key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Build packages
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Run tests
         run: yarn test ${{ matrix.package }}
@@ -181,7 +180,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -216,7 +215,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:
@@ -245,7 +244,7 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -389,7 +388,7 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: next
@@ -410,7 +409,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
 
@@ -448,7 +447,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/checkout@v3
         with:
@@ -477,7 +476,7 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - uses: actions/cache@v3
         id: packages-cache
@@ -624,7 +623,7 @@ jobs:
 
       - name: Build packages
         working-directory: next
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+        run: yarn build:quick
 
       - name: Set up Cypress config
         working-directory: next
@@ -652,20 +651,20 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}

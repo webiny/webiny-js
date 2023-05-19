@@ -1,8 +1,8 @@
 export * from "@webiny/theme/types";
 
 import React, { HTMLAttributes } from "react";
-import { type CSSObject } from "@emotion/core";
-import { Theme, StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
+import { type CSSObject } from "@emotion/react";
+import { StylesObject, ThemeBreakpoints, Theme } from "@webiny/theme/types";
 
 export interface Page {
     id: string;
@@ -90,7 +90,10 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
 
 export type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
 export type GetAttributes = () => HTMLAttributes<HTMLElement>;
-export type GetLoader = <TLoaderData = Record<string, any>>() => { data: TLoaderData; loading: boolean };
+export type GetLoader = <TLoaderData = Record<string, any>>() => {
+    data: TLoaderData;
+    loading: boolean;
+};
 
 export interface RendererContextValue extends PageElementsContextValue {
     getElement: GetElement;

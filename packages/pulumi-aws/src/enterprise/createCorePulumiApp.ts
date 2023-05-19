@@ -1,9 +1,11 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import {
     createCorePulumiApp as baseCreateCorePulumiApp,
     CreateCorePulumiAppParams as BaseCreateCorePulumiAppParams
 } from "~/apps/core/createCorePulumiApp";
-import { isResourceOfType } from "@webiny/pulumi";
+import { isResourceOfType, PulumiAppParam } from "@webiny/pulumi";
+import { getAwsRegion } from "~/apps/awsUtils";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -16,21 +18,27 @@ export type CorePulumiAppAdvancedVpcParams = Partial<{
 }>;
 
 export interface CreateCorePulumiAppParams extends Omit<BaseCreateCorePulumiAppParams, "vpc"> {
-    vpc?: boolean | CorePulumiAppAdvancedVpcParams;
+    vpc?: PulumiAppParam<boolean | CorePulumiAppAdvancedVpcParams>;
 }
 
 export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
-    const { vpc, elasticSearch, pulumi } = projectAppParams;
-    const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
-
     return baseCreateCorePulumiApp({
         ...projectAppParams,
         // If using existing VPC, we ensure `vpc` param is set to `false`.
-        vpc: usingAdvancedVpcParams && vpc.useExistingVpc ? false : Boolean(vpc),
+        vpc: ({ getParam }) => {
+            const vpc = getParam(projectAppParams.vpc);
+            const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
+            return usingAdvancedVpcParams && vpc.useExistingVpc ? false : Boolean(vpc);
+        },
         pulumi(...args) {
+            const [app] = args;
+            const { getParam } = app;
+            const vpc = getParam(projectAppParams.vpc);
+            const usingAdvancedVpcParams = vpc && typeof vpc !== "boolean";
+
             // Not using advanced VPC params? Then immediately exit.
             if (!usingAdvancedVpcParams) {
-                return pulumi?.(...args);
+                return projectAppParams.pulumi?.(...args);
             }
 
             const [{ resources, addResource, onResource }] = args;
@@ -44,7 +52,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     );
                 }
 
-                if (elasticSearch) {
+                if (projectAppParams.elasticSearch) {
                     if (!useExistingVpc.elasticSearchDomainVpcConfig) {
                         throw new Error(
                             "Cannot specify `useExistingVpc` parameter because the `elasticSearchDomainVpcConfig` parameter wasn't provided."
@@ -84,11 +92,13 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     }
                 });
 
-                return pulumi?.(...args);
+                return projectAppParams.pulumi?.(...args);
             }
 
             // 2. Now we deal with "non-existing VPC" setup.
             if (useVpcEndpoints) {
+                const region = getAwsRegion(app);
+
                 onResource(resource => {
                     if (isResourceOfType(resource, aws.ec2.Vpc)) {
                         resource.config.enableDnsSupport(true);
@@ -101,7 +111,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-s3-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.s3",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.s3`,
                         routeTableIds: [routeTables.privateSubnets.output.id]
                     }
                 });
@@ -110,7 +120,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-dynamodb-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.dynamodb",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.dynamodb`,
                         routeTableIds: [routeTables.privateSubnets.output.id]
                     }
                 });
@@ -119,7 +129,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-sqs-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.sqs",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.sqs`,
                         vpcEndpointType: "Interface",
                         privateDnsEnabled: true,
                         securityGroupIds: [vpc.output.defaultSecurityGroupId],
@@ -131,7 +141,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                     name: "vpc-events-vpc-endpoint",
                     config: {
                         vpcId: vpc.output.id,
-                        serviceName: "com.amazonaws.eu-central-1.events",
+                        serviceName: pulumi.interpolate`com.amazonaws.${region}.events`,
                         vpcEndpointType: "Interface",
                         privateDnsEnabled: true,
                         securityGroupIds: [vpc.output.defaultSecurityGroupId],
@@ -140,7 +150,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 });
             }
 
-            return pulumi?.(...args);
+            return projectAppParams.pulumi?.(...args);
         }
     });
 }

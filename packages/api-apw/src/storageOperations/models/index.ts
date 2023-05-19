@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { CmsGroupPlugin } from "@webiny/api-headless-cms";
+import { CmsGroupPlugin, CmsModelPlugin } from "@webiny/api-headless-cms";
 import { contentModelPluginFactory } from "./contentModelPluginFactory";
 import { createWorkflowModelDefinition } from "./workflow.model";
 import { createContentReviewModelDefinition } from "./contentReview.model";
@@ -22,8 +22,6 @@ export const createApwModels = (context: CmsContext) => {
     if (isInstallationPending({ tenancy: context.tenancy, i18n: context.i18n })) {
         return;
     }
-
-    context.security.disableAuthorization();
 
     const locale = context.i18n.getContentLocale();
     if (!locale) {
@@ -72,12 +70,10 @@ export const createApwModels = (context: CmsContext) => {
         commentModelDefinition
     ];
 
-    const cmsModelPlugins = [];
+    const cmsModelPlugins: CmsModelPlugin[] = [];
     for (const modelDefinition of modelDefinitions) {
         const cmsModelPlugin = contentModelPluginFactory({
             group: cmsGroupPlugin.contentModelGroup,
-            tenant: context.tenancy.getCurrentTenant().id,
-            locale: locale.code,
             modelDefinition
         });
         /**
@@ -94,6 +90,4 @@ export const createApwModels = (context: CmsContext) => {
      *  Register them so that they are accessible in cms context
      */
     context.plugins.register([cmsGroupPlugin, cmsModelPlugins]);
-
-    context.security.enableAuthorization();
 };

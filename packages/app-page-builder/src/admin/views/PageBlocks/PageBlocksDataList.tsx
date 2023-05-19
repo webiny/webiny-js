@@ -7,12 +7,14 @@ import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as DuplicateIcon } from "~/editor/assets/icons/round-queue-24px.svg";
+import { ReactComponent as ExportIcon } from "@material-design-icons/svg/round/download.svg";
 import { CircularProgress } from "@webiny/ui/Progress";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
 
 import { PbPageBlock } from "~/types";
 import {
@@ -104,6 +106,16 @@ const DuplicateButton = styled(IconButton)({
     }
 });
 
+const ExportButton = styled(IconButton)({
+    position: "absolute",
+    top: "10px",
+    right: "160px",
+
+    "& svg": {
+        fill: "white"
+    }
+});
+
 const NoRecordsWrapper = styled("div")({
     textAlign: "center",
     padding: 100,
@@ -111,15 +123,17 @@ const NoRecordsWrapper = styled("div")({
 });
 
 type PageBlocksDataListProps = {
+    filter: string;
     canCreate: boolean;
     canEdit: (item: CreatableItem) => boolean;
     canDelete: (item: CreatableItem) => boolean;
 };
 
-const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataListProps) => {
+const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlocksDataListProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
+    const { showExportBlockInitializeDialog } = useExportBlockDialog();
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
 
@@ -153,7 +167,16 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
         onCompleted: () => refetch()
     });
 
+    const filterData = useCallback(
+        ({ name }) => {
+            return name.toLowerCase().includes(filter);
+        },
+        [filter]
+    );
+
     const pageBlocksData: PbPageBlock[] = data?.pageBuilder?.listPageBlocks?.data || [];
+    const filteredBlocksData: PbPageBlock[] =
+        filter === "" ? pageBlocksData : pageBlocksData.filter(filterData);
 
     const deleteItem = useCallback(
         item => {
@@ -196,6 +219,10 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
         [duplicateIt]
     );
 
+    const handleExportClick = useCallback((id: string) => {
+        showExportBlockInitializeDialog({ ids: [id] });
+    }, []);
+
     const isLoading = [deleteMutation, duplicateMutation].find(item => item.loading) || loading;
 
     const showEmptyView = !isLoading && !selectedBlocksCategory;
@@ -209,7 +236,7 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
         );
     }
 
-    const showNoRecordsView = !isLoading && isEmpty(pageBlocksData);
+    const showNoRecordsView = !isLoading && isEmpty(filteredBlocksData);
     // Render "No records found" view.
     if (showNoRecordsView) {
         return (
@@ -223,7 +250,7 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
         <>
             <List>
                 {isLoading && <CircularProgress />}
-                {pageBlocksData.map(pageBlock => (
+                {filteredBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
                         <img
                             src={pageBlock?.preview?.src || previewFallback}
@@ -231,6 +258,10 @@ const PageBlocksDataList = ({ canCreate, canEdit, canDelete }: PageBlocksDataLis
                         />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
+                            <ExportButton
+                                icon={<ExportIcon />}
+                                onClick={() => handleExportClick(pageBlock.id)}
+                            />
                             {canEdit(pageBlock) && (
                                 <EditButton
                                     onClick={() =>

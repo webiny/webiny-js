@@ -18,7 +18,7 @@ const OverlayLayoutWrapper = styled("div")({
      * Has to be higher than 5 so it's above advanced settings dialog,
      * and below 20, so the image editor & Dialogs can be displayed above.
      */
-    zIndex: 18,
+    zIndex: 21,
     top: 0,
     left: 0
 });

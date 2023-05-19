@@ -1,10 +1,12 @@
-import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
+import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createSetupForPageContentReview } from "../utils/helpers";
 import { ApwContentReview, PageWithWorkflow } from "~/types";
 
 describe(`Pending change requests count test`, () => {
-    const gqlHandler = usePageBuilderHandler();
+    const gqlHandler = useGraphQlHandler({
+        path: "/graphql"
+    });
     const {
         createChangeRequestMutation,
         createContentReviewMutation,
