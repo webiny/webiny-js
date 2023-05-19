@@ -15280,6 +15280,7 @@ __metadata:
     "@babel/runtime": ^7.19.0
     "@pulumi/aws": ^5.8.0
     "@pulumi/pulumi": ^3.34.0
+    "@webiny/api-aco": 0.0.0
     "@webiny/api-apw": 0.0.0
     "@webiny/api-apw-scheduler-so-ddb": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
@@ -15291,10 +15292,14 @@ __metadata:
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-form-builder-so-ddb": 0.0.0
     "@webiny/api-form-builder-so-ddb-es": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb": 0.0.0
+    "@webiny/api-headless-cms-ddb-es": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-page-builder": 0.0.0
+    "@webiny/api-page-builder-aco": 0.0.0
     "@webiny/api-page-builder-import-export": 0.0.0
     "@webiny/api-page-builder-import-export-so-ddb": 0.0.0
     "@webiny/api-page-builder-so-ddb": 0.0.0
