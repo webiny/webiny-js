@@ -1,14 +1,13 @@
 import React, {FC, useCallback, useEffect} from "react";
-import { Toolbar } from "~/components/Toolbar/Toolbar";
 import {$getSelection, $isRangeSelection, $isTextNode, LexicalEditor} from "lexical";
 import {ToolbarType} from "~/types";
 import {useRichTextEditor} from "~/hooks/useRichTextEditor";
 import {getSelectedNode} from "~/utils/getSelectedNode";
 import {$isCodeHighlightNode} from "@lexical/code";
 import {mergeRegister} from "@lexical/utils";
-import {createPortal} from "react-dom";
 import {makeComposable} from "@webiny/react-composition";
 import {useLexicalComposerContext} from "@lexical/react/LexicalComposerContext";
+import "./StaticToolbar.css";
 
 
 interface useStaticToolbarProps {
@@ -22,7 +21,7 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
                                              type,
                                              children
                                          }): JSX.Element | null => {
-    const { nodeIsText, setNodeIsText } = useRichTextEditor();
+    const { setNodeIsText } = useRichTextEditor();
 
     const updatePopup = useCallback(() => {
         editor.getEditorState().read(() => {
@@ -81,7 +80,7 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
     }, [editor, updatePopup]);
 
     return(
-        <div  className="toolbar">
+        <div className="static-toolbar">
             {editor.isEditable() && children}
         </div>
     );

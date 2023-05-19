@@ -48,10 +48,20 @@ export interface RichTextEditorProps {
      */
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
+    /*
+    * Set inline styles to lexical input container
+    * */
+    styles?: React.CSSProperties
+
+    /*
+    * Set classes to lexical input container
+    * */
+    classes?: string;
 }
 
 const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     toolbar,
+    staticToolbar,
     onChange,
     value,
     nodes,
@@ -59,6 +69,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     children,
     onBlur,
     focus,
+    styles,
     width,
     height,
     theme,
@@ -109,35 +120,37 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div className={"toolbar"}>Toolbar</div>
-            <div ref={scrollRef} style={{ ...sizeStyle }}>
-                {/* data */}
-                <OnChangePlugin onChange={handleOnChange} />
-                {value && <LexicalUpdateStatePlugin value={value} />}
-                <ClearEditorPlugin />
-                <FontColorPlugin />
-                <TypographyPlugin />
-                <WebinyQuotePlugin />
-                <HistoryPlugin externalHistoryState={historyState} />
-                {/* Events */}
-                {onBlur && <BlurEventPlugin onBlur={onBlur} />}
-                {focus && <AutoFocusPlugin />}
-                {/* External plugins and components */}
-                {children}
-                <RichTextPlugin
-                    contentEditable={
-                        <div className="editor-scroller" style={{ ...sizeStyle }}>
-                            <div className="editor" ref={onRef} style={{ ...sizeStyle }}>
-                                <ContentEditable style={{ outline: 0, ...sizeStyle }} />
+            <>
+                {staticToolbar && staticToolbar}
+                <div ref={scrollRef} style={{ ...styles, ...sizeStyle, padding: 5 }}>
+                    {/* data */}
+                    <OnChangePlugin onChange={handleOnChange} />
+                    {value && <LexicalUpdateStatePlugin value={value} />}
+                    <ClearEditorPlugin />
+                    <FontColorPlugin />
+                    <TypographyPlugin />
+                    <WebinyQuotePlugin />
+                    <HistoryPlugin externalHistoryState={historyState} />
+                    {/* Events */}
+                    {onBlur && <BlurEventPlugin onBlur={onBlur} />}
+                    {focus && <AutoFocusPlugin />}
+                    {/* External plugins and components */}
+                    {children}
+                    <RichTextPlugin
+                        contentEditable={
+                            <div className="editor-scroller" style={{ ...sizeStyle }}>
+                                <div className="editor" ref={onRef} style={{ ...sizeStyle }}>
+                                    <ContentEditable style={{ outline: 0, ...sizeStyle }} />
+                                </div>
                             </div>
-                        </div>
-                    }
-                    placeholder={placeholderElem}
-                    ErrorBoundary={LexicalErrorBoundary}
-                />
-                {/* Toolbar */}
-                {floatingAnchorElem && toolbar}
-            </div>
+                        }
+                        placeholder={placeholderElem}
+                        ErrorBoundary={LexicalErrorBoundary}
+                    />
+                    {/* Toolbar */}
+                    {floatingAnchorElem && toolbar}
+                </div>
+            </>
         </LexicalComposer>
     );
 };

@@ -1,18 +1,19 @@
 import React, { FC } from "react";
 import { createComponentPlugin } from "@webiny/react-composition";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
+import {StaticToolbar} from "~/components/Toolbar/StaticToolbar";
 interface AddToolbarActionProps {
-    type?: "heading" | "paragraph" | "rich-text-static-toolbar" | string;
+    type?: "rich-text-static-toolbar" | string;
     element: JSX.Element;
 }
 
-export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: targetType }) => {
-    const ToolbarPlugin = React.memo(
-        createComponentPlugin(Toolbar, Original => {
-            return function Toolbar({ type, children, anchorElem }): JSX.Element {
+export const AddStaticToolbarAction: FC<AddToolbarActionProps> = ({ element, type: targetType }) => {
+    const StaticToolbarPlugin = React.memo(
+        createComponentPlugin(StaticToolbar, Original => {
+            return function StaticToolbar({ type, children }): JSX.Element {
                 if (!targetType || targetType === type) {
                     return (
-                        <Original type={type} anchorElem={anchorElem}>
+                        <Original type={type}>
                             {element}
                             {children}
                         </Original>
@@ -20,7 +21,7 @@ export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: tar
                 }
 
                 return (
-                    <Original anchorElem={anchorElem} type={type}>
+                    <Original type={type}>
                         {children}
                     </Original>
                 );
@@ -28,5 +29,5 @@ export const AddToolbarAction: FC<AddToolbarActionProps> = ({ element, type: tar
         })
     );
 
-    return <ToolbarPlugin />;
+    return <StaticToolbarPlugin />;
 };

@@ -1,14 +1,14 @@
 import React from "react";
 import { RichTextEditorProps } from "@webiny/ui/RichTextEditor";
 import { FileManager } from "~/components";
-import { RichTextEditor } from "@webiny/lexical-editor";
+import { RichTextContentEditor } from "@webiny/lexical-editor";
 import theme from "theme/theme";
 
 export const LexicalEditor: React.FC<RichTextEditorProps> = props => {
     return (
         <FileManager>
             {({ showFileManager }) => (
-                <RichTextEditor
+                <RichTextContentEditor
                     theme={theme}
                     value={JSON.stringify(props.value)}
                     onChange={(jsonString: string) => {
@@ -19,6 +19,7 @@ export const LexicalEditor: React.FC<RichTextEditorProps> = props => {
                     height={400}
                     width={"100%"}
                     placeholder={"Please add content"}
+                    styles={{ backgroundColor: "#e1e1e1", borderBottom: "1px solid #000" }}
                 />
             )}
         </FileManager>

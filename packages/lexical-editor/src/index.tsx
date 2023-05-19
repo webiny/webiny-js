@@ -27,10 +27,13 @@ export { Toolbar } from "~/components/Toolbar/Toolbar";
 // presets
 export { ParagraphToolbarPreset } from "~/components/ToolbarPresets/ParagraphToolbarPreset";
 export { HeadingToolbarPreset } from "./components/ToolbarPresets/HeadingToolbarPreset";
+export { RichTextStaticToolbarPreset } from "./components/ToolbarPresets/RichTextStaticToolbarPreset"
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
+export { RichTextContentEditor } from "~/components/Editor/RichTextContentEditor";
+
 // plugins
 export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
@@ -40,6 +43,7 @@ export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/LexicalUpdateStatePlugin";
 // composition
 export { AddToolbarAction } from "~/components/AddToolbarAction";
+export { AddStaticToolbarAction } from "~/components/AddStaticToolbarAction";
 export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
 export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeType";
 // utils

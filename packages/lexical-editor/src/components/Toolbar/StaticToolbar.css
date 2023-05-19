@@ -1,0 +1,418 @@
+.static-toolbar {
+  display: flex;
+  position: relative;
+  padding: 4px;
+  vertical-align: middle;
+  border: 1px solid #eee;
+  z-index: 30;
+  height: 35px;
+  will-change: transform;
+  width: 100%;
+}
+
+.static-toolbar button.popup-item {
+  border: 0;
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.static-toolbar button.popup-item:disabled {
+  cursor: not-allowed;
+}
+
+.static-toolbar button.popup-item.spaced {
+  margin-right: 2px;
+}
+
+.static-toolbar button.popup-item i.format {
+  background-size: contain;
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  margin-top: 2px;
+  vertical-align: -0.25em;
+  display: flex;
+}
+
+.static-toolbar button.popup-item:disabled i.format {
+  opacity: 0.2;
+}
+
+.static-toolbar button.popup-item.active {
+  background-color: rgba(223, 232, 250, 0.3);
+}
+
+.static-toolbar button.popup-item.active i {
+  opacity: 1;
+}
+
+.static-toolbar .popup-item:hover:not([disabled]) {
+  background-color: #eee;
+}
+
+.static-toolbar select.popup-item {
+  border: 0;
+  display: flex;
+  background: none;
+  border-radius: 10px;
+  padding: 8px;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 70px;
+  font-size: 14px;
+  color: #777;
+  text-overflow: ellipsis;
+}
+
+.static-toolbar select.code-language {
+  text-transform: capitalize;
+  width: 130px;
+}
+
+.static-toolbar .popup-item .text {
+  display: flex;
+  line-height: 20px;
+  width: 200px;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #777;
+  text-overflow: ellipsis;
+  width: 70px;
+  overflow: hidden;
+  height: 20px;
+  text-align: left;
+}
+
+.static-toolbar .popup-item .icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  user-select: none;
+  margin-right: 8px;
+  line-height: 16px;
+  background-size: contain;
+}
+
+.static-toolbar i.chevron-down {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  user-select: none;
+}
+
+.static-toolbar i.chevron-down.inside {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  margin-left: -25px;
+  margin-top: 11px;
+  margin-right: 10px;
+  pointer-events: none;
+}
+
+.static-toolbar .divider {
+  width: 1px;
+  background-color: #eee;
+  margin: 0 4px;
+}
+
+i.bold {
+  background-image: url("../../images/icons/type-bold.svg");
+}
+
+i.italic {
+  background-image: url("../../images/icons/type-italic.svg");
+}
+
+i.code {
+  background-image: url("../../images/icons/code.svg");
+}
+
+i.underline {
+  background-image: url("../../images/icons/type-underline.svg");
+}
+
+i.strikethrough {
+  background-image: url("../../images/icons/type-strikethrough.svg");
+}
+
+i.link {
+  background-image: url("../../images/icons/link.svg");
+}
+
+i.quote {
+  background-image: url("../../images/icons/chat-square-quote.svg");
+}
+
+.icon.left-align,
+i.left-align {
+  background-image: url("../../images/icons/text-left.svg");
+}
+
+i.center-align {
+  background-image: url("../../images/icons/text-center.svg");
+}
+
+i.right-align {
+  background-image: url("../../images/icons/text-right.svg");
+}
+
+i.chevron-down {
+  background-color: transparent;
+  background-size: contain;
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  background-image: url("../../images/icons/chevron-down.svg");
+}
+
+
+.static-toolbar .icon.bullet-list,
+.static-toolbar .icon.bullet {
+  background-image: url("../../images/icons/list-ul.svg");
+}
+
+.static-toolbar .icon.numbered-list,
+.static-toolbar .icon.number {
+  background-image: url("../../images/icons/list-ol.svg");
+}
+
+.static-toolbar .link-editor .button.active,
+.static-toolbar .button.active {
+  background-color: rgb(223, 232, 250);
+}
+
+i.font-color, .icon.font-color {
+  background-image: url("../../images/icons/font-color.svg");
+}
+
+.static-toolbar button.toolbar-item {
+  border: 0;
+  display: flex;
+  background: none;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  vertical-align: middle;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.static-toolbar button.toolbar-item:disabled {
+  cursor: not-allowed;
+}
+
+.static-toolbar button.toolbar-item.spaced {
+  margin-right: 2px;
+}
+
+.static-toolbar button.toolbar-item i.format {
+  background-size: contain;
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  vertical-align: -0.25em;
+  display: flex;
+  opacity: 0.6;
+}
+
+.static-toolbar button.toolbar-item:disabled .icon,
+.static-toolbar button.toolbar-item:disabled .text,
+.static-toolbar button.toolbar-item:disabled i.format,
+.static-toolbar button.toolbar-item:disabled .chevron-down {
+  opacity: 0.2;
+}
+
+.static-toolbar button.toolbar-item.active {
+  background-color: rgba(223, 232, 250, 0.3);
+}
+
+.static-toolbar button.toolbar-item.active i {
+  opacity: 1;
+}
+
+.static-toolbar .toolbar-item:hover:not([disabled]) {
+  background-color: #eee;
+}
+
+.static-toolbar .toolbar-item.font-family .text {
+  display: block;
+  max-width: 40px;
+}
+
+.static-toolbar .code-language {
+  width: 150px;
+}
+
+.static-toolbar .toolbar-item .text {
+  display: flex;
+  line-height: 20px;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #777;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 20px;
+  text-align: left;
+  padding-right: 10px;
+}
+
+.static-toolbar .toolbar-item .icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  user-select: none;
+  margin-right: 8px;
+  line-height: 16px;
+  background-size: contain;
+}
+
+.static-toolbar i.chevron-down {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  user-select: none;
+}
+
+.static-toolbar i.chevron-down.inside {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  margin-left: -25px;
+  margin-top: 11px;
+  margin-right: 10px;
+  pointer-events: none;
+}
+
+.static-toolbar .divider {
+  width: 1px;
+  background-color: #eee;
+  margin: 0 4px;
+}
+
+.lexical-dropdown-container {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+}
+
+.lexical-dropdown {
+  z-index: 10;
+  display: block;
+  position: fixed;
+  box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
+  inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  min-height: 40px;
+  background-color: #fff;
+  max-height: 250px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.lexical-dropdown.no-scroll {
+  max-height: inherit;
+  overflow: auto;
+  overflow-y: auto;
+}
+
+.lexical-dropdown .item {
+  margin: 0 8px 0 8px;
+  padding: 8px;
+  color: #050505;
+  cursor: pointer;
+  line-height: 16px;
+  font-size: 15px;
+  display: flex;
+  align-content: center;
+  flex-direction: row;
+  flex-shrink: 0;
+  justify-content: space-between;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 0;
+  max-width: 250px;
+  min-width: 100px;
+}
+
+.lexical-dropdown .item.fontsize-item,
+.lexical-dropdown .item.fontsize-item .text {
+  min-width: unset;
+}
+
+.lexical-dropdown .item .active {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+}
+
+.lexical-dropdown .item:first-child {
+  margin-top: 8px;
+}
+
+.lexical-dropdown .item:last-child {
+  margin-bottom: 8px;
+}
+
+.lexical-dropdown .item:hover {
+  background-color: #eee;
+}
+
+.lexical-dropdown .item .text {
+  display: flex;
+  line-height: 20px;
+  flex-grow: 1;
+  min-width: 150px;
+}
+
+.lexical-dropdown .item .icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  user-select: none;
+  margin-right: 12px;
+  line-height: 16px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.lexical-dropdown .divider {
+  width: auto;
+  background-color: #eee;
+  margin: 4px 8px;
+  height: 1px;
+}
+
+@media screen and (max-width: 1100px) {
+  .dropdown-button-text {
+    display: none !important;
+  }
+  .font-size .dropdown-button-text {
+    display: flex !important;
+  }
+  .code-language .dropdown-button-text {
+    display: flex !important;
+  }
+}
+
+.static-toolbar button.item i {
+  opacity: 0.6;
+}
+
+.static-toolbar button.item.dropdown-item-active {
+  background-color: rgba(223, 232, 250, 0.3);
+}
+
+.static-toolbar button.item.dropdown-item-active i {
+  opacity: 1;
+}
