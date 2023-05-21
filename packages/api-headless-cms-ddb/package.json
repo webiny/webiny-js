@@ -6,6 +6,7 @@
     "@webiny/api-headless-cms",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "cms:ddb"
   ],
   "repository": {

@@ -136,7 +136,7 @@ describe("Elasticsearch Base Search", () => {
 
                         return {
                             _index: indexTestName,
-                            _type: "_doc",
+                            // _type: "_doc",
                             _id: `person${id}`,
                             _source: {
                                 ...person

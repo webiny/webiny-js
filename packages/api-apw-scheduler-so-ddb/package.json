@@ -6,6 +6,7 @@
     "@webiny/api-apw",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "apws:ddb"
   ],
   "repository": {

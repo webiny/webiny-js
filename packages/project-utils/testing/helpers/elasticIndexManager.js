@@ -4,7 +4,7 @@ module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
         try {
             await client.indices.deleteAll();
         } catch (ex) {
-            console.log("Could not delete all indexes.");
+            console.log("Could not delete all indexes", ex.message);
             console.log(JSON.stringify(ex));
             throw ex;
         }

@@ -10,6 +10,7 @@
     "@webiny/api-security",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "security:ddb"
   ],
   "description": "Security storage operations.",

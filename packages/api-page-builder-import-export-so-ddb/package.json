@@ -6,6 +6,7 @@
     "@webiny/api-page-builder-import-export",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "pbie:ddb"
   ],
   "repository": {

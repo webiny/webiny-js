@@ -10,6 +10,7 @@
     "@webiny/api-admin-users-cognito",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "sau:ddb"
   ],
   "description": "Admin user management storage operations.",

@@ -6,6 +6,7 @@
     "@webiny/api-file-manager",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "fm:ddb"
   ],
   "repository": {

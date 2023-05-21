@@ -1,9 +1,7 @@
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { getStorageOperations } from "~tests/testHelpers/storageOperations";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
 import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "~tests/testHelpers/tenancySecurity";
@@ -14,6 +12,8 @@ import { TestContext } from "~tests/testHelpers/types";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
+import { HeadlessCmsStorageOperations } from "~/types";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -39,16 +39,17 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         setupTenancyAndSecurityGraphQL
     } = params;
 
-    const ops = getStorageOperations();
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const i18nStorage = getStorageOps<any[]>("i18n");
 
     return {
-        storageOperations: ops.storageOperations,
+        storageOperations: cmsStorage.storageOperations,
         tenant,
         plugins: [
             enableBenchmarkOnEnvironmentVariable(),
             topPlugins,
             createWcpContext(),
-            ...ops.plugins,
+            ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),
@@ -87,11 +88,11 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
-            i18nDynamoDbStorageOperations(),
+            i18nStorage.storageOperations,
             createDummyLocales(),
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: ops.storageOperations
+                storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             plugins,

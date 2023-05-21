@@ -11,6 +11,7 @@
     "@webiny/api-prerendering-service",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "ps:ddb"
   ],
   "description": "A DynamoDB storage operations for the Prerendering Service API.",

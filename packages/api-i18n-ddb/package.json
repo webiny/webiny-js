@@ -6,6 +6,7 @@
     "@webiny/api-i18n",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "i18n:ddb"
   ],
   "repository": {

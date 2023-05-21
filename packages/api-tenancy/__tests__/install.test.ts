@@ -1,9 +1,9 @@
-import { Tenancy } from "~/types";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { Tenancy, TenancyStorageOperations } from "~/types";
 import { createTenancy } from "~/createTenancy";
 
 describe(`Test "Tenancy" install`, () => {
-    // @ts-ignore
-    const { storageOperations } = __getStorageOperations();
+    const { storageOperations } = getStorageOps<TenancyStorageOperations>("tenancy");
     let tenancy: Tenancy;
 
     beforeEach(async () => {

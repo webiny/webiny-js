@@ -11759,9 +11759,7 @@ __metadata:
     "@types/md5": ^2.3.2
     "@webiny/api": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
@@ -11829,7 +11827,6 @@ __metadata:
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-mailer": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-page-builder-so-ddb": 0.0.0
@@ -12105,7 +12102,6 @@ __metadata:
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
@@ -12138,7 +12134,6 @@ __metadata:
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
     "@elastic/elasticsearch": 7.12.0
-    "@webiny/api": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/api-form-builder": 0.0.0
@@ -12204,16 +12199,11 @@ __metadata:
     "@types/json2csv": ^4.5.1
     "@types/node-fetch": ^2.6.1
     "@webiny/api": 0.0.0
-    "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-mailer": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -12329,11 +12319,8 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -12434,9 +12421,7 @@ __metadata:
     "@types/accept-language-parser": ^1.5.3
     "@webiny/api": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -12576,6 +12561,7 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@types/yauzl": ^2.9.2
     "@webiny/api": 0.0.0
+    "@webiny/api-authentication": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-file-manager-ddb-es": 0.0.0
@@ -12946,7 +12932,6 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-authentication": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -15251,8 +15236,12 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": ^6.1.1
     "@types/webpack-env": 1.16.3
+    "@webiny/api": 0.0.0
+    "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
+    "@webiny/api-elasticsearch": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/global-config": 0.0.0
+    "@webiny/handler-aws": 0.0.0
     "@webiny/telemetry": 0.0.0
     assert-browserify: ^2.0.0
     babel-loader: 8.2.3
@@ -15273,7 +15262,9 @@ __metadata:
     get-yarn-workspaces: 1.0.2
     glob: ^7.1.2
     html-webpack-plugin: 5.5.0
+    jest-dynalite: ^3.6.1
     listr2: ^5.0.8
+    load-json-file: 6.2.0
     lodash: ^4.6.2
     mini-css-extract-plugin: 2.4.5
     os-browserify: ^0.3.0
@@ -15307,6 +15298,7 @@ __metadata:
     webpack-dev-server: 4.6.0
     webpack-manifest-plugin: 4.0.2
     webpackbar: 5.0.2
+    yargs: ^17.0.1
   languageName: unknown
   linkType: soft
 
@@ -16132,6 +16124,7 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-admin-users-cognito": 0.0.0
     "@webiny/app-form-builder": 0.0.0
+    "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-editor": 0.0.0
     "@webiny/app-serverless-cms": 0.0.0
@@ -38596,61 +38589,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:2.x || 3.x || 4 || 5, semver@npm:^5.3.0, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.5.1, semver@npm:^5.6.0, semver@npm:^5.7.0, semver@npm:^5.7.1":
-  version: 5.7.1
-  resolution: "semver@npm:5.7.1"
-  bin:
-    semver: ./bin/semver
-  checksum: 57fd0acfd0bac382ee87cd52cd0aaa5af086a7dc8d60379dfe65fea491fb2489b6016400813930ecd61fd0952dae75c115287a1b16c234b1550887117744dfaf
-  languageName: node
-  linkType: hard
-
-"semver@npm:6.3.0, semver@npm:^6.0.0, semver@npm:^6.1.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.2.0, semver@npm:^6.3.0":
+"semver@npm:6.3.0":
   version: 6.3.0
   resolution: "semver@npm:6.3.0"
   bin:
     semver: ./bin/semver.js
   checksum: 1b26ecf6db9e8292dd90df4e781d91875c0dcc1b1909e70f5d12959a23c7eebb8f01ea581c00783bbee72ceeaad9505797c381756326073850dc36ed284b21b9
-  languageName: node
-  linkType: hard
-
-"semver@npm:7.3.2":
-  version: 7.3.2
-  resolution: "semver@npm:7.3.2"
-  bin:
-    semver: bin/semver.js
-  checksum: 692f4900dadb43919614b0df9af23fe05743051cda0d1735b5e4d76f93c9e43a266fae73cfc928f5d1489f022c5c0e65dfd2900fcf5b1839c4e9a239729afa7b
-  languageName: node
-  linkType: hard
-
-"semver@npm:7.3.4":
-  version: 7.3.4
-  resolution: "semver@npm:7.3.4"
-  dependencies:
-    lru-cache: ^6.0.0
-  bin:
-    semver: bin/semver.js
-  checksum: 96451bfd7cba9b60ee87571959dc47e87c95b2fe58a9312a926340fee9907fc7bc062c352efdaf5bb24b2dff59c145e14faf7eb9d718a84b4751312531b39f43
-  languageName: node
-  linkType: hard
-
-"semver@npm:7.x, semver@npm:^7.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8":
-  version: 7.3.8
-  resolution: "semver@npm:7.3.8"
-  dependencies:
-    lru-cache: ^6.0.0
-  bin:
-    semver: bin/semver.js
-  checksum: ba9c7cbbf2b7884696523450a61fee1a09930d888b7a8d7579025ad93d459b2d1949ee5bbfeb188b2be5f4ac163544c5e98491ad6152df34154feebc2cc337c1
-  languageName: node
-  linkType: hard
-
-"semver@npm:~7.2.0":
-  version: 7.2.3
-  resolution: "semver@npm:7.2.3"
-  bin:
-    semver: bin/semver.js
-  checksum: e6a27b19853bb07829f863782647408afc20698f6a2b2cce9c60d1f4465cfc38848c47d9e8bbadc48dd62d096b9a4e7fd841e91274f307cb3a9d83a381c10b26
   languageName: node
   linkType: hard
 

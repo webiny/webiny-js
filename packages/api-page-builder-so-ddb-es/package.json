@@ -6,6 +6,8 @@
     "@webiny/api-page-builder",
     "storage-operations",
     "dynamodb",
+    "elasticsearch",
+    "ddb-es",
     "pb:ddb-es"
   ],
   "repository": {

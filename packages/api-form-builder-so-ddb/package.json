@@ -6,6 +6,7 @@
     "@webiny/api-form-builder",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "fb:ddb"
   ],
   "repository": {
