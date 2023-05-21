@@ -162,4 +162,4 @@ if (ignorePackagesPattern) {
     output = output.filter(current => !current.includes(ignorePackagesPattern));
 }
 
-console.log(JSON.stringify(output, null, 2));
+console.log(JSON.stringify(output));
