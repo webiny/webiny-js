@@ -15236,12 +15236,8 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": ^6.1.1
     "@types/webpack-env": 1.16.3
-    "@webiny/api": 0.0.0
-    "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
-    "@webiny/api-elasticsearch": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/global-config": 0.0.0
-    "@webiny/handler-aws": 0.0.0
     "@webiny/telemetry": 0.0.0
     assert-browserify: ^2.0.0
     babel-loader: 8.2.3
