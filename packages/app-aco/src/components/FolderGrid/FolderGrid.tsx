@@ -9,7 +9,7 @@ import { FolderItem } from "~/types";
 
 interface FolderGridProps {
     folders: FolderItem[];
-    onFolderClick: (folder: FolderItem) => void;
+    onFolderClick: (id: string) => void;
 }
 
 export const FolderGrid: React.VFC<FolderGridProps> = ({ folders, onFolderClick }) => {

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { INSERT_WEBINY_QUOTE_COMMAND } from "~/commands/webiny-quote";
 import { formatToQuote } from "~/utils/nodes/formatToQuote";
 
-export function useWebinyQuote(editor: LexicalEditor): void {
+export function useQuote(editor: LexicalEditor): void {
     useEffect(() => {
         return mergeRegister(
             editor.registerCommand(

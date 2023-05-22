@@ -1,20 +1,26 @@
 import { ContextPlugin } from "@webiny/api";
-import { createFileHooks } from "~/file/hooks";
+import { createFileHooks, createImportExportFileHooks } from "~/file/hooks";
 import { FmAcoContext } from "~/types";
 import { createApp } from "~/app";
 
-const createAcoFileManagerContextPlugin = () => {
-    return new ContextPlugin<FmAcoContext>(async context => {
-        const app = await context.aco.registerApp(createApp());
+export const createAcoFileManagerContext = () => {
+    return [
+        new ContextPlugin<FmAcoContext>(async context => {
+            const app = await context.aco.registerApp(createApp());
 
-        context.fileManagerAco = {
-            app
-        };
+            context.fileManagerAco = {
+                app
+            };
 
-        createFileHooks(context);
-    });
+            createFileHooks(context);
+        })
+    ];
 };
 
-export const createAcoFileManagerContext = () => {
-    return [createAcoFileManagerContextPlugin()];
+export const createAcoFileManagerImportExportContext = () => {
+    return [
+        new ContextPlugin<FmAcoContext>(context => {
+            createImportExportFileHooks(context);
+        })
+    ];
 };

@@ -69,7 +69,7 @@ describe("Files settings test", () => {
                     getSettings: {
                         data: {
                             uploadMinFileSize: 0,
-                            uploadMaxFileSize: 26214401
+                            uploadMaxFileSize: 10737418240
                         },
                         error: null
                     }
@@ -112,7 +112,7 @@ describe("Files settings test", () => {
                     updateSettings: {
                         data: {
                             uploadMinFileSize: 1024,
-                            uploadMaxFileSize: 26214401
+                            uploadMaxFileSize: 10737418240
                         },
                         error: null
                     }
@@ -127,7 +127,7 @@ describe("Files settings test", () => {
                     getSettings: {
                         data: {
                             uploadMinFileSize: 1024,
-                            uploadMaxFileSize: 26214401
+                            uploadMaxFileSize: 10737418240
                         },
                         error: null
                     }
