@@ -65,10 +65,10 @@ export interface FileManagerViewProviderProps {
 
 type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 
-export const FileManagerAcoViewProvider = ({
+export const FileManagerAcoViewProvider: React.VFC<FileManagerViewProviderProps> = ({
     children,
     ...props
-}: FileManagerViewProviderProps) => {
+}) => {
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
     const { getRecord } = useRecords();

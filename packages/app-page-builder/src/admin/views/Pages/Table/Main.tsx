@@ -42,7 +42,7 @@ const createSort = (sorting?: Sorting): ListDbSort | undefined => {
     }, []);
 };
 
-export const Main = ({ folderId, defaultFolderName }: Props) => {
+export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const location = useLocation();
     const history = useHistory();
 

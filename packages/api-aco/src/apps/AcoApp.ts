@@ -5,6 +5,7 @@ import {
     AcoSearchRecordCrudBase,
     CreateSearchRecordParams,
     IAcoApp,
+    IAcoAppModifyFieldCallableCallback,
     IAcoAppParams,
     ListSearchRecordsParams,
     ListSearchRecordTagsParams,
@@ -111,5 +112,19 @@ export class AcoApp implements IAcoApp {
             return;
         }
         this.fields.splice(index, 1);
+    }
+
+    public modifyField(id: string, cb: IAcoAppModifyFieldCallableCallback): void {
+        const index = this.fields.findIndex(field => field.id === id);
+        if (index === -1) {
+            throw new WebinyError(
+                `There is no field "${id}" in app "${this.name}".`,
+                "FIELD_NOT_FOUND_ERROR",
+                {
+                    id
+                }
+            );
+        }
+        this.fields[index] = cb(structuredClone(this.fields[index]));
     }
 }

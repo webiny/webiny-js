@@ -1,5 +1,11 @@
 import { Plugin } from "@webiny/plugins";
-import { AcoContext, IAcoApp, IAcoAppAddFieldCallable, IAcoAppRemoveFieldCallable } from "~/types";
+import {
+    AcoContext,
+    IAcoApp,
+    IAcoAppAddFieldCallable,
+    IAcoAppModifyFieldCallable,
+    IAcoAppRemoveFieldCallable
+} from "~/types";
 import { Context } from "@webiny/handler/types";
 
 export interface AcoAppModifierPluginModifyParams<T extends Context = AcoContext> {
@@ -29,6 +35,7 @@ export interface AppModifier<T extends Context = AcoContext> {
     context: T;
     addField: IAcoAppAddFieldCallable;
     removeField: IAcoAppRemoveFieldCallable;
+    modifyField: IAcoAppModifyFieldCallable;
 }
 
 export interface AppModifierParams<T extends Context = AcoContext> {
@@ -48,6 +55,9 @@ const createModifier = <T extends Context>({
         },
         removeField: id => {
             app.removeField(id);
+        },
+        modifyField: (id, cb) => {
+            app.modifyField(id, cb);
         }
     };
 };

@@ -1,4 +1,4 @@
-import { AcoContext } from "@webiny/api-aco/types";
+import { AcoContext, IAcoApp } from "@webiny/api-aco/types";
 import { FileManagerContext, File } from "@webiny/api-file-manager/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 
@@ -7,4 +7,8 @@ export type FmFileRecordData = Pick<
     "id" | "key" | "size" | "type" | "name" | "meta" | "createdOn" | "createdBy" | "aliases"
 >;
 
-export interface FmAcoContext extends BaseContext, AcoContext, FileManagerContext {}
+export interface FmAcoContext extends BaseContext, AcoContext, FileManagerContext {
+    fileManagerAco: {
+        app: IAcoApp;
+    };
+}

@@ -1,7 +1,7 @@
-import { useApolloClient } from "@apollo/react-hooks";
 import React, { useEffect, useMemo, useState } from "react";
+import { useApolloClient } from "@apollo/react-hooks";
 import { AcoApp, AcoError, AcoModel } from "~/types";
-import { createGetAppQuery, GetAppResult, GetAppVariables, GraphQlAcoApp } from "~/graphql/app.gql";
+import { createGetAppQuery, GetAppResult, GetAppVariables } from "~/graphql/app.gql";
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
 
@@ -21,17 +21,43 @@ interface AcoAppProviderState {
 
 export const AcoAppContext = React.createContext<AcoAppProviderContext | undefined>(undefined);
 
-interface Props {
+export interface AcoAppProviderPropsApi {
     children: React.ReactNode;
-    model?: AcoModel | null;
     id: string;
+    model?: never;
 }
 
-const createApp = (data?: GraphQlAcoApp | null): AcoApp | null => {
+export interface AcoAppProviderPropsManual {
+    children: React.ReactNode;
+    id: string;
+    model: AcoModel;
+}
+
+export type AcoAppProviderProps = AcoAppProviderPropsApi | AcoAppProviderPropsManual;
+
+interface CreateAppParams {
+    id: string;
+    model: AcoModel;
+}
+
+const createApp = (data: CreateAppParams): AcoApp => {
+    return {
+        ...data,
+        getFields: () => {
+            return data.model.fields;
+        }
+    };
+};
+const createApiApp = (data: CreateAppParams | null): AcoApp | null => {
     if (!data) {
+        console.error(`The APP could not be created. No data received.`);
         return null;
     }
     const dataField = data.model.fields.find(f => f.fieldId === "data");
+    if (!dataField) {
+        console.error(`The APP "${data.id}" does not have the data field.`);
+        return null;
+    }
     return {
         ...data,
         getFields: () => {
@@ -40,28 +66,51 @@ const createApp = (data?: GraphQlAcoApp | null): AcoApp | null => {
     };
 };
 
-export const AcoAppProvider: React.VFC<Props> = ({ children, id, model: inputModel }) => {
+export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
+    children,
+    id,
+    model: inputModel
+}) => {
     const client = useApolloClient();
     const [state, setState] = useState<AcoAppProviderState>({
         loading: false,
         app: null,
-        model: inputModel,
+        model: null,
         error: null
     });
 
+    /**
+     * The APP Provider can operate in two modes:
+     * * `app` - when the `id` is provided, the app is fetched from the API
+     * * `model` - when the `model` is provided, the app is created from the model
+     */
     useEffect(() => {
-        if (!inputModel) {
+        if (!id) {
             return;
         }
-        setState(prev => {
-            return {
-                ...prev,
-                model: inputModel
-            };
-        });
-    }, [inputModel?.modelId]);
-
-    useEffect(() => {
+        /**
+         * In the `model` mode, we don't need to fetch the app from the API.
+         * BUT, the input model must be `undefined`. In case it's `null`, just return because there will be a model at a point.
+         */
+        if (inputModel !== undefined) {
+            if (!inputModel) {
+                return;
+            }
+            setState(prev => {
+                return {
+                    ...prev,
+                    model: inputModel,
+                    app: createApp({
+                        id,
+                        model: inputModel
+                    })
+                };
+            });
+            return;
+        }
+        if (id === state.app?.id) {
+            return;
+        }
         client
             .query<GetAppResult, GetAppVariables>({
                 query: createGetAppQuery(),
@@ -87,7 +136,7 @@ export const AcoAppProvider: React.VFC<Props> = ({ children, id, model: inputMod
                 }
 
                 setState(prev => {
-                    const app = createApp(data);
+                    const app = createApiApp(data);
                     if (!app) {
                         return {
                             ...prev,
@@ -104,12 +153,12 @@ export const AcoAppProvider: React.VFC<Props> = ({ children, id, model: inputMod
                         ...prev,
                         loading: false,
                         app,
-                        model: inputModel || app.model,
+                        model: app.model,
                         error: null
                     };
                 });
             });
-    }, [id]);
+    }, [id, inputModel?.modelId]);
 
     const { app, model, error, loading } = state;
 

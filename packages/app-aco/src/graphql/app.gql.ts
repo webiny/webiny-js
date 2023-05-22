@@ -3,7 +3,6 @@ import { AcoError, AcoModel } from "~/types";
 
 export interface GraphQlAcoApp {
     id: string;
-    name: string;
     model: AcoModel;
 }
 export interface GetAppResult {
@@ -25,7 +24,6 @@ export const createGetAppQuery = () => {
                 app: getApp(id: $id) {
                     data {
                         id
-                        name
                         model
                     }
                     error {

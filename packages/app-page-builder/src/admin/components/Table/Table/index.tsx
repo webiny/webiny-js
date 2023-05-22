@@ -18,7 +18,7 @@ import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
-import { statuses as statusLabels } from "~/admin/constants/pageStatusesLabels";
+import { statuses as statusLabels } from "~/admin/constants";
 import { PbPageDataItem } from "~/types";
 import { actionsColumnStyles, menuStyles } from "./styled";
 

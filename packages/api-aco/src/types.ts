@@ -83,6 +83,14 @@ export interface IAcoAppRemoveFieldCallable {
     (id: string): void;
 }
 
+export interface IAcoAppModifyFieldCallableCallback {
+    (field: CmsModelField): CmsModelField;
+}
+
+export interface IAcoAppModifyFieldCallable {
+    (id: string, cb: IAcoAppModifyFieldCallableCallback): void;
+}
+
 export interface IAcoApp {
     context: AcoContext;
     search: AcoSearchRecordCrudBase;
@@ -92,6 +100,7 @@ export interface IAcoApp {
     getFields: () => CmsModelField[];
     addField: IAcoAppAddFieldCallable;
     removeField: IAcoAppRemoveFieldCallable;
+    modifyField: IAcoAppModifyFieldCallable;
 }
 
 export interface IAcoAppParams {

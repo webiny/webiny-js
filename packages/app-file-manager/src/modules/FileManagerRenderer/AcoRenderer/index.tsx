@@ -8,6 +8,8 @@ import {
 import { FileItem } from "@webiny/app-admin/types";
 import FileManagerAcoView, { FileManagerAcoViewProps } from "./FileManagerAcoView";
 import { FileManagerAcoViewProvider } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { AcoProvider } from "@webiny/app-aco";
+import { FM_ACO_APP } from "~/constants";
 
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
@@ -62,14 +64,16 @@ export const AcoRenderer = createComponentPlugin(BaseFileManagerRenderer, () => 
         };
 
         return (
-            <FileManagerAcoViewProvider
-                accept={viewProps.accept || []}
-                tags={viewProps.tags || []}
-                scope={viewProps.scope}
-                own={viewProps.own}
-            >
-                <FileManagerAcoView {...viewProps} />
-            </FileManagerAcoViewProvider>
+            <AcoProvider id={FM_ACO_APP}>
+                <FileManagerAcoViewProvider
+                    accept={viewProps.accept || []}
+                    tags={viewProps.tags || []}
+                    scope={viewProps.scope}
+                    own={viewProps.own}
+                >
+                    <FileManagerAcoView {...viewProps} />
+                </FileManagerAcoViewProvider>
+            </AcoProvider>
         );
     };
 });
