@@ -1084,21 +1084,23 @@ export const createEntriesStorageOperations = (
             limit: MAX_LIST_LIMIT
         });
 
-        const result = items.reduce<Record<string, CmsEntryUniqueValue>>((collection, item) => {
-            const value = item.values[field.fieldId];
-            if (!collection[value]) {
-                collection[value] = {
-                    value,
-                    count: 1
-                };
-                return collection;
+        const result: Record<string, CmsEntryUniqueValue> = {};
+        for (const item of items) {
+            const values = item.values[field.fieldId] as string[] | undefined;
+            if (!Array.isArray(values) || !values?.length) {
+                continue;
             }
-            collection[value].count++;
+            for (const value of values) {
+                result[value] = {
+                    value,
+                    count: (result[value]?.count || 0) + 1
+                };
+            }
+        }
 
-            return collection;
-        }, {});
-
-        return Object.values(result);
+        return Object.values(result)
+            .sort((a, b) => (a.value > b.value ? 1 : b.value > a.value ? -1 : 0))
+            .sort((a, b) => b.count - a.count);
     };
 
     return {

@@ -9,8 +9,8 @@ export const resolve = async (fn: () => Promise<any>) => {
 };
 export const resolveList = async (fn: () => Promise<any>) => {
     try {
-        const [entries, meta] = await fn();
-        return new ListResponse(entries, meta);
+        const [items, meta] = await fn();
+        return new ListResponse(items, meta);
     } catch (e) {
         return new ErrorResponse(e);
     }
