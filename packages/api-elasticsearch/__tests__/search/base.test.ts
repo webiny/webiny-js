@@ -176,6 +176,7 @@ describe("Elasticsearch Base Search", () => {
             };
 
             searchPlugin.apply(query, {
+                name: "biography",
                 basePath: "biography",
                 path: "biography",
                 value: keyword,

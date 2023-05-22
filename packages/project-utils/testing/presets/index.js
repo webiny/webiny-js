@@ -14,7 +14,7 @@ const getAllPackages = targetKeywords => {
     const storagePriority = storage.split(",");
 
     const packages = getYarnWorkspaces(process.cwd())
-        .map(pkg => pkg.replace(/\//g, "/"))
+        .map(pkg => pkg.replace(/\\/g, "/"))
         .filter(pkg => pkg.match(/\/packages\//) !== null);
 
     // Find packages that match the given sets of tags.
