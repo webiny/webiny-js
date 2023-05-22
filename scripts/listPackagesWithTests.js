@@ -68,6 +68,10 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-page-builder-so-ddb-es --storage=ddb-es,ddb"];
     },
 
+    "api-page-builder-import-export": () => {
+        return ["packages/api-page-builder-import-export --storage=ddb"];
+    },
+
     "api-prerendering-service": () => {
         return ["packages/api-prerendering-service --storage=ddb"];
     },
