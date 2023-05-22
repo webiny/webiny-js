@@ -12,7 +12,6 @@
     { "path": "../pubsub" },
     { "path": "../utils" },
     { "path": "../validation" },
-    { "path": "../api-tenancy-so-ddb" },
     { "path": "../api-wcp" },
     { "path": "../handler-aws" }
   ],
@@ -43,8 +42,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
-      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

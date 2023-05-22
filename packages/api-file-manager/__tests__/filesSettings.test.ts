@@ -1,5 +1,5 @@
-import useGqlHandler from "./useGqlHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import useGqlHandler from "~tests/utils/useGqlHandler";
 
 const identityA: SecurityIdentity = {
     id: "a",

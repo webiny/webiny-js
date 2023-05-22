@@ -1,8 +1,7 @@
 import { getIntrospectionQuery } from "graphql";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import createGraphQLHandler from "@webiny/handler-graphql";
-import i18nContext from "@webiny/api-i18n/graphql/context";
+import { createI18NContext, createI18NGraphQL } from "@webiny/api-i18n";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -18,23 +17,16 @@ import {
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwPageBuilderContext, createApwGraphQL } from "~/index";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import {
     CmsParametersPlugin,
     createHeadlessCmsContext,
     createHeadlessCmsGraphQL
 } from "@webiny/api-headless-cms";
-/**
- * Unfortunately at we need to import the api-i18n-ddb package manually
- */
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { getStorageOperations } from "./storageOperations";
 import {
     createPageBuilderContext,
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
-import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import { CREATE_CATEGORY, GET_CATEGORY } from "./graphql/categories";
 import { CREATE_PAGE, GET_PAGE, PUBLISH_PAGE, DELETE_PAGE, UPDATE_PAGE } from "./graphql/pages";
 import {
@@ -69,13 +61,16 @@ import { contextCommon, contextSecurity } from "./context";
 import { createDummyTransport, createTransport } from "@webiny/api-mailer";
 import { CREATE_CONTENT_MODEL_GROUP_MUTATION } from "~tests/utils/graphql/cms.group";
 import { CREATE_CONTENT_MODEL_MUTATION } from "~tests/utils/graphql/cms.model";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import {
     contentEntryCreateFromMutationFactory,
     contentEntryCreateMutationFactory,
     contentEntryGetQueryFactory,
     contentEntryUpdateMutationFactory
 } from "~tests/utils/graphql/cms.entry";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
+import { ApwScheduleActionStorageOperations } from "~/scheduler/types";
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -109,30 +104,18 @@ const validateIsCoreGraphQlPath = (params: GQLHandlerCallableParams): void => {
     throw new Error(`Path is not a Core GraphQL path: ${params.path}`);
 };
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
-
 export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
-    const ops = getStorageOperations({
-        plugins: params.storageOperationPlugins || [],
-        documentClient
-    });
-
-    const tenant = {
-        id: "root",
-        name: "Root",
-        parent: null
-    };
     const { permissions, identity, plugins = [] } = params;
+
+    const apwScheduleStorage = getStorageOps<ApwScheduleActionStorageOperations>("apwSchedule");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
+    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const handler = createHandler({
         plugins: [
+            ...apwScheduleStorage.plugins,
+            ...cmsStorage.plugins,
             createTransport(async () => {
                 const plugin = await createDummyTransport();
                 plugin.name = "dummy-default.test";
@@ -142,15 +125,15 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
             createWcpContext(),
             createWcpGraphQL(),
             contextCommon(),
-            ...ops.plugins,
             ...createTenancyAndSecurity({
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
                 identity
             }),
-            contextSecurity({ tenant, identity }),
+            contextSecurity({ identity }),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            i18nContext(),
+            createI18NContext(),
+            createI18NGraphQL(),
             /**
              * for the page builder we must define the current locale and type
              * we can do that via the CmsParametersPlugin
@@ -163,28 +146,18 @@ export const createGraphQlHandler = (params: GQLHandlerCallableParams) => {
                     locale
                 };
             }),
-            i18nDynamoDbStorageOperations(),
+            ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
-            /**
-             * We're using ddb-only storageOperations here because current jest setup doesn't allow
-             * usage of more than one storageOperations at a time with the help of --keyword flag.
-             */
             createPageBuilderContext({
-                storageOperations: createPageBuilderStorageOperations({ documentClient })
+                storageOperations: pageBuilderStorage.storageOperations
             }),
-            /**
-             * We're using ddb-only storageOperations here because current jest setup doesn't allow
-             * usage of more than one storageOperations at a time with the help of --keyword flag.
-             */
             createHeadlessCmsContext({
-                storageOperations: createHeadlessCmsStorageOperations({
-                    documentClient
-                })
+                storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createApwPageBuilderContext({
-                storageOperations: ops.storageOperations
+                storageOperations: apwScheduleStorage.storageOperations
             }),
             createApwGraphQL(),
             plugins

@@ -8,6 +8,7 @@ describe(`"Login" test`, () => {
         const [response] = await install.install({
             "x-tenant": "root"
         });
+
         if (response.data.security.install.error) {
             throw new Error(response.data.security.install.error.message);
             // @ts-ignore
