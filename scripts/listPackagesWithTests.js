@@ -76,6 +76,10 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-prerendering-service --storage=ddb"];
     },
 
+    "api-mailer": () => {
+        return ["packages/api-mailer --storage=ddb", "packages/api-mailer --storage=ddb-es,ddb"];
+    },
+
     "api-headless-cms": () => {
         return [
             "packages/api-headless-cms --storage=ddb",

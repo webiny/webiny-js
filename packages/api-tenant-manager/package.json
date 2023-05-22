@@ -19,8 +19,6 @@
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
     "@webiny/api": "0.0.0",
-    "@webiny/api-security-so-ddb": "0.0.0",
-    "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/handler": "0.0.0",
