@@ -1,32 +1,34 @@
 import lodashMerge from "lodash/merge";
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
     CmsContext,
     CmsEntry,
     CmsEntryContext,
+    CmsEntryListParams,
     CmsEntryListWhere,
+    CmsEntryMeta,
     CmsEntryPermission,
     CmsEntryStatus,
+    CmsEntryValues,
     CmsModel,
     CmsModelField,
     CmsStorageEntry,
+    CONTENT_ENTRY_STATUS,
     CreateCmsEntryInput,
     EntryBeforeListTopicParams,
     HeadlessCms,
     HeadlessCmsStorageOperations,
     OnEntryAfterCreateTopicParams,
+    OnEntryAfterDeleteMultipleTopicParams,
     OnEntryAfterDeleteTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
+    OnEntryBeforeDeleteMultipleTopicParams,
     OnEntryBeforeDeleteTopicParams,
     OnEntryBeforeGetTopicParams,
     OnEntryBeforePublishTopicParams,
@@ -36,6 +38,7 @@ import {
     OnEntryCreateErrorTopicParams,
     OnEntryCreateRevisionErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
+    OnEntryDeleteMultipleErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
@@ -67,10 +70,11 @@ import { checkOwnership, validateOwnership } from "~/utils/ownership";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import { I18NLocale } from "@webiny/api-i18n/types";
+import { filterAsync } from "~/utils/filterAsync";
 
-export const STATUS_DRAFT = "draft";
-export const STATUS_PUBLISHED = "published";
-export const STATUS_UNPUBLISHED = "unpublished";
+export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
+export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
+export const STATUS_UNPUBLISHED = CONTENT_ENTRY_STATUS.UNPUBLISHED;
 
 type DefaultValue = boolean | number | string | null;
 /**
@@ -335,6 +339,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryRevisionDeleteError = createTopic<OnEntryRevisionDeleteErrorTopicParams>(
         "cms.onEntryRevisionDeleteError"
     );
+    /**
+     * Delete multiple entries
+     */
+    const onEntryBeforeDeleteMultiple = createTopic<OnEntryBeforeDeleteMultipleTopicParams>(
+        "cms.onEntryBeforeDeleteMultiple"
+    );
+    const onEntryAfterDeleteMultiple = createTopic<OnEntryAfterDeleteMultipleTopicParams>(
+        "cms.onEntryAfterDeleteMultiple"
+    );
+    const onEntryDeleteMultipleError = createTopic<OnEntryDeleteMultipleErrorTopicParams>(
+        "cms.onEntryDeleteMultipleError"
+    );
 
     /**
      * Get entry
@@ -485,16 +501,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             id: entryId
         });
     };
-    const listEntries: CmsEntryContext["listEntries"] = async (model, params) => {
+
+    const listEntries = async <T = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryListParams
+    ): Promise<[CmsEntry<T>[], CmsEntryMeta]> => {
         const permission = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
         const { where: initialWhere, limit: initialLimit } = params;
         const limit = initialLimit && initialLimit > 0 ? initialLimit : 50;
-        /**
-         * We always assign tenant and locale because we do not allow one model to have content through multiple tenants.
-         */
-        const where: CmsEntryListWhere = {
+
+        const where = {
             ...initialWhere
         };
         /**
@@ -557,7 +575,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 cursor: hasMoreItems ? cursor : null
             };
 
-            return [items, meta];
+            return [items as CmsEntry<T>[], meta];
         } catch (ex) {
             throw new WebinyError(
                 "Error while fetching entries from storage.",
@@ -1089,16 +1107,111 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
     };
-    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, entryId) => {
+    const deleteMultipleEntries: CmsEntryContext["deleteMultipleEntries"] = async (
+        model,
+        params
+    ) => {
+        const { entries: input } = params;
+        const maxDeletableEntries = 50;
+
+        const entryIdList = new Set<string>();
+        for (const id of input) {
+            const { id: entryId } = parseIdentifier(id);
+            entryIdList.add(entryId);
+        }
+        const ids = Array.from(entryIdList);
+
+        if (ids.length > maxDeletableEntries) {
+            throw new WebinyError(
+                "Cannot delete more than 50 entries at once.",
+                "DELETE_ENTRIES_MAX",
+                {
+                    entries: ids
+                }
+            );
+        }
         const permission = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
 
-        const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
-            id: entryId
+        const { items: entries } = await storageOperations.entries.list(model, {
+            where: {
+                latest: true,
+                entryId_in: ids
+            },
+            limit: maxDeletableEntries + 1
         });
+        /**
+         * We do not want to allow deleting entries that user does not own or cannot access.
+         */
+        const items = (
+            await filterAsync(entries, async entry => {
+                return validateOwnership(context, permission, entry);
+            })
+        ).map(entry => entry.id);
 
-        if (!storageEntry) {
-            throw new NotFoundError(`Entry "${entryId}" was not found!`);
+        try {
+            await onEntryBeforeDeleteMultiple.publish({
+                entries,
+                ids,
+                model
+            });
+            await storageOperations.entries.deleteMultipleEntries(model, {
+                entries: items
+            });
+            await onEntryAfterDeleteMultiple.publish({
+                entries,
+                ids,
+                model
+            });
+            return items.map(id => {
+                return {
+                    id
+                };
+            });
+        } catch (ex) {
+            await onEntryDeleteMultipleError.publish({
+                entries,
+                ids,
+                model,
+                error: ex
+            });
+            throw new WebinyError(ex.message, ex.code || "DELETE_ENTRIES_MULTIPLE_ERROR", {
+                error: ex,
+                entries
+            });
+        }
+    };
+
+    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
+        const permission = await checkEntryPermissions({ rwd: "d" });
+        await checkModelAccess(context, model);
+        const { force } = options || {};
+
+        const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
+            id
+        })) as CmsEntry;
+        /**
+         * If there is no entry, and we do not force the deletion, just throw an error.
+         */
+        if (!storageEntry && !force) {
+            throw new NotFoundError(`Entry "${id}" was not found!`);
+        }
+        /**
+         * In the case we are forcing the deletion, we do not need the storageEntry to exist as it might be an error when loading single database record.
+         *
+         * This happens, sometimes, in the Elasticsearch system as the entry might get deleted from the DynamoDB but not from the Elasticsearch.
+         * This is due to high load on the Elasticsearch at the time of the deletion.
+         */
+        //
+        else if (!storageEntry && force) {
+            const { id: entryId } = parseIdentifier(id);
+            return await deleteEntryHelper({
+                model,
+                entry: {
+                    id,
+                    entryId
+                } as CmsEntry
+            });
         }
 
         checkOwnership(context, permission, storageEntry);
@@ -1246,6 +1359,86 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
 
+    const getUniqueFieldValues: CmsEntryContext["getUniqueFieldValues"] = async (model, params) => {
+        const permission = await checkEntryPermissions({ rwd: "r" });
+        await checkModelAccess(context, model);
+
+        const { where: initialWhere, fieldId } = params;
+
+        const where = {
+            ...initialWhere
+        };
+        /**
+         * Possibly only get records which are owned by current user.
+         * Or if searching for the owner set that value - in the case that user can see other entries than their own.
+         */
+        const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+        if (ownedBy !== undefined) {
+            where.ownedBy = ownedBy;
+        }
+        /**
+         * Where must contain either latest or published keys.
+         * We cannot list entries without one of those
+         */
+        if (where.latest && where.published) {
+            throw new WebinyError(
+                "Cannot list entries that are both published and latest.",
+                "LIST_ENTRIES_ERROR",
+                {
+                    where
+                }
+            );
+        } else if (!where.latest && !where.published) {
+            throw new WebinyError(
+                "Cannot list entries if we do not have latest or published defined.",
+                "LIST_ENTRIES_ERROR",
+                {
+                    where
+                }
+            );
+        }
+        /**
+         * We need to verify that the field in question is searchable.
+         */
+        const fields = getSearchableFields({
+            fields: model.fields,
+            plugins: context.plugins,
+            input: []
+        });
+
+        if (fields.includes(fieldId) === false) {
+            throw new WebinyError(
+                "Cannot list unique entry field values if the field is not searchable.",
+                "LIST_UNIQUE_ENTRY_VALUES_ERROR",
+                {
+                    fieldId
+                }
+            );
+        }
+
+        try {
+            return await storageOperations.entries.getUniqueFieldValues(model, {
+                where,
+                fieldId
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                "Error while fetching unique entry values from storage.",
+                "LIST_UNIQUE_ENTRY_VALUES_ERROR",
+                {
+                    error: {
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.data
+                    },
+                    model,
+                    where,
+                    fieldId
+                }
+            );
+        }
+    };
+
     return {
         /**
          * Deprecated - will be removed in 5.35.0
@@ -1376,12 +1569,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        async listEntries(model, params) {
+        async listEntries<T = CmsEntryValues>(
+            model: CmsModel,
+            params: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             return context.benchmark.measure("headlessCms.crud.entries.listEntries", async () => {
                 return listEntries(model, params);
             });
         },
-        async listLatestEntries(this: HeadlessCms, model, params) {
+        async listLatestEntries<T = CmsEntryValues>(
+            this: HeadlessCms,
+            model: CmsModel,
+            params?: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             const where = params?.where || ({} as CmsEntryListWhere);
 
             return this.listEntries(model, {
@@ -1393,7 +1593,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        async listPublishedEntries(model, params) {
+        async listPublishedEntries<T = CmsEntryValues>(
+            model: CmsModel,
+            params?: CmsEntryListParams
+        ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             const where = params?.where || ({} as CmsEntryListWhere);
 
             return this.listEntries(model, {
@@ -1448,6 +1651,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 return deleteEntry(model, entryId);
             });
         },
+        async deleteMultipleEntries(model, ids) {
+            return context.benchmark.measure(
+                "headlessCms.crud.entries.deleteMultipleEntries",
+                async () => {
+                    return deleteMultipleEntries(model, ids);
+                }
+            );
+        },
         async publishEntry(model, id) {
             return context.benchmark.measure("headlessCms.crud.entries.publishEntry", async () => {
                 return publishEntry(model, id);
@@ -1458,6 +1669,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 "headlessCms.crud.entries.unpublishEntry",
                 async () => {
                     return unpublishEntry(model, id);
+                }
+            );
+        },
+        async getUniqueFieldValues(model, params) {
+            return context.benchmark.measure(
+                "headlessCms.crud.entries.getUniqueFieldValues",
+                async () => {
+                    return getUniqueFieldValues(model, params);
                 }
             );
         }

@@ -1,5 +1,4 @@
 import { createTopic } from "@webiny/pubsub";
-
 import { CreateAcoParams } from "~/types";
 import {
     AcoSearchRecordCrud,
@@ -76,6 +75,9 @@ export const createSearchRecordCrudMethods = ({
             await storageOperations.deleteRecord(model, { id });
             await onSearchRecordAfterDelete.publish({ model, record });
             return true;
+        },
+        async listTags(model, params) {
+            return storageOperations.listTags(model, params);
         }
     };
 };

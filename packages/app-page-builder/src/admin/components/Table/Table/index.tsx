@@ -1,7 +1,6 @@
-import React, { forwardRef, useMemo, useState, useEffect } from "react";
-
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
+import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -20,9 +19,8 @@ import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 import { statuses as statusLabels } from "~/admin/constants/pageStatusesLabels";
-import { PbPageDataItem, PbPageDataStatus } from "~/types";
-import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
-import { menuStyles } from "./styled";
+import { PbPageDataItem } from "~/types";
+import { actionsColumnStyles, menuStyles } from "./styled";
 
 interface Props {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -40,7 +38,7 @@ interface Entry {
     title: string;
     createdBy: string;
     savedOn: string;
-    status?: PbPageDataStatus;
+    status?: string;
     version?: number;
     original: PbPageDataItem | FolderItem;
     selectable: boolean;
@@ -127,6 +125,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             meta: {
                 alignEnd: true
             },
+            className: actionsColumnStyles,
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;

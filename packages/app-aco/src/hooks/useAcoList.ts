@@ -1,42 +1,62 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { FoldersContext } from "~/contexts/folders";
-import { AcoAppContext } from "~/contexts/app";
-import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
+import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
-import { FolderItem, ListDbSort, ListMeta, SearchRecordItem } from "~/types";
+import {
+    FolderItem,
+    ListDbSort,
+    ListMeta,
+    ListSearchRecordsWhereQueryVariables,
+    SearchRecordItem
+} from "~/types";
 
-interface ListItemsParams extends Omit<ListRecordsParams, "folderId"> {
+interface UseAcoListParams {
     folderId?: string;
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
+interface ListRecordsParams {
+    folderId?: string;
+    after?: string;
+    limit?: number;
+    sort?: ListDbSort;
+    search?: string;
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+    AND?: ListSearchRecordsWhereQueryVariables[];
+    OR?: ListSearchRecordsWhereQueryVariables[];
 }
 
 interface UseAcoListResponse {
     folders: FolderItem[];
     records: SearchRecordItem[];
-    listTitle: string | undefined;
-    isListLoading?: boolean;
-    isListLoadingMore?: boolean;
+    listTitle?: string;
+    isListLoading: boolean;
+    isListLoadingMore: boolean;
     meta: ListMeta;
-    listItems: (params: ListItemsParams) => Promise<any>;
+    listItems: (params: ListRecordsParams) => void;
 }
 
-export const useAcoList = (originalFolderId?: string) => {
+export const useAcoList = (params: UseAcoListParams) => {
+    const { folderId, ...initialWhere } = params;
+
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
-    const appContext = useContext(AcoAppContext);
 
-    if (!folderContext || !searchContext || !appContext) {
+    if (!folderContext || !searchContext) {
         throw new Error("useAcoList must be used within a ACOProvider");
     }
 
     const [folders, setFolders] = useState<FolderItem[]>([]);
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
-    const [sort, setSort] = useState<ListDbSort>(validateOrGetDefaultDbSort());
+    const [sort, setSort] = useState<ListDbSort>();
 
     const { folders: originalFolders, loading: foldersLoading, listFolders } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
-
-    const folderId = originalFolderId || "ROOT";
 
     const getCurrentFolderList = (
         folders?: FolderItem[] | null,
@@ -45,10 +65,26 @@ export const useAcoList = (originalFolderId?: string) => {
         if (!folders) {
             return [];
         }
-        if (currentFolderId) {
+        if (!folderId || folderId === "ROOT") {
+            return folders.filter(folder => !folder.parentId);
+        } else {
             return folders.filter(folder => folder.parentId === currentFolderId);
         }
-        return folders.filter(folder => !folder.parentId);
+    };
+
+    const getCurrentRecordList = (
+        records: SearchRecordItem[],
+        currentFolderId?: string
+    ): SearchRecordItem[] | [] => {
+        if (!records) {
+            return [];
+        }
+
+        if (!currentFolderId) {
+            return records;
+        }
+
+        return records.filter(record => record.location.folderId === currentFolderId);
     };
 
     /**
@@ -66,28 +102,28 @@ export const useAcoList = (originalFolderId?: string) => {
             listFolders();
         }
 
-        listRecords({ folderId, sort });
+        listRecords({ folderId, sort, ...initialWhere });
     }, [folderId]);
 
     /**
      * Any time we receive a `folders` list update:
-     * - we return the list filtered by the parent `folderId`, sorted according to the current `sort` value;
+     * - we return the list filtered by the current `type` and parent `folderId`, sorted according to the current `sort` value;
      * - we return the current folder name.
      */
     useEffect(() => {
-        const subFolders = getCurrentFolderList(originalFolders, originalFolderId);
+        const subFolders = getCurrentFolderList(originalFolders, folderId);
         setFolders(sortTableItems(subFolders, sort));
 
-        const currentFolder = originalFolders?.find(folder => folder.id === originalFolderId);
+        const currentFolder = originalFolders?.find(folder => folder.id === folderId);
         setListTitle(currentFolder?.title || undefined);
-    }, [originalFolders]);
+    }, [originalFolders, folderId]);
 
     /**
      * Any time we receive a `records` list or `folderId` update:
      * - we return the `records` list filtered by the current `folderId`.
      */
     useEffect(() => {
-        const subRecords = originalRecords.filter(record => record.location.folderId === folderId);
+        const subRecords = getCurrentRecordList(originalRecords, folderId);
         setRecords(subRecords);
     }, [originalRecords, folderId]);
 
@@ -99,32 +135,31 @@ export const useAcoList = (originalFolderId?: string) => {
         setFolders(folders => sortTableItems(folders, sort));
     }, [sort]);
 
-    return useMemo<UseAcoListResponse>(
-        () => ({
+    return useMemo<UseAcoListResponse>(() => {
+        return {
             folders,
             records,
             listTitle,
-            isListLoading:
+            isListLoading: Boolean(
                 recordsLoading.INIT ||
-                foldersLoading.INIT ||
-                recordsLoading.LIST ||
-                foldersLoading.LIST,
-            isListLoadingMore: recordsLoading.LIST_MORE,
-            meta: meta[folderId] || {},
+                    foldersLoading.INIT ||
+                    recordsLoading.LIST ||
+                    foldersLoading.LIST
+            ),
+            isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
+            meta: meta[folderId || "search"],
             listItems(params) {
-                const { sort: sortInput = [] } = params;
+                const { sort: initialSort } = params;
+
+                let sort: ListDbSort | undefined = undefined;
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
-                if (sortInput.length > 0) {
-                    setSort(validateOrGetDefaultDbSort(sortInput));
+                if (initialSort?.length) {
+                    sort = validateOrGetDefaultDbSort(initialSort);
+                    setSort(sort);
                 }
 
-                return listRecords({
-                    ...params,
-                    sort: sortInput,
-                    folderId
-                });
+                return listRecords({ folderId, ...params, sort });
             }
-        }),
-        [folders, records, foldersLoading, recordsLoading, meta]
-    );
+        };
+    }, [folders, records, foldersLoading, recordsLoading, meta]);
 };

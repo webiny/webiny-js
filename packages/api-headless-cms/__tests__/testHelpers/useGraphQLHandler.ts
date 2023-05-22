@@ -37,6 +37,7 @@ import { createHandlerCore, CreateHandlerCoreParams } from "./plugins";
 import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -54,7 +55,9 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
 
     const core = createHandlerCore(params);
 
-    const plugins = new PluginsContainer(core.plugins.concat([acceptIncomingChanges()]));
+    const plugins = new PluginsContainer(
+        core.plugins.concat([...createOutputBenchmarkLogs(), acceptIncomingChanges()])
+    );
 
     const storageOperationsCmsModelPlugin = new StorageOperationsCmsModelPlugin(
         createCmsModelFieldConvertersAttachFactory(plugins)

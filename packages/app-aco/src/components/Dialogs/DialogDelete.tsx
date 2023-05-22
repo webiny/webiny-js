@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -11,22 +10,22 @@ import {
     DialogTitle
 } from "@webiny/ui/Dialog";
 import { CircularProgress } from "@webiny/ui/Progress";
-
 import { useFolders } from "~/hooks";
-
 import { DialogContainer } from "./styled";
-
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
-
+const t = i18n.ns("app-aco/dialogs/dialog-delete");
 import { FolderItem } from "~/types";
 
-type Props = {
+interface FolderDialogDeleteProps {
     folder: Pick<FolderItem, "id" | "title">;
     open: boolean;
     onClose: DialogOnClose;
-};
+}
 
-export const FolderDialogDelete: React.VFC<Props> = ({ folder, open, onClose }) => {
+export const FolderDialogDelete: React.VFC<FolderDialogDeleteProps> = ({
+    folder,
+    open,
+    onClose
+}) => {
     const { deleteFolder, loading } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [dialogOpen, setDialogOpen] = useState(false);

@@ -1,4 +1,4 @@
-const DATA_FIELD = /* GraphQL */ `
+const SEARCH_DATA_FIELD = /* GraphQL */ `
     {
         id
         type
@@ -19,6 +19,18 @@ const DATA_FIELD = /* GraphQL */ `
             customLocked
         }
         tags
+        createdBy {
+            id
+            displayName
+            type
+        }
+    }
+`;
+
+const TAG_DATA_FIELD = /* GraphQL */ `
+    {
+        tag
+        count
     }
 `;
 
@@ -42,7 +54,7 @@ export const CREATE_RECORD = /* GraphQL */ `
     mutation CreateRecord($data: AcoSearchRecordWebinyCreateInput!) {
         search {
             createRecord: createAcoSearchRecordWebiny(data: $data) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -53,7 +65,7 @@ export const UPDATE_RECORD = /* GraphQL */ `
     mutation UpdateRecord($id: ID!, $data: AcoSearchRecordWebinyUpdateInput!) {
         search {
             updateRecord: updateAcoSearchRecordWebiny(id: $id, data: $data) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -75,7 +87,7 @@ export const LIST_RECORDS = /* GraphQL */ `
     query ListRecords($where: AcoSearchRecordWebinyListWhereInput, $search: String, $limit: Int, $after: String, $sort: [AcoSearchRecordWebinyListSorter!]) {
         search {
             listRecords: listAcoSearchRecordWebiny(where: $where, search: $search, limit: $limit, after: $after, sort: $sort) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -87,7 +99,19 @@ export const GET_RECORD = /* GraphQL */ `
     query GetRecord($id: ID!) {
         search {
             getRecord: getAcoSearchRecordWebiny(id: $id ) {
-                data ${DATA_FIELD}
+                data ${SEARCH_DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_TAGS = /* GraphQL */ `
+    query ListTags($where: AcoSearchRecordTagListWhereInput) {
+        search {
+            listTags: listAcoSearchRecordWebinyTags(where: $where) {
+                data ${TAG_DATA_FIELD}
+                meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
         }

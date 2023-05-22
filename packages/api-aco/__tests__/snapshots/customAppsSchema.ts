@@ -286,6 +286,9 @@ export const createCustomAppsSchemaSnapshot = () => {
             after: String
             sort: [AcoSearchRecordCustomTestingAppListSorter!]
           ): AcoSearchRecordCustomTestingAppListResponse!
+          listAcoSearchRecordCustomTestingAppTags(
+            where: AcoSearchRecordTagListWhereInput
+          ): AcoSearchRecordTagListResponse!
         }
 
         extend type SearchMutation {

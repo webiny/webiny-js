@@ -10,7 +10,11 @@ export const validateOrGetDefaultDbSort = (initial?: ListDbSort): ListDbSort => 
     return initial;
 };
 
-export const sortTableItems = (records: any[], sort?: ListDbSort): any[] => {
+interface IRecord {
+    id: string;
+}
+
+export const sortTableItems = (records: IRecord[], sort?: ListDbSort): any[] => {
     const dbSorting = validateOrGetDefaultDbSort(sort);
     const fields = [] as ListTableSort["fields"];
     const orders = [] as ListTableSort["orders"];

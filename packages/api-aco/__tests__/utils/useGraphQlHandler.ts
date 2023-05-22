@@ -6,9 +6,7 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-
 import { createTenancyAndSecurity } from "./tenancySecurity";
-
 import {
     CREATE_FOLDER,
     DELETE_FOLDER,
@@ -21,6 +19,7 @@ import {
     DELETE_RECORD,
     GET_RECORD,
     LIST_RECORDS,
+    LIST_TAGS,
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
 
@@ -32,7 +31,7 @@ import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
 }
@@ -57,7 +56,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         plugins: [
             ...ops.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || createIdentity() }),
+            ...createTenancyAndSecurity({
+                permissions,
+                identity: identity === undefined ? createIdentity() : identity
+            }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
@@ -130,6 +132,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async getRecord(variables = {}) {
             return invoke({ body: { query: GET_RECORD, variables } });
+        },
+        async listTags(variables = {}) {
+            return invoke({ body: { query: LIST_TAGS, variables } });
         }
     };
 

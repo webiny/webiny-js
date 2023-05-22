@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 import { Form, FormOnSubmit } from "@webiny/form";
@@ -16,25 +15,26 @@ import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-
 import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
-
 import { DialogContainer, DialogFoldersContainer } from "./styled";
-
 import { FolderItem } from "~/types";
 
-type Props = {
+interface FolderDialogUpdateProps {
     folder: FolderItem;
     open: boolean;
     onClose: DialogOnClose;
-};
+}
 
 type SubmitData = Pick<FolderItem, "title" | "slug">;
 
-const t = i18n.ns("app-aco/components/tree/dialog-update");
+const t = i18n.ns("app-aco/dialogs/dialog-update");
 
-export const FolderDialogUpdate: React.FC<Props> = ({ folder, onClose, open }) => {
+export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
+    folder,
+    onClose,
+    open
+}) => {
     const { loading, updateFolder } = useFolders();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();

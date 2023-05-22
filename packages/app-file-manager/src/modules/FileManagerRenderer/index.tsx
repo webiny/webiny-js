@@ -1,6 +1,6 @@
 import React from "react";
-import { DefaultRenderer } from "./DefaultRenderer";
+import { AcoRenderer } from "./AcoRenderer";
 
 export const FileManagerRendererModule = () => {
-    return <DefaultRenderer />;
+    return <AcoRenderer />;
 };

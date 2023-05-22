@@ -122,12 +122,15 @@ describe("record graphql generator", () => {
                 },
                 {
                     name: "listAcoSearchRecordMockAppApiName"
+                },
+                {
+                    name: "listAcoSearchRecordMockAppApiNameTags"
                 }
             ],
             enumValues: null,
             possibleTypes: null
         });
-        expect(SearchQuery?.fields).toHaveLength(3);
+        expect(SearchQuery?.fields).toHaveLength(4);
 
         const SearchMutation = types.find(t => t.name === "SearchMutation");
         expect(SearchMutation).toMatchObject({

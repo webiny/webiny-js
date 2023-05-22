@@ -66,7 +66,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
             folders,
             loading,
             async listFolders() {
-                const { data: response } = await apolloFetchingHandler(
+                const { data: response } = await apolloFetchingHandler<ListFoldersResponse>(
                     loadingHandler("LIST", setLoading),
                     () =>
                         client.query<ListFoldersResponse, ListFoldersQueryVariables>({
@@ -77,6 +77,10 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                             }
                         })
                 );
+
+                if (!response) {
+                    throw new Error("Network error while listing folders.");
+                }
 
                 const { data, error } = response.aco.listFolders;
 
@@ -99,7 +103,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Folder `id` is mandatory");
                 }
 
-                const { data: response } = await apolloFetchingHandler(
+                const { data: response } = await apolloFetchingHandler<GetFolderResponse>(
                     loadingHandler("GET", setLoading),
                     () =>
                         client.query<GetFolderResponse, GetFolderQueryVariables>({
@@ -107,6 +111,10 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                             variables: { id }
                         })
                 );
+
+                if (!response) {
+                    throw new Error("Network error while fetch folder.");
+                }
 
                 const { data, error } = response.aco.getFolder;
 
@@ -133,7 +141,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                 );
 
                 if (!response) {
-                    throw new Error("Network error while creating folder");
+                    throw new Error("Network error while creating folder.");
                 }
 
                 const { data, error } = response.aco.createFolder;
@@ -169,7 +177,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                 );
 
                 if (!response) {
-                    throw new Error("Network error while updating folder");
+                    throw new Error("Network error while updating folder.");
                 }
 
                 const { data, error } = response.aco.updateFolder;

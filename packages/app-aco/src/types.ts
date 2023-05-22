@@ -27,6 +27,11 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     content: string;
     location: Location;
     data: TData;
+    tags: string[];
+}
+
+export interface TagItem {
+    tag: string;
 }
 
 export type Loading<T extends string> = { [P in T]?: boolean };
@@ -139,15 +144,46 @@ export interface ListSearchRecordsResponse {
     };
 }
 
+export interface ListSearchRecordsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
 export interface ListSearchRecordsQueryVariables {
     where: {
         type: string;
-        location: Location;
+        location?: Location;
+        createdBy?: string;
         [key: string]: any;
     };
+    search?: string;
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
+}
+
+export interface ListTagsResponse {
+    search: {
+        listTags: {
+            data: TagItem[] | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface ListTagsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+    AND?: ListTagsWhereQueryVariables[];
+    OR?: ListTagsWhereQueryVariables[];
+}
+
+export interface ListTagsQueryVariables {
+    where: ListTagsWhereQueryVariables & {
+        type: string;
+    };
 }
 
 export interface GetSearchRecordResponse {

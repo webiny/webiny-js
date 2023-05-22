@@ -260,6 +260,9 @@ export const createDefaultAppsSchemaSnapshot = () => {
             after: String
             sort: [AcoSearchRecordWebinyListSorter!]
           ): AcoSearchRecordWebinyListResponse!
+          listAcoSearchRecordWebinyTags(
+            where: AcoSearchRecordTagListWhereInput
+          ): AcoSearchRecordTagListResponse!
         }
 
         extend type SearchMutation {

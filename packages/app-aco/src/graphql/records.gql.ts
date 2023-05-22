@@ -79,9 +79,9 @@ export const createCreateRecord = (model: AcoModel) => {
 export const createListRecords = (model: AcoModel) => {
     const { singularApiName, pluralApiName } = model;
     return gql`
-        query List${pluralApiName}($where: ${singularApiName}ListWhereInput, $limit: Int, $after: String, $sort: [${singularApiName}ListSorter!]) {
+        query List${pluralApiName}($where: ${singularApiName}ListWhereInput, $limit: Int, $after: String, $sort: [${singularApiName}ListSorter!], $search: String) {
             search {
-                listRecords: list${pluralApiName}(where: $where, limit: $limit, after: $after, sort: $sort) {
+                listRecords: list${pluralApiName}(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
                     data {
                         ${createAppFields(model)}
                     }
@@ -132,6 +132,22 @@ export const createDeleteRecord = (model: AcoModel) => {
             search {
                 deleteRecord: delete${singularApiName}(id: $id) {
                     data
+                    error ${ERROR_FIELD}
+                }
+            }
+        }
+    `;
+};
+
+export const createListTags = () => {
+    return gql`
+        query ListTags($where: SearchRecordTagListWhereInput) {
+            search {
+                listTags(where: $where) {
+                    data {
+                        tag
+                    }
+                    meta ${LIST_META_FIELD}
                     error ${ERROR_FIELD}
                 }
             }

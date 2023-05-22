@@ -12,6 +12,7 @@
     { "path": "../handler" },
     { "path": "../handler-graphql" },
     { "path": "../pubsub" },
+    { "path": "../utils" },
     { "path": "../api-i18n-ddb" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
@@ -47,6 +48,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
       "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
@@ -58,9 +61,7 @@
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

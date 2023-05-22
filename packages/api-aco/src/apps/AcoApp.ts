@@ -7,6 +7,7 @@ import {
     IAcoApp,
     IAcoAppParams,
     ListSearchRecordsParams,
+    ListSearchRecordTagsParams,
     SearchRecord
 } from "~/types";
 import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
@@ -43,6 +44,9 @@ export class AcoApp implements IAcoApp {
             },
             delete: async (id: string): Promise<Boolean> => {
                 return this.context.aco.search.delete(this.model, id);
+            },
+            listTags: async (params: ListSearchRecordTagsParams) => {
+                return this.context.aco.search.listTags(this.model, params);
             }
         };
     }

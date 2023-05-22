@@ -84,6 +84,7 @@ export interface IAcoAppRemoveFieldCallable {
 }
 
 export interface IAcoApp {
+    context: AcoContext;
     search: AcoSearchRecordCrudBase;
     folder: AcoFolderCrud;
     name: string;

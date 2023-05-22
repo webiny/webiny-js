@@ -1,9 +1,9 @@
 import { CmsGroupPlugin } from "@webiny/api-headless-cms";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { createFolderModelDefinition } from "~/folder/folder.model";
-import { modelFactory } from "~/utils/modelFactory";
-import { isInstallationPending } from "~/utils/isInstallationPending";
 import { createSearchModelDefinition } from "~/record/record.model";
+import { isInstallationPending } from "~/utils/isInstallationPending";
+import { modelFactory } from "~/utils/modelFactory";
 
 export const createAcoModels = (context: CmsContext) => {
     /**

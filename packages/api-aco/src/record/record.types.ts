@@ -20,6 +20,11 @@ export interface SearchRecord<TData extends GenericSearchData = GenericSearchDat
     tags: string[];
 }
 
+export type SearchRecordTag = {
+    tag: string;
+    count: number;
+};
+
 export interface ListSearchRecordsWhere {
     type: string;
     location?: {
@@ -55,11 +60,20 @@ export interface DeleteSearchRecordParams {
     id: string;
 }
 
+export interface ListSearchRecordTagsWhere {
+    type: string;
+}
+
+export interface ListSearchRecordTagsParams {
+    where?: ListSearchRecordTagsWhere;
+}
+
 export interface StorageOperationsGetSearchRecordParams {
     id: string;
 }
 
 export type StorageOperationsListSearchRecordsParams = ListSearchRecordsParams;
+export type StorageOperationsListSearchRecordTagsParams = ListSearchRecordTagsParams;
 
 export interface StorageOperationsCreateSearchRecordParams<
     TData extends GenericSearchData = GenericSearchData
@@ -126,6 +140,7 @@ export interface AcoSearchRecordCrudBase {
     list<TData extends GenericSearchData = GenericSearchData>(
         params: ListSearchRecordsParams
     ): Promise<[SearchRecord<TData>[], ListMeta]>;
+    listTags(params: ListSearchRecordTagsParams): Promise<[SearchRecordTag[], ListMeta]>;
     create<TData extends GenericSearchData = GenericSearchData>(
         data: CreateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
@@ -137,12 +152,19 @@ export interface AcoSearchRecordCrudBase {
 }
 
 export interface AcoSearchRecordCrud
-    extends Omit<AcoSearchRecordCrudBase, "get" | "list" | "create" | "update" | "delete"> {
+    extends Omit<
+        AcoSearchRecordCrudBase,
+        "get" | "list" | "create" | "update" | "delete" | "listTags"
+    > {
     get<TData>(model: CmsModel, id: string): Promise<SearchRecord<TData>>;
     list<TData>(
         model: CmsModel,
         params: ListSearchRecordsParams
     ): Promise<[SearchRecord<TData>[], ListMeta]>;
+    listTags(
+        model: CmsModel,
+        params: ListSearchRecordTagsParams
+    ): Promise<[SearchRecordTag[], ListMeta]>;
     create<TData>(
         model: CmsModel,
         data: CreateSearchRecordParams<TData>
@@ -170,6 +192,10 @@ export interface AcoSearchRecordStorageOperations {
         model: CmsModel,
         params: StorageOperationsListSearchRecordsParams
     ): Promise<[SearchRecord<TData>[], ListMeta]>;
+    listTags(
+        model: CmsModel,
+        params: StorageOperationsListSearchRecordTagsParams
+    ): Promise<[SearchRecordTag[], ListMeta]>;
     createRecord<TData extends GenericSearchData = GenericSearchData>(
         model: CmsModel,
         params: StorageOperationsCreateSearchRecordParams<TData>

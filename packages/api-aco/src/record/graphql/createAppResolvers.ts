@@ -4,6 +4,7 @@ import { IAcoApp } from "~/types";
 import { resolve, resolveList } from "~/utils/resolve";
 import { parseIdentifier } from "@webiny/utils";
 import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
+import { checkPermissions } from "~/utils/checkPermissions";
 
 interface Params {
     app: IAcoApp;
@@ -46,18 +47,27 @@ export const createAppResolvers = (params: Params): Resolvers => {
         SearchQuery: {
             [`get${apiName}`]: async (_: unknown, args: any) => {
                 return resolve(() => {
+                    checkPermissions(app.context);
                     return app.search.get(args.id);
                 });
             },
             [`list${apiName}`]: async (_: unknown, args: any) => {
                 return resolveList(() => {
+                    checkPermissions(app.context);
                     return app.search.list(args);
+                });
+            },
+            [`list${apiName}Tags`]: async (_: unknown, args: any) => {
+                return resolveList(() => {
+                    checkPermissions(app.context);
+                    return app.search.listTags(args);
                 });
             }
         },
         SearchMutation: {
             [`create${apiName}`]: async (_: unknown, args: any) => {
                 return resolve(() => {
+                    checkPermissions(app.context);
                     const { id } = parseIdentifier(args.data?.id);
                     return app.search.create({
                         ...args.data,
@@ -67,12 +77,14 @@ export const createAppResolvers = (params: Params): Resolvers => {
             },
             [`update${apiName}`]: async (_: unknown, args: any) => {
                 return resolve(() => {
+                    checkPermissions(app.context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.update(id, args.data || {});
                 });
             },
             [`delete${apiName}`]: async (_: unknown, args: any) => {
                 return resolve(() => {
+                    checkPermissions(app.context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.delete(id);
                 });

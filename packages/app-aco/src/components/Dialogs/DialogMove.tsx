@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -12,23 +11,24 @@ import {
 } from "@webiny/ui/Dialog";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
-
 import { FolderTree } from "~/components";
 import { useRecords } from "~/hooks";
-
 import { DialogContainer, DialogFoldersContainer } from "./styled";
-
 import { SearchRecordItem } from "~/types";
 
-interface Props {
+interface EntryDialogMoveProps {
     searchRecord: SearchRecordItem;
     open: boolean;
     onClose: DialogOnClose;
 }
 
-const t = i18n.ns("app-aco/components/tree/dialog-move");
+const t = i18n.ns("app-aco/dialogs/dialog-move");
 
-export const EntryDialogMove: React.FC<Props> = ({ searchRecord, onClose, open }) => {
+export const EntryDialogMove: React.VFC<EntryDialogMoveProps> = ({
+    searchRecord,
+    onClose,
+    open
+}) => {
     const { updateRecord, loading } = useRecords(searchRecord.location.folderId || "ROOT");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [folderId, setFolderId] = useState<string>();
@@ -37,13 +37,14 @@ export const EntryDialogMove: React.FC<Props> = ({ searchRecord, onClose, open }
     const onSubmit = async () => {
         try {
             if (folderId) {
-                const { id, title, type, content, data } = searchRecord;
+                const { id, title, type, content, data, tags } = searchRecord;
                 await updateRecord({
                     id,
                     title,
                     type,
                     content,
                     data,
+                    tags,
                     location: {
                         folderId
                     }

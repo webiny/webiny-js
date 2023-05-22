@@ -60,6 +60,26 @@ const baseSchema = new GraphQLSchemaPlugin({
             title: AcoSortDirection
         }
 
+        input AcoSearchRecordTagListWhereInput {
+            tags_in: [String!]
+            tags_startsWith: String
+            tags_not_startsWith: String
+            createdBy: ID
+            AND: [AcoSearchRecordTagListWhereInput!]
+            OR: [AcoSearchRecordTagListWhereInput!]
+        }
+
+        type TagItem {
+            tag: String!
+            count: Int!
+        }
+
+        type AcoSearchRecordTagListResponse {
+            data: [TagItem!]
+            error: AcoError
+            meta: AcoMeta
+        }
+
         type AcoSearchLocationType {
             folderId: ID!
         }
