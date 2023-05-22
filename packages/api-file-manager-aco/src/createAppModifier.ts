@@ -2,12 +2,12 @@ import {
     createAcoAppModifier as baseCreateAppModifier,
     CreateAcoAppModifierCallable
 } from "@webiny/api-aco";
-import { PB_PAGE_TYPE } from "~/contants";
-import { PbAcoContext } from "~/types";
+import { FM_FILE_TYPE } from "~/contants";
+import { FmAcoContext } from "~/types";
 import { Context } from "@webiny/handler/types";
 
-export const createAppModifier = <T extends Context = PbAcoContext>(
+export const createAppModifier = <T extends Context = FmAcoContext>(
     cb: CreateAcoAppModifierCallable<T>
 ) => {
-    return baseCreateAppModifier<T>(PB_PAGE_TYPE, cb);
+    return baseCreateAppModifier<T>(FM_FILE_TYPE, cb);
 };

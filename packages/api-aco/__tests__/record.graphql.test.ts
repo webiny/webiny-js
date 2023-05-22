@@ -5,7 +5,7 @@ import { createMockAcoApp, createMockApp, MOCK_APP_NAME } from "./mocks/app";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { useHandler } from "./utils/useHandler";
 import { IntrospectionField, IntrospectionInterfaceType } from "graphql";
-import { createAcoApp, createAcoAppModifier } from "~/plugins";
+import { registerAcoApp, createAcoAppModifier } from "~/plugins";
 import { createAppSchema } from "~/record/graphql/createAppSchema";
 import { CmsFieldTypePlugins, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
@@ -100,7 +100,7 @@ describe("record graphql generator", () => {
 
     it("should generate graphql schema when an app is present - introspection", async () => {
         const { introspect } = useGraphQlHandler({
-            plugins: [createAcoApp(createMockApp())]
+            plugins: [registerAcoApp(createMockApp())]
         });
         const [result] = await introspect();
 

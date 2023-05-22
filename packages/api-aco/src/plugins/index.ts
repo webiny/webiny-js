@@ -1,2 +1,2 @@
-export * from "./AcoCreateAppPlugin";
+export * from "./AcoAppRegisterPlugin";
 export * from "./AcoAppModifierPlugin";

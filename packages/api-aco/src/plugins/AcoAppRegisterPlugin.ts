@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 import { IAcoAppRegisterParams } from "~/types";
 
-export class AcoCreateAppPlugin extends Plugin {
+export class AcoAppRegisterPlugin extends Plugin {
     public static override type = "aco.apps.create.app";
     public readonly app: IAcoAppRegisterParams;
 
@@ -11,6 +11,6 @@ export class AcoCreateAppPlugin extends Plugin {
     }
 }
 
-export const createAcoApp = (app: IAcoAppRegisterParams) => {
-    return new AcoCreateAppPlugin(app);
+export const registerAcoApp = (app: IAcoAppRegisterParams) => {
+    return new AcoAppRegisterPlugin(app);
 };

@@ -3,6 +3,8 @@ import { createFileHooks, createImportExportFileHooks } from "~/file/hooks";
 import { FmAcoContext } from "~/types";
 import { createApp } from "~/app";
 
+export * from "./createAppModifier";
+
 export const createAcoFileManagerContext = () => {
     return [
         new ContextPlugin<FmAcoContext>(async context => {

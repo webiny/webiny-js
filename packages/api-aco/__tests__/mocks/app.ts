@@ -1,6 +1,6 @@
 import { IAcoAppRegisterParams } from "~/types";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
-import { createAcoApp } from "~/plugins";
+import { registerAcoApp } from "~/plugins";
 
 export const createMockAppTextField = (): CmsModelField => {
     return {
@@ -96,5 +96,5 @@ export const createMockApp = (
 };
 
 export const createMockAcoApp = (params: Partial<IAcoAppRegisterParams> = {}) => {
-    return createAcoApp(createMockApp(params));
+    return registerAcoApp(createMockApp(params));
 };
