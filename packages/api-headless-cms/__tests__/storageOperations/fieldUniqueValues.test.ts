@@ -84,12 +84,7 @@ describe("field unique values listing", () => {
         /**
          * There should be the "amount" of unique values.
          */
-        expect(values.sort()).toEqual(
-            Array.from({ length: 17 })
-                .map((_, index) => {
-                    return `Person #${index + 1}`;
-                })
-                .sort()
-        );
+        expect(values.length).toBe(amount);
+        expect(values.every(item => item.count === 3)).toBe(true);
     });
 });

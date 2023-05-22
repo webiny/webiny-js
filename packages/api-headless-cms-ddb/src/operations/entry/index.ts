@@ -1083,7 +1083,26 @@ export const createEntriesStorageOperations = (
             limit: MAX_LIST_LIMIT
         });
 
-        return Array.from(new Set(items.map(item => item.values[field.fieldId])));
+        const valueMap = items.reduce<{ [key: string]: number }>((acc, item) => {
+            const value = item.values[field.fieldId];
+
+            const values = Array.isArray(value) ? value : [value];
+
+            for (const v of values) {
+                if (v in acc) {
+                    acc[v]++;
+                } else {
+                    acc[v] = 1;
+                }
+            }
+
+            return acc;
+        }, {});
+
+        return Object.keys(valueMap).reduce<Array<{ value: string; count: number }>>(
+            (acc, item) => [...acc, { value: item, count: valueMap[item] }],
+            []
+        );
     };
 
     return {

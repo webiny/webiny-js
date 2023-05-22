@@ -5,9 +5,7 @@
   "keywords": [
     "@webiny/api-file-manager",
     "storage-operations",
-    "dynamodb",
-    "ddb",
-    "fm:ddb"
+    "ddb"
   ],
   "repository": {
     "type": "git",

@@ -2,9 +2,6 @@
   "name": "@webiny/api-file-manager-aco",
   "version": "0.0.0",
   "main": "index.js",
-  "keywords": [
-    "api-file-manager-aco:base"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",

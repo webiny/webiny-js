@@ -376,8 +376,7 @@ describe("`search` CRUD", () => {
         expect(response.data.search.listTags).toEqual(
             expect.objectContaining({
                 data: [
-                    // TODO: @bruno tag count doesn't work correctly (this should be `2`)
-                    { tag: "page-tag1", count: expect.any(Number) },
+                    { tag: "page-tag1", count: 2 },
                     { tag: "page-tag2", count: 1 },
                     { tag: "page-tag3", count: 1 },
                     { tag: "post-tag1", count: 1 },
