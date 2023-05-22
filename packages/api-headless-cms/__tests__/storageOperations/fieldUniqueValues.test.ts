@@ -75,19 +75,29 @@ describe("field unique values listing", () => {
          */
         expect(Object.values(results)).toHaveLength(amount * 3);
 
-        const values = await storageOperations.entries.getUniqueFieldValues(personModel, {
-            where: {
-                latest: true
-            },
-            fieldId: "name"
+        const values = (
+            await storageOperations.entries.getUniqueFieldValues(personModel, {
+                where: {
+                    latest: true
+                },
+                fieldId: "name"
+            })
+        ).sort((a, b) => {
+            const p1 = Number(a.value.split("#")[1]);
+            const p2 = Number(b.value.split("#")[1]);
+            return p1 < p2 ? -1 : 1;
         });
+
         /**
          * There should be the "amount" of unique values.
          */
-        expect(values.sort()).toEqual(
+        expect(values).toEqual(
             Array.from({ length: 17 })
                 .map((_, index) => {
-                    return `Person #${index + 1}`;
+                    return {
+                        value: `Person #${index + 1}`,
+                        count: 3
+                    };
                 })
                 .sort()
         );

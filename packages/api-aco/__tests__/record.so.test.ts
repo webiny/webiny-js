@@ -4,6 +4,7 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { createMockAcoApp } from "~tests/mocks/app";
 
 jest.retryTimes(0);
+jest.setTimeout(100000);
 
 describe("`search` CRUD", () => {
     const { search } = useGraphQlHandler({

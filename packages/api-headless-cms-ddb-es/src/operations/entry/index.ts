@@ -1594,9 +1594,13 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const values = response.body.aggregations["getUniqueFieldValues"] || { buckets: [] };
-
-        return values.buckets.map(item => item.key) || [];
+        const buckets = response.body.aggregations["getUniqueFieldValues"]?.buckets || [];
+        return buckets.map(file => {
+            return {
+                value: file.key,
+                count: file.doc_count
+            };
+        });
     };
 
     return {

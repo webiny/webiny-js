@@ -3,6 +3,7 @@ import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
     CmsEntryListWhere,
+    CmsEntryUniqueValue,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -1083,7 +1084,21 @@ export const createEntriesStorageOperations = (
             limit: MAX_LIST_LIMIT
         });
 
-        return Array.from(new Set(items.map(item => item.values[field.fieldId])));
+        const result = items.reduce<Record<string, CmsEntryUniqueValue>>((collection, item) => {
+            const value = item.values[field.fieldId];
+            if (!collection[value]) {
+                collection[value] = {
+                    value,
+                    count: 1
+                };
+                return collection;
+            }
+            collection[value].count++;
+
+            return collection;
+        }, {});
+
+        return Object.values(result);
     };
 
     return {

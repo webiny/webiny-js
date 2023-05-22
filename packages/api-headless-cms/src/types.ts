@@ -1577,6 +1577,11 @@ export interface CmsStorageEntry extends CmsEntry {
     [key: string]: any;
 }
 
+export interface CmsEntryUniqueValue {
+    value: string;
+    count: number;
+}
+
 /**
  * A definition for content model manager to be used in the code.
  * The default one uses `CmsEntryContext` methods internally, but devs can change to what every they want.
@@ -2352,7 +2357,7 @@ export interface CmsEntryContext {
     getUniqueFieldValues: (
         model: CmsModel,
         params: GetUniqueFieldValuesParams
-    ) => Promise<string[]>;
+    ) => Promise<CmsEntryUniqueValue[]>;
     /**
      * Lifecycle events - deprecated.
      */
@@ -2959,7 +2964,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     getUniqueFieldValues: (
         model: CmsModel,
         params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
-    ) => Promise<string[]>;
+    ) => Promise<CmsEntryUniqueValue[]>;
 }
 
 export enum CONTENT_ENTRY_STATUS {

@@ -20,10 +20,10 @@ export interface SearchRecord<TData extends GenericSearchData = GenericSearchDat
     tags: string[];
 }
 
-export type SearchRecordTag = {
+export interface SearchRecordTag {
     tag: string;
     count: number;
-};
+}
 
 export interface ListSearchRecordsWhere {
     type: string;
