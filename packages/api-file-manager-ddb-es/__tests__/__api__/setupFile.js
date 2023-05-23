@@ -11,6 +11,7 @@ module.exports = async () => {
     setStorageOps("fileManager", () => {
         const documentClient = getDocumentClient();
         const { elasticsearchClient, plugins } = getElasticsearchClient({
+            name: "api-file-manager-ddb-es",
             prefix: "api-file-manager-env-",
             onBeforeEach: async () => {
                 const { index } = configurations.es({
