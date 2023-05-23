@@ -100,5 +100,6 @@ module.exports = {
     projects: [project],
     modulePathIgnorePatterns: ["dist"],
     testTimeout: 30000,
-    watchman: false
+    watchman: false,
+    workerIdleMemoryLimit: "512MB"
 };

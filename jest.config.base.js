@@ -16,12 +16,19 @@ module.exports = function ({ path }, presets = []) {
 
     process.env.JEST_DYNALITE_CONFIG_DIRECTORY = path;
 
-    const merged = merge.recursive({ setupFilesAfterEnv: [] }, tsPreset, {
+    const merged = merge.recursive(true, { setupFilesAfterEnv: [] }, tsPreset, {
         displayName: name,
         modulePaths: [`${path}/src`],
         testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],
         transform: {
-            "^.+\\.[jt]sx?$": "ts-jest"
+            "^.+\\.[jt]sx?$": [
+                "ts-jest",
+                {
+                    isolatedModules: true,
+                    babelConfig: `${path}/.babelrc.js`,
+                    diagnostics: false
+                }
+            ]
         },
         transformIgnorePatterns: ["/node_modules/(?!(nanoid)/)"],
         moduleDirectories: ["node_modules"],
@@ -36,16 +43,8 @@ module.exports = function ({ path }, presets = []) {
             "<rootDir>/packages/.*/dist"
         ],
         globals: {
-            WEBINY_VERSION: version,
-            "ts-jest": {
-                isolatedModules: true,
-                babelConfig: `${path}/.babelrc.js`,
-                diagnostics: false
-            }
-        },
-        collectCoverage: false,
-        collectCoverageFrom: ["packages/**/*.{ts,tsx,js,jsx}"],
-        coverageReporters: ["html"]
+            WEBINY_VERSION: version
+        }
     });
 
     merged.setupFiles = [

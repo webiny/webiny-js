@@ -70,11 +70,6 @@ export const createRichTextStorageTransformPlugin = () => {
             try {
                 return jsonpack.unpack(value);
             } catch (ex) {
-                if (process.env.DEBUG !== "true") {
-                    return null;
-                }
-                console.log("Error while decompressing rich-text.");
-                console.log(ex.message);
                 return null;
             }
         },
