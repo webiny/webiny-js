@@ -30,6 +30,7 @@
     "@webiny/app-tenancy": "0.0.0",
     "@webiny/app-tenant-manager": "0.0.0",
     "@webiny/lexical-editor-actions": "0.0.0",
+    "@webiny/lexical-editor-cms-actions": "0.0.0",
     "@webiny/lexical-editor-pb-element": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "apollo-cache": "^1.3.5",

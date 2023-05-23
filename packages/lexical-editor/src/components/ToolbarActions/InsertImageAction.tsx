@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {FileManagerFileItem, fileToImagePayload} from "~/utils/files";
-import {ImagePayload, INSERT_IMAGE_COMMAND} from "~/commands/insertFiles";
-import {LexicalCommand} from "lexical";
+import { FileManagerFileItem, fileToImagePayload } from "~/utils/files";
+import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
+import { LexicalCommand } from "lexical";
 
 const IMAGE_ACTION_TYPE = "image-action";
 
-export const ImageAction = () => {
+export const InsertImageAction = () => {
     const [editor] = useLexicalComposerContext();
     const { actionPlugins } = useRichTextEditor();
     const [imageActionPlugin, setImageActionPlugin] = useState<
@@ -25,7 +25,7 @@ export const ImageAction = () => {
         if (typeof imageActionPlugin?.plugin === "function") {
             imageActionPlugin?.plugin((data: FileManagerFileItem) => {
                 const imagePayload = fileToImagePayload(data);
-               if (imagePayload) {
+                if (imagePayload) {
                     editor.dispatchCommand<LexicalCommand<ImagePayload>>(
                         INSERT_IMAGE_COMMAND,
                         imagePayload

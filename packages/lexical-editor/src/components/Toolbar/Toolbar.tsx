@@ -136,7 +136,7 @@ interface useToolbarProps {
     children?: React.ReactNode;
 }
 
-const useToolbar: FC<useToolbarProps> = ({
+const useFloatingToolbar: FC<useToolbarProps> = ({
     editor,
     anchorElem = document.body,
     type,
@@ -225,6 +225,6 @@ export const Toolbar = makeComposable<ToolbarProps>(
     "Toolbar",
     ({ anchorElem, type, children }): JSX.Element | null => {
         const [editor] = useLexicalComposerContext();
-        return useToolbar({ editor, anchorElem, type, children });
+        return useFloatingToolbar({ editor, anchorElem, type, children });
     }
 );

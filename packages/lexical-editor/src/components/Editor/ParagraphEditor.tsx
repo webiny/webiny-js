@@ -10,11 +10,15 @@ import { WebinyListPlugin } from "~/plugins/WebinyListPLugin/WebinyListPlugin";
 interface ParagraphLexicalEditorProps extends RichTextEditorProps {
     tag?: "p";
 }
-
-const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, tag, ...rest }) => {
+const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({
+    toolbar,
+    placeholder,
+    tag,
+    ...rest
+}) => {
     return (
         <RichTextEditor
-            toolbar={<ParagraphToolbar />}
+            toolbar={toolbar || <ParagraphToolbar />}
             tag={tag ?? "p"}
             placeholder={placeholder ?? "Enter your text here..."}
             {...rest}

@@ -19,6 +19,7 @@ interface useStaticToolbarProps {
 const useStaticToolbar: FC<useStaticToolbarProps> = ({
     editor,
     actionPlugins,
+    type,
     children
 }): JSX.Element | null => {
     const { setNodeIsText, setActionPlugins } = useRichTextEditor();
@@ -95,7 +96,7 @@ export interface StaticToolbarToolbarProps {
 }
 
 /**
- * @description Main toolbar container
+ * @description Main static toolbar container
  */
 export const StaticToolbar = makeComposable<StaticToolbarToolbarProps>(
     "StaticToolbar",

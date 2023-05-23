@@ -20,19 +20,20 @@ export { NumberedListAction } from "~/components/ToolbarActions/NumberedListActi
 export { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
 export { UnderlineAction } from "~/components/ToolbarActions/UnderlineAction";
 export { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
+export { InsertImageAction } from "~/components/ToolbarActions/InsertImageAction";
 // toolbars
 export { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
 export { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
 export { Toolbar } from "~/components/Toolbar/Toolbar";
+export { StaticToolbar } from "~/components/Toolbar/StaticToolbar";
 // presets
 export { ParagraphToolbarPreset } from "~/components/ToolbarPresets/ParagraphToolbarPreset";
 export { HeadingToolbarPreset } from "./components/ToolbarPresets/HeadingToolbarPreset";
-export { RichTextStaticToolbarPreset } from "./components/ToolbarPresets/RichTextStaticToolbarPreset";
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor";
+export { RichTextEditorProps } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
-export { RichTextContentEditor } from "~/components/Editor/RichTextContentEditor";
 // plugins
 export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
@@ -40,6 +41,7 @@ export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlight
 export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/LexicalUpdateStatePlugin";
+export { WebinyListPlugin } from "~/plugins/WebinyListPLugin/WebinyListPlugin";
 // composition
 export { AddToolbarAction } from "~/components/AddToolbarAction";
 export { AddStaticToolbarAction } from "~/components/AddStaticToolbarAction";
