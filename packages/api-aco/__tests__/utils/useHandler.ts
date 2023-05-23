@@ -1,41 +1,39 @@
 import createGraphQLHandler from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
 import { AcoContext } from "~/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createAco } from "~/index";
-import { createStorageOperations } from "./storageOperations";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    storageOperationPlugins?: any[];
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
-    const { permissions, identity, plugins = [], storageOperationPlugins } = params;
+    const { permissions, identity, plugins = [] } = params;
 
-    const ops = createStorageOperations({
-        plugins: storageOperationPlugins || []
-    });
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const handler = createHandler<any, AcoContext>({
         plugins: [
-            ...ops.plugins,
+            ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || createIdentity() }),
             i18nContext(),
-            i18nDynamoDbStorageOperations(),
+            ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: ops.storageOperations
+                storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createAco(),
