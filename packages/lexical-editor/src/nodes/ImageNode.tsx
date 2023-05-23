@@ -22,23 +22,12 @@ import type {
 import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
 import * as React from "react";
 import { Suspense } from "react";
+import { ImagePayload } from "~/commands/insertFiles";
 
 const ImageComponent = React.lazy(
     // @ts-ignore
-    () => import("./ImageComponent")
+    () => import("../components/ImageComponent")
 );
-
-export interface ImagePayload {
-    altText: string;
-    caption?: LexicalEditor;
-    height?: number;
-    key?: NodeKey;
-    maxWidth?: number;
-    showCaption?: boolean;
-    src: string;
-    width?: number;
-    captionsEnabled?: boolean;
-}
 
 function convertImageElement(domNode: Node): null | DOMConversionOutput {
     if (domNode instanceof HTMLImageElement) {
@@ -120,7 +109,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
     static importDOM(): DOMConversionMap | null {
         return {
-            img: (node: Node) => ({
+            img: () => ({
                 conversion: convertImageElement,
                 priority: 0
             })

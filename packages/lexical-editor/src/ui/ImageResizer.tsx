@@ -22,7 +22,7 @@ const Direction = {
     west: 1 << 2
 };
 
-export default function ImageResizer({
+export function ImageResizer({
     onResizeStart,
     onResizeEnd,
     buttonRef,

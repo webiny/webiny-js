@@ -179,6 +179,15 @@ i.chevron-down {
 }
 
 
+i.insert-image, .icon.insert-image {
+  background-color: transparent;
+  background-size: contain;
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  background-image: url("../../images/icons/insert-image.svg");
+}
+
 .icon.bullet-list,
 .icon.bullet {
   background-image: url("../../images/icons/list-ul.svg");
@@ -194,7 +203,7 @@ i.chevron-down {
   background-color: rgb(223, 232, 250);
 }
 
-i.font-color, .icon.font-color {
+i.font-color, c {
   background-image: url("../../images/icons/font-color.svg");
 }
 

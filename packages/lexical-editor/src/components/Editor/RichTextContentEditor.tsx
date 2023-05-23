@@ -3,19 +3,24 @@ import { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlight
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
-import { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
 import { RichTextEditor, RichTextEditorProps } from "~/components/Editor/RichTextEditor";
 import { WebinyListPlugin } from "~/plugins/WebinyListPLugin/WebinyListPlugin";
-import {RichTextStaticToolbar} from "~/components/Toolbar/RichTextStaticToolbar";
+import { RichTextStaticToolbar } from "~/components/Toolbar/RichTextStaticToolbar";
 
 interface RichTextContentEditorProps extends RichTextEditorProps {
     tag?: "p";
+    toolbarActionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
 
-const RichTextContentEditor: React.FC<RichTextContentEditorProps> = ({ placeholder, tag, ...rest }) => {
+const RichTextContentEditor: React.FC<RichTextContentEditorProps> = ({
+    placeholder,
+    toolbarActionPlugins,
+    tag,
+    ...rest
+}) => {
     return (
         <RichTextEditor
-            staticToolbar={<RichTextStaticToolbar />}
+            staticToolbar={<RichTextStaticToolbar actionPlugins={toolbarActionPlugins} />}
             tag={tag ?? "p"}
             placeholder={placeholder ?? "Enter your text here..."}
             {...rest}

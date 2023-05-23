@@ -93,7 +93,6 @@
   width: 20px;
   height: 20px;
   user-select: none;
-  margin-right: 8px;
   line-height: 16px;
   background-size: contain;
 }
@@ -187,6 +186,7 @@ i.chevron-down {
 .static-toolbar .button.active {
   background-color: rgb(223, 232, 250);
 }
+
 
 i.font-color, .icon.font-color {
   background-image: url("../../images/icons/font-color.svg");

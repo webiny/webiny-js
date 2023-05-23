@@ -12,8 +12,7 @@
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../ui-composer/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
-    { "path": "../lexical-editor/tsconfig.build.json" },
-    { "path": "../app-page-builder-elements/tsconfig.build.json" }
+    { "path": "../lexical-editor/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

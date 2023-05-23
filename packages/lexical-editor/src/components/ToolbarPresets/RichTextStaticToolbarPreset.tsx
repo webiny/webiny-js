@@ -11,22 +11,46 @@ import { BulletListAction } from "~/components/ToolbarActions/BulletListAction";
 import { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
 import { FontColorAction } from "~/components/ToolbarActions/FontColorAction";
 import { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
-import {AddStaticToolbarAction} from "~/components/AddStaticToolbarAction";
+import { AddStaticToolbarAction } from "~/components/AddStaticToolbarAction";
+import { ImageAction } from "~/components/ToolbarActions/ImageAction";
 
 export const RichTextStaticToolbarPreset = () => {
     return (
         <>
-            <AddStaticToolbarAction element={<FontSizeAction />} type={"rich-text-static-toolbar"} />
-            <AddStaticToolbarAction element={<FontColorAction />} type={"rich-text-static-toolbar"} />
-            <AddStaticToolbarAction element={<TypographyAction />} type={"rich-text-static-toolbar"} />
+            <AddStaticToolbarAction
+                element={<FontSizeAction />}
+                type={"rich-text-static-toolbar"}
+            />
+            <AddStaticToolbarAction
+                element={<FontColorAction />}
+                type={"rich-text-static-toolbar"}
+            />
+            <AddStaticToolbarAction
+                element={<TypographyAction />}
+                type={"rich-text-static-toolbar"}
+            />
             <AddStaticToolbarAction element={<Divider />} type={"rich-text-static-toolbar"} />
             <AddStaticToolbarAction element={<BoldAction />} type={"rich-text-static-toolbar"} />
             <AddStaticToolbarAction element={<ItalicAction />} type={"rich-text-static-toolbar"} />
-            <AddStaticToolbarAction element={<UnderlineAction />} type={"rich-text-static-toolbar"} />
-            <AddStaticToolbarAction element={<CodeHighlightAction />} type={"rich-text-static-toolbar"} />
+            <AddStaticToolbarAction
+                element={<UnderlineAction />}
+                type={"rich-text-static-toolbar"}
+            />
+            <AddStaticToolbarAction
+                element={<CodeHighlightAction />}
+                type={"rich-text-static-toolbar"}
+            />
             <AddStaticToolbarAction element={<Divider />} type={"rich-text-static-toolbar"} />
-            <AddStaticToolbarAction element={<NumberedListAction />} type={"rich-text-static-toolbar"} />
-            <AddStaticToolbarAction element={<BulletListAction />} type={"rich-text-static-toolbar"} />
+            <AddStaticToolbarAction
+                element={<NumberedListAction />}
+                type={"rich-text-static-toolbar"}
+            />
+            <AddStaticToolbarAction
+                element={<BulletListAction />}
+                type={"rich-text-static-toolbar"}
+            />
+            <AddStaticToolbarAction element={<Divider />} type={"rich-text-static-toolbar"} />
+            <AddStaticToolbarAction element={<ImageAction />} type={"rich-text-static-toolbar"} />
             <AddStaticToolbarAction element={<Divider />} type={"rich-text-static-toolbar"} />
             <AddStaticToolbarAction element={<LinkAction />} type={"rich-text-static-toolbar"} />
             <AddStaticToolbarAction element={<QuoteAction />} type={"rich-text-static-toolbar"} />

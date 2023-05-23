@@ -26,6 +26,7 @@ import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedH
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { ClassNames } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
+import {ImagesPlugin} from "~/plugins/ImagesPlugin/ImagesPlugin";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -49,13 +50,13 @@ export interface RichTextEditorProps {
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
     /*
-    * Set inline styles to lexical input container
-    * */
-    styles?: React.CSSProperties
+     * Set inline styles to lexical input container
+     * */
+    styles?: React.CSSProperties;
 
     /*
-    * Set classes to lexical input container
-    * */
+     * Set classes to lexical input container
+     * */
     classes?: string;
 }
 
@@ -131,6 +132,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     <TypographyPlugin />
                     <WebinyQuotePlugin />
                     <HistoryPlugin externalHistoryState={historyState} />
+                    <ImagesPlugin />
                     {/* Events */}
                     {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                     {focus && <AutoFocusPlugin />}

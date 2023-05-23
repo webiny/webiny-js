@@ -2,7 +2,6 @@ import headlessCmsPlugins from "~/admin/plugins";
 import textField from "~/admin/plugins/fields/text";
 import longTextField from "~/admin/plugins/fields/longText";
 import richTextField from "~/admin/plugins/fields/richText";
-import lexicalTextField from "~/admin/plugins/fields/lexicalText";
 import numberField from "~/admin/plugins/fields/number";
 import booleanField from "~/admin/plugins/fields/boolean";
 import dateTimeField from "~/admin/plugins/fields/dateTime";

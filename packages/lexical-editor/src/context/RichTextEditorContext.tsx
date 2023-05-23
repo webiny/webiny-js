@@ -13,6 +13,8 @@ export interface RichTextEditorContext {
     setTheme: (theme: WebinyTheme) => void;
     themeEmotionMap?: ThemeEmotionMap;
     setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
+    actionPlugins: { type: string; plugin: Record<string, any> }[];
+    setActionPlugins: (actionPlugins: { type: string; plugin: Record<string, any> }[]) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -26,6 +28,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
+    const [actionPlugins, setActionPlugins] = useState<
+        { type: string; plugin: Record<string, any> }[]
+    >([]);
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
@@ -47,7 +52,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 theme,
                 setTheme,
                 themeEmotionMap,
-                setThemeEmotionMap
+                setThemeEmotionMap,
+                actionPlugins,
+                setActionPlugins
             }}
         >
             {children}

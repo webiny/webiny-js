@@ -3,6 +3,7 @@ import { ListType } from "@lexical/list";
 import { CSSObject } from "@emotion/react";
 export type ToolbarType = "heading" | "paragraph" | string;
 export type LexicalValue = string;
+
 export { FontColorPicker } from "~/components/ToolbarActions/FontColorAction";
 
 export type LexicalTextType =
@@ -97,3 +98,6 @@ export type ThemeEmotionMap = {
         className: string;
     };
 };
+
+/* Commands payload types */
+export { ImagePayload } from "~/commands/insertFiles";

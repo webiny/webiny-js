@@ -27,13 +27,12 @@ export { Toolbar } from "~/components/Toolbar/Toolbar";
 // presets
 export { ParagraphToolbarPreset } from "~/components/ToolbarPresets/ParagraphToolbarPreset";
 export { HeadingToolbarPreset } from "./components/ToolbarPresets/HeadingToolbarPreset";
-export { RichTextStaticToolbarPreset } from "./components/ToolbarPresets/RichTextStaticToolbarPreset"
+export { RichTextStaticToolbarPreset } from "./components/ToolbarPresets/RichTextStaticToolbarPreset";
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
 export { RichTextContentEditor } from "~/components/Editor/RichTextContentEditor";
-
 // plugins
 export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
@@ -50,6 +49,8 @@ export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeTyp
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
 export { clearNodeFormatting } from "~/utils/nodes/clearNodeFormating";
+// Commands
+export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 // types
 export * as types from "./types";
 // config

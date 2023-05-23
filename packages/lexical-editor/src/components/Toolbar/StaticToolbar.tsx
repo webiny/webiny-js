@@ -1,27 +1,33 @@
-import React, {FC, useCallback, useEffect} from "react";
-import {$getSelection, $isRangeSelection, $isTextNode, LexicalEditor} from "lexical";
-import {ToolbarType} from "~/types";
-import {useRichTextEditor} from "~/hooks/useRichTextEditor";
-import {getSelectedNode} from "~/utils/getSelectedNode";
-import {$isCodeHighlightNode} from "@lexical/code";
-import {mergeRegister} from "@lexical/utils";
-import {makeComposable} from "@webiny/react-composition";
-import {useLexicalComposerContext} from "@lexical/react/LexicalComposerContext";
+import React, { FC, useCallback, useEffect } from "react";
+import { $getSelection, $isRangeSelection, $isTextNode, LexicalEditor } from "lexical";
+import { ToolbarType } from "~/types";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { getSelectedNode } from "~/utils/getSelectedNode";
+import { $isCodeHighlightNode } from "@lexical/code";
+import { mergeRegister } from "@lexical/utils";
+import { makeComposable } from "@webiny/react-composition";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./StaticToolbar.css";
-
 
 interface useStaticToolbarProps {
     editor: LexicalEditor;
     type: ToolbarType;
     children?: React.ReactNode;
+    actionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
 
 const useStaticToolbar: FC<useStaticToolbarProps> = ({
-                                             editor,
-                                             type,
-                                             children
-                                         }): JSX.Element | null => {
-    const { setNodeIsText } = useRichTextEditor();
+    editor,
+    actionPlugins,
+    children
+}): JSX.Element | null => {
+    const { setNodeIsText, setActionPlugins } = useRichTextEditor();
+
+    useEffect(() => {
+        if (actionPlugins) {
+            setActionPlugins(actionPlugins || []);
+        }
+    }, [actionPlugins]);
 
     const updatePopup = useCallback(() => {
         editor.getEditorState().read(() => {
@@ -79,17 +85,13 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
         );
     }, [editor, updatePopup]);
 
-    return(
-        <div className="static-toolbar">
-            {editor.isEditable() && children}
-        </div>
-    );
+    return <div className="static-toolbar">{editor.isEditable() && children}</div>;
 };
 
 export interface StaticToolbarToolbarProps {
     type: ToolbarType;
-
     children?: React.ReactNode;
+    actionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
 
 /**
@@ -97,8 +99,8 @@ export interface StaticToolbarToolbarProps {
  */
 export const StaticToolbar = makeComposable<StaticToolbarToolbarProps>(
     "StaticToolbar",
-    ({ type, children }): JSX.Element | null => {
+    ({ type, actionPlugins, children }): JSX.Element | null => {
         const [editor] = useLexicalComposerContext();
-        return useStaticToolbar({ editor, type, children });
+        return useStaticToolbar({ actionPlugins, editor, type, children });
     }
 );

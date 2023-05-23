@@ -13,6 +13,7 @@ import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
 import { WebinyQuoteNode } from "~/nodes/WebinyQuoteNode";
 import { ParagraphNode } from "~/nodes/ParagraphNode";
 import { ParagraphNode as BaseParagraphNode } from "lexical";
+import { ImageNode } from "~/nodes/ImageNode";
 
 /*
  * This is a list of all the nodes that Webiny's Lexical implementation supports OOTB.
@@ -25,6 +26,7 @@ export const WebinyNodes: ReadonlyArray<
       }
 > = [
     HeadingNode,
+    ImageNode,
     WebinyListNode,
     WebinyListItemNode,
     WebinyQuoteNode,

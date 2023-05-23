@@ -16,10 +16,10 @@ export const LexicalEditor: React.FC<RichTextEditorProps> = props => {
                             props?.onChange(JSON.parse(jsonString));
                         }
                     }}
-                    height={400}
                     width={"100%"}
                     placeholder={"Please add content"}
-                    styles={{ backgroundColor: "#e1e1e1", borderBottom: "1px solid #000" }}
+                    styles={{ backgroundColor: "#e1e1e1", borderBottom: "1px solid #000", minHeight: 400 }}
+                    toolbarActionPlugins={[{ type: "image-action", plugin: showFileManager }]}
                 />
             )}
         </FileManager>
