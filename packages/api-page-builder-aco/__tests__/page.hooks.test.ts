@@ -1,5 +1,4 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-
 import { assignPageLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { pageContentMock, pageLegacyContentMock } from "./mocks/page.mocks";
 import { PB_PAGE_TYPE, ROOT_FOLDER } from "~/contants";

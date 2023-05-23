@@ -5364,18 +5364,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/environment@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "@jest/environment@npm:27.5.1"
-  dependencies:
-    "@jest/fake-timers": ^27.5.1
-    "@jest/types": ^27.5.1
-    "@types/node": "*"
-    jest-mock: ^27.5.1
-  checksum: 2a9e18c35a015508dbec5b90b21c150230fa6c1c8cb8fabe029d46ee2ca4c40eb832fb636157da14c66590d0a4c8a2c053226b041f54a44507d6f6a89abefd66
-  languageName: node
-  linkType: hard
-
 "@jest/environment@npm:^28.1.3":
   version: 28.1.3
   resolution: "@jest/environment@npm:28.1.3"
@@ -5404,20 +5392,6 @@ __metadata:
     expect: ^28.1.3
     jest-snapshot: ^28.1.3
   checksum: 4197f6fdddc33dc45ba4e838f992fc61839c421d7aed0dfe665ef9c2f172bb1df8a8cac9cecee272b40e744a326da521d5e182709fe82a0b936055bfffa3b473
-  languageName: node
-  linkType: hard
-
-"@jest/fake-timers@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "@jest/fake-timers@npm:27.5.1"
-  dependencies:
-    "@jest/types": ^27.5.1
-    "@sinonjs/fake-timers": ^8.0.1
-    "@types/node": "*"
-    jest-message-util: ^27.5.1
-    jest-mock: ^27.5.1
-    jest-util: ^27.5.1
-  checksum: 02a0561ed2f4586093facd4ae500b74694f187ac24d4a00e949a39a1c5325bca8932b4fcb0388a2c5ed0656506fc1cf51fd3e32cdd48cea7497ad9c6e028aba8
   languageName: node
   linkType: hard
 
@@ -5581,19 +5555,6 @@ __metadata:
     "@types/istanbul-reports": ^1.1.1
     "@types/yargs": ^13.0.0
   checksum: 603698f774cf22f9d16a0e0fac9e10e7db21052aebfa33db154c8a5940e0eb1fa9c079a8c91681041ad3aeee2adfa950608dd0c663130316ba034b8bca7b301c
-  languageName: node
-  linkType: hard
-
-"@jest/types@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "@jest/types@npm:27.5.1"
-  dependencies:
-    "@types/istanbul-lib-coverage": ^2.0.0
-    "@types/istanbul-reports": ^3.0.0
-    "@types/node": "*"
-    "@types/yargs": ^16.0.0
-    chalk: ^4.0.0
-  checksum: d1f43cc946d87543ddd79d49547aab2399481d34025d5c5f2025d3d99c573e1d9832fa83cef25e9d9b07a8583500229d15bbb07b8e233d127d911d133e2f14b1
   languageName: node
   linkType: hard
 
@@ -9128,15 +9089,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/fake-timers@npm:^8.0.1":
-  version: 8.1.0
-  resolution: "@sinonjs/fake-timers@npm:8.1.0"
-  dependencies:
-    "@sinonjs/commons": ^1.7.0
-  checksum: 09b5a158ce013a6c37613258bad79ca4efeb99b1f59c41c73cca36cac00b258aefcf46eeea970fccf06b989414d86fe9f54c1102272c0c3bdd51a313cea80949
-  languageName: node
-  linkType: hard
-
 "@sinonjs/fake-timers@npm:^9.1.2":
   version: 9.1.2
   resolution: "@sinonjs/fake-timers@npm:9.1.2"
@@ -11037,15 +10989,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^16.0.0":
-  version: 16.0.5
-  resolution: "@types/yargs@npm:16.0.5"
-  dependencies:
-    "@types/yargs-parser": "*"
-  checksum: 22697f7cc8aa32dcc10981a87f035e183303a58351c537c81fb450270d5c494b1d918186210e445b0eb2e4a8b34a8bda2a595f346bdb1c9ed2b63d193cb00430
-  languageName: node
-  linkType: hard
-
 "@types/yargs@npm:^17.0.8":
   version: 17.0.22
   resolution: "@types/yargs@npm:17.0.22"
@@ -11758,7 +11701,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -11776,9 +11718,7 @@ __metadata:
     "@types/md5": ^2.3.2
     "@webiny/api": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
@@ -11824,7 +11764,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -11844,16 +11783,11 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-admin-settings": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-mailer": 0.0.0
     "@webiny/api-page-builder": 0.0.0
-    "@webiny/api-page-builder-so-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
@@ -11998,15 +11932,10 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler": 0.0.0
@@ -12123,7 +12052,6 @@ __metadata:
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
@@ -12156,7 +12084,6 @@ __metadata:
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
     "@elastic/elasticsearch": 7.12.0
-    "@webiny/api": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/api-form-builder": 0.0.0
@@ -12173,7 +12100,6 @@ __metadata:
     elastic-ts: ^0.8.0
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12201,7 +12127,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12222,16 +12147,11 @@ __metadata:
     "@types/json2csv": ^4.5.1
     "@types/node-fetch": ^2.6.1
     "@webiny/api": 0.0.0
-    "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-mailer": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -12275,11 +12195,8 @@ __metadata:
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/error": 0.0.0
@@ -12293,7 +12210,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.2.4
     jsonpack: ^1.1.5
     lodash: ^4.17.21
     prettier: ^2.3.2
@@ -12327,7 +12243,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.3
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.2.4
     jsonpack: ^1.1.5
     lodash: ^4.5.0
     ttypescript: ^1.5.12
@@ -12347,11 +12262,8 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -12418,9 +12330,7 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
@@ -12433,7 +12343,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12452,9 +12361,7 @@ __metadata:
     "@types/accept-language-parser": ^1.5.3
     "@webiny/api": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -12487,13 +12394,9 @@ __metadata:
     "@types/nodemailer": ^6.4.4
     "@webiny/api": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/error": 0.0.0
@@ -12529,15 +12432,10 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-page-builder": 0.0.0
-    "@webiny/api-page-builder-so-ddb": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler": 0.0.0
@@ -12573,7 +12471,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12595,16 +12492,13 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@types/yauzl": ^2.9.2
     "@webiny/api": 0.0.0
+    "@webiny/api-authentication": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-ddb-es": 0.0.0
     "@webiny/api-form-builder": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db": 0.0.0
@@ -12678,7 +12572,6 @@ __metadata:
     graphql: ^15.8.0
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
     lodash: ^4.17.21
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -12711,7 +12604,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
     lodash: ^4.17.21
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -12734,14 +12626,10 @@ __metadata:
     "@types/rimraf": ^3.0.2
     "@webiny/api": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
     "@webiny/api-prerendering-service": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
@@ -12819,7 +12707,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.3.1
-    jest-environment-node: ^27.3.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -12945,7 +12832,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -12965,7 +12851,6 @@ __metadata:
     "@webiny/api": 0.0.0
     "@webiny/api-authentication": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -13000,7 +12885,6 @@ __metadata:
     dynamodb-toolbox: ^0.3.5
     jest: ^28.1.0
     jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -13040,9 +12924,7 @@ __metadata:
     "@babel/core": ^7.19.3
     "@webiny/api": 0.0.0
     "@webiny/api-security": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
     "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/handler": 0.0.0
@@ -15289,7 +15171,9 @@ __metadata:
     get-yarn-workspaces: 1.0.2
     glob: ^7.1.2
     html-webpack-plugin: 5.5.0
+    jest-dynalite: ^3.6.1
     listr2: ^5.0.8
+    load-json-file: 6.2.0
     lodash: ^4.6.2
     mini-css-extract-plugin: 2.4.5
     os-browserify: ^0.3.0
@@ -15323,6 +15207,7 @@ __metadata:
     webpack-dev-server: 4.6.0
     webpack-manifest-plugin: 4.0.2
     webpackbar: 5.0.2
+    yargs: ^17.0.1
   languageName: unknown
   linkType: soft
 
@@ -16148,6 +16033,7 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-admin-users-cognito": 0.0.0
     "@webiny/app-form-builder": 0.0.0
+    "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-editor": 0.0.0
     "@webiny/app-serverless-cms": 0.0.0
@@ -28936,20 +28822,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-node@npm:^27.0.6, jest-environment-node@npm:^27.2.4, jest-environment-node@npm:^27.3.0":
-  version: 27.5.1
-  resolution: "jest-environment-node@npm:27.5.1"
-  dependencies:
-    "@jest/environment": ^27.5.1
-    "@jest/fake-timers": ^27.5.1
-    "@jest/types": ^27.5.1
-    "@types/node": "*"
-    jest-mock: ^27.5.1
-    jest-util: ^27.5.1
-  checksum: 0f988330c4f3eec092e3fb37ea753b0c6f702e83cd8f4d770af9c2bf964a70bc45fbd34ec6fdb6d71ce98a778d9f54afd673e63f222e4667fff289e8069dba39
-  languageName: node
-  linkType: hard
-
 "jest-environment-node@npm:^28.1.3":
   version: 28.1.3
   resolution: "jest-environment-node@npm:28.1.3"
@@ -29099,23 +28971,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-message-util@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "jest-message-util@npm:27.5.1"
-  dependencies:
-    "@babel/code-frame": ^7.12.13
-    "@jest/types": ^27.5.1
-    "@types/stack-utils": ^2.0.0
-    chalk: ^4.0.0
-    graceful-fs: ^4.2.9
-    micromatch: ^4.0.4
-    pretty-format: ^27.5.1
-    slash: ^3.0.0
-    stack-utils: ^2.0.3
-  checksum: eb6d637d1411c71646de578c49826b6da8e33dd293e501967011de9d1916d53d845afbfb52a5b661ff1c495be7c13f751c48c7f30781fd94fbd64842e8195796
-  languageName: node
-  linkType: hard
-
 "jest-message-util@npm:^28.1.3":
   version: 28.1.3
   resolution: "jest-message-util@npm:28.1.3"
@@ -29139,16 +28994,6 @@ __metadata:
   peerDependencies:
     jest: ">= 22.4.2"
   checksum: d1b682e484abd97c068419eea4aa6c21dc5cd5e889db327e70734894ee332a864644722fef24b73a355638db08f6b26ce64f34c91b6e0d1424bf6f94b5512c0a
-  languageName: node
-  linkType: hard
-
-"jest-mock@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "jest-mock@npm:27.5.1"
-  dependencies:
-    "@jest/types": ^27.5.1
-    "@types/node": "*"
-  checksum: f5b5904bb1741b4a1687a5f492535b7b1758dc26534c72a5423305f8711292e96a601dec966df81bb313269fb52d47227e29f9c2e08324d79529172f67311be0
   languageName: node
   linkType: hard
 
@@ -29302,20 +29147,6 @@ __metadata:
     pretty-format: ^28.1.3
     semver: ^7.3.5
   checksum: 2a46a5493f1fb50b0a236a21f25045e7f46a244f9f3ae37ef4fbcd40249d0d68bb20c950ce77439e4e2cac985b05c3061c90b34739bf6069913a1199c8c716e1
-  languageName: node
-  linkType: hard
-
-"jest-util@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "jest-util@npm:27.5.1"
-  dependencies:
-    "@jest/types": ^27.5.1
-    "@types/node": "*"
-    chalk: ^4.0.0
-    ci-info: ^3.2.0
-    graceful-fs: ^4.2.9
-    picomatch: ^2.2.3
-  checksum: ac8d122f6daf7a035dcea156641fd3701aeba245417c40836a77e35b3341b9c02ddc5d904cfcd4ddbaa00ab854da76d3b911870cafdcdbaff90ea471de26c7d7
   languageName: node
   linkType: hard
 
@@ -35487,7 +35318,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^27.0.2, pretty-format@npm:^27.5.1":
+"pretty-format@npm:^27.0.2":
   version: 27.5.1
   resolution: "pretty-format@npm:27.5.1"
   dependencies:
@@ -38628,61 +38459,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:2.x || 3.x || 4 || 5, semver@npm:^5.3.0, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.5.1, semver@npm:^5.6.0, semver@npm:^5.7.0, semver@npm:^5.7.1":
-  version: 5.7.1
-  resolution: "semver@npm:5.7.1"
-  bin:
-    semver: ./bin/semver
-  checksum: 57fd0acfd0bac382ee87cd52cd0aaa5af086a7dc8d60379dfe65fea491fb2489b6016400813930ecd61fd0952dae75c115287a1b16c234b1550887117744dfaf
-  languageName: node
-  linkType: hard
-
-"semver@npm:6.3.0, semver@npm:^6.0.0, semver@npm:^6.1.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.2.0, semver@npm:^6.3.0":
+"semver@npm:6.3.0":
   version: 6.3.0
   resolution: "semver@npm:6.3.0"
   bin:
     semver: ./bin/semver.js
   checksum: 1b26ecf6db9e8292dd90df4e781d91875c0dcc1b1909e70f5d12959a23c7eebb8f01ea581c00783bbee72ceeaad9505797c381756326073850dc36ed284b21b9
-  languageName: node
-  linkType: hard
-
-"semver@npm:7.3.2":
-  version: 7.3.2
-  resolution: "semver@npm:7.3.2"
-  bin:
-    semver: bin/semver.js
-  checksum: 692f4900dadb43919614b0df9af23fe05743051cda0d1735b5e4d76f93c9e43a266fae73cfc928f5d1489f022c5c0e65dfd2900fcf5b1839c4e9a239729afa7b
-  languageName: node
-  linkType: hard
-
-"semver@npm:7.3.4":
-  version: 7.3.4
-  resolution: "semver@npm:7.3.4"
-  dependencies:
-    lru-cache: ^6.0.0
-  bin:
-    semver: bin/semver.js
-  checksum: 96451bfd7cba9b60ee87571959dc47e87c95b2fe58a9312a926340fee9907fc7bc062c352efdaf5bb24b2dff59c145e14faf7eb9d718a84b4751312531b39f43
-  languageName: node
-  linkType: hard
-
-"semver@npm:7.x, semver@npm:^7.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8":
-  version: 7.3.8
-  resolution: "semver@npm:7.3.8"
-  dependencies:
-    lru-cache: ^6.0.0
-  bin:
-    semver: bin/semver.js
-  checksum: ba9c7cbbf2b7884696523450a61fee1a09930d888b7a8d7579025ad93d459b2d1949ee5bbfeb188b2be5f4ac163544c5e98491ad6152df34154feebc2cc337c1
-  languageName: node
-  linkType: hard
-
-"semver@npm:~7.2.0":
-  version: 7.2.3
-  resolution: "semver@npm:7.2.3"
-  bin:
-    semver: bin/semver.js
-  checksum: e6a27b19853bb07829f863782647408afc20698f6a2b2cce9c60d1f4465cfc38848c47d9e8bbadc48dd62d096b9a4e7fd841e91274f307cb3a9d83a381c10b26
   languageName: node
   linkType: hard
 

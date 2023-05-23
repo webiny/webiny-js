@@ -7,9 +7,6 @@
     "url": "https://github.com/webiny/webiny-js.git",
     "directory": "packages/api-i18n"
   },
-  "keywords": [
-    "i18n:base"
-  ],
   "author": "Webiny Ltd",
   "description": "The API for the Webiny I18N app.",
   "license": "MIT",
@@ -17,9 +14,7 @@
     "@babel/runtime": "^7.19.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-security": "0.0.0",
-    "@webiny/api-security-so-ddb": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
-    "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-client": "0.0.0",
