@@ -1086,8 +1086,12 @@ export const createEntriesStorageOperations = (
 
         const result: Record<string, CmsEntryUniqueValue> = {};
         for (const item of items) {
-            const values = item.values[field.fieldId] as string[] | undefined;
-            if (!Array.isArray(values) || !values?.length) {
+            const fieldValue = item.values[field.fieldId] as string[] | string | undefined;
+            if (!fieldValue) {
+                continue;
+            }
+            const values = Array.isArray(fieldValue) ? fieldValue : [fieldValue];
+            if (values.length === 0) {
                 continue;
             }
             for (const value of values) {

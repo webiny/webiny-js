@@ -8,7 +8,22 @@ const DATA_FIELD = (extra = "") => /* GraphQL */ `
             folderId
         }
         tags
-        data
+        data {
+            id
+            key
+            name
+            createdBy {
+                id
+                displayName
+            }
+            createdOn
+            size
+            aliases
+            meta {
+                private
+            }
+            type
+        }
         ${extra}
     }
 `;
@@ -24,7 +39,7 @@ const ERROR_FIELD = /* GraphQL */ `
 export const GET_RECORD = /* GraphQL */ `
     query GetRecord($id: ID!) {
         search {
-            getRecord(id: $id ) {
+            getRecord: getAcoSearchRecordFm(id: $id ) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
