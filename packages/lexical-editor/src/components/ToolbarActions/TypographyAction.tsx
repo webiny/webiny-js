@@ -18,7 +18,9 @@ import {
     WebinyListCommandPayload
 } from "~/commands/webiny-list";
 import { INSERT_WEBINY_QUOTE_COMMAND, WebinyQuoteCommandPayload } from "~/commands/webiny-quote";
-import { $isParagraphNode, ParagraphNode } from "~/nodes/ParagraphNode";
+import { $isParagraphNode } from "~/nodes/ParagraphNode";
+import { $isHeadingNode } from "~/nodes/HeadingNode";
+import { $isQuoteNode } from "~/nodes/QuoteNode";
 
 /*
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
@@ -54,7 +56,9 @@ export const TypographyAction: TypographyAction = () => {
     const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
     const isTypographySelected = textBlockSelection?.state?.typography.isSelected || false;
     const isParagraphSelected = textBlockSelection?.state?.paragraph.isSelected || false;
+    const isHeadingSelected = textBlockSelection?.state?.heading.isSelected || false;
     const textType = textBlockSelection?.state?.textType;
+    const isQuoteSelected = textBlockSelection?.state?.quote.isSelected || false;
     const setTypographySelect = useCallback(
         (value: TypographyValue) => {
             setTypography(value);
@@ -64,7 +68,6 @@ export const TypographyAction: TypographyAction = () => {
 
     const onTypographySelect = useCallback((value: TypographyValue) => {
         setTypographySelect(value);
-
         if (value.tag.includes("h") || value.tag.includes("p")) {
             editor.dispatchCommand<LexicalCommand<TypographyPayload>>(
                 ADD_TYPOGRAPHY_ELEMENT_COMMAND,
@@ -111,9 +114,13 @@ export const TypographyAction: TypographyAction = () => {
                 return;
             }
 
-            if ($isParagraphNode(textBlockSelection?.element)) {
-                const el = textBlockSelection.element as ParagraphNode;
-                const styleId = el.getTypographyStyleId();
+            if (
+                $isParagraphNode(textBlockSelection?.element) ||
+                $isHeadingNode(textBlockSelection?.element) ||
+                $isQuoteNode(textBlockSelection?.element)
+            ) {
+                const elementWithThemeStyle = textBlockSelection?.element;
+                const styleId = elementWithThemeStyle.getTypographyStyleId();
                 if (!styleId) {
                     return;
                 }
@@ -123,12 +130,14 @@ export const TypographyAction: TypographyAction = () => {
                 }
 
                 const style = themeEmotionMap[styleId];
-                setTypography({
-                    name: style.name,
-                    id: style.id,
-                    css: style.styles,
-                    tag: style.tag
-                });
+                if (style) {
+                    setTypography({
+                        name: style?.name,
+                        id: style.id,
+                        css: style.styles,
+                        tag: style.tag
+                    });
+                }
                 return;
             }
 
@@ -148,7 +157,7 @@ export const TypographyAction: TypographyAction = () => {
                 }
             }
         }
-    }, [isTypographySelected, textType, isParagraphSelected]);
+    }, [isTypographySelected, textType, isQuoteSelected, isParagraphSelected, isHeadingSelected]);
 
     return (
         <TypographyActionContext.Provider

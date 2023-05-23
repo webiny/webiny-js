@@ -38,7 +38,6 @@
     "jsonpack": "^1.1.5",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.11",
-    "mdbid": "^1.0.0",
     "node-fetch": "^2.6.1",
     "rimraf": "^3.0.2",
     "stream": "^0.0.2",

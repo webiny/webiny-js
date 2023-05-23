@@ -75,6 +75,13 @@ const CUSTOM_HANDLERS = {
             "packages/api-page-builder-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base",
             "packages/api-page-builder-aco/* --keyword=cms:ddb-es --keyword=aco:base --keyword=pb:ddb-es --keyword=pb:base --keyword=api-page-builder-aco:base"
         ];
+    },
+    // Setup "api-file-manager-aco" tests.
+    "api-file-manager-aco": () => {
+        return [
+            "packages/api-file-manager-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=fm:ddb --keyword=fm:base --keyword=api-file-manager-aco:base",
+            "packages/api-file-manager-aco/* --keyword=cms:ddb-es --keyword=aco:base --keyword=fm:ddb-es --keyword=fm:base --keyword=api-file-manager-aco:base"
+        ];
     }
 };
 

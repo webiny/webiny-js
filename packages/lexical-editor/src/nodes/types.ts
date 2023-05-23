@@ -10,6 +10,9 @@ export interface TextNodeThemeStyles {
     setThemeStyles: (styles: ThemeStyleValue[]) => void;
 }
 
+/*
+ * Indicates that the node is implementing the typography styles
+ */
 export interface TypographyStylesNode {
     setTypography: (typographyStyleId: string) => void;
     getTypographyStyleId: () => string | undefined;

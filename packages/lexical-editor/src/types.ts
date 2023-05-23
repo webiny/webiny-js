@@ -42,6 +42,7 @@ export type ToolbarState = {
     quote: NodeState;
     textType: LexicalTextType;
     paragraph: NodeState;
+    heading: NodeState;
 };
 
 /*
@@ -78,12 +79,6 @@ export type TypographyValue = {
 };
 
 /* Nodes */
-export interface WebinyThemeNode {
-    /*
-     * Get theme style id
-     */
-    getStyleId: () => string;
-}
 
 /*
  * Contains IDs of the styles and Emotion generated classes.

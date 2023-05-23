@@ -64,7 +64,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
 
             return file;
         },
-        async createFile(input) {
+        async createFile(input, meta) {
             await checkBasePermissions(getPermission, { rwd: "w" });
             const identity = getIdentity();
 
@@ -92,11 +92,11 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             };
 
             try {
-                await this.onFileBeforeCreate.publish({ file });
+                await this.onFileBeforeCreate.publish({ file, meta });
 
                 const result = await storageOperations.files.create({ file });
 
-                await this.onFileAfterCreate.publish({ file });
+                await this.onFileAfterCreate.publish({ file, meta });
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -212,7 +212,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
 
             return true;
         },
-        async createFilesInBatch(inputs) {
+        async createFilesInBatch(inputs, meta) {
             await checkBasePermissions(getPermission, { rwd: "w" });
 
             const identity = getIdentity();
@@ -243,11 +243,11 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             });
 
             try {
-                await this.onFileBeforeBatchCreate.publish({ files });
+                await this.onFileBeforeBatchCreate.publish({ files, meta });
                 const results = await storageOperations.files.createBatch({
                     files
                 });
-                await this.onFileAfterBatchCreate.publish({ files });
+                await this.onFileAfterBatchCreate.publish({ files, meta });
                 return results;
             } catch (ex) {
                 throw new WebinyError(

@@ -17,13 +17,11 @@ const lexicalText = JSON.stringify({
                         version: 1
                     }
                 ],
-                styleId: "heading1",
-                name: "Heading 1",
                 direction: "ltr",
-                typographyStyles: {},
+                styles: [],
                 format: "",
                 indent: 0,
-                type: "typography-el-node",
+                type: "heading-element",
                 version: 1,
                 tag: "h1"
             }

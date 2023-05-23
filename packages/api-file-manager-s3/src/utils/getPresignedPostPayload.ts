@@ -1,11 +1,8 @@
-// @ts-ignore `mdbid` has no type declarations
-import mdbid from "mdbid";
-import sanitizeFilename from "sanitize-filename";
 import S3 from "aws-sdk/clients/s3";
 import { validation } from "@webiny/validation";
-import { PresignedPostPayloadData, PresignedPostPayloadDataResponse } from "~/types";
 import { FileManagerSettings } from "@webiny/api-file-manager/types";
-import { mimeTypes } from "./mimeTypes";
+import { prepareFileData } from "~/utils/prepareFileData";
+import { PresignedPostPayloadData, PresignedPostPayloadDataResponse } from "~/types";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; // 1TB
@@ -24,39 +21,7 @@ export const getPresignedPostPayload = (
     data: PresignedPostPayloadData,
     settings: FileManagerSettings
 ): PresignedPostPayloadDataResponse => {
-    // If type is missing, let's use the default "application/octet-stream" type,
-    // which is also the default type that the Amazon S3 would use.
-    if (!data.type) {
-        data.type = "application/octet-stream";
-    }
-
-    const contentType = data.type;
-    if (!contentType) {
-        throw Error(`File's content type could not be resolved.`);
-    }
-
-    const id = data.id || mdbid();
-    let key = data.key || sanitizeFilename(data.name);
-
-    // We must prefix file key with file ID.
-    if (!key.startsWith(id)) {
-        key = id + "/" + key;
-    }
-
-    if (data.keyPrefix) {
-        key = data.keyPrefix + key;
-    }
-
-    // Replace all whitespace.
-    key = key.replace(/\s/g, "");
-
-    // Make sure file key contains a file extension
-    const extensions = mimeTypes[contentType];
-    // We only need this variable to compare extensions in a case-insensitive way.
-    const lowerKey = key.toLowerCase();
-    if (!extensions.some(ext => lowerKey.endsWith(`.${ext}`))) {
-        key = key + `.${extensions[0]}`;
-    }
+    const file = prepareFileData(data);
 
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(
@@ -69,8 +34,8 @@ export const getPresignedPostPayload = (
         Bucket: S3_BUCKET,
         Conditions: [["content-length-range", uploadMinFileSize, uploadMaxFileSize]],
         Fields: {
-            "Content-Type": contentType,
-            key
+            "Content-Type": file.type,
+            key: file.key
         }
     };
 
@@ -83,12 +48,6 @@ export const getPresignedPostPayload = (
 
     return {
         data: payload,
-        file: {
-            id,
-            name: data.name,
-            key,
-            type: contentType,
-            size: data.size
-        }
+        file
     };
 };

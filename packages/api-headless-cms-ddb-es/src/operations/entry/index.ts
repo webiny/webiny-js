@@ -31,7 +31,10 @@ import {
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
+import {
+    ElasticsearchSearchResponse,
+    SearchBody as ElasticsearchSearchBody
+} from "@webiny/api-elasticsearch/types";
 import { CmsEntryStorageOperations, CmsIndexEntry } from "~/types";
 import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
@@ -1507,6 +1510,95 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const getUniqueFieldValues: CmsEntryStorageOperations["getUniqueFieldValues"] = async (
+        model,
+        params
+    ) => {
+        const { where, fieldId } = params;
+
+        const { index } = configurations.es({
+            model
+        });
+
+        try {
+            const result = await elasticsearch.indices.exists({
+                index
+            });
+            if (!result?.body) {
+                return [];
+            }
+        } catch (ex) {
+            throw new WebinyError(
+                "Could not determine if Elasticsearch index exists.",
+                "ELASTICSEARCH_INDEX_CHECK_ERROR",
+                {
+                    error: ex,
+                    index
+                }
+            );
+        }
+
+        const initialBody = createElasticsearchBody({
+            model,
+            params: {
+                limit: 1,
+                where
+            },
+            plugins
+        });
+
+        const field = model.fields.find(f => f.fieldId === fieldId);
+        if (!field) {
+            throw new WebinyError(
+                `Could not find field with given "fieldId" value.`,
+                "FIELD_NOT_FOUND",
+                {
+                    fieldId
+                }
+            );
+        }
+
+        const body: ElasticsearchSearchBody = {
+            ...initialBody,
+            /**
+             * We do not need any hits returned, we only need the aggregations.
+             */
+            size: 0,
+            aggregations: {
+                getUniqueFieldValues: {
+                    terms: {
+                        field: `values.${field.storageId}.keyword`,
+                        size: 1000000
+                    }
+                }
+            }
+        };
+
+        let response: ElasticsearchSearchResponse<string> | undefined = undefined;
+
+        try {
+            response = await elasticsearch.search({
+                index,
+                body
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Error in the Elasticsearch query.",
+                ex.code || "ELASTICSEARCH_ERROR",
+                {
+                    error: ex,
+                    index,
+                    model,
+                    body
+                }
+            );
+        }
+
+        const values = response.body.aggregations["getUniqueFieldValues"] || { buckets: [] };
+
+        return values.buckets.map(item => item.key) || [];
+    };
+
     return {
         create,
         createRevisionFrom,
@@ -1526,6 +1618,7 @@ export const createEntriesStorageOperations = (
         getLatestByIds,
         getPublishedByIds,
         getPreviousRevision,
+        getUniqueFieldValues,
         dataLoaders
     };
 };

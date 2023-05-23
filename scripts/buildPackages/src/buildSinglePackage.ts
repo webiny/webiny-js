@@ -14,7 +14,9 @@ export const buildPackageInNewProcess = async (pkg: Package, buildOverrides = "{
     const cacheFolderPath = path.join(CACHE_FOLDER_PATH, pkg.packageJson.name);
 
     const buildFolder = getBuildOutputFolder(pkg);
-    fs.copySync(buildFolder, cacheFolderPath);
+    // Delete previous cache!
+    await fs.emptyDir(cacheFolderPath);
+    await fs.copy(buildFolder, cacheFolderPath);
 };
 
 export const buildPackageInSameProcess = async (pkg: Package, buildOverrides = "{}") => {
@@ -32,5 +34,8 @@ export const buildPackageInSameProcess = async (pkg: Package, buildOverrides = "
     const cacheFolderPath = path.join(CACHE_FOLDER_PATH, pkg.packageJson.name);
 
     const buildFolder = getBuildOutputFolder(pkg);
-    fs.copySync(buildFolder, cacheFolderPath);
+
+    // Delete previous cache!
+    await fs.emptyDir(cacheFolderPath);
+    await fs.copy(buildFolder, cacheFolderPath);
 };

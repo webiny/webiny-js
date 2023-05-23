@@ -20,13 +20,13 @@ import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
-import { WebinyQuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
+import { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { ClassNames } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
-import {ImagesPlugin} from "~/plugins/ImagesPlugin/ImagesPlugin";
+import { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -130,9 +130,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     <ClearEditorPlugin />
                     <FontColorPlugin />
                     <TypographyPlugin />
-                    <WebinyQuotePlugin />
-                    <HistoryPlugin externalHistoryState={historyState} />
+                    <QuotePlugin />
                     <ImagesPlugin />
+                    <HistoryPlugin externalHistoryState={historyState} />
                     {/* Events */}
                     {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                     {focus && <AutoFocusPlugin />}

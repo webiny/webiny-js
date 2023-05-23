@@ -3,7 +3,7 @@ import { Input } from "@webiny/ui/Input";
 import { Form, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { useSnackbar } from "@webiny/app-admin";
-import { useFile, useFileManagerApi, useFileManagerView } from "~/index";
+import { useFile, useFileManagerApi, useFileManagerAcoView } from "~/index";
 
 interface NameFormData {
     name: string;
@@ -14,7 +14,7 @@ const Name = () => {
     const name = file.name || "";
     const { showSnackbar } = useSnackbar();
     const { canEdit } = useFileManagerApi();
-    const { updateFile } = useFileManagerView();
+    const { updateFile } = useFileManagerAcoView();
 
     const onSubmit: FormOnSubmit<NameFormData> = async ({ name }) => {
         // Bail out if name is same as the current file name.

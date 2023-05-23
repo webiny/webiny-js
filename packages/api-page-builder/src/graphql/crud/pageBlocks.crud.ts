@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
@@ -27,7 +22,7 @@ import {
     createPageBlocksCreateValidation,
     createPageBlocksUpdateValidation
 } from "~/graphql/crud/pageBlocks/validation";
-import { createZodError, removeUndefinedValues } from "@webiny/utils";
+import { createZodError, mdbid, removeUndefinedValues } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.block";
 

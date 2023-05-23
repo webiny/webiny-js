@@ -30,6 +30,7 @@ export const DialogContainer: React.FC = () => {
                 )}
                 {actions.accept && (
                     <ButtonPrimary
+                        data-testid={"confirmationdialog-confirm-action"}
                         onClick={() => {
                             actions.accept.onClick();
                             hideDialog();

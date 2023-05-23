@@ -1,5 +1,4 @@
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 /**
  * We need the "until" because we are using storage operations directly.
  */

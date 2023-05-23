@@ -23,20 +23,40 @@ export const createManageSDL: CreateManageSDL = ({
     fieldTypePlugins,
     sorterPlugins
 }): string => {
+    const inputFields = renderInputFields({
+        models,
+        model,
+        fields: model.fields,
+        fieldTypePlugins
+    });
+    if (inputFields.length === 0) {
+        return "";
+    }
     const listFilterFieldsRender = renderListFilterFields({
         model,
+        fields: model.fields,
         type: "manage",
         fieldTypePlugins
     });
 
-    const sortEnumRender = renderSortEnum({ model, fieldTypePlugins, sorterPlugins });
-    const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-    const inputFields = renderInputFields({ models, model, fieldTypePlugins });
-    const fields = renderFields({ models, model, type: "manage", fieldTypePlugins });
+    const sortEnumRender = renderSortEnum({
+        model,
+        fields: model.fields,
+        fieldTypePlugins,
+        sorterPlugins
+    });
+    const getFilterFieldsRender = renderGetFilterFields({
+        fields: model.fields,
+        fieldTypePlugins
+    });
 
-    if (inputFields.length === 0) {
-        return "";
-    }
+    const fields = renderFields({
+        models,
+        model,
+        fields: model.fields,
+        type: "manage",
+        fieldTypePlugins
+    });
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
@@ -74,40 +94,26 @@ export const createManageSDL: CreateManageSDL = ({
             data: JSON
         }
 
-        ${fields
-            .map(f => f.typeDefs)
-            .filter(Boolean)
-            .join("\n")}
+        ${fields.map(f => f.typeDefs).join("\n")}
 
-        ${inputFields
-            .map(f => f.typeDefs)
-            .filter(Boolean)
-            .join("\n")}
+        ${inputFields.map(f => f.typeDefs).join("\n")}
 
-        ${
-            inputFields &&
-            `input ${singularName}Input {
-                id: ID
+
+        input ${singularName}Input {
+            id: ID
             ${inputFields.map(f => f.fields).join("\n")}
-        }`
         }
 
-        ${
-            getFilterFieldsRender &&
-            `input ${singularName}GetWhereInput {
+        input ${singularName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`
         }
 
-
-        ${
-            listFilterFieldsRender &&
-            `input ${singularName}ListWhereInput {
-                ${listFilterFieldsRender}
-                AND: [${singularName}ListWhereInput!]
-                OR: [${singularName}ListWhereInput!]
-        }`
+        input ${singularName}ListWhereInput {
+            ${listFilterFieldsRender}
+            AND: [${singularName}ListWhereInput!]
+            OR: [${singularName}ListWhereInput!]
         }
+
 
         type ${singularName}Response {
             data: ${singularName}
@@ -125,11 +131,9 @@ export const createManageSDL: CreateManageSDL = ({
             error: CmsError
         }
 
-        ${
-            sortEnumRender &&
-            `enum ${singularName}ListSorter {
+
+        enum ${singularName}ListSorter {
             ${sortEnumRender}
-        }`
         }
 
         extend type Query {
@@ -149,7 +153,7 @@ export const createManageSDL: CreateManageSDL = ({
 
         extend type Mutation {
             create${singularName}(data: ${singularName}Input!): ${singularName}Response
-    
+
             create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
     
             update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
