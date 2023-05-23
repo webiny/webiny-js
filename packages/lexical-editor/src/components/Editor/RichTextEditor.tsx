@@ -123,7 +123,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         <LexicalComposer initialConfig={initialConfig}>
             <>
                 {staticToolbar && staticToolbar}
-                <div ref={scrollRef} style={{ ...styles, ...sizeStyle, padding: 5 }}>
+                <div ref={scrollRef} style={{ ...styles, ...sizeStyle, padding: "10px 15px" }}>
                     {/* data */}
                     <OnChangePlugin onChange={handleOnChange} />
                     {value && <LexicalUpdateStatePlugin value={value} />}
