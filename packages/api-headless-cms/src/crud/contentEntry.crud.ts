@@ -1646,9 +1646,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async deleteEntry(model, entryId) {
+        async deleteEntry(model, entryId, options) {
             return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
-                return deleteEntry(model, entryId);
+                return deleteEntry(model, entryId, options);
             });
         },
         async deleteMultipleEntries(model, ids) {
