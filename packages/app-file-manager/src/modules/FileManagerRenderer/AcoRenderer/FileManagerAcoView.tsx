@@ -28,7 +28,7 @@ import { useFileManagerApi } from "~/index";
 import { FileItem } from "@webiny/app-admin/types";
 import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 
-import { ACO_TYPE } from "~/constants";
+import { ACO_TYPE, FOLDER_ID_DEFAULT } from "~/constants";
 
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { DropFilesHere } from "~/components/DropFilesHere";
@@ -144,7 +144,11 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         listTitle = defaultFolderName,
         meta,
         records
-    } = useAcoList({ type: ACO_TYPE, folderId, ...listWhere });
+    } = useAcoList({
+        type: ACO_TYPE,
+        ...listWhere,
+        folderId: folderId || FOLDER_ID_DEFAULT
+    });
 
     const uploader = useMemo<BatchFileUploader>(
         () => new BatchFileUploader(uploadFile),
