@@ -163,7 +163,7 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
                             }
                         });
 
-                        const cursor = files[files.length - 1].id;
+                        const cursor = files[files.length - 1]?.id;
 
                         // Update checkpoint after every batch
                         migrationStatus[groupId] = cursor;

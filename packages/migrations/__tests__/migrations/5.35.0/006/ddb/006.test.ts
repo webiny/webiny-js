@@ -37,6 +37,8 @@ describe("5.35.0-006", () => {
         for (const tenant of tenants) {
             const locales = testLocales
                 .filter(item => item.PK === `T#${tenant}#I18N#L`)
+                // We want to keep `fr` locale empty (without any pages)
+                .filter(item => item.code !== `fr`)
                 .map(locale => locale.code) as string[];
 
             for (const locale of locales) {
@@ -277,5 +279,21 @@ describe("5.35.0-006", () => {
             expect(grouped.skipped.length).toBe(1);
             expect(grouped.notApplicable.length).toBe(0);
         }
+    });
+
+    it("should not fail of there are no pages in any given locale", async () => {
+        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestPages(5);
+
+        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_35_0_006] });
+
+        // Should run the migration
+        process.stdout.write("[First run]\n");
+        const firstRun = await handler();
+        assertNotError(firstRun.error);
+        const firstData = groupMigrations(firstRun.data.migrations);
+        expect(firstData.executed.length).toBe(1);
+        expect(firstData.errored.length).toBe(0);
+        expect(firstData.skipped.length).toBe(0);
     });
 });

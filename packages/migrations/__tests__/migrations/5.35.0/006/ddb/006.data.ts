@@ -83,6 +83,16 @@ export const createLocalesData = () => {
             webinyVersion: "0.0.0"
         },
         {
+            PK: `T#root#I18N#L`,
+            SK: "fr",
+            code: "fr",
+            default: false,
+            createdOn: "2023-01-25T09:37:58.220Z",
+            createdBy,
+            tenant: "root",
+            webinyVersion: "0.0.0"
+        },
+        {
             PK: `T#otherTenant#I18N#L`,
             SK: "fr-FR",
             code: "fr-FR",

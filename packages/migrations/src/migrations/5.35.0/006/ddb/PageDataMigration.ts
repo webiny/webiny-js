@@ -170,7 +170,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             }
                         });
 
-                        const cursor = pages[pages.length - 1].id;
+                        const cursor = pages[pages.length - 1]?.id;
 
                         // Update checkpoint after every batch
                         migrationStatus[groupId] = cursor;

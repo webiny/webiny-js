@@ -170,4 +170,20 @@ describe("5.35.0-001", () => {
         expect(secondData.skipped.length).toBe(1);
         expect(spy).toHaveBeenCalledTimes(0);
     });
+
+    it("should not fail of there are no files in any given locale", async () => {
+        await insertDynamoDbTestData(table, testData);
+        await insertTestFiles(5);
+
+        const handler = createDdbMigrationHandler({ table, migrations: [FileManager_5_35_0_001] });
+
+        // Should run the migration
+        process.stdout.write("[First run]\n");
+        const firstRun = await handler();
+        assertNotError(firstRun.error);
+        const firstData = groupMigrations(firstRun.data.migrations);
+        expect(firstData.executed.length).toBe(1);
+        expect(firstData.errored.length).toBe(0);
+        expect(firstData.skipped.length).toBe(0);
+    });
 });
