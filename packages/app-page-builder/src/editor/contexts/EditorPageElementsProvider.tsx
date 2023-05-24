@@ -74,7 +74,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
         // On a couple of occasions, we've seen the `theme` object being `null` for a brief moment. This
         // would happen when the theme is being loaded via a dynamic import, e.g. in a multi-theme setup.
         if (!theme) {
-            return null
+            return null;
         }
 
         return {
