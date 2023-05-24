@@ -1,8 +1,10 @@
+import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import elasticsearchClientContextPlugin, {
     createGzipCompression,
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
+import { logger } from "@webiny/project-utils/testing/logger";
 import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
@@ -12,20 +14,28 @@ import { ElasticsearchClient } from "./client";
 import { PluginCollection } from "../environment";
 
 interface GetElasticsearchClientParams {
+    name: string;
     prefix?: string;
     onBeforeEach?: OnBeforeEach;
 }
 
 const cache: Record<string, ElasticsearchClientConfig> = {};
 
-export const getElasticsearchClient = (
-    params: GetElasticsearchClientParams = {}
-): ElasticsearchClientConfig => {
-    const testId = expect.getState().currentTestName;
+export const getElasticsearchClient = (params: GetElasticsearchClientParams) => {
+    logger.debug(`getElasticsearchClient() called by "%s"`, params.name);
+    const state = expect.getState();
+    const testId = path.basename(state.testPath);
 
-    const config = cache[testId] || new ElasticsearchClientConfig(params.prefix || "");
+    let config = cache[testId];
+    if (!config) {
+        logger.debug(`Creating a new ES client; cache key = "%s"`, testId);
+        config = new ElasticsearchClientConfig(params.prefix || "");
+    } else {
+        logger.debug(`Using cached ES client; cache key = "%s"`, testId);
+    }
+
     if (params.onBeforeEach) {
-        config.setOnBeforeEach(params.onBeforeEach);
+        config.setOnBeforeEach(params.name, params.onBeforeEach);
     }
     cache[testId] = config;
 
@@ -39,16 +49,18 @@ interface OnBeforeEach {
 export class ElasticsearchClientConfig {
     public elasticsearchClient: ElasticsearchClient;
     public plugins: PluginCollection;
-    private onBeforeEach: OnBeforeEach[] = [];
+    private onBeforeEach: { name: string; cb: OnBeforeEach }[] = [];
 
     constructor(prefix: string) {
         if (prefix !== "") {
             // Prefix will only be handled once, for the first processed storage operations.
             const indexPrefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-            if (!indexPrefix.includes(prefix)) {
+            if (!indexPrefix.includes("api-")) {
                 process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
             }
         }
+
+        logger.debug(`ES index prefix = "%s"`, process.env.ELASTIC_SEARCH_INDEX_PREFIX);
 
         const documentClient = getDocumentClient();
         this.elasticsearchClient = createElasticsearchClient() as ElasticsearchClient;
@@ -76,8 +88,8 @@ export class ElasticsearchClientConfig {
             global: global,
             client: this.elasticsearchClient,
             onBeforeEach: async () => {
-                for (const cb of this.onBeforeEach) {
-                    await cb();
+                for (const onBeforeEach of this.onBeforeEach) {
+                    await onBeforeEach.cb();
                 }
             }
         });
@@ -89,7 +101,9 @@ export class ElasticsearchClientConfig {
         ];
     }
 
-    setOnBeforeEach(cb: OnBeforeEach) {
-        this.onBeforeEach.push(cb);
+    setOnBeforeEach(name: string, cb: OnBeforeEach) {
+        if (!this.onBeforeEach.find(item => item.name === name)) {
+            this.onBeforeEach.push({ name, cb });
+        }
     }
 }

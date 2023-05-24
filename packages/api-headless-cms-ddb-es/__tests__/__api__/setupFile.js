@@ -24,6 +24,7 @@ module.exports = () => {
     setStorageOps("cms", () => {
         const documentClient = getDocumentClient();
         const { elasticsearchClient, plugins } = getElasticsearchClient({
+            name: "api-headless-cms-ddb-es",
             prefix: "api-headless-cms-env-"
         });
 
@@ -50,13 +51,13 @@ module.exports = () => {
             context.waitFor(["cms"], async () => {
                 context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
                     const index = createIndexName(model);
-                    const response = await elasticsearchClient.indices.exists({
-                        index
-                    });
-                    if (response.body) {
-                        return;
-                    }
                     try {
+                        const response = await elasticsearchClient.indices.exists({
+                            index
+                        });
+                        if (response.body) {
+                            return;
+                        }
                         await elasticsearchClient.indices.create({
                             index,
                             body: {
@@ -65,8 +66,9 @@ module.exports = () => {
                         });
                         await refreshIndex(model);
                     } catch (ex) {
-                        console.log("Could not create index on before entry create...");
-                        console.log(JSON.stringify(ex));
+                        process.stdout.write(
+                            `\nCould not create index on before entry create: ${ex.message}\n`
+                        );
                     }
                 });
                 context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {

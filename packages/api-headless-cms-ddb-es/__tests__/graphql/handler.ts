@@ -21,7 +21,7 @@ interface UseHandlerParams {
 export const useHandler = (params: UseHandlerParams = {}) => {
     const { plugins = [] } = params;
     const documentClient = getDocumentClient();
-    const { elasticsearchClient } = getElasticsearchClient();
+    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
     const i18nStorage = getStorageOps<any[]>("i18n");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 

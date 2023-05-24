@@ -85,6 +85,8 @@
     "jest-dynalite": "^3.6.1",
     "listr2": "^5.0.8",
     "load-json-file": "6.2.0",
+    "pino": "^8.11.0",
+    "pino-pretty": "^9.4.0",
     "yargs": "^17.0.1"
   },
   "license": "MIT",
@@ -96,7 +98,9 @@
         "@webiny/api",
         "@webiny/api-dynamodb-to-elasticsearch",
         "@webiny/api-elasticsearch",
-        "@webiny/handler-aws"
+        "@webiny/handler-aws",
+        "pino",
+        "pino-logger"
       ],
       "dependencies": [
         "@babel/core",

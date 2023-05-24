@@ -16,6 +16,7 @@ module.exports = () => {
     setStorageOps("formBuilder", () => {
         const documentClient = getDocumentClient();
         const { elasticsearchClient, plugins } = getElasticsearchClient({
+            name: "api-form-builder-so-ddb-es",
             prefix: "api-form-builder-env-",
             onBeforeEach: async () => {
                 const { index } = configurations.es({

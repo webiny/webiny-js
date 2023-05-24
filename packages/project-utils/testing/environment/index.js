@@ -21,4 +21,8 @@ const setStorageOps = (app, factory) => {
     global["__storageOps"] = storageOps;
 };
 
-module.exports = { setStorageOps, getStorageOps };
+const clearStorageOps = () => {
+    delete global["__storageOps"];
+};
+
+module.exports = { setStorageOps, getStorageOps, clearStorageOps };
