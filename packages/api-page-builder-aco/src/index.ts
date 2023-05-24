@@ -25,17 +25,37 @@ const setupContext = async (context: PbAcoContext): Promise<void> => {
 };
 
 export const createAcoPageBuilderContext = () => {
-    return new ContextPlugin<PbAcoContext>(async context => {
+    const plugin = new ContextPlugin<PbAcoContext>(async context => {
+        if (!context.aco) {
+            console.log(
+                `There is no ACO initialized so we will not initialize the Page Builder ACO.`
+            );
+            return;
+        }
         await setupContext(context);
         createPageHooks(context);
         createPageProcessors(context);
     });
+
+    plugin.name = "page-builder-aco.createContext";
+
+    return plugin;
 };
 
 export const createAcoPageBuilderImportExportContext = () => {
-    return new ContextPlugin<PbAcoContext>(async context => {
+    const plugin = new ContextPlugin<PbAcoContext>(async context => {
+        if (!context.aco) {
+            console.log(
+                `There is no ACO initialized so we will not initialize the Page Builder ACO.`
+            );
+            return;
+        }
         await setupContext(context);
         createImportExportPageHooks(context);
         createPageProcessors(context);
     });
+
+    plugin.name = `page-builder-aco.createImportExportContext`;
+
+    return plugin;
 };

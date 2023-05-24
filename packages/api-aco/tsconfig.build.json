@@ -6,9 +6,6 @@
       "path": "../api/tsconfig.build.json"
     },
     {
-      "path": "../api-admin-settings/tsconfig.build.json"
-    },
-    {
       "path": "../api-headless-cms/tsconfig.build.json"
     },
     {

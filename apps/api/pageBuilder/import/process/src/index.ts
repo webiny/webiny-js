@@ -50,6 +50,20 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
+        createHeadlessCmsGraphQL(),
+        createAco(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({ documentClient })
         }),
@@ -73,20 +87,6 @@ export const handler = createHandler({
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient
-            })
-        }),
-        new CmsParametersPlugin(async context => {
-            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
-            return {
-                type: "manage",
-                locale
-            };
-        }),
-        createHeadlessCmsGraphQL(),
-        createAco(),
         createAcoPageBuilderImportExportContext(),
         createAcoFileManagerImportExportContext()
     ],

@@ -15,10 +15,6 @@ import { AcoAppRegisterPlugin } from "~/plugins";
 const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
 
-    if (isInstallationPending({ tenancy, i18n })) {
-        return;
-    }
-
     const getLocale = (): I18NLocale => {
         const locale = i18n.getContentLocale();
         if (!locale) {
@@ -89,16 +85,23 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
 };
 
 export const createAcoContext = () => {
-    return new ContextPlugin<AcoContext>(async context => {
+    const plugin = new ContextPlugin<AcoContext>(async context => {
+        /**
+         * We can skip the ACO initialization if the installation is pending.
+         */
         if (isInstallationPending(context)) {
             return;
         }
-
         await context.benchmark.measure("aco.context.setup", async () => {
             await setupAcoContext(context);
         });
+
         await context.benchmark.measure("aco.context.hooks", async () => {
             await createAcoHooks(context);
         });
     });
+
+    plugin.name = "aco.createContext";
+
+    return plugin;
 };

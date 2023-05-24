@@ -11630,7 +11630,6 @@ __metadata:
     "@types/ungap__structured-clone": ^0.3.0
     "@ungap/structured-clone": 1.2.0
     "@webiny/api": 0.0.0
-    "@webiny/api-admin-settings": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0

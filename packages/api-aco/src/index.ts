@@ -1,4 +1,3 @@
-import { createAdminSettingsContext } from "@webiny/api-admin-settings";
 import { createAcoContext } from "~/createAcoContext";
 import { createAcoGraphQL } from "~/createAcoGraphQL";
 import { createFields } from "~/fields";
@@ -9,10 +8,5 @@ export * from "./apps";
 export * from "./plugins";
 
 export const createAco = () => {
-    return [
-        ...createFields(),
-        ...createAdminSettingsContext(),
-        createAcoContext(),
-        createAcoGraphQL()
-    ];
+    return [...createFields(), createAcoContext(), ...createAcoGraphQL()];
 };

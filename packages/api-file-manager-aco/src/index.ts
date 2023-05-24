@@ -6,23 +6,36 @@ import { createApp } from "~/app";
 export * from "./createAppModifier";
 
 export const createAcoFileManagerContext = () => {
-    return [
-        new ContextPlugin<FmAcoContext>(async context => {
-            const app = await context.aco.registerApp(createApp());
+    const plugin = new ContextPlugin<FmAcoContext>(async context => {
+        if (!context.aco) {
+            console.log(
+                `There is no ACO initialized so we will not initialize the Page Builder ACO.`
+            );
+            return;
+        }
+        const app = await context.aco.registerApp(createApp());
 
-            context.fileManagerAco = {
-                app
-            };
+        context.fileManagerAco = {
+            app
+        };
 
-            createFileHooks(context);
-        })
-    ];
+        createFileHooks(context);
+    });
+    plugin.name = `file-manager-aco.createContext`;
+    return [plugin];
 };
 
 export const createAcoFileManagerImportExportContext = () => {
-    return [
-        new ContextPlugin<FmAcoContext>(context => {
-            createImportExportFileHooks(context);
-        })
-    ];
+    const plugin = new ContextPlugin<FmAcoContext>(context => {
+        if (!context.aco) {
+            console.log(
+                `There is no ACO initialized so we will not initialize the Page Builder ACO.`
+            );
+            return;
+        }
+        createImportExportFileHooks(context);
+    });
+    plugin.name = `file-manager-aco.createImportExportContext`;
+
+    return [plugin];
 };

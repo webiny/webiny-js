@@ -57,18 +57,21 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const createRecordsData = useMemo(() => {
-        return (items: SearchRecordItem<PbPageDataItem>[]): Entry[] =>
-            items.map(({ data }) => ({
-                id: data.id,
-                type: "RECORD",
-                title: data.title,
-                createdBy: data.createdBy.displayName,
-                savedOn: data.savedOn,
-                status: data.status,
-                version: data.version,
-                original: data || {},
-                selectable: true
-            }));
+        return (items: SearchRecordItem<PbPageDataItem>[]): Entry[] => {
+            return items.map(({ data }) => {
+                return {
+                    id: data.id,
+                    type: "RECORD",
+                    title: data.title,
+                    createdBy: data.createdBy.displayName,
+                    savedOn: data.savedOn,
+                    status: data.status,
+                    version: data.version,
+                    original: data || {},
+                    selectable: true
+                };
+            });
+        };
     }, [records]);
 
     const createFoldersData = useMemo(() => {
