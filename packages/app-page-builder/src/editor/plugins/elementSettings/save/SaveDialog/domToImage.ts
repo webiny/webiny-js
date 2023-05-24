@@ -249,15 +249,11 @@ function inlineImages(node) {
 
 function makeSvgDataUri(node, width, height) {
     return Promise.resolve(node)
-        .then(function (node) {
+        .then(function () {
             node.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-            return new XMLSerializer().serializeToString(node);
-        })
-        .then(util.escapeXhtml)
-        .then(function (xhtml) {
             return (
                 '<foreignObject x="0" y="0" width="100%" height="100%">' +
-                encodeURIComponent(xhtml) +
+                node.outerHTML +
                 "</foreignObject>"
             );
         })
@@ -273,7 +269,7 @@ function makeSvgDataUri(node, width, height) {
             );
         })
         .then(function (svg) {
-            return "data:image/svg+xml;charset=utf-8," + svg;
+            return "data:image/svg+xml;base64," + btoa(svg);
         });
 }
 
@@ -603,9 +599,9 @@ function newFontFaces() {
         }
 
         function getCssRules(styleSheets) {
-            var cssRules = [];
+            let cssRules = [];
             styleSheets.forEach(function (sheet) {
-                if (sheet.hasOwnProperty("cssRules")) {
+                if (sheet.cssRules) {
                     try {
                         util.asArray(sheet.cssRules || []).forEach(cssRules.push.bind(cssRules));
                     } catch (e) {
