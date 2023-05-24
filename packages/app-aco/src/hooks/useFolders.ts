@@ -16,13 +16,14 @@ export const useFolders = () => {
          * On first mount, call `listFolders`, which will either issue a network request, or load folders from cache.
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          *
-         * IMPORTANT: we check if the folders[type] array exists: the hook can be used from multiple components and
+         * IMPORTANT: we check if the folders array exists: the hook can be used from multiple components and
          * fetch the outdated list from Apollo Cache. Since the state is managed locally, we fetch the folders only
          * at the first mount.
          */
         if (folders) {
-            listFolders();
+            return;
         }
+        listFolders();
     }, []);
 
     return useMemo(

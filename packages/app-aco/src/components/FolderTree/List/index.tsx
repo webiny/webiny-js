@@ -50,18 +50,13 @@ export const List: React.VFC<ListProps> = ({
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
         }
-
-        /**
-         *  We are spreading the `folders`:
-         *  in case of folder value update (e.g. name) from any component within the UI does not trigger the tree data update.
-         *  TODO: need investigation.
-         */
     }, [folders, focusedFolderId]);
 
     useEffect(() => {
-        if (folders) {
-            setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
+        if (!folders) {
+            return;
         }
+        setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
     }, []);
 
     const handleDrop = async (

@@ -70,7 +70,6 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
             </>
         );
     };
-
     return (
         <Container>
             <Title title={title} onClick={onTitleClick} isDragging={isDragging} />

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { DialogTitle, DialogActions, DialogContent, DialogOnClose } from "@webiny/ui/Dialog";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { DialogActions, DialogContent, DialogOnClose, DialogTitle } from "@webiny/ui/Dialog";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
@@ -39,7 +39,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
     const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
 
-    const onSubmit: FormOnSubmit<SubmitData> = async data => {
+    const onSubmit: FormOnSubmit<SubmitData> = useCallback(async data => {
         try {
             await createFolder({
                 ...data,
@@ -50,28 +50,26 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
         } catch (error) {
             showSnackbar(error.message);
         }
-    };
+    }, []);
 
-    const generateSlug = (form: FormAPI) => () => {
-        if (form.data.slug) {
-            return;
-        }
+    const generateSlug = useCallback((form: FormAPI) => {
+        return () => {
+            if (form.data.slug || !form.data.title) {
+                return;
+            }
 
-        if (!form.data.title) {
-            return;
-        }
-
-        // We want to update slug only when the folder is first being created.
-        form.setValue(
-            "slug",
-            slugify(form.data.title, {
-                replacement: "-",
-                lower: true,
-                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
-                trim: false
-            })
-        );
-    };
+            // We want to update slug only when the folder is first being created.
+            form.setValue(
+                "slug",
+                slugify(form.data.title, {
+                    replacement: "-",
+                    lower: true,
+                    remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                    trim: false
+                })
+            );
+        };
+    }, []);
 
     useEffect(() => {
         setParentId(currentParentId);

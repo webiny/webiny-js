@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { AcoApp, AcoError, AcoModel } from "~/types";
+import { AcoApp, AcoError, AcoModel, AcoModelField } from "~/types";
 import { createGetAppQuery, GetAppResult, GetAppVariables } from "~/graphql/app.gql";
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
+import { Loader } from "~/components/FolderTree/Loader";
+import { DisplayError } from "./DisplayError";
 
 interface AcoAppProviderContext {
     app: AcoApp;
@@ -25,12 +27,14 @@ export interface AcoAppProviderPropsApi {
     children: React.ReactNode;
     id: string;
     model?: never;
+    getFields?: never;
 }
 
 export interface AcoAppProviderPropsManual {
     children: React.ReactNode;
     id: string;
     model: AcoModel;
+    getFields?: () => AcoModelField[];
 }
 
 export type AcoAppProviderProps = AcoAppProviderPropsApi | AcoAppProviderPropsManual;
@@ -38,17 +42,26 @@ export type AcoAppProviderProps = AcoAppProviderPropsApi | AcoAppProviderPropsMa
 interface CreateAppParams {
     id: string;
     model: AcoModel;
+    getFields?: () => AcoModelField[];
 }
 
 const createApp = (data: CreateAppParams): AcoApp => {
     return {
         ...data,
-        getFields: () => {
-            return data.model.fields;
-        }
+        getFields:
+            data.getFields ||
+            (() => {
+                return data.model.fields;
+            })
     };
 };
-const createApiApp = (data: CreateAppParams | null): AcoApp | null => {
+
+interface CreateApiAppParams {
+    id: string;
+    model: AcoModel;
+}
+
+const createApiApp = (data: CreateApiAppParams | null): AcoApp | null => {
     if (!data) {
         console.error(`The APP could not be created. No data received.`);
         return null;
@@ -69,7 +82,8 @@ const createApiApp = (data: CreateAppParams | null): AcoApp | null => {
 export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     children,
     id,
-    model: inputModel
+    model: inputModel,
+    getFields
 }) => {
     const client = useApolloClient();
     const [state, setState] = useState<AcoAppProviderState>({
@@ -99,10 +113,12 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
             setState(prev => {
                 return {
                     ...prev,
+                    loading: false,
                     model: inputModel,
                     app: createApp({
                         id,
-                        model: inputModel
+                        model: inputModel,
+                        getFields
                     })
                 };
             });
@@ -111,6 +127,12 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
         if (id === state.app?.id) {
             return;
         }
+        setState(prev => {
+            return {
+                ...prev,
+                loading: true
+            };
+        });
         client
             .query<GetAppResult, GetAppVariables>({
                 query: createGetAppQuery(),
@@ -173,26 +195,21 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     /**
      * Do not render anything yet if there is no application.
      */
-
     if (error) {
         return <div>Error: {error.message}</div>;
     } else if (loading) {
-        return (
-            <div>
-                Loading app <strong>{id}</strong>...
-            </div>
-        );
+        return <Loader />;
     } else if (!app) {
         return (
-            <div>
-                There is no app <strong>{id}</strong>!
-            </div>
+            <DisplayError>
+                There is no ACO App: <strong>{id}</strong>!
+            </DisplayError>
         );
     } else if (!model) {
         return (
-            <div>
-                There is no model in app <strong>{id}</strong>!
-            </div>
+            <DisplayError>
+                There is no model for the ACO App: <strong>{id}</strong>!
+            </DisplayError>
         );
     }
 

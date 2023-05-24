@@ -40,6 +40,42 @@ interface UseAcoListResponse {
     listItems: (params: ListRecordsParams) => void;
 }
 
+const defaultMeta: ListMeta = {
+    totalCount: 0,
+    hasMoreItems: false,
+    cursor: null
+};
+
+const getCurrentFolderList = (
+    folders?: FolderItem[] | null,
+    currentFolderId?: string
+): FolderItem[] | [] => {
+    if (!folders) {
+        return [];
+    }
+    if (!currentFolderId || currentFolderId.toLowerCase() === "root") {
+        return folders.filter(
+            folder => !folder.parentId || folder.parentId.toLowerCase() === "root"
+        );
+    }
+    return folders.filter(folder => folder.parentId === currentFolderId);
+};
+
+const getCurrentRecordList = (
+    records: SearchRecordItem[],
+    currentFolderId?: string
+): SearchRecordItem[] | [] => {
+    if (!records) {
+        return [];
+    }
+
+    if (!currentFolderId) {
+        return records;
+    }
+
+    return records.filter(record => record.location.folderId === currentFolderId);
+};
+
 export const useAcoList = (params: UseAcoListParams) => {
     const { folderId, ...initialWhere } = params;
 
@@ -57,35 +93,6 @@ export const useAcoList = (params: UseAcoListParams) => {
 
     const { folders: originalFolders, loading: foldersLoading, listFolders } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
-
-    const getCurrentFolderList = (
-        folders?: FolderItem[] | null,
-        currentFolderId?: string
-    ): FolderItem[] | [] => {
-        if (!folders) {
-            return [];
-        }
-        if (!folderId || folderId === "ROOT") {
-            return folders.filter(folder => !folder.parentId);
-        } else {
-            return folders.filter(folder => folder.parentId === currentFolderId);
-        }
-    };
-
-    const getCurrentRecordList = (
-        records: SearchRecordItem[],
-        currentFolderId?: string
-    ): SearchRecordItem[] | [] => {
-        if (!records) {
-            return [];
-        }
-
-        if (!currentFolderId) {
-            return records;
-        }
-
-        return records.filter(record => record.location.folderId === currentFolderId);
-    };
 
     /**
      * On first mount, call `listFolders` and `listRecords`, which will either issue a network request, or load folders and records from cache.
@@ -112,7 +119,9 @@ export const useAcoList = (params: UseAcoListParams) => {
      */
     useEffect(() => {
         const subFolders = getCurrentFolderList(originalFolders, folderId);
-        setFolders(sortTableItems(subFolders, sort));
+        setFolders(() => {
+            return sortTableItems(subFolders, sort);
+        });
 
         const currentFolder = originalFolders?.find(folder => folder.id === folderId);
         setListTitle(currentFolder?.title || undefined);
@@ -125,15 +134,17 @@ export const useAcoList = (params: UseAcoListParams) => {
     useEffect(() => {
         const subRecords = getCurrentRecordList(originalRecords, folderId);
         setRecords(subRecords);
-    }, [originalRecords, folderId]);
+    }, [originalRecords, folderId, setRecords]);
 
     /**
      * Any time we receive a new `sort` value:
      * - we sort the current `folders` list according to `sort` value;
      */
     useEffect(() => {
-        setFolders(folders => sortTableItems(folders, sort));
-    }, [sort]);
+        setFolders(prev => {
+            return sortTableItems(prev, sort);
+        });
+    }, [sort, setFolders]);
 
     return useMemo<UseAcoListResponse>(() => {
         return {
@@ -147,7 +158,7 @@ export const useAcoList = (params: UseAcoListParams) => {
                     foldersLoading.LIST
             ),
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
-            meta: meta[folderId || "search"],
+            meta: meta[folderId || "search"] || defaultMeta,
             listItems(params) {
                 const { sort: initialSort } = params;
 

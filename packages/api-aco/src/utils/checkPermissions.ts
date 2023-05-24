@@ -1,14 +1,8 @@
 import { NotAuthorizedError } from "@webiny/api-security";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import { AcoContext } from "~/types";
 
-interface Params {
-    security: {
-        getIdentity: () => SecurityIdentity | null;
-    };
-}
-
-export const checkPermissions = ({ security }: Params) => {
-    const identity = security.getIdentity();
+export const checkPermissions = (context: AcoContext) => {
+    const identity = context.security.getIdentity();
     if (!identity) {
         throw new NotAuthorizedError();
     }

@@ -88,7 +88,9 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error(error?.message || "Could not fetch folders");
                 }
 
-                setFolders(data || []);
+                setFolders(() => {
+                    return data || [];
+                });
 
                 setLoading(prev => ({
                     ...prev,
@@ -150,8 +152,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error(error?.message || "Could not create folder");
                 }
 
-                setFolders(folders => {
-                    return [data, ...(folders || [])];
+                setFolders(prev => {
+                    return [data, ...(prev || [])];
                 });
 
                 return data;
@@ -186,18 +188,18 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error(error?.message || "Could not update folder");
                 }
 
-                setFolders(folders => {
-                    if (!folders) {
+                setFolders(prev => {
+                    if (!prev) {
                         return [];
                     }
-                    const folderIndex = folders.findIndex(f => f.id === id);
+                    const folderIndex = prev.findIndex(f => f.id === id);
                     if (folderIndex === -1) {
-                        return folders;
+                        return prev;
                     }
+                    const next = [...prev];
+                    next[folderIndex] = data;
 
-                    folders[folderIndex] = data;
-
-                    return folders;
+                    return next;
                 });
 
                 return data;
@@ -227,14 +229,17 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error(error?.message || "Could not delete folder");
                 }
 
-                setFolders(folders => {
-                    return (folders || []).filter(f => f.id !== id);
+                setFolders(prev => {
+                    if (!prev) {
+                        return [];
+                    }
+                    return prev.filter(f => f.id !== id);
                 });
 
                 return true;
             }
         };
-    }, [folders, type, loading, setFolders]);
+    }, [folders, loading, setLoading, setFolders]);
 
     return <FoldersContext.Provider value={context}>{children}</FoldersContext.Provider>;
 };
