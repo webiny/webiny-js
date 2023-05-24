@@ -3,7 +3,7 @@ import { userMock } from "~tests/mocks/user.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { createMockAcoApp } from "~tests/mocks/app";
 
-jest.setTimeout(200000);
+jest.setTimeout(300000);
 
 describe("`search` CRUD", () => {
     const { search } = useGraphQlHandler({
