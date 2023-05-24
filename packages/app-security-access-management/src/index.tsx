@@ -1,7 +1,7 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Layout, Plugins, AddMenu, AddRoute } from "@webiny/app-admin";
-import { HasPermission } from "@webiny/app-security";
+import { Layout, Plugins, AddMenu, AddRoute, WcpPermission } from "@webiny/app-admin";
+import { HasPermission, useSecurity } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
 import { Groups } from "~/ui/views/Groups";
 import { Teams } from "~/ui/views/Teams";
@@ -18,6 +18,14 @@ export default () => [];
 export const AccessManagementExtension = () => {
     plugins.register(accessManagementPlugins());
 
+    // We disable form elements for custom permissions if AACL cannot be used.
+    const { getPermission } = useSecurity();
+    const canUseAacl = useMemo(() => {
+        const wcpPermissions = getPermission<WcpPermission>("wcp");
+        return !(wcpPermissions?.aacl === false);
+    }, []);
+
+    console.log(canUseAacl);
     return (
         <Plugins>
             <HasPermission name={Permission.Groups}>
@@ -51,13 +59,15 @@ export const AccessManagementExtension = () => {
                                 path={"/access-management/groups"}
                             />
                         </HasPermission>
-                        <HasPermission name={Permission.Teams}>
-                            <AddMenu
-                                name={"settings.accessManagement.teams"}
-                                label={"Teams"}
-                                path={"/access-management/teams"}
-                            />
-                        </HasPermission>
+                        {canUseAacl && (
+                            <HasPermission name={Permission.Teams}>
+                                <AddMenu
+                                    name={"settings.accessManagement.teams"}
+                                    label={"Teams"}
+                                    path={"/access-management/teams"}
+                                />
+                            </HasPermission>
+                        )}
 
                         <HasPermission name={Permission.ApiKeys}>
                             <AddMenu

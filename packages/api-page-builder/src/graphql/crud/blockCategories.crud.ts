@@ -85,7 +85,7 @@ export const createBlockCategoriesCrud = (
                 return await storageOperations.blockCategories.get(params);
             }
 
-            await context.i18n.checkI18NContentPermission();
+            // await context.i18n.checkI18NContentPermission();
 
             let permissions: PbSecurityPermission[] = [];
             const blocksPermissions = await getPermissions(PERMISSION_NAME);
@@ -140,6 +140,7 @@ export const createBlockCategoriesCrud = (
                 },
                 sort: ["createdOn_ASC"]
             };
+
             // If user can only manage own records, add the createdBy to where values.
             if (!canAccessAllRecords(permissions)) {
                 const identity = context.security.getIdentity();

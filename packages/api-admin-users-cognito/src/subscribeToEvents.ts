@@ -1,4 +1,4 @@
-import { SecurityContext } from "@webiny/api-security/types";
+import { Group, PermissionsTenantLink, SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
 import { migration } from "~/migration";
@@ -21,7 +21,27 @@ export const subscribeToEvents = (context: Context): void => {
          */
         const tenant = getTenant();
 
-        const group = await security.getGroup({ where: { id: user.group } });
+        const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
+
+        if (user.team) {
+            const team = await security.getTeam({ where: { id: user.team } });
+            const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
+            data.teams = [
+                {
+                    id: team.id,
+                    groups: teamGroups.map(group => ({
+                        id: group.id,
+                        permissions: group.permissions
+                    }))
+                }
+            ];
+        }
+
+        if (user.group) {
+            const group = await security.getGroup({ where: { id: user.group } });
+            data.groups = [{ id: group.id, permissions: group.permissions }];
+        }
+
         await security.createTenantLinks([
             {
                 /**
@@ -34,23 +54,47 @@ export const subscribeToEvents = (context: Context): void => {
                 // `syncWithCognito` will assign the `sub` value to the user id, so that the identity id matches the user id.
                 identity: user.id,
                 type: "permissions",
-                data: {
-                    group: group.id,
-                    permissions: group.permissions
-                }
+                data
             }
         ]);
     });
 
     // On user update, if the group was changed, update the tenant link.
     adminUsers.onUserAfterUpdate.subscribe(async ({ updatedUser, originalUser }) => {
-        if (updatedUser.group === originalUser.group) {
+        const tenant = getTenant();
+
+        // If group/team hasn't changed, we don't need to do anything.
+        const groupChanged = updatedUser.group !== originalUser.group;
+        const teamChanged = updatedUser.team !== originalUser.team;
+        if (!groupChanged && !teamChanged) {
             return;
         }
 
-        const tenant = getTenant();
+        const groups = await security.getGroup({ where: { id: updatedUser.group } }).then(group => {
+            if (!group) {
+                return [];
+            }
+            return [{ id: group.id, permissions: group.permissions }];
+        });
 
-        const group = await security.getGroup({ where: { id: updatedUser.group } });
+        const teams = await security
+            .getTeam({ where: { id: updatedUser.team } })
+            .then(async team => {
+                if (!team) {
+                    return [];
+                }
+
+                const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
+                return [
+                    {
+                        id: team.id,
+                        groups: teamGroups.map(group => {
+                            return [{ id: group.id, permissions: group.permissions }];
+                        })
+                    }
+                ];
+            });
+
         await security.updateTenantLinks([
             {
                 /**
@@ -61,7 +105,7 @@ export const subscribeToEvents = (context: Context): void => {
                 tenant,
                 identity: updatedUser.id,
                 type: "permissions",
-                data: { group: group.id, permissions: group.permissions }
+                data: { groups, teams }
             }
         ]);
     });

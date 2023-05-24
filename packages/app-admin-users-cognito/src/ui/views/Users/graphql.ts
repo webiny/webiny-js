@@ -24,6 +24,11 @@ const userFormFields = /* GraphQL */ `
             slug
             name
         }
+        team {
+            id
+            slug
+            name
+        }
     }
 `;
 

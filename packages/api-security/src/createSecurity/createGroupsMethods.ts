@@ -25,7 +25,7 @@ import {
     GetGroupParams,
     Group,
     GroupInput,
-    GroupTenantLink,
+    PermissionsTenantLink,
     ListGroupsParams,
     Security
 } from "~/types";
@@ -62,7 +62,7 @@ async function updateTenantLinks(
     tenant: string,
     updatedGroup: Group
 ): Promise<void> {
-    const links = await security.listTenantLinksByType<GroupTenantLink>({
+    const links = await security.listTenantLinksByType<PermissionsTenantLink>({
         tenant,
         type: "permissions"
     });

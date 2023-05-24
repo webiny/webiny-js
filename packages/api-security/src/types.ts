@@ -29,7 +29,10 @@ export interface Authorizer {
 }
 
 export interface SecurityConfig {
-    advancedAccessControlLayer?: boolean;
+    advancedAccessControlLayer?: {
+        enabled: boolean;
+        teams?: boolean;
+    };
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
 }
@@ -79,6 +82,8 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onLogin: Topic<LoginEvent<TIdentity>>;
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
     onIdentity: Topic<IdentityEvent<TIdentity>>;
+
+    config: SecurityConfig;
 
     getStorageOperations(): SecurityStorageOperations;
 
@@ -414,12 +419,9 @@ export interface TenantLink<TData = any> {
     webinyVersion: string;
 }
 
-export type GroupTenantLink = TenantLink<{
-    groups: [{ id: string; permissions: SecurityPermission[] }];
-}>;
-
-export type TeamTenantLink = TenantLink<{
-    teams: [{ id: string; permissions: SecurityPermission[] }];
+export type PermissionsTenantLink = TenantLink<{
+    groups: Array<{ id: string; permissions: SecurityPermission[] }>;
+    teams: Array<{ id: string; groups: Array<{ id: string; permissions: SecurityPermission[] }> }>;
 }>;
 
 export interface ApiKey {

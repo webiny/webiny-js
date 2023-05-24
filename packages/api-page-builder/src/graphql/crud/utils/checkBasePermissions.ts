@@ -14,16 +14,12 @@ export default async <TPermission extends PbSecurityPermission = PbSecurityPermi
 ): Promise<TPermission[]> => {
     const pbPagePermissions = await context.security.getPermissions<TPermission>(name);
 
-    const relevantPbPagePermissions = pbPagePermissions.filter(permission => {
-        if (!context.i18n.hasI18NContentPermission()) {
+    const relevantPbPagePermissions = pbPagePermissions.filter(current => {
+        if (check.rwd && !hasRwd(current, check.rwd)) {
             return false;
         }
 
-        if (check.rwd && !hasRwd(permission, check.rwd)) {
-            return false;
-        }
-
-        if (check.pw && !hasPw<TPermission>(permission, check.pw)) {
+        if (check.pw && !hasPw<TPermission>(current, check.pw)) {
             return false;
         }
 

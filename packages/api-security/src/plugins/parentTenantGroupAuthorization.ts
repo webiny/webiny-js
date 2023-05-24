@@ -1,4 +1,4 @@
-import { GroupTenantLink, SecurityContext } from "~/types";
+import { PermissionsTenantLink, SecurityContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
@@ -6,6 +6,7 @@ type Context = SecurityContext & TenancyContext;
 
 export interface Config {
     identityType?: string;
+    testTenantLink?: Pick<PermissionsTenantLink, "data">;
 }
 
 export const createParentTenantGroupAuthorizer =
@@ -18,20 +19,26 @@ export const createParentTenantGroupAuthorizer =
         if (!identity || identity.type !== config.identityType) {
             return null;
         }
+
         if (!tenant.parent) {
             return null;
         }
 
-        const tenantLink = await security.getTenantLinkByIdentity<GroupTenantLink>({
-            identity: identity.id,
-            tenant: tenant.parent
-        });
+        const tenantLink =
+            config.testTenantLink ||
+            (await security.getTenantLinkByIdentity<PermissionsTenantLink>({
+                identity: identity.id,
+                tenant: tenant.parent
+            }));
 
-        if (!tenantLink || !tenantLink.data || !tenantLink.data.permissions) {
+        const groups = tenantLink?.data?.groups;
+        if (!Array.isArray(groups)) {
             return null;
         }
 
-        return tenantLink.data.permissions;
+        // Although only one group is allowed, we still pretend multiples are possible.
+        // This way, in the near future, we can support multiple groups per tenant.
+        return groups.map(group => group.permissions).flat();
     };
 
 /**

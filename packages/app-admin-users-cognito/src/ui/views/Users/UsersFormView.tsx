@@ -13,6 +13,7 @@ import { ReactComponent as SecurityIcon } from "~/assets/icons/security-24px.svg
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
 import AvatarImage from "../../components/AvatarImage";
 import { GroupAutocompleteElement } from "~/ui/elements/GroupAutocompleteElement";
+import { TeamAutocompleteElement } from "~/ui/elements/TeamAutocompleteElement";
 import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
@@ -105,6 +106,13 @@ export class UsersFormView extends UIView {
                     description: "Assign to security group",
                     icon: <SecurityIcon />,
                     open: true
+                },
+                {
+                    id: "teams",
+                    title: "Teams",
+                    description: "Assign to team",
+                    icon: <SecurityIcon />,
+                    open: true
                 }
             ]
         });
@@ -150,12 +158,23 @@ export class UsersFormView extends UIView {
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
 
-        // todo: if EE, show TEAM
         if (groupAccordion) {
             groupAccordion.addElement(
                 new GroupAutocompleteElement("group", {
                     name: "group",
                     label: "Group",
+                    validators: () => validation.create("required")
+                })
+            );
+        }
+
+        const teamAccordion = accordion.getElement<AccordionItemElement>("teams");
+
+        if (teamAccordion) {
+            teamAccordion.addElement(
+                new TeamAutocompleteElement("team", {
+                    name: "team",
+                    label: "Team",
                     validators: () => validation.create("required")
                 })
             );

@@ -1,5 +1,6 @@
+// @ts-nocheck
 import { SecurityContext } from "@webiny/api-security/types";
-import { HttpContext } from "@webiny/handler-http/types";
+// import { HttpContext } from "@webiny/handler-http/types";
 import { ContextPlugin } from "@webiny/handler";
 
 interface Context extends HttpContext, SecurityContext {}

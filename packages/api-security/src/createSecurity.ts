@@ -64,6 +64,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
     return {
         ...authentication,
+        config,
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
         onAfterLogin: createTopic("security.onAfterLogin"),
@@ -149,8 +150,10 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             // Now we start checking whether we want to return all permissions, or we
             // need to omit the custom ones because of the one of the following reasons.
 
-            let aacl: WcpPermission["aacl"] = config.advancedAccessControlLayer === true;
-            if (!aacl) {
+            let aaclEnabled: WcpPermission["aacl"] =
+                config.advancedAccessControlLayer?.enabled === true;
+
+            if (!aaclEnabled) {
                 // Are we dealing with an old Webiny project?
                 // Older versions of Webiny do not have the `installedOn` value stored. So,
                 // if missing, we don't want to make any changes to the existing behavior.
@@ -162,16 +165,20 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                     securityInstalledOn && securityInstalledOn >= AACL_RELEASE_DATE;
 
                 if (!isWcpAdvancedAccessControlLayer) {
-                    aacl = null;
+                    aaclEnabled = null;
                 }
             }
 
-            // Pushing the value of `aacl` can help us in making similar checks on the frontend side.
-            permissions.push({ name: "wcp", aacl });
-
             // If Advanced Access Control Layer (AACL) can be used or if we are
             // dealing with an old Webiny project, we don't need to do anything.
-            if (aacl || aacl === null) {
+            if (aaclEnabled || aaclEnabled === null) {
+                // Pushing the value of `aacl` can help us in making similar checks on the frontend side.
+                permissions.push({
+                    name: "aacl",
+                    legacy: aaclEnabled === null,
+                    teams: !!config.advancedAccessControlLayer?.teams
+                });
+
                 return permissions;
             }
 

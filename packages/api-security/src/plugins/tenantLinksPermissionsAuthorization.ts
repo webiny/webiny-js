@@ -1,15 +1,15 @@
-import { GroupTenantLink, SecurityContext, SecurityPermission } from "~/types";
+import { PermissionsTenantLink, SecurityContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { I18NContext } from "@webiny/api-i18n/types";
 
 type Context = SecurityContext & TenancyContext;
 
 export interface Config {
     identityType?: string;
+    testTenantLink?: Pick<PermissionsTenantLink, "data">;
 }
 
-export const tenantLinksPermissionsAuthorization =
+export const createGroupAuthorizer =
     (config: Config) =>
     ({ security, tenancy }: Context) =>
     async () => {
@@ -20,26 +20,25 @@ export const tenantLinksPermissionsAuthorization =
             return null;
         }
 
-        const tenantLink = await security.getTenantLinkByIdentity<GroupTenantLink>({
-            identity: identity.id,
-            tenant: tenant.id
-        });
+        const tenantLink =
+            config.testTenantLink ||
+            (await security.getTenantLinkByIdentity<PermissionsTenantLink>({
+                identity: identity.id,
+                tenant: tenant.id
+            }));
 
-        // Let's go through all the groups and teams permissions, and let's filter
-        // out the ones that are not related to current locale.
-
-        const permissions: Record<string, SecurityPermission[]> = {}
-
-
-        if (!tenantLink || !tenantLink.data || !tenantLink.data.permissions) {
+        const groups = tenantLink?.data?.groups;
+        if (!Array.isArray(groups)) {
             return null;
         }
 
-        return tenantLink.data.permissions;
+        // Although only one group is allowed, we still pretend multiples are possible.
+        // This way, in the near future, we can support multiple groups per tenant.
+        return groups.map(group => group.permissions).flat();
     };
 
 export default (config: Config) => {
-    return new ContextPlugin<SecurityContext & TenancyContext & I18NContext>(context => {
-        context.security.addAuthorizer(tenantLinksPermissionsAuthorization(config)(context));
+    return new ContextPlugin<SecurityContext & TenancyContext>(context => {
+        context.security.addAuthorizer(createGroupAuthorizer(config)(context));
     });
 };

@@ -16,7 +16,7 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import {GetTeamParams, Team, TeamInput, TeamTenantLink, Security} from "~/types";
+import { GetTeamParams, Team, TeamInput, PermissionsTenantLink, Security } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
@@ -50,7 +50,7 @@ async function updateTenantLinks(
     tenant: string,
     updatedTeam: Team
 ): Promise<void> {
-    const links = await security.listTenantLinksByType<TeamTenantLink>({
+    const links = await security.listTenantLinksByType<PermissionsTenantLink>({
         tenant,
         type: "permissions"
     });
@@ -83,7 +83,7 @@ async function updateTenantLinks(
 
                             return {
                                 id: updatedTeam.id,
-                                permissions: updatedTeam.permissions
+                                permissions: updatedTeam.groups
                             };
                         })
                     }

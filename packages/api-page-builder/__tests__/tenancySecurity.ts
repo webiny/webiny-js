@@ -7,6 +7,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { documentClient } from "./documentClient";
+import { tenantLinksPermissionsAuthorization } from "@webiny/api-security/plugins/tenantLinksPermissionsAuthorization";
 
 interface Config {
     permissions?: SecurityPermission[];
@@ -58,9 +59,18 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 return identity || defaultIdentity;
             });
 
-            context.security.addAuthorizer(async () => {
-                return typeof permissions === "undefined" ? [{ name: "*" }] : permissions;
-            });
+            if (typeof permissions === "undefined") {
+                context.security.addAuthorizer(async () => [{ name: "*" }]);
+            } else {
+                context.security.addAuthorizer(
+                    tenantLinksPermissionsAuthorization({
+                        identityType: "admin",
+                        testTenantLink: {
+                            data: { teams: [], groups: [{ id: "admin", permissions }] }
+                        }
+                    })(context)
+                );
+            }
         }),
         new BeforeHandlerPlugin<SecurityContext>(context => {
             return context.security.authenticate("");
