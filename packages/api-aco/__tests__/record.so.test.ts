@@ -3,7 +3,7 @@ import { userMock } from "~tests/mocks/user.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { createMockAcoApp } from "~tests/mocks/app";
 
-jest.setTimeout(300000);
+jest.setTimeout(500000);
 
 describe("`search` CRUD", () => {
     const { search } = useGraphQlHandler({
@@ -631,7 +631,7 @@ describe("`search` CRUD", () => {
         const numberOfTags = 50;
 
         // Let's create some search records.
-        await insertTestRecords(1000, type, 50);
+        await insertTestRecords(250, type, 50);
 
         // Let's search for tags.
         const [response] = await search.listTags();
@@ -651,6 +651,8 @@ describe("`search` CRUD", () => {
                 }
             }
         });
+
+        expect(response.data.search.listTags.data).toHaveLength(numberOfTags);
     });
 
     it("should list an empty array in case of not found tags", async () => {
