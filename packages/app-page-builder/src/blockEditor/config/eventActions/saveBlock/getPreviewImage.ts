@@ -43,7 +43,7 @@ function takePageScreenshot(element: PbElement) {
     return domToImage.toPng(node, {
         width: 2000,
         filter: (element: Element) => {
-            return element.tagName !== "PB-ELEMENT-CONTROLS-OVERLAY";
+            return element.tagName !== "PB-ECO" && element.tagName !== "PB-ECO-BORDER";
         }
     });
 }
