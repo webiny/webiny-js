@@ -1,11 +1,11 @@
 import { useHandler } from "./utils/useHandler";
 import {
     createMockApp,
-    createMockAppIdentityField,
     createMockAppCustomCreatedOnField,
     createMockAppCustomLockedField,
-    createMockAppTextField,
     createMockAppCustomVersionField,
+    createMockAppIdentityField,
+    createMockAppTextField,
     MOCK_APP_NAME
 } from "./mocks/app";
 import { AcoApp } from "~/apps";
@@ -274,6 +274,37 @@ describe("aco apps", () => {
         expect(app.getFields()).toEqual([
             createMockAppTextField(),
             createMockAppIdentityField(),
+            createMockAppCustomVersionField(),
+            createMockAppCustomLockedField()
+        ]);
+    });
+
+    it("should modify the existing field", async () => {
+        const { handler } = useHandler({
+            plugins: [
+                createAcoAppModifier(MOCK_APP_NAME, async ({ modifyField }) => {
+                    modifyField("customCreatedOn", field => {
+                        return {
+                            ...field,
+                            storageId: "date@customCreatedOn"
+                        };
+                    });
+                })
+            ]
+        });
+
+        const context = await handler();
+
+        const app = await context.aco.registerApp(createMockApp());
+
+        expect(app).toBeInstanceOf(AcoApp);
+        expect(app.getFields()).toEqual([
+            createMockAppTextField(),
+            createMockAppIdentityField(),
+            {
+                ...createMockAppCustomCreatedOnField(),
+                storageId: "date@customCreatedOn"
+            },
             createMockAppCustomVersionField(),
             createMockAppCustomLockedField()
         ]);
