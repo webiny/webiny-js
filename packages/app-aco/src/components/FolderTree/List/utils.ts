@@ -21,7 +21,7 @@ export const createTreeData = (
 
             return {
                 id,
-                parent: parentId || ROOT_ID,
+                parent: parentId?.toLowerCase() || ROOT_ID, // toLowerCase() fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
                 text: title,
                 droppable: true,
                 data: {
