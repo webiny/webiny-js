@@ -8,28 +8,41 @@ import {
     WebinyListPlugin,
     LinkPlugin
 } from "@webiny/lexical-editor";
-import {RichTextStaticToolbar} from "~/components/RichTextStaticToolbar";
+import { RichTextStaticToolbar } from "~/components/RichTextStaticToolbar";
 import webinyTheme from "theme/theme";
+import { LexicalValue } from "@webiny/lexical-editor/types";
 
-interface RichTextContentEditorProps extends RichTextEditorProps {
+interface LexicalRichTextEditorProps
+    extends Omit<RichTextEditorProps, "theme" | "onChange" | "value"> {
     tag?: "p";
+    theme?: {};
+    value: Record<string, any> | null;
+    onChange: (json: Record<string, any>) => void;
     toolbarActionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
 
-const LexicalRichTextEditor: React.FC<RichTextContentEditorProps> = ({
+const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = ({
     placeholder,
     staticToolbar,
     toolbarActionPlugins,
     theme,
     tag,
+    onChange,
+    value,
     ...rest
 }) => {
+    const hasThemeValue = (theme?: Record<string, any>): boolean => {
+        return !!theme && Object.keys(theme).length > 0;
+    };
+
     return (
         <RichTextEditor
-            theme={theme || webinyTheme}
-            staticToolbar={
-                staticToolbar || <RichTextStaticToolbar actionPlugins={toolbarActionPlugins} />
-            }
+            value={value ? JSON.stringify(value) : null}
+            onChange={(value: LexicalValue) => {
+                onChange(JSON.parse(value));
+            }}
+            theme={theme && hasThemeValue(theme) ? theme : webinyTheme}
+            staticToolbar={<RichTextStaticToolbar actionPlugins={toolbarActionPlugins} />}
             tag={tag ?? "p"}
             placeholder={placeholder ?? "Enter your text here..."}
             {...rest}

@@ -22,13 +22,19 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
     type,
     children
 }): JSX.Element | null => {
-    const { setNodeIsText, setActionPlugins } = useRichTextEditor();
+    const { setNodeIsText, setActionPlugins, setToolbarType } = useRichTextEditor();
 
     useEffect(() => {
         if (actionPlugins) {
             setActionPlugins(actionPlugins || []);
         }
     }, [actionPlugins]);
+
+    useEffect(() => {
+        if (type) {
+            setToolbarType(type);
+        }
+    }, [type]);
 
     const updatePopup = useCallback(() => {
         editor.getEditorState().read(() => {

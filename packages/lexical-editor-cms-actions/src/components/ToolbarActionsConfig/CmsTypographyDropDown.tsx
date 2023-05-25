@@ -9,7 +9,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements";
 import { TypographyStyle } from "@webiny/theme/types";
 import { TypographyValue } from "@webiny/lexical-editor/types";
 
-export const TypographyDropDown = () => {
+export const CmsTypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);

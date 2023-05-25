@@ -57,3 +57,4 @@ export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 export * as types from "./types";
 // config
 export { LexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+export { AddLexicalEditorConfig } from "~/components/AddLexicalEditorConfig";

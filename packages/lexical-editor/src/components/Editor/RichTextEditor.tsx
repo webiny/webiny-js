@@ -32,7 +32,8 @@ export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
     staticToolbar?: React.ReactNode;
     tag?: string;
-    onChange?: (json: LexicalValue) => void;
+    onChange?: (value: LexicalValue) => void;
+
     value: LexicalValue | null;
     focus?: boolean;
     placeholder?: string;
@@ -150,7 +151,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                         ErrorBoundary={LexicalErrorBoundary}
                     />
                     {/* Toolbar */}
-                    {floatingAnchorElem && toolbar}
+                    {floatingAnchorElem && toolbar && toolbar}
                 </div>
             </>
         </LexicalComposer>
@@ -165,6 +166,7 @@ export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEdito
         <RichTextEditorProvider>
             <ClassNames>
                 {({ css }) => {
+                    debugger;
                     const themeEmotionMap =
                         props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
                     return (

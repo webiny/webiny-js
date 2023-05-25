@@ -6,7 +6,7 @@ interface ParagraphToolbarProps {
     actionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
 
-export const STATIC_TOOLBAR_TYPE = "lexical-rich-text-static-toolbar"
+export const STATIC_TOOLBAR_TYPE = "lexical-rich-text-static-toolbar";
 
 /**
  * Static toolbar that will be always visible above the text input

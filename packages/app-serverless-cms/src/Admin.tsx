@@ -29,7 +29,7 @@ import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { ACOProvider } from "@webiny/app-aco";
 import { isLegacyRenderingEngine } from "@webiny/app-page-builder/utils";
-import {LexicalEditorCmsActions} from "@webiny/lexical-editor-cms-actions";
+import { LexicalEditorCmsPlugin } from "@webiny/lexical-editor-cms-actions";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -54,11 +54,10 @@ const App = (props: AdminProps) => {
             <I18NContent />
             <Provider hoc={ViewCompositionProvider} />
             <PageBuilder />
-
+            {<LexicalEditorCmsPlugin />}
             {!isLegacyRenderingEngine && <LexicalEditorPlugin />}
             {!isLegacyRenderingEngine && <LexicalEditorActions />}
 
-            <LexicalEditorCmsActions />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AdvancedPublishingWorkflow />

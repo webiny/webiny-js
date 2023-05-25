@@ -1,6 +1,6 @@
 import React from "react";
 import { useFontColorPicker, DropDown } from "@webiny/lexical-editor";
-import { LexicalColorPicker } from "~/components/ToolbarActionsConfig/LexicalColorPicker";
+//import { LexicalColorPicker } from "~/components/ToolbarActionsConfig/LexicalColorPicker";
 
 export const LexicalColorPickerDropdown = () => {
     const { value, applyColor } = useFontColorPicker();
@@ -14,7 +14,8 @@ export const LexicalColorPickerDropdown = () => {
             disabled={false}
             showScroll={false}
         >
-            <LexicalColorPicker value={value} onChangeComplete={applyColor} />
+            nothing
+            {/* <LexicalColorPicker value={value} onChangeComplete={applyColor} />*/}
         </DropDown>
     );
 };
