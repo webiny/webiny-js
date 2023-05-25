@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useMemo, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
@@ -44,6 +44,36 @@ interface Entry {
     selectable: boolean;
 }
 
+const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): Entry[] => {
+    return items.map(({ data }) => {
+        return {
+            id: data.id,
+            type: "RECORD",
+            title: data.title,
+            createdBy: data.createdBy?.displayName || "",
+            savedOn: data.savedOn,
+            status: data.status,
+            version: data.version,
+            original: data || {},
+            selectable: true
+        };
+    });
+};
+
+const createFoldersData = (items: FolderItem[]): Entry[] => {
+    return items.map(item => {
+        return {
+            id: item.id,
+            type: "FOLDER",
+            title: item.title,
+            createdBy: item.createdBy.displayName || "-",
+            savedOn: item.createdOn,
+            original: item,
+            selectable: false
+        };
+    });
+};
+
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const { folders, records, loading, openPreviewDrawer, onSelectRow, sorting, onSortingChange } =
         props;
@@ -55,37 +85,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
     const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
-
-    const createRecordsData = useMemo(() => {
-        return (items: SearchRecordItem<PbPageDataItem>[]): Entry[] => {
-            return items.map(({ data }) => {
-                return {
-                    id: data.id,
-                    type: "RECORD",
-                    title: data.title,
-                    createdBy: data.createdBy.displayName,
-                    savedOn: data.savedOn,
-                    status: data.status,
-                    version: data.version,
-                    original: data || {},
-                    selectable: true
-                };
-            });
-        };
-    }, [records]);
-
-    const createFoldersData = useMemo(() => {
-        return (items: FolderItem[]): Entry[] =>
-            items.map(item => ({
-                id: item.id,
-                type: "FOLDER",
-                title: item.title,
-                createdBy: item.createdBy.displayName || "-",
-                savedOn: item.createdOn,
-                original: item,
-                selectable: false
-            }));
-    }, [folders]);
 
     useEffect(() => {
         const foldersData = createFoldersData(folders);
@@ -99,9 +98,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             cell: ({ id, title, type }) => {
                 if (type === "RECORD") {
                     return <PageName name={title} id={id} onClick={openPreviewDrawer} />;
-                } else {
-                    return <FolderName name={title} id={id} />;
                 }
+                return <FolderName name={title} id={id} />;
             },
             enableSorting: true
         },
@@ -118,9 +116,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             cell: ({ status, version }) => {
                 if (status && version) {
                     return `${statusLabels[status]} (v${version})`;
-                } else {
-                    return "-";
                 }
+                return "-";
             }
         },
         original: {
@@ -132,9 +129,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;
-                }
-
-                if (type === "RECORD") {
+                } else if (type === "RECORD") {
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
                             <RecordActionEdit record={original as PbPageDataItem} />
@@ -153,24 +148,23 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                             <RecordActionDelete record={original as PbPageDataItem} />
                         </Menu>
                     );
-                } else {
-                    return (
-                        <Menu handle={<IconButton icon={<More />} />}>
-                            <FolderActionEdit
-                                onClick={() => {
-                                    setUpdateDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
-                            <FolderActionDelete
-                                onClick={() => {
-                                    setDeleteDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
-                        </Menu>
-                    );
                 }
+                return (
+                    <Menu handle={<IconButton icon={<More />} />}>
+                        <FolderActionEdit
+                            onClick={() => {
+                                setUpdateDialogOpen(true);
+                                setSelectedFolder(original as FolderItem);
+                            }}
+                        />
+                        <FolderActionDelete
+                            onClick={() => {
+                                setDeleteDialogOpen(true);
+                                setSelectedFolder(original as FolderItem);
+                            }}
+                        />
+                    </Menu>
+                );
             }
         }
     };

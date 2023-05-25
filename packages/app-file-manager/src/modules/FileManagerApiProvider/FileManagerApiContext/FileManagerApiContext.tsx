@@ -128,7 +128,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             if (!fmFilePermission) {
                 return false;
             }
-            const creatorId = item.createdBy.id;
+            const creatorId = item.createdBy?.id;
 
             if (fmFilePermission.own && creatorId) {
                 const identityId = identity ? identity.id || identity.login : null;

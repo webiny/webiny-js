@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useMemo, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
@@ -47,6 +47,34 @@ interface Entry {
     selectable: boolean;
 }
 
+const createRecordsData = (items: SearchRecordItem<FileItem>[], selectable: boolean): Entry[] => {
+    return items.map(({ data }) => {
+        return {
+            id: data.id,
+            type: "RECORD",
+            title: data.name,
+            createdBy: data.createdBy?.displayName || "",
+            savedOn: data.createdOn,
+            fileType: data.type,
+            size: data.size,
+            original: data || {},
+            selectable
+        };
+    });
+};
+
+const createFoldersData = (items: FolderItem[]): Entry[] => {
+    return items.map(item => ({
+        id: item.id,
+        type: "FOLDER",
+        title: item.title,
+        createdBy: item.createdBy.displayName || "-",
+        savedOn: item.createdOn,
+        original: item,
+        selectable: false
+    }));
+};
+
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const {
         folders,
@@ -68,37 +96,9 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
-    const createRecordsData = useMemo(() => {
-        return (items: SearchRecordItem<FileItem>[]): Entry[] =>
-            items.map(({ data }) => ({
-                id: data.id,
-                type: "RECORD",
-                title: data.name,
-                createdBy: data.createdBy.displayName,
-                savedOn: data.createdOn,
-                fileType: data.type,
-                size: data.size,
-                original: data || {},
-                selectable: selectableItems
-            }));
-    }, [records]);
-
-    const createFoldersData = useMemo(() => {
-        return (items: FolderItem[]): Entry[] =>
-            items.map(item => ({
-                id: item.id,
-                type: "FOLDER",
-                title: item.title,
-                createdBy: item.createdBy.displayName || "-",
-                savedOn: item.createdOn,
-                original: item,
-                selectable: false
-            }));
-    }, [folders]);
-
     useEffect(() => {
         const foldersData = createFoldersData(folders);
-        const files = createRecordsData(records);
+        const files = createRecordsData(records, selectableItems);
         setData([...foldersData, ...files]);
     }, [folders, records]);
 
@@ -110,9 +110,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     return (
                         <FileName name={title} id={id} type={fileType} onClick={onRecordClick} />
                     );
-                } else {
-                    return <FolderName name={title} id={id} onClick={onFolderClick} />;
                 }
+                return <FolderName name={title} id={id} onClick={onFolderClick} />;
             },
             enableSorting: true
         },
@@ -121,9 +120,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: ({ fileType }) => {
                 if (fileType) {
                     return fileType;
-                } else {
-                    return "-";
                 }
+                return "-";
             }
         },
         size: {
@@ -131,9 +129,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: ({ size }) => {
                 if (size) {
                     return bytes.format(size, { unitSeparator: " " });
-                } else {
-                    return "-";
                 }
+                return "-";
             }
         },
         savedOn: {
@@ -153,9 +150,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;
-                }
-
-                if (type === "RECORD") {
+                } else if (type === "RECORD") {
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
                             <RecordActionCopy record={original as FileItem} />
@@ -173,24 +168,23 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             <RecordActionDelete record={original as FileItem} />
                         </Menu>
                     );
-                } else {
-                    return (
-                        <Menu handle={<IconButton icon={<More />} />}>
-                            <FolderActionEdit
-                                onClick={() => {
-                                    setUpdateDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
-                            <FolderActionDelete
-                                onClick={() => {
-                                    setDeleteDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
-                        </Menu>
-                    );
                 }
+                return (
+                    <Menu handle={<IconButton icon={<More />} />}>
+                        <FolderActionEdit
+                            onClick={() => {
+                                setUpdateDialogOpen(true);
+                                setSelectedFolder(original as FolderItem);
+                            }}
+                        />
+                        <FolderActionDelete
+                            onClick={() => {
+                                setDeleteDialogOpen(true);
+                                setSelectedFolder(original as FolderItem);
+                            }}
+                        />
+                    </Menu>
+                );
             }
         }
     };

@@ -138,8 +138,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                 query: createGetAppQuery(),
                 variables: {
                     id
-                },
-                fetchPolicy: "network-only"
+                }
             })
             .then(response => {
                 const { data, error } = response.data.aco?.app || {};
