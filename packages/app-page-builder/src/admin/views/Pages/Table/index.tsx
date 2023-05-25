@@ -6,8 +6,6 @@ import { Sidebar } from "~/admin/views/Pages/Table/Sidebar";
 import { Main } from "~/admin/views/Pages/Table/Main";
 import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
 
-import { FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
-
 const t = i18n.ns("app-page-builder/admin/views/pages/table");
 
 const Index: React.FC = () => {
@@ -25,10 +23,7 @@ const Index: React.FC = () => {
                 <Sidebar folderId={currentFolderId} defaultFolderName={defaultFolderName} />
             </LeftPanel>
             <RightPanel span={10}>
-                <Main
-                    folderId={currentFolderId || FOLDER_ID_DEFAULT}
-                    defaultFolderName={defaultFolderName}
-                />
+                <Main folderId={currentFolderId} defaultFolderName={defaultFolderName} />
             </RightPanel>
         </SplitView>
     );

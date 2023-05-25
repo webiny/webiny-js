@@ -47,7 +47,8 @@ export const useAcoList = (params: UseAcoListParams) => {
             return [];
         }
         if (!folderId || folderId === "ROOT") {
-            return folders.filter(folder => !folder.parentId);
+            // checking for parentId value fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
+            return folders.filter(folder => !folder.parentId || folder.parentId === "ROOT");
         } else {
             return folders.filter(folder => folder.parentId === currentFolderId);
         }
