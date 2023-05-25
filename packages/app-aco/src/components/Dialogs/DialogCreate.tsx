@@ -39,18 +39,21 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
     const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
 
-    const onSubmit: FormOnSubmit<SubmitData> = useCallback(async data => {
-        try {
-            await createFolder({
-                ...data,
-                parentId: parentId || null
-            });
-            setDialogOpen(false);
-            showSnackbar(t`Folder created successfully!`);
-        } catch (error) {
-            showSnackbar(error.message);
-        }
-    }, []);
+    const onSubmit: FormOnSubmit<SubmitData> = useCallback(
+        async data => {
+            try {
+                await createFolder({
+                    ...data,
+                    parentId: parentId || null
+                });
+                setDialogOpen(false);
+                showSnackbar(t`Folder created successfully!`);
+            } catch (error) {
+                showSnackbar(error.message);
+            }
+        },
+        [parentId]
+    );
 
     const generateSlug = useCallback((form: FormAPI) => {
         return () => {
@@ -77,65 +80,65 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
 
     useEffect(() => {
         setDialogOpen(open);
-    }, [open]);
+    }, [open, setDialogOpen]);
+
+    if (!dialogOpen) {
+        return null;
+    }
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
-            {dialogOpen && (
-                <Form<SubmitData> onSubmit={onSubmit}>
-                    {({ form, Bind, submit }) => (
-                        <>
-                            {loading.CREATE && <CircularProgress label={t`Creating folder...`} />}
-                            <DialogTitle>{t`Create a new folder`}</DialogTitle>
-                            <DialogContent>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name={"title"}
-                                            validators={[validation.create("required,minLength:3")]}
-                                        >
-                                            <Input label={t`Title`} onBlur={generateSlug(form)} />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name={"slug"}
-                                            validators={[
-                                                validation.create("required,minLength:3,slug")
-                                            ]}
-                                        >
-                                            <Input label={t`Slug`} />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Typography use="body1">{t`Parent folder`}</Typography>
-                                        <DialogFoldersContainer>
-                                            <FolderTree
-                                                title={t`Root folder`}
-                                                focusedFolderId={parentId || undefined}
-                                                onFolderClick={data =>
-                                                    setParentId(data?.id || null)
-                                                }
-                                                onTitleClick={() => setParentId(null)}
-                                            />
-                                        </DialogFoldersContainer>
-                                    </Cell>
-                                </Grid>
-                            </DialogContent>
-                            <DialogActions>
-                                <ButtonDefault
-                                    onClick={() => {
-                                        setDialogOpen(false);
-                                    }}
-                                >
-                                    {t`Cancel`}
-                                </ButtonDefault>
-                                <ButtonPrimary onClick={submit}>{t`Create Folder`}</ButtonPrimary>
-                            </DialogActions>
-                        </>
-                    )}
-                </Form>
-            )}
+            <Form<SubmitData> onSubmit={onSubmit}>
+                {({ form, Bind, submit }) => (
+                    <>
+                        {loading.CREATE && <CircularProgress label={t`Creating folder...`} />}
+                        <DialogTitle>{t`Create a new folder`}</DialogTitle>
+                        <DialogContent>
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"title"}
+                                        validators={[validation.create("required,minLength:3")]}
+                                    >
+                                        <Input label={t`Title`} onBlur={generateSlug(form)} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"slug"}
+                                        validators={[
+                                            validation.create("required,minLength:3,slug")
+                                        ]}
+                                    >
+                                        <Input label={t`Slug`} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Typography use="body1">{t`Parent folder`}</Typography>
+                                    <DialogFoldersContainer>
+                                        <FolderTree
+                                            title={t`Root folder`}
+                                            focusedFolderId={parentId || undefined}
+                                            onFolderClick={data => setParentId(data?.id || null)}
+                                            onTitleClick={() => setParentId(null)}
+                                        />
+                                    </DialogFoldersContainer>
+                                </Cell>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions>
+                            <ButtonDefault
+                                onClick={() => {
+                                    setDialogOpen(false);
+                                }}
+                            >
+                                {t`Cancel`}
+                            </ButtonDefault>
+                            <ButtonPrimary onClick={submit}>{t`Create Folder`}</ButtonPrimary>
+                        </DialogActions>
+                    </>
+                )}
+            </Form>
         </DialogContainer>
     );
 };
