@@ -49,6 +49,58 @@ export const isPerBreakpointStylesObject = ({
     return false;
 };
 
+// Detect if certain style is a transformed per-breakpoint CSS style object, or a transformed regular CSS properties.
+export const isBreakpointCssStyle = ({
+    breakpoints,
+    styleName
+}: {
+    breakpoints: ThemeBreakpoints;
+    styleName: string;
+}): boolean => {
+    for (const breakpointName in breakpoints) {
+        if (breakpoints[breakpointName] === styleName) {
+            return true;
+        }
+    }
+    return false;
+};
+
+// separate style parts (modifiers) are assigned to different screen sizes one by one
+// this means that "responsive" style properties are assigned
+// in different order compared to theme.breakpoints order
+// it causes not guaranteed CSS order (that causes UI issues)
+// so we need to recreate styles object in proper order
+// (here "order" refers to a for...in cycle order while iterating over the breakpoints)
+// (so we need to recreate styles object adding properties in valid order)
+// see "traversal order" section of for-in loop - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in#description
+const recreateStyleObject = ({
+    breakpoints,
+    cssObject
+}: {
+    breakpoints: ThemeBreakpoints;
+    cssObject: CSSObject;
+}) => {
+    const recreatedStyles: Record<string, any> = {};
+
+    // copy plain styles as is
+    for (const styleName in cssObject) {
+        if (!isBreakpointCssStyle({ breakpoints, styleName })) {
+            recreatedStyles[styleName] = cssObject[styleName];
+        }
+    }
+
+    // copy "responsive" styles in breakpoint order
+    for (const breakpointName in breakpoints) {
+        const breakpoint = breakpoints[breakpointName];
+
+        if (cssObject[breakpoint]) {
+            recreatedStyles[breakpoint] = cssObject[breakpoint];
+        }
+    }
+
+    return recreatedStyles;
+};
+
 export const assignStyles: AssignStylesCallback = (params: {
     breakpoints: ThemeBreakpoints;
     styles: StylesObject;
@@ -102,6 +154,7 @@ export const defaultElementAttributesCallback: ElementAttributesCallback = ({
 
     return attributes;
 };
+
 export const defaultElementStylesCallback: ElementStylesCallback = ({
     element,
     modifiers,
@@ -109,7 +162,8 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
     theme,
     assignStyles: customAssignStylesCallback
 }) => {
-    const styles: Record<string, any> = {};
+    const cssObject: Record<string, any> = {};
+    const breakpoints = theme.breakpoints || {};
 
     for (const modifierName in modifiers.styles) {
         const modifier = modifiers.styles[modifierName];
@@ -124,13 +178,13 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
         const assign = customAssignStylesCallback || assignStyles;
 
         assign({
-            breakpoints: theme.breakpoints || {},
-            assignTo: styles,
+            breakpoints,
+            assignTo: cssObject,
             styles: styleValues || {}
         });
     }
 
-    return styles;
+    return recreateStyleObject({ breakpoints, cssObject });
 };
 
 export const defaultStylesCallback: StylesCallback = ({
@@ -139,6 +193,8 @@ export const defaultStylesCallback: StylesCallback = ({
     assignStyles: customAssignStylesCallback
 }) => {
     let returnStyles = {};
+    const breakpoints = theme.breakpoints || {};
+
     try {
         returnStyles = typeof styles === "function" ? styles(theme) : styles;
     } catch (e) {
@@ -148,10 +204,12 @@ export const defaultStylesCallback: StylesCallback = ({
     }
 
     const assign = customAssignStylesCallback || assignStyles;
-    return assign({
-        breakpoints: theme.breakpoints || {},
+    const cssObject = assign({
+        breakpoints,
         styles: returnStyles
     });
+
+    return recreateStyleObject({ breakpoints, cssObject });
 };
 
 export const elementDataPropsAreEqual = (prevProps: RendererProps, nextProps: RendererProps) => {
