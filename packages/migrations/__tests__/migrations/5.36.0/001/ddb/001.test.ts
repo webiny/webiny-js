@@ -34,6 +34,7 @@ describe("5.36.0-001", () => {
         skipLocales = 0
     ) => {
         ddbFiles.length = 0;
+        numberOfGeneratedFiles = 0;
 
         const tenants = createTenantsData().map(tenant => tenant.data.id);
         const testLocales = createLocalesData();
