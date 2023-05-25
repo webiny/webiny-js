@@ -181,9 +181,7 @@ export interface ListTagsWhereQueryVariables {
 }
 
 export interface ListTagsQueryVariables {
-    where: ListTagsWhereQueryVariables & {
-        type: string;
-    };
+    where?: ListTagsWhereQueryVariables;
 }
 
 export interface GetSearchRecordResponse {

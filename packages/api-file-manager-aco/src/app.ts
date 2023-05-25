@@ -53,7 +53,7 @@ export const createApp = (): IAcoAppRegisterParams => {
                 id: "createdBy",
                 fieldId: "createdBy",
                 type: "object",
-                storageId: "object@createdBy",
+                storageId: "createdBy",
                 label: "Created By",
                 settings: {
                     fields: [

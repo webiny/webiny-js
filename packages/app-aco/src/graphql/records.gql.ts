@@ -139,11 +139,12 @@ export const createDeleteRecord = (model: AcoModel) => {
     `;
 };
 
-export const createListTags = () => {
+export const createListTags = (model: AcoModel) => {
+    const { pluralApiName } = model;
     return gql`
-        query ListTags($where: SearchRecordTagListWhereInput) {
+        query List${pluralApiName}Tags($where: AcoSearchRecordTagListWhereInput) {
             search {
-                listTags(where: $where) {
+                listTags: list${pluralApiName}Tags(where: $where) {
                     data {
                         tag
                     }

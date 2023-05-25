@@ -136,11 +136,11 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 LIST_RECORDS: createListRecords(model),
                 UPDATE_RECORD: createUpdateRecord(model),
                 GET_RECORD: createGetRecord(model),
-                LIST_TAGS: createListTags(),
+                LIST_TAGS: createListTags(model),
                 DELETE_RECORD: createDeleteRecord(model),
                 CREATE_RECORD: createCreateRecord(model)
             };
-        }, [app.id, model?.modelId]);
+        }, [app.id, model.modelId]);
 
     const context: SearchRecordsContext = {
         records,
@@ -436,10 +436,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     client.query<ListTagsResponse, ListTagsQueryVariables>({
                         query: LIST_TAGS,
                         variables: {
-                            where: {
-                                ...(params.where || {}),
-                                type: app.id
-                            }
+                            where: params.where
                         }
                     })
             );
