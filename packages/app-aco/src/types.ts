@@ -80,6 +80,7 @@ export interface ListFoldersResponse {
 
 export interface ListFoldersQueryVariables {
     type: string;
+    limit: number;
 }
 
 export interface GetFolderResponse {
