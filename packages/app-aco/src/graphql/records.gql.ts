@@ -22,26 +22,29 @@ const createFieldsList = ({ model, fields }: CreateFieldsListParams): string => 
         .reduce((acc: any, item: any) => ({ ...acc, [item.field.type]: item.field }), {});
 
     return fields
-        .reduce<string[]>((collection, field) => {
-            if (!fieldPlugins[field.type]) {
-                console.log(`Unknown field plugin for field type "${field.type}".`);
+        .reduce<string[]>(
+            (collection, field) => {
+                if (!fieldPlugins[field.type]) {
+                    console.log(`Unknown field plugin for field type "${field.type}".`);
+                    return collection;
+                }
+                const { graphql } = fieldPlugins[field.type];
+
+                if (graphql && graphql.queryField) {
+                    const { queryField } = graphql;
+                    const selection =
+                        typeof queryField === "string" ? queryField : queryField({ model, field });
+
+                    collection.push(`${field.fieldId} ${selection}`);
+                    return collection;
+                }
+
+                collection.push(field.fieldId);
+
                 return collection;
-            }
-            const { graphql } = fieldPlugins[field.type];
-
-            if (graphql && graphql.queryField) {
-                const { queryField } = graphql;
-                const selection =
-                    typeof queryField === "string" ? queryField : queryField({ model, field });
-
-                collection.push(`${field.fieldId} ${selection}`);
-                return collection;
-            }
-
-            collection.push(field.fieldId);
-
-            return collection;
-        }, defaultFields)
+            },
+            [...defaultFields]
+        )
         .join("\n");
 };
 
