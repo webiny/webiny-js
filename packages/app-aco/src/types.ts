@@ -252,12 +252,29 @@ export interface AcoModel {
     fields: AcoModelField[];
 }
 
+export interface AcoModelFieldPredefinedValues {
+    values: [];
+    enabled: boolean;
+}
+
+export interface AcoModelFieldValidation {
+    name: string;
+    message: string;
+}
+
 export interface AcoModelField {
-    type: string;
-    fieldId: string;
     id: string;
+    storageId: string;
+    fieldId: string;
+    type: string;
     label: string;
-    [key: string]: any;
+    multipleValues: boolean;
+    predefinedValues: AcoModelFieldPredefinedValues;
+    settings: {
+        fields: AcoModelField[];
+    };
+    validation: AcoModelFieldValidation[];
+    listValidation: AcoModelFieldValidation[];
 }
 
 export interface AcoApp {
