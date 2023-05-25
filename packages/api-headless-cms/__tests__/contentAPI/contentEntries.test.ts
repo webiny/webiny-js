@@ -99,6 +99,7 @@ describe("Content entries", () => {
     const {
         createFruit,
         publishFruit,
+        deleteFruit,
         getContentEntries,
         getLatestContentEntries,
         getPublishedContentEntries,
@@ -646,6 +647,57 @@ describe("Content entries", () => {
                             title: greenApple.name
                         }
                     ],
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should process the delete of non existing entry", async () => {
+        const { greenApple } = await setupFruits();
+        /**
+         * First we should delete the fruit.
+         */
+        const [deleteSuccessResponse] = await deleteFruit({
+            revision: greenApple.entryId
+        });
+        expect(deleteSuccessResponse).toEqual({
+            data: {
+                deleteFruit: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+        /**
+         * If we repeat the operation we should get the non existing entry error.
+         */
+        const [deleteFailResponse] = await deleteFruit({
+            revision: greenApple.entryId
+        });
+        expect(deleteFailResponse).toMatchObject({
+            data: {
+                deleteFruit: {
+                    data: null,
+                    error: {
+                        message: `Entry "${greenApple.entryId}" was not found!`
+                    }
+                }
+            }
+        });
+        /**
+         * And if we force deletion, we should get the success response.
+         */
+        const [deleteForceSuccessResponse] = await deleteFruit({
+            revision: greenApple.entryId,
+            options: {
+                force: true
+            }
+        });
+        expect(deleteForceSuccessResponse).toEqual({
+            data: {
+                deleteFruit: {
+                    data: true,
                     error: null
                 }
             }
