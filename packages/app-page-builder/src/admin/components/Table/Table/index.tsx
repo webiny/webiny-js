@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
@@ -50,7 +50,7 @@ const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): Entry[] =
             id: data.id,
             type: "RECORD",
             title: data.title,
-            createdBy: data.createdBy?.displayName || "",
+            createdBy: data.createdBy?.displayName || "-",
             savedOn: data.savedOn,
             status: data.status,
             version: data.version,
@@ -66,7 +66,7 @@ const createFoldersData = (items: FolderItem[]): Entry[] => {
             id: item.id,
             type: "FOLDER",
             title: item.title,
-            createdBy: item.createdBy.displayName || "-",
+            createdBy: item.createdBy?.displayName || "-",
             savedOn: item.createdOn,
             original: item,
             selectable: false
@@ -77,8 +77,6 @@ const createFoldersData = (items: FolderItem[]): Entry[] => {
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const { folders, records, loading, openPreviewDrawer, onSelectRow, sorting, onSortingChange } =
         props;
-
-    const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -86,10 +84,8 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
-    useEffect(() => {
-        const foldersData = createFoldersData(folders);
-        const pagesData = createRecordsData(records);
-        setData([...foldersData, ...pagesData]);
+    const data = useMemo<Entry[]>(() => {
+        return createFoldersData(folders).concat(createRecordsData(records));
     }, [folders, records]);
 
     const columns: Columns<Entry> = {
