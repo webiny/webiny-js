@@ -1,5 +1,4 @@
-// @ts-ignore mdbid doesn't have TS types.
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 
 export const createId = () => {
     return mdbid();

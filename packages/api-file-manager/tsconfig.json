@@ -14,7 +14,7 @@
     { "path": "../pubsub" },
     { "path": "../validation" },
     { "path": "../api-i18n" },
-    { "path": "../api-i18n-ddb" }
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -47,8 +47,8 @@
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
-      "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
-      "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"]
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

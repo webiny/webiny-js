@@ -1,6 +1,5 @@
 import { default as DynamoDbDriver } from "./DynamoDbDriver";
-
-export { DbItem } from "./types";
 export * from "./utils";
+export { DbItem } from "./types";
 
 export { DynamoDbDriver };

@@ -1,11 +1,7 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import { QueueAddJobEvent } from "./types";
 import { PrerenderingServiceStorageOperations, QueueJob } from "~/types";
 import { EventPlugin } from "@webiny/handler";
+import { mdbid } from "@webiny/utils";
 
 export interface CreateQueueAddParams {
     storageOperations: PrerenderingServiceStorageOperations;

@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import slugify from "slugify";
 import { NotFoundError } from "@webiny/handler-graphql";
 import * as utils from "./utils";
@@ -34,7 +29,7 @@ import {
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, mdbid } from "@webiny/utils";
 import { createTopic } from "@webiny/pubsub";
 
 export interface CreateFormsCrudParams {

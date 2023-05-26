@@ -1,7 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { ApwContext } from "~/types";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
-import { Tenant } from "@webiny/api-tenancy/types";
 import { WcpContextObject } from "@webiny/api-wcp/types";
 import { WCP_FEATURE_LABEL } from "@webiny/wcp";
 
@@ -33,13 +32,15 @@ export const contextCommon = (): ContextPlugin<ApwContext>[] => {
 };
 
 interface ContextTenantParams {
-    tenant: Pick<Tenant, "id" | "name" | "parent">;
     identity?: SecurityIdentity;
 }
-export const contextSecurity = ({
-    tenant,
-    identity
-}: ContextTenantParams): ContextPlugin<ApwContext>[] => {
+export const contextSecurity = ({ identity }: ContextTenantParams): ContextPlugin<ApwContext>[] => {
+    const tenant = {
+        id: "root",
+        name: "Root",
+        parent: null
+    };
+
     return [
         new ContextPlugin<ApwContext>(async context => {
             context.security.getApiKeyByToken = async (token: string): Promise<ApiKey | null> => {

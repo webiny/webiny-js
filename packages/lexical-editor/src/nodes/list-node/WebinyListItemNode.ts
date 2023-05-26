@@ -1,7 +1,6 @@
 import {
-    $createParagraphNode,
     $isElementNode,
-    $isParagraphNode,
+    $isParagraphNode as $isBaseParagraphNode,
     $isRangeSelection,
     DOMConversionMap,
     DOMConversionOutput,
@@ -29,6 +28,7 @@ import {
     $handleOutdent,
     updateChildrenListItemValue
 } from "~/nodes/list-node/formatList";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 export type SerializedWebinyListItemNode = Spread<
     {
@@ -370,7 +370,7 @@ export class WebinyListItemNode extends ElementNode {
     }
 
     override canMergeWith(node: LexicalNode): boolean {
-        return $isParagraphNode(node) || $isWebinyListItemNode(node);
+        return $isBaseParagraphNode(node) || $isWebinyListItemNode(node);
     }
 
     override extractWithChild(

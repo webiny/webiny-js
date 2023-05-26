@@ -1,4 +1,3 @@
-export * from "./attributes";
 export * from "./batchRead";
 export * from "./batchWrite";
 export * from "./cleanup";

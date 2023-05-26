@@ -1,26 +1,19 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import {
+    SecurityContext,
+    SecurityIdentity,
+    SecurityPermission,
+    SecurityStorageOperations
+} from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { TenancyContext } from "@webiny/api-tenancy/types";
-
-// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
+import { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
 
 interface Config {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
 }
 
 export const defaultIdentity = {
@@ -29,43 +22,33 @@ export const defaultIdentity = {
     displayName: "John Doe"
 };
 
-export const createTenancyAndSecurity = ({ permissions, identity }: Config = {}) => {
+export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     return [
-        createTenancyContext({
-            storageOperations: tenancyStorageOperations({
-                documentClient,
-                table: table => ({
-                    ...table,
-                    name: process.env.DB_TABLE as string
-                })
-            })
-        }),
+        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
         createTenancyGraphQL(),
-        createSecurityContext({
-            storageOperations: securityStorageOperations({
-                documentClient,
-                table: process.env.DB_TABLE
-            })
-        }),
+        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
-                webinyVersion: process.env.WEBINY_VERSION,
-                description: "",
-                parent: null,
                 settings: {
                     domains: []
                 },
-                status: "any",
-                createdOn: new Date().toISOString(),
+                status: "unknown",
+                description: "",
+                parent: null,
+                tags: [],
                 savedOn: new Date().toISOString(),
-                tags: []
+                createdOn: new Date().toISOString(),
+                webinyVersion: "w.w.w"
             });
 
             context.security.addAuthenticator(async () => {
-                return identity || defaultIdentity;
+                // `undefined` results in the default identity being set; `null` means "anonymous request".
+                return identity === undefined ? defaultIdentity : identity;
             });
 
             context.security.addAuthorizer(async () => {

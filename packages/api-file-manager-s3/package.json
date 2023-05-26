@@ -14,9 +14,9 @@
     "@webiny/api-security": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "form-data": "^4.0.0",
-    "mdbid": "^1.0.0",
     "mime": "^3.0.0",
     "node-fetch": "^2.6.1",
     "sanitize-filename": "^1.6.3"

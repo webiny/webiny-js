@@ -1,7 +1,6 @@
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createI18NContext } from "@webiny/api-i18n";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
@@ -21,15 +20,17 @@ import {
     DELETE_RECORD,
     GET_RECORD,
     LIST_RECORDS,
+    LIST_TAGS,
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
 
 import { createAco } from "~/index";
-import { createStorageOperations } from "~tests/utils/storageOperations";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: SecurityIdentity | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
 }
@@ -43,29 +44,25 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-const defaultIdentity: SecurityIdentity = {
-    id: "12345678",
-    type: "admin",
-    displayName: "John Doe"
-};
-
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { permissions, identity, plugins = [], storageOperationPlugins } = params;
+    const { permissions, identity, plugins = [] } = params;
 
-    const ops = createStorageOperations({
-        plugins: storageOperationPlugins || []
-    });
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const handler = createHandler({
         plugins: [
-            ...ops.plugins,
+            ...cmsStorage.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
-            i18nContext(),
-            i18nDynamoDbStorageOperations(),
+            ...createTenancyAndSecurity({
+                permissions,
+                identity
+            }),
+            createI18NContext(),
+            ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: ops.storageOperations
+                storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createAco(),
@@ -127,6 +124,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async listRecords(variables = {}) {
             return invoke({ body: { query: LIST_RECORDS, variables } });
+        },
+        async listTags(variables = {}) {
+            return invoke({ body: { query: LIST_TAGS, variables } });
         },
         async getRecord(variables = {}) {
             return invoke({ body: { query: GET_RECORD, variables } });

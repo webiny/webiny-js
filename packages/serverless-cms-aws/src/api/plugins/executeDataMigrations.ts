@@ -23,6 +23,11 @@ export const executeDataMigrations = {
             return;
         }
 
+        // No need to run migrations if we're doing a preview.
+        if (params.inputs.preview) {
+            return;
+        }
+
         const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
         context.info("Executing data migrations Lambda function...");
