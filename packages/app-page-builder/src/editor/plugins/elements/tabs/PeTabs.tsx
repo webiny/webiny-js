@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
-import { Typography } from "@webiny/ui/Typography";
 import { createRenderer, useRenderer, Elements } from "@webiny/app-page-builder-elements";
 import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
@@ -13,30 +12,33 @@ const TabsContainer = styled.div`
 
 const TabsHeader = styled.div`
     display: flex;
-    flex-wrap: wrap;
-    border-bottom: 2px solid var(--mdc-theme-on-background);
+    flex-wrap: nowrap;
+    border-bottom: 2px solid ${props => props.theme.styles.colors.color5};
     margin-bottom: 16px;
+    overflow-x: auto;
 `;
 
-const TabLabel = styled.div<{ isActive: boolean }>`
+const TabLabel = styled.div<{ active: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     flex-grow: 1;
+    flex-basis: content;
+    transition: none;
     padding: 4px 16px;
-    border-bottom: ${props =>
-        props.isActive ? "2px solid var(--mdc-theme-primary)" : "2px solid transparent"};
-    background-color: ${props => (props.isActive ? "var(--mdc-theme-background)" : "white")};
-    transition: all 0.2s;
+    border-bottom: 2px solid
+        ${props => (props.active ? props.theme.styles.colors.color1 : "transparent")};
+    background-color: ${props =>
+        props.active ? props.theme.styles.colors.color5 : props.theme.styles.colors.color6};
     cursor: pointer;
+    ${props => props.theme.styles.typography.headings.stylesById("heading6")};
+    font-size: 14px;
+    transition: all 0.2s;
     z-index: 40;
 
     &:hover {
-        background-color: var(--mdc-theme-background);
-    }
-
-    & > span {
-        font-size: 14px;
+        background-color: ${props => props.theme.styles.colors.color5};
     }
 `;
 
@@ -67,11 +69,9 @@ const PeTabs = createRenderer(() => {
                             setSelectedTabElement(tab);
                             setActiveElementId(tab.id);
                         }}
-                        isActive={tab.id === selectedTabElement.id}
+                        active={tab.id === selectedTabElement.id}
                     >
-                        <Typography use="headline6">
-                            {tab.data?.settings?.tab?.label || ""}
-                        </Typography>
+                        {tab.data?.settings?.tab?.label || ""}
                     </TabLabel>
                 ))}
             </TabsHeader>

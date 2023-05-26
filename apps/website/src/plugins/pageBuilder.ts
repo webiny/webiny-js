@@ -35,7 +35,6 @@ import accordion from "@webiny/app-page-builder/render/plugins/elements/accordio
 import accordionItem from "@webiny/app-page-builder/render/plugins/elements/accordionItem";
 import tabs from "@webiny/app-page-builder/render/plugins/elements/tabs";
 import tab from "@webiny/app-page-builder/render/plugins/elements/tab";
-
 /**
  * Page settings plugins (seo, social, etc.).
  */

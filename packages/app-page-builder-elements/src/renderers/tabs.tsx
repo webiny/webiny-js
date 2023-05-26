@@ -1,8 +1,37 @@
 import React, { useState } from "react";
+import styled from "@emotion/styled";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { usePageElements } from "~/hooks/usePageElements";
+
+const TabsHeader = styled.div`
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    border-bottom: 2px solid ${props => props.theme.styles.colors.color5};
+`;
+
+const TabLabel = styled.div<{ active: boolean }>`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    flex-grow: 1;
+    flex-basis: content;
+    padding: 6px 16px;
+    border-bottom: 2px solid
+        ${props => (props.active ? props.theme.styles.colors.color1 : "transparent")};
+    background-color: ${props =>
+        props.active ? props.theme.styles.colors.color5 : props.theme.styles.colors.color6};
+    cursor: pointer;
+    ${props => props.theme.styles.typography.headings.stylesById("heading6")};
+    font-size: 14px;
+    transition: all 0.2s;
+
+    &:hover {
+        background-color: ${props => props.theme.styles.colors.color5};
+    }
+`;
 
 export type TabsRenderer = ReturnType<typeof createTabs>;
 
@@ -10,56 +39,23 @@ export const createTabs = () => {
     return createRenderer(() => {
         const { getElement } = useRenderer();
         const element = getElement();
-        const { theme } = usePageElements();
         const [selectedTabElement, setSelectedTabElement] = useState(element.elements[0]);
-
-        theme.styles.elements["tabs"] = {
-            ".tabs-header": {
-                display: "flex",
-                flexWrap: "wrap",
-                borderBottom: "2px solid rgba(212, 212, 212, 0.5)"
-            },
-            ".tab-label": {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexGrow: 1,
-                padding: "6px 16px",
-                borderBottom: "2px solid transparent",
-                backgroundColor: "white",
-                cursor: "pointer",
-                ...theme.styles.typography.heading6,
-                fontSize: "14px",
-                transition: "all .2s",
-
-                "&.active": {
-                    borderBottom: `2px solid ${theme.styles.colors.color1}`,
-                    backgroundColor: "rgba(212, 212, 212, 0.5)"
-                },
-
-                "&:hover": {
-                    backgroundColor: "rgba(212, 212, 212, 0.5)"
-                }
-            }
-        };
 
         return (
             <>
-                <div className="tabs-header">
+                <TabsHeader>
                     {element.elements.map((tab, index) => (
-                        <div
-                            className={`tab-label ${
-                                tab.id === selectedTabElement.id ? "active" : ""
-                            }`}
+                        <TabLabel
                             key={index}
                             onClick={() => {
                                 setSelectedTabElement(tab);
                             }}
+                            active={tab.id === selectedTabElement.id}
                         >
                             {tab.data?.settings?.tab?.label || ""}
-                        </div>
+                        </TabLabel>
                     ))}
-                </div>
+                </TabsHeader>
                 <Elements element={{ ...element, elements: [selectedTabElement] }} />
             </>
         );
