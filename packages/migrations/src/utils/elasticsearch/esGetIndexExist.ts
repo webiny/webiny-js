@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
 import { esGetIndexName } from "~/utils";
 
@@ -15,6 +14,7 @@ export const esGetIndexExist = async (params: GetIndexExistParams) => {
 
     try {
         const index = esGetIndexName({ tenant, locale, type, isHeadlessCmsModel });
+
         const response = await elasticsearchClient.indices.exists({
             index
         });
@@ -25,15 +25,7 @@ export const esGetIndexExist = async (params: GetIndexExistParams) => {
 
         return false;
     } catch (ex) {
-        throw new WebinyError(
-            ex.message || "Could not get Elasticsearch index.",
-            ex.code || "GET_ELASTICSEARCH_INDEX_ERROR",
-            {
-                error: ex,
-                locale,
-                tenant,
-                type
-            }
-        );
+        console.warn(`Could not find Elasticsearch index:`, ex.message);
+        return false;
     }
 };
