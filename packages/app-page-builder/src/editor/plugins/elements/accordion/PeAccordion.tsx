@@ -3,9 +3,8 @@ import { createRenderer, useRenderer, Elements } from "@webiny/app-page-builder-
 import { Element } from "@webiny/app-page-builder-elements/types";
 import { useRecoilValue } from "recoil";
 import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
-import EmptyCell from "~/editor/plugins/elements/cell/EmptyCell";
 
-const PeBlock = createRenderer(
+const PeGrid = createRenderer(
     () => {
         const { getElement } = useRenderer();
         const element = getElement();
@@ -14,29 +13,18 @@ const PeBlock = createRenderer(
             elementWithChildrenByIdSelector(element.id)
         ) as Element;
 
-        const childrenElements = elementWithChildren?.elements;
-        if (Array.isArray(childrenElements) && childrenElements.length > 0) {
-            return (
-                <>
-                    <Elements element={elementWithChildren} />
-                    {element.data.blockId && (
-                        <ps-tag data-key={"pb-page-block"} data-value={element.data.blockId} />
-                    )}
-                </>
-            );
-        }
-
-        return <EmptyCell element={element} />;
+        return <Elements element={elementWithChildren} />;
     },
     {
         baseStyles: {
+            boxSizing: "border-box",
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "flex-start",
-            boxSizing: "border-box"
+            width: "100%"
         }
     }
 );
 
-export default PeBlock;
+export default PeGrid;

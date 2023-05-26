@@ -31,6 +31,8 @@ import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/p
 import iframe from "@webiny/app-page-builder/render/plugins/elements/iframe";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
+import accordion from "@webiny/app-page-builder/render/plugins/elements/accordion";
+import accordionItem from "@webiny/app-page-builder/render/plugins/elements/accordionItem";
 
 /**
  * Page settings plugins (seo, social, etc.).
@@ -52,6 +54,8 @@ import padding from "@webiny/app-page-builder/render/plugins/elementSettings/pad
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings/text";
 import property from "@webiny/app-page-builder/render/plugins/elementSettings/property";
+import accordionSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordion";
+import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordionItem";
 
 /**
  * Responsive display mode plugins.
@@ -83,6 +87,8 @@ export default [
     iframe(),
     pagesList(),
     imagesList(),
+    accordion(),
+    accordionItem(),
 
     // Page settings
     pageSettings(),
@@ -100,5 +106,7 @@ export default [
     margin,
     textSetting,
     property,
+    accordionSettings,
+    accordionItemSettings,
     responsiveMode()
 ];
