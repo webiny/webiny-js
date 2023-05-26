@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/highlight_off.svg";
 import { IconButton } from "@webiny/ui/Button";
-import { CmsDynamicZoneTemplate } from "~/types";
+import { CmsDynamicZoneTemplate } from "@webiny/app-headless-cms-common/types";
 import { useModelField } from "~/admin/hooks";
 import { TemplateCard } from "./TemplateCard";
 

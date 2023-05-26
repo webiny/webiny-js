@@ -10,7 +10,7 @@ import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import * as SF from "@webiny/app-admin/components/SimpleForm";
-import { CmsEditorFormSettingsPlugin } from "~/types";
+import { CmsEditorFormSettingsPlugin } from "@webiny/app-headless-cms-common/types";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
 import { useModelEditor } from "~/admin/hooks";
 

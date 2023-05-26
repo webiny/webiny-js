@@ -6,7 +6,7 @@ import { useFileManagerApi } from "~/index";
 import { Action, initializeState, State, StateListWhere, stateReducer } from "./stateReducer";
 import { FOLDER_ID_DEFAULT, DEFAULT_SCOPE } from "~/constants";
 import { useRecords } from "@webiny/app-aco";
-import { ListDbSort } from "@webiny/app-aco/types";
+import { ListSearchRecordsSort } from "@webiny/app-aco/types";
 import { FileManagerViewContextData } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { UploadOptions } from "@webiny/app/types";
 
@@ -37,8 +37,8 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     setHasPreviouslyUploadedFiles: (flag: boolean) => void;
     listWhere: StateListWhere;
     setListWhere: (state: StateListWhere) => void;
-    listSort: ListDbSort | undefined;
-    setListSort: (state: ListDbSort) => void;
+    listSort: ListSearchRecordsSort | undefined;
+    setListSort: (state: ListSearchRecordsSort) => void;
     dragging: boolean;
     setDragging: (state: boolean) => void;
     showFileDetails: (id: string) => void;
@@ -299,7 +299,7 @@ export const FileManagerAcoViewProvider: React.VFC<FileManagerViewProviderProps>
             dispatch({ type: "listWhere", state });
         },
         listSort: state.listSort,
-        setListSort(state: ListDbSort) {
+        setListSort(state: ListSearchRecordsSort) {
             dispatch({ type: "listSort", state });
         },
         setDragging(state = true) {

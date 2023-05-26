@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
 import { i18n } from "@webiny/app/i18n";
 import ContentEntriesAutocomplete from "./components/ContentEntriesAutocomplete";
 import { NewRefEntryDialogContextProvider } from "./hooks/useNewRefEntryDialog";

@@ -7,29 +7,31 @@ import { CmsIdentity } from "~/types/shared";
  */
 export type CmsEditorField<T = unknown> = CmsModelField<T>;
 
+export interface CmsModelFieldSettings<T = unknown> {
+    defaultValue?: string | null | undefined;
+    defaultSetValue?: string;
+    type?: string;
+    fields?: CmsModelField<T>[];
+    layout?: string[][];
+    models?: Pick<CmsModel, "modelId">[];
+    templates?: CmsDynamicZoneTemplate[];
+    imagesOnly?: boolean;
+    [key: string]: any;
+}
+
 export type CmsModelField<T = unknown> = T & {
     id: string;
     type: string;
     fieldId: CmsEditorFieldId;
     storageId?: string;
-    label?: string;
+    label: string;
     helpText?: string;
     placeholderText?: string;
     validation?: CmsModelFieldValidator[];
     listValidation?: CmsModelFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
-    settings?: {
-        defaultValue?: string | null | undefined;
-        defaultSetValue?: string;
-        type?: string;
-        fields?: CmsModelField<any>[];
-        layout?: string[][];
-        models?: Pick<CmsModel, "modelId">[];
-        templates?: CmsDynamicZoneTemplate[];
-        imagesOnly?: boolean;
-        [key: string]: any;
-    };
+    settings?: CmsModelFieldSettings<T>;
     renderer: {
         name: string;
     };

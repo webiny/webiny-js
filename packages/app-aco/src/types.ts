@@ -1,3 +1,9 @@
+import {
+    CmsModel,
+    CmsModelField,
+    CmsModelFieldSettings
+} from "@webiny/app-headless-cms-common/types";
+
 export interface FolderItem {
     id: string;
     title: string;
@@ -46,18 +52,8 @@ export interface AcoError {
 
 export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
 
-export enum ListTableSortDirection {
-    asc = "asc",
-    desc = "desc"
-}
-
-export type ListDbSortItem = `${string}_ASC` | `${string}_DESC`;
-export type ListDbSort = ListDbSortItem[];
-
-export interface ListTableSort {
-    fields: string[];
-    orders: ListTableSortDirection[];
-}
+export type ListSearchRecordsSortItem = `${string}_ASC` | `${string}_DESC`;
+export type ListSearchRecordsSort = ListSearchRecordsSortItem[];
 
 export interface ListMeta {
     cursor: string | null;
@@ -145,22 +141,21 @@ export interface ListSearchRecordsResponse {
 }
 
 export interface ListSearchRecordsWhereQueryVariables {
+    location?: Partial<Location>;
+    createdBy?: string;
     tags_in?: string[];
     tags_startsWith?: string;
     tags_not_startsWith?: string;
+    AND?: ListSearchRecordsWhereQueryVariables[];
+    OR?: ListSearchRecordsWhereQueryVariables[];
 }
 
 export interface ListSearchRecordsQueryVariables {
-    where: {
-        type: string;
-        location?: Location;
-        createdBy?: string;
-        [key: string]: any;
-    };
+    where?: ListSearchRecordsWhereQueryVariables;
     search?: string;
     limit?: number;
     after?: string | null;
-    sort?: ListDbSort;
+    sort?: ListSearchRecordsSort;
 }
 
 export interface ListTagsResponse {
@@ -241,40 +236,26 @@ export interface DndItemData extends FolderItem {
     isFocused?: boolean;
 }
 
+export type AcoAppMode = "aco" | "cms";
+
 /**
  * Apps.
  */
-export interface AcoModel {
-    modelId: string;
-    name: string;
-    singularApiName: string;
-    pluralApiName: string;
+export interface AcoModel extends CmsModel {
     fields: AcoModelField[];
 }
 
-export interface AcoModelFieldPredefinedValues {
-    values: [];
-    enabled: boolean;
+export interface AcoModelFieldSettingsAco {
+    enabled?: boolean;
+    header?: boolean;
 }
 
-export interface AcoModelFieldValidation {
-    name: string;
-    message: string;
+export interface AcoModelFieldSettings {
+    aco?: AcoModelFieldSettingsAco;
 }
 
-export interface AcoModelField {
-    id: string;
-    storageId: string;
-    fieldId: string;
-    type: string;
-    label: string;
-    multipleValues: boolean;
-    predefinedValues: AcoModelFieldPredefinedValues;
-    settings: {
-        fields: AcoModelField[];
-    };
-    validation: AcoModelFieldValidation[];
-    listValidation: AcoModelFieldValidation[];
+export interface AcoModelField extends CmsModelField {
+    settings?: CmsModelFieldSettings & AcoModelFieldSettings;
 }
 
 export interface AcoApp {

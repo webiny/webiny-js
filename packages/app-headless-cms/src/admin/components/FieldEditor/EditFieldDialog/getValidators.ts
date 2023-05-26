@@ -6,7 +6,7 @@ import {
     CmsModelFieldValidatorsGroup,
     CmsModelFieldValidatorConfig,
     CmsModelFieldValidatorsFactory
-} from "~/types";
+} from "@webiny/app-headless-cms-common/types";
 import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";
 
 export interface Validator {

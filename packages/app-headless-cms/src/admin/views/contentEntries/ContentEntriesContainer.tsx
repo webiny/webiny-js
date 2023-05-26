@@ -10,14 +10,17 @@ import {
     GetCmsModelQueryVariables
 } from "~/admin/graphql/contentModels";
 import { useQuery } from "../../hooks";
-import { CmsModel } from "~/types";
+import { CmsModel } from "@webiny/app-headless-cms-common/types";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries");
 
-export const ContentEntriesContainer = ({ children }: { children: React.ReactNode }) => {
+interface Props {
+    children: React.ReactNode;
+}
+export const ContentEntriesContainer: React.VFC<Props> = ({ children }) => {
     const { params } = useRouter();
-    const modelId = params ? params["modelId"] : null;
+    const modelId = params?.modelId;
     const [contentModel, setContentModel] = useState<CmsModel | null>(null);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -27,7 +30,7 @@ export const ContentEntriesContainer = ({ children }: { children: React.ReactNod
         {
             skip: !modelId,
             variables: {
-                modelId
+                modelId: modelId as string
             },
             onCompleted: data => {
                 const contentModel = get(data, "getContentModel.data", null);

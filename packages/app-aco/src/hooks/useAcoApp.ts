@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { AcoAppContext } from "~/contexts/app";
+import { AcoAppContext, AcoAppProviderContext } from "~/contexts/app";
 
-export const useAcoApp = () => {
+export const useAcoApp = (): AcoAppProviderContext => {
     const context = useContext(AcoAppContext);
 
     if (!context) {
@@ -11,6 +11,8 @@ export const useAcoApp = () => {
     return {
         app: context.app,
         model: context.model,
+        client: context.client,
+        mode: context.mode,
         loading: context.loading,
         error: context.error
     };

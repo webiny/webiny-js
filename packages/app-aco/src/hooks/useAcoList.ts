@@ -1,11 +1,12 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import {
     FolderItem,
-    ListDbSort,
+    GenericSearchData,
     ListMeta,
+    ListSearchRecordsSort,
     ListSearchRecordsWhereQueryVariables,
     SearchRecordItem
 } from "~/types";
@@ -21,18 +22,14 @@ interface ListRecordsParams {
     folderId?: string;
     after?: string;
     limit?: number;
-    sort?: ListDbSort;
+    sort?: ListSearchRecordsSort;
     search?: string;
-    tags_in?: string[];
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
-    AND?: ListSearchRecordsWhereQueryVariables[];
-    OR?: ListSearchRecordsWhereQueryVariables[];
+    where?: ListSearchRecordsWhereQueryVariables;
 }
 
-interface UseAcoListResponse {
+interface UseAcoListResponse<T> {
     folders: FolderItem[];
-    records: SearchRecordItem[];
+    records: SearchRecordItem<T>[];
     listTitle?: string;
     isListLoading: boolean;
     isListLoadingMore: boolean;
@@ -61,10 +58,10 @@ const getCurrentFolderList = (
     return folders.filter(folder => folder.parentId === currentFolderId);
 };
 
-const getCurrentRecordList = (
-    records: SearchRecordItem[],
+const getCurrentRecordList = <T = GenericSearchData>(
+    records: SearchRecordItem<T>[],
     currentFolderId?: string
-): SearchRecordItem[] | [] => {
+): SearchRecordItem<T>[] => {
     if (!records) {
         return [];
     }
@@ -73,10 +70,12 @@ const getCurrentRecordList = (
         return records;
     }
 
-    return records.filter(record => record.location.folderId === currentFolderId);
+    return records.filter(
+        (record): record is SearchRecordItem<T> => record.location.folderId === currentFolderId
+    );
 };
 
-export const useAcoList = (params: UseAcoListParams) => {
+export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
     const { folderId, ...initialWhere } = params;
 
     const folderContext = useContext(FoldersContext);
@@ -87,9 +86,9 @@ export const useAcoList = (params: UseAcoListParams) => {
     }
 
     const [folders, setFolders] = useState<FolderItem[]>([]);
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
+    const [records, setRecords] = useState<SearchRecordItem<T>[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
-    const [sort, setSort] = useState<ListDbSort>();
+    const [sort, setSort] = useState<ListSearchRecordsSort>();
 
     const { folders: originalFolders, loading: foldersLoading, listFolders } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
@@ -109,7 +108,15 @@ export const useAcoList = (params: UseAcoListParams) => {
             listFolders();
         }
 
-        listRecords({ folderId, sort, ...initialWhere });
+        listRecords({
+            sort,
+            ...initialWhere,
+            where: {
+                location: {
+                    folderId
+                }
+            }
+        });
     }, [folderId]);
 
     /**
@@ -132,7 +139,10 @@ export const useAcoList = (params: UseAcoListParams) => {
      * - we return the `records` list filtered by the current `folderId`.
      */
     useEffect(() => {
-        const subRecords = getCurrentRecordList(originalRecords, folderId);
+        const subRecords = getCurrentRecordList<T>(
+            originalRecords as SearchRecordItem<T>[],
+            folderId
+        );
         setRecords(subRecords);
     }, [originalRecords, folderId, setRecords]);
 
@@ -146,11 +156,53 @@ export const useAcoList = (params: UseAcoListParams) => {
         });
     }, [sort, setFolders]);
 
-    return useMemo<UseAcoListResponse>(() => {
+    /**
+     * This method updates the records state so we do not need to load data again.
+     * The example usage is changing the record state (published/draft/unpublished).
+     */
+    const updateRecordCache = useCallback(
+        (id: string, data: Partial<T>) => {
+            const index = records.findIndex(record => record.id === id);
+            if (index === -1) {
+                return;
+            }
+            setRecords(prev => {
+                const list = [...prev];
+                list[index].data = {
+                    ...list[index].data,
+                    ...data
+                };
+                return list;
+            });
+        },
+        [records, setRecords]
+    );
+
+    /**
+     * This methods deletes the record from the records state.
+     */
+    const deleteRecordCache = useCallback(
+        (id: string) => {
+            const index = records.findIndex(record => record.id === id);
+            if (index === -1) {
+                return;
+            }
+            setRecords(prev => {
+                const list = [...prev];
+                list.splice(Number(index), 1);
+                return list;
+            });
+        },
+        [records, setRecords]
+    );
+
+    return useMemo<UseAcoListResponse<T>>(() => {
         return {
             folders,
             records,
             listTitle,
+            updateRecordCache,
+            deleteRecordCache,
             isListLoading: Boolean(
                 recordsLoading.INIT ||
                     foldersLoading.INIT ||
@@ -159,17 +211,27 @@ export const useAcoList = (params: UseAcoListParams) => {
             ),
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
             meta: meta[folderId || "search"] || defaultMeta,
-            listItems(params) {
-                const { sort: initialSort } = params;
-
-                let sort: ListDbSort | undefined = undefined;
+            listItems({ folderId, where, sort: initialSort, after, limit, search }) {
+                let sort: ListSearchRecordsSort | undefined = undefined;
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (initialSort?.length) {
                     sort = validateOrGetDefaultDbSort(initialSort);
                     setSort(sort);
                 }
+                const params: ListRecordsParams & Required<Pick<ListRecordsParams, "where">> = {
+                    where: {
+                        ...(where || {}),
+                        location: {
+                            folderId
+                        }
+                    },
+                    after,
+                    limit,
+                    search,
+                    sort
+                };
 
-                return listRecords({ folderId, ...params, sort });
+                return listRecords(params);
             }
         };
     }, [folders, records, foldersLoading, recordsLoading, meta]);

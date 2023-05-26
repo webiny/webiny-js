@@ -4,7 +4,7 @@ import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 import { EditorBar } from "~/editor";
-import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+import { useNavigateFolder } from "@webiny/app-aco";
 
 const backStyles = css({
     marginLeft: -10
@@ -12,7 +12,7 @@ const backStyles = css({
 
 export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
     return function BackButton() {
-        const { navigateToLatestFolder } = usePageViewNavigation();
+        const { navigateToLatestFolder } = useNavigateFolder();
 
         return (
             <IconButton

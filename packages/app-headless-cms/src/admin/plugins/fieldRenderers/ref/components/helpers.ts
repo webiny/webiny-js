@@ -1,5 +1,5 @@
 import { CmsReferenceContentEntry, OptionItem, OptionItemCollection } from "./types";
-import { CmsContentEntryStatusType } from "~/types";
+import { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types";
 
 export const convertReferenceEntryToOption = (entry: CmsReferenceContentEntry): OptionItem => {
     return {

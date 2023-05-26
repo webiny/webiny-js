@@ -1,7 +1,10 @@
 import React from "react";
 import { css } from "emotion";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
-import { CmsEditorFieldRendererPlugin, CmsModelFieldRendererProps } from "~/types";
+import {
+    CmsEditorFieldRendererPlugin,
+    CmsModelFieldRendererProps
+} from "@webiny/app-headless-cms-common/types";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";

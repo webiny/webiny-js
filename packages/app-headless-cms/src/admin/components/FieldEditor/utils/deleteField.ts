@@ -1,5 +1,5 @@
 import dot from "dot-prop-immutable";
-import { CmsModelField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "@webiny/app-headless-cms-common/types";
 
 type DeleteFieldParamsData = Pick<CmsModel, "fields" | "layout">;
 interface DeleteFieldParams {

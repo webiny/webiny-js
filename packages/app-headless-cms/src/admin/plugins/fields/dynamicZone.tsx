@@ -4,7 +4,10 @@ import { i18n } from "@webiny/app/i18n";
 import { DynamicZone } from "~/admin/plugins/fields/dynamicZone/DynamicZone";
 import { createFieldsList } from "~/admin/graphql/createFieldsList";
 import { createTypeName } from "~/utils/createTypeName";
-import { CmsModelFieldTypePlugin, CmsModelFieldValidatorsGroup } from "~/types";
+import {
+    CmsModelFieldTypePlugin,
+    CmsModelFieldValidatorsGroup
+} from "@webiny/app-headless-cms-common/types";
 import { commonValidators } from "./dynamicZone/commonValidators";
 
 const t = i18n.ns("app-headless-cms/admin/fields");

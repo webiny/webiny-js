@@ -13,11 +13,15 @@ import {
     CmsEntryUpdateMutationVariables,
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables
-} from "~/admin/graphql/contentEntries";
+} from "@webiny/app-headless-cms-common";
 import { useApolloClient, useCms, useModel, useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import {
+    CmsContentEntry,
+    CmsModelField,
+    CmsEditorFieldRendererPlugin
+} from "@webiny/app-headless-cms-common/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
@@ -52,13 +56,13 @@ interface UseContentEntryForm {
 }
 
 export interface UseContentEntryFormParams {
-    entry: Partial<CmsEditorContentEntry>;
+    entry: Partial<CmsContentEntry>;
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
     addEntryToListCache: boolean;
 }
 
-function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
+function useEntry(entryFromProps: Partial<CmsContentEntry>) {
     // We need to keep track of the entry locally
     const [entry, setEntry] = useState(entryFromProps);
     const { onEntryRevisionPublish } = useCms();

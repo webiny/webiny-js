@@ -6,7 +6,7 @@ import {
 } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { parseIdentifier } from "@webiny/utils";
 import styled from "@emotion/styled";
-import { CmsModelField } from "~/types";
+import { CmsModelField } from "@webiny/app-headless-cms-common/types";
 import { Radio } from "@webiny/ui/Radio";
 
 const Title = styled("h5")({

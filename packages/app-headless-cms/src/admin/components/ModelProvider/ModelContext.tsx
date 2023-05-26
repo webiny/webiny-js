@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsModel } from "~/types";
+import { CmsModel } from "@webiny/app-headless-cms-common/types";
 
 export type ModelContext = CmsModel;
 

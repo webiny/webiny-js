@@ -6,7 +6,7 @@ import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security";
 import { Cell } from "@webiny/ui/Grid";
 import { Grid } from "@webiny/ui/Grid";
-import { CmsModel, CmsSecurityPermission } from "~/types";
+import { CmsModel, CmsSecurityPermission } from "@webiny/app-headless-cms-common/types";
 
 const grid = css({
     "&.mdc-layout-grid": {

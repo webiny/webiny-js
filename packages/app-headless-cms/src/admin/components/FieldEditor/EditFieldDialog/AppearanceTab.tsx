@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Typography } from "@webiny/ui/Typography";

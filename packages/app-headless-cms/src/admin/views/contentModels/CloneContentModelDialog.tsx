@@ -12,7 +12,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
-import { CmsModel } from "~/types";
+import { CmsModel } from "@webiny/app-headless-cms-common/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import {
     CREATE_CONTENT_MODEL_FROM,

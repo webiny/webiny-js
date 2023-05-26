@@ -1,8 +1,10 @@
 import orderBy from "lodash/orderBy";
 
-import { ListDbSort, ListTableSort, ListTableSortDirection } from "~/types";
+import { ListSearchRecordsSort } from "~/types";
 
-export const validateOrGetDefaultDbSort = (initial?: ListDbSort): ListDbSort => {
+export const validateOrGetDefaultDbSort = (
+    initial?: ListSearchRecordsSort
+): ListSearchRecordsSort => {
     if (!Array.isArray(initial) || initial.length === 0) {
         return ["savedOn_DESC"];
     }
@@ -14,15 +16,15 @@ interface IRecord {
     id: string;
 }
 
-export const sortTableItems = (records: IRecord[], sort?: ListDbSort): any[] => {
+export const sortTableItems = (records: IRecord[], sort?: ListSearchRecordsSort): any[] => {
     const dbSorting = validateOrGetDefaultDbSort(sort);
-    const fields = [] as ListTableSort["fields"];
-    const orders = [] as ListTableSort["orders"];
+    const fields: string[] = [];
+    const orders: (boolean | "asc" | "desc")[] = [];
 
     for (const sort of dbSorting) {
         const [field, order] = sort.split("_");
         fields.push(field);
-        orders.push(order.toLowerCase() as ListTableSortDirection);
+        orders.push(order.toLowerCase() as "asc" | "desc");
     }
 
     return orderBy(records, fields, orders);

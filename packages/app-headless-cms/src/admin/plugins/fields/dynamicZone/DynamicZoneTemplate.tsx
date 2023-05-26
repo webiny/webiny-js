@@ -9,7 +9,11 @@ import { ReactComponent as ArrowDownIcon } from "@material-design-icons/svg/roun
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { pullValueAtIndex, pushValueAtIndex, removeValueAtIndex } from "~/admin/plugins/arrayUtils";
-import { CmsDynamicZoneTemplate, CmsEditorFieldsLayout, CmsModelField } from "~/types";
+import {
+    CmsDynamicZoneTemplate,
+    CmsEditorFieldsLayout,
+    CmsModelField
+} from "@webiny/app-headless-cms-common/types";
 import { TemplateDialog } from "./TemplateDialog";
 import { FieldEditor } from "~/admin/components/FieldEditor";
 

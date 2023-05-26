@@ -17,7 +17,12 @@ import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 import { MainContainer, Wrapper } from "./styled";
-import { ListDbSort, ListDbSortItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
+import {
+    ListSearchRecordsSort,
+    ListSearchRecordsSortItem,
+    ListMeta,
+    SearchRecordItem
+} from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 
@@ -28,12 +33,12 @@ interface Props {
     defaultFolderName: string;
 }
 
-const createSort = (sorting?: Sorting): ListDbSort | undefined => {
+const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     if (!sorting?.length) {
         return undefined;
     }
-    return sorting.reduce<ListDbSort>((items, item) => {
-        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListDbSortItem;
+    return sorting.reduce<ListSearchRecordsSort>((items, item) => {
+        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSearchRecordsSortItem;
         if (items.includes(sort)) {
             return items;
         }

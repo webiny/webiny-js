@@ -1,4 +1,4 @@
-import { CmsModel } from "~/types";
+import { CmsModel } from "@webiny/app-headless-cms-common/types";
 
 /**
  * For `dynamicZone` we don't want to write to cache, due to problems with Union Fragments normalization.

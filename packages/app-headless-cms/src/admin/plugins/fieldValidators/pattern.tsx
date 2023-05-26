@@ -4,7 +4,10 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
-import { CmsModelFieldValidatorPlugin, CmsModelFieldRegexValidatorExpressionPlugin } from "~/types";
+import {
+    CmsModelFieldValidatorPlugin,
+    CmsModelFieldRegexValidatorExpressionPlugin
+} from "@webiny/app-headless-cms-common/types";
 import { useForm, Bind } from "@webiny/form";
 
 const PatternSettings = () => {

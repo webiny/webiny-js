@@ -3,7 +3,7 @@ import { ReactComponent as DraftIcon } from "./assets/status-draft.svg";
 import { ReactComponent as PublishedIcon } from "./assets/status-published.svg";
 import { ReactComponent as UnpublishedIcon } from "./assets/status-unpublished.svg";
 import { Box } from "./Box";
-import { CmsContentEntryStatusType } from "~/types";
+import { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types";
 
 const getIcon = (status: CmsContentEntryStatusType) => {
     switch (status) {

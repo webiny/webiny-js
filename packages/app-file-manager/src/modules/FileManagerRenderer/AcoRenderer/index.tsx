@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
     createComponentPlugin,
     FileManagerFileItem,
@@ -9,7 +9,8 @@ import { FileItem } from "@webiny/app-admin/types";
 import FileManagerAcoView, { FileManagerAcoViewProps } from "./FileManagerAcoView";
 import { FileManagerAcoViewProvider } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 import { AcoProvider } from "@webiny/app-aco";
-import { FM_ACO_APP } from "~/constants";
+import { FM_ACO_APP, LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/constants";
+import { useApolloClient } from "@apollo/react-hooks";
 
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
@@ -63,8 +64,19 @@ export const AcoRenderer = createComponentPlugin(BaseFileManagerRenderer, () => 
             accept: images ? accept || imagesAccept : accept || []
         };
 
+        const createNavigateFolderStorageKey = useCallback(() => {
+            return LOCAL_STORAGE_LATEST_VISITED_FOLDER;
+        }, []);
+
+        const client = useApolloClient();
+
         return (
-            <AcoProvider id={FM_ACO_APP}>
+            <AcoProvider
+                id={FM_ACO_APP}
+                client={client}
+                folderIdQueryString={"fmFolderId"}
+                createNavigateFolderStorageKey={createNavigateFolderStorageKey}
+            >
                 <FileManagerAcoViewProvider
                     accept={viewProps.accept || []}
                     tags={viewProps.tags || []}

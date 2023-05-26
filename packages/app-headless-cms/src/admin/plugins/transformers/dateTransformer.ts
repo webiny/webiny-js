@@ -1,4 +1,4 @@
-import { CmsFieldValueTransformer } from "~/types";
+import { CmsFieldValueTransformer } from "@webiny/app-headless-cms-common/types";
 import WebinyError from "@webiny/error";
 
 interface TransformerCallable<T> {

@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import {
     CmsEditorFieldPredefinedValuesEntry as Option,
     CmsEditorFieldRendererPlugin
-} from "~/types";
+} from "@webiny/app-headless-cms-common/types";
 import { Select } from "@webiny/ui/Select";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");

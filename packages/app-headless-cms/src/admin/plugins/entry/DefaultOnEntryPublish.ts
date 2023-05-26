@@ -4,8 +4,8 @@ import {
     CmsEntryPublishMutationResponse,
     CmsEntryPublishMutationVariables,
     createPublishMutation
-} from "~/admin/graphql/contentEntries";
-import { CmsErrorResponse, CmsModel } from "~/types";
+} from "@webiny/app-headless-cms-common";
+import { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { useCms } from "~/admin/hooks";
 import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";

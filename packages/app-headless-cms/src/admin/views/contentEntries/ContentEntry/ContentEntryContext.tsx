@@ -15,7 +15,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
-import { CmsContentEntryRevision, CmsEditorContentEntry } from "~/types";
+import { CmsContentEntryRevision, CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
 import {
@@ -25,16 +25,16 @@ import {
     CmsEntryGetQueryVariables,
     createReadQuery,
     createRevisionsQuery
-} from "~/admin/graphql/contentEntries";
+} from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
 interface ContentEntryContextForm {
-    submit: (ev: React.SyntheticEvent) => Promise<CmsEditorContentEntry | null>;
+    submit: (ev: React.SyntheticEvent) => Promise<CmsContentEntry | null>;
 }
 type ContentEntryContextFormRef = MutableRefObject<ContentEntryContextForm>;
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
-    entry: CmsEditorContentEntry;
+    entry: CmsContentEntry;
     form: ContentEntryContextFormRef;
     setFormRef: (form: { submit: Function }) => void;
     loading: boolean;
@@ -174,7 +174,7 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
     });
 
     const loading = isLoading || getEntry.loading || getRevisions.loading;
-    const entry = (get(getEntry, "data.content.data") as unknown as CmsEditorContentEntry) || {};
+    const entry = (get(getEntry, "data.content.data") as unknown as CmsContentEntry) || {};
 
     const value: ContentEntryContext = {
         canCreate,

@@ -18,7 +18,7 @@ import {
 } from "~/admin/graphql/contentModels";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { useNewRefEntryDialog } from "../hooks/useNewRefEntryDialog";
-import { CmsContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");

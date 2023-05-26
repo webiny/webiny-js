@@ -9,7 +9,7 @@ import useQuery from "~/admin/hooks/useQuery";
 import usePermission from "~/admin/hooks/usePermission";
 import { AddMenu as Menu } from "@webiny/app-admin";
 import { NothingToShow } from "./NothingToShowElement";
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsGroup, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface HasContentEntryPermissionsProps {

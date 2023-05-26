@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { ReactComponent as InfoIcon } from "@material-design-icons/svg/outlined/info.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add_circle_outline.svg";
 import { Typography } from "@webiny/ui/Typography";
-import { CmsDynamicZoneTemplate } from "~/types";
+import { CmsDynamicZoneTemplate } from "@webiny/app-headless-cms-common/types";
 import { TemplateGallery } from "./TemplateGallery";
 import { IconButton, ButtonSecondary } from "@webiny/ui/Button";
 

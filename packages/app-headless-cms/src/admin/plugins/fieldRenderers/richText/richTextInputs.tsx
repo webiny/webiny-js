@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";

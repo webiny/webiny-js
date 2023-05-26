@@ -2,7 +2,7 @@ import { FileItem } from "@webiny/app-admin/types";
 import gql from "graphql-tag";
 import { Settings } from "~/types";
 import { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext";
-import { ListDbSort } from "@webiny/app-aco/types";
+import { ListSearchRecordsSort } from "@webiny/app-aco/types";
 
 const FILE_FIELDS = /* GraphQL */ `
     {
@@ -58,7 +58,7 @@ export interface ListFilesQueryResponse {
 export interface ListFilesQueryVariables {
     limit?: number;
     after?: string | null;
-    sort?: ListDbSort;
+    sort?: ListSearchRecordsSort;
     where?: {
         search?: string;
         type?: string;

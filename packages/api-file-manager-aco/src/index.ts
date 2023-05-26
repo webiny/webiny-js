@@ -29,7 +29,7 @@ export const createAcoFileManagerImportExportContext = () => {
     const plugin = new ContextPlugin<FmAcoContext>(context => {
         if (!context.aco) {
             console.log(
-                `There is no ACO initialized so we will not initialize the Page Builder ACO.`
+                `There is no ACO initialized so we will not initialize the File Manager ACO.`
             );
             return;
         }

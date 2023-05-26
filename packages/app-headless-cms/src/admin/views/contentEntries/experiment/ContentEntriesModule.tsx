@@ -5,7 +5,7 @@ import { Select } from "@webiny/ui/Select";
 import { ContentEntriesViewRenderer, ContentEntriesViewConfig } from "./ContentEntriesViewConfig";
 import { ContentEntriesRenderer } from "./ContentEntriesRenderer";
 import { plugins } from "@webiny/plugins";
-import { CmsEntryFilterStatusPlugin } from "~/types";
+import { CmsEntryFilterStatusPlugin } from "@webiny/app-headless-cms-common/types";
 
 const { Filter, Sorter } = ContentEntriesViewConfig;
 

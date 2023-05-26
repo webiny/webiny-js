@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
-import { CmsModelField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "@webiny/app-headless-cms-common/types";
 import {
     SEARCH_CONTENT_ENTRIES,
     GET_CONTENT_ENTRIES,

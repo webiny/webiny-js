@@ -1,13 +1,13 @@
 import gql from "graphql-tag";
 import {
     CmsContentEntryRevision,
-    CmsEditorContentEntry,
+    CmsContentEntry,
     CmsEditorContentModel,
     CmsErrorResponse,
     CmsMetaResponse
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
-import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
+import { getModelTitleFieldId } from "./getModelTitleFieldId";
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
     meta {
@@ -53,7 +53,7 @@ const ERROR_FIELD = /* GraphQL */ `
  */
 export interface CmsEntryGetQueryResponse {
     content: {
-        data: CmsEditorContentEntry;
+        data: CmsContentEntry;
         error: CmsErrorResponse | null;
     };
 }
@@ -70,12 +70,12 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
     return gql`
         query CmsEntriesGet${model.singularApiName}($revision: ID, $entryId: ID) {
             content: get${model.singularApiName}(revision: $revision, entryId: $entryId) {
-            data {
-                ${CONTENT_ENTRY_SYSTEM_FIELDS}
-                ${createFieldsList({ model, fields: model.fields })}
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
+                }
+                error ${ERROR_FIELD}
             }
-            error ${ERROR_FIELD}
-        }
         }
     `;
 };
@@ -115,7 +115,7 @@ export const createRevisionsQuery = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntriesListQueryResponse {
     content: {
-        data: CmsEditorContentEntry[];
+        data: CmsContentEntry[];
         error: CmsErrorResponse | null;
         meta: CmsMetaResponse;
     };
@@ -142,17 +142,17 @@ export const createListQuery = (model: CmsEditorContentModel) => {
             limit: $limit
             after: $after
             ) {
-            data {
-                ${CONTENT_ENTRY_SYSTEM_FIELDS}
-                ${getModelTitleFieldId(model)}
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${getModelTitleFieldId(model)}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                error ${ERROR_FIELD}
             }
-            meta {
-                cursor
-                hasMoreItems
-                totalCount
-            }
-            error ${ERROR_FIELD}
-        }
         }
     `;
 };
@@ -163,7 +163,7 @@ export const createListQuery = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryDeleteMutationResponse {
     content: {
-        data: CmsEditorContentEntry | null;
+        data: CmsContentEntry | null;
         error: CmsErrorResponse | null;
     };
 }
@@ -189,7 +189,7 @@ export const createDeleteMutation = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryCreateMutationResponse {
     content: {
-        data: CmsEditorContentEntry | null;
+        data: CmsContentEntry | null;
         error: CmsErrorResponse | null;
     };
 }
@@ -221,7 +221,7 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryCreateFromMutationResponse {
     content: {
-        data?: CmsEditorContentEntry;
+        data?: CmsContentEntry;
         error?: CmsErrorResponse;
     };
 }
@@ -255,7 +255,7 @@ export const createCreateFromMutation = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryUpdateMutationResponse {
     content: {
-        data?: CmsEditorContentEntry;
+        data?: CmsContentEntry;
         error?: CmsErrorResponse;
     };
 }
@@ -290,7 +290,7 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryPublishMutationResponse {
     content: {
-        data?: CmsEditorContentEntry;
+        data?: CmsContentEntry;
         error?: CmsErrorResponse;
     };
 }
@@ -318,7 +318,7 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryUnpublishMutationResponse {
     content: {
-        data?: CmsEditorContentEntry;
+        data?: CmsContentEntry;
         error?: CmsErrorResponse;
     };
 }

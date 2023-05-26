@@ -9,8 +9,13 @@ import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
 import { rowHandle, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useModelFieldEditor } from "./useModelFieldEditor";
-import { DragSource, FieldEditorProvider, IsVisibleCallable } from "./FieldEditorContext";
-import { CmsModelField, CmsEditorFieldsLayout, CmsModelFieldTypePlugin } from "~/types";
+import { FieldEditorProvider, IsVisibleCallable } from "./FieldEditorContext";
+import {
+    CmsModelField,
+    CmsEditorFieldsLayout,
+    CmsModelFieldTypePlugin,
+    DragSource
+} from "@webiny/app-headless-cms-common/types";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");

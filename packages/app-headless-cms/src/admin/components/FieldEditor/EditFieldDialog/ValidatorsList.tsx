@@ -7,7 +7,10 @@ import { Form, Bind } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
-import { CmsModelFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
+import {
+    CmsModelFieldValidator,
+    CmsModelFieldValidatorPlugin
+} from "@webiny/app-headless-cms-common/types";
 import { Validator } from "@webiny/validation/types";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";

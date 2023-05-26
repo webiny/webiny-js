@@ -1,17 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
-import { AcoApp, AcoError, AcoModel, AcoModelField } from "~/types";
+import { AcoApp, AcoAppMode, AcoError, AcoModel, AcoModelField } from "~/types";
 import { createGetAppQuery, GetAppResult, GetAppVariables } from "~/graphql/app.gql";
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
 import { Loader } from "~/components/FolderTree/Loader";
 import { DisplayError } from "./DisplayError";
+import { NavigateFolderProvider } from "~/contexts/navigateFolder";
+import { ApolloClient } from "apollo-client";
 
-interface AcoAppProviderContext {
+export interface AcoAppProviderContext {
     app: AcoApp;
     model: AcoModel;
+    client: ApolloClient<any>;
     loading: boolean;
     error?: AcoError | null;
+    mode: AcoAppMode;
 }
 
 interface AcoAppProviderState {
@@ -19,20 +22,26 @@ interface AcoAppProviderState {
     app?: AcoApp | null;
     model?: AcoModel | null;
     error?: AcoError | null;
+    mode: AcoAppMode;
 }
 
 export const AcoAppContext = React.createContext<AcoAppProviderContext | undefined>(undefined);
 
-export interface AcoAppProviderPropsApi {
+interface BaseAcoAppProviderProps {
     children: React.ReactNode;
     id: string;
+    folderIdQueryString?: string;
+    client: ApolloClient<any>;
+    createNavigateFolderListLink?: () => string;
+    createNavigateFolderStorageKey: () => string;
+}
+
+export interface AcoAppProviderPropsApi extends BaseAcoAppProviderProps {
     model?: never;
     getFields?: never;
 }
 
-export interface AcoAppProviderPropsManual {
-    children: React.ReactNode;
-    id: string;
+export interface AcoAppProviderPropsManual extends BaseAcoAppProviderProps {
     model: AcoModel;
     getFields?: () => AcoModelField[];
 }
@@ -82,15 +91,19 @@ const createApiApp = (data: CreateApiAppParams | null): AcoApp | null => {
 export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     children,
     id,
+    client,
     model: inputModel,
-    getFields
+    getFields,
+    folderIdQueryString,
+    createNavigateFolderListLink,
+    createNavigateFolderStorageKey
 }) => {
-    const client = useApolloClient();
     const [state, setState] = useState<AcoAppProviderState>({
         loading: false,
         app: null,
         model: null,
-        error: null
+        error: null,
+        mode: "aco"
     });
 
     /**
@@ -119,7 +132,8 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                         id,
                         model: inputModel,
                         getFields
-                    })
+                    }),
+                    mode: "cms"
                 };
             });
             return;
@@ -150,7 +164,8 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                             loading: false,
                             app: null,
                             model: null,
-                            error
+                            error,
+                            mode: "aco"
                         };
                     });
                     return;
@@ -164,6 +179,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                             loading: false,
                             app: null,
                             model: null,
+                            mode: "aco",
                             error: {
                                 message: `App "${id}" not found!`,
                                 code: "APP_NOT_FOUND"
@@ -175,22 +191,25 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                         loading: false,
                         app,
                         model: app.model,
-                        error: null
+                        error: null,
+                        mode: "aco"
                     };
                 });
             });
     }, [id, inputModel?.modelId]);
 
-    const { app, model, error, loading } = state;
+    const { app, model, error, loading, mode } = state;
 
     const value = useMemo<AcoAppProviderContext>(() => {
         return {
             app: app as AcoApp,
             loading,
+            client,
             model: model as AcoModel,
-            error
+            error,
+            mode
         };
-    }, [app?.id, loading, error, model]);
+    }, [app?.id, loading, error, model, client, mode]);
     /**
      * Do not render anything yet if there is no application.
      */
@@ -215,7 +234,15 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     return (
         <AcoAppContext.Provider value={value}>
             <FoldersContextProvider>
-                <SearchRecordsContextProvider>{children}</SearchRecordsContextProvider>
+                <SearchRecordsContextProvider>
+                    <NavigateFolderProvider
+                        folderIdQueryString={folderIdQueryString}
+                        createListLink={createNavigateFolderListLink}
+                        createStorageKey={createNavigateFolderStorageKey}
+                    >
+                        {children}
+                    </NavigateFolderProvider>
+                </SearchRecordsContextProvider>
             </FoldersContextProvider>
         </AcoAppContext.Provider>
     );

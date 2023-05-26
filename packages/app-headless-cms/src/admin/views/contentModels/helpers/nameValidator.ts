@@ -1,5 +1,5 @@
 import lodashCamelCase from "lodash/camelCase";
-import { CmsModel } from "~/types";
+import { CmsModel } from "@webiny/app-headless-cms-common/types";
 
 interface Params {
     models: CmsModel[];

@@ -2,7 +2,7 @@ import lodashUpperFirst from "lodash/upperFirst";
 import lodashCamelCase from "lodash/camelCase";
 import gql from "graphql-tag";
 import ApolloClient from "apollo-client";
-import { CmsModel } from "~/types";
+import { CmsModel } from "@webiny/app-headless-cms-common/types";
 
 /**
  * This list is to disallow creating models that might interfere with GraphQL schema creation.

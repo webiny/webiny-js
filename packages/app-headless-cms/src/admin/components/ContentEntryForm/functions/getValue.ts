@@ -1,4 +1,4 @@
-import { CmsModelField } from "~/types";
+import { CmsModelField } from "@webiny/app-headless-cms-common/types";
 import { BindComponentRenderProp } from "@webiny/form";
 
 interface GetValueParams {

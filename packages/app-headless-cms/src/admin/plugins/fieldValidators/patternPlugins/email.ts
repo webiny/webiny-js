@@ -1,4 +1,4 @@
-import { CmsModelFieldRegexValidatorExpressionPlugin } from "~/types";
+import { CmsModelFieldRegexValidatorExpressionPlugin } from "@webiny/app-headless-cms-common/types";
 
 const plugin: CmsModelFieldRegexValidatorExpressionPlugin = {
     type: "cms-model-field-regex-validator-expression",

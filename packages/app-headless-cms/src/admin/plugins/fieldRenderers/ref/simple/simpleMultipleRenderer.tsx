@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsModelFieldRendererPlugin } from "~/types";
+import { CmsModelFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
 import { i18n } from "@webiny/app/i18n";
 import { SimpleMultipleRenderer } from "./components/SimpleMultipleRenderer";
 

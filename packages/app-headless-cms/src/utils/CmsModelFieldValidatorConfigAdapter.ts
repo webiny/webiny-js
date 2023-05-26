@@ -1,5 +1,10 @@
 import { plugins } from "@webiny/plugins";
-import { CmsModelFieldValidatorConfig, CmsModelField, CmsModelFieldValidatorPlugin } from "~/types";
+import {
+    CmsModelField,
+    CmsModelFieldValidatorConfig,
+    CmsModelFieldValidatorConfigAdapter as ICmsModelFieldValidatorConfigAdapter,
+    CmsModelFieldValidatorPlugin
+} from "@webiny/app-headless-cms-common/types";
 
 function getValidator(name: string) {
     const allValidators = plugins.byType<CmsModelFieldValidatorPlugin>("cms-model-field-validator");
@@ -10,7 +15,7 @@ function getValidator(name: string) {
     return plugin.validator;
 }
 
-export class CmsModelFieldValidatorConfigAdapter {
+export class CmsModelFieldValidatorConfigAdapter implements ICmsModelFieldValidatorConfigAdapter {
     private field: CmsModelField;
     private validator: CmsModelFieldValidatorConfig;
     private plugin: CmsModelFieldValidatorPlugin["validator"];

@@ -1,4 +1,8 @@
-import { CmsContentEntryStatusType, CmsIdentity, CmsModel } from "~/types";
+import {
+    CmsContentEntryStatusType,
+    CmsIdentity,
+    CmsModel
+} from "@webiny/app-headless-cms-common/types";
 
 export interface OptionItem {
     id: string;

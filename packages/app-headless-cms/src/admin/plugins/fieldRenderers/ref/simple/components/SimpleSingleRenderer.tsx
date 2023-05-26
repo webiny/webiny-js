@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { BindComponentRenderProp, CmsModelField } from "~/types";
+import { BindComponentRenderProp, CmsModelField } from "@webiny/app-headless-cms-common/types";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { useContentModels } from "./useContentModels";
 import { useReferences } from "./useReferences";

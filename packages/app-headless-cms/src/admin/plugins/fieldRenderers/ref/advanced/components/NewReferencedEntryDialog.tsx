@@ -3,7 +3,7 @@ import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/
 import { DialogActions, DialogCancel, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { i18n } from "@webiny/app/i18n";
-import { CmsContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";

@@ -8,9 +8,7 @@ import {
     FormAPI
 } from "@webiny/form";
 import { IconName, IconPrefix } from "@fortawesome/fontawesome-svg-core";
-import Label from "~/admin/components/ContentEntryForm/Label";
 import { SecurityPermission } from "@webiny/app-security/types";
-import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 import {
     CmsModelFieldValidator,
     CmsModelFieldValidatorsFactory,
@@ -18,6 +16,7 @@ import {
 } from "./validation";
 import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
+import { DragObjectWithType } from "react-dnd";
 
 export * from "./validation";
 export * from "./model";
@@ -26,6 +25,20 @@ export * from "./shared";
 interface QueryFieldParams {
     model: CmsModel;
     field: CmsModelField;
+}
+
+interface Position {
+    row: number;
+    index: number;
+}
+
+export interface DragSource extends DragObjectWithType {
+    parent?: string;
+    pos?: Partial<Position>;
+    type: "row" | "field" | "newField";
+    fieldType?: string;
+    field?: CmsModelField | null;
+    fields?: CmsModelField[];
 }
 
 /**
@@ -207,7 +220,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
 
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
-    Label: typeof Label;
+    Label: React.FC;
     getBind: (index?: number, key?: string) => BindComponent;
     contentModel: CmsModel;
 }
@@ -518,3 +531,10 @@ export interface CmsEntryFilterStatusPlugin extends Plugin {
     label: string;
     value: string;
 }
+
+/**
+ * Available statuses for content entry.
+ *
+ * @category CmsEntry
+ */
+export type CmsEntryStatus = "published" | "unpublished" | "draft";

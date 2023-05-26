@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useCms } from "~/admin/hooks";
-import { CmsErrorResponse, CmsModel } from "~/types";
+import { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types";
 import {
     CmsEntryDeleteMutationResponse,
     CmsEntryDeleteMutationVariables,
     createDeleteMutation
-} from "~/admin/graphql/contentEntries";
+} from "@webiny/app-headless-cms-common";
 import { DocumentNode } from "graphql";
 import { OnEntryDeleteRequest } from "~/admin/contexts/Cms";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
@@ -38,14 +38,8 @@ const OnEntryDelete: React.FC = () => {
         return mutations.current[key];
     };
 
-    const handleOnDelete = async ({
-        entry,
-        model,
-        id,
-        client,
-        listQueryVariables = {},
-        locale
-    }: OnEntryDeleteRequest) => {
+    const handleOnDelete = async (params: OnEntryDeleteRequest) => {
+        const { entry, model, id, client, listQueryVariables = {}, locale } = params;
         const mutation = getMutation(model, locale);
 
         const response = await client.mutate<
@@ -89,7 +83,6 @@ const OnEntryDelete: React.FC = () => {
 
         // We have other revisions, update entry's cache
         const revisions = GQLCache.removeRevisionFromEntryCache(model, client.cache, {
-            ...entry,
             id
         });
 

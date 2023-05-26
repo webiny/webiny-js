@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo } from "react";
-import { SearchRecordsContext } from "~/contexts/records";
-import { ListDbSort, SearchRecordItem } from "~/types";
+import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
+import { SearchRecordItem } from "~/types";
 
 export const useRecords = (folderId?: string) => {
     const context = useContext(SearchRecordsContext);
@@ -25,9 +25,16 @@ export const useRecords = (folderId?: string) => {
          * On first mount, call `listRecords`, which will either issue a network request, or load links from cache.
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
-        if (folderId) {
-            listRecords({ folderId });
+        if (!folderId) {
+            return;
         }
+        listRecords({
+            where: {
+                location: {
+                    folderId
+                }
+            }
+        });
     }, [folderId]);
 
     return useMemo(
@@ -40,8 +47,16 @@ export const useRecords = (folderId?: string) => {
             loading,
             meta: meta[folderId!] || {},
             records: records.filter(record => record.location.folderId === folderId),
-            listRecords(params: { after?: string; limit?: number; sort?: ListDbSort }) {
-                return listRecords({ folderId, ...params });
+            listRecords(params: ListRecordsParams) {
+                return listRecords({
+                    ...params,
+                    where: {
+                        ...(params.where || {}),
+                        location: {
+                            folderId
+                        }
+                    }
+                });
             },
             getRecord(id: string) {
                 return getRecord(id);

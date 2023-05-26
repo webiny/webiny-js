@@ -13001,6 +13001,7 @@ __metadata:
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/validation": 0.0.0
     apollo-client: ^2.6.10
@@ -13013,6 +13014,7 @@ __metadata:
     react-dom: 17.0.2
     rimraf: ^3.0.2
     slugify: ^1.2.9
+    store: ^2.0.12
     ttypescript: ^1.5.12
     typescript: 4.7.4
   languageName: unknown
@@ -13531,6 +13533,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-headless-cms-common@0.0.0, @webiny/app-headless-cms-common@workspace:packages/app-headless-cms-common":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-headless-cms-common@workspace:packages/app-headless-cms-common"
+  dependencies:
+    "@babel/cli": ^7.19.3
+    "@babel/core": ^7.19.3
+    "@babel/preset-env": ^7.19.4
+    "@babel/preset-react": ^7.16.0
+    "@babel/preset-typescript": ^7.18.6
+    "@babel/runtime": ^7.19.0
+    "@fortawesome/fontawesome-svg-core": ^1.3.0
+    "@types/react": 17.0.39
+    "@webiny/app-security": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/form": 0.0.0
+    "@webiny/plugins": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    babel-plugin-emotion: ^9.2.8
+    babel-plugin-lodash: ^3.3.4
+    babel-plugin-module-resolver: ^4.1.0
+    graphql: ^15.7.2
+    graphql-tag: ^2.12.6
+    prop-types: ^15.7.2
+    react: 17.0.2
+    react-dnd: ^11.1.3
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-headless-cms@0.0.0, @webiny/app-headless-cms@workspace:packages/app-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/app-headless-cms@workspace:packages/app-headless-cms"
@@ -13555,8 +13588,10 @@ __metadata:
     "@svgr/webpack": ^6.1.1
     "@types/react": 17.0.39
     "@webiny/app": 0.0.0
+    "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-graphql-playground": 0.0.0
+    "@webiny/app-headless-cms-common": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-plugin-admin-welcome-screen": 0.0.0
     "@webiny/app-security": 0.0.0

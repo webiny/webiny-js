@@ -2,25 +2,28 @@ import React, { useMemo } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CmsEditorContentEntry } from "~/types";
-import * as GQL from "~/admin/graphql/contentEntries";
-import * as GQLCache from "./cache";
-import { useApolloClient, useCms } from "~/admin/hooks";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
     CmsEntryUnpublishMutationResponse,
-    CmsEntryUnpublishMutationVariables
-} from "~/admin/graphql/contentEntries";
+    CmsEntryUnpublishMutationVariables,
+    createCreateFromMutation,
+    createUnpublishMutation
+} from "@webiny/app-headless-cms-common";
+import * as GQLCache from "./cache";
+import { useApolloClient, useCms } from "~/admin/hooks";
+import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
 interface CreateRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 interface EditRevisionHandler {
     (id?: string): void;
 }
+
 interface DeleteRevisionHandler {
     (id?: string): Promise<void>;
 }
@@ -39,7 +42,9 @@ interface UseRevisionHandlers {
 }
 
 export interface UseRevisionProps {
-    revision: CmsEditorContentEntry;
+    revision: Pick<CmsContentEntry, "id"> & {
+        meta: Pick<CmsContentEntry["meta"], "version">;
+    };
 }
 
 export const useRevision = ({ revision }: UseRevisionProps) => {
@@ -53,8 +58,8 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
     const { CREATE_REVISION, UNPUBLISH_REVISION } = useMemo(() => {
         return {
-            CREATE_REVISION: GQL.createCreateFromMutation(contentModel),
-            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel)
+            CREATE_REVISION: createCreateFromMutation(contentModel),
+            UNPUBLISH_REVISION: createUnpublishMutation(contentModel)
         };
     }, [modelId]);
 

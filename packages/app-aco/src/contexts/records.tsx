@@ -1,5 +1,4 @@
 import React, { ReactNode, useMemo, useState } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
 import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
@@ -18,11 +17,9 @@ import {
     DeleteSearchRecordVariables,
     GetSearchRecordQueryVariables,
     GetSearchRecordResponse,
-    ListDbSort,
     ListMeta,
     ListSearchRecordsQueryVariables,
     ListSearchRecordsResponse,
-    ListSearchRecordsWhereQueryVariables,
     ListTagsQueryVariables,
     ListTagsResponse,
     ListTagsWhereQueryVariables,
@@ -38,30 +35,17 @@ import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks";
 
 interface ListTagsParams {
-    where?: ListTagsWhereQueryVariables & {
-        AND?: ListTagsWhereQueryVariables[];
-        OR?: ListTagsWhereQueryVariables[];
-    };
+    where?: ListTagsWhereQueryVariables;
 }
+
+export type ListRecordsParams = ListSearchRecordsQueryVariables;
 
 interface SearchRecordsContext {
     records: SearchRecordItem[];
     tags: TagItem[];
     loading: Loading<LoadingActions>;
     meta: Meta<ListMeta>;
-    listRecords: (params: {
-        folderId?: string;
-        limit?: number;
-        after?: string;
-        sort?: ListDbSort;
-        search?: string;
-        createdBy?: string;
-        tags_in?: string[];
-        tags_startsWith?: string;
-        tags_not_startsWith?: string;
-        AND?: ListSearchRecordsWhereQueryVariables[];
-        OR?: ListSearchRecordsWhereQueryVariables[];
-    }) => Promise<SearchRecordItem[]>;
+    listRecords: (params: ListRecordsParams) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem | null>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
@@ -111,6 +95,13 @@ const mergeRecords = (
     return sortBy(mergedRecords, ["title"]);
 };
 
+const getRecordCount = (records: SearchRecordItem[], folderId?: string | null) => {
+    if (!folderId) {
+        return records.length;
+    }
+    return records.filter(record => record.location.folderId === folderId).length;
+};
+
 const mergeAndSortTags = (oldTagItems: TagItem[], newTags: string[]): TagItem[] => {
     if (!newTags.length) {
         return oldTagItems;
@@ -123,9 +114,7 @@ const mergeAndSortTags = (oldTagItems: TagItem[], newTags: string[]): TagItem[] 
 };
 
 export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
-    const client = useApolloClient();
-
-    const { app } = useAcoApp();
+    const { app, client, mode } = useAcoApp();
     const { model } = app;
 
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
@@ -136,12 +125,12 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
     const { GET_RECORD, LIST_RECORDS, UPDATE_RECORD, DELETE_RECORD, CREATE_RECORD, LIST_TAGS } =
         useMemo(() => {
             return {
-                LIST_RECORDS: createListRecords(model),
-                UPDATE_RECORD: createUpdateRecord(model),
-                GET_RECORD: createGetRecord(model),
-                LIST_TAGS: createListTags(model),
-                DELETE_RECORD: createDeleteRecord(model),
-                CREATE_RECORD: createCreateRecord(model)
+                LIST_RECORDS: createListRecords(model, mode),
+                UPDATE_RECORD: createUpdateRecord(model, mode),
+                GET_RECORD: createGetRecord(model, mode),
+                LIST_TAGS: createListTags(model, mode),
+                DELETE_RECORD: createDeleteRecord(model, mode),
+                CREATE_RECORD: createCreateRecord(model, mode)
             };
         }, [app.id, model.modelId]);
 
@@ -152,27 +141,15 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             loading,
             meta,
             async listRecords(params) {
-                const {
-                    folderId,
-                    after,
-                    limit,
-                    sort: sorting,
-                    search,
-                    createdBy,
-                    tags_in,
-                    tags_startsWith,
-                    tags_not_startsWith,
-                    AND,
-                    OR
-                } = params;
+                const { after, limit, sort: sorting, search, where } = params;
+
+                const folderId = where?.location?.folderId;
 
                 /**
                  * Avoiding to fetch records in case they have already been fetched.
                  * This happens when visiting a list with all records loaded and receives "after" param.
                  */
-                const recordsCount = records.filter(
-                    record => record.location.folderId === folderId
-                ).length;
+                const recordsCount = getRecordCount(records, folderId);
                 const totalCount = meta[folderId || "search"]?.totalCount || 0;
                 if (after && recordsCount === totalCount) {
                     return records;
@@ -192,16 +169,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                         client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
                             query: LIST_RECORDS,
                             variables: {
-                                where: {
-                                    type: app.id,
-                                    ...(folderId && { location: { folderId } }),
-                                    tags_in,
-                                    tags_startsWith,
-                                    tags_not_startsWith,
-                                    createdBy,
-                                    AND,
-                                    OR
-                                },
+                                where,
                                 search,
                                 limit,
                                 after,

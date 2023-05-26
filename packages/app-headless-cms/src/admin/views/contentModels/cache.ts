@@ -2,7 +2,7 @@ import dotProp from "dot-prop-immutable";
 import { DataProxy } from "apollo-cache";
 import ApolloClient from "apollo-client";
 import { LIST_CONTENT_MODELS, LIST_MENU_CONTENT_GROUPS_MODELS } from "../../viewsGraphql";
-import { CmsEditorContentModel } from "~/types";
+import { CmsEditorContentModel } from "@webiny/app-headless-cms-common/types";
 import { ListCmsModelsQueryResponse, ListMenuCmsGroupsQueryResponse } from "../../viewsGraphql";
 
 export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {

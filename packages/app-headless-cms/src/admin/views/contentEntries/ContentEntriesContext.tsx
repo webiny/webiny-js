@@ -1,7 +1,7 @@
 import React, { useState, useMemo, Dispatch, SetStateAction, useCallback } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
-import { CmsModel, CmsSecurityPermission } from "~/types";
+import { CmsModel, CmsSecurityPermission } from "@webiny/app-headless-cms-common/types";
 import {
     useContentEntriesViewConfig,
     ContentEntriesViewConfigSorter

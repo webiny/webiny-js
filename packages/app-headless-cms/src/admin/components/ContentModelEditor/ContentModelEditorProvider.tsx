@@ -20,7 +20,7 @@ import {
     UpdateCmsModelMutationVariables
 } from "~/admin/graphql/contentModels";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
-import { CmsModelField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { FetchResult } from "apollo-link";
 import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { ModelProvider } from "~/admin/components/ModelProvider";

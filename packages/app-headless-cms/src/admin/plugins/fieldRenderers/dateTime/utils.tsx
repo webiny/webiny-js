@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
-import { CmsModelField } from "~/types";
+import { CmsModelField } from "@webiny/app-headless-cms-common/types";
 
 export const UTC_TIMEZONES = [
     {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CmsContentDetailsPlugin } from "~/types";
+import { CmsContentDetailsPlugin } from "@webiny/app-headless-cms-common/types";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
 import SaveContentButton from "./saveContent/SaveContent";
 import { SaveAndPublishButton } from "./saveAndPublishContent/SaveAndPublishContent";

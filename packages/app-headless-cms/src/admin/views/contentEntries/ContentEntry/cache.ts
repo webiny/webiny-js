@@ -1,15 +1,20 @@
 import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
-import { CmsContentEntryRevision, CmsEditorContentEntry, CmsModel } from "~/types";
-import * as GQL from "~/admin/graphql/contentEntries";
-import { parseIdentifier } from "@webiny/utils";
-import { DataProxy } from "apollo-cache";
+import {
+    CmsContentEntry,
+    CmsContentEntryRevision,
+    CmsModel
+} from "@webiny/app-headless-cms-common/types";
 import {
     CmsEntriesListQueryResponse,
     CmsEntriesListQueryVariables,
     CmsEntriesListRevisionsQueryResponse,
-    CmsEntriesListRevisionsQueryVariables
-} from "~/admin/graphql/contentEntries";
+    CmsEntriesListRevisionsQueryVariables,
+    createListQuery,
+    createRevisionsQuery
+} from "@webiny/app-headless-cms-common";
+import { parseIdentifier } from "@webiny/utils";
+import { DataProxy } from "apollo-cache";
 import pick from "lodash/pick";
 import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
 
@@ -17,10 +22,7 @@ import { getModelTitleFieldId } from "~/utils/getModelTitleFieldId";
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
  * */
-const sortEntries = (
-    list: CmsEditorContentEntry[],
-    sort?: string[] | null
-): CmsEditorContentEntry[] => {
+const sortEntries = (list: CmsContentEntry[], sort?: string[] | null): CmsContentEntry[] => {
     if (!sort) {
         return list;
     } else if (Array.isArray(sort) === false) {
@@ -38,10 +40,10 @@ const sortEntries = (
 export const addEntryToListCache = (
     model: CmsModel,
     cache: DataProxy,
-    entry: CmsEditorContentEntry,
+    entry: CmsContentEntry,
     variables: CmsEntriesListQueryVariables
 ): void => {
-    const gqlParams = { query: GQL.createListQuery(model), variables };
+    const gqlParams = { query: createListQuery(model), variables };
     const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
         gqlParams
     );
@@ -67,7 +69,7 @@ export const addEntryToListCache = (
                             "ownedBy",
                             "meta",
                             "__typename"
-                        ]) as CmsEditorContentEntry,
+                        ]) as CmsContentEntry,
                         ...content.data
                     ],
                     variables.sort
@@ -83,7 +85,7 @@ export const updateLatestRevisionInListCache = (
     revision: CmsContentEntryRevision,
     variables: CmsEntriesListQueryVariables
 ): void => {
-    const gqlParams = { query: GQL.createListQuery(model), variables };
+    const gqlParams = { query: createListQuery(model), variables };
 
     const { id: uniqueId } = parseIdentifier(revision.id);
 
@@ -110,11 +112,11 @@ export const updateLatestRevisionInListCache = (
 export const removeEntryFromListCache = (
     model: CmsModel,
     cache: DataProxy,
-    revision: CmsContentEntryRevision,
+    revision: Pick<CmsContentEntryRevision, "id">,
     variables: CmsEntriesListQueryVariables
 ): void => {
     // Delete the item from list cache
-    const gqlParams = { query: GQL.createListQuery(model), variables };
+    const gqlParams = { query: createListQuery(model), variables };
     const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
         gqlParams
     );
@@ -139,11 +141,11 @@ export const removeEntryFromListCache = (
 export const removeRevisionFromEntryCache = (
     model: CmsModel,
     cache: DataProxy,
-    revision: CmsContentEntryRevision
+    revision: Pick<CmsContentEntryRevision, "id">
 ): CmsContentEntryRevision[] => {
     const { id } = parseIdentifier(revision.id);
     const gqlParams = {
-        query: GQL.createRevisionsQuery(model),
+        query: createRevisionsQuery(model),
         variables: {
             id
         }
@@ -190,7 +192,7 @@ export const addRevisionToRevisionsCache = (
 ): void => {
     const { id } = parseIdentifier(revision.id);
     const gqlParams = {
-        query: GQL.createRevisionsQuery(model),
+        query: createRevisionsQuery(model),
         variables: {
             id
         }
@@ -221,7 +223,7 @@ export const unpublishPreviouslyPublishedRevision = (
 ): void => {
     const { id } = parseIdentifier(publishedId);
     const gqlParams = {
-        query: GQL.createRevisionsQuery(model),
+        query: createRevisionsQuery(model),
         variables: {
             id
         }

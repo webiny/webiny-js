@@ -5,7 +5,7 @@ import {
     CmsErrorResponse,
     CmsMetaResponse,
     CmsModel
-} from "~/types";
+} from "@webiny/app-headless-cms-common/types";
 import { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { CmsEntryGetEntryVariable } from "~/admin/plugins/fieldRenderers/ref/components/graphql";
 

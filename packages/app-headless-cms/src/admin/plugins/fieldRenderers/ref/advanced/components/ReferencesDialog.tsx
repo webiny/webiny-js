@@ -4,7 +4,7 @@ import { DialogHeader } from "./dialog/DialogHeader";
 import { Search } from "./Search";
 import { Entry } from "./Entry";
 import { DialogActions, DialogContent as BaseDialogContent } from "~/admin/components/Dialog";
-import { CmsModelFieldRendererProps } from "~/types";
+import { CmsModelFieldRendererProps } from "@webiny/app-headless-cms-common/types";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin";

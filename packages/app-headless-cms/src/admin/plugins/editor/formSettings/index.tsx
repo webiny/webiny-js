@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CmsEditorFormSettingsPlugin } from "~/types";
+import { CmsEditorFormSettingsPlugin } from "@webiny/app-headless-cms-common/types";
 import GeneralSettings from "./components/GeneralSettings";
 import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg";
 

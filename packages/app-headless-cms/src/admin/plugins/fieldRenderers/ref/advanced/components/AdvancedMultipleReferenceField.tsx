@@ -3,10 +3,10 @@ import styled from "@emotion/styled";
 import * as GQL from "~/admin/viewsGraphql";
 import {
     BindComponentRenderProp,
-    CmsEditorContentEntry,
+    CmsContentEntry,
     CmsModelFieldRendererProps,
     CmsModel
-} from "~/types";
+} from "@webiny/app-headless-cms-common/types";
 import { Options } from "./Options";
 import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";
@@ -201,7 +201,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     );
 
     const onNewEntryCreate = useCallback(
-        (data: Partial<CmsEditorContentEntry> | null) => {
+        (data: Partial<CmsContentEntry> | null) => {
             if (!data) {
                 console.log(
                     `Could not store new entry to the reference field. Missing whole entry.`

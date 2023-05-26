@@ -8,7 +8,7 @@ import {
     CmsEntrySearchQueryResponse,
     CmsEntrySearchQueryVariables
 } from "./graphql";
-import { CmsModelField, CmsModel } from "~/types";
+import { CmsModelField, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem, OptionItemCollection } from "./types";
 import {

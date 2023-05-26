@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/ballot.svg";
-import { CmsModelFieldTypePlugin, CmsModelField } from "~/types";
+import { CmsModelFieldTypePlugin, CmsModelField } from "@webiny/app-headless-cms-common/types";
 import { i18n } from "@webiny/app/i18n";
 import { ObjectFields } from "./object/ObjectFields";
 import { createFieldsList } from "~/admin/graphql/createFieldsList";

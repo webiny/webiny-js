@@ -1,8 +1,17 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-
 import { CmsModelField } from "~/types";
-import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";
+
+export interface CmsModelFieldValidatorConfigAdapter {
+    isRequired(): boolean;
+    getName(): string;
+    getLabel(): string;
+    getDescription(): string;
+    getDefaultMessage(): string;
+    getDefaultSettings(): Record<string, any> | undefined;
+    getVariables(): CmsModelFieldValidatorVariable[];
+    getVariableDescription(variableName: string): string | undefined;
+}
 
 export interface CmsModelFieldValidatorVariable {
     name: string;

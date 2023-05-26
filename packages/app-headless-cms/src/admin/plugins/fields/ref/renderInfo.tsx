@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { CmsModel as BaseCmsModel, CmsModelField } from "~/types";
+import { CmsModel as BaseCmsModel, CmsModelField } from "@webiny/app-headless-cms-common/types";
 import { useQuery } from "~/admin/hooks";
 import {
     LIST_REFERENCED_MODELS,
