@@ -7,6 +7,7 @@ import React, {
     useContext,
     useMemo
 } from "react";
+import {useCompositionScope} from "~/CompositionScope";
 
 export function compose(...fns: HigherOrderComponent[]) {
     return function ComposedComponent(Base: FC<unknown>): FC<unknown> {
@@ -23,6 +24,10 @@ interface ComposedComponent {
      * HOCs used to compose the original component.
      */
     hocs: HigherOrderComponent[];
+    /**
+     * Component composition can be scoped.
+     */
+    scope?: string;
 }
 
 /**
@@ -35,31 +40,41 @@ export interface HigherOrderComponent<TInputProps = any, TOutputProps = TInputPr
 }
 
 type ComposedComponents = Map<ComponentType<unknown>, ComposedComponent>;
+type ComponentScopes = Map<string, ComposedComponents>;
 
 interface CompositionContext {
-    components: ComposedComponents;
-    getComponent(component: ComponentType<unknown>): ComponentType<unknown> | undefined;
-    composeComponent(component: ComponentType<unknown>, hocs: HigherOrderComponent[]): void;
+    components: ComponentScopes;
+    getComponent(
+        component: ComponentType<unknown>,
+        scope?: string
+    ): ComponentType<unknown> | undefined;
+    composeComponent(
+        component: ComponentType<unknown>,
+        hocs: HigherOrderComponent[],
+        scope?: string
+    ): void;
 }
 
 const CompositionContext = createContext<CompositionContext | undefined>(undefined);
 
 export const CompositionProvider: React.FC = ({ children }) => {
-    const [components, setComponents] = useState<ComposedComponents>(new Map());
+    const [components, setComponents] = useState<ComponentScopes>(new Map());
 
     const composeComponent = useCallback(
-        (component, hocs) => {
+        (component, hocs, scope = "*") => {
             setComponents(prevComponents => {
                 const components = new Map(prevComponents);
-                const recipe = components.get(component) || { component: null, hocs: [] };
+                const scopeMap: ComposedComponents = components.get(scope) || new Map();
+                const recipe = scopeMap.get(component) || { component: null, hocs: [] };
 
                 const newHocs = [...(recipe.hocs || []), ...hocs];
 
-                components.set(component, {
+                scopeMap.set(component, {
                     component: compose(...[...newHocs].reverse())(component),
                     hocs: newHocs
                 });
 
+                components.set(scope, scopeMap);
                 return components;
             });
 
@@ -67,7 +82,8 @@ export const CompositionProvider: React.FC = ({ children }) => {
             return () => {
                 setComponents(prevComponents => {
                     const components = new Map(prevComponents);
-                    const recipe = components.get(component) || {
+                    const scopeMap: ComposedComponents = components.get(scope) || new Map();
+                    const recipe = scopeMap.get(component) || {
                         component: null,
                         hocs: []
                     };
@@ -75,11 +91,12 @@ export const CompositionProvider: React.FC = ({ children }) => {
                     const newHOCs = [...recipe.hocs].filter(hoc => !hocs.includes(hoc));
                     const NewComponent = compose(...[...newHOCs].reverse())(component);
 
-                    components.set(component, {
+                    scopeMap.set(component, {
                         component: NewComponent,
                         hocs: newHOCs
                     });
 
+                    components.set(scope, scopeMap);
                     return components;
                 });
             };
@@ -88,8 +105,9 @@ export const CompositionProvider: React.FC = ({ children }) => {
     );
 
     const getComponent: CompositionContext["getComponent"] = useCallback(
-        Component => {
-            const composedComponent = components.get(Component);
+        (Component, scope = "*") => {
+            const scopeMap: ComposedComponents = components.get(scope) || new Map();
+            const composedComponent = scopeMap.get(Component);
             return composedComponent ? composedComponent.component : undefined;
         },
         [components]
@@ -109,12 +127,13 @@ export const CompositionProvider: React.FC = ({ children }) => {
 
 export function useComponent(Component: ComponentType<any>) {
     const context = useOptionalComposition();
+    const scope = useCompositionScope();
 
     if (!context) {
         return Component;
     }
 
-    return context.getComponent(Component) || Component;
+    return context.getComponent(Component, scope) || Component;
 }
 
 /**

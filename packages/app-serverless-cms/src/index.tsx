@@ -23,6 +23,7 @@ export {
     BrandRenderer,
     Provider,
     Compose,
+    CompositionScope,
     Plugins,
     Plugin,
     makeComposable,

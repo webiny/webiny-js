@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { HigherOrderComponent, useComposition } from "./Context";
+import { useCompositionScope } from "~/CompositionScope";
 
 export interface ComposableFC<TProps = unknown> extends React.FC<TProps> {
     original: React.FC<TProps>;
@@ -17,6 +18,7 @@ export interface ComposeProps {
 
 export const Compose: React.FC<ComposeProps> = props => {
     const { composeComponent } = useComposition();
+    const scope = useCompositionScope();
 
     useEffect(() => {
         if (typeof props.component.original === "undefined") {
@@ -28,7 +30,7 @@ export const Compose: React.FC<ComposeProps> = props => {
         }
 
         const hocs = Array.isArray(props.with) ? props.with : [props.with];
-        return composeComponent(props.component.original, hocs);
+        return composeComponent(props.component.original, hocs, scope);
     }, [props.with]);
 
     return null;
