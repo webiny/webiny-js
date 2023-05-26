@@ -17,21 +17,27 @@ import {
     createSettingsEntity
 } from "~/migrations/5.35.0/001/entities/createSettingsEntity";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { getIndexName } from "~/utils";
+import { esGetIndexName } from "~/utils";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
 const NUMBER_OF_FILES = 3000;
+const INDEX_TYPE = "file-manager";
 let numberOfGeneratedFiles = 0;
 
 describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();
     const elasticsearchClient = createElasticsearchClient();
 
-    beforeAll(() => {
+    beforeAll(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+
+        await elasticsearchClient.indices.deleteAll();
+    });
+    afterEach(async () => {
+        await elasticsearchClient.indices.deleteAll();
     });
 
     const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES) => {
@@ -93,7 +99,11 @@ describe("5.35.0-001", () => {
                             elasticsearchClient,
                             allFiles,
                             item => {
-                                return getIndexName(item.tenant, item.locale);
+                                return esGetIndexName({
+                                    tenant: item.tenant,
+                                    locale: item.locale,
+                                    type: INDEX_TYPE
+                                });
                             }
                         );
                         allFiles.length = 0;
@@ -101,7 +111,11 @@ describe("5.35.0-001", () => {
                 }
                 await insertDynamoDbTestData(table, batch);
                 await insertElasticsearchTestData<File>(elasticsearchClient, allFiles, item => {
-                    return getIndexName(item.tenant, item.locale);
+                    return esGetIndexName({
+                        tenant: item.tenant,
+                        locale: item.locale,
+                        type: INDEX_TYPE
+                    });
                 });
 
                 // Track generated files

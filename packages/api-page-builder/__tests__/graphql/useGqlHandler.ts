@@ -3,12 +3,9 @@ import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createFileManagerContext } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
-
 import prerenderingHookPlugins from "~/prerendering/hooks";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
@@ -72,8 +69,9 @@ import path from "path";
 import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "../tenancySecurity";
-import { getStorageOperations } from "../storageOperations";
-import { documentClient } from "~tests/documentClient";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { PageBuilderStorageOperations } from "~/types";
+import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 
 interface Params {
     permissions?: any;
@@ -82,31 +80,24 @@ interface Params {
     storageOperationPlugins?: any[];
 }
 
-export default ({ permissions, identity, plugins, storageOperationPlugins }: Params = {}) => {
-    const ops = getStorageOperations({
-        plugins: storageOperationPlugins || []
-    });
+export default ({ permissions, identity, plugins }: Params = {}) => {
+    const i18nStorage = getStorageOps("i18n");
+    const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
+    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
 
     const handler = createHandler({
         plugins: [
-            ...ops.plugins,
-            // TODO figure out a way to load these automatically
+            ...pageBuilderStorage.plugins,
             createWcpContext(),
             createWcpGraphQL(),
-            createFileManagerContext({
-                storageOperations: createFileManagerStorageOperations({
-                    documentClient
-                })
-            }),
+            createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
             graphqlHandler(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
-            i18nDynamoDbStorageOperations(),
+            i18nStorage.storageOperations as any,
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
-            createPageBuilderContext({
-                storageOperations: ops.storageOperations
-            }),
+            createPageBuilderContext({ storageOperations: pageBuilderStorage.storageOperations }),
             prerenderingHookPlugins(),
             prerenderingServicePlugins({
                 handlers: {

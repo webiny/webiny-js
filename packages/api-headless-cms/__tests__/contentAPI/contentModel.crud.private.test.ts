@@ -1,7 +1,7 @@
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsGroup, CmsGroupCreateInput, CmsModel } from "~/types";
 import { CreateContentModelMutationVariables } from "~tests/testHelpers/graphql/contentModel";
 
 const privateGroup = new CmsGroupPlugin({
@@ -47,7 +47,7 @@ describe("Private Groups and Models", function () {
         listContentModelsQuery
     } = useGraphQLHandler(manageHandlerOpts);
 
-    const createGroup = async (data: Record<string, any>): Promise<CmsGroup> => {
+    const createGroup = async (data: CmsGroupCreateInput): Promise<CmsGroup> => {
         const [createResponse] = await createContentModelGroupMutation({
             data
         });

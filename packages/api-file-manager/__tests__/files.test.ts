@@ -1,6 +1,5 @@
-// @ts-ignore
-import mdbid from "mdbid";
-import useGqlHandler from "./useGqlHandler";
+import { mdbid } from "@webiny/utils";
+import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
 import { File } from "~/types";
 
@@ -387,13 +386,51 @@ describe("Files CRUD test", () => {
             }
         });
 
-        const tags = ["art", "file-a", "file-b", "file-c", "sketch", "webiny"];
-        const scopedTags = ["scope:apw", "scope:apw:file-d", "scope:apw:media"];
+        const tags = [
+            {
+                tag: "art",
+                count: 2
+            },
+            {
+                tag: "sketch",
+                count: 2
+            },
+            {
+                tag: "webiny",
+                count: 2
+            },
+            {
+                tag: "file-a",
+                count: 1
+            },
+            {
+                tag: "file-b",
+                count: 1
+            },
+            {
+                tag: "file-c",
+                count: 1
+            }
+        ];
+        const scopedTags = [
+            {
+                tag: "scope:apw",
+                count: 1
+            },
+            {
+                tag: "scope:apw:file-d",
+                count: 1
+            },
+            {
+                tag: "scope:apw:media",
+                count: 1
+            }
+        ];
 
         await until(
             () => listTags({ where: { tag_not_startsWith: "scope:apw" } }).then(([data]) => data),
             ({ data }: any) => {
-                return data.fileManager.listTags.length === tags.length;
+                return data.fileManager.listTags.data.length === tags.length;
             },
             { name: "bulk list all tags", tries: 10 }
         );
@@ -407,7 +444,10 @@ describe("Files CRUD test", () => {
         expect(response).toEqual({
             data: {
                 fileManager: {
-                    listTags: tags
+                    listTags: {
+                        data: tags,
+                        error: null
+                    }
                 }
             }
         });
@@ -421,7 +461,10 @@ describe("Files CRUD test", () => {
         expect(scopedListTagsResponse).toEqual({
             data: {
                 fileManager: {
-                    listTags: scopedTags
+                    listTags: {
+                        data: scopedTags,
+                        error: null
+                    }
                 }
             }
         });
@@ -684,7 +727,10 @@ describe("Files CRUD test", () => {
         expect(tagsResponse).toEqual({
             data: {
                 fileManager: {
-                    listTags: []
+                    listTags: {
+                        data: [],
+                        error: null
+                    }
                 }
             }
         });

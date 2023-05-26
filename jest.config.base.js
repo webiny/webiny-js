@@ -1,5 +1,7 @@
-const { basename, join } = require("path");
+const { basename, join, dirname } = require("path");
+const fs = require("fs");
 const merge = require("merge");
+const findUp = require("find-up");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 const { version } = require("@webiny/cli/package.json");
 
@@ -12,12 +14,21 @@ module.exports = function ({ path }, presets = []) {
         type = `.${process.env.TEST_TYPE}`;
     }
 
-    const merged = merge.recursive({ setupFilesAfterEnv: [] }, tsPreset, ...presets, {
+    process.env.JEST_DYNALITE_CONFIG_DIRECTORY = path;
+
+    const merged = merge.recursive(true, { setupFilesAfterEnv: [] }, tsPreset, {
         displayName: name,
         modulePaths: [`${path}/src`],
         testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],
         transform: {
-            "^.+\\.[jt]sx?$": "ts-jest"
+            "^.+\\.[jt]sx?$": [
+                "ts-jest",
+                {
+                    isolatedModules: true,
+                    babelConfig: `${path}/.babelrc.js`,
+                    diagnostics: false
+                }
+            ]
         },
         transformIgnorePatterns: ["/node_modules/(?!(nanoid)/)"],
         moduleDirectories: ["node_modules"],
@@ -25,29 +36,50 @@ module.exports = function ({ path }, presets = []) {
             "~tests/(.*)": `${path}/__tests__/$1`,
             "~/(.*)": `${path}/src/$1`
         },
-        modulePathIgnorePatterns: [],
+        modulePathIgnorePatterns: [
+            "<rootDir>/.verdaccio",
+            "<rootDir>/.webiny",
+            "<rootDir>/apps",
+            "<rootDir>/packages/.*/dist"
+        ],
         globals: {
-            WEBINY_VERSION: version,
-            "ts-jest": {
-                isolatedModules: true,
-                babelConfig: `${path}/.babelrc.js`,
-                diagnostics: false
-            }
-        },
-        collectCoverage: false,
-        collectCoverageFrom: ["packages/**/*.{ts,tsx,js,jsx}"],
-        coverageReporters: ["html"]
+            WEBINY_VERSION: version
+        }
     });
+
+    merged.setupFiles = [
+        ...(merged.setupFiles || []),
+        ...presets
+            .map(preset => preset.setupFiles)
+            .flat()
+            .filter(Boolean)
+    ];
+
+    const setupAfterEnv = join(path, "__tests__", "setup", "setupAfterEnv.js");
+    const setupAfterEnvExists = fs.existsSync(setupAfterEnv);
 
     merged.setupFilesAfterEnv = [
         join(__dirname, "jest.config.base.setup.js"),
-        ...merged.setupFilesAfterEnv
-    ];
+        setupAfterEnvExists ? setupAfterEnv : null,
+        ...merged.setupFilesAfterEnv,
+        ...presets.map(preset => preset.setupFilesAfterEnv || []).flat()
+    ].filter(Boolean);
 
     // IMPORTANT!
     // We need to delete the following keys to let our rules be the only ones applied.
     delete merged.transform["^.+\\.jsx?$"];
     delete merged.transform["^.+\\.tsx?$"];
+
+    process.stdout.write(`Loading test setup files from the following packages:\n`);
+    merged.setupFilesAfterEnv.forEach(setupFile => {
+        const filePkg = findUp.sync("package.json", { cwd: dirname(setupFile) });
+        const pkg = require(filePkg);
+        if (pkg.name) {
+            process.stdout.write(`- ${pkg.name}\n`);
+        }
+    });
+
+    process.stdout.write(`\n---------------------------\n`);
 
     return merged;
 };

@@ -119,7 +119,7 @@ const defineColumns = <T,>(
         }));
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
-            const { id, header, meta, cell, enableSorting = false } = column;
+            const { id, header, meta, cell, enableSorting = false, className } = column;
 
             return {
                 accessorKey: id,
@@ -132,7 +132,10 @@ const defineColumns = <T,>(
                     }
                 },
                 enableSorting,
-                meta
+                meta: {
+                    ...meta,
+                    className
+                }
             };
         });
 

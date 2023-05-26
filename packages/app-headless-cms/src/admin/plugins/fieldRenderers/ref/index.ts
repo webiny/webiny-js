@@ -1,5 +1,6 @@
 import refInput from "./refInput";
 import refInputs from "./refInputs";
-import { createAdvancedRefRender } from "~/admin/plugins/fieldRenderers/ref/advanced";
+import { createAdvancedRefRenderer } from "./advanced";
+import { createSimpleRefRenderer } from "./simple";
 
-export default [...createAdvancedRefRender(), refInput, refInputs];
+export default [...createAdvancedRefRenderer(), refInput, refInputs, ...createSimpleRefRenderer()];

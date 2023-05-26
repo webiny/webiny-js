@@ -1,15 +1,18 @@
 import type { EditorThemeClasses } from "lexical";
 
 import "./webinyLexicalTheme.css";
+import { ThemeEmotionMap } from "~/types";
 
 export type WebinyTheme = {
     styles?: Record<string, any>;
+    emotionMap?: ThemeEmotionMap;
 };
 
 export type WebinyEditorTheme = WebinyTheme & EditorThemeClasses;
 
 export const webinyEditorTheme: WebinyEditorTheme = {
     styles: undefined,
+    emotionMap: undefined,
     characterLimit: "WebinyLexical__characterLimit",
     code: "WebinyLexical__code",
     codeHighlight: {

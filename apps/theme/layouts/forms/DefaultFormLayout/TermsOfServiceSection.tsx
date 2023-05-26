@@ -13,7 +13,6 @@ import {
     TermsOfServiceChildrenFunction
 } from "@webiny/app-page-builder-elements/renderers/form/types";
 import styled from "@emotion/styled";
-import theme from "../../../theme";
 
 interface Props {
     component: TermsOfServiceComponent;
@@ -21,7 +20,7 @@ interface Props {
 
 const RteFieldLabel = styled(FieldLabelStyled)`
     .rte-block-paragraph {
-        ${theme.styles.typography["paragraph1"]};
+        ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
         margin: 0;
     }
 `;

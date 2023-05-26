@@ -9,7 +9,6 @@ import {
     FileManagerFilesStorageOperationsListParams,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsListResponse,
-    FileManagerFilesStorageOperationsListResponseMeta,
     FileManagerFilesStorageOperationsTagsParams,
     FileManagerFilesStorageOperationsTagsParamsWhere,
     FileManagerFilesStorageOperationsTagsResponse,
@@ -375,7 +374,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
-    ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
+    ): Promise<FileManagerFilesStorageOperationsTagsResponse[]> {
         const { where: initialWhere } = params;
 
         const queryAllParams = {
@@ -422,32 +421,28 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             fields
         });
 
-        /**
-         * Aggregate all the tags from all the filtered items.
-         */
-        const tagsObject = filteredItems.reduce((collection, item) => {
+        const tags = filteredItems.reduce<
+            Record<string, FileManagerFilesStorageOperationsTagsResponse>
+        >((collection, item) => {
             const tags = Array.isArray(item.tags) ? item.tags : [];
+
             for (const tag of tags) {
-                if (!collection[tag]) {
-                    collection[tag] = [];
-                }
-                collection[tag].push(item.id);
+                collection[tag] = {
+                    tag,
+                    count: (collection[tag]?.count || 0) + 1
+                };
             }
+
             return collection;
-        }, {} as Record<string, string[]>);
+        }, {});
 
-        const tags: string[] = Object.keys(tagsObject);
-
-        const hasMoreItems = false;
-        const totalCount = tags.length;
-
-        const meta: FileManagerFilesStorageOperationsListResponseMeta = {
-            hasMoreItems,
-            totalCount,
-            cursor: null
-        };
-
-        return [tags, meta];
+        return Object.values(tags)
+            .sort((a, b) => {
+                return a.tag < b.tag ? -1 : 1;
+            })
+            .sort((a, b) => {
+                return a.count > b.count ? -1 : 1;
+            });
     }
 
     private createQueryAllOptions({ where }: QueryAllOptionsParams): DynamoDBToolboxQueryOptions {

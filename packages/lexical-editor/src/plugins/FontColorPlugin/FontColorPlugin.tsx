@@ -7,7 +7,6 @@ import {
     FontColorPayload
 } from "~/nodes/FontColorNode";
 import {
-    $createParagraphNode,
     $getSelection,
     $insertNodes,
     $isRangeSelection,
@@ -15,6 +14,7 @@ import {
     COMMAND_PRIORITY_EDITOR
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
+import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 export const FontColorPlugin: React.FC = () => {
     const [editor] = useLexicalComposerContext();

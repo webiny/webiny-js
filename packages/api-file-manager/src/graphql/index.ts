@@ -151,6 +151,16 @@ export const createGraphQLSchemaPlugin = () => {
                 tag_not_startsWith: String
             }
 
+            type ListTagResponseItem {
+                tag: String!
+                count: Number!
+            }
+
+            type ListTagsResponse {
+                data: [ListTagResponseItem!]
+                error: FileError
+            }
+
             type FmQuery {
                 getFile(id: ID, where: JSON, sort: String): FileResponse
 
@@ -164,7 +174,7 @@ export const createGraphQLSchemaPlugin = () => {
                     where: FileWhereInput
                 ): FileListResponse
 
-                listTags(where: TagWhereInput): [String]
+                listTags(where: TagWhereInput): ListTagsResponse!
 
                 # Get installed version
                 version: String
@@ -178,8 +188,8 @@ export const createGraphQLSchemaPlugin = () => {
             }
 
             type FmMutation {
-                createFile(data: CreateFileInput!): FileResponse
-                createFiles(data: [CreateFileInput]!): CreateFilesResponse
+                createFile(data: CreateFileInput!, meta: JSON): FileResponse
+                createFiles(data: [CreateFileInput]!, meta: JSON): CreateFilesResponse
                 updateFile(id: ID!, data: UpdateFileInput!): FileResponse
                 deleteFile(id: ID!): FilesDeleteResponse
                 install(srcPrefix: String): FileManagerBooleanResponse
@@ -225,7 +235,9 @@ export const createGraphQLSchemaPlugin = () => {
                 },
                 async listTags(_, args: any, context) {
                     try {
-                        return await context.fileManager.listTags(args || {});
+                        const tags = await context.fileManager.listTags(args || {});
+
+                        return new Response(tags);
                     } catch (error) {
                         return new ErrorResponse(error);
                     }
@@ -244,13 +256,15 @@ export const createGraphQLSchemaPlugin = () => {
             },
             FmMutation: {
                 async createFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.createFile(args.data));
+                    return resolve(() => context.fileManager.createFile(args.data, args.meta));
                 },
                 async updateFile(_, args: any, context) {
                     return resolve(() => context.fileManager.updateFile(args.id, args.data));
                 },
                 async createFiles(_, args: any, context) {
-                    return resolve(() => context.fileManager.createFilesInBatch(args.data));
+                    return resolve(() =>
+                        context.fileManager.createFilesInBatch(args.data, args.meta)
+                    );
                 },
                 async deleteFile(_, args: any, context) {
                     return resolve(async () => {

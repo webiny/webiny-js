@@ -11,12 +11,12 @@ import {
 } from "~/types";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
 
-const transformNameToSingularApiName = (name: string) => {
+const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
 };
 
-const transformNameToPluralApiName = (name: string) => {
-    return pluralize(transformNameToSingularApiName(name));
+const createPluralApiName = (name: string) => {
+    return pluralize(createApiName(name));
 };
 
 interface CmsModelFieldSettings extends Omit<BaseCmsModelFieldSettings, "fields"> {
@@ -41,34 +41,35 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
     settings?: CmsModelFieldSettings;
 }
 
-interface CmsApiModel
-    extends Omit<CmsModelBase, "isPrivate" | "locale" | "tenant" | "webinyVersion" | "fields"> {
+export interface CmsApiModel
+    extends Omit<CmsModel, "isPrivate" | "fields" | "singularApiName" | "pluralApiName"> {
     isPrivate?: never;
+    noValidate?: never;
+    singularApiName?: string;
+    pluralApiName?: string;
     fields: CmsModelFieldInput[];
-    locale?: string;
-    tenant?: string;
+}
+
+export interface CmsApiModelFull extends Omit<CmsApiModel, "fields" | "noValidate"> {
+    noValidate: true;
+    fields: CmsModelFieldBase[];
 }
 
 interface CmsPrivateModel
-    extends Omit<
-        CmsModelBase,
-        | "isPrivate"
-        | "singularApiName"
-        | "pluralApiName"
-        | "locale"
-        | "tenant"
-        | "webinyVersion"
-        | "fields"
-    > {
+    extends Omit<CmsModel, "isPrivate" | "singularApiName" | "pluralApiName" | "fields"> {
+    noValidate?: never;
     singularApiName?: never;
     pluralApiName?: never;
     isPrivate: true;
     fields: CmsModelFieldInput[];
-    locale?: string;
-    tenant?: string;
 }
 
-type CmsModelInput = CmsApiModel | CmsPrivateModel;
+export interface CmsPrivateModelFull extends Omit<CmsPrivateModel, "fields" | "noValidate"> {
+    fields: CmsModelFieldBase[];
+    noValidate: true;
+}
+
+export type CmsModelInput = CmsApiModel | CmsPrivateModel | CmsApiModelFull | CmsPrivateModelFull;
 
 interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
     locale?: string;
@@ -92,11 +93,33 @@ export class CmsModelPlugin extends Plugin {
     }
 
     private buildModel(input: CmsModelInput): CmsModel {
+        const isPrivate = input.isPrivate || false;
+        const singularApiName = input.singularApiName
+            ? createApiName(input.singularApiName)
+            : createApiName(input.name);
+        const pluralApiName = input.pluralApiName
+            ? createApiName(input.pluralApiName)
+            : createPluralApiName(input.name);
+
+        if (input.noValidate) {
+            /**
+             * We can safely ignore this error, because we are sure noValidate is not a model field.
+             */
+            // @ts-ignore
+            delete input["noValidate"];
+            return {
+                ...input,
+                isPrivate,
+                singularApiName,
+                pluralApiName
+            };
+        }
+
         const model: CmsModel = {
             ...input,
-            isPrivate: input.isPrivate || false,
-            singularApiName: input.singularApiName || transformNameToSingularApiName(input.name),
-            pluralApiName: input.pluralApiName || transformNameToPluralApiName(input.name),
+            isPrivate,
+            singularApiName,
+            pluralApiName,
             fields: this.buildFields(input, input.fields)
         };
         this.validateLayout(model);

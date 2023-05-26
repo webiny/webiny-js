@@ -1,4 +1,4 @@
-# @webiny/api-aco
+# @webiny/api-page-builder-aco
 
 [![](https://img.shields.io/npm/dw/@webiny/api-page-builder-aco.svg)](https://www.npmjs.com/package/@webiny/api-page-builder-aco)
 [![](https://img.shields.io/npm/v/@webiny/api-page-builder-aco.svg)](https://www.npmjs.com/package/@webiny/api-page-builder-aco)
@@ -23,11 +23,11 @@ To run tests api-page-builder-aco tests with targeted storage operations loaded 
 ### DynamoDB
 
 ```
-yarn test packages/api-page-builder-aco ---keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base
+yarn test packages/api-page-builder-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base
 ```
 
-#### Note
+### DynamoDB + ElasticSearch
 
-> All the tests in `@webiny/api-page-builder-aco` package are being tested against ddb-only storage operations because
-current jest setup doesn't allow usage of more than one storage operations at a time with the help of --keyword flag.
-We should revisit these tests once we have the ability to load multiple storage operations in the jest setup.
+```
+yarn test packages/api-page-builder-aco/* --keyword=cms:ddb-es --keyword=aco:base --keyword=pb:ddb-es --keyword=pb:base --keyword=api-page-builder-aco:base
+```

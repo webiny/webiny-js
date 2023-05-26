@@ -1,11 +1,12 @@
 import got from "got";
+import { format } from "date-fns";
 import { FbFormTriggerHandlerPlugin } from "~/types";
 
 const plugin: FbFormTriggerHandlerPlugin = {
     type: "form-trigger-handler",
     name: "form-trigger-handler-webhook",
     trigger: "webhook",
-    async handle({ trigger, data, addLog }) {
+    async handle({ trigger, data, meta, addLog }) {
         const urls = trigger && trigger.urls;
         if (!urls || Array.isArray(urls) === false) {
             return;
@@ -20,7 +21,15 @@ const plugin: FbFormTriggerHandlerPlugin = {
                 const response = await got(url, {
                     method: "post",
                     json: true,
-                    body: data
+                    body: {
+                        ...data,
+                        meta: {
+                            submittedOn: format(new Date(meta.submittedOn), "yyyy-MM-dd HH:mm:ss"),
+                            // We don't spread the full `meta` object in order to ensure sensitive data
+                            // doesn't end up being included (at the moment, that's IP address).
+                            url: meta.url
+                        }
+                    }
                 });
 
                 addLog({

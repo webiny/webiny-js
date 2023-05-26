@@ -9,13 +9,15 @@ export interface PresignedPostPayloadData {
     keyPrefix?: string;
 }
 
+export interface FileData {
+    id: string;
+    name: string;
+    key: string;
+    type: string;
+    size: number;
+}
+
 export interface PresignedPostPayloadDataResponse {
     data: S3.PresignedPost;
-    file: {
-        id: string;
-        name: string;
-        key: string;
-        type: string;
-        size: number;
-    };
+    file: FileData;
 }

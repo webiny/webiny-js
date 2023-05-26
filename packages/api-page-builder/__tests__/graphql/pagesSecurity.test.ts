@@ -1,10 +1,6 @@
+import { mdbid } from "@webiny/utils";
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
-/**
- * Package mdbid does not have types
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import { Category } from "~/types";
 
 const defaultHandler = useGqlHandler({

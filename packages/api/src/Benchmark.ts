@@ -2,8 +2,8 @@ import {
     Benchmark as BenchmarkInterface,
     BenchmarkEnableOnCallable,
     BenchmarkMeasurement,
+    BenchmarkMeasureOptions,
     BenchmarkOutputCallable,
-    BenchmarkOutputCallableResponse,
     BenchmarkRuns
 } from "~/types";
 
@@ -13,27 +13,29 @@ enum BenchmarkState {
     UNDETERMINED = "undetermined"
 }
 
+interface BenchmarkMeasurementStart
+    extends Pick<BenchmarkMeasurement, "name" | "category" | "start"> {
+    memoryStart: number;
+}
+
+const createDefaultOutputCallable = (): BenchmarkOutputCallable => {
+    return async ({ benchmark }) => {
+        console.log(`Benchmark total time elapsed: ${benchmark.elapsed}ms`);
+        console.log("Benchmark measurements:");
+        console.log(benchmark.measurements);
+    };
+};
+
 export class Benchmark implements BenchmarkInterface {
     public readonly measurements: BenchmarkMeasurement[] = [];
 
     private outputDone = false;
+    private isAlreadyRunning = false;
     private totalElapsed = 0;
     public readonly runs: BenchmarkRuns = {};
     private readonly enableOnCallables: BenchmarkEnableOnCallable[] = [];
     private readonly onOutputCallables: BenchmarkOutputCallable[] = [];
-
     private state: BenchmarkState = BenchmarkState.UNDETERMINED;
-
-    public constructor() {
-        /**
-         * The default output is to the console.
-         * This one is executed after all other user defined outputs.
-         */
-        this.onOutputCallables.push(async () => {
-            console.log("Benchmark measurements:");
-            console.log(this.measurements);
-        });
-    }
 
     public get elapsed(): number {
         return this.totalElapsed;
@@ -58,7 +60,7 @@ export class Benchmark implements BenchmarkInterface {
     /**
      * When running the output, we need to reverse the callables array, so that the last one added is the first one executed.
      *
-     * The first one is our built-in console.log output, which we want to be the last one executed - and we need to stop output if user wants to end it.
+     * The last one is our built-in console.log output.
      */
     public async output(): Promise<void> {
         /**
@@ -67,39 +69,56 @@ export class Benchmark implements BenchmarkInterface {
         if (this.outputDone || this.measurements.length === 0) {
             return;
         }
-        const callables = this.onOutputCallables.reverse();
+        const callables = [...this.onOutputCallables].reverse();
+        callables.push(createDefaultOutputCallable());
         for (const cb of callables) {
-            const result = await cb(this);
-            if (result === BenchmarkOutputCallableResponse.BREAK) {
+            const result = await cb({
+                benchmark: this,
+                stop: () => "stop"
+            });
+            if (result === "stop") {
                 return;
             }
         }
         this.outputDone = true;
     }
 
-    public async measure<T = any>(name: string, cb: () => Promise<T>): Promise<T> {
+    public async measure<T = any>(
+        options: BenchmarkMeasureOptions | string,
+        cb: () => Promise<T>
+    ): Promise<T> {
         const enabled = await this.getIsEnabled();
         if (!enabled) {
             return cb();
         }
-        const start = new Date();
-        const memoryStart = process.memoryUsage().heapUsed;
+        const measurement = this.startMeasurement(options);
+        const isAlreadyRunning = this.getIsAlreadyRunning();
+        this.startRunning();
         try {
             return await cb();
         } finally {
-            const end = new Date();
-            const memoryEnd = process.memoryUsage().heapUsed;
-            const elapsed = end.getTime() - start.getTime();
-            this.measurements.push({
-                name,
-                start,
-                end,
-                elapsed,
-                memory: memoryEnd - memoryStart
-            });
-            this.addElapsed(elapsed);
-            this.addRun(name);
+            const measurementEnded = this.stopMeasurement(measurement);
+            this.measurements.push(measurementEnded);
+            this.addRun(measurementEnded);
+            /**
+             * Only add to total time if this run is not a child of another run.
+             * And then end running.
+             */
+            if (!isAlreadyRunning) {
+                this.addElapsed(measurementEnded);
+                this.endRunning();
+            }
         }
+    }
+
+    private getIsAlreadyRunning(): boolean {
+        return this.isAlreadyRunning;
+    }
+    private startRunning(): void {
+        this.isAlreadyRunning = true;
+    }
+    private endRunning(): void {
+        this.isAlreadyRunning = false;
     }
 
     private async getIsEnabled(): Promise<boolean> {
@@ -120,11 +139,12 @@ export class Benchmark implements BenchmarkInterface {
         return false;
     }
 
-    private addElapsed(elapsed: number): void {
-        this.totalElapsed = this.totalElapsed + elapsed;
+    private addElapsed(measurement: Pick<BenchmarkMeasurement, "elapsed">): void {
+        this.totalElapsed = this.totalElapsed + measurement.elapsed;
     }
 
-    private addRun(name: string): void {
+    private addRun(measurement: Pick<BenchmarkMeasurement, "name" | "category">): void {
+        const name = `${measurement.category}#${measurement.name}`;
         if (!this.runs[name]) {
             this.runs[name] = 0;
         }
@@ -133,5 +153,30 @@ export class Benchmark implements BenchmarkInterface {
 
     private setState(state: BenchmarkState): void {
         this.state = state;
+    }
+
+    private startMeasurement(options: BenchmarkMeasureOptions | string): BenchmarkMeasurementStart {
+        const name = typeof options === "string" ? options : options.name;
+        const category = typeof options === "string" ? "webiny" : options.category;
+        return {
+            name,
+            category,
+            start: new Date(),
+            memoryStart: process.memoryUsage().heapUsed
+        };
+    }
+
+    private stopMeasurement(measurement: BenchmarkMeasurementStart): BenchmarkMeasurement {
+        const end = new Date();
+        const memoryEnd = process.memoryUsage().heapUsed;
+        const elapsed = end.getTime() - measurement.start.getTime();
+        return {
+            name: measurement.name,
+            category: measurement.category,
+            start: measurement.start,
+            end,
+            elapsed,
+            memory: memoryEnd - measurement.memoryStart
+        };
     }
 }

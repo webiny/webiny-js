@@ -15,8 +15,8 @@
     "@webiny/ioc": "0.0.0",
     "@webiny/utils": "0.0.0",
     "dynamodb-toolbox": "^0.3.5",
+    "jsonpack": "^1.1.5",
     "lodash": "^4.17.21",
-    "mdbid": "^1.0.0",
     "pluralize": "^8.0.0"
   },
   "publishConfig": {

@@ -11,6 +11,7 @@
     "@webiny/api-prerendering-service",
     "storage-operations",
     "dynamodb",
+    "ddb",
     "ps:ddb"
   ],
   "description": "A DynamoDB storage operations for the Prerendering Service API.",
@@ -34,7 +35,6 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.3.1",
-    "jest-environment-node": "^27.3.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

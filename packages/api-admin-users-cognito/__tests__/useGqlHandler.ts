@@ -2,6 +2,8 @@ import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandler from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
+import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import adminUsersPlugins from "../src/index";
 // Graphql
 import {
@@ -17,8 +19,8 @@ import {
 } from "./graphql/users";
 
 import { INSTALL, IS_INSTALLED, INSTALL_SECURITY, INSTALL_TENANCY } from "./graphql/install";
-import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { createTenancyAndSecurity } from "./tenancySecurity";
+import { AdminUsersStorageOperations } from "./types";
 
 interface UseGqlHandlerParams {
     fullAccess?: boolean;
@@ -38,8 +40,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { fullAccess: false, plugins: [] };
     opts = Object.assign({}, defaults, opts);
 
-    // @ts-ignore
-    const { storageOperations } = __getStorageOperations();
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
@@ -48,7 +49,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             createWcpGraphQL(),
             ...createTenancyAndSecurity({ fullAccess: defaults.fullAccess }),
             adminUsersPlugins({
-                storageOperations
+                storageOperations: adminUsersStorage.storageOperations
             }),
             graphqlHandler(),
             authenticateUsingHttpHeader(),

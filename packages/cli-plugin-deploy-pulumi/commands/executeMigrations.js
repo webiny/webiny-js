@@ -10,9 +10,6 @@ const clearLine = () => {
     }
 };
 
-/**
- * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
- */
 module.exports = async (params, context) => {
     const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
@@ -27,6 +24,7 @@ module.exports = async (params, context) => {
             lambdaClient,
             functionName: apiOutput["migrationLambdaArn"],
             payload: {
+                version: process.env.WEBINY_VERSION || context.version,
                 pattern: params.pattern
             },
             statusCallback: ({ status, migrations }) => {

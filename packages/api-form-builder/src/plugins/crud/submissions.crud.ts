@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import fetch from "node-fetch";
 import pick from "lodash/pick";
 import WebinyError from "@webiny/error";
@@ -27,6 +22,7 @@ import {
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
+import { mdbid } from "@webiny/utils";
 
 interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
@@ -332,7 +328,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                     submission.logs.push(log);
                                 },
                                 data: utils.sanitizeFormSubmissionData(form.fields, data),
-                                // meta,
+                                meta,
                                 trigger: form.triggers[plugin.trigger]
                             });
                         }

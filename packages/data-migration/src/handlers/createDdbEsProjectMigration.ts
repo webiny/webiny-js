@@ -1,7 +1,7 @@
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
 import { Table } from "dynamodb-toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
-import { createContainer, Constructor } from "@webiny/ioc";
+import { Constructor, createContainer } from "@webiny/ioc";
 import {
     DataMigration,
     ExecutionTimeLimiter,
@@ -11,16 +11,17 @@ import {
 } from "~/types";
 import {
     ElasticsearchClientSymbol,
-    MigrationRepositorySymbol,
-    PrimaryDynamoTableSymbol,
     ElasticsearchDynamoTableSymbol,
+    ExecutionTimeLimiterSymbol,
+    MigrationRepositorySymbol,
     MigrationSymbol,
-    ExecutionTimeLimiterSymbol
+    PrimaryDynamoTableSymbol
 } from "~/symbols";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
 import { devVersionErrorResponse } from "~/handlers/devVersionErrorResponse";
 import { createPatternMatcher } from "~/handlers/createPatternMatcher";
+import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbEsDataMigrationConfig {
     elasticsearchClient: ElasticsearchClient;
@@ -45,7 +46,8 @@ export const createDdbEsProjectMigration = ({
         async ({ payload, lambdaContext }) => {
             const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
 
-            if (projectVersion === "0.0.0") {
+            const version = semverCoerce(projectVersion);
+            if (version?.version === "0.0.0") {
                 return devVersionErrorResponse();
             }
 

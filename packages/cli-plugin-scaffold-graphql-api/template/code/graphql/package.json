@@ -9,8 +9,7 @@
     "@webiny/handler-aws": "^WEBINY_VERSION",
     "@webiny/handler-client": "^WEBINY_VERSION",
     "@webiny/handler-graphql": "^WEBINY_VERSION",
-    "@webiny/handler-logs": "^WEBINY_VERSION",
-    "mdbid": "^1.0.0"
+    "@webiny/handler-logs": "^WEBINY_VERSION"
   },
   "devDependencies": {
     "@webiny/cli": "^WEBINY_VERSION",

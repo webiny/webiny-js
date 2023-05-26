@@ -1,5 +1,5 @@
 import { Context } from "~/Context";
-import { BenchmarkMeasurement, BenchmarkOutputCallableResponse } from "~/types";
+import { BenchmarkMeasurement } from "~/types";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
 import { ContextPlugin } from "~/plugins/ContextPlugin";
 
@@ -37,6 +37,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -73,6 +74,7 @@ describe("benchmark", () => {
 
         expected.push({
             name: "test",
+            category: "webiny",
             start: expect.any(Date),
             end: expect.any(Date),
             elapsed: expect.any(Number),
@@ -80,6 +82,7 @@ describe("benchmark", () => {
         });
         expected.push({
             name: "another test",
+            category: "webiny",
             start: expect.any(Date),
             end: expect.any(Date),
             elapsed: expect.any(Number),
@@ -91,8 +94,8 @@ describe("benchmark", () => {
         expect(context.benchmark.measurements[1].elapsed).toBeGreaterThanOrEqual(50);
         expect(context.benchmark.measurements[2].elapsed).toBeGreaterThanOrEqual(50);
         expect(context.benchmark.runs).toEqual({
-            test: 2,
-            "another test": 1
+            "webiny#test": 2,
+            "webiny#another test": 1
         });
         expect(context.benchmark.elapsed).toBeGreaterThanOrEqual(150);
     });
@@ -112,6 +115,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -164,6 +168,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -205,6 +210,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -228,6 +234,7 @@ describe("benchmark", () => {
         const expected: BenchmarkMeasurement[] = [
             {
                 name: "test",
+                category: "webiny",
                 start: expect.any(Date),
                 end: expect.any(Date),
                 elapsed: expect.any(Number),
@@ -263,8 +270,9 @@ describe("benchmark", () => {
 
         await context.benchmark.output();
 
-        expect(log).toHaveLength(2);
+        expect(log).toHaveLength(3);
         expect(log).toMatchObject([
+            `Benchmark total time elapsed: ${context.benchmark.elapsed}ms`,
             "Benchmark measurements:",
             [
                 {
@@ -302,14 +310,15 @@ describe("benchmark", () => {
             log.push(...args);
         });
 
-        context.benchmark.onOutput(async benchmark => {
+        context.benchmark.onOutput(async ({ benchmark }) => {
             outsideSystemLog.push(...benchmark.measurements);
         });
 
         await context.benchmark.output();
 
-        expect(log).toHaveLength(2);
+        expect(log).toHaveLength(3);
         expect(log).toMatchObject([
+            `Benchmark total time elapsed: ${context.benchmark.elapsed}ms`,
             "Benchmark measurements:",
             [
                 {
@@ -350,7 +359,7 @@ describe("benchmark", () => {
         ]);
     });
 
-    it("should output measurements to some outside system and not our default because of the break", async () => {
+    it("should output measurements to some outside system and not our default because of the stop", async () => {
         context.benchmark.enable();
         for (let i = 1; i <= 5; i++) {
             await context.benchmark.measure(`test ${i}`, async () => {
@@ -366,10 +375,10 @@ describe("benchmark", () => {
             log.push(...args);
         });
 
-        context.benchmark.onOutput(async benchmark => {
+        context.benchmark.onOutput(async ({ benchmark, stop }) => {
             outsideSystemLog.push(...benchmark.measurements);
 
-            return BenchmarkOutputCallableResponse.BREAK;
+            return stop();
         });
 
         await context.benchmark.output();
@@ -393,6 +402,46 @@ describe("benchmark", () => {
             {
                 name: "test 5"
             }
+        ]);
+    });
+
+    it("should properly measure nested benchmarks", async () => {
+        context.benchmark.enable();
+
+        const result = await context.benchmark.measure(`first level`, async () => {
+            await sleep(10);
+            return context.benchmark.measure(`second level`, async () => {
+                await sleep(10);
+                return context.benchmark.measure(`third level`, async () => {
+                    return "level 3";
+                });
+            });
+        });
+
+        expect(result).toEqual("level 3");
+        expect(context.benchmark.measurements).toHaveLength(3);
+        const logs: any[] = [];
+        jest.spyOn(console, "log").mockImplementation((...args) => {
+            logs.push(...args);
+        });
+
+        await context.benchmark.output();
+
+        expect(logs).toHaveLength(3);
+        expect(logs).toMatchObject([
+            `Benchmark total time elapsed: ${context.benchmark.elapsed}ms`,
+            "Benchmark measurements:",
+            [
+                {
+                    name: "third level"
+                },
+                {
+                    name: "second level"
+                },
+                {
+                    name: "first level"
+                }
+            ]
         ]);
     });
 });

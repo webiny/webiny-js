@@ -1,6 +1,8 @@
 import { FileItem } from "@webiny/app-admin/types";
 import gql from "graphql-tag";
 import { Settings } from "~/types";
+import { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext";
+import { ListDbSort } from "@webiny/app-aco/types";
 
 const FILE_FIELDS = /* GraphQL */ `
     {
@@ -56,6 +58,7 @@ export interface ListFilesQueryResponse {
 export interface ListFilesQueryVariables {
     limit?: number;
     after?: string | null;
+    sort?: ListDbSort;
     where?: {
         search?: string;
         type?: string;
@@ -91,9 +94,23 @@ export const LIST_FILES = gql`
     }
 `;
 
+export const GET_FILE = gql`
+    query GetFile($id: ID!) {
+        fileManager {
+            getFile(id: $id) {
+                data ${FILE_FIELDS}
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
 export interface ListFileTagsQueryResponse {
     fileManager: {
-        listTags: string[];
+        listTags: {
+            data: ListTagsResponseItem[];
+            error: Error | null;
+        };
     };
 }
 
@@ -107,7 +124,13 @@ export interface ListFileTagsQueryVariables {
 export const LIST_TAGS = gql`
     query ListTags($where: TagWhereInput) {
         fileManager {
-            listTags(where: $where)
+            listTags(where: $where) {
+                data {
+                    tag
+                    count
+                }
+                error ${ERROR_FIELDS}
+            }
         }
     }
 `;
@@ -133,12 +156,13 @@ export interface FileInput {
 
 export interface CreateFileMutationVariables {
     data: FileInput;
+    meta?: Record<string, any>;
 }
 
 export const CREATE_FILE = gql`
-    mutation CreateFile($data: CreateFileInput!) {
+    mutation CreateFile($data: CreateFileInput!, $meta: JSON) {
         fileManager {
-            createFile(data: $data) {
+            createFile(data: $data, meta: $meta) {
                 error ${ERROR_FIELDS}
                 data ${FILE_FIELDS}
             }
@@ -164,12 +188,7 @@ export const UPDATE_FILE = gql`
     mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
         fileManager {
             updateFile(id: $id, data: $data) {
-                data {
-                    id
-                    src
-                    name
-                    tags
-                }
+                data ${FILE_FIELDS}
                 error ${ERROR_FIELDS}
             }
         }

@@ -4,6 +4,7 @@ const DATA_FIELD = (extra = "") => /* GraphQL */ `
         type
         title
         content
+        tags
         location {
             folderId
         }
@@ -26,6 +27,22 @@ export const GET_RECORD = /* GraphQL */ `
             getRecord(id: $id ) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_RECORDS = /* GraphQL */ `
+    query ListRecords {
+        search {
+            listRecords {
+                data  ${DATA_FIELD()}
+                error ${ERROR_FIELD}
+                meta {
+                    hasMoreItems
+                    totalCount
+                    cursor
+                }
             }
         }
     }

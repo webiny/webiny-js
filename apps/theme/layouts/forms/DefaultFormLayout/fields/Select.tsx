@@ -6,19 +6,18 @@ import { Field } from "./components/Field";
 import { FieldErrorMessage } from "./components/FieldErrorMessage";
 import { FieldHelperMessage } from "./components/FieldHelperMessage";
 import { FieldLabel } from "./components/FieldLabel";
-import theme from "../../../../theme";
 
 interface SelectProps {
     field: FormRenderFbFormModelField;
 }
 
 const StyledSelect = styled.select`
-    ${theme.styles.typography["paragraph1"]};
-    border: 1px solid ${theme.styles.colors["color5"]};
-    background-color: ${theme.styles.colors["color5"]};
+    ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
+    border: 1px solid ${props => props.theme.styles.colors["color5"]};
+    background-color: ${props => props.theme.styles.colors["color5"]};
     width: 100%;
     padding: 10px;
-    border-radius: ${theme.styles.borderRadius};
+    border-radius: ${props => props.theme.styles.borderRadius};
     box-sizing: border-box;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     height: 40px;
@@ -29,7 +28,7 @@ const StyledSelect = styled.select`
     background-position: center right;
 
     &:focus {
-        border-color: ${theme.styles.colors["color2"]};
+        border-color: ${props => props.theme.styles.colors["color2"]};
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         outline: none;
     }
