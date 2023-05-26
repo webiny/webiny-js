@@ -26,6 +26,7 @@ import lodashGet from "lodash/get";
 
 const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const defaultSettings = [
+        "pb-editor-page-element-style-settings-cell-settings",
         "pb-editor-page-element-style-settings-background",
         "pb-editor-page-element-style-settings-animation",
         "pb-editor-page-element-style-settings-border",

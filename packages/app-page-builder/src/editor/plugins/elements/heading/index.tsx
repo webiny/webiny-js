@@ -22,6 +22,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         "pb-editor-page-element-style-settings-shadow",
         "pb-editor-page-element-style-settings-padding",
         "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-style-settings-position",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
     ];
