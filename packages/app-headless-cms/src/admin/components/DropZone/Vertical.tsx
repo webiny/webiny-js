@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { Droppable, IsVisibleCallable } from "../Droppable";
-import { DragSource } from "@webiny/app-headless-cms-common/types";
+import { DragSource } from "~/types";
 
 const InnerDivVertical = styled("div")({
     position: "absolute",

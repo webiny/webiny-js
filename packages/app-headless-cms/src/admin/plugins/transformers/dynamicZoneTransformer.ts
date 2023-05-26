@@ -1,7 +1,4 @@
-import {
-    CmsDynamicZoneTemplate,
-    CmsFieldValueTransformer
-} from "@webiny/app-headless-cms-common/types";
+import { CmsDynamicZoneTemplate, CmsFieldValueTransformer } from "~/types";
 
 interface TemplateValueFromForm {
     _templateId: string;

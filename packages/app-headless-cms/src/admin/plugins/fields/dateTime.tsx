@@ -3,7 +3,7 @@ import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Input } from "@webiny/ui/Input";
-import { CmsModelField, CmsModelFieldTypePlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsModelFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
 import { useModel, useModelField } from "~/admin/hooks";

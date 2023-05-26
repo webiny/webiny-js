@@ -25,7 +25,7 @@ import orderBy from "lodash/orderBy";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { CmsEditorContentModel, CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsEditorContentModel, CmsModel } from "~/types";
 import {
     DeleteCmsModelMutationResponse,
     DeleteCmsModelMutationVariables

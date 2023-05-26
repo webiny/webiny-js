@@ -2,7 +2,7 @@ import * as GQL from "~/admin/viewsGraphql";
 import { useQuery } from "~/admin/hooks/index";
 import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import { useMemo } from "react";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 
 /**
  * @deprecated Use `useModels` hook instead.

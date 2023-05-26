@@ -15,7 +15,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
-import { CmsContentEntryRevision, CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntryRevision, CmsContentEntry } from "~/types";
 import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
 import {

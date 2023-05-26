@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 import { Elevation } from "@webiny/ui/Elevation";
 import { OptionsModelListItem } from "./OptionsModelListItem";
 import { ReactComponent as DownIcon } from "../assets/down-arrow.svg";

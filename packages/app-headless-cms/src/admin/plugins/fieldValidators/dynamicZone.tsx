@@ -6,7 +6,7 @@ import {
     CmsDynamicZoneTemplate,
     CmsModelFieldValidatorConfig,
     CmsModelFieldValidatorPlugin
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 import { ValidatorsList } from "~/admin/components/FieldEditor/EditFieldDialog/ValidatorsList";
 import { createValidators } from "~/utils/createValidators";
 import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter";

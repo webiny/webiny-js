@@ -25,7 +25,7 @@ import { ReactComponent as AddIcon } from "~/admin/icons/add.svg";
 import { ReactComponent as EditIcon } from "~/admin/icons/edit.svg";
 import { ReactComponent as UnpublishIcon } from "~/admin/icons/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
-import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { useRevision } from "./useRevision";
 import usePermission from "~/admin/hooks/usePermission";

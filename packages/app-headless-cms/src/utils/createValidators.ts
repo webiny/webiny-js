@@ -1,9 +1,5 @@
 import { plugins } from "@webiny/plugins";
-import {
-    CmsModelField,
-    CmsModelFieldValidator,
-    CmsModelFieldValidatorPlugin
-} from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsModelFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
 import { Validator } from "@webiny/validation/types";
 
 export const createValidators = (

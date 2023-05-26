@@ -1,10 +1,6 @@
 import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
-import {
-    CmsContentEntry,
-    CmsContentEntryRevision,
-    CmsModel
-} from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry, CmsContentEntryRevision, CmsModel } from "~/types";
 import {
     CmsEntriesListQueryResponse,
     CmsEntriesListQueryVariables,

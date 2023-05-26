@@ -4,7 +4,7 @@ import {
     CmsContentEntry,
     CmsModelFieldRendererProps,
     CmsModel
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 import { Options } from "./Options";
 import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";

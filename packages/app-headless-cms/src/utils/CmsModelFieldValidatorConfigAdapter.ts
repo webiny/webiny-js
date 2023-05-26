@@ -4,7 +4,7 @@ import {
     CmsModelFieldValidatorConfig,
     CmsModelFieldValidatorConfigAdapter as ICmsModelFieldValidatorConfigAdapter,
     CmsModelFieldValidatorPlugin
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 
 function getValidator(name: string) {
     const allValidators = plugins.byType<CmsModelFieldValidatorPlugin>("cms-model-field-validator");

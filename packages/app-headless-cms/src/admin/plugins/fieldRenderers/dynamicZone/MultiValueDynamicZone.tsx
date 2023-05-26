@@ -17,7 +17,7 @@ import {
     CmsModelFieldRendererProps,
     CmsModel,
     CmsModelField
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 
 const BottomMargin = styled.div`
     margin-bottom: 20px;

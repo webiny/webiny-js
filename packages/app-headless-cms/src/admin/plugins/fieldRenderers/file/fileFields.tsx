@@ -1,6 +1,6 @@
 import React from "react";
 import dotProp from "dot-prop-immutable";
-import { CmsModelField, CmsModelFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, GridInner } from "@webiny/ui/Grid";
 import { imageWrapperStyles } from "./utils";

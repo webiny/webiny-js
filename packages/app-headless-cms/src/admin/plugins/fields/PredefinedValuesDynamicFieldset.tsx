@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
-import { BindComponent, CmsModelField } from "@webiny/app-headless-cms-common/types";
+import { BindComponent, CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { useModelField } from "~/admin/hooks";
 

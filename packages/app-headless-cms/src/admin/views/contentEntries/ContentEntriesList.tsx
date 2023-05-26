@@ -22,7 +22,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { statuses as statusLabels } from "../../constants/statusLabels";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/useContentEntriesList";
 import { positionValues as PositionValues } from "react-custom-scrollbars";
-import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry } from "~/types";
 import {
     ContentEntriesViewConfigFilter,
     useContentEntriesViewConfig

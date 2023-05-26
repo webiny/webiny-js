@@ -3,7 +3,7 @@ import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
-import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry, CmsModel } from "~/types";
 import { MutationHookOptions } from "@apollo/react-hooks";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
 import { ListQueryVariables } from "~/admin/views/contentEntries/ContentEntriesContext";

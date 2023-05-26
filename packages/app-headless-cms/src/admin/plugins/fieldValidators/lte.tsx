@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { CmsModelFieldValidatorPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 import { Bind } from "@webiny/form";
 
 const plugin: CmsModelFieldValidatorPlugin = {

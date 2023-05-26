@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 import { ReactComponent as CloseIcon } from "./assets/close.svg";
 
 const Container = styled("div")({

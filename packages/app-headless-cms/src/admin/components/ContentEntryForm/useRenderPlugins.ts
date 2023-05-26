@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import { useMemo } from "react";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsEditorFieldRendererPlugin } from "~/types";
 
 export function useRenderPlugins() {
     return useMemo(

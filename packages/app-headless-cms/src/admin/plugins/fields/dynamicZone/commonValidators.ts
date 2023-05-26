@@ -1,4 +1,4 @@
-import { CmsModelFieldValidatorConfig } from "@webiny/app-headless-cms-common/types";
+import { CmsModelFieldValidatorConfig } from "~/types";
 
 export const commonValidators: CmsModelFieldValidatorConfig[] = [
     {

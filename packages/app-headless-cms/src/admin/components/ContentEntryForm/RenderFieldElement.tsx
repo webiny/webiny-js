@@ -1,9 +1,5 @@
 import React from "react";
-import {
-    CmsModelField,
-    CmsEditorContentModel,
-    BindComponent
-} from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsEditorContentModel, BindComponent } from "~/types";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import Label from "./Label";

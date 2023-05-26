@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry } from "~/types";
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,

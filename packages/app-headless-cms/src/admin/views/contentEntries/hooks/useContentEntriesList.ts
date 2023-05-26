@@ -12,7 +12,7 @@ import {
 } from "@webiny/app-headless-cms-common";
 import { useQuery } from "~/admin/hooks";
 import { useContentEntries } from "./useContentEntries";
-import { CmsContentEntry, CmsMetaResponse } from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry, CmsMetaResponse } from "~/types";
 
 interface UpdateSearchCallableParams {
     filter: string;

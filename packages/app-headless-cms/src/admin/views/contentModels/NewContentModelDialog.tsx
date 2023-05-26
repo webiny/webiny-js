@@ -18,7 +18,7 @@ import {
     CreateCmsModelMutationVariables,
     ListMenuCmsGroupsQueryResponse
 } from "../../viewsGraphql";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 import { CmsGroupOption } from "./types";
 import { Dialog } from "~/admin/components/Dialog";
 import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator";

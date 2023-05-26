@@ -1,5 +1,5 @@
 import dot from "dot-prop-immutable";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 
 interface Params {
     source: number;

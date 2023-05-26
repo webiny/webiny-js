@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as BooleanIcon } from "@material-design-icons/svg/outlined/toggle_on.svg";
-import { CmsModelFieldTypePlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsModelFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";

@@ -10,7 +10,7 @@ import {
     CmsModelFieldRendererProps,
     CmsModel,
     CmsModelField
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 
 type GetBind = CmsModelFieldRendererProps["getBind"];
 

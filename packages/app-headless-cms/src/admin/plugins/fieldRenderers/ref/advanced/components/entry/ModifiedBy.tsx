@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsIdentity } from "@webiny/app-headless-cms-common/types";
+import { CmsIdentity } from "~/types";
 import { Box } from "./Box";
 /**
  * Package timeago-react does not have types.

@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { CmsErrorResponse, CmsGroup, CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsErrorResponse, CmsGroup, CmsModel } from "~/types";
 
 const ERROR_FIELDS = `
     code

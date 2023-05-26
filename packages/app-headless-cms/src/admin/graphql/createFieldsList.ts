@@ -1,8 +1,4 @@
-import {
-    CmsModelField,
-    CmsEditorFieldTypePlugin,
-    CmsModel
-} from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsEditorFieldTypePlugin, CmsModel } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 interface CreateFieldsListParams {

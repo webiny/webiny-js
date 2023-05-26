@@ -1,4 +1,4 @@
-import { CmsFieldValueTransformer } from "@webiny/app-headless-cms-common/types";
+import { CmsFieldValueTransformer } from "~/types";
 
 export const createNumberTransformer = (): CmsFieldValueTransformer => ({
     type: "cms-field-value-transformer",

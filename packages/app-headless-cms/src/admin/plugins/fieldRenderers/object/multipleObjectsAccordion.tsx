@@ -7,7 +7,7 @@ import {
     BindComponentRenderProp,
     CmsEditorFieldRendererPlugin,
     CmsModelFieldRendererProps
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 import DynamicSection from "../DynamicSection";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";

@@ -16,7 +16,7 @@ import { Select } from "./entry/Select";
 import { Remove } from "./entry/Remove";
 import { MoveUp } from "./entry/MoveUp";
 import { MoveDown } from "./entry/MoveDown";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 
 const Container = styled("div")({
     width: "100%",

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
-import { CmsDynamicZoneTemplate } from "@webiny/app-headless-cms-common/types";
+import { CmsDynamicZoneTemplate } from "~/types";
 import { ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { TemplateDialog } from "./TemplateDialog";
 import { Typography } from "@webiny/ui/Typography";

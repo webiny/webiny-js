@@ -9,7 +9,7 @@ import {
     CmsModelField,
     DragSource,
     FieldLayoutPosition
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
 import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";

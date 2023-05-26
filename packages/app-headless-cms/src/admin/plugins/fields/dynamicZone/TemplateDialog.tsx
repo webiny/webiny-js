@@ -4,7 +4,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { CmsDynamicZoneTemplate } from "@webiny/app-headless-cms-common/types";
+import { CmsDynamicZoneTemplate } from "~/types";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { IconPicker } from "~/admin/components/IconPicker";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "~/admin/components/Dialog";

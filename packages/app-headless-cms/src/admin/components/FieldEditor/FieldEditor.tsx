@@ -10,12 +10,7 @@ import Field from "./Field";
 import { rowHandle, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useModelFieldEditor } from "./useModelFieldEditor";
 import { FieldEditorProvider, IsVisibleCallable } from "./FieldEditorContext";
-import {
-    CmsModelField,
-    CmsEditorFieldsLayout,
-    CmsModelFieldTypePlugin,
-    DragSource
-} from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsEditorFieldsLayout, CmsModelFieldTypePlugin, DragSource } from "~/types";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");

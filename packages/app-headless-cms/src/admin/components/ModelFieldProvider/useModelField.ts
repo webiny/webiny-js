@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { ModelFieldContext } from "./ModelFieldContext";
 import { plugins } from "@webiny/plugins";
-import { CmsModelFieldTypePlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsModelFieldTypePlugin } from "~/types";
 
 interface GetFieldPlugin {
     (type: string): CmsModelFieldTypePlugin;

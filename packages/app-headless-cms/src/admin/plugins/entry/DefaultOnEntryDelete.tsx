@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useCms } from "~/admin/hooks";
-import { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsErrorResponse, CmsModel } from "~/types";
 import {
     CmsEntryDeleteMutationResponse,
     CmsEntryDeleteMutationVariables,

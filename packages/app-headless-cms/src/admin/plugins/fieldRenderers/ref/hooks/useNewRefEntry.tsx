@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsModelField } from "@webiny/app-headless-cms-common/types";
+import { CmsModelField } from "~/types";
 import MissingEntryHelpText, {
     ReferenceMultipleModelsHelpText
 } from "../components/MissingEntryHelpText";

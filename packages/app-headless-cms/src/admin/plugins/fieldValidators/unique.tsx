@@ -1,4 +1,4 @@
-import { CmsModelFieldValidatorPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 
 export default (): CmsModelFieldValidatorPlugin => {
     return {

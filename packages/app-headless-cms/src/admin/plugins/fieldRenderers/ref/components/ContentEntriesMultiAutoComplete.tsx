@@ -7,7 +7,7 @@ import { useReferences } from "./useReferences";
 import { renderItem, renderListItemOptions } from "./renderItem";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
-import { CmsModelField } from "@webiny/app-headless-cms-common/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem } from "./types";
 

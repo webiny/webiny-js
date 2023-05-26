@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 
 import { Typography } from "@webiny/ui/Typography";
-import { CmsDynamicZoneTemplate } from "@webiny/app-headless-cms-common/types";
+import { CmsDynamicZoneTemplate } from "~/types";
 import { ButtonSecondary } from "@webiny/ui/Button";
 import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon";
 

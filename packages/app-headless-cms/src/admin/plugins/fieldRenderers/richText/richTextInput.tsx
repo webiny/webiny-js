@@ -1,11 +1,7 @@
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import {
-    CmsContentEntry,
-    CmsModelField,
-    CmsEditorFieldRendererPlugin
-} from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";

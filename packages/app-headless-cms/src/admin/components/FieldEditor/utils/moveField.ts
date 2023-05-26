@@ -4,7 +4,7 @@ import {
     CmsEditorFieldId,
     CmsModel as BaseCmsModel,
     FieldLayoutPosition
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
 type CmsModel = Required<Pick<BaseCmsModel, "fields" | "layout">>;

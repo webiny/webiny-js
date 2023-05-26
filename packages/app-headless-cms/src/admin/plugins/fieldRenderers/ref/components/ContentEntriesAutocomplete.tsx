@@ -8,7 +8,7 @@ import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
-import { CmsModelField } from "@webiny/app-headless-cms-common/types";
+import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem } from "./types";
 import { EntryStatus } from "./EntryStatus";

@@ -5,7 +5,7 @@ import {
     CmsEntryPublishMutationVariables,
     createPublishMutation
 } from "@webiny/app-headless-cms-common";
-import { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsErrorResponse, CmsModel } from "~/types";
 import { useCms } from "~/admin/hooks";
 import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";

@@ -1,4 +1,4 @@
-import { CmsIdentity, CmsEntryStatus } from "@webiny/app-headless-cms-common/types";
+import { CmsIdentity, CmsEntryStatus } from "~/types";
 import { FolderItem } from "@webiny/app-aco/types";
 
 interface BaseEntry {

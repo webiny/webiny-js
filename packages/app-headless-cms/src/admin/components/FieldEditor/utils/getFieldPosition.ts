@@ -1,8 +1,4 @@
-import {
-    CmsModelField,
-    CmsModel,
-    FieldLayoutPosition
-} from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsModel, FieldLayoutPosition } from "~/types";
 
 interface GetFieldPositionParams {
     field: string | CmsModelField;

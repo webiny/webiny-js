@@ -17,11 +17,7 @@ import {
 import { useApolloClient, useCms, useModel, useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import {
-    CmsContentEntry,
-    CmsModelField,
-    CmsEditorFieldRendererPlugin
-} from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";

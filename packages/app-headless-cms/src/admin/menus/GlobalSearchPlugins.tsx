@@ -8,7 +8,7 @@ import {
     LIST_MENU_CONTENT_GROUPS_MODELS,
     ListMenuCmsGroupsQueryResponse
 } from "~/admin/viewsGraphql";
-import { CmsGroup } from "@webiny/app-headless-cms-common/types";
+import { CmsGroup } from "~/types";
 
 /**
  * DISCLAIMER!

@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { FileManager } from "@webiny/app-admin/components";

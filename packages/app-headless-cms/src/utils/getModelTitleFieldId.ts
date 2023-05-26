@@ -1,4 +1,4 @@
-import { CmsEditorContentModel } from "@webiny/app-headless-cms-common/types";
+import { CmsEditorContentModel } from "~/types";
 
 export const getModelTitleFieldId = (model: CmsEditorContentModel): string => {
     if (!model.titleFieldId || model.titleFieldId === "id") {

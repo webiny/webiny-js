@@ -1,6 +1,6 @@
 import React from "react";
 import get from "lodash/get";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 

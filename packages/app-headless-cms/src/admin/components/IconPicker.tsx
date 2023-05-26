@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DelayedOnChange from "./DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
-import { CmsIcon, CmsIconsPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsIcon, CmsIconsPlugin } from "~/types";
 import { FormComponentProps } from "@webiny/ui/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { GridCellProps } from "react-virtualized/dist/es/Grid";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ConnectDropTarget, useDrop } from "react-dnd";
-import { DragSource } from "@webiny/app-headless-cms-common/types";
+import { DragSource } from "~/types";
 
 export interface DroppableChildrenFunctionParams {
     isDragging: boolean;

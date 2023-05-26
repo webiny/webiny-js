@@ -7,7 +7,7 @@ import {
     CmsEntrySearchQueryVariables,
     SEARCH_CONTENT_ENTRIES
 } from "~/admin/plugins/fieldRenderers/ref/components/graphql";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 
 interface ExecuteSearchParams {
     setLoading: (loading: boolean) => void;

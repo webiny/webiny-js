@@ -5,7 +5,7 @@ import { Form } from "@webiny/form";
 import { FormAPI, FormRenderPropParams } from "@webiny/form/types";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { CmsContentFormRendererPlugin } from "@webiny/app-headless-cms-common/types";
+import { CmsContentFormRendererPlugin } from "~/types";
 import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntryForm";
 import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";

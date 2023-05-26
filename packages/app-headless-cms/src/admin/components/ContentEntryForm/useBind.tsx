@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, cloneElement } from "react";
 import { createValidators } from "~/utils/createValidators";
-import { BindComponent, CmsModelField } from "@webiny/app-headless-cms-common/types";
+import { BindComponent, CmsModelField } from "~/types";
 import { Validator } from "@webiny/validation/types";
 
 interface UseBindProps {

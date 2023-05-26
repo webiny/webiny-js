@@ -15,7 +15,7 @@ import { PreviewTab } from "./PreviewTab";
 import Header from "./Header";
 import DragPreview from "../DragPreview";
 import { useModelEditor } from "./useModelEditor";
-import { CmsModelField, CmsEditorFieldsLayout } from "@webiny/app-headless-cms-common/types";
+import { CmsModelField, CmsEditorFieldsLayout } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 

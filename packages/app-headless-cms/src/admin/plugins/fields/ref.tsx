@@ -6,7 +6,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CmsModelFieldTypePlugin, CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModelFieldTypePlugin, CmsModel } from "~/types";
 import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 import { i18n } from "@webiny/app/i18n";
 import { Bind, BindComponentRenderProp, useForm } from "@webiny/form";

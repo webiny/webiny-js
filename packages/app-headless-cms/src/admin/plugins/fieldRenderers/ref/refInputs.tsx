@@ -1,9 +1,5 @@
 import React from "react";
-import {
-    CmsContentEntry,
-    CmsModelField,
-    CmsEditorFieldRendererPlugin
-} from "@webiny/app-headless-cms-common/types";
+import { CmsContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import ContentEntriesMultiAutocomplete from "./components/ContentEntriesMultiAutoComplete";
 import { NewRefEntryDialogContextProvider } from "./hooks/useNewRefEntryDialog";
 

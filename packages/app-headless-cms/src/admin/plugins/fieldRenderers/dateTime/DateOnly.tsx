@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Input, TrailingIcon } from "./Input";
-import { CmsModelField } from "@webiny/app-headless-cms-common/types";
+import { CmsModelField } from "~/types";
 import {
     getCurrentDate,
     getDefaultFieldValue

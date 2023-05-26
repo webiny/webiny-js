@@ -10,7 +10,7 @@ import {
     GetCmsModelQueryVariables
 } from "~/admin/graphql/contentModels";
 import { useQuery } from "../../hooks";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries");

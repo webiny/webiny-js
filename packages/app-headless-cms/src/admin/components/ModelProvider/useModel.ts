@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ModelContext } from "./ModelContext";
-import { CmsModel } from "@webiny/app-headless-cms-common/types";
+import { CmsModel } from "~/types";
 
 type UseModelReturnType = {
     model: CmsModel;

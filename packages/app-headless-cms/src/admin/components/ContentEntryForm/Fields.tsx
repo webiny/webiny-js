@@ -6,7 +6,7 @@ import {
     CmsModelField,
     CmsEditorFieldsLayout,
     BindComponent
-} from "@webiny/app-headless-cms-common/types";
+} from "~/types";
 
 interface FieldsProps {
     Bind: BindComponent;
