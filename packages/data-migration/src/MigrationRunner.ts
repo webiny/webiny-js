@@ -159,24 +159,24 @@ export class MigrationRunner {
                     throw new MigrationNotFinished();
                 }
             };
-            const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
-
-            if (!shouldExecute) {
-                this.logger.info(`Skipping migration %s.`, migration.getId());
-                runItem.status = "skipped";
-
-                await this.setRunItemAndSave(lastRun, runItem);
-
-                await this.repository.logMigration({
-                    id: migration.getId(),
-                    description: migration.getDescription(),
-                    reason: "skipped"
-                });
-
-                continue;
-            }
-
             try {
+                const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
+
+                if (!shouldExecute) {
+                    this.logger.info(`Skipping migration %s.`, migration.getId());
+                    runItem.status = "skipped";
+
+                    await this.setRunItemAndSave(lastRun, runItem);
+
+                    await this.repository.logMigration({
+                        id: migration.getId(),
+                        description: migration.getDescription(),
+                        reason: "skipped"
+                    });
+
+                    continue;
+                }
+
                 lastRun.status = "running";
                 runItem.status = "running";
                 if (!runItem.startedOn) {
