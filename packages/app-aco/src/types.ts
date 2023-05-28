@@ -4,6 +4,8 @@ import {
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
 
+export * from "~/graphql/records/types";
+
 export interface FolderItem {
     id: string;
     title: string;
@@ -130,112 +132,14 @@ export interface DeleteFolderResponse {
     };
 }
 
-export interface ListSearchRecordsResponse {
-    search: {
-        listRecords: {
-            data: SearchRecordItem[] | null;
-            meta: ListMeta | null;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface ListSearchRecordsWhereQueryVariables {
-    location?: Partial<Location>;
-    createdBy?: string;
-    tags_in?: string[];
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
-    AND?: ListSearchRecordsWhereQueryVariables[];
-    OR?: ListSearchRecordsWhereQueryVariables[];
-}
-
-export interface ListSearchRecordsQueryVariables {
-    where?: ListSearchRecordsWhereQueryVariables;
-    search?: string;
-    limit?: number;
-    after?: string | null;
-    sort?: ListSearchRecordsSort;
-}
-
-export interface ListTagsResponse {
-    search: {
-        listTags: {
-            data: TagItem[] | null;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface ListTagsWhereQueryVariables {
-    tags_in?: string[];
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
-    AND?: ListTagsWhereQueryVariables[];
-    OR?: ListTagsWhereQueryVariables[];
-}
-
-export interface ListTagsQueryVariables {
-    where?: ListTagsWhereQueryVariables;
-}
-
-export interface GetSearchRecordResponse {
-    search: {
-        getRecord: {
-            data: SearchRecordItem | null;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface GetSearchRecordQueryVariables {
-    id: string;
-}
-
-export interface CreateSearchRecordResponse {
-    search: {
-        createRecord: {
-            data: SearchRecordItem;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface CreateSearchRecordVariables {
-    data: Omit<SearchRecordItem, "id" | "createdOn" | "createdBy" | "savedOn">;
-}
-
-export interface UpdateSearchRecordResponse {
-    search: {
-        updateRecord: {
-            data: SearchRecordItem;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface UpdateSearchRecordVariables {
-    id: string;
-    data: Pick<SearchRecordItem, "location" | "title" | "content" | "data">;
-}
-
-export interface DeleteSearchRecordVariables {
-    id: string;
-}
-
-export interface DeleteSearchRecordResponse {
-    search: {
-        deleteRecord: {
-            data: boolean;
-            error: AcoError | null;
-        };
-    };
-}
-
 export interface DndItemData extends FolderItem {
     isFocused?: boolean;
 }
 
+/**
+ * This type will be removed when all apps migrate to the CMS.
+ * @deprecated
+ */
 export type AcoAppMode = "aco" | "cms";
 
 /**

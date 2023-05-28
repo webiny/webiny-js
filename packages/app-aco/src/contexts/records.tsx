@@ -11,6 +11,7 @@ import {
     createUpdateRecord
 } from "~/graphql/records.gql";
 import {
+    AcoAppMode,
     CreateSearchRecordResponse,
     CreateSearchRecordVariables,
     DeleteSearchRecordResponse,
@@ -113,6 +114,13 @@ const mergeAndSortTags = (oldTagItems: TagItem[], newTags: string[]): TagItem[] 
     return sortBy(mergedTagItems, ["tag"]);
 };
 
+const getResponseData = (response: any, mode: AcoAppMode): any => {
+    if (mode === "cms") {
+        return response?.content || {};
+    }
+    return response.search?.content || {};
+};
+
 export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
     const { app, client, mode } = useAcoApp();
     const { model } = app;
@@ -183,10 +191,10 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Could not fetch records - no response.");
                 }
 
-                const { data, meta: responseMeta, error } = response.search.listRecords;
+                const { data, meta: responseMeta, error } = getResponseData(response, mode);
 
                 if (!data || !responseMeta) {
-                    throw new Error(error?.message || "Could not fetch records");
+                    throw new Error(error?.message || "Could not fetch records.");
                 }
 
                 setRecords(prev => {
@@ -231,7 +239,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error(`Could not fetch record "${id}" - no response.`);
                 }
 
-                const { data, error } = response.search.getRecord;
+                const { data, error } = getResponseData(response, mode);
 
                 if (error && error.code !== "NOT_FOUND") {
                     throw new Error("Network error while syncing record");
@@ -268,6 +276,9 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             },
 
             async createRecord(record) {
+                if (!CREATE_RECORD) {
+                    throw new Error("Missing CREATE_RECORD operation.");
+                }
                 const { location } = record;
                 const { folderId } = location;
 
@@ -284,7 +295,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Network error while creating search record.");
                 }
 
-                const { data, error } = response.search.createRecord;
+                const { data, error } = getResponseData(response, mode);
 
                 if (!data) {
                     throw new Error(error?.message || "Could not create record");
@@ -317,6 +328,9 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 if (!contextFolderId) {
                     throw new Error("`folderId` is mandatory");
                 }
+                if (!UPDATE_RECORD) {
+                    throw new Error("Missing UPDATE_RECORD operation.");
+                }
 
                 const { id, location, data, title, content } = record;
 
@@ -333,7 +347,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Network error while updating record");
                 }
 
-                const { data: result, error } = response.search.updateRecord;
+                const { data: result, error } = getResponseData(response, mode);
 
                 if (!result) {
                     throw new Error(error?.message || "Could not update record");
@@ -364,6 +378,9 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             },
 
             async deleteRecord(record) {
+                if (!DELETE_RECORD) {
+                    throw new Error("Missing DELETE_RECORD operation.");
+                }
                 const { id, location } = record;
                 const { folderId } = location;
 
@@ -380,7 +397,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Network error while deleting record.");
                 }
 
-                const { data, error } = response.search.deleteRecord;
+                const { data, error } = getResponseData(response, mode);
 
                 if (!data) {
                     throw new Error(error?.message || "Could not delete record");
@@ -402,6 +419,10 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             },
 
             async listTags(params) {
+                if (!LIST_TAGS) {
+                    throw new Error("Missing LIST_TAGS operation.");
+                }
+
                 const { data: response } = await apolloFetchingHandler(
                     loadingHandler("LIST", setLoading),
                     () =>
@@ -417,7 +438,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     throw new Error("Network error while fetching tags.");
                 }
 
-                const { data, error } = response.search.listTags;
+                const { data, error } = getResponseData(response, mode);
 
                 if (!data) {
                     throw new Error(error?.message || "Could not fetch tags");

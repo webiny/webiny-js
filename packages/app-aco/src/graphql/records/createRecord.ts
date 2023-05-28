@@ -4,15 +4,16 @@ import { createAppFields, ERROR_FIELD } from "./common";
 
 export const createCreateRecord = (model: AcoModel, mode: AcoAppMode) => {
     if (mode === "cms") {
-        throw new Error(
+        console.info(
             "User should not be allowed to create a search record for the CMS base ACO App."
         );
+        return null;
     }
     const { singularApiName } = model;
     return gql`
         mutation Create${singularApiName}($data: ${singularApiName}CreateInput!) {
             search {
-                createRecord: create${singularApiName}(data: $data) {
+                content: create${singularApiName}(data: $data) {
                     data {
                         ${createAppFields(model)}
                     }

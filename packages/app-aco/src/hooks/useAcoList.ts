@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
-import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import {
     FolderItem,
     GenericSearchData,
@@ -10,9 +9,11 @@ import {
     ListSearchRecordsWhereQueryVariables,
     SearchRecordItem
 } from "~/types";
+import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
 interface UseAcoListParams {
     folderId?: string;
+    limit?: number;
     tags_in?: string[];
     tags_startsWith?: string;
     tags_not_startsWith?: string;
@@ -34,6 +35,7 @@ interface UseAcoListResponse<T> {
     isListLoading: boolean;
     isListLoadingMore: boolean;
     meta: ListMeta;
+    limit: number;
     listItems: (params: ListRecordsParams) => void;
 }
 
@@ -76,7 +78,7 @@ const getCurrentRecordList = <T = GenericSearchData>(
 };
 
 export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
-    const { folderId, ...initialWhere } = params;
+    const { folderId, limit: initialLimit = 20, ...initialWhere } = params;
 
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
@@ -108,14 +110,27 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             listFolders();
         }
 
-        listRecords({
-            sort,
-            ...initialWhere,
-            where: {
-                location: {
-                    folderId
-                }
+        let where: ListSearchRecordsWhereQueryVariables | undefined;
+        if (Object.keys(initialWhere).length > 0) {
+            where = {
+                ...initialWhere
+            };
+        }
+        if (folderId) {
+            if (!where) {
+                where = {};
             }
+            where.location = {
+                folderId
+            };
+        }
+
+        listRecords({
+            where,
+            sort,
+            limit: initialLimit,
+            after: undefined,
+            search: undefined
         });
     }, [folderId]);
 
@@ -203,6 +218,7 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             listTitle,
             updateRecordCache,
             deleteRecordCache,
+            limit: initialLimit,
             isListLoading: Boolean(
                 recordsLoading.INIT ||
                     foldersLoading.INIT ||
@@ -211,28 +227,32 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             ),
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
             meta: meta[folderId || "search"] || defaultMeta,
-            listItems({ folderId, where, sort: initialSort, after, limit, search }) {
+            listItems({ folderId, where, sort: initialSort, after, limit = initialLimit, search }) {
                 let sort: ListSearchRecordsSort | undefined = undefined;
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (initialSort?.length) {
                     sort = validateOrGetDefaultDbSort(initialSort);
                     setSort(sort);
                 }
-                const params: ListRecordsParams & Required<Pick<ListRecordsParams, "where">> = {
-                    where: {
+                if (folderId) {
+                    where = {
                         ...(where || {}),
                         location: {
                             folderId
                         }
-                    },
-                    after,
+                    };
+                }
+
+                const params: ListRecordsParams = {
+                    where: !where || Object.keys(where).length === 0 ? undefined : where,
+                    sort,
                     limit,
-                    search,
-                    sort
+                    after,
+                    search
                 };
 
                 return listRecords(params);
             }
         };
-    }, [folders, records, foldersLoading, recordsLoading, meta]);
+    }, [folders, records, foldersLoading, recordsLoading, meta, initialWhere]);
 };

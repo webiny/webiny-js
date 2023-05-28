@@ -4,15 +4,16 @@ import { ERROR_FIELD } from "./common";
 
 export const createDeleteRecord = (model: AcoModel, mode: AcoAppMode) => {
     if (mode === "cms") {
-        throw new Error(
+        console.info(
             "User should not be allowed to delete a search record for the CMS base ACO App."
         );
+        return null;
     }
     const { singularApiName } = model;
     return gql`
         mutation Delete${singularApiName}($id: ID!) {
             search {
-                deleteRecord: delete${singularApiName}(id: $id) {
+                content: delete${singularApiName}(id: $id) {
                     data
                     ${ERROR_FIELD}
                 }

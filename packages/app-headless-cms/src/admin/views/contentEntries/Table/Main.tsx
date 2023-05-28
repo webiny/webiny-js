@@ -48,7 +48,8 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
         meta,
         isListLoading,
         isListLoadingMore,
-        listItems
+        listItems,
+        limit
         // deleteRecordCache,
         // updateRecordCache
     } = useAcoList<CmsContentEntryRecord>({ folderId });
@@ -69,7 +70,6 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const [tableHeight, setTableHeight] = useState(0);
     const tableRef = useRef<HTMLDivElement>(null);
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [limit] = useState<number>(20);
     const [where] = useState<ListSearchRecordsWhereQueryVariables>({});
 
     const sort = useMemo(() => {

@@ -9,6 +9,9 @@
       "path": "../app-admin"
     },
     {
+      "path": "../app-headless-cms-common"
+    },
+    {
       "path": "../form"
     },
     {
@@ -35,6 +38,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
+      "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/ui/*": ["../ui/src/*"],
