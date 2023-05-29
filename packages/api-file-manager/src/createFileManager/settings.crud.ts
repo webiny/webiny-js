@@ -9,7 +9,7 @@ import { FileManagerConfig } from "~/createFileManager/index";
 
 const CreateDataModel = withFields({
     uploadMinFileSize: number({ value: 0, validation: validation.create("gte:0") }),
-    uploadMaxFileSize: number({ value: 26214401 }),
+    uploadMaxFileSize: number({ value: 10737418240 }),
     srcPrefix: onSet((value?: string) => {
         // Make sure srcPrefix always ends with forward slash.
         if (typeof value === "string") {

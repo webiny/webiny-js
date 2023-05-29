@@ -23,6 +23,11 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             createdBy: AcoUser
         }
 
+        type TagItem {
+            tag: String!
+            count: Int!
+        }
+
         type SearchLocationType {
             folderId: ID!
         }
@@ -49,12 +54,31 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             tags: [String!]
         }
 
+        input BasicSearchRecordListWhereInput {
+            tags_in: [String!]
+            tags_startsWith: String
+            tags_not_startsWith: String
+        }
+
         input SearchRecordListWhereInput {
             type: String!
             location: SearchLocationInput
             tags_in: [String!]
             tags_startsWith: String
             tags_not_startsWith: String
+            createdBy: ID
+            AND: [BasicSearchRecordListWhereInput!]
+            OR: [BasicSearchRecordListWhereInput!]
+        }
+
+        input SearchRecordTagListWhereInput {
+            type: String
+            tags_in: [String!]
+            tags_startsWith: String
+            tags_not_startsWith: String
+            createdBy: ID
+            AND: [SearchRecordTagListWhereInput!]
+            OR: [SearchRecordTagListWhereInput!]
         }
 
         type SearchRecordResponse {
@@ -68,6 +92,12 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
             meta: AcoMeta
         }
 
+        type SearchRecordTagListResponse {
+            data: [TagItem!]
+            error: AcoError
+            meta: AcoMeta
+        }
+
         extend type SearchQuery {
             getRecord(id: ID!): SearchRecordResponse
             listRecords(
@@ -77,6 +107,7 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
                 after: String
                 sort: AcoSort
             ): SearchRecordListResponse
+            listTags(where: SearchRecordTagListWhereInput): SearchRecordTagListResponse
         }
 
         extend type SearchMutation {
@@ -104,6 +135,15 @@ export const searchRecordSchema = new GraphQLSchemaPlugin<AcoContext>({
                     await checkPermissions(context);
                     const [entries, meta] = await context.aco.search.list(args);
                     return new ListResponse(entries, meta);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            },
+            listTags: async (_, args: any, context) => {
+                try {
+                    await checkPermissions(context);
+                    const [tags, meta] = await context.aco.search.listTags(args);
+                    return new ListResponse(tags, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }

@@ -18,6 +18,9 @@
       "path": "../../../packages/api-file-manager/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-file-manager-aco/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-file-manager-ddb/tsconfig.build.json"
     },
     {
@@ -122,6 +125,8 @@
       "@webiny/api-apw": ["../../../packages/api-apw/src"],
       "@webiny/api-file-manager/*": ["../../../packages/api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../../../packages/api-file-manager/src"],
+      "@webiny/api-file-manager-aco/*": ["../../../packages/api-file-manager-aco/src/*"],
+      "@webiny/api-file-manager-aco": ["../../../packages/api-file-manager-aco/src"],
       "@webiny/api-file-manager-ddb/*": ["../../../packages/api-file-manager-ddb/src/*"],
       "@webiny/api-file-manager-ddb": ["../../../packages/api-file-manager-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../../../packages/api-file-manager-s3/src/*"],

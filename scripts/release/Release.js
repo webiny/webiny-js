@@ -42,6 +42,9 @@ class Release {
         this.version = version;
     }
 
+    /**
+     * @param {boolean|string} flag Boolean or "latest" to mark release as "latest" on Github
+     */
     setCreateGithubRelease(flag) {
         this.createGithubRelease = flag;
     }
@@ -109,7 +112,7 @@ class Release {
         await execa("yarn", lernaPublishArgs, { stdio: "inherit" });
         this.logger.info(`Packages were published to NPM under %s dist-tag`, this.tag);
 
-        if (this.createGithubRelease) {
+        if (this.createGithubRelease !== false) {
             // Generate changelog, tag commit, and create Github release.
             const lernaJSON = await loadJSON("lerna.json");
             const versionTag = `v${lernaJSON.version}`;
@@ -191,7 +194,9 @@ class Release {
             tag_name: tag,
             name: tag,
             body: changelog,
-            prerelease: false
+            prerelease: false,
+            // `make_latest` is of type `string`
+            make_latest: this.createGithubRelease === "latest" ? "true" : "false"
         });
     }
 }

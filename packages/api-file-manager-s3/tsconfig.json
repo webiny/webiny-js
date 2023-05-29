@@ -6,6 +6,7 @@
     { "path": "../api-security" },
     { "path": "../error" },
     { "path": "../handler-graphql" },
+    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -23,6 +24,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

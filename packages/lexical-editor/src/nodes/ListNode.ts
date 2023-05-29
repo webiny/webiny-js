@@ -54,9 +54,6 @@ export class ListNode extends ElementNode {
         return "webiny-list";
     }
 
-    /*
-     *
-     * */
     isStyleExistInTheme(theme: WebinyTheme): boolean {
         return theme?.emotionMap ? !!theme?.emotionMap[this.__themeStyleId] : false;
     }
@@ -70,7 +67,7 @@ export class ListNode extends ElementNode {
             dom.setAttribute("start", String(this.__start));
         }
 
-        // if styleId is not set or user removed from theme, set default style.
+        // If styleId is not set or user removed from theme, set default style
         if (!this.hasThemeStyle() || !this.isStyleExistInTheme(wTheme)) {
             this.setDefaultThemeListStyleByTag(this.__tag, wTheme);
         }

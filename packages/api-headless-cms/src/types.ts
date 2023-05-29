@@ -642,21 +642,6 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      */
     isSortable: boolean;
     /**
-     * Optional method which creates the storageId.
-     * Primary use is for the datetime field, but if users has some specific fields, they can customize the storageId to their needs.
-     *
-     * ```ts
-     * createStorageId: ({field}) => {
-     *     if (field.settings.type === "time) {
-     *         return `${field.type}_time@${field.id}`
-     *     }
-     *     // use default method
-     *     return undefined;
-     * }
-     * ```
-     */
-    createStorageId?: (params: { model: CmsModel; field: TField }) => string | null | undefined;
-    /**
      * Read API methods.
      */
     read: {
@@ -671,7 +656,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * }
          * ```
          */
-        createGetFilters?(params: { model: CmsModel; field: TField }): string;
+        createGetFilters?(params: { field: TField }): string;
         /**
          * Definition for list filtering for GraphQL.
          *
@@ -689,7 +674,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createListFilters?(params: {
-            model: CmsModel;
+            model: Pick<CmsModel, "singularApiName">;
             field: TField;
             plugins: CmsFieldTypePlugins;
         }): string;
@@ -768,7 +753,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createListFilters?: (params: {
-            model: CmsModel;
+            model: Pick<CmsModel, "singularApiName">;
             field: TField;
             plugins: CmsFieldTypePlugins;
         }) => string;
@@ -2211,6 +2196,15 @@ export interface UpdateCmsEntryInput {
 }
 
 /**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface GetUniqueFieldValuesParams {
+    where: CmsEntryListWhere;
+    fieldId: string;
+}
+
+/**
  * @category CmsEntry
  */
 export interface CmsDeleteEntryOptions {
@@ -2333,7 +2327,16 @@ export interface CmsEntryContext {
      */
     getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
     /**
-     * Lifecyle events - deprecated.
+     * List all unique values for a given field.
+     *
+     * @internal
+     */
+    getUniqueFieldValues: (
+        model: CmsModel,
+        params: GetUniqueFieldValuesParams
+    ) => Promise<string[]>;
+    /**
+     * Lifecycle events - deprecated.
      */
     /**
      * @deprecated
@@ -2756,6 +2759,11 @@ export interface CmsEntryStorageOperationsUnpublishParams<
     storageEntry: T;
 }
 
+export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
+    where: CmsEntryListWhere;
+    fieldId: string;
+}
+
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
 }
@@ -2925,6 +2933,15 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Unpublish the entry.
      */
     unpublish: (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams<T>) => Promise<T>;
+    /**
+     * Method to list all the unique values for the given field id.
+     * Simplest use case would be to aggregate tags for some content.
+     * @internal
+     */
+    getUniqueFieldValues: (
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
+    ) => Promise<string[]>;
 }
 
 export enum CONTENT_ENTRY_STATUS {

@@ -1,9 +1,5 @@
 import { QueueJob } from "~/types";
-/**
- * Missing types for mdbid package.
- */
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 
 const tenant = "root";
 const locale = "en-US";

@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import DataLoader from "dataloader";
 import {
     CreateTenantInput,
@@ -18,6 +13,7 @@ import {
     ListTenantsParams
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
+import { mdbid } from "@webiny/utils";
 
 function createTenantLoaders(storageOperations: TenancyStorageOperations) {
     const loaders = new Map<string, DataLoader<any, any>>();

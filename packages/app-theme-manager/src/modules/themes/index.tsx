@@ -4,7 +4,7 @@ import { Provider, Plugins } from "@webiny/app-admin";
 import { AddPbWebsiteSettings } from "@webiny/app-page-builder";
 import { AddTenantFormField, IsRootTenant, IsNotRootTenant } from "@webiny/app-tenant-manager";
 import { useBind } from "@webiny/form";
-import { Select } from "@webiny/ui/Select";
+import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { validation } from "@webiny/validation";
 import { ThemeCheckboxGroup } from "~/components/ThemeCheckboxGroup";
 import { ThemeManagerProviderHOC } from "~/components/ThemeManagerProvider";
@@ -48,26 +48,24 @@ const TenantThemes = () => {
 interface ThemeSelectProps {
     themes: ThemeSource[];
 }
+
 const ThemeSelect: React.FC<ThemeSelectProps> = ({ themes }) => {
     const bind = useBind({
         name: "theme",
-        defaultValue: "",
         validators: validation.create("required")
     });
 
+    const options = themes.map(theme => ({ id: theme.name, name: theme.label || theme.name }));
+    const value = options.find(option => option.id === bind.value) || { id: "", name: "" };
+
     return (
-        <Select
+        <AutoComplete
+            {...bind}
             label="Theme"
             description={"Select a theme to use for your website."}
-            {...bind}
-            value={bind.value || ""}
-        >
-            {[{ name: "", label: null, hidden: true }, ...themes].map(theme => (
-                <option key={theme.name} value={theme.name} hidden={theme.hidden}>
-                    {theme.label}
-                </option>
-            ))}
-        </Select>
+            options={options}
+            value={value}
+        />
     );
 };
 
@@ -76,6 +74,7 @@ const WebsiteSettingsSelection = gql`
         theme
     }
 `;
+
 const WebsiteSettings: React.FC = () => {
     return (
         <Fragment>

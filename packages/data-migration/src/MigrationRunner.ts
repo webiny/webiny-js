@@ -1,7 +1,7 @@
 import { coerce } from "semver";
 import { Logger } from "pino";
 import { inject, makeInjectable } from "@webiny/ioc";
-import { executeWithRetry } from "@webiny/utils";
+import { executeWithRetry, mdbid } from "@webiny/utils";
 import {
     MigrationRepositorySymbol,
     LoggerSymbol,
@@ -18,7 +18,6 @@ import {
     MigrationStatus,
     MigrationRunItem
 } from "~/types";
-import { createId } from "~/createId";
 
 export type IsMigrationApplicable = (migration: DataMigration) => boolean;
 
@@ -160,24 +159,24 @@ export class MigrationRunner {
                     throw new MigrationNotFinished();
                 }
             };
-            const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
-
-            if (!shouldExecute) {
-                this.logger.info(`Skipping migration %s.`, migration.getId());
-                runItem.status = "skipped";
-
-                await this.setRunItemAndSave(lastRun, runItem);
-
-                await this.repository.logMigration({
-                    id: migration.getId(),
-                    description: migration.getDescription(),
-                    reason: "skipped"
-                });
-
-                continue;
-            }
-
             try {
+                const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
+
+                if (!shouldExecute) {
+                    this.logger.info(`Skipping migration %s.`, migration.getId());
+                    runItem.status = "skipped";
+
+                    await this.setRunItemAndSave(lastRun, runItem);
+
+                    await this.repository.logMigration({
+                        id: migration.getId(),
+                        description: migration.getDescription(),
+                        reason: "skipped"
+                    });
+
+                    continue;
+                }
+
                 lastRun.status = "running";
                 runItem.status = "running";
                 if (!runItem.startedOn) {
@@ -298,7 +297,7 @@ export class MigrationRunner {
 
         if (!lastRun || resolvedStatus.includes(lastRun.status)) {
             lastRun = {
-                id: createId(),
+                id: mdbid(),
                 status: "init",
                 startedOn: getCurrentISOTime(),
                 finishedOn: "",
