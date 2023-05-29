@@ -5,7 +5,7 @@ import { createListQuery } from "@webiny/app-headless-cms-common";
 
 export const createListRecords = (model: AcoModel, mode: AcoAppMode) => {
     if (mode === "cms") {
-        return createListQuery(model);
+        return createListQuery(model, model.fields);
     }
     const { singularApiName, pluralApiName } = model;
     return gql`

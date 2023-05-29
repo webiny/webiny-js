@@ -4,7 +4,8 @@ import {
     CmsContentEntry,
     CmsEditorContentModel,
     CmsErrorResponse,
-    CmsMetaResponse
+    CmsMetaResponse,
+    CmsModelField
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "./getModelTitleFieldId";
@@ -131,7 +132,7 @@ export interface CmsEntriesListQueryVariables {
     after?: string;
 }
 
-export const createListQuery = (model: CmsEditorContentModel) => {
+export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelField[]) => {
     return gql`
         query CmsEntriesList${model.pluralApiName}($where: ${
         model.singularApiName
@@ -144,7 +145,8 @@ export const createListQuery = (model: CmsEditorContentModel) => {
             ) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
-                    ${getModelTitleFieldId(model)}
+                    ${fields ? createFieldsList({ model, fields }) : ""}
+                    ${!fields ? getModelTitleFieldId(model) : ""}
                 }
                 meta {
                     cursor

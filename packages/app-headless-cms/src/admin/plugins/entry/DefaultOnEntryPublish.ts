@@ -8,7 +8,6 @@ import {
 import { CmsErrorResponse, CmsModel } from "~/types";
 import { useCms } from "~/admin/hooks";
 import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
-import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 
 interface Mutations {
     [key: string]: DocumentNode;
@@ -56,7 +55,6 @@ const OnEntryPublish: React.FC = () => {
                 if (!content || !content.data || content.error) {
                     return;
                 }
-                GQLCache.unpublishPreviouslyPublishedRevision(model, cache, id);
             }
         });
 

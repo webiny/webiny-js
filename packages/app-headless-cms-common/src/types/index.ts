@@ -339,6 +339,8 @@ export interface CmsContentEntry {
     createdBy: CmsIdentity;
     meta: {
         title: string;
+        description?: string;
+        image?: string;
         publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
@@ -531,10 +533,3 @@ export interface CmsEntryFilterStatusPlugin extends Plugin {
     label: string;
     value: string;
 }
-
-/**
- * Available statuses for content entry.
- *
- * @category CmsEntry
- */
-export type CmsEntryStatus = "published" | "unpublished" | "draft";

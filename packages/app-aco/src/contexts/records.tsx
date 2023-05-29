@@ -8,12 +8,14 @@ import {
     createGetRecord,
     createListRecords,
     createListTags,
+    createMoveRecord,
     createUpdateRecord
 } from "~/graphql/records.gql";
 import {
     AcoAppMode,
     CreateSearchRecordResponse,
     CreateSearchRecordVariables,
+    DeletableSearchRecordItem,
     DeleteSearchRecordResponse,
     DeleteSearchRecordVariables,
     GetSearchRecordQueryVariables,
@@ -27,6 +29,9 @@ import {
     Loading,
     LoadingActions,
     Meta,
+    MovableSearchRecordItem,
+    MoveSearchRecordResponse,
+    MoveSearchRecordVariables,
     SearchRecordItem,
     TagItem,
     UpdateSearchRecordResponse,
@@ -50,7 +55,8 @@ interface SearchRecordsContext {
     getRecord: (id: string) => Promise<SearchRecordItem | null>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
     updateRecord: (record: SearchRecordItem, contextFolderId?: string) => Promise<SearchRecordItem>;
-    deleteRecord(record: SearchRecordItem): Promise<true>;
+    moveRecord: (record: MovableSearchRecordItem) => Promise<void>;
+    deleteRecord(record: DeletableSearchRecordItem): Promise<true>;
     listTags: (params: ListTagsParams) => Promise<TagItem[]>;
 }
 
@@ -130,17 +136,25 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
 
-    const { GET_RECORD, LIST_RECORDS, UPDATE_RECORD, DELETE_RECORD, CREATE_RECORD, LIST_TAGS } =
-        useMemo(() => {
-            return {
-                LIST_RECORDS: createListRecords(model, mode),
-                UPDATE_RECORD: createUpdateRecord(model, mode),
-                GET_RECORD: createGetRecord(model, mode),
-                LIST_TAGS: createListTags(model, mode),
-                DELETE_RECORD: createDeleteRecord(model, mode),
-                CREATE_RECORD: createCreateRecord(model, mode)
-            };
-        }, [app.id, model.modelId]);
+    const {
+        GET_RECORD,
+        LIST_RECORDS,
+        UPDATE_RECORD,
+        MOVE_RECORD,
+        DELETE_RECORD,
+        CREATE_RECORD,
+        LIST_TAGS
+    } = useMemo(() => {
+        return {
+            LIST_RECORDS: createListRecords(model, mode),
+            UPDATE_RECORD: createUpdateRecord(model, mode),
+            MOVE_RECORD: createMoveRecord(model),
+            GET_RECORD: createGetRecord(model, mode),
+            LIST_TAGS: createListTags(model, mode),
+            DELETE_RECORD: createDeleteRecord(model, mode),
+            CREATE_RECORD: createCreateRecord(model, mode)
+        };
+    }, [app.id, model.modelId]);
 
     const context = useMemo<SearchRecordsContext>(() => {
         return {
@@ -287,7 +301,9 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     () =>
                         client.mutate<CreateSearchRecordResponse, CreateSearchRecordVariables>({
                             mutation: CREATE_RECORD,
-                            variables: { data: record }
+                            variables: {
+                                data: record
+                            }
                         })
                 );
 
@@ -377,6 +393,43 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 return result;
             },
 
+            moveRecord: async (record: MovableSearchRecordItem) => {
+                const { id, location } = record;
+                const { folderId } = location;
+
+                const { data: response } = await apolloFetchingHandler(
+                    loadingHandler("DELETE", setLoading),
+                    () =>
+                        client.mutate<MoveSearchRecordResponse, MoveSearchRecordVariables>({
+                            mutation: MOVE_RECORD,
+                            variables: {
+                                id,
+                                folderId
+                            }
+                        })
+                );
+
+                if (!response) {
+                    throw new Error("Network error while moving record.");
+                }
+
+                const { data, error } = getResponseData(response, mode);
+
+                if (!data) {
+                    throw new Error(error?.message || "Could not move record.");
+                }
+                setRecords(prev => {
+                    return prev.filter(record => record.id !== id);
+                });
+                setMeta(meta => ({
+                    ...meta,
+                    [folderId]: {
+                        ...meta[folderId],
+                        totalCount: --meta[folderId].totalCount
+                    }
+                }));
+            },
+
             async deleteRecord(record) {
                 if (!DELETE_RECORD) {
                     throw new Error("Missing DELETE_RECORD operation.");
@@ -460,6 +513,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
         LIST_RECORDS,
         UPDATE_RECORD,
         DELETE_RECORD,
+        MOVE_RECORD,
         CREATE_RECORD,
         LIST_TAGS
     ]);

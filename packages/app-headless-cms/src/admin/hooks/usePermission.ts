@@ -7,6 +7,7 @@ import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types"
 export interface CreatableItem {
     createdBy: Pick<CmsIdentity, "id">;
 }
+export type EditableItem = CreatableItem;
 
 interface CanReadEntriesCallableParams {
     contentModelGroup: CmsGroup;

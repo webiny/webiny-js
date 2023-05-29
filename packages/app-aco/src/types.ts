@@ -38,6 +38,10 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     tags: string[];
 }
 
+export type MovableSearchRecordItem = Pick<SearchRecordItem, "id" | "location">;
+
+export type DeletableSearchRecordItem = Pick<SearchRecordItem, "id" | "location">;
+
 export interface TagItem {
     tag: string;
 }

@@ -7,9 +7,10 @@ import { Header } from "~/admin/components/ContentEntries/Header";
 import { LoadingMore } from "~/admin/components/ContentEntries/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/ContentEntries/LoadMoreButton";
 import { Table } from "~/admin/components/ContentEntries/Table";
-import { CmsContentEntryRecord } from "~/admin/components/ContentEntries/Table/types";
+import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
 import { MainContainer, Wrapper } from "./styled";
 import {
+    FolderItem,
     ListMeta,
     ListSearchRecordsSort,
     ListSearchRecordsSortItem,
@@ -20,6 +21,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { Header as ContentEntryHeader } from "./Header";
 import { useRouter } from "@webiny/react-router";
+import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
 interface Props {
     folderId?: string;
@@ -40,19 +42,49 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     }, []);
 };
 
+const createRecords = (items: CmsContentEntry[]): RecordEntry[] => {
+    return items.map(item => {
+        return {
+            id: item.id,
+            type: "RECORD",
+            title: item.meta.title,
+            description: item.meta.description,
+            image: item.meta.image,
+            createdBy: item.createdBy.displayName,
+            savedOn: item.savedOn,
+            status: item.meta.status,
+            version: item.meta.version,
+            original: item,
+            selectable: true
+        };
+    });
+};
+
+const createFolders = (items: FolderItem[]): FolderEntry[] => {
+    return items.map(item => {
+        return {
+            id: item.id,
+            type: "FOLDER",
+            title: item.title,
+            createdBy: item.createdBy.displayName || "-",
+            savedOn: item.createdOn,
+            original: item,
+            selectable: false
+        };
+    });
+};
+
 export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const {
-        records,
-        folders,
+        records: initialRecords,
+        folders: initialFolders,
         listTitle = defaultFolderName,
         meta,
         isListLoading,
         isListLoadingMore,
         listItems,
         limit
-        // deleteRecordCache,
-        // updateRecordCache
-    } = useAcoList<CmsContentEntryRecord>({ folderId });
+    } = useAcoList({ folderId });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
@@ -116,6 +148,13 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     }, [meta]);
 
     const { showEmptyView } = useContentEntry();
+
+    const records = useMemo(() => {
+        return createRecords(initialRecords as unknown as CmsContentEntry[]);
+    }, [initialRecords]);
+    const folders = useMemo(() => {
+        return createFolders(initialFolders);
+    }, [initialFolders]);
 
     if (!showEmptyView) {
         return (

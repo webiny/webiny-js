@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo } from "react";
 import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
-import { SearchRecordItem } from "~/types";
+import { DeletableSearchRecordItem, MovableSearchRecordItem, SearchRecordItem } from "~/types";
 
 export const useRecords = (folderId?: string) => {
     const context = useContext(SearchRecordsContext);
@@ -17,6 +17,7 @@ export const useRecords = (folderId?: string) => {
         getRecord,
         createRecord,
         updateRecord,
+        moveRecord,
         deleteRecord
     } = context;
 
@@ -67,7 +68,10 @@ export const useRecords = (folderId?: string) => {
             updateRecord(record: SearchRecordItem) {
                 return updateRecord(record, folderId);
             },
-            deleteRecord(record: SearchRecordItem) {
+            moveRecord(params: MovableSearchRecordItem) {
+                return moveRecord(params);
+            },
+            deleteRecord(record: DeletableSearchRecordItem) {
                 return deleteRecord(record);
             }
         }),

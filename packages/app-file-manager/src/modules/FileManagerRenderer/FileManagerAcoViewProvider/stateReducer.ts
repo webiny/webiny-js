@@ -14,6 +14,7 @@ export interface StateListWhere extends BaseStateListWhere {
     search?: string;
     createdBy?: string;
     AND?: BaseStateListWhere[];
+    OR?: BaseStateListWhere[];
 }
 
 export interface State {

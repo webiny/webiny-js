@@ -7,13 +7,23 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { Icon } from "@webiny/ui/Icon";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { usePermission } from "~/admin/hooks";
-import { RecordEntry } from "../../types";
 import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
+import { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types";
 
 const t = i18n.ns("app-headless-cms/pages-table/actions/page/publish");
 
 interface Props {
-    record: RecordEntry;
+    record: {
+        id: string;
+        title: string;
+        status: CmsContentEntryStatusType;
+        original: {
+            id: string;
+            meta: {
+                version: number;
+            };
+        };
+    };
 }
 
 export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
@@ -23,7 +33,7 @@ export const RecordActionPublish: React.VFC<Props> = ({ record }) => {
         revision: {
             id: record.original.id,
             meta: {
-                version: record.original.version
+                version: record.original.meta.version
             }
         }
     });

@@ -1,23 +1,22 @@
-import { Dispatch, SetStateAction, useCallback, useMemo, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FormOnSubmit } from "@webiny/form";
 import {
-    createCreateFromMutation,
-    createCreateMutation,
-    createUpdateMutation,
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables,
     CmsEntryCreateMutationResponse,
     CmsEntryCreateMutationVariables,
     CmsEntryUpdateMutationResponse,
     CmsEntryUpdateMutationVariables,
-    CmsEntryCreateFromMutationResponse,
-    CmsEntryCreateFromMutationVariables
+    createCreateFromMutation,
+    createCreateMutation,
+    createUpdateMutation
 } from "@webiny/app-headless-cms-common";
-import { useApolloClient, useCms, useModel, useMutation } from "~/admin/hooks";
-import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
+import { useCms, useModel, useMutation } from "~/admin/hooks";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
@@ -86,7 +85,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const { listQueryVariables } = useContentEntry();
     const { model } = useModel();
     const { history } = useRouter();
-    const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -166,10 +164,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
-            if (params.addEntryToListCache) {
-                GQLCache.addEntryToListCache(model, client.cache, entry, listQueryVariables);
-            }
-
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);
@@ -231,13 +225,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
-            GQLCache.updateLatestRevisionInListCache(
-                model,
-                client.cache,
-                newRevision,
-                listQueryVariables
-            );
-            GQLCache.addRevisionToRevisionsCache(model, client.cache, newRevision);
 
             showSnackbar("A new revision was created!");
             goToRevision(newRevision.id);

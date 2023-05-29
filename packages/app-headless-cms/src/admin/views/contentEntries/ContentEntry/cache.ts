@@ -33,7 +33,7 @@ const sortEntries = (list: CmsContentEntry[], sort?: string[] | null): CmsConten
     return orderBy(list, [key], [order]);
 };
 
-export const addEntryToListCache = (
+export const addEntryToListCache_UNUSED = (
     model: CmsModel,
     cache: DataProxy,
     entry: CmsContentEntry,
@@ -75,7 +75,7 @@ export const addEntryToListCache = (
     });
 };
 
-export const updateLatestRevisionInListCache = (
+export const updateLatestRevisionInListCache_UNUSED = (
     model: CmsModel,
     cache: DataProxy,
     revision: CmsContentEntryRevision,
@@ -105,7 +105,7 @@ export const updateLatestRevisionInListCache = (
     });
 };
 
-export const removeEntryFromListCache = (
+export const removeEntryFromListCache_UNUSED = (
     model: CmsModel,
     cache: DataProxy,
     revision: Pick<CmsContentEntryRevision, "id">,
@@ -134,7 +134,7 @@ export const removeEntryFromListCache = (
     });
 };
 
-export const removeRevisionFromEntryCache = (
+export const removeRevisionFromEntryCache_UNUSED = (
     model: CmsModel,
     cache: DataProxy,
     revision: Pick<CmsContentEntryRevision, "id">
@@ -181,7 +181,7 @@ export const removeRevisionFromEntryCache = (
     return data;
 };
 
-export const addRevisionToRevisionsCache = (
+export const addRevisionToRevisionsCache_UNUSED = (
     model: CmsModel,
     cache: DataProxy,
     revision: CmsContentEntryRevision
@@ -212,7 +212,7 @@ export const addRevisionToRevisionsCache = (
     });
 };
 
-export const unpublishPreviouslyPublishedRevision = (
+export const unpublishPreviouslyPublishedRevision_UNUSED = (
     model: CmsModel,
     cache: DataProxy,
     publishedId: string

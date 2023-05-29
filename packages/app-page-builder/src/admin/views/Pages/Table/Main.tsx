@@ -17,12 +17,7 @@ import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 import { MainContainer, Wrapper } from "./styled";
-import {
-    ListSearchRecordsSort,
-    ListSearchRecordsSortItem,
-    ListMeta,
-    SearchRecordItem
-} from "@webiny/app-aco/types";
+import { ListMeta, ListSearchRecordsSort, ListSearchRecordsSortItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 
@@ -59,7 +54,7 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useAcoList({ folderId });
+    } = useAcoList<PbPageDataItem>({ folderId });
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -185,7 +180,7 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
                                 <Table
                                     ref={tableRef}
                                     folders={folders}
-                                    records={records as SearchRecordItem<PbPageDataItem>[]}
+                                    records={records}
                                     loading={isListLoading}
                                     openPreviewDrawer={openPreviewDrawer}
                                     onSelectRow={rows => {

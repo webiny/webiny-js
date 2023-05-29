@@ -11,7 +11,6 @@ import {
     createCreateFromMutation,
     createUnpublishMutation
 } from "@webiny/app-headless-cms-common";
-import * as GQLCache from "./cache";
 import { useApolloClient, useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
@@ -98,14 +97,6 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             showSnackbar(`Missing data in Create Revision callable.`);
                             return;
                         }
-
-                        GQLCache.updateLatestRevisionInListCache(
-                            contentModel,
-                            client.cache,
-                            data,
-                            listQueryVariables
-                        );
-                        GQLCache.addRevisionToRevisionsCache(contentModel, client.cache, data);
 
                         history.push(
                             `/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`

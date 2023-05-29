@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as BackIcon } from "@material-design-icons/svg/round/arrow_back.svg";
 import { ButtonDefault } from "@webiny/ui/Button";
+import { useNavigateFolder } from "@webiny/app-aco";
 
 const Wrapper = styled("div")({
     display: "flex",
@@ -24,13 +25,14 @@ const Wrapper = styled("div")({
 });
 
 export const Header: React.VFC = () => {
+    const { navigateToLatestFolder } = useNavigateFolder();
     const onClick = useCallback(() => {
-        history.back();
+        navigateToLatestFolder();
     }, [history]);
     return (
         <Wrapper>
             <ButtonDefault onClick={onClick}>
-                <BackIcon /> Go Back
+                <BackIcon /> Back to Folder
             </ButtonDefault>
         </Wrapper>
     );

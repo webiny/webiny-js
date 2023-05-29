@@ -10,7 +10,7 @@ import {
 export interface UpdateSearchRecordResponse {
     search: {
         updateRecord: {
-            data: SearchRecordItem;
+            data: SearchRecordItem | null;
             error: AcoError | null;
         };
     };
@@ -19,6 +19,20 @@ export interface UpdateSearchRecordResponse {
 export interface UpdateSearchRecordVariables {
     id: string;
     data: Pick<SearchRecordItem, "location" | "title" | "content" | "data">;
+}
+
+export interface MoveSearchRecordResponse {
+    search: {
+        moveRecord: {
+            data: boolean | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface MoveSearchRecordVariables {
+    id: string;
+    folderId: string;
 }
 
 export interface ListTagsWhereQueryVariables {
@@ -99,7 +113,7 @@ export interface DeleteSearchRecordResponse {
 export interface CreateSearchRecordResponse {
     search: {
         content: {
-            data: SearchRecordItem;
+            data: SearchRecordItem | null;
             error: AcoError | null;
         };
     };

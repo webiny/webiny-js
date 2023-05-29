@@ -3,21 +3,21 @@ import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import {
-    DialogTitle,
     DialogActions,
+    DialogCancel,
     DialogContent,
     DialogOnClose,
-    DialogCancel
+    DialogTitle
 } from "@webiny/ui/Dialog";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
 import { FolderTree } from "~/components";
 import { useRecords } from "~/hooks";
 import { DialogContainer, DialogFoldersContainer } from "./styled";
-import { SearchRecordItem } from "~/types";
+import { MovableSearchRecordItem } from "~/types";
 
 interface EntryDialogMoveProps {
-    searchRecord: SearchRecordItem;
+    searchRecord: MovableSearchRecordItem;
     open: boolean;
     onClose: DialogOnClose;
 }
@@ -29,29 +29,26 @@ export const EntryDialogMove: React.VFC<EntryDialogMoveProps> = ({
     onClose,
     open
 }) => {
-    const { updateRecord, loading } = useRecords(searchRecord.location.folderId || "ROOT");
+    const { moveRecord, loading } = useRecords(searchRecord.location.folderId || "ROOT");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [folderId, setFolderId] = useState<string>();
     const { showSnackbar } = useSnackbar();
 
     const onSubmit = async () => {
         try {
-            if (folderId) {
-                const { id, title, type, content, data, tags } = searchRecord;
-                await updateRecord({
-                    id,
-                    title,
-                    type,
-                    content,
-                    data,
-                    tags,
-                    location: {
-                        folderId
-                    }
-                });
-
-                showSnackbar(t`Item moved successfully!`);
+            if (!folderId) {
+                setDialogOpen(false);
+                return;
             }
+            const { id } = searchRecord;
+            await moveRecord({
+                id,
+                location: {
+                    folderId
+                }
+            });
+
+            showSnackbar(t`Item moved successfully!`);
             setDialogOpen(false);
         } catch (error) {
             showSnackbar(error.message);

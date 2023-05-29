@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
-import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
+import { FolderDialogDelete, FolderDialogUpdate, useNavigateFolder } from "@webiny/app-aco";
+import { FolderItem, MovableSearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -20,55 +20,24 @@ import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
 import { menuStyles } from "./styled";
 import { parseIdentifier } from "@webiny/utils";
-import { CmsContentEntryRecord, Entry, FolderEntry, RecordEntry } from "./types";
+import { Entry, FolderEntry, RecordEntry } from "./types";
 import { useRouter } from "@webiny/react-router";
-import { usePermission } from "~/admin/hooks";
+import { useModel, usePermission } from "~/admin/hooks";
 import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 
 interface Props {
-    records: SearchRecordItem<CmsContentEntryRecord>[];
-    folders: FolderItem[];
+    records: RecordEntry[];
+    folders: FolderEntry[];
     loading?: boolean;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
 
-const createRecords = (items: SearchRecordItem<CmsContentEntryRecord>[]): RecordEntry[] => {
-    return items.map(item => {
-        const { data } = item;
-        return {
-            id: item.id,
-            type: "RECORD",
-            title: item.title,
-            description: item.content,
-            image: data.image,
-            createdBy: data.createdBy.displayName,
-            savedOn: data.savedOn,
-            status: data.status,
-            version: data.version,
-            original: data || {},
-            selectable: true
-        };
-    });
-};
-
-const createFolders = (items: FolderItem[]): FolderEntry[] => {
-    return items.map(item => {
-        return {
-            id: item.id,
-            type: "FOLDER",
-            title: item.title,
-            createdBy: item.createdBy.displayName || "-",
-            savedOn: item.createdOn,
-            original: item,
-            selectable: false
-        };
-    });
-};
-
 export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
+    const { currentFolderId } = useNavigateFolder();
     const { folders, records, loading, sorting, onSortingChange } = props;
+    const { model } = useModel();
 
     const { history } = useRouter();
     const { canEdit: baseCanEdit } = usePermission();
@@ -77,11 +46,12 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-    const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
+    const [selectedSearchRecord, setSelectedSearchRecord] =
+        useState<MovableSearchRecordItem | null>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
-        return (createFolders(folders) as Entry[]).concat(createRecords(records));
+        return (folders as Entry[]).concat(records as Entry[]);
     }, [folders, records]);
 
     const canEdit = useCallback(
@@ -91,17 +61,17 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         [baseCanEdit]
     );
     const createEditEntry = useCallback(
-        (entry: CmsContentEntryRecord) => {
+        (entry: CreatableItem & Pick<Entry, "id">) => {
             if (!canEdit(entry)) {
                 return undefined;
             }
             return () => {
                 history.push(
-                    `/cms/content-entries/${entry.modelId}?id=${encodeURIComponent(entry.id)}`
+                    `/cms/content-entries/${model.modelId}?id=${encodeURIComponent(entry.id)}`
                 );
             };
         },
-        [canEdit]
+        [canEdit, model.modelId]
     );
 
     const columns: Columns<Entry> = {
@@ -160,7 +130,18 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                                     setMoveSearchRecordDialogOpen(true);
                                     setSelectedSearchRecord(() => {
                                         const { id: entryId } = parseIdentifier(record.id);
-                                        return records.find(item => item.id === entryId);
+                                        const exists = records.some(
+                                            item => item.original.entryId === entryId
+                                        );
+                                        if (!exists) {
+                                            return null;
+                                        }
+                                        return {
+                                            id: entryId,
+                                            location: {
+                                                folderId: currentFolderId as string
+                                            }
+                                        };
                                     });
                                 }}
                             />

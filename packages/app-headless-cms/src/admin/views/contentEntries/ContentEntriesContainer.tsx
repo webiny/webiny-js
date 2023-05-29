@@ -40,7 +40,7 @@ export const ContentEntriesContainer: React.VFC<Props> = ({ children }) => {
 
                 history.push("/cms/content-models");
                 showSnackbar(
-                    t`Could not load content for model "{modelId}". Redirecting...`({
+                    t`Could not load model "{modelId}". Redirecting...`({
                         modelId
                     })
                 );
