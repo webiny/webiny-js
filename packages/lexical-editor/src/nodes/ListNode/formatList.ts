@@ -12,7 +12,7 @@ import {
     NodeKey,
     ParagraphNode as BaseParagraphNode
 } from "lexical";
-import { $createWebinyListNode, $isWebinyListNode, WebinyListNode } from "./WebinyListNode";
+import { $createListNode, $isListNode, ListNode } from "../ListNode";
 import {
     $getAllListItems,
     $getTopListNode,
@@ -20,36 +20,32 @@ import {
     findNearestWebinyListItemNode,
     getUniqueWebinyListItemNodes,
     isNestedListNode
-} from "~/utils/nodes/list-node";
+} from "~/utils/nodes/listNode";
 import { $getNearestNodeOfType } from "@lexical/utils";
-import {
-    $createWebinyListItemNode,
-    $isWebinyListItemNode,
-    WebinyListItemNode
-} from "~/nodes/list-node/WebinyListItemNode";
+import { $createListItemNode, $isListItemNode, ListItemNode } from "~/nodes/ListItemNode";
 import { ListType } from "@lexical/list";
 import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 const DEFAULT_LIST_START_NUMBER = 1;
 
 function $isSelectingEmptyListItem(
-    anchorNode: WebinyListItemNode | LexicalNode,
+    anchorNode: ListItemNode | LexicalNode,
     nodes: Array<LexicalNode>
 ): boolean {
     return (
-        $isWebinyListItemNode(anchorNode) &&
+        $isListItemNode(anchorNode) &&
         (nodes.length === 0 ||
             (nodes.length === 1 && anchorNode.is(nodes[0]) && anchorNode.getChildrenSize() === 0))
     );
 }
 
-function $getListItemValue(listItem: WebinyListItemNode): number {
+function $getListItemValue(listItem: ListItemNode): number {
     const list = listItem.getParent();
 
     let value = 1;
 
     if (list !== null) {
-        if (!$isWebinyListNode(list)) {
+        if (!$isListNode(list)) {
             console.log(
                 "$getListItemValue: webiny list node is not parent of webiny list item node"
             );
@@ -63,14 +59,14 @@ function $getListItemValue(listItem: WebinyListItemNode): number {
     for (let i = 0; i < siblings.length; i++) {
         const sibling = siblings[i];
 
-        if ($isWebinyListItemNode(sibling) && !$isWebinyListNode(sibling.getFirstChild())) {
+        if ($isListItemNode(sibling) && !$isListNode(sibling.getFirstChild())) {
             value++;
         }
     }
     return value;
 }
 
-export function insertList(editor: LexicalEditor, listType: ListType, styleId: string): void {
+export function insertList(editor: LexicalEditor, listType: ListType, styleId?: string): void {
     editor.update(() => {
         const selection = $getSelection();
 
@@ -81,17 +77,17 @@ export function insertList(editor: LexicalEditor, listType: ListType, styleId: s
             const anchorNodeParent = anchorNode.getParent();
 
             if ($isSelectingEmptyListItem(anchorNode, nodes)) {
-                const list = $createWebinyListNode(listType, styleId);
+                const list = $createListNode(listType, styleId);
 
                 if ($isRootOrShadowRoot(anchorNodeParent)) {
                     anchorNode.replace(list);
-                    const listItem = $createWebinyListItemNode();
+                    const listItem = $createListItemNode();
                     if ($isElementNode(anchorNode)) {
                         listItem.setFormat(anchorNode.getFormatType());
                         listItem.setIndent(anchorNode.getIndent());
                     }
                     list.append(listItem);
-                } else if ($isWebinyListItemNode(anchorNode)) {
+                } else if ($isListItemNode(anchorNode)) {
                     const parent = anchorNode.getParentOrThrow();
                     append(list, parent.getChildren());
                     parent.replace(list);
@@ -113,9 +109,9 @@ export function insertList(editor: LexicalEditor, listType: ListType, styleId: s
                         while (parent != null) {
                             const parentKey = parent.getKey();
 
-                            if ($isWebinyListNode(parent)) {
+                            if ($isListNode(parent)) {
                                 if (!handled.has(parentKey)) {
-                                    const newListNode = $createWebinyListNode(listType, styleId);
+                                    const newListNode = $createListNode(listType, styleId);
                                     append(newListNode, parent.getChildren());
                                     parent.replace(newListNode);
                                     updateChildrenListItemValue(newListNode);
@@ -146,34 +142,34 @@ function append(node: ElementNode, nodesToAppend: Array<LexicalNode>) {
     node.splice(node.getChildrenSize(), 0, nodesToAppend);
 }
 
-function createListOrMerge(node: ElementNode, listType: ListType, styleId: string): WebinyListNode {
-    if ($isWebinyListNode(node)) {
+function createListOrMerge(node: ElementNode, listType: ListType, styleId?: string): ListNode {
+    if ($isListNode(node)) {
         return node;
     }
 
     const previousSibling = node.getPreviousSibling();
     const nextSibling = node.getNextSibling();
-    const listItem = $createWebinyListItemNode();
+    const listItem = $createListItemNode();
     listItem.setFormat(node.getFormatType());
     listItem.setIndent(node.getIndent());
     append(listItem, node.getChildren());
 
-    if ($isWebinyListNode(previousSibling) && listType === previousSibling.getListType()) {
+    if ($isListNode(previousSibling) && listType === previousSibling.getListType()) {
         previousSibling.append(listItem);
         node.remove();
         // if the same type of list is on both sides, merge them.
 
-        if ($isWebinyListNode(nextSibling) && listType === nextSibling.getListType()) {
+        if ($isListNode(nextSibling) && listType === nextSibling.getListType()) {
             append(previousSibling, nextSibling.getChildren());
             nextSibling.remove();
         }
         return previousSibling;
-    } else if ($isWebinyListNode(nextSibling) && listType === nextSibling.getListType()) {
+    } else if ($isListNode(nextSibling) && listType === nextSibling.getListType()) {
         nextSibling.getFirstChildOrThrow().insertBefore(listItem);
         node.remove();
         return nextSibling;
     } else {
-        const list = $createWebinyListNode(listType, styleId);
+        const list = $createListNode(listType, styleId);
         list.append(listItem);
         node.replace(list);
         updateChildrenListItemValue(list);
@@ -186,7 +182,7 @@ export function removeList(editor: LexicalEditor): void {
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-            const listNodes = new Set<WebinyListNode>();
+            const listNodes = new Set<ListNode>();
             const nodes = selection.getNodes();
             const anchorNode = selection.anchor.getNode();
 
@@ -197,7 +193,7 @@ export function removeList(editor: LexicalEditor): void {
                     const node = nodes[i];
 
                     if ($isLeafNode(node)) {
-                        const WebinyListItemNode = $getNearestNodeOfType(node, WebinyListNode);
+                        const WebinyListItemNode = $getNearestNodeOfType(node, ListNode);
 
                         if (WebinyListItemNode != null) {
                             listNodes.add($getTopListNode(WebinyListItemNode));
@@ -207,7 +203,7 @@ export function removeList(editor: LexicalEditor): void {
             }
 
             for (const listNode of listNodes) {
-                let insertionPoint: WebinyListNode | BaseParagraphNode = listNode;
+                let insertionPoint: ListNode | BaseParagraphNode = listNode;
 
                 const listItems = $getAllListItems(listNode);
 
@@ -240,15 +236,12 @@ export function removeList(editor: LexicalEditor): void {
     });
 }
 
-export function updateChildrenListItemValue(
-    list: WebinyListNode,
-    children?: Array<LexicalNode>
-): void {
+export function updateChildrenListItemValue(list: ListNode, children?: Array<LexicalNode>): void {
     const childrenOrExisting = children || list.getChildren();
     if (childrenOrExisting !== undefined) {
         for (let i = 0; i < childrenOrExisting.length; i++) {
             const child = childrenOrExisting[i];
-            if ($isWebinyListItemNode(child)) {
+            if ($isListItemNode(child)) {
                 const prevValue = child.getValue();
                 const nextValue = $getListItemValue(child);
 
@@ -260,11 +253,11 @@ export function updateChildrenListItemValue(
     }
 }
 
-export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): void {
+export function $handleIndent(WebinyListItemNodes: Array<ListItemNode>): void {
     // go through each node and decide where to move it.
     const removed = new Set<NodeKey>();
 
-    WebinyListItemNodes.forEach((WebinyListItemNode: WebinyListItemNode) => {
+    WebinyListItemNodes.forEach((WebinyListItemNode: ListItemNode) => {
         if (isNestedListNode(WebinyListItemNode) || removed.has(WebinyListItemNode.getKey())) {
             return;
         }
@@ -272,20 +265,19 @@ export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): v
         const parent = WebinyListItemNode.getParent();
 
         // We can cast both of the below `isNestedListNode` only returns a boolean type instead of a user-defined type guards
-        const nextSibling =
-            WebinyListItemNode.getNextSibling<WebinyListItemNode>() as WebinyListItemNode;
+        const nextSibling = WebinyListItemNode.getNextSibling<ListItemNode>() as ListItemNode;
         const previousSibling =
-            WebinyListItemNode.getPreviousSibling<WebinyListItemNode>() as WebinyListItemNode;
+            WebinyListItemNode.getPreviousSibling<ListItemNode>() as ListItemNode;
         // if there are nested lists on either side, merge them all together.
 
         if (isNestedListNode(nextSibling) && isNestedListNode(previousSibling)) {
             const innerList = previousSibling.getFirstChild();
 
-            if ($isWebinyListNode(innerList)) {
+            if ($isListNode(innerList)) {
                 innerList.append(WebinyListItemNode);
                 const nextInnerList = nextSibling.getFirstChild();
 
-                if ($isWebinyListNode(nextInnerList)) {
+                if ($isListNode(nextInnerList)) {
                     const children = nextInnerList.getChildren();
                     append(innerList, children);
                     nextSibling.remove();
@@ -297,7 +289,7 @@ export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): v
             // if the WebinyListItemNode is next to a nested ListNode, merge them
             const innerList = nextSibling.getFirstChild();
 
-            if ($isWebinyListNode(innerList)) {
+            if ($isListNode(innerList)) {
                 const firstChild = innerList.getFirstChild();
 
                 if (firstChild !== null) {
@@ -308,16 +300,16 @@ export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): v
         } else if (isNestedListNode(previousSibling)) {
             const innerList = previousSibling.getFirstChild();
 
-            if ($isWebinyListNode(innerList)) {
+            if ($isListNode(innerList)) {
                 innerList.append(WebinyListItemNode);
                 updateChildrenListItemValue(innerList);
             }
         } else {
             // otherwise, we need to create a new nested ListNode
 
-            if ($isWebinyListNode(parent)) {
-                const newListItem = $createWebinyListItemNode();
-                const newList = $createWebinyListNode(parent.getListType(), parent.getStyleId());
+            if ($isListNode(parent)) {
+                const newListItem = $createListItemNode();
+                const newList = $createListNode(parent.getListType(), parent.getStyleId());
                 newListItem.append(newList);
                 newList.append(WebinyListItemNode);
 
@@ -331,13 +323,13 @@ export function $handleIndent(WebinyListItemNodes: Array<WebinyListItemNode>): v
             }
         }
 
-        if ($isWebinyListNode(parent)) {
+        if ($isListNode(parent)) {
             updateChildrenListItemValue(parent);
         }
     });
 }
 
-export function $handleOutdent(WebinyListItemNodes: Array<WebinyListItemNode>): void {
+export function $handleOutdent(WebinyListItemNodes: Array<ListItemNode>): void {
     // go through each node and decide where to move it.
 
     WebinyListItemNodes.forEach(WebinyListItemNode => {
@@ -352,9 +344,9 @@ export function $handleOutdent(WebinyListItemNodes: Array<WebinyListItemNode>): 
         // If it doesn't have these ancestors, it's not indented.
 
         if (
-            $isWebinyListNode(greatGrandparentList) &&
-            $isWebinyListItemNode(grandparentListItem) &&
-            $isWebinyListNode(parentList)
+            $isListNode(greatGrandparentList) &&
+            $isListItemNode(grandparentListItem) &&
+            $isListNode(parentList)
         ) {
             // if it's the first child in it's parent list, insert it into the
             // great grandparent list before the grandparent
@@ -379,14 +371,14 @@ export function $handleOutdent(WebinyListItemNodes: Array<WebinyListItemNode>): 
                 // otherwise, we need to split the siblings into two new nested lists
                 const listType = parentList.getListType();
                 const themeStyleId = parentList.getStyleId();
-                const previousSiblingsListItem = $createWebinyListItemNode();
-                const previousSiblingsList = $createWebinyListNode(listType, themeStyleId);
+                const previousSiblingsListItem = $createListItemNode();
+                const previousSiblingsList = $createListNode(listType, themeStyleId);
                 previousSiblingsListItem.append(previousSiblingsList);
                 WebinyListItemNode.getPreviousSiblings().forEach(sibling =>
                     previousSiblingsList.append(sibling)
                 );
-                const nextSiblingsListItem = $createWebinyListItemNode();
-                const nextSiblingsList = $createWebinyListNode(listType, themeStyleId);
+                const nextSiblingsListItem = $createListItemNode();
+                const nextSiblingsList = $createListNode(listType, themeStyleId);
                 nextSiblingsListItem.append(nextSiblingsList);
                 append(nextSiblingsList, WebinyListItemNode.getNextSiblings());
                 // put the sibling nested lists on either side of the grandparent list item in the great grandparent.
@@ -408,7 +400,7 @@ function maybeIndentOrOutdent(direction: "indent" | "outdent"): void {
         return;
     }
     const selectedNodes = selection.getNodes();
-    let webinyListItemNodes: Array<WebinyListItemNode> = [];
+    let webinyListItemNodes: Array<ListItemNode> = [];
 
     if (selectedNodes.length === 0) {
         selectedNodes.push(selection.anchor.getNode());
@@ -453,13 +445,13 @@ export function $handleListInsertParagraph(): boolean {
     // Only run this code on empty list items
     const anchor = selection.anchor.getNode();
 
-    if (!$isWebinyListItemNode(anchor) || anchor.getTextContent() !== "") {
+    if (!$isListItemNode(anchor) || anchor.getTextContent() !== "") {
         return false;
     }
     const topListNode = $getTopListNode(anchor);
     const parent = anchor.getParent();
 
-    if (!$isWebinyListNode(parent)) {
+    if (!$isListNode(parent)) {
         console.log("A WebinyListItemNode must have a WebinyListNode for a parent.");
         return false;
     }
@@ -471,8 +463,8 @@ export function $handleListInsertParagraph(): boolean {
     if ($isRootOrShadowRoot(grandparent)) {
         replacementNode = $createParagraphNode();
         topListNode.insertAfter(replacementNode);
-    } else if ($isWebinyListItemNode(grandparent)) {
-        replacementNode = $createWebinyListItemNode();
+    } else if ($isListItemNode(grandparent)) {
+        replacementNode = $createListItemNode();
         grandparent.insertAfter(replacementNode);
     } else {
         return false;
@@ -482,12 +474,12 @@ export function $handleListInsertParagraph(): boolean {
     const nextSiblings = anchor.getNextSiblings();
 
     if (nextSiblings.length > 0) {
-        const newList = $createWebinyListNode(parent?.getListType(), parent?.getStyleId());
+        const newList = $createListNode(parent?.getListType(), parent?.getStyleId());
 
         if ($isParagraphNode(replacementNode)) {
             replacementNode.insertAfter(newList);
         } else {
-            const newListItem = $createWebinyListItemNode();
+            const newListItem = $createListItemNode();
             newListItem.append(newList);
             replacementNode.insertAfter(newListItem);
         }
