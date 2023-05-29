@@ -2,23 +2,19 @@ import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
     $getSelection,
     $isRangeSelection,
-    $isTextNode,
     COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
     LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { makeComposable } from "@webiny/react-composition";
-import { $isLinkNode } from "@lexical/link";
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
-import { $isCodeHighlightNode } from "@lexical/code";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./Toolbar.css";
 import { ToolbarType } from "~/types";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
-import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 
@@ -31,15 +27,48 @@ interface FloatingToolbarProps {
 
 const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem, editor }) => {
     const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
-    const { toolbarType, setToolbarType, setIsEditable, setActiveEditor } = useRichTextEditor();
-
-    const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
+    const { toolbarType, setToolbarType } = useRichTextEditor();
 
     useEffect(() => {
         if (toolbarType !== type) {
             setToolbarType(type);
         }
     }, [type]);
+
+    function mouseMoveListener(e: MouseEvent) {
+        if (popupCharStylesEditorRef?.current && (e.buttons === 1 || e.buttons === 3)) {
+            if (popupCharStylesEditorRef.current.style.pointerEvents !== "none") {
+                const x = e.clientX;
+                const y = e.clientY;
+                const elementUnderMouse = document.elementFromPoint(x, y);
+
+                if (!popupCharStylesEditorRef.current.contains(elementUnderMouse)) {
+                    // Mouse is not over the target element => not a normal click, but probably a drag
+                    popupCharStylesEditorRef.current.style.pointerEvents = "none";
+                }
+            }
+        }
+    }
+    function mouseUpListener() {
+        if (popupCharStylesEditorRef?.current) {
+            if (popupCharStylesEditorRef.current.style.pointerEvents !== "auto") {
+                popupCharStylesEditorRef.current.style.pointerEvents = "auto";
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (popupCharStylesEditorRef?.current) {
+            document.addEventListener("mousemove", mouseMoveListener);
+            document.addEventListener("mouseup", mouseUpListener);
+
+            return () => {
+                document.removeEventListener("mousemove", mouseMoveListener);
+                document.removeEventListener("mouseup", mouseUpListener);
+            };
+        }
+        return;
+    }, [popupCharStylesEditorRef]);
 
     const updateTextFormatFloatingToolbar = useCallback(() => {
         const selection = $getSelection();
@@ -51,26 +80,16 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
             return;
         }
 
-        let isLink = false;
-        if ($isRangeSelection(selection)) {
-            const node = getSelectedNode(selection);
-            const parent = node.getParent();
-            if ($isLinkNode(node) || $isLinkNode(parent)) {
-                isLink = true;
-            }
-        }
-
-        // set floating toolbar position
         const rootElement = editor.getRootElement();
         if (
             selection !== null &&
             nativeSelection !== null &&
             !nativeSelection.isCollapsed &&
             rootElement !== null &&
-            rootElement.contains(nativeSelection.anchorNode) &&
-            !isLink
+            rootElement.contains(nativeSelection.anchorNode)
         ) {
             const rangeRect = getDOMRangeRect(nativeSelection, rootElement);
+
             setFloatingElemPosition(rangeRect, popupCharStylesEditorElem, anchorElem);
         }
     }, [editor, anchorElem]);
@@ -79,12 +98,9 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
         const scrollerElem = anchorElem.parentElement;
 
         const update = () => {
-            editor.registerEditableListener(editable => {
-                setIsEditable(editable);
-            }),
-                editor.getEditorState().read(() => {
-                    updateTextFormatFloatingToolbar();
-                });
+            editor.getEditorState().read(() => {
+                updateTextFormatFloatingToolbar();
+            });
         };
 
         window.addEventListener("resize", update);
@@ -101,18 +117,20 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
     }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
 
     useEffect(() => {
+        editor.getEditorState().read(() => {
+            updateTextFormatFloatingToolbar();
+        });
         return mergeRegister(
-            toolbarActiveEditor.registerUpdateListener(({ editorState }) => {
+            editor.registerUpdateListener(({ editorState }) => {
                 editorState.read(() => {
                     updateTextFormatFloatingToolbar();
                 });
             }),
+
             editor.registerCommand(
                 SELECTION_CHANGE_COMMAND,
-                (_payload, newEditor) => {
+                () => {
                     updateTextFormatFloatingToolbar();
-                    setToolbarActiveEditor(newEditor);
-                    setActiveEditor(newEditor);
                     return false;
                 },
                 COMMAND_PRIORITY_LOW
@@ -151,42 +169,24 @@ const useToolbar: FC<useToolbarProps> = ({
             if (editor.isComposing()) {
                 return;
             }
+
             const selection = $getSelection();
-            const nativeSelection = window.getSelection();
-            const rootElement = editor.getRootElement();
 
             if ($isRangeSelection(selection)) {
                 const selectionState = getLexicalTextSelectionState(toolbarActiveEditor, selection);
                 if (selectionState) {
                     setTextBlockSelection(selectionState);
-                }
-
-                if (
-                    nativeSelection !== null &&
-                    (!$isRangeSelection(selection) ||
-                        rootElement === null ||
-                        !rootElement.contains(nativeSelection.anchorNode))
-                ) {
-                    setNodeIsText(false);
-                    return;
+                    if (selectionState.selectedText !== "") {
+                        setNodeIsText(true);
+                    } else {
+                        setNodeIsText(false);
+                    }
                 }
             }
 
             if (!$isRangeSelection(selection)) {
-                return;
-            }
-
-            const node = getSelectedNode(selection);
-            if (
-                node &&
-                !$isCodeHighlightNode(selection.anchor.getNode()) &&
-                selection.getTextContent() !== ""
-            ) {
-                setNodeIsText($isTextNode(node));
-                setIsEditable(true);
-            } else {
                 setNodeIsText(false);
-                setIsEditable(false);
+                return;
             }
         });
     }, [toolbarActiveEditor]);

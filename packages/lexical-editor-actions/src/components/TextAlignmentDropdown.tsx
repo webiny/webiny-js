@@ -8,12 +8,11 @@ import {
 } from "@webiny/lexical-editor";
 
 export const TextAlignmentDropdown = () => {
-    const { isEditable, textBlockSelection } = useRichTextEditor();
+    const { textBlockSelection } = useRichTextEditor();
     const { applyTextAlignment, outdentText, indentText } = useTextAlignmentAction();
 
     return (
         <DropDown
-            disabled={!isEditable}
             buttonLabel="Align"
             buttonIconClassName="icon left-align"
             buttonClassName="toolbar-item spaced alignment"

@@ -58,6 +58,7 @@ export type TextBlockSelection = {
     node: ElementNode | TextNode;
     anchorNode: ElementNode | TextNode;
     isElementDom: boolean;
+    selectedText: string;
     state: ToolbarState | undefined;
 };
 

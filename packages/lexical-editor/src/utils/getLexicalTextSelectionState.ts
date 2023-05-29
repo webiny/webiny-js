@@ -160,6 +160,7 @@ export const getLexicalTextSelectionState = (
         const node = getSelectedNode(selection);
         const parent = node.getParent();
         const isElementDom = elementDOM !== null;
+        const selectedText = selection.getTextContent();
 
         return {
             // node/element data from selection
@@ -170,6 +171,7 @@ export const getLexicalTextSelectionState = (
             anchorNode,
             selection,
             isElementDom,
+            selectedText,
             state: getToolbarState(selection, node, parent, element, anchorNode)
         };
     }
