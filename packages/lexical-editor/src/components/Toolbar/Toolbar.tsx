@@ -145,7 +145,6 @@ const useToolbar: FC<useToolbarProps> = ({
 
     const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
 
-
     const updateToolbar = useCallback(() => {
         editor.getEditorState().read(() => {
             // Should not to pop up the floating toolbar when using IME input
