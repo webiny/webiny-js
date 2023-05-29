@@ -34,7 +34,6 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
     const { toolbarType, setToolbarType, setIsEditable, setActiveEditor } = useRichTextEditor();
 
     const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
-    setActiveEditor(editor);
 
     useEffect(() => {
         if (toolbarType !== type) {
@@ -113,6 +112,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
                 (_payload, newEditor) => {
                     updateTextFormatFloatingToolbar();
                     setToolbarActiveEditor(newEditor);
+                    setActiveEditor(newEditor);
                     return false;
                 },
                 COMMAND_PRIORITY_LOW
@@ -144,8 +144,7 @@ const useToolbar: FC<useToolbarProps> = ({
         useRichTextEditor();
 
     const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
-    setActiveEditor(editor);
-    setIsEditable(editor.isEditable());
+
 
     const updateToolbar = useCallback(() => {
         editor.getEditorState().read(() => {
@@ -180,12 +179,15 @@ const useToolbar: FC<useToolbarProps> = ({
 
             const node = getSelectedNode(selection);
             if (
+                node &&
                 !$isCodeHighlightNode(selection.anchor.getNode()) &&
                 selection.getTextContent() !== ""
             ) {
                 setNodeIsText($isTextNode(node));
+                setIsEditable(true);
             } else {
                 setNodeIsText(false);
+                setIsEditable(false);
             }
         });
     }, [toolbarActiveEditor]);
