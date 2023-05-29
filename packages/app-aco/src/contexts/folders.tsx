@@ -49,6 +49,7 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     LIST: false,
     LIST_MORE: false,
     GET: false,
+    MOVE: false,
     CREATE: false,
     UPDATE: false,
     DELETE: false

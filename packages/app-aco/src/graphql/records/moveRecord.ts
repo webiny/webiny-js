@@ -7,7 +7,7 @@ export const createMoveRecord = (model: AcoModel) => {
     return gql`
         mutation Move${singularApiName}($id: ID!, $folderId: ID!) {
             search {
-                content: update${singularApiName}(id: $id, folderId: $folderId) {
+                content: move${singularApiName}(id: $id, folderId: $folderId) {
                     data
                     ${ERROR_FIELD}
                 }

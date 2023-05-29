@@ -48,7 +48,15 @@ export interface TagItem {
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
+export type LoadingActions =
+    | "INIT"
+    | "LIST"
+    | "LIST_MORE"
+    | "GET"
+    | "CREATE"
+    | "UPDATE"
+    | "DELETE"
+    | "MOVE";
 
 export interface AcoError {
     code: string;
