@@ -1,7 +1,8 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-
 import { assignRecordLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { createMockAcoApp } from "~tests/mocks/app";
+
+jest.retryTimes(0);
 
 const id = "id-lifecycle-events";
 const type = "demo-lifecycle-events";
@@ -75,10 +76,12 @@ describe("Search Record Lifecycle Events", () => {
 
         expect(tracker.isExecutedOnce("searchRecord:beforeCreate")).toEqual(true);
         expect(tracker.isExecutedOnce("searchRecord:afterCreate")).toEqual(true);
-        expect(tracker.isExecutedOnce("searchRecord:beforeUpdate")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:afterUpdate")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:beforeDelete")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:afterDelete")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeUpdate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterUpdate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeMove")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterMove")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeDelete")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterDelete")).toEqual(false);
     });
 
     it("should trigger update lifecycle events", async () => {
@@ -133,12 +136,75 @@ describe("Search Record Lifecycle Events", () => {
             }
         });
 
-        expect(tracker.isExecutedOnce("searchRecord:beforeCreate")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:afterCreate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeCreate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterCreate")).toEqual(false);
         expect(tracker.isExecutedOnce("searchRecord:beforeUpdate")).toEqual(true);
         expect(tracker.isExecutedOnce("searchRecord:afterUpdate")).toEqual(true);
-        expect(tracker.isExecutedOnce("searchRecord:beforeDelete")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:afterDelete")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeMove")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterMove")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeDelete")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterDelete")).toEqual(false);
+    });
+
+    it("should trigger move lifecycle events", async () => {
+        await search.createRecord({
+            data: {
+                id,
+                type,
+                title,
+                content,
+                location: {
+                    folderId
+                },
+                data
+            }
+        });
+
+        tracker.reset();
+
+        const [moveResponse] = await search.moveRecord({
+            id,
+            folderId: `${folderId}-updated`
+        });
+
+        expect(moveResponse).toMatchObject({
+            data: {
+                search: {
+                    moveRecord: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        expect(tracker.isExecuted("searchRecord:beforeCreate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterCreate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeUpdate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterUpdate")).toEqual(false);
+        expect(tracker.isExecutedOnce("searchRecord:beforeMove")).toEqual(true);
+        expect(tracker.isExecutedOnce("searchRecord:afterMove")).toEqual(true);
+        expect(tracker.isExecuted("searchRecord:beforeDelete")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterDelete")).toEqual(false);
+
+        const [movedRecord] = await search.getRecord({
+            id
+        });
+        expect(movedRecord).toMatchObject({
+            data: {
+                search: {
+                    getRecord: {
+                        data: {
+                            id,
+                            location: {
+                                folderId: `${folderId}-updated`
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     it("should trigger delete lifecycle events", async () => {
@@ -173,10 +239,12 @@ describe("Search Record Lifecycle Events", () => {
             }
         });
 
-        expect(tracker.isExecutedOnce("searchRecord:beforeCreate")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:afterCreate")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:beforeUpdate")).toEqual(false);
-        expect(tracker.isExecutedOnce("searchRecord:afterUpdate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeCreate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterCreate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeUpdate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterUpdate")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:beforeMove")).toEqual(false);
+        expect(tracker.isExecuted("searchRecord:afterMove")).toEqual(false);
         expect(tracker.isExecutedOnce("searchRecord:beforeDelete")).toEqual(true);
         expect(tracker.isExecutedOnce("searchRecord:afterDelete")).toEqual(true);
     });

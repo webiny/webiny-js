@@ -37,6 +37,9 @@ export class AcoApp implements IAcoApp {
                  */
                 return (await this.context.aco.search.update<TData>(this.model, id, data)) as any;
             },
+            move: async (id: string, folderId?: string) => {
+                return this.context.aco.search.move(this.model, id, folderId);
+            },
             get: async <TData>(id: string) => {
                 return this.context.aco.search.get<TData>(this.model, id);
             },

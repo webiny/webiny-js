@@ -68,6 +68,11 @@ const baseSchema = new GraphQLSchemaPlugin({
             OR: [AcoSearchRecordTagListWhereInput!]
         }
 
+        type AcoSearchRecordMoveResponse {
+            data: Boolean
+            error: AcoError
+        }
+
         type TagItem {
             tag: String!
             count: Int!

@@ -273,6 +273,10 @@ export const createDefaultAppsSchemaSnapshot = () => {
             id: ID!
             data: AcoSearchRecordWebinyUpdateInput!
           ): AcoSearchRecordWebinyResponse!
+          moveAcoSearchRecordWebiny(
+            id: ID!
+            folderId: ID!
+          ): AcoSearchRecordMoveResponse!
           deleteAcoSearchRecordWebiny(id: ID!): AcoBooleanResponse!
         }
     `;

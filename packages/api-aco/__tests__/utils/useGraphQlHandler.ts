@@ -19,6 +19,7 @@ import {
     GET_RECORD,
     LIST_RECORDS,
     LIST_TAGS,
+    MOVE_RECORD,
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
 
@@ -122,6 +123,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async updateRecord(variables = {}) {
             return invoke({ body: { query: UPDATE_RECORD, variables } });
+        },
+        async moveRecord(variables = {}) {
+            return invoke({ body: { query: MOVE_RECORD, variables } });
         },
         async deleteRecord(variables = {}) {
             return invoke({ body: { query: DELETE_RECORD, variables } });

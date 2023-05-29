@@ -31,7 +31,7 @@ import { until } from "@webiny/project-utils/testing/helpers/until";
 import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/FilePhysicalStoragePlugin";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { configurations } from "~/configurations";
 import { getBaseConfiguration } from "@webiny/api-elasticsearch";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";

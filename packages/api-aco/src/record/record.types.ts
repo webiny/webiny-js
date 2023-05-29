@@ -80,12 +80,19 @@ export interface StorageOperationsCreateSearchRecordParams<
 > {
     data: CreateSearchRecordParams<TData>;
 }
+
 export interface StorageOperationsUpdateSearchRecordParams<
     TData extends GenericSearchData = GenericSearchData
 > {
     id: string;
     data: UpdateSearchRecordParams<TData>;
 }
+
+export interface StorageOperationsMoveSearchRecordParams {
+    id: string;
+    folderId?: string | null;
+}
+
 export type StorageOperationsDeleteSearchRecordParams = DeleteSearchRecordParams;
 
 export interface OnSearchRecordBeforeCreateTopicParams<
@@ -108,6 +115,22 @@ export interface OnSearchRecordBeforeUpdateTopicParams<
     model: CmsModel;
     original: SearchRecord<TData>;
     input: Record<string, any>;
+}
+
+export interface OnSearchRecordBeforeMoveTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    model: CmsModel;
+    original: SearchRecord<TData>;
+    folderId?: string | null;
+}
+
+export interface OnSearchRecordAfterMoveTopicParams<
+    TData extends GenericSearchData = GenericSearchData
+> {
+    model: CmsModel;
+    original: SearchRecord<TData>;
+    folderId?: string | null;
 }
 
 export interface OnSearchRecordAfterUpdateTopicParams<
@@ -148,13 +171,14 @@ export interface AcoSearchRecordCrudBase {
         id: string,
         data: UpdateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
+    move(id: string, folderId?: string | null): Promise<boolean>;
     delete(id: string): Promise<Boolean>;
 }
 
 export interface AcoSearchRecordCrud
     extends Omit<
         AcoSearchRecordCrudBase,
-        "get" | "list" | "create" | "update" | "delete" | "listTags"
+        "get" | "list" | "create" | "update" | "delete" | "listTags" | "move"
     > {
     get<TData>(model: CmsModel, id: string): Promise<SearchRecord<TData>>;
     list<TData>(
@@ -174,11 +198,14 @@ export interface AcoSearchRecordCrud
         id: string,
         data: UpdateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
+    move(model: CmsModel, id: string, folderId?: string | null): Promise<boolean>;
     delete(model: CmsModel, id: string): Promise<Boolean>;
     onSearchRecordBeforeCreate: Topic<OnSearchRecordBeforeCreateTopicParams>;
     onSearchRecordAfterCreate: Topic<OnSearchRecordAfterCreateTopicParams>;
     onSearchRecordBeforeUpdate: Topic<OnSearchRecordBeforeUpdateTopicParams>;
     onSearchRecordAfterUpdate: Topic<OnSearchRecordAfterUpdateTopicParams>;
+    onSearchRecordBeforeMove: Topic<OnSearchRecordBeforeMoveTopicParams>;
+    onSearchRecordAfterMove: Topic<OnSearchRecordAfterMoveTopicParams>;
     onSearchRecordBeforeDelete: Topic<OnSearchRecordBeforeDeleteTopicParams>;
     onSearchRecordAfterDelete: Topic<OnSearchRecordAfterDeleteTopicParams>;
 }
@@ -204,6 +231,7 @@ export interface AcoSearchRecordStorageOperations {
         model: CmsModel,
         params: StorageOperationsUpdateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
+    moveRecord(model: CmsModel, params: StorageOperationsMoveSearchRecordParams): Promise<boolean>;
     deleteRecord(
         model: CmsModel,
         params: StorageOperationsDeleteSearchRecordParams

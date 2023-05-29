@@ -109,6 +109,24 @@ export const createSearchRecordOperations = (
                 return getRecordFieldValues(entry);
             });
         },
+        moveRecord(this: AcoSearchRecordStorageOperations, model, params) {
+            const { id, folderId } = params;
+            return security.withoutAuthorization(async () => {
+                const original = await this.getRecord(model, { id });
+
+                const input = {
+                    ...original,
+                    location: {
+                        ...original,
+                        folderId
+                    }
+                };
+
+                await cms.updateEntry(model, attachAcoRecordPrefix(original.id), input);
+
+                return true;
+            });
+        },
         deleteRecord(model, { id }) {
             return security.withoutAuthorization(async () => {
                 await cms.deleteEntry(model, attachAcoRecordPrefix(id));

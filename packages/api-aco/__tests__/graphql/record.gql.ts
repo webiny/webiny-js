@@ -72,6 +72,17 @@ export const UPDATE_RECORD = /* GraphQL */ `
     }
 `;
 
+export const MOVE_RECORD = /* GraphQL */ `
+    mutation MoveRecord($id: ID!, $folderId: ID!) {
+        search {
+            moveRecord: moveAcoSearchRecordWebiny(id: $id, folderId: $folderId) {
+                data
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const DELETE_RECORD = /* GraphQL */ `
     mutation DeleteRecord($id: ID!) {
         search {

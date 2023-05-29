@@ -1,7 +1,9 @@
-import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { AcoContext } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import lodashOmit from "lodash/omit";
+import { checkPermissions } from "~/utils/checkPermissions";
+import { resolve } from "~/utils/resolve";
 
 const cleanModel = (model: CmsModel): Partial<CmsModel> => {
     return lodashOmit(model, [
@@ -39,24 +41,22 @@ export const appGql = new GraphQLSchemaPlugin<AcoContext>({
     resolvers: {
         AcoQuery: {
             getApp: async (_, args, context) => {
-                try {
+                return resolve(async () => {
+                    checkPermissions(context);
                     const app = context.aco.getApp(args.id);
-                    return new Response({
+                    return {
                         id: args.id,
                         name: app.name,
                         model: cleanModel(app.model)
-                    });
-                } catch (ex) {
-                    return new ErrorResponse(ex);
-                }
+                    };
+                });
             },
             getAppModel: async (_, args, context) => {
-                try {
+                return resolve(async () => {
+                    checkPermissions(context);
                     const app = context.aco.getApp(args.id);
-                    return new Response(cleanModel(app.model));
-                } catch (ex) {
-                    return new ErrorResponse(ex);
-                }
+                    return cleanModel(app.model);
+                });
             }
         }
     }

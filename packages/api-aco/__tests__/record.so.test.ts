@@ -435,6 +435,46 @@ describe("`search` CRUD", () => {
         });
     });
 
+    it("should move a record to another folder", async () => {
+        // Creating a record with same "id"
+        const [createResponse] = await search.createRecord({ data: recordMocks.recordA });
+
+        const record = createResponse.data.search.createRecord.data;
+
+        const [moveResponse] = await search.moveRecord({
+            id: record.id,
+            folderId: "folder-1-2-3-4-5-6-7"
+        });
+
+        expect(moveResponse).toEqual({
+            data: {
+                search: {
+                    moveRecord: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [movedRecord] = await search.getRecord({ id: record.id });
+        expect(movedRecord).toMatchObject({
+            data: {
+                search: {
+                    getRecord: {
+                        data: {
+                            id: record.id,
+                            location: {
+                                folderId: "folder-1-2-3-4-5-6-7"
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
     it("should list existing tags sorted alphabetically attached to search records", async () => {
         // Let's create some search records.
         await search.createRecord({ data: recordMocks.recordA });

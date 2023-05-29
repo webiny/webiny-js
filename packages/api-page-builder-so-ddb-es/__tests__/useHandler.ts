@@ -8,7 +8,7 @@ import { getIntrospectionQuery } from "graphql";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "@webiny/api-page-builder";
 import { createStorageOperations } from "~/index";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";

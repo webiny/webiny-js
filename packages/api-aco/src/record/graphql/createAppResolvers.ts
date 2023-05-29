@@ -82,6 +82,13 @@ export const createAppResolvers = (params: Params): Resolvers => {
                     return app.search.update(id, args.data || {});
                 });
             },
+            [`move${apiName}`]: async (_: unknown, args: any) => {
+                return resolve(() => {
+                    checkPermissions(app.context);
+                    const { id } = parseIdentifier(args.id);
+                    return app.search.move(id, args.folderId);
+                });
+            },
             [`delete${apiName}`]: async (_: unknown, args: any) => {
                 return resolve(() => {
                     checkPermissions(app.context);

@@ -130,6 +130,7 @@ export const createAppSchema = (params: Params): string => {
         extend type SearchMutation {
             create${apiName}(data: ${apiName}CreateInput!): ${apiName}Response!
             update${apiName}(id: ID!, data: ${apiName}UpdateInput!): ${apiName}Response!
+            move${apiName}(id: ID!, folderId: ID!): AcoSearchRecordMoveResponse!
             delete${apiName}(id: ID!): AcoBooleanResponse!
         }
     `;

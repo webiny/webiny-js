@@ -1,4 +1,4 @@
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { FileManager_5_35_0_001, File } from "~/migrations/5.35.0/001/ddb-es";
 import {
     assertNotError,

@@ -150,13 +150,16 @@ describe("record graphql generator", () => {
                     name: "updateAcoSearchRecordMockAppApiName"
                 },
                 {
+                    name: "moveAcoSearchRecordMockAppApiName"
+                },
+                {
                     name: "deleteAcoSearchRecordMockAppApiName"
                 }
             ],
             enumValues: null,
             possibleTypes: null
         });
-        expect(SearchMutation?.fields).toHaveLength(4);
+        expect(SearchMutation?.fields).toHaveLength(5);
     });
 
     it("should generate the default graphql schema when an app is present - via method", async () => {

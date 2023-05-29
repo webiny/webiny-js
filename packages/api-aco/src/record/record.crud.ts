@@ -1,5 +1,9 @@
 import { createTopic } from "@webiny/pubsub";
-import { CreateAcoParams } from "~/types";
+import {
+    CreateAcoParams,
+    OnSearchRecordAfterMoveTopicParams,
+    OnSearchRecordBeforeMoveTopicParams
+} from "~/types";
 import {
     AcoSearchRecordCrud,
     OnSearchRecordAfterCreateTopicParams,
@@ -27,6 +31,13 @@ export const createSearchRecordCrudMethods = ({
     const onSearchRecordAfterUpdate = createTopic<OnSearchRecordAfterUpdateTopicParams>(
         "aco.onSearchRecordAfterUpdate"
     );
+    // move
+    const onSearchRecordBeforeMove = createTopic<OnSearchRecordBeforeMoveTopicParams>(
+        "aco.onSearchRecordBeforeMove"
+    );
+    const onSearchRecordAfterMove = createTopic<OnSearchRecordAfterMoveTopicParams>(
+        "aco.onSearchRecordAfterMove"
+    );
     // delete
     const onSearchRecordBeforeDelete = createTopic<OnSearchRecordBeforeDeleteTopicParams>(
         "aco.onSearchRecordBeforeDelete"
@@ -43,6 +54,8 @@ export const createSearchRecordCrudMethods = ({
         onSearchRecordAfterCreate,
         onSearchRecordBeforeUpdate,
         onSearchRecordAfterUpdate,
+        onSearchRecordBeforeMove,
+        onSearchRecordAfterMove,
         onSearchRecordBeforeDelete,
         onSearchRecordAfterDelete,
         async get(model, id) {
@@ -68,6 +81,20 @@ export const createSearchRecordCrudMethods = ({
                 record
             });
             return record;
+        },
+        async move(model, id, folderId) {
+            const original = await storageOperations.getRecord(model, { id });
+            await onSearchRecordBeforeMove.publish({ model, original, folderId });
+            const result = await storageOperations.moveRecord(model, {
+                id,
+                folderId
+            });
+            await onSearchRecordAfterMove.publish({
+                model,
+                original,
+                folderId
+            });
+            return result;
         },
         async delete(model, id: string) {
             const record = await storageOperations.getRecord(model, { id });

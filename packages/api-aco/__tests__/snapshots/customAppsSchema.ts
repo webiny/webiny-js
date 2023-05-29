@@ -299,6 +299,10 @@ export const createCustomAppsSchemaSnapshot = () => {
             id: ID!
             data: AcoSearchRecordCustomTestingAppUpdateInput!
           ): AcoSearchRecordCustomTestingAppResponse!
+          moveAcoSearchRecordCustomTestingApp(
+            id: ID!
+            folderId: ID!
+          ): AcoSearchRecordMoveResponse!
           deleteAcoSearchRecordCustomTestingApp(id: ID!): AcoBooleanResponse!
         }
     `;
