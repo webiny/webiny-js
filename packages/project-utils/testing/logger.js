@@ -1,5 +1,5 @@
-import { pino } from "pino";
-import pinoPretty from "pino-pretty";
+const { pino } = require("pino");
+const pinoPretty = require("pino-pretty");
 
 export const createPinoLogger = () => {
     return pino(

@@ -1,4 +1,4 @@
-const { logger } = require("@webiny/project-utils/testing/logger");
+const { logger } = require("../logger");
 
 module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
     const clearEsIndices = async () => {
