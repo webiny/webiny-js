@@ -17,7 +17,6 @@ export const QuoteAction = () => {
             formatToQuote(editor, hasQuoteStyles ? DEFAULT_QUOTE_ID : undefined);
             return;
         }
-        debugger;
         formatToParagraph(editor);
     };
 
