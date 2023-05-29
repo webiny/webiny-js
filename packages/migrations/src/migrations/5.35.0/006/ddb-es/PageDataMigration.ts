@@ -119,7 +119,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                         },
                         sort: [
                             {
-                                "id.keyword": "asc"
+                                "id.keyword": { order: "asc", unmapped_type: "keyword" }
                             }
                         ]
                     }
@@ -204,7 +204,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                         size: 500,
                         sort: [
                             {
-                                "id.keyword": "asc"
+                                "id.keyword": { order: "asc", unmapped_type: "keyword" }
                             }
                         ],
                         search_after: status

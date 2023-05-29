@@ -18,7 +18,7 @@ import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
 
 import { createdBy, createLocalesData, createTenantsData } from "./006.data";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { esGetIndexName } from "~/utils";
+import { esCreateIndex, esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedData";
 import { ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "~/migrations/5.35.0/006/constants";
 
@@ -164,6 +164,27 @@ describe("5.35.0-006", () => {
         }
     };
 
+    const insertEmptyPageIndexes = async () => {
+        const tenants = createTenantsData().map(tenant => tenant.data.id);
+        const testLocales = createLocalesData();
+
+        for (const tenant of tenants) {
+            const locales = testLocales
+                .filter(item => item.PK === `T#${tenant}#I18N#L`)
+                .map(locale => locale.code) as string[];
+
+            for (const locale of locales) {
+                await esCreateIndex({
+                    elasticsearchClient: elasticsearchClient,
+                    tenant,
+                    locale,
+                    type: INDEX_TYPE,
+                    isHeadlessCmsModel: false
+                });
+            }
+        }
+    };
+
     logTestNameBeforeEachTest();
 
     it("should not run if no tenant found", async () => {
@@ -204,8 +225,29 @@ describe("5.35.0-006", () => {
         expect(grouped.notApplicable.length).toBe(0);
     });
 
-    it("should not run if no pages found", async () => {
+    it("should not run if no pages found - no index found", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_35_0_006]
+        });
+
+        const { data, error } = await handler();
+
+        assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
+    });
+
+    it("should not run if no pages found - index empty", async () => {
+        await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+        await insertEmptyPageIndexes();
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
