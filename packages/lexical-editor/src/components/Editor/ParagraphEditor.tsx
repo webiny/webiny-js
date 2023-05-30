@@ -18,6 +18,7 @@ const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, t
             tag={tag ?? "p"}
             placeholder={placeholder ?? "Enter your text here..."}
             {...rest}
+            styles={{ padding: 5 }}
         >
             <LinkPlugin />
             <WebinyListPlugin />

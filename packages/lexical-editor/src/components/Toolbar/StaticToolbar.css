@@ -7,7 +7,6 @@
   z-index: 10;
   height: 35px;
   will-change: transform;
-  width: 100%;
 }
 
 .static-toolbar button.popup-item {

@@ -17,6 +17,7 @@ export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, 
             tag={tag ?? "h1"}
             placeholder={placeholder ?? "Enter your heading text here..."}
             {...rest}
+            styles={{ padding: 5 }}
         >
             <LinkPlugin />
             <QuotePlugin />
