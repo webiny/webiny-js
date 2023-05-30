@@ -8,7 +8,7 @@ import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useMutation } from "@apollo/react-hooks";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
@@ -18,7 +18,7 @@ interface EditRevisionProps {
 }
 const EditRevision: React.FC<EditRevisionProps> = props => {
     const { page } = props;
-    const { canEdit } = usePermission();
+    const { canEdit } = usePagesPermissions();
     const { history } = useRouter();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();

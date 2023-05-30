@@ -5,7 +5,10 @@ import { SecurityIdentity, SecurityPermission } from "~/types";
 export interface SecurityContext {
     identity: SecurityIdentity | null;
     setIdentity: Dispatch<SetStateAction<SecurityIdentity | null>>;
+
     getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T | null;
+
+    getPermissions<T extends SecurityPermission = SecurityPermission>(name: string): T[];
 }
 
 export const SecurityContext = React.createContext<SecurityContext>({
@@ -15,6 +18,9 @@ export const SecurityContext = React.createContext<SecurityContext>({
     },
     getPermission: () => {
         return null;
+    },
+    getPermissions: () => {
+        return [];
     }
 });
 
@@ -39,6 +45,27 @@ export const SecurityProvider: React.FC = props => {
         [identity]
     );
 
+    const getPermissions = useCallback(
+        <T extends SecurityPermission = SecurityPermission>(name: string): Array<T> => {
+            if (!identity) {
+                return [];
+            }
+
+            const permissions = identity.permissions || [];
+
+            return permissions.filter(current => {
+                const exactMatch = current.name === name;
+                if (exactMatch) {
+                    return true;
+                }
+
+                // Try matching using patterns.
+                return minimatch(name, current.name);
+            }) as T[];
+        },
+        [identity]
+    );
+
     const value = useMemo(() => {
         return {
             identity: identity
@@ -49,7 +76,8 @@ export const SecurityProvider: React.FC = props => {
                   }
                 : null,
             setIdentity,
-            getPermission
+            getPermission,
+            getPermissions
         };
     }, [identity]);
 

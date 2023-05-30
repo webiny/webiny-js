@@ -11,7 +11,7 @@ import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { useSecurity } from "@webiny/app-security";
-import { WcpPermission } from "@webiny/app-admin";
+import { AaclPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-file-manager/admin/plugins/permissionRenderer");
 
@@ -49,8 +49,7 @@ export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAAcl = useMemo(() => {
-        const wcpPermissions = getPermission<WcpPermission>("wcp");
-        return wcpPermissions?.aacl === false;
+        return !getPermission<AaclPermission>("aacl");
     }, []);
 
     const onFormChange = useCallback(

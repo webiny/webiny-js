@@ -10,6 +10,7 @@ import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCus
 import { createTopic } from "@webiny/pubsub";
 import { AACL_RELEASE_DATE } from "@webiny/api-wcp";
 import { WcpPermission } from "@webiny/api-wcp/types";
+import { featureFlags } from "@webiny/feature-flags";
 
 export interface GetTenant {
     (): string | undefined;
@@ -31,11 +32,10 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         if (permissionsLoader) {
             return permissionsLoader;
         }
-
         const shouldEnableAuthorization = performAuthorization;
 
         permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
-            // Authorizers often need to query business-related data, and since the identity is not yet
+            // Authorizes often need to query business-related data, and since the identity is not yet
             // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
             // To avoid this, we disable permission checks (assume `full-access` permissions) for
             // the duration of the authorization process.
@@ -150,8 +150,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             // Now we start checking whether we want to return all permissions, or we
             // need to omit the custom ones because of the one of the following reasons.
 
-            let aaclEnabled: WcpPermission["aacl"] =
-                config.advancedAccessControlLayer?.enabled === true;
+            let aaclEnabled: WcpPermission["aacl"] = config.advancedAccessControlLayer === true;
 
             if (!aaclEnabled) {
                 // Are we dealing with an old Webiny project?
@@ -176,7 +175,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                 permissions.push({
                     name: "aacl",
                     legacy: aaclEnabled === null,
-                    teams: !!config.advancedAccessControlLayer?.teams
+                    teams: featureFlags?.aacl?.teams
                 });
 
                 return permissions;

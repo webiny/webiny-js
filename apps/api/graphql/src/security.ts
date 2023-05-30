@@ -10,8 +10,7 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 // Changed authorization.
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import tenantLinksPermissionsAuthorization from "@webiny/api-security-teams/plugins/tenantLinksPermissionsAuthorization";
-import parentTenantPermissionsAuthorization from "@webiny/api-security-teams/plugins/parentTenantPermissionsAuthorization";
+import tenantLinksPermissionsAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
 import createAdminUsersApp from "@webiny/api-admin-users-cognito";
 import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
@@ -94,7 +93,7 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
      * Authorization plugin to fetch permissions from the parent tenant.
      */
-    parentTenantPermissionsAuthorization({ identityType: "admin" }),
+    tenantLinksPermissionsAuthorization({ identityType: "admin", parent: true }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

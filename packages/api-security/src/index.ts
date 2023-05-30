@@ -35,12 +35,7 @@ export const createSecurityContext = ({ storageOperations, ...config }: Security
         const advancedAccessControlLayer = context.wcp.canUseFeature("advancedAccessControlLayer");
 
         context.security = await createSecurity({
-            advancedAccessControlLayer: {
-                enabled: advancedAccessControlLayer,
-
-                // In order to use teams, AACL must be enabled.
-                teams: advancedAccessControlLayer ? config.teams : false
-            },
+            advancedAccessControlLayer,
             getTenant: () => {
                 const tenant = context.tenancy.getCurrentTenant();
                 return tenant ? tenant.id : undefined;

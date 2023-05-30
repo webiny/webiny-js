@@ -15,7 +15,7 @@ import CustomSection from "./CustomSection";
 import { useSecurity } from "@webiny/app-security";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { PageBuilderSecurityPermission } from "~/types";
-import { WcpPermission } from "@webiny/app-admin";
+import { AaclPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
@@ -48,8 +48,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAAcl = useMemo(() => {
-        const wcpPermissions = getPermission<WcpPermission>("wcp");
-        return wcpPermissions?.aacl === false;
+        return !getPermission<AaclPermission>("aacl");
     }, []);
 
     const onFormChange = useCallback(

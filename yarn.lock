@@ -12674,29 +12674,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-teams@0.0.0, @webiny/api-security-teams@workspace:packages/api-security-teams":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-teams@workspace:packages/api-security-teams"
-  dependencies:
-    "@babel/cli": ^7.19.3
-    "@babel/core": ^7.19.3
-    "@babel/preset-env": ^7.19.4
-    "@babel/preset-typescript": ^7.18.6
-    "@babel/runtime": ^7.19.0
-    "@webiny/api": 0.0.0
-    "@webiny/api-i18n": 0.0.0
-    "@webiny/api-security": 0.0.0
-    "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/handler-aws": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.12
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-security@0.0.0, @webiny/api-security@workspace:packages/api-security":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security@workspace:packages/api-security"
@@ -16430,7 +16407,6 @@ __metadata:
     "@webiny/api-security": 0.0.0
     "@webiny/api-security-cognito": 0.0.0
     "@webiny/api-security-so-ddb": 0.0.0
-    "@webiny/api-security-teams": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-tenant-manager": 0.0.0

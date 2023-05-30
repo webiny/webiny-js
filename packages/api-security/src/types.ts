@@ -29,10 +29,7 @@ export interface Authorizer {
 }
 
 export interface SecurityConfig {
-    advancedAccessControlLayer?: {
-        enabled: boolean;
-        teams?: boolean;
-    };
+    advancedAccessControlLayer: boolean;
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
 }

@@ -162,8 +162,6 @@
       "@webiny/api-prerendering-service": ["../../../packages/api-prerendering-service/src"],
       "@webiny/api-security/*": ["../../../packages/api-security/src/*"],
       "@webiny/api-security": ["../../../packages/api-security/src"],
-      "@webiny/api-security-teams/*": ["../../../packages/api-security-teams/src/*"],
-      "@webiny/api-security-teams": ["../../../packages/api-security-teams/src"],
       "@webiny/api-security-cognito/*": ["../../../packages/api-security-cognito/src/*"],
       "@webiny/api-security-cognito": ["../../../packages/api-security-cognito/src"],
       "@webiny/api-security-so-ddb/*": ["../../../packages/api-security-so-ddb/src/*"],

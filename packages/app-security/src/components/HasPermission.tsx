@@ -9,18 +9,18 @@ interface HasPermissionProps {
 }
 
 export const HasPermission = ({ children, ...props }: HasPermissionProps) => {
-    const { getPermission } = useSecurity();
+    const { getPermissions } = useSecurity();
 
     if (props.any && props.all) {
         throw new Error(`You can use either "any" or "all", but not both at the same time.`);
     }
 
     if (props.name) {
-        return getPermission(props.name) ? <Fragment>{children}</Fragment> : null;
+        return getPermissions(props.name) ? <Fragment>{children}</Fragment> : null;
     }
 
     const permissions = [...(props.any || []), ...(props.all || [])].map(name =>
-        getPermission(name)
+        getPermissions(name)
     );
 
     const hasPermission = props.any

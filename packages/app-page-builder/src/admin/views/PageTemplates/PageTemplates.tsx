@@ -1,19 +1,17 @@
-import React, { useMemo, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useMutation, useApolloClient } from "@apollo/react-hooks";
-
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { useSecurity } from "@webiny/app-security";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-
 import PageTemplatesDataList from "./PageTemplatesDataList";
 import PageTemplateDetails from "./PageTemplateDetails";
 import CreatePageTemplateDialog from "./CreatePageTemplateDialog";
-import { PageBuilderSecurityPermission, PbPageTemplate } from "~/types";
+import { PbPageTemplate } from "~/types";
 import { LIST_PAGE_TEMPLATES, CREATE_PAGE_TEMPLATE, DELETE_PAGE_TEMPLATE } from "./graphql";
+import { useTemplatesPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/views/page-templates");
 
@@ -24,56 +22,13 @@ export interface CreatableItem {
 }
 
 const PageTemplates: React.FC = () => {
-    const { identity, getPermission } = useSecurity();
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState<boolean>(false);
 
-    const pbPageTemplatePermission = useMemo((): PageBuilderSecurityPermission | null => {
-        return getPermission("pb.template");
-    }, [identity]);
-
-    const canCreate = useMemo((): boolean => {
-        if (!pbPageTemplatePermission) {
-            return false;
-        }
-        if (typeof pbPageTemplatePermission.rwd === "string") {
-            return pbPageTemplatePermission.rwd.includes("w");
-        }
-        return true;
-    }, []);
-
-    const canEdit = useCallback((item: CreatableItem): boolean => {
-        if (!pbPageTemplatePermission) {
-            return false;
-        }
-        if (pbPageTemplatePermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return item.createdBy?.id === identityId;
-        }
-        if (typeof pbPageTemplatePermission.rwd === "string") {
-            return pbPageTemplatePermission.rwd.includes("w");
-        }
-
-        return true;
-    }, []);
-
-    const canDelete = useCallback((item: CreatableItem): boolean => {
-        if (!pbPageTemplatePermission) {
-            return false;
-        }
-        if (pbPageTemplatePermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return item.createdBy?.id === identityId;
-        }
-        if (typeof pbPageTemplatePermission.rwd === "string") {
-            return pbPageTemplatePermission.rwd.includes("d");
-        }
-
-        return true;
-    }, []);
+    const { canCreate, canUpdate, canDelete } = useTemplatesPermissions();
 
     const onCreatePageTemplate = async (
         formData: Pick<PbPageTemplate, "title" | "slug" | "description">
@@ -126,9 +81,9 @@ const PageTemplates: React.FC = () => {
             <SplitView>
                 <LeftPanel>
                     <PageTemplatesDataList
-                        canCreate={canCreate}
-                        canEdit={canEdit}
-                        canDelete={canDelete}
+                        canCreate={canCreate()}
+                        canEdit={record => canUpdate(record.createdBy?.id)}
+                        canDelete={record => canDelete(record.createdBy?.id)}
                         onCreate={() => setIsCreateDialogOpen(true)}
                         onDelete={handleDeleteTemplateClick}
                         isLoading={deleteMutation?.loading}
@@ -136,9 +91,9 @@ const PageTemplates: React.FC = () => {
                 </LeftPanel>
                 <RightPanel>
                     <PageTemplateDetails
-                        canCreate={canCreate}
-                        canEdit={canEdit}
-                        canDelete={canDelete}
+                        canCreate={canCreate()}
+                        canEdit={record => canUpdate(record.createdBy?.id)}
+                        canDelete={record => canDelete(record.createdBy?.id)}
                         onCreate={() => setIsCreateDialogOpen(true)}
                         onDelete={handleDeleteTemplateClick}
                     />

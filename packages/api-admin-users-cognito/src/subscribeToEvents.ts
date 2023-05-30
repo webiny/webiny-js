@@ -1,7 +1,8 @@
-import { Group, PermissionsTenantLink, SecurityContext } from "@webiny/api-security/types";
+import { PermissionsTenantLink, SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
 import { migration } from "~/migration";
+import { featureFlags } from "@webiny/feature-flags";
 
 type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
@@ -23,23 +24,25 @@ export const subscribeToEvents = (context: Context): void => {
 
         const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
 
-        if (user.team) {
-            const team = await security.getTeam({ where: { id: user.team } });
-            const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
-            data.teams = [
-                {
-                    id: team.id,
-                    groups: teamGroups.map(group => ({
-                        id: group.id,
-                        permissions: group.permissions
-                    }))
-                }
-            ];
-        }
-
-        if (user.group) {
-            const group = await security.getGroup({ where: { id: user.group } });
-            data.groups = [{ id: group.id, permissions: group.permissions }];
+        if (featureFlags?.aacl.teams) {
+            if (user.team) {
+                const team = await security.getTeam({ where: { id: user.team } });
+                const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
+                data.teams = [
+                    {
+                        id: team.id,
+                        groups: teamGroups.map(group => ({
+                            id: group.id,
+                            permissions: group.permissions
+                        }))
+                    }
+                ];
+            }
+        } else {
+            if (user.group) {
+                const group = await security.getGroup({ where: { id: user.group } });
+                data.groups = [{ id: group.id, permissions: group.permissions }];
+            }
         }
 
         await security.createTenantLinks([
@@ -70,30 +73,42 @@ export const subscribeToEvents = (context: Context): void => {
             return;
         }
 
-        const groups = await security.getGroup({ where: { id: updatedUser.group } }).then(group => {
-            if (!group) {
-                return [];
+        const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
+        if (featureFlags?.aacl.teams) {
+            if (updatedUser.team) {
+                data.teams = await security
+                    .getTeam({ where: { id: updatedUser.team } })
+                    .then(async team => {
+                        if (!team) {
+                            return [];
+                        }
+
+                        const teamGroups = await security.listGroups({
+                            where: { id_in: team.groups }
+                        });
+
+                        return [
+                            {
+                                id: team.id,
+                                groups: teamGroups.map(group => {
+                                    return { id: group.id, permissions: group.permissions };
+                                })
+                            }
+                        ];
+                    });
             }
-            return [{ id: group.id, permissions: group.permissions }];
-        });
-
-        const teams = await security
-            .getTeam({ where: { id: updatedUser.team } })
-            .then(async team => {
-                if (!team) {
-                    return [];
-                }
-
-                const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
-                return [
-                    {
-                        id: team.id,
-                        groups: teamGroups.map(group => {
-                            return [{ id: group.id, permissions: group.permissions }];
-                        })
-                    }
-                ];
-            });
+        } else {
+            if (updatedUser.group) {
+                data.groups = await security
+                    .getGroup({ where: { id: updatedUser.group } })
+                    .then(group => {
+                        if (!group) {
+                            return [];
+                        }
+                        return [{ id: group.id, permissions: group.permissions }];
+                    });
+            }
+        }
 
         await security.updateTenantLinks([
             {
@@ -105,7 +120,7 @@ export const subscribeToEvents = (context: Context): void => {
                 tenant,
                 identity: updatedUser.id,
                 type: "permissions",
-                data: { groups, teams }
+                data
             }
         ]);
     });

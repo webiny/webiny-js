@@ -28,7 +28,7 @@ import { ReactComponent as UnpublishIcon } from "~/admin/assets/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
 import { PbPageData, PbPageRevision } from "~/types";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { PublishPageMenuOption } from "./PublishPageMenuOption";
 import { PageRevisionListItemGraphic } from "./PageRevisionListItemGraphic";
 
@@ -62,7 +62,7 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
         refreshSiteStatus
     );
 
-    const { canUnpublish, canDelete } = usePermission();
+    const { canUnpublish, canDelete } = usePagesPermissions();
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = "Cypress" in window ? "_self" : "_blank";

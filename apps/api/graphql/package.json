@@ -31,7 +31,6 @@
     "@webiny/api-security": "0.0.0",
     "@webiny/api-security-cognito": "0.0.0",
     "@webiny/api-security-so-ddb": "0.0.0",
-    "@webiny/api-security-teams": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/api-tenant-manager": "0.0.0",

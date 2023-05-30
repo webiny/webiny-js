@@ -49,9 +49,8 @@ export default {
         website: "apps/website"
     },
     featureFlags: {
-        // Enforces usage of legacy PB page elements rendering engine.
-        // To migrate to the latest one, please read:
-        // https://www.webiny.com/docs/page-builder-rendering-upgrade
-        pbLegacyRenderingEngine: false
+        aacl: {
+            teams: false
+        }
     }
 };

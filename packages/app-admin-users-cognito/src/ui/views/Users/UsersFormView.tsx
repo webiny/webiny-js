@@ -174,8 +174,8 @@ export class UsersFormView extends UIView {
             teamAccordion.addElement(
                 new TeamAutocompleteElement("team", {
                     name: "team",
-                    label: "Team",
-                    validators: () => validation.create("required")
+                    label: "Team"
+                    // validators: () => validation.create("required")
                 })
             );
         }

@@ -63,8 +63,8 @@ module.exports = options => {
                         typescriptPath: require.resolve("typescript")
                     },
                     async: !production
-                }),
-            options.logs && new WebpackBar({ name: path.basename(cwd) })
+                })
+            // options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
         module: {

@@ -12,7 +12,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { useSecurity } from "@webiny/app-security";
-import { WcpPermission } from "@webiny/app-admin";
+import { AaclPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
@@ -33,8 +33,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAacl = useMemo(() => {
-        const wcpPermissions = getPermission<WcpPermission>("wcp");
-        return wcpPermissions?.aacl === false;
+        return !getPermission<AaclPermission>("aacl");
     }, []);
 
     const onFormChange = useCallback(

@@ -10,7 +10,7 @@ import { MenuItem } from "@webiny/ui/Menu";
 
 import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
 import { PbPageDataItem } from "~/types";
@@ -20,8 +20,9 @@ const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/ed
 interface Props {
     record: PbPageDataItem;
 }
+
 export const RecordActionEdit = ({ record }: Props): ReactElement => {
-    const { canEdit } = usePermission();
+    const { canUpdate } = usePagesPermissions();
     const { history } = useRouter();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
@@ -47,7 +48,7 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [record]);
 
-    if (!canEdit(record)) {
+    if (!canUpdate(record)) {
         return <></>;
     }
 

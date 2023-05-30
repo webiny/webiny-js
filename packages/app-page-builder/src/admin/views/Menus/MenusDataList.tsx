@@ -28,6 +28,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { PageBuilderSecurityPermission, PbMenu } from "~/types";
+import { useMenusPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
@@ -116,26 +117,7 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
         [slug]
     );
 
-    const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
-        return getPermission("pb.menu");
-    }, [identity]);
-
-    const canDelete = useCallback(item => {
-        if (!pbMenuPermission) {
-            return false;
-        }
-        if (pbMenuPermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return item.createdBy.id === identityId;
-        }
-
-        if (typeof pbMenuPermission.rwd === "string") {
-            return pbMenuPermission.rwd.includes("d");
-        }
-
-        return true;
-    }, []);
+    const { canDelete } = useMenusPermissions();
 
     const menusDataListModalOverlay = useMemo(
         () => (
@@ -209,7 +191,7 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
                                 </ListItemTextSecondary>
                             </ListItemText>
 
-                            {canDelete(item) && (
+                            {canDelete(item?.createdBy?.id) && (
                                 <ListItemMeta>
                                     <ListActions>
                                         <DeleteIcon onClick={() => deleteItem(item)} />

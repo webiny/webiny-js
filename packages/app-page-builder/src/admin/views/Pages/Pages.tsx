@@ -14,6 +14,7 @@ import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import PageTemplatesDialog from "./PageTemplatesDialog";
 import { PageBuilderSecurityPermission, PbPageTemplate } from "~/types";
+import { usePagesPermissions } from "~/hooks/permissions";
 
 const Pages: React.FC = () => {
     const { history } = useRouter();
@@ -68,20 +69,7 @@ const Pages: React.FC = () => {
         setIsLoading(false);
     }, []);
 
-    const { identity, getPermission } = useSecurity();
-
-    const canCreate = useMemo(() => {
-        const permission = getPermission<PageBuilderSecurityPermission>("pb.page");
-        if (!permission) {
-            return false;
-        }
-
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
-
-        return permission.rwd.includes("w");
-    }, [identity]);
+    const { canCreate } = usePagesPermissions();
 
     return (
         <>
@@ -102,14 +90,14 @@ const Pages: React.FC = () => {
             <SplitView>
                 <LeftPanel>
                     <PagesDataList
-                        canCreate={canCreate}
+                        canCreate={canCreate()}
                         onCreatePage={openTemplatesDialog}
                         onImportPage={openCategoriesDialog}
                     />
                 </LeftPanel>
                 <RightPanel>
                     <PageDetails
-                        canCreate={canCreate}
+                        canCreate={canCreate()}
                         onCreatePage={openTemplatesDialog}
                         onDelete={() => history.push("/page-builder/pages")}
                     />

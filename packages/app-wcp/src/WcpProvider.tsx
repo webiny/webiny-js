@@ -21,6 +21,9 @@ export const GET_WCP_PROJECT = gql`
                             advancedPublishingWorkflow {
                                 enabled
                             }
+                            advancedAccessControlLayer {
+                                enabled
+                            }
                         }
                     }
                 }

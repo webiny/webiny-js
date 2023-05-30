@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
 
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
@@ -17,7 +17,7 @@ interface Props {
     record: PbPageDataItem;
 }
 export const RecordActionDelete = ({ record }: Props): ReactElement => {
-    const { canDelete } = usePermission();
+    const { canDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page: record });
 
     if (!canDelete(record)) {

@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Layout, Plugins, AddMenu, AddRoute, WcpPermission } from "@webiny/app-admin";
+import { Layout, Plugins, AddMenu, AddRoute, AaclPermission } from "@webiny/app-admin";
 import { HasPermission, useSecurity } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
 import { Groups } from "~/ui/views/Groups";
@@ -21,7 +21,7 @@ export const AccessManagementExtension = () => {
     // We disable form elements for custom permissions if AACL cannot be used.
     const { getPermission } = useSecurity();
     const canUseAacl = useMemo(() => {
-        const wcpPermissions = getPermission<WcpPermission>("wcp");
+        const wcpPermissions = getPermission<AaclPermission>("wcp");
         return !(wcpPermissions?.aacl === false);
     }, []);
 
