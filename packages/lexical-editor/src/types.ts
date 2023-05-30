@@ -1,4 +1,4 @@
-import { ElementNode, LexicalNode, NodeSelection, RangeSelection, TextNode } from "lexical";
+import { ElementNode, LexicalNode, Klass, NodeSelection, RangeSelection, TextNode } from "lexical";
 import { ListType } from "@lexical/list";
 import { CSSObject } from "@emotion/react";
 export type ToolbarType = "heading" | "paragraph" | string;
@@ -99,3 +99,6 @@ export type ThemeEmotionMap = {
 
 /* Commands payload types */
 export { ImagePayload } from "~/commands/insertFiles";
+
+// lexical types
+export { Klass, LexicalNode } from "lexical";

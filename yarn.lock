@@ -15445,6 +15445,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/react-rich-text-lexical-renderer@workspace:packages/react-rich-text-lexical-renderer":
+  version: 0.0.0-use.local
+  resolution: "@webiny/react-rich-text-lexical-renderer@workspace:packages/react-rich-text-lexical-renderer"
+  dependencies:
+    "@babel/cli": ^7.19.3
+    "@babel/core": ^7.19.3
+    "@babel/plugin-transform-modules-commonjs": ^7.16.8
+    "@babel/preset-env": ^7.19.4
+    "@babel/preset-react": ^7.16.0
+    "@babel/preset-typescript": ^7.18.6
+    "@babel/runtime": ^7.19.0
+    "@editorjs/editorjs": ^2.20.1
+    "@types/react": 17.0.39
+    "@webiny/app-page-builder-elements": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/lexical-editor": 0.0.0
+    classnames: ^2.3.1
+    react: 17.0.2
+    rimraf: ^3.0.2
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/react-rich-text-renderer@0.0.0, @webiny/react-rich-text-renderer@workspace:packages/react-rich-text-renderer":
   version: 0.0.0-use.local
   resolution: "@webiny/react-rich-text-renderer@workspace:packages/react-rich-text-renderer"
