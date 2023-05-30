@@ -19,6 +19,7 @@ import { $isFontColorNode } from "~/nodes/FontColorNode";
 import { $isParagraphNode } from "~/nodes/ParagraphNode";
 import { $isHeadingNode } from "~/nodes/HeadingNode";
 import { $isQuoteNode } from "~/nodes/QuoteNode";
+import { $isParentElementRTL } from "@lexical/selection";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -42,6 +43,7 @@ const getDefaultToolbarState = (): ToolbarState => {
         italic: false,
         underline: false,
         code: false,
+        isRTL: false,
         link: { isSelected: false },
         list: { isSelected: false },
         typography: { isSelected: false },
@@ -69,6 +71,8 @@ export const getToolbarState = (
         underline: textFormat.underline,
         code: textFormat.code
     };
+
+    state.isRTL = $isParentElementRTL(selection);
 
     // link
     state.link.isSelected = $isLinkNode(parent) || $isLinkNode(node);
@@ -155,6 +159,7 @@ export const getLexicalTextSelectionState = (
         const node = getSelectedNode(selection);
         const parent = node.getParent();
         const isElementDom = elementDOM !== null;
+        const selectedText = selection.getTextContent();
 
         return {
             // node/element data from selection
@@ -165,6 +170,7 @@ export const getLexicalTextSelectionState = (
             anchorNode,
             selection,
             isElementDom,
+            selectedText,
             state: getToolbarState(selection, node, parent, element, anchorNode)
         };
     }

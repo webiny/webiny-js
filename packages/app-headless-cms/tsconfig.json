@@ -16,8 +16,7 @@
     { "path": "../react-router" },
     { "path": "../ui" },
     { "path": "../utils" },
-    { "path": "../validation" },
-    { "path": "../lexical-editor" }
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -55,9 +54,7 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
-      "@webiny/lexical-editor": ["../lexical-editor/src"]
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

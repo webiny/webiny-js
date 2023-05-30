@@ -24,7 +24,7 @@
     "@webiny/app-security": "0.0.0",
     "@webiny/app-wcp": "0.0.0",
     "@webiny/form": "0.0.0",
-    "@webiny/lexical-editor": "0.0.0",
+    "@webiny/lexical-editor-cms-actions": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-router": "0.0.0",

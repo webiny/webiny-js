@@ -13367,7 +13367,7 @@ __metadata:
     "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
-    "@webiny/lexical-editor": 0.0.0
+    "@webiny/lexical-editor-cms-actions": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
@@ -13686,7 +13686,6 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/form": 0.0.0
-    "@webiny/lexical-editor": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
@@ -14136,6 +14135,7 @@ __metadata:
     "@webiny/app-tenant-manager": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor-actions": 0.0.0
+    "@webiny/lexical-editor-cms-actions": 0.0.0
     "@webiny/lexical-editor-pb-element": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -15152,19 +15152,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/lexical-editor-cms-actions@workspace:packages/lexical-editor-cms-actions":
+"@webiny/lexical-editor-cms-actions@0.0.0, @webiny/lexical-editor-cms-actions@workspace:packages/lexical-editor-cms-actions":
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor-cms-actions@workspace:packages/lexical-editor-cms-actions"
   dependencies:
-    "@emotion/styled": ^11.10.6
+    "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/theme": 0.0.0
-    classnames: ^2.3.1
-    emotion: ^10.0.27
     react: ^17.0.2
-    react-color: ^2.14.1
     react-dom: ^17.0.2
   languageName: unknown
   linkType: soft

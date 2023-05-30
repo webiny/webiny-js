@@ -34,6 +34,8 @@ export type ToolbarState = {
     underline: boolean;
     italic: boolean;
     code: boolean;
+    // is direction of the text right-to-left
+    isRTL: boolean;
     // nodes selection state
     link: NodeState;
     typography: NodeState;
@@ -57,6 +59,7 @@ export type TextBlockSelection = {
     node: ElementNode | TextNode;
     anchorNode: ElementNode | TextNode;
     isElementDom: boolean;
+    selectedText: string;
     state: ToolbarState | undefined;
 };
 

@@ -1,13 +1,18 @@
-import React, { FC, useCallback, useEffect } from "react";
-import { $getSelection, $isRangeSelection, $isTextNode, LexicalEditor } from "lexical";
+import React, { FC, useCallback, useEffect, useState } from "react";
+import {
+    $getSelection,
+    $isRangeSelection,
+    COMMAND_PRIORITY_CRITICAL,
+    LexicalEditor,
+    SELECTION_CHANGE_COMMAND
+} from "lexical";
 import { ToolbarType } from "~/types";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { getSelectedNode } from "~/utils/getSelectedNode";
-import { $isCodeHighlightNode } from "@lexical/code";
 import { mergeRegister } from "@lexical/utils";
 import { makeComposable } from "@webiny/react-composition";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./StaticToolbar.css";
+import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 
 interface useStaticToolbarProps {
     editor: LexicalEditor;
@@ -19,9 +24,12 @@ interface useStaticToolbarProps {
 const useStaticToolbar: FC<useStaticToolbarProps> = ({
     editor,
     actionPlugins,
+    type,
     children
 }): JSX.Element | null => {
-    const { setNodeIsText, setActionPlugins } = useRichTextEditor();
+    const { setNodeIsText, setActionPlugins, setToolbarType, setTextBlockSelection } =
+        useRichTextEditor();
+    const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
 
     useEffect(() => {
         if (actionPlugins) {
@@ -29,53 +37,65 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
         }
     }, [actionPlugins]);
 
-    const updatePopup = useCallback(() => {
+    useEffect(() => {
+        if (type) {
+            setToolbarType(type);
+        }
+    }, [type]);
+
+    const updateToolbar = useCallback(() => {
         editor.getEditorState().read(() => {
             // Should not to pop up the floating toolbar when using IME input
             if (editor.isComposing()) {
                 return;
             }
-            const selection = $getSelection();
-            const nativeSelection = window.getSelection();
-            const rootElement = editor.getRootElement();
 
-            if (
-                nativeSelection !== null &&
-                (!$isRangeSelection(selection) ||
-                    rootElement === null ||
-                    !rootElement.contains(nativeSelection.anchorNode))
-            ) {
-                setNodeIsText(false);
-                return;
+            const selection = $getSelection();
+
+            if ($isRangeSelection(selection)) {
+                const selectionState = getLexicalTextSelectionState(toolbarActiveEditor, selection);
+                if (selectionState) {
+                    setTextBlockSelection(selectionState);
+                    if (selectionState.selectedText !== "") {
+                        setNodeIsText(true);
+                    } else {
+                        setNodeIsText(false);
+                    }
+                }
             }
 
             if (!$isRangeSelection(selection)) {
+                setNodeIsText(false);
                 return;
             }
-
-            const node = getSelectedNode(selection);
-            if (
-                !$isCodeHighlightNode(selection.anchor.getNode()) &&
-                selection.getTextContent() !== ""
-            ) {
-                setNodeIsText($isTextNode(node));
-            } else {
-                setNodeIsText(false);
-            }
         });
-    }, [editor]);
+    }, [toolbarActiveEditor]);
 
     useEffect(() => {
-        document.addEventListener("selectionchange", updatePopup);
+        document.addEventListener("selectionchange", updateToolbar);
         return () => {
-            document.removeEventListener("selectionchange", updatePopup);
+            document.removeEventListener("selectionchange", updateToolbar);
         };
-    }, [updatePopup]);
+    }, [updateToolbar]);
+
+    useEffect(() => {
+        return editor.registerCommand(
+            SELECTION_CHANGE_COMMAND,
+            (_payload, newEditor) => {
+                updateToolbar();
+                setToolbarActiveEditor(newEditor);
+                return false;
+            },
+            COMMAND_PRIORITY_CRITICAL
+        );
+    }, [editor, updateToolbar]);
 
     useEffect(() => {
         return mergeRegister(
-            editor.registerUpdateListener(() => {
-                updatePopup();
+            toolbarActiveEditor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
+                    updateToolbar();
+                });
             }),
             editor.registerRootListener(() => {
                 if (editor.getRootElement() === null) {
@@ -83,7 +103,7 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
                 }
             })
         );
-    }, [editor, updatePopup]);
+    }, [updateToolbar, editor, toolbarActiveEditor]);
 
     return <div className="static-toolbar">{editor.isEditable() && children}</div>;
 };

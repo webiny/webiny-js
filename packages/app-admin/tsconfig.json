@@ -12,7 +12,7 @@
     { "path": "../ui" },
     { "path": "../ui-composer" },
     { "path": "../validation" },
-    { "path": "../lexical-editor" }
+    { "path": "../lexical-editor-cms-actions" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -41,8 +41,8 @@
       "@webiny/ui-composer": ["../ui-composer/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
-      "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
-      "@webiny/lexical-editor": ["../lexical-editor/src"]
+      "@webiny/lexical-editor-cms-actions/*": ["../lexical-editor-cms-actions/src/*"],
+      "@webiny/lexical-editor-cms-actions": ["../lexical-editor-cms-actions/src"]
     },
     "baseUrl": "."
   }

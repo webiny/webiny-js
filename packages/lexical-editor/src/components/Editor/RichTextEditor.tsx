@@ -87,7 +87,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     useEffect(() => {
         setTheme(theme);
         setThemeEmotionMap(themeEmotionMap);
-    }, [themeEmotionMap]);
+    }, [themeEmotionMap, theme]);
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
