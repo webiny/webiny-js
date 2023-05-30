@@ -18,8 +18,9 @@ export const LexicalEditor: React.FC<RichTextEditorProps> = props => {
                     styles={{
                         backgroundColor: "#fff",
                         border: "1px solid #e1e1e1",
-                        minHeight: 250,
-                        padding: "10px 14px"
+                        padding: "10px 14px",
+                        minHeight: 200,
+                        maxHeight: 300
                     }}
                     toolbarActionPlugins={[{ type: "image-action", plugin: showFileManager }]}
                 />

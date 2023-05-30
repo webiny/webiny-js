@@ -304,25 +304,6 @@ export default function ImageComponent({
                         maxWidth={maxWidth}
                     />
                 </div>
-                {showCaption && (
-                    <div className="image-caption-container">
-                        <LexicalNestedComposer initialEditor={caption}>
-                            <AutoFocusPlugin />
-                            <HistoryPlugin externalHistoryState={historyState} />
-                            <RichTextPlugin
-                                contentEditable={
-                                    <LexicalContentEditable className="ImageNode__contentEditable" />
-                                }
-                                placeholder={
-                                    <Placeholder className="ImageNode__placeholder">
-                                        Enter a caption...
-                                    </Placeholder>
-                                }
-                                ErrorBoundary={LexicalErrorBoundary}
-                            />
-                        </LexicalNestedComposer>
-                    </div>
-                )}
                 {resizable && $isNodeSelection(selection) && isFocused && (
                     <ImageResizer
                         showCaption={showCaption}

@@ -123,7 +123,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         <LexicalComposer initialConfig={initialConfig}>
             <>
                 {staticToolbar && staticToolbar}
-                <div ref={scrollRef} style={{ ...styles, ...sizeStyle }}>
+                <div ref={scrollRef} style={{ ...styles, ...sizeStyle, overflow: "auto" }}>
                     {/* data */}
                     <OnChangePlugin onChange={handleOnChange} />
                     {value && <LexicalUpdateStatePlugin value={value} />}
@@ -141,8 +141,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     <RichTextPlugin
                         contentEditable={
                             <div className="editor-scroller" style={{ ...sizeStyle }}>
-                                <div className="editor" ref={onRef} style={{ ...sizeStyle }}>
-                                    <ContentEditable style={{ outline: 0, ...sizeStyle }} />
+                                <div className="editor" ref={onRef}>
+                                    <ContentEditable style={{ outline: 0 }} />
                                 </div>
                             </div>
                         }
