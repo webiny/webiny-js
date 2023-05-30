@@ -31,6 +31,8 @@ import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/p
 import iframe from "@webiny/app-page-builder/render/plugins/elements/iframe";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
+import carousel from "@webiny/app-page-builder/render/plugins/elements/carousel";
+import carouselElement from "@webiny/app-page-builder/render/plugins/elements/carouselElement";
 
 /**
  * Page settings plugins (seo, social, etc.).
@@ -83,6 +85,8 @@ export default [
     iframe(),
     pagesList(),
     imagesList(),
+    carousel(),
+    carouselElement(),
 
     // Page settings
     pageSettings(),

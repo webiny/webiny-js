@@ -40,7 +40,8 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
         const dynamicParent = useDynamicParent(element?.id);
         const updateElement = useUpdateElement();
         const { onUnlink } = useUnlinkBlockDynamic({ element });
-        const elementType = element?.type === "block" ? "block" : "element";
+        const elementType =
+            element?.type === "block" || element?.type === "carousel" ? "block" : "element";
 
         const onSubmit: FormOnSubmit = async formData => {
             const settingsPlugins = plugins
@@ -68,7 +69,9 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
 
         return (
             <Tabs {...props}>
-                {element.type === "block" || canHaveDynamicSource ? (
+                {element.type === "block" ||
+                element?.type === "carousel" ||
+                canHaveDynamicSource ? (
                     <>
                         {children}
                         <Tab label={"Data"}>

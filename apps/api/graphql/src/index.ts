@@ -8,6 +8,7 @@ import {
     createPageBuilderContext,
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
+import { createInternalCmsQuerying } from "@webiny/api-page-builder/plugins";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
@@ -98,6 +99,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createInternalCmsQuerying(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })

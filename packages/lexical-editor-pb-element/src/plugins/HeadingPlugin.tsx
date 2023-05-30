@@ -42,7 +42,7 @@ export const HeadingPlugin = createComponentPlugin(Heading, Original => {
         const variableValue = useElementVariableValue(element);
         const dynamicValue = useDynamicHeadingValue(
             elementContent,
-            element.data?.dynamicSource?.path
+            element.data?.dynamicSource?.resolvedPath
         );
         const isDynamic = useIsDynamicElement(element);
 

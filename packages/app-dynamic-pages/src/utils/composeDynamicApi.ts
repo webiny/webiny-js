@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import ApolloClient from "apollo-client";
 import get from "lodash/get";
 import { getNestingByPath } from "~/utils/getNestingByPath";
@@ -101,6 +100,14 @@ const composeQueryPaths = async (data: Record<string, any>[], pluralApiName: str
     return concatPathsForQuery();
 };
 
+const transformObjectToString = (data: Record<string, any>) => {
+    return JSON.stringify(data).replace(/"([^"]+)":/g, "$1:");
+};
+
+const transformArrayToString = (data: string[]) => {
+    return JSON.stringify(data).replace(/['"]+/g, "");
+};
+
 export const composeDynamicApi = async ({
     readApolloClient,
     modelId,
@@ -199,14 +206,12 @@ export const composeDynamicApi = async ({
 
     const DATA_FIELD = buildQueryBody() || FALLBACK_DATA_FIELD;
 
-    const query = gql`
-        query ListDynamicData ($where: ${toUpperCase(modelId)}ListWhereInput, $sort: [${toUpperCase(
-        modelId
-    )}ListSorter], $limit: Int) {
+    const query = `
+        {
             result: ${QUERY_API_NAME}(
-                where: $where,
-                sort: $sort,
-                limit: $limit
+                where: ${transformObjectToString(params.where)},
+                sort: ${transformArrayToString(params.sort)},
+                limit: ${params.limit}
             ) {
                 data ${DATA_FIELD}
 
@@ -219,8 +224,5 @@ export const composeDynamicApi = async ({
         }
     `;
 
-    return {
-        query,
-        params
-    };
+    return query;
 };

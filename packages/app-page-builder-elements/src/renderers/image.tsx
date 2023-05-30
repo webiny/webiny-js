@@ -21,7 +21,7 @@ export interface ImageElementData {
         href: string;
     };
     dynamicSource?: {
-        path: string;
+        resolvedPath: string;
     };
 }
 
@@ -69,7 +69,10 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
     const { getElement } = useRenderer();
 
     const element = getElement<ImageElementData>();
-    const dynamicElement = useImageDynamicValue(element, element?.data?.dynamicSource?.path);
+    const dynamicElement = useImageDynamicValue(
+        element,
+        element?.data?.dynamicSource?.resolvedPath
+    );
     const isDynamic = useIsDynamicElement(element);
 
     const elementToUse = isDynamic ? dynamicElement : element;

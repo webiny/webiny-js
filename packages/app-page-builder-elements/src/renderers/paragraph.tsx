@@ -39,7 +39,7 @@ export const createParagraph = () => {
         const { theme } = usePageElements();
         const dynamicValue = useDynamicParagraphValue(
             elementContent,
-            element.data?.dynamicSource?.path
+            element.data?.dynamicSource?.resolvedPath
         );
 
         const __html = dynamicValue || elementContent;

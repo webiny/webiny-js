@@ -1,120 +1,32 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
-import { merge } from "dot-prop-immutable";
-import styled from "@emotion/styled";
+
+import {
+    EntrySelectorWrapper,
+    SelectEntry,
+    SelectedEntryTitle,
+    SelectedEntryLable,
+    SelectedEntryLeft,
+    SelectedEntryRight
+} from "./styles";
 import { EditorBar } from "~/editor";
-import { useTemplate } from "~/templateEditor/hooks/useTemplate";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
+import { useGetModelEntries } from "~/templateEditor/hooks/useGetModelEntries";
+import { useTemplate } from "~/templateEditor/hooks/useTemplate";
 import { EntrySelectorModal } from "./EntrySelectorModal";
+
+import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as OpenIcon } from "@material-symbols/svg-400/rounded/open_in_new-fill.svg";
-import gql from "graphql-tag";
-
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { CmsModel } from "@webiny/app-headless-cms/types";
 import { useEntries } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/hooks/useEntries";
+import { ReactComponent as OpenIcon } from "@material-symbols/svg-400/rounded/open_in_new-fill.svg";
 
-const GET_MODEL_ENTRIES = gql`
-    query searchContentEntities(
-        $modelIds: [ID!]!
-        $query: String
-        $fields: [String!]
-        $limit: Int
-    ) {
-        result: searchContentEntries(
-            modelIds: $modelIds
-            query: $query
-            fields: $fields
-            limit: $limit
-        ) {
-            data {
-                id
-                entryId
-                status
-                title
-                description
-                image
-                createdOn
-                savedOn
-                createdBy {
-                    id
-                    type
-                    displayName
-                }
-                modifiedBy {
-                    id
-                    type
-                    displayName
-                }
-                model {
-                    modelId
-                    name
-                }
-                published {
-                    id
-                    entryId
-                    title
-                }
-            }
-            error {
-                code
-                message
-                data
-            }
-        }
-    }
-`;
-
-const SelectEntry = styled.div`
-    width: 400px;
-    height: 25px;
-
-    margin-left: 15px;
-    padding: 10px 13px;
-
-    cursor: pointer;
-
-    background-color: #e6e6e6;
-    opacity: 0.5;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    position: absolute;
-    top: 10px;
-`;
-
-const SelectedEntryTitle = styled.span`
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 18px;
-    color: #000000;
-`;
-
-const SelectedEntryLable = styled.span`
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 15px;
-    color: #4b4b4b;
-`;
-
-const SelectedEntryLeft = styled.div`
-    display: flex;
-    flex-direction: column;
-`;
-
-const SelectedEntryRight = styled.div``;
-
-// TODO: types, improve useEffects, change values state to object instead of array, fix loadMore
 const DefaultEntrySelector = () => {
     const [templateAtomValue] = useTemplate();
-    const handler = useEventActionHandler();
-    const { data, loading } = useQuery(GET_MODEL_ENTRIES, {
-        variables: {
-            modelIds: [templateAtomValue?.sourceModel?.modelId]
-        }
-    });
+    const [toggleModal, setToggleModal] = useState<boolean>(false);
+    const [selectedEntryTitle, setSelectedEntryTitle] = useState("Select Entry");
+    const [entriesData, setEntriesData] = useState<any>();
+    const { data, loading } = useGetModelEntries(templateAtomValue);
 
     const defaultValues = templateAtomValue?.templatePageData
         ? [
@@ -125,18 +37,12 @@ const DefaultEntrySelector = () => {
           ]
         : [];
 
-    const [toggleModal, setToggleModal] = useState<boolean>(false);
-    const [selectedEntryTitle, setSelectedEntryTitle] = useState("Select Entry");
-    const [entriesData, setEntriesData] = useState<any>();
+    const [values, setValues] = useState<Record<string, string | undefined>[]>(defaultValues);
 
-    const [values, setValues] = useState<any>(defaultValues);
+    const handler = useEventActionHandler();
 
-    const {
-        entries,
-        runSearch,
-        loadMore: __loadMore
-    } = useEntries({
-        model: templateAtomValue?.sourceModel as any,
+    const { entries, runSearch, loadMore } = useEntries({
+        model: templateAtomValue?.sourceModel as CmsModel,
         limit: 10
     });
 
@@ -227,10 +133,8 @@ const DefaultEntrySelector = () => {
         }, 200) as unknown as number;
     }, []);
 
-    const loadMore = useCallback(() => {}, []);
-
     return (
-        <>
+        <EntrySelectorWrapper>
             <div>
                 <SelectEntry onClick={() => setToggleModal(true)}>
                     <SelectedEntryLeft>
@@ -252,8 +156,9 @@ const DefaultEntrySelector = () => {
                 values={values}
                 loading={loading}
                 entries={entriesData}
+                model={templateAtomValue.sourceModel}
             />
-        </>
+        </EntrySelectorWrapper>
     );
 };
 

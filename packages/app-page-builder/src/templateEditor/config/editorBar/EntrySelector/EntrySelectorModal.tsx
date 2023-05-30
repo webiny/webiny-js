@@ -1,19 +1,20 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { Dialog } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/dialog/Dialog";
+
+import { Container, Content, DialogContent } from "./styles";
+
+import { parseIdentifier } from "@webiny/utils";
+import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
+
+import { DialogActions } from "@webiny/app-headless-cms/admin/components/Dialog";
+import { CmsModel } from "@webiny/app-headless-cms/types";
 import { Entries } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/Entries";
 import { Entry } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/Entry";
-import { DialogHeader } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/dialog/DialogHeader";
-import {
-    DialogActions,
-    DialogContent as BaseDialogContent
-} from "@webiny/app-headless-cms/admin/components/Dialog";
 import { Search } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/Search";
 import { AbsoluteLoader } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/Loader";
-import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { parseIdentifier } from "@webiny/utils";
+import { Dialog } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/dialog/Dialog";
+import { DialogHeader } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/dialog/DialogHeader";
 
-const isSelected = (entryId: string, values: any[]) => {
+const useIsSelected = (entryId: string, values: any[]) => {
     if (!entryId) {
         return false;
     }
@@ -27,30 +28,6 @@ const isSelected = (entryId: string, values: any[]) => {
     });
 };
 
-const Container = styled("div")({
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "20px"
-});
-
-const Content = styled("div")({
-    display: "flex",
-    flex: "1",
-    flexDirection: "column",
-    position: "relative",
-    width: "100%",
-    minHeight: "20px",
-    boxSizing: "border-box",
-    padding: "20px 0 20px 20px",
-    backgroundColor: "var(--mdc-theme-background)",
-    border: "1px solid var(--mdc-theme-on-background)",
-    overflowX: "hidden"
-});
-
-const DialogContent = styled(BaseDialogContent)({
-    padding: "0 !important"
-});
-
 export interface EntrySelectorModalProps {
     open: boolean;
     loading: boolean;
@@ -60,7 +37,8 @@ export interface EntrySelectorModalProps {
     onInput: (ev: React.KeyboardEvent<HTMLInputElement>) => void;
     onChange: (entry: any) => void;
     onSave: () => void;
-    loadMore: any;
+    loadMore: () => void;
+    model: any;
 }
 
 export const EntrySelectorModal = ({
@@ -72,11 +50,12 @@ export const EntrySelectorModal = ({
     onChange,
     onClose,
     onInput,
-    onSave
+    onSave,
+    model
 }: EntrySelectorModalProps) => {
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogHeader model={"blog" as any} onClose={onClose} />
+            <DialogHeader model={model as CmsModel} onClose={onClose} />
             <DialogContent>
                 <Container>
                     <Search onInput={onInput} />
@@ -84,13 +63,13 @@ export const EntrySelectorModal = ({
                         {loading && <AbsoluteLoader />}
                         {entries && (
                             <Entries entries={entries} loadMore={loadMore}>
-                                {(entry: any) => {
+                                {entry => {
                                     return (
                                         <Entry
-                                            model={{ icon: "" } as any}
+                                            model={model as CmsModel}
                                             key={`reference-entry-${entry.id}`}
                                             entry={entry}
-                                            selected={isSelected(entry.id, values)}
+                                            selected={useIsSelected(entry.id, values)}
                                             onChange={onChange}
                                         />
                                     );

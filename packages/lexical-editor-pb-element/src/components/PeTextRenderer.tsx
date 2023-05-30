@@ -40,7 +40,10 @@ export const PeTextRenderer = createRenderer(() => {
 
     const variableValue = useElementVariableValue(element);
     const { theme } = usePageElements();
-    const dynamicValue = useDynamicHeadingValue(elementContent, element.data?.dynamicSource?.path);
+    const dynamicValue = useDynamicHeadingValue(
+        elementContent,
+        element.data?.dynamicSource?.resolvedPath
+    );
     const __html = dynamicValue || variableValue || elementContent;
     return <LexicalHtmlRenderer theme={theme} value={__html} />;
 });

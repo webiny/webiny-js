@@ -1,16 +1,19 @@
 import { useEffect, useState, useRef } from "react";
 import get from "lodash/get";
-import { useCms } from "@webiny/app-headless-cms/index";
-import { composeDynamicApi, Filter, Sort } from "~/utils/composeDynamicApi";
-import { getChildrenPaths } from "~/utils/getChildrenPaths";
 import isEqual from "lodash/isEqual";
+import { useApolloClient } from "@apollo/react-hooks";
+
+import { useDynamicDataQuery } from "~/hooks/useDynamicDataQuery";
+import { useIsDynamicElement } from "~/hooks/useIsDynamicElement";
+import { getChildrenPaths } from "~/utils/getChildrenPaths";
+import { RUN_QUERY } from "~/graphql";
 import { PbElement } from "~/types";
 
-export const usePaths = (paths: string[] = []) => {
-    const [prevPaths, setPrevPaths] = useState<string[]>(paths);
+export const usePaths = (paths?: string[]) => {
+    const [prevPaths, setPrevPaths] = useState<string[]>();
 
     useEffect(() => {
-        if (prevPaths && !isEqual(prevPaths, paths)) {
+        if (!isEqual(prevPaths, paths)) {
             setPrevPaths(paths);
         }
     }, [paths]);
@@ -18,33 +21,33 @@ export const usePaths = (paths: string[] = []) => {
     return prevPaths;
 };
 
-export const useDynamicData = (block?: PbElement) => {
-    const paths = usePaths(getChildrenPaths(block?.elements));
-
+export const useDynamicData = (element?: PbElement) => {
     const { data, loading, error } = useLoadDynamicData({
-        paths,
-        modelId: block?.data?.dynamicSource?.modelId,
-        filter: block?.data?.dynamicSource?.filter,
-        sort: block?.data?.dynamicSource?.sortRules,
-        limit: block?.data?.dynamicSource?.limit
+        modelId: element?.data?.dynamicSource?.modelId,
+        query: element?.data?.dynamicSource?.query
     });
 
     return { data, loading, error };
 };
 
 export const useDynamicDataForEditor = (
-    block?: PbElement,
+    element?: PbElement,
     templateWhereField?: Record<string, string>
 ) => {
-    const paths = usePaths(getChildrenPaths(block?.elements));
-
-    const { data, loading, error } = useLoadDynamicData({
+    const isDynamic = useIsDynamicElement(element);
+    const paths = usePaths(isDynamic ? getChildrenPaths(element?.elements) : undefined);
+    const { data: query } = useDynamicDataQuery({
         paths,
-        modelId: block?.data?.dynamicSource?.modelId,
-        filter: block?.data?.dynamicSource?.filter,
-        sort: block?.data?.dynamicSource?.sortRules,
+        modelId: element?.data?.dynamicSource?.modelId,
+        filter: element?.data?.dynamicSource?.filter,
+        sort: element?.data?.dynamicSource?.sortRules,
         limit: 1,
         templateWhereField
+    });
+
+    const { data, loading, error } = useLoadDynamicData({
+        modelId: element?.data?.dynamicSource?.modelId,
+        query
     });
 
     return { data: data?.[0], loading, error };
@@ -52,30 +55,19 @@ export const useDynamicDataForEditor = (
 
 type UseLoadDynamicDataParams = {
     modelId: string;
-    paths?: string[];
-    filter?: Filter;
-    sort?: Sort[];
-    limit?: number;
-    templateWhereField?: Record<string, string | undefined>;
+    query: string | null;
 };
 
-export const useLoadDynamicData = ({
-    modelId,
-    filter,
-    sort,
-    limit,
-    paths,
-    templateWhereField
-}: UseLoadDynamicDataParams) => {
+export const useLoadDynamicData = ({ modelId, query }: UseLoadDynamicDataParams) => {
     const isMounted = useRef(true);
     const [data, setData] = useState<JSON[] | null>(null);
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { readApolloClient } = useCms();
+    const apolloClient = useApolloClient();
 
     useEffect(() => {
-        if (!modelId) {
+        if (!modelId || !query) {
             return;
         }
 
@@ -85,21 +77,11 @@ export const useLoadDynamicData = ({
 
         const execute = async () => {
             try {
-                const { query, params } = await composeDynamicApi({
-                    readApolloClient,
-                    paths,
-                    modelId,
-                    filter,
-                    sort,
-                    limit,
-                    templateWhereField
+                const listQuery = await apolloClient.query({
+                    query: RUN_QUERY,
+                    variables: { query }
                 });
-                const listQuery = await readApolloClient.query({
-                    query,
-                    variables: params,
-                    fetchPolicy: "no-cache"
-                });
-                const newData = get(listQuery, `data.result.data`, null);
+                const newData = get(listQuery, `data.runQuery.data.data.result.data`, null);
 
                 if (!isMounted.current) {
                     return;
@@ -117,7 +99,7 @@ export const useLoadDynamicData = ({
         };
 
         execute();
-    }, [modelId, paths, filter, sort, limit, templateWhereField]);
+    }, [modelId, query]);
 
     // To prevent setting state on unmounted component
     useEffect(() => {

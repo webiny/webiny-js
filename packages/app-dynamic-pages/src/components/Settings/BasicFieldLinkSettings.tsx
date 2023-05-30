@@ -1,9 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import styled from "@emotion/styled";
 import get from "lodash/get";
 
 import { ButtonIcon, ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { BindComponent } from "@webiny/form/types";
+import { useCms } from "@webiny/app-headless-cms/index";
 
 import { ReactComponent as InfoIcon } from "@material-design-icons/svg/outlined/info.svg";
 import { ReactComponent as DatabaseIcon } from "@material-symbols/svg-400/rounded/database.svg";
@@ -11,6 +12,7 @@ import { ReactComponent as DatabaseIcon } from "@material-symbols/svg-400/rounde
 import { FieldSelect } from "~/components/Select/FieldSelect";
 import { ElementStatusWrapper } from "~/components/common/ElementStatusWrapper";
 import { UnlinkElementWrapper } from "~/components/common/UnlinkElementWrapper";
+import { getNestingByPath } from "~/utils/getNestingByPath";
 
 const BasicFieldLinkSettingsWrapper = styled.div`
     display: grid;
@@ -44,22 +46,43 @@ export const BasicFieldLinkSettings: React.FC<BasicFieldLinkSettingsProps> = ({
     onUnlink,
     allowedFields
 }) => {
-    const isLinked = useMemo(() => {
-        return Boolean(get(data, "dynamicSource"));
+    const { readApolloClient } = useCms();
+
+    const dynamicSource = useMemo(() => {
+        return get(data, "dynamicSource");
     }, [data]);
+
+    const handlePathChange = useCallback(
+        async (path: string, onChange: (dynamicSource: any) => void) => {
+            if (sourceModelId) {
+                const nesting = await getNestingByPath(readApolloClient, sourceModelId, path);
+                const resolvedPath = nesting
+                    .filter(nestingItem => !nestingItem.selectedTemplate)
+                    .map(({ pathPart }) => pathPart)
+                    .join(".");
+
+                onChange({
+                    ...dynamicSource,
+                    resolvedPath,
+                    path
+                });
+            }
+        },
+        [sourceModelId, dynamicSource]
+    );
 
     return (
         <BasicFieldLinkSettingsWrapper>
-            {isLinked ? (
+            {Boolean(dynamicSource) ? (
                 <>
                     <FieldSelectWrapper>
                         <span>Field:</span>
-                        <Bind name={"dynamicSource.path"} afterChange={submit}>
+                        <Bind name={"dynamicSource"} afterChange={submit}>
                             {({ value, onChange }) => (
                                 <FieldSelect
                                     sourceModelId={sourceModelId || ""}
-                                    value={value}
-                                    onChange={value => onChange(value)}
+                                    value={value.path}
+                                    onChange={path => handlePathChange(path, onChange)}
                                     allowedFields={allowedFields}
                                 />
                             )}

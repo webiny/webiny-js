@@ -427,18 +427,27 @@ export const FilterSettings: React.FC<FilterSettingsProps> = ({
         (index: number) => {
             const newArray = [...filters];
             newArray.splice(index, 1);
-            onChange({ filters: newArray });
+            onChange({
+                filters: newArray,
+                ...(index > 0 ? { filterCondition } : {})
+            });
+        },
+        [filters, filterCondition]
+    );
+
+    const handleFilterConditionSelect = useCallback(
+        selectedFilterCondition => {
+            onChange({ filters, filterCondition: selectedFilterCondition });
         },
         [filters]
     );
 
-    const handleFilterConditionSelect = useCallback(selectedFilterCondition => {
-        onChange({ filterCondition: selectedFilterCondition });
-    }, []);
-
-    const handleExcludeCurrentSwitch = useCallback(selectedExcludeCurrent => {
-        onChange({ excludeCurrent: selectedExcludeCurrent });
-    }, []);
+    const handleExcludeCurrentSwitch = useCallback(
+        selectedExcludeCurrent => {
+            onChange({ filters, excludeCurrent: selectedExcludeCurrent });
+        },
+        [filters]
+    );
 
     return (
         <SettingsWrapper>

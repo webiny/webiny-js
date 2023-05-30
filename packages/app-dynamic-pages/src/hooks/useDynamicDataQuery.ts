@@ -1,8 +1,24 @@
 import { useEffect, useState, useRef } from "react";
 import { useCms } from "@webiny/app-headless-cms/index";
-import { getNestingByPath } from "~/utils/getNestingByPath";
+import { composeDynamicApi, Filter, Sort } from "~/utils/composeDynamicApi";
 
-export const useResolvedPath = (modelId: string, path: string) => {
+type UseLoadDynamicDataQueryParams = {
+    modelId: string;
+    paths?: string[];
+    filter?: Filter;
+    sort?: Sort[];
+    limit?: number;
+    templateWhereField?: Record<string, string | undefined>;
+};
+
+export const useDynamicDataQuery = ({
+    modelId,
+    filter,
+    sort,
+    limit,
+    paths,
+    templateWhereField
+}: UseLoadDynamicDataQueryParams) => {
     const isMounted = useRef(true);
     const [data, setData] = useState<string | null>(null);
     const [error, setError] = useState<Error | null>(null);
@@ -11,7 +27,7 @@ export const useResolvedPath = (modelId: string, path: string) => {
     const { readApolloClient } = useCms();
 
     useEffect(() => {
-        if (!modelId) {
+        if (!modelId || !paths) {
             return;
         }
 
@@ -21,29 +37,30 @@ export const useResolvedPath = (modelId: string, path: string) => {
 
         const execute = async () => {
             try {
-                const nesting = await getNestingByPath(readApolloClient, modelId, path);
+                const query = await composeDynamicApi({
+                    readApolloClient,
+                    paths,
+                    modelId,
+                    filter,
+                    sort,
+                    limit,
+                    templateWhereField
+                });
 
-                if (!isMounted.current) {
-                    return;
-                }
-                const resolvedPath = nesting
-                    .filter(nestingItem => !nestingItem.selectedTemplate)
-                    .map(({ pathPart }) => pathPart)
-                    .join(".");
-                setData(resolvedPath);
+                setData(query);
                 setLoading(false);
             } catch (err) {
                 if (!isMounted.current) {
                     return;
                 }
-                console.log("Error while generating resolved path:", err.message);
+                console.log("Error while getting dynamic data:", err.message);
                 setError(err);
                 setLoading(false);
             }
         };
 
         execute();
-    }, [modelId, path]);
+    }, [modelId, paths, filter, sort, limit, templateWhereField]);
 
     // To prevent setting state on unmounted component
     useEffect(() => {

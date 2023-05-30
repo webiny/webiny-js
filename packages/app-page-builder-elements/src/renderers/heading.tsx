@@ -41,7 +41,7 @@ export const createHeading = () => {
         const { theme } = usePageElements();
         const dynamicValue = useDynamicHeadingValue(
             elementContent,
-            element.data?.dynamicSource?.path
+            element.data?.dynamicSource?.resolvedPath
         );
 
         const tag = element.data.text.desktop.tag || "h1";
