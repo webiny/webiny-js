@@ -4,7 +4,7 @@
   padding: 4px;
   vertical-align: middle;
   border: 1px solid #eee;
-  z-index: 10;
+  z-index: 1;
   height: 35px;
   will-change: transform;
 }

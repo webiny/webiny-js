@@ -1,12 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
-import { createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
-import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
 
@@ -43,11 +41,11 @@ const EditorWrapper = styled("div")({
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
-    name: "cms-editor-field-renderer-rich-text-inputs",
+    name: "cms-editor-field-renderer-lexical-inputs",
     renderer: {
-        rendererName: "rich-text-inputs",
-        name: t`Rich Text Inputs`,
-        description: t`Renders a simple list of rich text editors.`,
+        rendererName: "lexical-inputs",
+        name: t`Lexical Inputs`,
+        description: t`Renders a simple list of lexical editors.`,
         canUse({ field }) {
             return (
                 field.type === "rich-text" &&
@@ -57,16 +55,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
         },
         render(props) {
             const { field } = props;
-
-            const rteProps = useMemo(() => {
-                /**
-                 * TODO @ts-refactor
-                 * Missing cms-rte-config plugin.
-                 */
-                // @ts-ignore
-                return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
-            }, []);
-
             return (
                 <DynamicSection {...props} emptyValue={emptyValue}>
                     {({ bind, index }) => (
@@ -77,7 +65,12 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
-                            <LexicalEditor  />
+                            <LexicalEditor
+                                value={bind.field.value}
+                                onChange={bind.field.onChange}
+                                key={getKey(field, bind, index)}
+                                placeholder={field.placeholderText}
+                            />
                         </EditorWrapper>
                     )}
                 </DynamicSection>

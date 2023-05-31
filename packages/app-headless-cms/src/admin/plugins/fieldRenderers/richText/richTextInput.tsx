@@ -5,7 +5,6 @@ import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } fr
 import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
-import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -47,9 +46,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 <Bind>
                     {bind => {
                         return (
-                            <LexicalEditor  key={getKey(field, bind as any)}
-                                            placeholder={field.placeholderText} />
-                            /*<RichTextEditor
+                            <RichTextEditor
                                 key={getKey(field, bind as any)}
                                 {...rteProps}
                                 {...bind}
@@ -58,7 +55,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 placeholder={field.placeholderText}
                                 description={field.helpText}
                                 data-testid={`fr.input.richtext.${field.label}`}
-                            />*/
+                            />
                         );
                     }}
                 </Bind>

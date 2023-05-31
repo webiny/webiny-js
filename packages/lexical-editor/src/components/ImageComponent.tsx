@@ -9,12 +9,7 @@
 import type { GridSelection, LexicalEditor, NodeKey, NodeSelection, RangeSelection } from "lexical";
 
 import "../nodes/imageNode.css";
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -34,11 +29,7 @@ import {
 import * as React from "react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
-import { useSharedHistoryContext } from "../context/SharedHistoryContext";
-// import { LinkPlugin } from '../plugins/LinkPlugin';
-import { LexicalContentEditable } from "../ui/ContentEditable";
 import { ImageResizer } from "../ui/ImageResizer";
-import { Placeholder } from "../ui/Placeholder";
 import { $isImageNode } from "../nodes/ImageNode";
 
 const imageCache = new Set();
@@ -281,8 +272,6 @@ export default function ImageComponent({
     const onResizeStart = () => {
         setIsResizing(true);
     };
-
-    const { historyState } = useSharedHistoryContext();
 
     const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
     const isFocused = isSelected || isResizing;

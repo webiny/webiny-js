@@ -1,9 +1,7 @@
-import React, { useMemo } from "react";
+import React from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
-import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
-import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
 import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
 
@@ -19,11 +17,11 @@ const getKey = (
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
-    name: "cms-editor-field-renderer-rich-text",
+    name: "cms-editor-field-renderer-lexical",
     renderer: {
-        rendererName: "rich-text-input",
-        name: t`Rich Text Input`,
-        description: t`Renders a rich text editor.`,
+        rendererName: "lexical-text-input",
+        name: t`Lexical Text Input`,
+        description: t`Renders a lexical text editor.`,
         canUse({ field }) {
             return (
                 field.type === "rich-text" &&
@@ -33,20 +31,18 @@ const plugin: CmsEditorFieldRendererPlugin = {
         },
         render({ field, getBind }) {
             const Bind = getBind();
-
-            const rteProps = useMemo(() => {
-                /**
-                 * TODO @ts-refactor
-                 * Missing cms-rte-config plugin type.
-                 */
-                // @ts-ignore
-                return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
-            }, []);
-
             return (
                 <Bind>
                     {bind => {
-                        return <LexicalEditor />;
+                        return (
+                            <LexicalEditor
+                                value={bind.value}
+                                onChange={bind.onChange}
+                                key={getKey(field, bind as any)}
+                                placeholder={field.placeholderText}
+                                data-testid={`fr.input.lexical.${field.label}`}
+                            />
+                        );
                     }}
                 </Bind>
             );
