@@ -143,6 +143,8 @@ export const createGraphQLSchemaPlugin = () => {
                 tag_not_startsWith: String
                 id_in: [ID!]
                 id: ID
+                importedUnderKey_in: [String!]
+                importedUnderKey: String
                 createdBy: ID
             }
 

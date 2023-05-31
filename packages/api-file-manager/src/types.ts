@@ -32,6 +32,7 @@ export interface FileInput {
     meta: Record<string, any>;
     tags: string[];
     aliases: string[];
+    importedUnderKey?: string;
 }
 
 export interface FileListWhereParams {
@@ -43,6 +44,8 @@ export interface FileListWhereParams {
     tag_and_in?: string[];
     id_in?: string[];
     id?: string;
+    importedUnderKey_in?: string[];
+    importedUnderKey?: string;
 }
 export interface FilesListOpts {
     search?: string;

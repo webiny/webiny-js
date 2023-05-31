@@ -24,17 +24,47 @@ export const uploadAssets = async (params: UploadAssetsParams) => {
         return oldIdToNewFileMap;
     }
 
+    // Check if files with such keys were already imported.
+    const fileKeys = files.map(file => file.key);
+    const [existingImportedImages] = await context.fileManager.listFiles({
+        where: { importedUnderKey_in: fileKeys }
+    });
+
+    // Link files that were already imported.
+    for (const existingImportedImage of existingImportedImages) {
+        const importFileId = files.find(
+            file => file.key === existingImportedImage.importedUnderKey
+        )?.id;
+        if (importFileId) {
+            oldIdToNewFileMap.set(importFileId, existingImportedImage);
+        }
+    }
+
+    // Check if files with such keys already exist.
+    const fileIds = files.map(file => file.id);
+    const [existingImages] = await context.fileManager.listFiles({
+        where: { id_in: fileIds }
+    });
+    const filteredFiles = files.filter(
+        file =>
+            !existingImages.some(existingImage => existingImage.key === file.key) &&
+            !existingImportedImages.some(
+                existingImportedImage => existingImportedImage.importedUnderKey === file.key
+            )
+    );
+
     // A map of temporary file keys (created during ZIP upload) to permanent file keys.
     const uploadFileMap: UploadFileMap = new Map();
 
     // Array of file inputs, to insert into the DB.
     const createFilesInput: FileInput[] = [];
 
-    for (const oldFile of files) {
+    for (const oldFile of filteredFiles) {
         const id = mdbid();
         // We replace the old file ID with a new one.
         const newKey = `${id}/${oldFile.key.replace(`${oldFile.id}/`, "")}`;
-        const newFile: FileInput = { ...oldFile, id, key: newKey };
+        // We also add importedUnderKey property to prevent duplicates on future imports.
+        const newFile: FileInput = { ...oldFile, id, key: newKey, importedUnderKey: oldFile.key };
 
         createFilesInput.push(newFile);
         oldIdToNewFileMap.set(oldFile.id, newFile);
