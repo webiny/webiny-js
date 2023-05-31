@@ -195,91 +195,89 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
         }
     }, [textData]);
 
-    return (
-        <>
-            {!usingLexicalEditor ? (
-                <Accordion
-                    title={"Text"}
-                    defaultValue={defaultAccordionValue}
-                    icon={
-                        <Tooltip
-                            content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}
-                        >
-                            {activeDisplayModeConfig.icon}
-                        </Tooltip>
-                    }
-                >
-                    <>
-                        <Wrapper containerClassName={classes.grid} label={"Color"}>
-                            <BaseColorPicker
-                                value={text.color}
-                                updateValue={updateColor}
-                                updatePreview={updateColorPreview}
-                            />
-                        </Wrapper>
-                        {options.useCustomTag && (
-                            <Wrapper
-                                containerClassName={classes.grid}
-                                label={"Heading Type"}
-                                leftCellSpan={5}
-                                rightCellSpan={7}
-                            >
-                                <SelectField value={text.tag} onChange={updateTag}>
-                                    {options.tags.map(tag => (
-                                        <option value={tag} key={tag}>
-                                            {tag.toUpperCase()}
-                                        </option>
-                                    ))}
-                                </SelectField>
-                            </Wrapper>
-                        )}
-                        <Wrapper
-                            containerClassName={classes.grid}
-                            label={"Typography"}
-                            leftCellSpan={5}
-                            rightCellSpan={7}
-                        >
-                            <SelectField
-                                value={text.typography}
-                                onChange={updateTypography}
-                                disabled={themeTypographyOptions.length === 0}
-                            >
-                                {themeTypographyOptions}
-                            </SelectField>
-                        </Wrapper>
-                        <Wrapper
-                            containerClassName={classes.grid}
-                            label={"Alignment"}
-                            leftCellSpan={3}
-                            rightCellSpan={9}
-                            leftCellClassName={classes.leftCellStyle}
-                            rightCellClassName={classes.rightCellStyle}
-                        >
-                            <TextAlignment value={text.alignment} onChange={updateAlignment} />
-                        </Wrapper>
+    if (usingLexicalEditor) {
+        return null;
+    }
 
-                        {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
-                            <Grid className={classes.warningMessageGrid}>
-                                <Cell span={12}>
-                                    <Typography use={"caption"}>
-                                        Please add typography options in{" "}
-                                        <Link
-                                            to={
-                                                "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
-                                            }
-                                            target={"_blank"}
-                                        >
-                                            theme
-                                        </Link>
-                                        .
-                                    </Typography>
-                                </Cell>
-                            </Grid>
-                        )}
-                    </>
-                </Accordion>
-            ) : null}
-        </>
+    return (
+        <Accordion
+            title={"Text"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
+            <>
+                <Wrapper containerClassName={classes.grid} label={"Color"}>
+                    <BaseColorPicker
+                        value={text.color}
+                        updateValue={updateColor}
+                        updatePreview={updateColorPreview}
+                    />
+                </Wrapper>
+                {options.useCustomTag && (
+                    <Wrapper
+                        containerClassName={classes.grid}
+                        label={"Heading Type"}
+                        leftCellSpan={5}
+                        rightCellSpan={7}
+                    >
+                        <SelectField value={text.tag} onChange={updateTag}>
+                            {options.tags.map(tag => (
+                                <option value={tag} key={tag}>
+                                    {tag.toUpperCase()}
+                                </option>
+                            ))}
+                        </SelectField>
+                    </Wrapper>
+                )}
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Typography"}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                >
+                    <SelectField
+                        value={text.typography}
+                        onChange={updateTypography}
+                        disabled={themeTypographyOptions.length === 0}
+                    >
+                        {themeTypographyOptions}
+                    </SelectField>
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Alignment"}
+                    leftCellSpan={3}
+                    rightCellSpan={9}
+                    leftCellClassName={classes.leftCellStyle}
+                    rightCellClassName={classes.rightCellStyle}
+                >
+                    <TextAlignment value={text.alignment} onChange={updateAlignment} />
+                </Wrapper>
+
+                {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
+                    <Grid className={classes.warningMessageGrid}>
+                        <Cell span={12}>
+                            <Typography use={"caption"}>
+                                Please add typography options in{" "}
+                                <Link
+                                    to={
+                                        "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
+                                    }
+                                    target={"_blank"}
+                                >
+                                    theme
+                                </Link>
+                                .
+                            </Typography>
+                        </Cell>
+                    </Grid>
+                )}
+            </>
+        </Accordion>
     );
 };
 

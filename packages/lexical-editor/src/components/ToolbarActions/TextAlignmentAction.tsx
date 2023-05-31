@@ -10,9 +10,9 @@ import { Compose, makeComposable } from "@webiny/react-composition";
 import { TextAlignmentActionContext } from "~/context/TextAlignmentActionContextProps";
 
 /*
- * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
- * Note: Toa add custom component access trough @see LexicalEditorConfig API
- * */
+ * Base text alignment dropdown composable component.
+ * Note: To add a custom dropdown component use @see LexicalEditorConfig API.
+ */
 export const BaseTextAlignmentDropDown = makeComposable(
     "BaseTextAlignmentDropDown",
     (): JSX.Element | null => {
