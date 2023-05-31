@@ -2,12 +2,12 @@ import { Table } from "dynamodb-toolbox";
 import lodashChunk from "lodash/chunk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-interface Item {
+export interface BatchWriteItem {
     [key: string]: DocumentClient.WriteRequest;
 }
 interface Params {
     table: Table;
-    items: Item[];
+    items: BatchWriteItem[];
 }
 
 /**
@@ -20,7 +20,7 @@ export const batchWriteAll = async (params: Params, maxChunk = 25): Promise<void
     if (params.items.length === 0) {
         return;
     }
-    const chunkedItems: Item[][] = lodashChunk(params.items, maxChunk);
+    const chunkedItems: BatchWriteItem[][] = lodashChunk(params.items, maxChunk);
     for (const items of chunkedItems) {
         await params.table.batchWrite(items);
     }
