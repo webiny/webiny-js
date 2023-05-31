@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import {
@@ -20,7 +20,7 @@ interface UseAcoListParams {
 }
 
 interface ListRecordsParams {
-    folderId?: string;
+    // folderId?: string;
     after?: string;
     limit?: number;
     sort?: ListSearchRecordsSort;
@@ -73,12 +73,12 @@ const getCurrentRecordList = <T = GenericSearchData>(
     }
 
     return records.filter(
-        (record): record is SearchRecordItem<T> => record.location.folderId === currentFolderId
+        (record): record is SearchRecordItem<T> => record.location?.folderId === currentFolderId
     );
 };
 
 export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
-    const { folderId, limit: initialLimit = 20, ...initialWhere } = params;
+    const { folderId, limit: initialLimit = 50, ...initialWhere } = params;
 
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
@@ -171,53 +171,11 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
         });
     }, [sort, setFolders]);
 
-    /**
-     * This method updates the records state so we do not need to load data again.
-     * The example usage is changing the record state (published/draft/unpublished).
-     */
-    const updateRecordCache = useCallback(
-        (id: string, data: Partial<T>) => {
-            const index = records.findIndex(record => record.id === id);
-            if (index === -1) {
-                return;
-            }
-            setRecords(prev => {
-                const list = [...prev];
-                list[index].data = {
-                    ...list[index].data,
-                    ...data
-                };
-                return list;
-            });
-        },
-        [records, setRecords]
-    );
-
-    /**
-     * This methods deletes the record from the records state.
-     */
-    const deleteRecordCache = useCallback(
-        (id: string) => {
-            const index = records.findIndex(record => record.id === id);
-            if (index === -1) {
-                return;
-            }
-            setRecords(prev => {
-                const list = [...prev];
-                list.splice(Number(index), 1);
-                return list;
-            });
-        },
-        [records, setRecords]
-    );
-
     return useMemo<UseAcoListResponse<T>>(() => {
         return {
             folders,
             records,
             listTitle,
-            updateRecordCache,
-            deleteRecordCache,
             limit: initialLimit,
             isListLoading: Boolean(
                 recordsLoading.INIT ||
@@ -227,7 +185,7 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             ),
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
             meta: meta[folderId || "search"] || defaultMeta,
-            listItems({ folderId, where, sort: initialSort, after, limit = initialLimit, search }) {
+            listItems({ where, sort: initialSort, after, limit = initialLimit, search }) {
                 let sort: ListSearchRecordsSort | undefined = undefined;
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (initialSort?.length) {

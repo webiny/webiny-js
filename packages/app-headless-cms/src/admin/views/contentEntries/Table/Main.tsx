@@ -7,10 +7,8 @@ import { Header } from "~/admin/components/ContentEntries/Header";
 import { LoadingMore } from "~/admin/components/ContentEntries/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/ContentEntries/LoadMoreButton";
 import { Table } from "~/admin/components/ContentEntries/Table";
-import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
 import { MainContainer, Wrapper } from "./styled";
 import {
-    FolderItem,
     ListMeta,
     ListSearchRecordsSort,
     ListSearchRecordsSortItem,
@@ -22,6 +20,11 @@ import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { Header as ContentEntryHeader } from "./Header";
 import { useRouter } from "@webiny/react-router";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import {
+    transformCmsContentEntriesToRecordEntries,
+    transformFolderItemsToFolderEntries
+} from "~/utils/acoRecordTransform";
+import { FOLDER_ID_DEFAULT } from "~/admin/constants";
 
 interface Props {
     folderId?: string;
@@ -42,40 +45,13 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     }, []);
 };
 
-const createRecords = (items: CmsContentEntry[]): RecordEntry[] => {
-    return items.map(item => {
-        return {
-            id: item.id,
-            type: "RECORD",
-            title: item.meta.title,
-            description: item.meta.description,
-            image: item.meta.image,
-            createdBy: item.createdBy.displayName,
-            savedOn: item.savedOn,
-            status: item.meta.status,
-            version: item.meta.version,
-            original: item,
-            selectable: true
-        };
-    });
-};
-
-const createFolders = (items: FolderItem[]): FolderEntry[] => {
-    return items.map(item => {
-        return {
-            id: item.id,
-            type: "FOLDER",
-            title: item.title,
-            createdBy: item.createdBy.displayName || "-",
-            savedOn: item.createdOn,
-            original: item,
-            selectable: false
-        };
-    });
-};
-
-export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
+export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolderName }) => {
+    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
     const {
+        /**
+         * TODO refactor useAcoList to accept exact generic type
+         * We know that records are CmsContentEntry[] so we can safely cast afterwards
+         */
         records: initialRecords,
         folders: initialFolders,
         listTitle = defaultFolderName,
@@ -84,7 +60,9 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
         isListLoadingMore,
         listItems,
         limit
-    } = useAcoList({ folderId });
+    } = useAcoList({
+        folderId
+    });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
@@ -150,10 +128,12 @@ export const Main: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
     const { showEmptyView } = useContentEntry();
 
     const records = useMemo(() => {
-        return createRecords(initialRecords as unknown as CmsContentEntry[]);
+        return transformCmsContentEntriesToRecordEntries(
+            initialRecords as unknown as CmsContentEntry[]
+        );
     }, [initialRecords]);
     const folders = useMemo(() => {
-        return createFolders(initialFolders);
+        return transformFolderItemsToFolderEntries(initialFolders);
     }, [initialFolders]);
 
     if (!showEmptyView) {

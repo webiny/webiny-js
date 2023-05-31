@@ -58,7 +58,9 @@ export interface UseContentEntryFormParams {
 }
 
 function useEntry(entryFromProps: Partial<CmsContentEntry>) {
-    // We need to keep track of the entry locally
+    /**
+     * We need to keep track of the entry locally
+     */
     const [entry, setEntry] = useState(entryFromProps);
     const { onEntryRevisionPublish } = useCms();
 
@@ -101,7 +103,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
-            // LIST_CONTENT: createListQuery(model),
             CREATE_CONTENT: createCreateMutation(model),
             UPDATE_CONTENT: createUpdateMutation(model),
             CREATE_CONTENT_FROM: createCreateFromMutation(model)
@@ -149,7 +150,9 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
             setLoading(false);
 
-            // Finalize "create" process
+            /**
+             * Finalize "create" process
+             */
             if (!response.data) {
                 showSnackbar("Missing response data in Create Entry.");
                 return;
@@ -164,6 +167,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
+
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);

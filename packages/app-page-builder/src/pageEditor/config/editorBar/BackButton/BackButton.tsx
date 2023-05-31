@@ -4,7 +4,7 @@ import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 import { EditorBar } from "~/editor";
-import { useNavigateFolder } from "@webiny/app-aco";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const backStyles = css({
     marginLeft: -10
@@ -12,13 +12,13 @@ const backStyles = css({
 
 export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
     return function BackButton() {
-        const { navigateToLatestFolder } = useNavigateFolder();
+        const navigate = useNavigatePage();
 
         return (
             <IconButton
                 data-testid="pb-editor-back-button"
                 className={backStyles}
-                onClick={navigateToLatestFolder}
+                onClick={navigate.navigateToLatestFolder}
                 icon={<BackIcon />}
             />
         );

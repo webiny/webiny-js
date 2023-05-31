@@ -219,7 +219,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                      */
                     return sortTableItems(mergeRecords(after ? prev : [], data));
                 });
-
                 setMeta(meta => ({
                     ...meta,
                     [folderId || "search"]: responseMeta

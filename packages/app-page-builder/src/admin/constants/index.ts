@@ -9,5 +9,7 @@ export const statuses: Record<PbPageDataStatus, string> = {
     published: t`Published`,
     unpublished: t`Unpublished`
 };
+
+export const PAGE_BUILDER_EDITOR_LINK = "/page-builder/editor";
 export const PAGE_BUILDER_LIST_LINK = "/page-builder/pages";
 export const LOCAL_STORAGE_LATEST_VISITED_FOLDER = "webiny_pb_page_latest_visited_folder";

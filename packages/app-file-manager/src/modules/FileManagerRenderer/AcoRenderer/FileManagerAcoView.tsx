@@ -25,9 +25,9 @@ import LeftSidebar from "./LeftSidebar";
 import { useFileManagerApi } from "~/index";
 import { FileItem } from "@webiny/app-admin/types";
 import {
+    ListMeta,
     ListSearchRecordsSort,
     ListSearchRecordsSortItem,
-    ListMeta,
     SearchRecordItem
 } from "@webiny/app-aco/types";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
@@ -168,7 +168,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         listTitle = defaultFolderName,
         meta,
         records
-    } = useAcoList<FileItem>({ folderId, ...listWhere });
+    } = useAcoList<FileItem>({ folderId, limit: 50, ...listWhere });
 
     const uploader = useMemo<BatchFileUploader>(
         () => new BatchFileUploader(uploadFile),

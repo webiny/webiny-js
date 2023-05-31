@@ -7,12 +7,12 @@ import { usePage } from "~/pageEditor/hooks/usePage";
 import { createComponentPlugin } from "@webiny/react-composition";
 import { PageOptionsMenu, PageOptionsMenuItem } from "~/pageEditor";
 import { useConfirmationDialog } from "@webiny/app-admin";
-import { useNavigateFolder } from "@webiny/app-aco";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, Original => {
     return function SetAsHomepageButton({ items, ...props }) {
         const [page] = usePage();
-        const { navigateToLatestFolder } = useNavigateFolder();
+        const { navigateToLatestFolder } = useNavigatePage();
         const { showSnackbar } = useSnackbar();
         const pageBuilder = useAdminPageBuilder();
         const { showConfirmation } = useConfirmationDialog({
