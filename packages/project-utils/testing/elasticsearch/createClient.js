@@ -1,5 +1,5 @@
 const { logger } = require("@webiny/project-utils/testing/logger");
-const { createElasticsearchClient } = require("../../../api-elasticsearch/dist");
+const { createElasticsearchClient } = require("@webiny/api-elasticsearch");
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
 
@@ -62,7 +62,7 @@ const createDeleteIndexCallable = client => {
                     return;
                 }
             } catch (ex) {
-                logger.warning(`Could not determine that index "${index}" exists: ${ex.message}`);
+                logger.warn(`Could not determine that index "${index}" exists: ${ex.message}`);
                 return;
             }
             /**
@@ -75,7 +75,7 @@ const createDeleteIndexCallable = client => {
                 });
                 return;
             } catch (ex) {
-                logger.warning(`Could not delete index "${index}": ${ex.message}`);
+                logger.warn(`Could not delete index "${index}": ${ex.message}`);
                 /**
                  * In case of snapshot error - we will retry.
                  */
@@ -141,7 +141,7 @@ const attachCustomEvents = client => {
             try {
                 await deleteIndexCallable(index);
             } catch (ex) {
-                logger.warning(`Could not delete index "${index}".`);
+                logger.warn(`Could not delete index "${index}".`);
             }
         }
         logger.debug(`Finished "client.indices.deleteAll".\n`);
