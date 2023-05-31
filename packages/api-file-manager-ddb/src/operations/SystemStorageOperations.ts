@@ -8,8 +8,7 @@ import {
     FileManagerSystemStorageOperationsUpdateParams
 } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
-import defineSystemEntity from "~/definitions/systemEntity";
-import { createTable } from "~/definitions/table";
+import { createLegacyEntity, createTable } from "@webiny/db-dynamodb";
 
 interface SystemStorageOperationsConstructorParams {
     documentClient: DocumentClient;
@@ -21,7 +20,18 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
     private readonly _entity: Entity<any>;
 
     public constructor({ documentClient }: SystemStorageOperationsConstructorParams) {
-        this._entity = defineSystemEntity({ table: createTable({ documentClient }) });
+        this._entity = createLegacyEntity({
+            table: createTable({ documentClient }),
+            name: "System",
+            attributes: {
+                version: {
+                    type: "string"
+                },
+                tenant: {
+                    type: "string"
+                }
+            }
+        });
     }
 
     public async get({

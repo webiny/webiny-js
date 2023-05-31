@@ -1,3 +1,5 @@
+import { Entity } from "dynamodb-toolbox";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import {
     FileManagerSettings,
     FileManagerSettingsStorageOperations,
@@ -6,12 +8,8 @@ import {
     FileManagerStorageOperationsDeleteSettings,
     FileManagerStorageOperationsGetSettingsParams
 } from "@webiny/api-file-manager/types";
-import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
-import defineSettingsEntity from "~/definitions/settingsEntity";
-import { get } from "@webiny/db-dynamodb/utils/get";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createTable } from "~/definitions/table";
+import { get, createStandardEntity, createTable } from "@webiny/db-dynamodb";
 
 interface SettingsStorageOperationsConfig {
     documentClient: DocumentClient;
@@ -23,7 +21,10 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
     private readonly _entity: Entity<any>;
 
     public constructor({ documentClient }: SettingsStorageOperationsConfig) {
-        this._entity = defineSettingsEntity({ table: createTable({ documentClient }) });
+        this._entity = createStandardEntity({
+            table: createTable({ documentClient }),
+            name: "FM.Settings"
+        });
     }
 
     public async get({
@@ -34,7 +35,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
                 entity: this._entity,
                 keys: {
                     PK: `T#${tenant}#FM#SETTINGS`,
-                    SK: "A"
+                    SK: SORT_KEY
                 }
             });
 
