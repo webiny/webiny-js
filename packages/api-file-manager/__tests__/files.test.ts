@@ -1,51 +1,12 @@
 import { mdbid } from "@webiny/utils";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
+import { ids, fileDData, fileCData, fileBData, fileAData } from "./mocks/files";
 import { File } from "~/types";
 
+jest.retryTimes(0);
+
 // const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
-
-const ids = {
-    A: mdbid(),
-    B: mdbid(),
-    C: mdbid(),
-    D: mdbid()
-};
-
-const fileAData = {
-    id: ids.A,
-    key: `${ids.A}/filenameA.png`,
-    name: "filenameA.png",
-    size: 123456,
-    type: "image/png",
-    tags: ["sketch", "file-a", "webiny"],
-    aliases: []
-};
-const fileBData = {
-    id: ids.B,
-    key: `${ids.B}/filenameB.png`,
-    name: "filenameB.png",
-    size: 123456,
-    type: "image/png",
-    tags: ["art", "file-b"],
-    aliases: []
-};
-const fileCData = {
-    id: ids.C,
-    key: `${ids.C}/filenameC.png`,
-    name: "filenameC.png",
-    size: 123456,
-    type: "image/png",
-    tags: ["art", "sketch", "webiny", "file-c"]
-};
-const fileDData = {
-    id: ids.D,
-    key: `${ids.D}/filenameD.png`,
-    name: "filenameD.png",
-    size: 123456,
-    type: "image/png",
-    tags: ["scope:apw:file-d", "scope:apw", "scope:apw:media"]
-};
 
 jest.setTimeout(100000);
 
@@ -199,7 +160,7 @@ describe("Files CRUD test", () => {
                             }
                         ],
                         meta: {
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: expect.any(Number),
                             hasMoreItems: false
                         },
@@ -212,11 +173,7 @@ describe("Files CRUD test", () => {
 
     test("should create files in bulk and paginate using cursor", async () => {
         // Bulk insert test data
-        const pages = Math.ceil(testFiles.length / 20);
-        for (let i = 0; i < pages; i++) {
-            const files = testFiles.slice(i * 20, i * 20 + 20);
-            await createFiles({ data: files });
-        }
+        const a = await createFiles({ data: testFiles });
 
         await until(
             () =>
@@ -247,11 +204,7 @@ describe("Files CRUD test", () => {
         const meta3 = page3.data.fileManager.listFiles.meta;
         expect(page3.data.fileManager.listFiles.data.length).toBe(60);
         expect(page3.data.fileManager.listFiles.data).toEqual(inElastic.slice(40, 100));
-
-        // This query must return empty array
-        const [page4] = await listFiles({ limit: 60, after: meta3.cursor });
-        expect(page4.data.fileManager.listFiles.data.length).toBe(0);
-        expect(page4.data.fileManager.listFiles.meta.cursor).toBe(null);
+        expect(meta3.cursor).toEqual(null);
     });
 
     it("should find files by tags", async () => {
@@ -291,7 +244,7 @@ describe("Files CRUD test", () => {
                         error: null,
                         meta: {
                             hasMoreItems: false,
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: 2
                         }
                     }
@@ -311,7 +264,7 @@ describe("Files CRUD test", () => {
                         error: null,
                         meta: {
                             hasMoreItems: false,
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: 1
                         }
                     }
@@ -362,7 +315,7 @@ describe("Files CRUD test", () => {
                         error: null,
                         meta: {
                             hasMoreItems: false,
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: 4
                         }
                     }
@@ -502,7 +455,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 1,
-                            cursor: expect.any(String)
+                            cursor: null
                         }
                     }
                 }
@@ -530,7 +483,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 2,
-                            cursor: expect.any(String)
+                            cursor: null
                         }
                     }
                 }
@@ -558,7 +511,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 1,
-                            cursor: expect.any(String)
+                            cursor: null
                         }
                     }
                 }
@@ -610,7 +563,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 1,
-                            cursor: expect.any(String)
+                            cursor: null
                         }
                     }
                 }
@@ -659,7 +612,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 2,
-                            cursor: expect.any(String)
+                            cursor: null
                         }
                     }
                 }
@@ -685,7 +638,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 2,
-                            cursor: expect.any(String)
+                            cursor: null
                         }
                     }
                 }

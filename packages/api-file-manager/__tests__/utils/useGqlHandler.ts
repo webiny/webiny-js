@@ -27,8 +27,9 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { FilePhysicalStoragePlugin } from "~/plugins/FilePhysicalStoragePlugin";
 import { PluginCollection } from "@webiny/plugins/types";
 import { createFileManagerContext, createFileManagerGraphQL } from "~/index";
-// import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { FileManagerStorageOperations } from "~/types";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -49,11 +50,13 @@ export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
+            ...cmsStorage.plugins,
             ...fileManagerStorage.plugins,
             createWcpContext(),
             createWcpGraphQL(),
@@ -62,8 +65,13 @@ export default (params: UseGqlHandlerParams = {}) => {
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
             mockLocalesPlugins(),
-            // createHeadlessCmsContext({ storageOperations }),
-            // createHeadlessCmsGraphQL(),
+            new CmsParametersPlugin(async () => {
+                return {
+                    locale: "en-US",
+                    type: "manage"
+                };
+            }),
+            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createFileManagerContext({
                 storageOperations: fileManagerStorage.storageOperations
             }),

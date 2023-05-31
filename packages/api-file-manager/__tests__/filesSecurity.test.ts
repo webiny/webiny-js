@@ -129,7 +129,7 @@ describe("Files Security Test", () => {
                         listFiles: {
                             data: [file4, file3, file2, file1],
                             meta: {
-                                cursor: expect.any(String),
+                                cursor: null,
                                 totalCount: expect.any(Number),
                                 hasMoreItems: false
                             },
@@ -152,7 +152,7 @@ describe("Files Security Test", () => {
                     listFiles: {
                         data: [file2, file1],
                         meta: {
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: expect.any(Number),
                             hasMoreItems: false
                         },
@@ -174,7 +174,7 @@ describe("Files Security Test", () => {
                     listFiles: {
                         data: [file4, file3],
                         meta: {
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: expect.any(Number),
                             hasMoreItems: false
                         },

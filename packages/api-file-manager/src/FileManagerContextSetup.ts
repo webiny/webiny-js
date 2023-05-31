@@ -1,0 +1,103 @@
+import { FileManagerAliasesStorageOperations, FileManagerContext } from "~/types";
+import { createFileManager, FileManagerConfig } from "~/createFileManager";
+import { FileStorage } from "~/storage/FileStorage";
+import WebinyError from "@webiny/error";
+import { SecurityPermission } from "@webiny/api-security/types";
+import { isInstallationPending } from "~/cmsFileStorage/isInstallationPending";
+import { createFileManagerPlugins } from "~/cmsFileStorage/createFileManagerPlugins";
+import { FILE_MODEL_ID } from "~/cmsFileStorage/file.model";
+import { CmsFilesStorage } from "~/cmsFileStorage/CmsFilesStorage";
+
+export class FileManagerContextSetup {
+    private readonly context: FileManagerContext;
+
+    constructor(context: FileManagerContext) {
+        this.context = context;
+    }
+
+    async setupContext(storageOperations: FileManagerConfig["storageOperations"]) {
+        if (storageOperations.beforeInit) {
+            await storageOperations.beforeInit(this.context);
+        }
+
+        const fileStorageOps = await this.context.security.withoutAuthorization(() => {
+            return this.setupCmsStorageOperations(storageOperations.aliases);
+        });
+
+        if (fileStorageOps) {
+            storageOperations.files = fileStorageOps;
+        }
+
+        return createFileManager({
+            storageOperations,
+            getTenantId: this.getTenantId.bind(this),
+            getLocaleCode: this.getLocaleCode.bind(this),
+            getIdentity: this.getIdentity.bind(this),
+            getPermission: this.getPermission.bind(this),
+            storage: new FileStorage({
+                context: this.context
+            }),
+            // TODO: maybe this is no longer necessary, as this wil be managed by CMS?
+            WEBINY_VERSION: this.context.WEBINY_VERSION
+        });
+    }
+
+    private getLocaleCode() {
+        const locale = this.context.i18n.getContentLocale();
+        if (!locale) {
+            throw new WebinyError(
+                "Missing locale on context.i18n locale in File Manager API.",
+                "LOCALE_ERROR"
+            );
+        }
+        return locale.code;
+    }
+
+    private getIdentity() {
+        return this.context.security.getIdentity();
+    }
+
+    private getTenantId() {
+        return this.context.tenancy.getCurrentTenant().id;
+    }
+
+    private async getPermission<T extends SecurityPermission = SecurityPermission>(
+        name: string
+    ): Promise<T | null> {
+        await this.context.i18n.checkI18NContentPermission();
+
+        return this.context.security.getPermission(name);
+    }
+
+    private async setupCmsStorageOperations(aliases: FileManagerAliasesStorageOperations) {
+        if (isInstallationPending({ tenancy: this.context.tenancy, i18n: this.context.i18n })) {
+            console.log("Installation pending!");
+            return;
+        }
+
+        // This registers code plugins (model group, models)
+        this.context.plugins.register(createFileManagerPlugins());
+
+        // Now load the file model registered in the previous step.
+        const fileModel = await this.getModel(FILE_MODEL_ID);
+
+        // Overwrite the original `files` storage ops
+        return await CmsFilesStorage.create({
+            fileModel,
+            cms: this.context.cms,
+            security: this.context.security,
+            aliases
+        });
+    }
+
+    private async getModel(modelId: string) {
+        const model = await this.context.cms.getModel(modelId);
+        if (!model) {
+            throw new WebinyError({
+                code: "MODEL_NOT_FOUND",
+                message: `Content model "${modelId}" was not found!`
+            });
+        }
+        return model;
+    }
+}

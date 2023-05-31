@@ -6,6 +6,7 @@ import { Context } from "@webiny/api/types";
 import { FileLifecycleEvents } from "./types/file.lifecycle";
 import { File } from "./types/file";
 import { Topic } from "@webiny/pubsub/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 export * from "./types/file.lifecycle";
 export * from "./types/file";
 
@@ -13,7 +14,12 @@ export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD, Syste
     storage: FileStorage;
 }
 
-export interface FileManagerContext extends Context, SecurityContext, TenancyContext, I18NContext {
+export interface FileManagerContext
+    extends Context,
+        SecurityContext,
+        TenancyContext,
+        I18NContext,
+        CmsContext {
     fileManager: FileManagerContextObject;
 }
 
@@ -291,6 +297,9 @@ export interface FileManagerFilesStorageOperationsListParamsWhere {
     name_contains?: string;
     tag?: string;
     tag_contains?: string;
+    tag_and_in?: string[];
+    tag_startsWith?: string;
+    tag_not_startsWith?: string;
     tag_in?: string[];
     createdBy?: string;
     locale: string;
@@ -299,6 +308,7 @@ export interface FileManagerFilesStorageOperationsListParamsWhere {
     type?: string;
     type_in?: string[];
     search?: string;
+    extensions?: Record<string, any>;
 }
 /**
  * @category StorageOperations
@@ -385,9 +395,15 @@ export interface FileManagerFilesStorageOperations {
     ) => Promise<FileManagerFilesStorageOperationsTagsResponse[]>;
 }
 
+export interface FileManagerAliasesStorageOperations {
+    storeAliases(file: File): Promise<void>;
+    deleteAliases(file: File): Promise<void>;
+}
+
 export interface FileManagerStorageOperations<TContext = FileManagerContext> {
     beforeInit?: (context: TContext) => Promise<void>;
     files: FileManagerFilesStorageOperations;
+    aliases: FileManagerAliasesStorageOperations;
     settings: FileManagerSettingsStorageOperations;
     system: FileManagerSystemStorageOperations;
 }
