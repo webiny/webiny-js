@@ -85,7 +85,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 placeholder={field.placeholderText}
                                 description={field.helpText}
                             />*/}
-                            <LexicalEditor />
+                            <LexicalEditor key={getKey(field, bind, index)}
+                                           placeholder={field.helpText} />
                         </EditorWrapper>
                     )}
                 </DynamicSection>

@@ -77,7 +77,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
-                            <LexicalEditor />
+                            <LexicalEditor  />
                         </EditorWrapper>
                     )}
                 </DynamicSection>

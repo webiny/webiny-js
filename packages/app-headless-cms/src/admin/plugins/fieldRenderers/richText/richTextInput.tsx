@@ -47,7 +47,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 <Bind>
                     {bind => {
                         return (
-                            <LexicalEditor />
+                            <LexicalEditor  key={getKey(field, bind as any)}
+                                            placeholder={field.placeholderText} />
                             /*<RichTextEditor
                                 key={getKey(field, bind as any)}
                                 {...rteProps}

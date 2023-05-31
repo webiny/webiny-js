@@ -14,7 +14,7 @@ export const LexicalEditor: React.FC<RichTextEditorProps> = props => {
                             props?.onChange(JSON.parse(jsonString));
                         }
                     }}
-                    placeholder={"Please add content"}
+                    placeholder={props?.placeholder || "Please add content"}
                     styles={{
                         backgroundColor: "#fff",
                         border: "1px solid #e1e1e1",
