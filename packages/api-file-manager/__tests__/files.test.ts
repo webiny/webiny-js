@@ -173,7 +173,7 @@ describe("Files CRUD test", () => {
 
     test("should create files in bulk and paginate using cursor", async () => {
         // Bulk insert test data
-        const a = await createFiles({ data: testFiles });
+        await createFiles({ data: testFiles });
 
         await until(
             () =>

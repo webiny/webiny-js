@@ -12071,6 +12071,7 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@webiny/api": 0.0.0
     "@webiny/api-file-manager": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-mailer": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -12090,6 +12091,7 @@ __metadata:
     commodo-fields-object: ^1.0.6
     csvtojson: ^2.0.10
     date-fns: ^2.22.1
+    fs-extra: ^9.1.0
     got: ^9.6.0
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
@@ -12463,8 +12465,6 @@ __metadata:
     "@webiny/api-aco": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
-    "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-headless-cms-ddb-es": 0.0.0
     "@webiny/api-i18n": 0.0.0
@@ -12547,6 +12547,7 @@ __metadata:
     "@types/rimraf": ^3.0.2
     "@webiny/api": 0.0.0
     "@webiny/api-file-manager": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-prerendering-service": 0.0.0
     "@webiny/api-security": 0.0.0
