@@ -21,7 +21,7 @@ import elasticsearchClientContext, {
     createElasticsearchClient
 } from "@webiny/api-elasticsearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
@@ -69,10 +69,17 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient,
+                plugins: []
+            })
+        }),
+        createHeadlessCmsGraphQL(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
-                documentClient,
-                elasticsearchClient
+                documentClient
             })
         }),
         createFileManagerGraphQL(),
@@ -98,14 +105,6 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient,
-                plugins: []
-            })
-        }),
-        createHeadlessCmsGraphQL(),
         createGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({
