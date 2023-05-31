@@ -170,4 +170,20 @@ if (ignorePackagesPattern) {
     output = output.filter(current => !current.includes(ignorePackagesPattern));
 }
 
-console.log(JSON.stringify(output));
+const cmdToId = cmd => {
+    return cmd
+        .replace("packages/", "")
+        .replace("--storage=", "")
+        .replace(/[,\s]/g, "_")
+        .replace(/[\(\)\[\]]/g, "")
+        .toLowerCase();
+};
+
+const tasks = output.map(pkg => {
+    return {
+        cmd: pkg,
+        id: cmdToId(pkg)
+    };
+});
+
+console.log(JSON.stringify(tasks));
