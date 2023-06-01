@@ -111,7 +111,7 @@ export const addElementToParent = (
 };
 
 export const createDroppedElement = (
-    source: PbElement | DragObjectWithTypeWithTarget,
+    source: DragObjectWithTypeWithTarget,
     target: PbEditorElement
 ): PbEditorElement => {
     if (source.id) {
@@ -120,7 +120,7 @@ export const createDroppedElement = (
         return {
             id,
             type: source.type,
-            elements: ((source as PbElement).elements || []).map(childElement => ({
+            elements: ((source as any).elements || []).map((childElement: PbEditorElement) => ({
                 ...childElement,
                 parent: id
             })),
