@@ -1,5 +1,5 @@
 import { mdbid } from "@webiny/utils";
-import useGqlHandler from "./useGqlHandler";
+import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
 import { File } from "~/types";
 

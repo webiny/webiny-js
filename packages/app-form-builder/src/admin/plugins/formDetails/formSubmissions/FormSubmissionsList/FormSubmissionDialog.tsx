@@ -67,8 +67,31 @@ const renderFieldValueLabel = (field: FbFormModelField, value: string): string =
     return getFieldValueLabel(field, value);
 };
 
+/**
+ * Converts deep submission meta object into flat object suitable for CSV.
+ */
+const flattenSubmissionMeta = (
+    obj: Record<string, any>,
+    parent: string,
+    res: Record<string, string> = {}
+) => {
+    for (const key in obj) {
+        const propName = parent ? parent + "_" + key : key;
+        if (typeof obj[key] == "object") {
+            flattenSubmissionMeta(obj[key], propName, res);
+        } else {
+            res[propName] = obj[key];
+        }
+    }
+    return res;
+};
+
 const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmission, onClose }) => {
     const { showSnackbar } = useSnackbar();
+    const exportMeta = {
+        submittedOn: formSubmission?.meta.submittedOn,
+        url: formSubmission?.meta.url
+    };
 
     return (
         <Dialog open={!!formSubmission} onClose={onClose} className={dialogStyle}>
@@ -82,7 +105,14 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
                                     icon={<ObjectIcon />}
                                     onClick={() => {
                                         navigator.clipboard.writeText(
-                                            JSON.stringify(formSubmission.data, null, 2)
+                                            JSON.stringify(
+                                                {
+                                                    ...formSubmission.data,
+                                                    meta: exportMeta
+                                                },
+                                                null,
+                                                2
+                                            )
                                         );
                                         showSnackbar("JSON data copied to clipboard.");
                                     }}
@@ -92,7 +122,12 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
                                 <IconButton
                                     icon={<TableIcon />}
                                     onClick={() => {
-                                        navigator.clipboard.writeText(parse(formSubmission.data));
+                                        navigator.clipboard.writeText(
+                                            parse({
+                                                ...formSubmission.data,
+                                                ...flattenSubmissionMeta(exportMeta, "meta")
+                                            })
+                                        );
                                         showSnackbar("CSV data copied to clipboard.");
                                     }}
                                 />

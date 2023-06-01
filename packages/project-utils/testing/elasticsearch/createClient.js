@@ -1,3 +1,4 @@
+const { logger } = require("@webiny/project-utils/testing/logger");
 const { createElasticsearchClient } = require("../../../api-elasticsearch/dist");
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
@@ -61,8 +62,7 @@ const createDeleteIndexCallable = client => {
                     return;
                 }
             } catch (ex) {
-                console.log(`Could not determine that index exists: ${index}`);
-                console.log(ex.message);
+                logger.warning(`Could not determine that index "${index}" exists: ${ex.message}`);
                 return;
             }
             /**
@@ -75,16 +75,14 @@ const createDeleteIndexCallable = client => {
                 });
                 return;
             } catch (ex) {
-                console.log(`Could not delete index: ${index}`);
-                console.log(JSON.stringify(ex));
+                logger.warning(`Could not delete index "${index}": ${ex.message}`);
                 /**
                  * In case of snapshot error - we will retry.
                  */
                 if (isSnapshotError(ex) === false) {
                     return;
                 }
-                console.log("Is snapshot error, will try to delete the index in a sec...");
-                console.log(JSON.stringify(ex));
+                logger.debug("It's a snapshot error; will try to delete the index in a sec...");
             }
             /**
              * Let's retry deleting index again...
@@ -96,6 +94,7 @@ const createDeleteIndexCallable = client => {
 };
 
 const attachCustomEvents = client => {
+    logger.debug(`Attach custom events to ES`);
     const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
     const originalExists = client.indices.exists;
@@ -132,18 +131,20 @@ const attachCustomEvents = client => {
     };
 
     client.indices.deleteAll = async () => {
+        logger.debug(`Running "client.indices.deleteAll".`);
         const indexes = Array.from(registeredIndexes.values());
         if (indexes.length === 0) {
             return;
         }
+        logger.debug(indexes, "Delete all indexes.");
         for (const index of indexes) {
             try {
                 await deleteIndexCallable(index);
             } catch (ex) {
-                console.log(`Could not delete index "${index}".`);
-                console.log(JSON.stringify(ex));
+                logger.warning(`Could not delete index "${index}".`);
             }
         }
+        logger.debug(`Finished "client.indices.deleteAll".\n`);
     };
     client.indices.registerIndex = registerIndex;
 

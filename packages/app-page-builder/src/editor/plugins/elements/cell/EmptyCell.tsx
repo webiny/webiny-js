@@ -10,6 +10,7 @@ import { useElementById } from "~/editor/hooks/useElementById";
 import { PbEditorElement } from "~/types";
 
 const EmptyCellStyled = styled.div<{ isActive: boolean }>`
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -18,10 +19,12 @@ const EmptyCellStyled = styled.div<{ isActive: boolean }>`
             ? "1px dashed var(--mdc-theme-primary)"
             : "1px dashed var(--mdc-theme-secondary)"};
     align-items: center;
+
     button {
         color: ${props =>
             props.isActive ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)"};
         transition: transform 0.2s;
+
         &:hover {
             transform: scale(1.3);
         }

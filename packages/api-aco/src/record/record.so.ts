@@ -4,7 +4,7 @@ import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorage
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getRecordFieldValues } from "~/utils/getFieldValues";
-import { AcoSearchRecordStorageOperations, SearchRecordTag } from "./record.types";
+import { AcoSearchRecordStorageOperations } from "./record.types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { attachAcoRecordPrefix } from "~/utils/acoRecordId";
 
@@ -70,20 +70,8 @@ export const createSearchRecordOperations = (
                     fieldId: "tags"
                 });
 
-                const tags = Object.values(
-                    items.reduce<Record<string, SearchRecordTag>>((collection, item) => {
-                        const tags = Array.isArray(item) ? item : [];
-
-                        for (const tag of tags) {
-                            collection[tag] = {
-                                tag,
-                                count: (collection[tag]?.count || 0) + 1
-                            };
-                        }
-
-                        return collection;
-                    }, {})
-                )
+                const tags = items
+                    .map(item => ({ tag: item.value, count: item.count }))
                     .sort((a, b) => {
                         return a.tag < b.tag ? -1 : 1;
                     })

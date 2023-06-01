@@ -32,15 +32,16 @@ class FileLocker {
             for (const key in dependencies) {
                 this.assertExists(dependencies);
 
+                const depVersion = dependencies[key] as string;
                 if (this.ignoredPackages.includes(key)) {
                     continue;
                 }
 
                 if (key.startsWith("@webiny/")) {
+                    dependencies[key] = depVersion.replace("^", "");
                     continue;
                 }
 
-                const depVersion = dependencies[key] as string;
                 if (depVersion.startsWith("file:")) {
                     continue;
                 }

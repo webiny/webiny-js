@@ -367,8 +367,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                     folders={folders}
                     records={files}
                     loading={isListLoading}
-                    onRecordClick={id => showFileDetails(id)}
-                    onFolderClick={id => setFolderId(id)}
+                    onRecordClick={showFileDetails}
+                    onFolderClick={setFolderId}
                     onSelectRow={rows => {
                         const files = rows
                             .filter(row => row.type === "RECORD")
@@ -388,8 +388,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                 folders={folders}
                 records={files.map(file => file.data)}
                 loading={isListLoading}
-                onRecordClick={id => showFileDetails(id)}
-                onFolderClick={id => setFolderId(id)}
+                onRecordClick={showFileDetails}
+                onFolderClick={setFolderId}
                 selected={selected}
                 multiple={multiple}
                 toggleSelected={toggleSelected}
@@ -483,17 +483,14 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                         }
                     >
                         <>
-                            {showingFileDetails && (
-                                <FileDetails
-                                    loading={loadingFileDetails}
-                                    file={currentFile}
-                                    open={Boolean(showingFileDetails)}
-                                    onClose={hideFileDetails}
-                                    scope={scope}
-                                    own={own}
-                                />
-                            )}
-
+                            <FileDetails
+                                loading={loadingFileDetails}
+                                file={currentFile}
+                                open={Boolean(showingFileDetails)}
+                                onClose={hideFileDetails}
+                                scope={scope}
+                                own={own}
+                            />
                             <LeftSidebar
                                 title={defaultFolderName}
                                 currentFolder={folderId}
@@ -502,7 +499,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                 own={own}
                                 toggleTag={tag => toggleTag({ tag, listWhere })}
                             />
-
                             <FileListWrapper
                                 {...getDropZoneProps({
                                     onDragEnter: () =>

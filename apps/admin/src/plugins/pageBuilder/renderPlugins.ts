@@ -19,6 +19,8 @@ import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twi
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
+import accordion from "@webiny/app-page-builder/render/plugins/elements/accordion";
+import accordionItem from "@webiny/app-page-builder/render/plugins/elements/accordionItem";
 import carousel from "@webiny/app-page-builder/render/plugins/elements/carousel";
 import carouselElement from "@webiny/app-page-builder/render/plugins/elements/carouselElement";
 // Page settings
@@ -61,6 +63,8 @@ export default [
     pinterest(),
     pagesList(),
     imagesList(),
+    accordion(),
+    accordionItem(),
     carousel(),
     carouselElement(),
     // Page settings

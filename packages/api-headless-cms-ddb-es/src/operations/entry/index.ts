@@ -1596,7 +1596,12 @@ export const createEntriesStorageOperations = (
 
         const values = response.body.aggregations["getUniqueFieldValues"] || { buckets: [] };
 
-        return values.buckets.map(item => item.key) || [];
+        return values.buckets.map(file => {
+            return {
+                value: file.key,
+                count: file.doc_count
+            };
+        });
     };
 
     return {

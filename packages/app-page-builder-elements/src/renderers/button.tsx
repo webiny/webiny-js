@@ -130,7 +130,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
                 buttonInnerContent = (
                     <>
-                        <StyledButtonIcon svg={icon.svg} />
+                        <StyledButtonIcon svg={icon.svg} className={`button-icon-${position}`} />
                         {buttonInnerContent}
                     </>
                 );

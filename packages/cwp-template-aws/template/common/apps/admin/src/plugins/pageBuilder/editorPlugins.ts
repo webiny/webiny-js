@@ -19,6 +19,8 @@ import iframe from "@webiny/app-page-builder/editor/plugins/elements/embeds/ifra
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
+import accordion from "@webiny/app-page-builder/editor/plugins/elements/accordion";
+import accordionItem from "@webiny/app-page-builder/editor/plugins/elements/accordionItem";
 import carousel from "@webiny/app-page-builder/editor/plugins/elements/carousel";
 import carouselElement from "@webiny/app-page-builder/editor/plugins/elements/carouselElement";
 // Element groups
@@ -56,6 +58,8 @@ import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSetting
 import cellSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/cell";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import property from "@webiny/app-page-builder/editor/plugins/elementSettings/property";
+import accordionSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordion";
+import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordionItem";
 import carouselSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carousel";
 import carouselElementSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselElement";
 import carouselStylesSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselStyles";
@@ -89,6 +93,8 @@ export default [
     iframe(),
     codesandbox(),
     pagesList(),
+    accordion(),
+    accordionItem(),    
     carousel(),
     carouselElement(),
     // grid presets
@@ -127,6 +133,8 @@ export default [
     cellSettings,
     textSettings,
     property,
+    accordionSettings,
+    accordionItemSettings,
     carouselSettings,
     carouselElementSettings,
     carouselStylesSettings,

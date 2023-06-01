@@ -20,7 +20,13 @@ export interface CreateCorePulumiAppParams {
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
      */
-    elasticSearch?: PulumiAppParam<boolean>;
+    elasticSearch?: PulumiAppParam<
+        | boolean
+        | Partial<{
+              domainName: string;
+              indexPrefix: string;
+          }>
+    >;
 
     /**
      * Enables VPC for the application.
@@ -57,7 +63,7 @@ export interface CoreAppLegacyConfig {
 }
 
 export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
-    return createPulumiApp({
+    const app = createPulumiApp({
         name: "core",
         path: "apps/core",
         config: projectAppParams,
@@ -138,4 +144,19 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             };
         }
     });
+
+    if (projectAppParams.elasticSearch) {
+        const elasticSearch = app.getParam(projectAppParams.elasticSearch);
+        if (typeof elasticSearch === "object") {
+            if (elasticSearch.domainName) {
+                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+            }
+
+            if (elasticSearch.indexPrefix) {
+                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+            }
+        }
+    }
+
+    return app;
 }
