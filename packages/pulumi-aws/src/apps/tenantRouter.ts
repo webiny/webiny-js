@@ -102,7 +102,11 @@ export function applyTenantRouter(
                 });
             })
         },
-        opts: { provider: awsUsEast1 }
+        // With the `retainOnDelete` option set to `true`, the Lambda function will not be deleted when
+        // the environment is destroyed. Users need to delete the function manually. We decided to use
+        // this option here because it enables us to avoid annoying AWS Lambda function replication
+        // errors upon destroying the stack (see https://github.com/pulumi/pulumi-aws/issues/2178).
+        opts: { provider: awsUsEast1, retainOnDelete: true }
     });
 
     cloudfront.config.defaultCacheBehavior(value => {
@@ -125,4 +129,6 @@ export function applyTenantRouter(
             ]
         };
     });
+
+    return { originLambda };
 }

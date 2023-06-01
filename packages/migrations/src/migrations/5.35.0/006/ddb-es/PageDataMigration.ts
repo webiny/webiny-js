@@ -22,8 +22,8 @@ import {
     esCreateIndex,
     esFindOne,
     esGetIndexExist,
-    esQueryAllWithCallback,
     esGetIndexName,
+    esQueryAllWithCallback,
     queryAll,
     queryOne
 } from "~/utils";
@@ -135,7 +135,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 // Fetch latest aco search record from DDB using latest page "pid"
                 const latestSearchRecord = await queryOne<{ id: string }>({
                     entity: this.ddbEntryEntity,
-                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#${latestPage.pid}`,
+                    partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#wby-aco-${latestPage.pid}`,
                     options: {
                         eq: "L"
                     }
@@ -238,7 +238,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 status,
                                 tenant: pageTenant,
                                 title,
-                                version
+                                version,
+                                settings
                             } = ddbPage;
 
                             const entry = await this.createSearchRecordCommonFields(ddbPage);
@@ -254,24 +255,10 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                     "text@type": PB_PAGE_TYPE,
                                     "text@title": title,
                                     "text@content": content,
+                                    "text@tags": settings.general?.tags || [],
                                     "object@location": {
                                         "text@folderId": ROOT_FOLDER
-                                    }
-                                },
-                                createdBy,
-                                entryId: pid,
-                                tenant: pageTenant,
-                                createdOn,
-                                locked: false,
-                                ownedBy: createdBy,
-                                webinyVersion: process.env.WEBINY_VERSION,
-                                id: `${pid}#0001`,
-                                modifiedBy: createdBy,
-                                latest: true,
-                                TYPE: "cms.entry.l",
-                                __type: "cms.entry.l",
-                                rawValues: {
-                                    "object@location": {},
+                                    },
                                     "wby-aco-json@data": {
                                         id: `${pid}#0001`,
                                         pid,
@@ -284,25 +271,40 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                         locked,
                                         path
                                     }
+                                },
+                                createdBy,
+                                entryId: `wby-aco-${pid}`,
+                                tenant: pageTenant,
+                                createdOn,
+                                locked: false,
+                                ownedBy: createdBy,
+                                webinyVersion: process.env.WEBINY_VERSION,
+                                id: `wby-aco-${pid}#0001`,
+                                modifiedBy: createdBy,
+                                latest: true,
+                                TYPE: "cms.entry.l",
+                                __type: "cms.entry.l",
+                                rawValues: {
+                                    "object@location": {}
                                 }
                             };
 
                             const latestDdb = {
-                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#${pid}`,
+                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
                                 SK: "L",
                                 TYPE: "L",
                                 ...entry
                             };
 
                             const revisionDdb = {
-                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#${pid}`,
+                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
                                 SK: "REV#0001",
                                 TYPE: "cms.entry",
                                 ...entry
                             };
 
                             const latestDdbEs = {
-                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#${pid}`,
+                                PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
                                 SK: "L",
                                 data: await getCompressedData(rawDatas),
                                 index: esGetIndexName({
@@ -405,7 +407,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
             status,
             tenant,
             title,
-            version
+            version,
+            settings
         } = page;
 
         const content = await getSearchablePageContent(page);
@@ -413,8 +416,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
         return {
             createdBy,
             createdOn,
-            entryId: pid,
-            id: `${pid}#0001`,
+            entryId: `wby-aco-${pid}`,
+            id: `wby-aco-${pid}#0001`,
             locale,
             locked: false,
             modelId: ACO_SEARCH_MODEL_ID,
@@ -443,6 +446,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                 "object@location": {
                     "text@folderId": ROOT_FOLDER
                 },
+                "text@tags": settings.general?.tags || [],
                 "text@type": PB_PAGE_TYPE
             }
         };

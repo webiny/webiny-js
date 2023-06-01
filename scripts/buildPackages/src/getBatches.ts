@@ -12,6 +12,7 @@ import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
 
 interface GetBatchesOptions {
     cache?: boolean;
+    packagesWhitelist?: string[];
 }
 
 export async function getBatches(options: GetBatchesOptions = {}) {
@@ -20,18 +21,26 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     const packagesNoCache: Package[] = [];
     const packagesUseCache: Package[] = [];
 
-    const workspacesPackages = (
+    let workspacesPackages = (
         getPackages({
             includes: ["/packages/", "/packages-v6/"]
         }) as Package[]
     )
-        .filter(item => item.isTs)
+        .filter(pkg => pkg.isTs)
         .filter(pkg => {
             // Check if packages has a build script
             return pkg.packageJson.scripts && "build" in pkg.packageJson.scripts;
         });
 
+    const packagesWhitelist = options.packagesWhitelist;
+    if (Array.isArray(packagesWhitelist) && packagesWhitelist.length) {
+        workspacesPackages = workspacesPackages.filter(pkg => {
+            return packagesWhitelist.includes(pkg.name);
+        });
+    }
+
     console.log(`There is a total of ${green(workspacesPackages.length)} packages.`);
+
     const useCache = options.cache ?? false;
 
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.

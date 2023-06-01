@@ -46,10 +46,6 @@ export type Action =
     | {
           type: "hasPreviouslyUploadedFiles";
           state: boolean;
-      }
-    | {
-          type: "uploading";
-          state: boolean;
       };
 
 interface Reducer {
@@ -130,10 +126,6 @@ export const stateReducer: Reducer = (state: State, action) => {
         }
         case "hasPreviouslyUploadedFiles": {
             next.hasPreviouslyUploadedFiles = action.state;
-            break;
-        }
-        case "uploading": {
-            next.uploading = action.state;
             break;
         }
     }

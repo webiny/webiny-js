@@ -10,6 +10,7 @@ import domToImage from "~/editor/plugins/elementSettings/save/SaveDialog/domToIm
 import { CREATE_FILE, DELETE_FILE } from "~/editor/plugins/elementSettings/save/SaveDialog/graphql";
 import { File, PbElement, EventActionHandlerMeta } from "~/types";
 import { isLegacyRenderingEngine } from "~/utils";
+import { FileInput } from "@webiny/app-file-manager/types";
 
 interface ImageDimensionsType {
     width: number;
@@ -68,7 +69,7 @@ export async function getPreviewImage(
     const blob = dataURLtoBlob(dataUrl);
     blob.name = "pb-editor-page-element-" + element.id + ".png";
 
-    const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("app-file-manager-storage");
+    const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
 
     /**
      * We break the method because it would break if there is no fileUploaderPlugin.
@@ -78,13 +79,20 @@ export async function getPreviewImage(
     }
 
     const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: meta.client });
-    previewImage.meta = imageMeta;
-    previewImage.meta.private = true;
+
+    const createFile: FileInput = {
+        ...previewImage,
+        tags: [],
+        meta: {
+            ...imageMeta,
+            private: true
+        }
+    };
 
     const createdImageResponse = await meta.client.mutate({
         mutation: CREATE_FILE,
         variables: {
-            data: previewImage
+            data: createFile
         }
     });
 

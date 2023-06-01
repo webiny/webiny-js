@@ -1,67 +1,11 @@
 import useGqlHandler from "../useGqlHandler";
+import { createExpectedTags, createMockFileData } from "~tests/crud/mocks/file";
 
-const richTextData = {
-    editor: "webiny",
-    data: [
-        {
-            tag: "h1",
-            content: "h1 title"
-        },
-        {
-            tag: "p",
-            content: "paragraph text"
-        },
-        {
-            tag: "div",
-            content: [
-                {
-                    tag: "p",
-                    content: "content paragraph text"
-                },
-                {
-                    tag: "a",
-                    content: "some url",
-                    href: "https://www.webiny.com/"
-                }
-            ]
-        }
-    ]
-};
-const simpleRichTextData = {
-    editor: "webiny",
-    data: [
-        {
-            tag: "h1",
-            content: "title"
-        }
-    ]
-};
-
-const fileData = {
-    id: "12345678",
-    key: "12345678/filenameA.png",
-    name: "filenameA.png",
-    size: 123456,
-    type: "image/png",
-    tags: ["sketch"],
-    aliases: [],
-    richText: richTextData
-};
-/**
- * Add fields that are added via the plugins, so we get them back in the result.
- */
-const extraFields = ["richText {editor data}"];
+jest.retryTimes(0);
 
 describe("Files CRUD ddb/es", () => {
-    const {
-        createFile,
-        updateFile,
-        getFile,
-        listFiles,
-        clearElasticsearch,
-        until,
-        createElasticsearchIndice
-    } = useGqlHandler();
+    const { listTags, clearElasticsearch, createElasticsearchIndice, elasticsearch, getIndexName } =
+        useGqlHandler();
 
     const locale = "en-US";
     const tenant = "root";
@@ -83,110 +27,104 @@ describe("Files CRUD ddb/es", () => {
         });
     });
 
-    test("it should create a new file with custom richText field and then update it", async () => {
+    const disableIndexing = {
+        number_of_replicas: 0,
+        refresh_interval: -1
+    };
+    const enableIndexing = {
         /**
-         * Create the file with custom field.
+         * You can set to what ever you want
          */
-        const [createResponse] = await createFile(
-            {
-                data: fileData
-            },
-            extraFields
-        );
+        number_of_replicas: 1,
+        refresh_interval: "1s"
+    };
 
-        expect(createResponse).toEqual({
-            data: {
-                fileManager: {
-                    createFile: {
-                        data: fileData,
-                        error: null
-                    }
-                }
+    it("should list tags when having a large number of files and tags", async () => {
+        const index = getIndexName({
+            tenant,
+            locale
+        });
+        /**
+         * Let's create an index, make it not actually index anything, so we can insert data faster.
+         */
+        await elasticsearch.indices.create({
+            index
+        });
+        await elasticsearch.indices.putSettings({
+            index,
+            body: {
+                index: disableIndexing
             }
         });
 
+        const operations: any[] = [];
         /**
-         * Wait until the data is available.
+         * TODO change to test larger amount of files
          */
-        await until(
-            () => listFiles({}).then(([data]: any) => data),
-            ({ data }: any) => {
-                return (
-                    data.fileManager.listFiles.data.length === 1 &&
-                    data.fileManager.listFiles.data[0].id === fileData.id
-                );
-            },
-            { name: "list all files after create", tries: 10 }
-        );
+        const maxFiles = 100;
         /**
-         * The file must contain that custom field.
+         * Now let's insert a large amount of files.
          */
-        const [getResponse] = await getFile(
-            {
-                id: fileData.id
-            },
-            ["id"].concat(extraFields)
-        );
+        for (let i = 0; i < maxFiles; i++) {
+            const fileId = `file_${i}`;
+            const file = createMockFileData({
+                index: i,
+                tenant,
+                locale
+            });
+            operations.push({ index: { _id: fileId, _index: index } }, file);
+        }
 
-        expect(getResponse).toEqual({
-            data: {
-                fileManager: {
-                    getFile: {
-                        data: {
-                            ...fileData
-                        },
-                        error: null
-                    }
-                }
+        let result: any;
+        let error: any = null;
+        try {
+            result = await elasticsearch.bulk({
+                body: operations
+            });
+        } catch (ex) {
+            error = ex;
+        }
+        expect(error).toEqual(null);
+        expect(result).toMatchObject({
+            body: {
+                errors: false
+            },
+            statusCode: 200
+        });
+        /**
+         * Then let's re-enable indexing.
+         */
+        await elasticsearch.indices.putSettings({
+            index,
+            body: {
+                index: enableIndexing
             }
         });
-
         /**
-         * Update the file data custom field with some new data.
+         * ... Refresh the index.
          */
-        const { id, ...data } = fileData;
-        const [updateResponse] = await updateFile(
-            {
-                id,
-                data: {
-                    ...data,
-                    richText: simpleRichTextData
-                }
-            },
-            ["id"].concat(extraFields)
-        );
-        expect(updateResponse).toEqual({
-            data: {
-                fileManager: {
-                    updateFile: {
-                        data: {
-                            ...fileData,
-                            richText: simpleRichTextData
-                        },
-                        error: null
-                    }
-                }
-            }
+        await elasticsearch.indices.refresh({
+            index
         });
 
+        const expectedTags = createExpectedTags({
+            amount: maxFiles,
+            tenant,
+            locale
+        });
         /**
-         * The file must contain updated custom field.
+         * And then list the tags.
          */
-        const [getUpdatedResponse] = await getFile(
-            {
-                id: fileData.id
-            },
-            ["id"].concat(extraFields)
-        );
-
-        expect(getUpdatedResponse).toEqual({
+        const [response] = await listTags();
+        /**
+         * Must be the amount of files + 2 (one for tenant and one for locale).
+         */
+        expect(response.data.fileManager.listTags.data).toHaveLength(maxFiles + 2);
+        expect(response).toEqual({
             data: {
                 fileManager: {
-                    getFile: {
-                        data: {
-                            ...fileData,
-                            richText: simpleRichTextData
-                        },
+                    listTags: {
+                        data: expectedTags,
                         error: null
                     }
                 }

@@ -3,9 +3,10 @@ import { SEARCH_RECORD_MODEL_ID } from "./record.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFieldValues } from "~/utils/getFieldValues";
+import { getRecordFieldValues } from "~/utils/getFieldValues";
 import { AcoSearchRecordStorageOperations } from "./record.types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
+import { attachAcoRecordPrefix } from "~/utils/acoRecordId";
 
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
@@ -23,7 +24,7 @@ export const createSearchRecordOperations = (
          * We need to retrieve it via `cms.storageOperations.entries.getLatestByIds()` method and return the first one.
          */
         const revisions = await cms.storageOperations.entries.getLatestByIds(model, {
-            ids: [id]
+            ids: [attachAcoRecordPrefix(id)]
         });
 
         if (revisions.length === 0) {
@@ -39,7 +40,7 @@ export const createSearchRecordOperations = (
         async getRecord({ id }) {
             return withModel(async model => {
                 const record = await getRecord(model, id);
-                return getFieldValues(record, baseFields, true);
+                return getRecordFieldValues(record, baseFields);
             });
         },
         listRecords(params) {
@@ -54,33 +55,73 @@ export const createSearchRecordOperations = (
                     }
                 });
 
-                return [entries.map(entry => getFieldValues(entry, baseFields, true)), meta];
+                return [entries.map(entry => getRecordFieldValues(entry, baseFields)), meta];
             });
         },
-        createRecord({ data }) {
+        listTags(params) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, data);
+                const { where } = params;
 
-                return getFieldValues(entry, baseFields, true);
+                const items = await cms.getUniqueFieldValues(model, {
+                    where: {
+                        ...(where || {}),
+                        latest: true
+                    },
+                    fieldId: "tags"
+                });
+
+                const tags = items
+                    .map(item => ({ tag: item.value, count: item.count }))
+                    .sort((a, b) => {
+                        return a.tag < b.tag ? -1 : 1;
+                    })
+                    .sort((a, b) => {
+                        return a.count > b.count ? -1 : 1;
+                    });
+
+                const meta = {
+                    hasMoreItems: false,
+                    totalCount: tags.length,
+                    cursor: null
+                };
+
+                return [tags, meta];
             });
         },
-        updateRecord({ id, data }) {
+        createRecord({ data: SearchRecordData }) {
             return withModel(async model => {
-                const original = await getRecord(model, id);
+                const { tags = [], data = {}, ...rest } = SearchRecordData;
+                const entry = await cms.createEntry(model, {
+                    tags,
+                    data,
+                    ...rest,
+                    id: attachAcoRecordPrefix(rest.id)
+                });
+
+                return getRecordFieldValues(entry, baseFields);
+            });
+        },
+        updateRecord(this: AcoSearchRecordStorageOperations, { id, data }) {
+            return withModel(async model => {
+                const original = await this.getRecord({ id });
 
                 const input = {
                     ...original,
                     ...data
                 };
 
-                const entry = await cms.updateEntry(model, original.id, input);
+                const entry = await cms.updateEntry(
+                    model,
+                    attachAcoRecordPrefix(original.id),
+                    input
+                );
 
-                return getFieldValues(entry, baseFields, true);
+                return getRecordFieldValues(entry, baseFields);
             });
         },
         deleteRecord({ id }) {
             return withModel(async model => {
-                await cms.deleteEntry(model, id);
+                await cms.deleteEntry(model, attachAcoRecordPrefix(id));
                 return true;
             });
         }

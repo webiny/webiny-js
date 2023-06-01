@@ -11,6 +11,7 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType";
 interface RenderFieldsParams {
     models: CmsModel[];
     model: CmsModel;
+    fields: CmsModelField[];
     type: ApiEndpoint;
     fieldTypePlugins: CmsFieldTypePlugins;
 }
@@ -22,15 +23,16 @@ interface RenderFields {
 export const renderFields: RenderFields = ({
     models,
     model,
+    fields,
     type,
     fieldTypePlugins
 }): CmsModelFieldDefinition[] => {
-    return model.fields
+    return fields
         .map(field => renderField({ models, model, type, field, fieldTypePlugins }))
         .filter(Boolean) as CmsModelFieldDefinition[];
 };
 
-interface RenderFieldParams extends RenderFieldsParams {
+interface RenderFieldParams extends Omit<RenderFieldsParams, "fields"> {
     field: CmsModelField;
 }
 
@@ -41,7 +43,7 @@ export const renderField = ({
     field,
     fieldTypePlugins
 }: RenderFieldParams): CmsModelFieldDefinition | null => {
-    const plugin: CmsModelFieldToGraphQLPlugin = fieldTypePlugins[getBaseFieldType(field)];
+    const plugin = fieldTypePlugins[getBaseFieldType(field)];
     if (!plugin) {
         // Let's not render the field if it does not exist in the field plugins.
         return null;

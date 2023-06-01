@@ -1,6 +1,5 @@
 import { Sort as esSort } from "@webiny/api-elasticsearch/types";
-import { CmsEntryElasticsearchFieldPlugin } from "~/plugins";
-import { createSort } from "@webiny/api-elasticsearch";
+import { createSort, ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types";
 import { ModelFields } from "./types";
@@ -31,9 +30,7 @@ export const createElasticsearchSort = (params: Params): esSort => {
 
     const fieldIdToStorageIdIdMap: Record<string, string> = {};
 
-    const sortPlugins = Object.values(modelFields).reduce<
-        Record<string, CmsEntryElasticsearchFieldPlugin>
-    >(
+    const sortPlugins = Object.values(modelFields).reduce<Record<string, ElasticsearchFieldPlugin>>(
         (plugins, field) => {
             /**
              * We do not support sorting by nested fields.
@@ -54,19 +51,19 @@ export const createElasticsearchSort = (params: Params): esSort => {
             /**
              * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
              */
-            plugins[fieldId] = new CmsEntryElasticsearchFieldPlugin({
+            plugins[fieldId] = new ElasticsearchFieldPlugin({
                 unmappedType: field.unmappedType,
                 keyword: hasKeyword(field),
-                sortable: field.isSortable,
-                searchable: field.isSearchable,
+                sortable: field.sortable,
+                searchable: field.searchable,
                 field: fieldId,
                 path
             });
             return plugins;
         },
         {
-            ["*"]: new CmsEntryElasticsearchFieldPlugin({
-                field: CmsEntryElasticsearchFieldPlugin.ALL,
+            ["*"]: new ElasticsearchFieldPlugin({
+                field: ElasticsearchFieldPlugin.ALL,
                 keyword: false
             })
         }

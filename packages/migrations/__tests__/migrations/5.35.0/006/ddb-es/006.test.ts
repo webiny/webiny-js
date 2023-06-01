@@ -16,7 +16,7 @@ import {
 
 import { AcoRecords_5_35_0_006, Page } from "~/migrations/5.35.0/006/ddb-es";
 
-import { createTenantsData, createLocalesData, createdBy } from "./006.data";
+import { createdBy, createLocalesData, createTenantsData } from "./006.data";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexName } from "~/utils";
 import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedData";
@@ -38,9 +38,14 @@ describe("5.35.0-006", () => {
     const ddbEsPages: Record<string, any>[] = [];
     const esPages: any[] = [];
 
-    beforeEach(() => {
+    beforeEach(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+
+        await elasticsearchClient.indices.deleteAll();
+    });
+    afterEach(async () => {
+        await elasticsearchClient.indices.deleteAll();
     });
 
     const insertTestPages = async (numberOfPages = NUMBER_OF_PAGES) => {
@@ -96,7 +101,7 @@ describe("5.35.0-006", () => {
                                 image: null,
                                 layout: "static",
                                 snippet: null,
-                                tags: null
+                                tags: [`tag-${pid}-1`, `tag-${pid}-2`]
                             },
                             seo: {
                                 description: null,
@@ -280,18 +285,20 @@ describe("5.35.0-006", () => {
                 webinyVersion
             } = page;
 
-            const ddbSearchRecord = ddbSearchRecords.find(record => record.id === `${pid}#0001`);
+            const ddbSearchRecord = ddbSearchRecords.find(
+                record => record.id === `wby-aco-${pid}#0001`
+            );
             const ddbEsSearchRecord = ddbEsSearchRecords.find(
-                record => record.PK === `T#${tenant}#L#${locale}#CMS#CME#${pid}`
+                record => record.PK === `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`
             );
 
             // Checking DDB ACO search record
             expect(ddbSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
                 SK: "L",
                 TYPE: "L",
-                entryId: pid,
-                id: `${pid}#0001`,
+                entryId: `wby-aco-${pid}`,
+                id: `wby-aco-${pid}#0001`,
                 locale,
                 tenant,
                 version: 1,
@@ -303,6 +310,7 @@ describe("5.35.0-006", () => {
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
                     },
+                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
                     "wby-aco-json@data": {
                         createdBy,
                         createdOn,
@@ -328,24 +336,10 @@ describe("5.35.0-006", () => {
                     "text@type": PB_PAGE_TYPE,
                     "text@title": title,
                     "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
+                    "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
                     "object@location": {
                         "text@folderId": ROOT_FOLDER
-                    }
-                },
-                createdBy,
-                entryId: pid,
-                tenant,
-                createdOn,
-                locked: false,
-                ownedBy: createdBy,
-                webinyVersion: process.env.WEBINY_VERSION,
-                id: `${pid}#0001`,
-                modifiedBy: createdBy,
-                latest: true,
-                TYPE: "cms.entry.l",
-                __type: "cms.entry.l",
-                rawValues: {
-                    "object@location": {},
+                    },
                     "wby-aco-json@data": {
                         id: `${pid}#0001`,
                         pid,
@@ -358,12 +352,27 @@ describe("5.35.0-006", () => {
                         locked,
                         path
                     }
+                },
+                createdBy,
+                entryId: `wby-aco-${pid}`,
+                tenant,
+                createdOn,
+                locked: false,
+                ownedBy: createdBy,
+                webinyVersion: process.env.WEBINY_VERSION,
+                id: `wby-aco-${pid}#0001`,
+                modifiedBy: createdBy,
+                latest: true,
+                TYPE: "cms.entry.l",
+                __type: "cms.entry.l",
+                rawValues: {
+                    "object@location": {}
                 }
             });
 
             // Checking DDB + ES ACO search record
             expect(ddbEsSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#${pid}`,
+                PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
                 SK: "L",
                 index: esGetIndexName({
                     tenant,

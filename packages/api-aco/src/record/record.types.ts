@@ -12,17 +12,26 @@ export interface Location {
 export interface SearchRecord<TData extends GenericSearchData = GenericSearchData>
     extends AcoBaseFields {
     type: string;
-    title?: string;
+    title: string;
     content?: string;
-    location?: Location;
-    data?: TData;
+    location: Location;
+    data: TData;
+    tags: string[];
 }
+
+export type SearchRecordTag = {
+    tag: string;
+    count: number;
+};
 
 export interface ListSearchRecordsWhere {
     type: string;
     location?: {
         folderId: string;
     };
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
 }
 
 export interface ListSearchRecordsParams {
@@ -35,7 +44,7 @@ export interface ListSearchRecordsParams {
 
 export type CreateSearchRecordParams<TData> = Pick<
     SearchRecord<TData>,
-    "id" | "title" | "content" | "type" | "location" | "data"
+    "id" | "title" | "content" | "type" | "location" | "data" | "tags"
 >;
 
 export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
@@ -43,10 +52,19 @@ export interface UpdateSearchRecordParams<TData extends GenericSearchData> {
     content?: string;
     location?: Location;
     data?: TData;
+    tags?: string[];
 }
 
 export interface DeleteSearchRecordParams {
     id: string;
+}
+
+export interface ListSearchRecordTagsWhere {
+    type: string;
+}
+
+export interface ListSearchRecordTagsParams {
+    where?: ListSearchRecordTagsWhere;
 }
 
 export interface StorageOperationsGetSearchRecordParams {
@@ -54,6 +72,7 @@ export interface StorageOperationsGetSearchRecordParams {
 }
 
 export type StorageOperationsListSearchRecordsParams = ListSearchRecordsParams;
+export type StorageOperationsListSearchRecordTagsParams = ListSearchRecordTagsParams;
 
 export interface StorageOperationsCreateSearchRecordParams<
     TData extends GenericSearchData = GenericSearchData
@@ -110,6 +129,7 @@ export interface OnSearchRecordAfterDeleteTopicParams<
 export interface AcoSearchRecordCrud {
     get<TData>(id: string): Promise<SearchRecord<TData>>;
     list<TData>(params: ListSearchRecordsParams): Promise<[SearchRecord<TData>[], ListMeta]>;
+    listTags(params: ListSearchRecordTagsParams): Promise<[SearchRecordTag[], ListMeta]>;
     create<TData>(data: CreateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
     update<TData>(id: string, data: UpdateSearchRecordParams<TData>): Promise<SearchRecord<TData>>;
     delete(id: string): Promise<Boolean>;
@@ -127,6 +147,9 @@ export interface AcoSearchRecordStorageOperations {
     listRecords<TData extends GenericSearchData = GenericSearchData>(
         params: StorageOperationsListSearchRecordsParams
     ): Promise<[SearchRecord<TData>[], ListMeta]>;
+    listTags(
+        params: StorageOperationsListSearchRecordTagsParams
+    ): Promise<[SearchRecordTag[], ListMeta]>;
     createRecord<TData extends GenericSearchData = GenericSearchData>(
         params: StorageOperationsCreateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;

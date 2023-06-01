@@ -1,5 +1,4 @@
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 import { PbImportExportContext } from "~/graphql/types";
 import { File, FileInput } from "@webiny/api-file-manager/types";
 import { UploadFileMap, uploadFilesFromS3 } from "~/import/utils/uploadFilesFromS3";

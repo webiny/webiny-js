@@ -4,6 +4,7 @@ import { Category } from "@webiny/api-page-builder/types";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { Entity } from "dynamodb-toolbox";
 import { createPartitionKey, createSortKey } from "./keys";
+import { DataLoaderInterface } from "~/types";
 
 interface Params {
     entity: Entity<any>;
@@ -11,7 +12,7 @@ interface Params {
 
 type DataLoaderGetItem = Pick<Category, "slug" | "tenant" | "locale">;
 
-export class CategoryDataLoader {
+export class CategoryDataLoader implements DataLoaderInterface {
     private _getDataLoader: DataLoader<any, any> | undefined = undefined;
 
     private readonly entity: Entity<any>;

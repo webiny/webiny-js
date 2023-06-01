@@ -1,4 +1,5 @@
 const { Converter } = require("aws-sdk/clients/dynamodb");
+const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 
 const processDelete = async (documentClient, handler, params) => {
     if (!params || params.TableName !== process.env.DB_TABLE_ELASTICSEARCH) {
@@ -148,7 +149,25 @@ const createDynamoStreamEvent = (...records) => {
     return { Records: records };
 };
 
+let documentClient = null;
+
+const getDocumentClient = () => {
+    if (!documentClient) {
+        documentClient = new DocumentClient({
+            convertEmptyValues: true,
+            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+            sslEnabled: false,
+            region: "local",
+            accessKeyId: "test",
+            secretAccessKey: "test"
+        });
+    }
+
+    return documentClient;
+};
+
 module.exports = {
+    getDocumentClient,
     simulateStream,
     createDynamoStreamEvent,
     createDynamoStreamRecord

@@ -150,7 +150,12 @@ export default /* GraphQL */ `
 
         updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
-        deleteCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CmsDeleteResponse
+        deleteCategoryApiNameWhichIsABitDifferentThanModelId(
+            revision: ID!
+            options: CmsDeleteEntryOptions
+        ): CmsDeleteResponse
+
+        deleteMultipleCategoriesApiModel(entries: [ID!]!): CmsDeleteMultipleResponse!
 
         publishCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
     

@@ -30,9 +30,14 @@ describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();
     const elasticsearchClient = createElasticsearchClient();
 
-    beforeAll(() => {
+    beforeAll(async () => {
         process.env.ELASTIC_SEARCH_INDEX_PREFIX =
             new Date().toISOString().replace(/\.|\:/g, "-").toLowerCase() + "-";
+
+        await elasticsearchClient.indices.deleteAll();
+    });
+    afterEach(async () => {
+        await elasticsearchClient.indices.deleteAll();
     });
 
     const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES) => {

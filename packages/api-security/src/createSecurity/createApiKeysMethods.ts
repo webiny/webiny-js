@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import crypto from "crypto";
 /**
  * Package @commodo/fields does not have types.
@@ -15,6 +10,7 @@ import { withFields, string } from "@commodo/fields";
 // @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
+import { mdbid } from "@webiny/utils";
 import { NotAuthorizedError } from "~/index";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";

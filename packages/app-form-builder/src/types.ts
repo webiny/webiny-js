@@ -193,6 +193,10 @@ export interface FbFormSubmissionData {
     meta: {
         ip: string;
         submittedOn: string;
+        url: {
+            location: string;
+            query: Record<string, string>;
+        };
     };
     form: {
         id: string;

@@ -9,7 +9,7 @@ import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { ReactComponent as ViewListIcon } from "../../icons/view_list.svg";
 import { ReactComponent as CloneIcon } from "../../icons/clone.svg";
-import { useApolloClient, useContentModels } from "../../hooks";
+import { useApolloClient, useModels } from "../../hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as UIL from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
@@ -114,7 +114,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "cms-delete-content-model-dialog"
     });
-    const { models, loading } = useContentModels();
+    const { models, loading } = useModels();
     const { canDelete, canEdit } = usePermission();
 
     const filterData = useCallback(

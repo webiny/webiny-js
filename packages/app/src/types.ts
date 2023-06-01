@@ -11,16 +11,18 @@ export interface FileItem {
     size: number;
     type: string;
     tags: string[];
+    aliases: string[];
     createdOn: string;
     createdBy: {
         id: string;
+        displayName: string;
     };
     [key: string]: any;
 }
 
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
-    onProgress?: (progress: number) => void;
+    onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
 };
 
 export type UiStatePlugin = Plugin & {
@@ -28,16 +30,18 @@ export type UiStatePlugin = Plugin & {
     render(): React.ReactElement;
 };
 
+export interface UploadedFile {
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    key: string;
+}
+
 export type FileUploaderPlugin = Plugin & {
     type: "file-uploader";
-    // TODO: @adrian define type for the returned object
-    upload(file: File, options: UploadOptions): Promise<any>;
-};
-
-export type AppFileManagerStoragePlugin = Plugin & {
-    type: "app-file-manager-storage";
-    // TODO: @adrian define type for the returned object
-    upload(file: File, options: UploadOptions): Promise<any>;
+    name: "file-uploader";
+    upload(file: File, options: UploadOptions): Promise<UploadedFile>;
 };
 
 export { Plugin };

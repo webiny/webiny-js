@@ -1,3 +1,4 @@
+const { logger } = require("@webiny/project-utils/testing/logger");
 const { createElasticsearchClient } = require("../../../api-elasticsearch/dist");
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
@@ -61,8 +62,7 @@ const createDeleteIndexCallable = client => {
                     return;
                 }
             } catch (ex) {
-                console.log(`Could not determine that index exists: ${index}`);
-                console.log(ex.message);
+                logger.warning(`Could not determine that index "${index}" exists: ${ex.message}`);
                 return;
             }
             /**
@@ -75,16 +75,14 @@ const createDeleteIndexCallable = client => {
                 });
                 return;
             } catch (ex) {
-                console.log(`Could not delete index: ${index}`);
-                console.log(JSON.stringify(ex));
+                logger.warning(`Could not delete index "${index}": ${ex.message}`);
                 /**
                  * In case of snapshot error - we will retry.
                  */
                 if (isSnapshotError(ex) === false) {
                     return;
                 }
-                console.log("Is snapshot error, will try to delete the index in a sec...");
-                console.log(JSON.stringify(ex));
+                logger.debug("It's a snapshot error; will try to delete the index in a sec...");
             }
             /**
              * Let's retry deleting index again...
@@ -96,24 +94,34 @@ const createDeleteIndexCallable = client => {
 };
 
 const attachCustomEvents = client => {
-    const createdIndexes = new Set();
+    logger.debug(`Attach custom events to ES`);
+    const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
+    const originalExists = client.indices.exists;
+
+    const registerIndex = input => {
+        const names = Array.isArray(input) ? input : [input];
+        for (const name of names) {
+            registeredIndexes.add(name);
+        }
+    };
 
     const deleteIndexCallable = createDeleteIndexCallable(client);
 
-    // @ts-ignore
+    client.indices.exists = async (params, options = {}) => {
+        registerIndex(params.index);
+        return originalExists.apply(client.indices, [params, options]);
+    };
+
     client.indices.create = async (params, options = {}) => {
         /**
          * First we always delete existing index, if any.
          */
         await deleteIndexCallable(params.index);
 
-        // @ts-ignore
         const response = await originalCreate.apply(client.indices, [params, options]);
 
-        if (createdIndexes.has(params.index) === false) {
-            createdIndexes.add(params.index);
-        }
+        registeredIndexes.add(params.index);
 
         await client.indices.refresh({
             index: params.index
@@ -123,26 +131,22 @@ const attachCustomEvents = client => {
     };
 
     client.indices.deleteAll = async () => {
-        const indexes = Array.from(createdIndexes.values());
+        logger.debug(`Running "client.indices.deleteAll".`);
+        const indexes = Array.from(registeredIndexes.values());
         if (indexes.length === 0) {
-            // console.log("No indexes to delete.");
             return;
         }
-        const deletedIndexes = [];
+        logger.debug(indexes, "Delete all indexes.");
         for (const index of indexes) {
             try {
                 await deleteIndexCallable(index);
-                createdIndexes.delete(index);
-                deletedIndexes.push(index);
             } catch (ex) {
-                console.log(`Could not delete index "${index}".`);
-                console.log(JSON.stringify(ex));
+                logger.warning(`Could not delete index "${index}".`);
             }
         }
-        createdIndexes.clear();
-        //console.log(`Deleted indexes: ${deletedIndexes}`);
-        //console.log(deletedIndexes.join(", "));
+        logger.debug(`Finished "client.indices.deleteAll".\n`);
     };
+    client.indices.registerIndex = registerIndex;
 
     return client;
 };
