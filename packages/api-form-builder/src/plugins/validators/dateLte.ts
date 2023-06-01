@@ -3,11 +3,14 @@ import { FbFormFieldValidatorPlugin } from "~/types";
 
 const plugin: FbFormFieldValidatorPlugin = {
     type: "fb-form-field-validator",
-    name: "form-field-validator-lte-date",
+    name: "form-field-validator-date-lte",
     validator: {
-        name: "lteDate",
+        name: "dateLte",
         validate: async (value, validator) => {
-            const regex = /(^\d*:\d*)/gm;
+            // With this regex we check whether our value is time (11:59) and not a date
+            // We need this regex in order to apply correct validation rule (example: #line 23)
+            // Because for date and time validation rules are different (check @webiny/validation)
+            const timeValidator = /(^\d*:\d*)/gm;
 
             const validValue = `${validator.settings.value}${
                 validator.settings.timeZone ? validator.settings.timeZone : ""
@@ -17,7 +20,7 @@ const plugin: FbFormFieldValidatorPlugin = {
                 return true;
             }
 
-            if (value.match(regex) !== null) {
+            if (value.match(timeValidator) !== null) {
                 return validation.validate(value, `timeLte:${validValue}`);
             }
 

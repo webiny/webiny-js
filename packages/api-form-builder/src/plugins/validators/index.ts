@@ -1,8 +1,8 @@
 import gte from "./gte";
-import gteDate from "./gteDate";
+import dateGte from "./dateGte";
 import inValidator from "./in";
 import lte from "./lte";
-import lteDate from "./lteDate";
+import dateLte from "./dateLte";
 import maxLength from "./maxLength";
 import minLength from "./minLength";
 import pattern from "./pattern";
@@ -11,10 +11,10 @@ import patternPlugins from "./patternPlugins";
 
 export default [
     gte,
-    gteDate,
+    dateGte,
     inValidator,
     lte,
-    lteDate,
+    dateLte,
     pattern,
     required,
     minLength,

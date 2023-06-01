@@ -13,8 +13,8 @@ const plugin: FbBuilderFieldPlugin = {
     field: {
         type: "datetime",
         name: "date",
-        validators: ["required", "gteDate", "lteDate"],
-        label: "Date",
+        validators: ["required", "dateGte", "dateLte"],
+        label: "Date/Time",
         description: "Renders input for various formats of date and time.",
         icon: <DateIcon />,
         createField() {
