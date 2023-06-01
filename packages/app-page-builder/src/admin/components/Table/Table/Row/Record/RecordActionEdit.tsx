@@ -48,7 +48,7 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [record]);
 
-    if (!canUpdate(record)) {
+    if (!canUpdate(record?.createdBy?.id)) {
         return <></>;
     }
 

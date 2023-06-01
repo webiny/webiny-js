@@ -15,7 +15,7 @@ const DeletePage: React.FC<DeletePageProps> = props => {
     const { canDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page, onDelete });
 
-    if (!canDelete(page)) {
+    if (!canDelete(page?.createdBy?.id)) {
         return null;
     }
 

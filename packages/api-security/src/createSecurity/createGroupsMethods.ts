@@ -251,6 +251,79 @@ export const createGroupsMethods = ({
             if (!group) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
             }
+
+            // We can't proceed with the deletion if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is being used by one or more tenant links.
+            // 3. The group is being used by one or more teams.
+
+            // 1. Is system group?
+            if (group.system) {
+                throw new WebinyError(
+                    `Cannot delete system groups.`,
+                    "CANNOT_DELETE_SYSTEM_GROUPS"
+                );
+            }
+
+            // 2. Is being used by one or more tenant links?
+            const usagesInTenantLinks = await storageOperations
+                .listTenantLinksByType({
+                    tenant: getTenant(),
+                    type: "permissions"
+                })
+                .then(links =>
+                    links.filter(link => {
+                        const linkGroups = link.data?.groups;
+                        if (Array.isArray(linkGroups) && linkGroups.length > 0) {
+                            return linkGroups.some(linkGroup => linkGroup.id === id);
+                        }
+                        return false;
+                    })
+                );
+
+            if (usagesInTenantLinks.length > 0) {
+                let foundUsages = "(found 1 usage)";
+                if (usagesInTenantLinks.length > 1) {
+                    foundUsages = `(found ${usagesInTenantLinks.length} usages)`;
+                }
+
+                throw new WebinyError(
+                    `Cannot delete "${group.name}" group because it is currently being used in tenant links ${foundUsages}.`,
+                    "CANNOT_DELETE_GROUP_USED_IN_TENANT_LINKS",
+                    { tenantLinksCount: usagesInTenantLinks.length }
+                );
+            }
+
+            // 3. Is being used by one or more teams?
+            const usagesInTeams = await storageOperations
+                .listTeams({ where: { tenant: getTenant() } })
+                .then(teams => {
+                    return teams.filter(team => {
+                        const teamGroupsIds = team.groups;
+                        if (Array.isArray(teamGroupsIds) && teamGroupsIds.length > 0) {
+                            return teamGroupsIds.some(teamGroupId => teamGroupId === id);
+                        }
+                        return false;
+                    });
+                });
+
+            if (usagesInTeams.length > 0) {
+                let foundUsages = "(found 1 usage)";
+                if (usagesInTeams.length > 1) {
+                    foundUsages = `(found ${usagesInTeams.length} usages)`;
+                }
+
+                throw new WebinyError(
+                    `Cannot delete "${group.name}" group because it is currently being used with one or more teams ${foundUsages}.`,
+                    "GROUP_EXISTS",
+                    {
+                        teamsCount: usagesInTeams.length,
+                        teams: usagesInTeams.map(team => ({ id: team.id, name: team.name }))
+                    }
+                );
+            }
+
+            // Delete the group if none of the above conditions are met.
             try {
                 await storageOperations.deleteGroup({ group });
             } catch (ex) {

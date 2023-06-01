@@ -20,7 +20,7 @@ export const RecordActionDelete = ({ record }: Props): ReactElement => {
     const { canDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page: record });
 
-    if (!canDelete(record)) {
+    if (!canDelete(record?.createdBy?.id)) {
         console.log("Does not have permission to delete page.");
         return <></>;
     }

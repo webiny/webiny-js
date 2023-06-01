@@ -37,7 +37,6 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 import { Context } from "~/types";
 
 const debug = process.env.DEBUG === "true";
-
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
     region: process.env.AWS_REGION

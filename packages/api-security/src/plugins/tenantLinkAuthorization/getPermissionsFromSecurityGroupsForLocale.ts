@@ -1,4 +1,4 @@
-import { SecurityPermission } from "@webiny/api-security/types";
+import { SecurityPermission } from "~/types";
 
 export const getPermissionsFromSecurityGroupsForLocale = (
     securityGroups: Array<{ permissions: SecurityPermission[] }>,

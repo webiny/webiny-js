@@ -50,7 +50,7 @@ export default {
     },
     featureFlags: {
         aacl: {
-            teams: false
+            teams: true
         }
     }
 };

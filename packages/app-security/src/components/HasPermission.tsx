@@ -11,21 +11,31 @@ interface HasPermissionProps {
 export const HasPermission = ({ children, ...props }: HasPermissionProps) => {
     const { getPermissions } = useSecurity();
 
+    if (props.name) {
+        const permissionsCollections = getPermissions(props.name);
+        const hasPermission = permissionsCollections.length > 0;
+        if (hasPermission) {
+            return <Fragment>{children}</Fragment>;
+        }
+
+        return null;
+    }
+
     if (props.any && props.all) {
         throw new Error(`You can use either "any" or "all", but not both at the same time.`);
     }
 
-    if (props.name) {
-        return getPermissions(props.name) ? <Fragment>{children}</Fragment> : null;
-    }
+    const anyAllPermissions = props.any || props.all || [];
 
-    const permissions = [...(props.any || []), ...(props.all || [])].map(name =>
-        getPermissions(name)
-    );
+    const permissionsCollections = anyAllPermissions.map(name => getPermissions(name));
 
     const hasPermission = props.any
-        ? permissions.some(p => Boolean(p))
-        : permissions.every(p => Boolean(p));
+        ? permissionsCollections.some(collection => collection.length > 0)
+        : permissionsCollections.every(collection => collection.length > 0);
 
-    return hasPermission ? <Fragment>{children}</Fragment> : null;
+    if (hasPermission) {
+        return <Fragment>{children}</Fragment>;
+    }
+
+    return null;
 };

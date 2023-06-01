@@ -146,6 +146,10 @@ export default [
                     return "https://www.gravatar.com/avatar/" + md5(user.email);
                 },
                 group(user, _, context) {
+                    if (!user.group) {
+                        return null;
+                    }
+
                     return context.security.getGroup({ where: { id: user.group } });
                 }
             },
@@ -271,6 +275,10 @@ export default [
             resolvers: {
                 AdminUser: {
                     team(user, _, context) {
+                        if (!user.team) {
+                            return null;
+                        }
+
                         return context.security.getTeam({ where: { id: user.team } });
                     }
                 }

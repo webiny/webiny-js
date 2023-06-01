@@ -32,10 +32,11 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         if (permissionsLoader) {
             return permissionsLoader;
         }
-        const shouldEnableAuthorization = performAuthorization;
 
+
+        const shouldEnableAuthorization = performAuthorization;
         permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
-            // Authorizes often need to query business-related data, and since the identity is not yet
+            // Authorizers often need to query business-related data, and since the identity is not yet
             // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
             // To avoid this, we disable permission checks (assume `full-access` permissions) for
             // the duration of the authorization process.

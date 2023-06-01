@@ -59,36 +59,46 @@ async function updateTenantLinks(
         return;
     }
 
+    const relevantLinks = links.filter(link => {
+        const linkTeams = link.data?.teams;
+        if (Array.isArray(linkTeams) && linkTeams.length > 0) {
+            return linkTeams.some(team => team.id === updatedTeam.id);
+        }
+
+        return false;
+    });
+
+    if (!relevantLinks.length) {
+        return;
+    }
+
+    const teamGroups = await security.listGroups({ where: { id_in: updatedTeam.groups } });
+
     await security.updateTenantLinks(
-        links
-            .filter(link => {
-                const linkTeams = link.data?.teams;
-                if (!Array.isArray(linkTeams) || !linkTeams.length) {
-                    return false;
+        relevantLinks.map(link => {
+            // We know the `link.data` is not undefined, because we filtered out all links that don't have any teams.
+            const linkTeams = link.data!.teams;
+
+            return {
+                ...link,
+                data: {
+                    ...link.data,
+                    teams: linkTeams.map(linkTeam => {
+                        if (linkTeam.id !== updatedTeam.id) {
+                            return linkTeam;
+                        }
+
+                        return {
+                            id: updatedTeam.id,
+                            groups: teamGroups.map(group => ({
+                                id: group.id,
+                                permissions: group.permissions
+                            }))
+                        };
+                    })
                 }
-
-                return linkTeams.some(item => item.id === updatedTeam.id);
-            })
-            .map(link => {
-                const linkGroups = link.data!.teams;
-
-                return {
-                    ...link,
-                    data: {
-                        ...link.data,
-                        groups: linkGroups.map(linkTeam => {
-                            if (linkTeam.id !== updatedTeam.id) {
-                                return linkTeam;
-                            }
-
-                            return {
-                                id: updatedTeam.id,
-                                permissions: updatedTeam.groups
-                            };
-                        })
-                    }
-                };
-            })
+            };
+        })
     );
 }
 
@@ -238,6 +248,35 @@ export const createTeamsMethods = ({
             if (!team) {
                 throw new NotFoundError(`Team "${id}" was not found!`);
             }
+
+            const usagesInTenantLinks = await storageOperations
+                .listTenantLinksByType({
+                    tenant: getTenant(),
+                    type: "permissions"
+                })
+                .then(links =>
+                    links.filter(link => {
+                        const linkTeams = link.data?.teams;
+                        if (Array.isArray(linkTeams) && linkTeams.length > 0) {
+                            return linkTeams.some(linkTeam => linkTeam.id === id);
+                        }
+                        return false;
+                    })
+                );
+
+            if (usagesInTenantLinks.length > 0) {
+                let foundUsages = "(found 1 usage)";
+                if (usagesInTenantLinks.length > 1) {
+                    foundUsages = `(found ${usagesInTenantLinks.length} usages)`;
+                }
+
+                throw new WebinyError(
+                    `Cannot delete "${team.name}" team because it is currently being used in tenant links ${foundUsages}.`,
+                    "CANNOT_DELETE_TEAM_USED_IN_TENANT_LINKS",
+                    { tenantLinksCount: usagesInTenantLinks.length }
+                );
+            }
+
             try {
                 await storageOperations.deleteTeam({ team });
             } catch (ex) {

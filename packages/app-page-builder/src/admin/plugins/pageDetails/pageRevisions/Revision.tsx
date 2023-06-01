@@ -134,7 +134,7 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
                                 {previewButtonLabel}
                             </MenuItem>
 
-                            {canDelete(page) && (
+                            {canDelete(page?.createdBy?.id) && (
                                 <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>

@@ -41,6 +41,7 @@ export const createUsePermissions = (permissionName: string) => (): UsePermissio
                     return true;
                 }
 
+                console.log('woot')
                 if (own && createdById) {
                     return identity && createdById === identity.login;
                 }

@@ -84,6 +84,7 @@ export const DELETE_TEAM = gql`
                 error {
                     code
                     message
+                    data
                 }
             }
         }

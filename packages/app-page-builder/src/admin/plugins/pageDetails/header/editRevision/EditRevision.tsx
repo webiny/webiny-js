@@ -18,7 +18,7 @@ interface EditRevisionProps {
 }
 const EditRevision: React.FC<EditRevisionProps> = props => {
     const { page } = props;
-    const { canEdit } = usePagesPermissions();
+    const { canUpdate } = usePagesPermissions();
     const { history } = useRouter();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
@@ -44,7 +44,7 @@ const EditRevision: React.FC<EditRevisionProps> = props => {
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [page]);
 
-    if (!canEdit(page)) {
+    if (!canUpdate(page?.createdBy?.id)) {
         return null;
     }
 
