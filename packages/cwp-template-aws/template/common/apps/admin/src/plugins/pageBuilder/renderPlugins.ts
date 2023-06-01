@@ -64,7 +64,7 @@ export default [
     pagesList(),
     imagesList(),
     accordion(),
-    accordionItem(),    
+    accordionItem(),
     carousel(),
     carouselElement(),
     // Page settings

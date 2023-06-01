@@ -94,7 +94,7 @@ export default [
     codesandbox(),
     pagesList(),
     accordion(),
-    accordionItem(),    
+    accordionItem(),
     carousel(),
     carouselElement(),
     // grid presets
