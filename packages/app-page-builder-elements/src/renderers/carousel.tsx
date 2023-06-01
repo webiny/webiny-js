@@ -3,17 +3,50 @@ import styled from "@emotion/styled";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { usePageElements } from "~/hooks/usePageElements";
-import { registerCarousel } from "~/modifiers/carousel/index";
 
+let pbCarouselCheck: Promise<void>;
+
+const initializeSwiper = async () => {
+    if (typeof window === "undefined") {
+        return;
+    }
+
+    if (!pbCarouselCheck) {
+        pbCarouselCheck = new Promise<void>(resolve => {
+            const interval = setInterval(() => {
+                if (document.querySelector("swiper-container")) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 333);
+        });
+    }
+
+    await pbCarouselCheck;
+
+    const register = await import("swiper/element/bundle");
+
+    register.register();
+};
+
+const registerCarousel = () => {
+    new Promise<void>(async resolve => {
+        await initializeSwiper();
+        resolve();
+    });
+};
 export type CarouselRenderer = ReturnType<typeof createCarousel>;
 
 const CarouselWrapper = styled.div`
     display: flex;
     justify-content: center;
-    --swiper-navigation-color: var(--mdc-theme-primary);
-    --swiper-pagination-color: var(--mdc-theme-primary);
-    --swiper-pagination-bottom: 0;
+
+    & .carousel-preview {
+        --swiper-navigation-color: ${props => props.theme.styles.colors.color1};
+        --swiper-pagination-color: ${props => props.theme.styles.colors.color1};
+        --swiper-pagination-bottom: 0;
+        max-width: 1100px;
+    }
 
     & swiper-slide {
         text-align: center;
@@ -61,30 +94,18 @@ export const createCarousel = () => {
     registerCarousel();
     return createRenderer(() => {
         const { getElement } = useRenderer();
-        const { theme } = usePageElements();
         const element = getElement();
 
         const { arrowsToggle = true, bulletsToggle = true } = element?.data?.settings?.carousel;
 
-        const paginationClickable = bulletsToggle ? true : null;
-
-        theme.styles.elements["carousel"] = {
-            "swiper-container": {
-                "--swiper-navigation-color": `${theme.styles.colors.color1}`,
-                "--swiper-pagination-color": `${theme.styles.colors.color1}`,
-                "--swiper-pagination-bottom": "0",
-                maxWidth: "1100px"
-            }
+        const navProps = {
+            navigation: arrowsToggle,
+            pagination: bulletsToggle
         };
 
         return (
             <CarouselWrapper>
-                <swiper-container
-                    class="carousel-preview"
-                    navigation={arrowsToggle}
-                    pagination={bulletsToggle}
-                    pagination-clickable={paginationClickable}
-                >
+                <swiper-container class="carousel-preview" {...navProps}>
                     {element.elements.map((carousel, index) => (
                         <swiper-slide key={index}>
                             <div className="carousel-element-wrapper">

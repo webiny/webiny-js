@@ -89,10 +89,10 @@ export default [
     iframe(),
     pagesList(),
     imagesList(),
-    accordion(),
-    accordionItem(),
     carousel(),
     carouselElement(),
+    accordion(),
+    accordionItem(),
 
     // Page settings
     pageSettings(),

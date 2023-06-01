@@ -28,7 +28,7 @@
     "react-columned": "^1.1.3",
     "react-google-recaptcha": "^2.3.4",
     "react-images": "^0.5.19",
-    "swiper": "^9.2.4"
+    "swiper": "^9.3.2"
   },
   "peerDependenciesMeta": {
     "@editorjs/editorjs": {

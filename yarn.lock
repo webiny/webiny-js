@@ -13765,7 +13765,7 @@ __metadata:
     react-columned: ^1.1.3
     react-google-recaptcha: ^2.3.4
     react-images: ^0.5.19
-    swiper: ^9.2.4
+    swiper: ^9.3.2
   peerDependenciesMeta:
     "@editorjs/editorjs":
       optional: true
@@ -13873,7 +13873,7 @@ __metadata:
     rimraf: ^3.0.2
     slugify: ^1.2.9
     store: ^2.0.12
-    swiper: ^9.2.4
+    swiper: ^9.3.2
     timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -39988,12 +39988,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swiper@npm:^9.2.4":
-  version: 9.2.4
-  resolution: "swiper@npm:9.2.4"
+"swiper@npm:^9.3.2":
+  version: 9.3.2
+  resolution: "swiper@npm:9.3.2"
   dependencies:
     ssr-window: ^4.0.2
-  checksum: 09f7d0eb0898c47f4ef048c731b5b9c3d5809c3f82170670864f15d27ba39a4cba65b5231fecf83ae5f09c536ab6d68ac3062f583438314de8e72e9f3392c211
+  checksum: 9ccb6a0ef67d71ac780d7d1f3b2c2daf6f1846d3df8810aff6dcb8501c87b7769540a869cdd83eb902e5278396e5379cb32d9ed397234f7700ef55f0209f4592
   languageName: node
   linkType: hard
 
