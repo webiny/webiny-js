@@ -1,6 +1,6 @@
 import { useNavigateFolder } from "@webiny/app-aco";
 import { useRouter } from "@webiny/react-router";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { PAGE_BUILDER_EDITOR_LINK, PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
 
 interface UseNavigatePageResponse {
@@ -16,13 +16,15 @@ export const useNavigatePage = () => {
     } catch {}
     const { history, params } = useRouter();
     const folderId = params["folderId"];
-    const getFolderUrl = useCallback(() => {
+    const folderUrl = useMemo(() => {
         return params["folderId"] ? `?folderId=${params["folderId"]}` : "";
     }, [folderId]);
 
     return useMemo<UseNavigatePageResponse>(() => {
         const navigateToPageEditor = (id: string) => {
-            return history.push(`${PAGE_BUILDER_EDITOR_LINK}/${encodeURIComponent(id)}`);
+            return history.push(
+                `${PAGE_BUILDER_EDITOR_LINK}/${encodeURIComponent(id)}${folderUrl}`
+            );
         };
         if (navigateFolder) {
             return {
@@ -33,7 +35,7 @@ export const useNavigatePage = () => {
         }
         return {
             navigateToLatestFolder: () => {
-                return history.push(`${PAGE_BUILDER_LIST_LINK}${getFolderUrl()}`);
+                return history.push(`${PAGE_BUILDER_LIST_LINK}${folderUrl}`);
             },
             navigateToListHome: () => {
                 return history.push(PAGE_BUILDER_LIST_LINK);

@@ -1,0 +1,115 @@
+const entryFields = `
+    id
+    entryId
+    title
+    meta {
+        location {
+            folderId
+        }
+    }
+`;
+
+const DATA_FIELD = /* GraphQL */ `
+    data {
+        ${entryFields}
+    }
+`;
+
+const ERROR_FIELD = /* GraphQL */ `
+    error {
+        code
+        message
+        data
+    }
+`;
+
+export interface GetEntryResult {
+    data: {
+        entry: {
+            data: {
+                id: string;
+                entryId: string;
+                title: string;
+                meta: {
+                    location?: {
+                        folderId?: string;
+                    };
+                };
+            } | null;
+            error: {
+                code: string;
+                message: string;
+                data: any;
+            } | null;
+        };
+    };
+}
+
+export type GetEntryInputVariables =
+    | {
+          revision: string;
+          entryId?: never;
+      }
+    | {
+          revision?: never;
+          entryId: string;
+      };
+export const GET_ENTRY_QUERY = /* GraphQL */ `
+    query GetEntryQuery($revision: ID, $entryId: ID) {
+        entry: getTestAcoModel(revision: $revision, entryId: $entryId) {
+            ${DATA_FIELD}
+            ${ERROR_FIELD}
+        }
+    }
+`;
+
+export type CreateEntryResult = GetEntryResult;
+
+export interface CreateEntryInputVariables {
+    data: {
+        id?: string;
+        title: string;
+    };
+}
+
+export const CREATE_ENTRY_MUTATION = /* GraphQL */ `
+    mutation CreateEntryMutation($data: TestAcoModelInput!) {
+        entry: createTestAcoModel(data: $data) {
+            ${DATA_FIELD}
+            ${ERROR_FIELD}
+        }
+    }
+`;
+
+export type UpdateEntryResult = GetEntryResult;
+
+export interface UpdateEntryInputVariables {
+    revision: string;
+    data: {
+        title?: string;
+    };
+}
+
+export const UPDATE_ENTRY_MUTATION = /* GraphQL */ `
+    mutation UpdateEntryMutation($revision: ID!, $data: TestAcoModelInput!) {
+        entry: updateTestAcoModel(revision: $revision, data: $data) {
+            ${DATA_FIELD}
+            ${ERROR_FIELD}
+        }
+    }
+`;
+
+export interface UpdateEntryLocationVariables {
+    id: string;
+    folderId: string;
+}
+
+export type UpdateEntryLocationResult = GetEntryResult;
+export const UPDATE_ENTRY_LOCATION_MUTATION = /* GraphQL */ `
+    mutation UpdateEntryLocationMutation($id: ID!, $folderId: ID!) {
+        entry: updateTestAcoModelLocation(id: $id, folderId: $folderId) {
+            ${DATA_FIELD}
+            ${ERROR_FIELD}
+        }
+    }
+`;

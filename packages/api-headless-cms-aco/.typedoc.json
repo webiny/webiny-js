@@ -1,0 +1,4 @@
+{
+  "name": "API Headless CMS",
+  "entryPoints": ["types.ts"]
+}

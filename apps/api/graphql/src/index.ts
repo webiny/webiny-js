@@ -23,12 +23,12 @@ import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createHeadlessCmsAco } from "@webiny/api-headless-cms-aco";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
-
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAcoFileManagerContext } from "@webiny/api-file-manager-aco";
@@ -91,6 +91,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createHeadlessCmsAco(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
