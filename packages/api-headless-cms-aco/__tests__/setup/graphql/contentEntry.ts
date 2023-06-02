@@ -23,24 +23,34 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+const META_FIELD = /* GraphQL */ `
+    meta {
+        cursor
+        hasMoreItems
+        totalCount
+    }
+`;
+
+interface Entry {
+    id: string;
+    entryId: string;
+    title: string;
+    meta: {
+        location?: {
+            folderId?: string;
+        };
+    };
+}
+export interface CmsError {
+    code: string;
+    message: string;
+    data: any;
+}
 export interface GetEntryResult {
     data: {
         entry: {
-            data: {
-                id: string;
-                entryId: string;
-                title: string;
-                meta: {
-                    location?: {
-                        folderId?: string;
-                    };
-                };
-            } | null;
-            error: {
-                code: string;
-                message: string;
-                data: any;
-            } | null;
+            data: Entry | null;
+            error: CmsError | null;
         };
     };
 }
@@ -59,6 +69,36 @@ export const GET_ENTRY_QUERY = /* GraphQL */ `
         entry: getTestAcoModel(revision: $revision, entryId: $entryId) {
             ${DATA_FIELD}
             ${ERROR_FIELD}
+        }
+    }
+`;
+
+export interface ListEntriesInputVariables {
+    where?: {
+        createdBy?: string;
+        meta?: {
+            location?: {
+                folderId?: string;
+            };
+        };
+    };
+}
+
+export interface ListEntriesResult {
+    data: {
+        entries: {
+            data: Entry[] | null;
+            error: CmsError | null;
+        };
+    };
+}
+
+export const LIST_ENTRIES_QUERY = /* GraphQL */ `
+    query ListEntriesQuery($where: TestAcoModelListWhereInput) {
+        entries: listTestAcoModels(where: $where) {
+            ${DATA_FIELD}
+            ${ERROR_FIELD}
+            ${META_FIELD}
         }
     }
 `;

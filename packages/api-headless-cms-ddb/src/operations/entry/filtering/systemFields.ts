@@ -44,10 +44,32 @@ export const createSystemFields = (): Field[] => {
         },
         {
             id: "meta",
-            type: "plainObject",
+            type: "object",
             storageId: "meta",
             fieldId: "meta",
-            label: "Meta"
+            label: "Meta",
+            settings: {
+                fields: [
+                    {
+                        id: "location",
+                        type: "object",
+                        storageId: "location",
+                        fieldId: "location",
+                        label: "Location",
+                        settings: {
+                            fields: [
+                                {
+                                    id: "folderId",
+                                    type: "text",
+                                    storageId: "folderId",
+                                    fieldId: "folderId",
+                                    label: "Folder ID"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
         },
         {
             id: "ownedBy",

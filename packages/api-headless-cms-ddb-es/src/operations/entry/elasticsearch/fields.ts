@@ -107,6 +107,96 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
+        meta: {
+            type: "object",
+            systemField: true,
+            searchable: true,
+            sortable: true,
+            field: createSystemField({
+                storageId: "meta",
+                fieldId: "meta",
+                type: "object",
+                settings: {
+                    fields: [
+                        {
+                            id: "location",
+                            fieldId: "location",
+                            storageId: "location",
+                            type: "object",
+                            label: "Location",
+                            settings: {
+                                fields: [
+                                    {
+                                        id: "folderId",
+                                        fieldId: "folderId",
+                                        storageId: "folderId",
+                                        type: "text",
+                                        label: "Folder ID"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }),
+            parents: []
+        },
+        "meta.location": {
+            type: "object",
+            systemField: true,
+            searchable: true,
+            sortable: true,
+            field: createSystemField({
+                id: "location",
+                fieldId: "location",
+                storageId: "location",
+                type: "object",
+                label: "Location",
+                settings: {
+                    fields: [
+                        {
+                            id: "folderId",
+                            fieldId: "folderId",
+                            storageId: "folderId",
+                            type: "text",
+                            label: "Folder ID"
+                        }
+                    ]
+                }
+            }),
+            parents: [
+                {
+                    fieldId: "meta",
+                    type: "object",
+                    storageId: "meta"
+                }
+            ]
+        },
+        "meta.location.folderId": {
+            type: "text",
+            systemField: true,
+            searchable: true,
+            sortable: true,
+            field: createSystemField({
+                id: "folderId",
+                fieldId: "folderId",
+                storageId: "folderId",
+                type: "text",
+                label: "Folder ID"
+            }),
+            parents: [
+                {
+                    fieldId: "meta",
+                    type: "object",
+                    storageId: "meta"
+                },
+                {
+                    fieldId: "location",
+                    type: "object",
+                    storageId: "location"
+                }
+            ]
+        },
         version: {
             type: "number",
             unmappedType: undefined,

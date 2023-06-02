@@ -172,7 +172,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
 
             const field = fields[fieldId];
             if (!field) {
-                throw new WebinyError(`There is no field "${fieldId}".`);
+                throw new WebinyError(`There is no field "${fieldId}".`, "EXEC_FILTERING_ERROR");
             }
             const filterPlugin = getFilterPlugin(field.type);
 

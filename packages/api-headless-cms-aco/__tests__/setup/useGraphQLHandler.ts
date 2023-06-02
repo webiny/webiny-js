@@ -16,7 +16,10 @@ import {
     UpdateEntryResult,
     UPDATE_ENTRY_LOCATION_MUTATION,
     UpdateEntryLocationVariables,
-    UpdateEntryLocationResult
+    UpdateEntryLocationResult,
+    ListEntriesInputVariables,
+    ListEntriesResult,
+    LIST_ENTRIES_QUERY
 } from "./graphql/contentEntry";
 import { createUpdateLocationGraphQl } from "~tests/setup/updateLocationGraphQlPlugin";
 
@@ -98,6 +101,14 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             return invoke<GetEntryResult>({
                 body: {
                     query: GET_ENTRY_QUERY,
+                    variables
+                }
+            });
+        },
+        async listEntries(variables: ListEntriesInputVariables) {
+            return invoke<ListEntriesResult>({
+                body: {
+                    query: LIST_ENTRIES_QUERY,
                     variables
                 }
             });

@@ -1,22 +1,42 @@
 import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms";
 
-const createTypeDefs = (models: CmsModel[]): string => {
-    return [
+const createTypeDefs = (models: CmsModel[], manage?: boolean): string => {
+    const base: string[] = [
         /* GraphQL */ `
             type WbyLocation {
                 folderId: ID
             }
         `
-    ]
+    ];
+    if (manage) {
+        base.push(`
+            input WbyMetaLocationInput {
+                folderId: ID
+            }
+            input WbyMetaInput {
+                location: WbyMetaLocationInput
+            }
+        `);
+    }
+    return base
         .concat(
-            models.map(model => {
-                return /* GraphQL */ `
-                extend type ${model.singularApiName}Meta {
-                    location: WbyLocation
+            models.reduce<string[]>((collection, model) => {
+                if (manage) {
+                    collection.push(/* GraphQL */ `
+                        extend input ${model.singularApiName}ListWhereInput {
+                            meta: WbyMetaInput
+                        }
+                    `);
                 }
-            `;
-            })
+                collection.push(/* GraphQL */ `
+                    extend type ${model.singularApiName}Meta {
+                        location: WbyLocation
+                    }
+                `);
+
+                return collection;
+            }, [])
         )
         .join("\n");
 };
@@ -39,7 +59,7 @@ export const extendHeadlessCmsGraphQL = async (context: CmsContext): Promise<voi
     });
 
     const plugin = new CmsGraphQLSchemaPlugin({
-        typeDefs: createTypeDefs(models),
+        typeDefs: createTypeDefs(models, context.cms.type === "manage"),
         resolvers: createResolvers(models)
     });
 
