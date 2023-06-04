@@ -7,12 +7,15 @@ import { RichVariableInputPlugin } from "~/plugins/elementSettings/variables/Ric
 import { TextVariableInputPlugin } from "~/plugins/elementSettings/variables/TextVariableInputPlugin";
 import { PbTextPlugin } from "~/plugins/PbTextPlugin";
 import { TextElementRendererPlugin } from "~/render/plugins/TextElementRendererPlugin";
+import { CompositionScope } from "@webiny/react-composition";
 
 export const LexicalEditorPlugin = () => {
     return (
         <>
-            <HeadingToolbarPreset />
-            <ParagraphToolbarPreset />
+            <CompositionScope name={"pb"}>
+                <HeadingToolbarPreset />
+                <ParagraphToolbarPreset />
+            </CompositionScope>
             {/* Components */}
             <PeTextPlugin />
             <PbTextPlugin />

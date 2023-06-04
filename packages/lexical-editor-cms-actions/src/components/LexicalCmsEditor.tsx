@@ -12,6 +12,7 @@ import {
 } from "@webiny/lexical-editor";
 import { usePageElements } from "@webiny/app-page-builder-elements";
 import { RichTextStaticToolbar } from "~/components/RichTextStaticToolbar";
+import { CompositionScope } from "@webiny/react-composition";
 
 interface RichTextContentEditorProps extends Omit<RichTextEditorProps, "theme"> {
     tag?: "p";
@@ -28,7 +29,11 @@ export const LexicalCmsEditor: React.FC<RichTextContentEditorProps> = ({
     const { theme } = usePageElements();
     return (
         <RichTextEditor
-            staticToolbar={<RichTextStaticToolbar actionPlugins={toolbarActionPlugins} />}
+            staticToolbar={
+                <CompositionScope name={"cms"}>
+                    <RichTextStaticToolbar actionPlugins={toolbarActionPlugins} />
+                </CompositionScope>
+            }
             tag={tag ?? "p"}
             placeholder={placeholder ?? "Enter your text here..."}
             {...rest}
