@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { CompositionScope } from "@webiny/react-composition";
 import PeText from "@webiny/app-page-builder/editor/components/Text/PeText";
 import { createComponentPlugin } from "@webiny/react-composition";
 import get from "lodash/get";
@@ -33,7 +34,9 @@ export const PeTextPlugin = createComponentPlugin(PeText, Original => {
         const content = variableValue || element.data?.text?.data?.text;
 
         return isValidLexicalData(content) ? (
-            <LexicalText elementId={elementId} tag={tag} />
+            <CompositionScope name={"pb"}>
+                <LexicalText elementId={elementId} tag={tag} />
+            </CompositionScope>
         ) : (
             <Original elementId={elementId} tag={tag} mediumEditorOptions={mediumEditorOptions} />
         );

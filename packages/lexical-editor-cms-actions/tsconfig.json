@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../app-page-builder-elements" }, { "path": "../lexical-editor" }],
+  "references": [
+    { "path": "../app-page-builder-elements" },
+    { "path": "../lexical-editor" },
+    { "path": "../react-composition" },
+    { "path": "../theme" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -12,7 +17,11 @@
       "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
       "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
-      "@webiny/lexical-editor": ["../lexical-editor/src"]
+      "@webiny/lexical-editor": ["../lexical-editor/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
+      "@webiny/theme/*": ["../theme/src/*"],
+      "@webiny/theme": ["../theme/src"]
     },
     "baseUrl": "."
   }

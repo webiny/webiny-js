@@ -109,7 +109,6 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
 };
 
 export interface StaticToolbarToolbarProps {
-    type: ToolbarType;
     children?: React.ReactNode;
     actionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
@@ -119,8 +118,8 @@ export interface StaticToolbarToolbarProps {
  */
 export const StaticToolbar = makeComposable<StaticToolbarToolbarProps>(
     "StaticToolbar",
-    ({ type, actionPlugins, children }): JSX.Element | null => {
+    ({ actionPlugins, children }): JSX.Element | null => {
         const [editor] = useLexicalComposerContext();
-        return useStaticToolbar({ actionPlugins, editor, type, children });
+        return useStaticToolbar({ actionPlugins, editor, type: "static", children });
     }
 );
