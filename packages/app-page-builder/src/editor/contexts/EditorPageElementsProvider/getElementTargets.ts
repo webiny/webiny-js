@@ -1,0 +1,12 @@
+// Get the plugin via which the page element was registered and check if the `onReceived` method is defined.
+import { plugins } from "@webiny/plugins";
+import { PbEditorPageElementPlugin } from "~/types";
+import type { Element } from "@webiny/app-page-builder-elements/types";
+
+export const getElementTargets = (element: Element) => {
+    const elementPlugin = plugins
+        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .find(item => item.elementType === element.type);
+
+    return elementPlugin?.targets || [];
+};
