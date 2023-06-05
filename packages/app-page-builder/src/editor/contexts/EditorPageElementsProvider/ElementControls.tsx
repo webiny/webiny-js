@@ -65,8 +65,6 @@ export const ElementControls = () => {
     }, [element.id]);
 
     if (isDroppable && isDragging) {
-        // Here we don't need to render `ElementControlHorizontalDropZones` as it's simply
-        // not needed. It's only needed when at least one element has been dropped.
         return (
             <Droppable
                 onDrop={source => dropElementAction(source)}
