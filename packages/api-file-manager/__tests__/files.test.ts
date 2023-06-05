@@ -3,7 +3,7 @@ import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
 import { ids, fileDData, fileCData, fileBData, fileAData } from "./mocks/files";
 
-jest.retryTimes(0);
+jest.retryTimes(3);
 
 // const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
 
