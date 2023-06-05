@@ -7,6 +7,8 @@ import { isInstallationPending } from "~/cmsFileStorage/isInstallationPending";
 import { createFileManagerPlugins } from "~/cmsFileStorage/createFileManagerPlugins";
 import { FILE_MODEL_ID } from "~/cmsFileStorage/file.model";
 import { CmsFilesStorage } from "~/cmsFileStorage/CmsFilesStorage";
+import { CmsModelModifierPlugin } from "~/modelModifier/CmsModelModifier";
+import { CmsModelPlugin } from "@webiny/api-headless-cms";
 
 export class FileManagerContextSetup {
     private readonly context: FileManagerContext;
@@ -76,9 +78,20 @@ export class FileManagerContextSetup {
         }
 
         // This registers code plugins (model group, models)
-        this.context.plugins.register(createFileManagerPlugins());
+        const { groupPlugin, fileModelDefinition } = createFileManagerPlugins();
 
-        // Now load the file model registered in the previous step.
+        const modelModifiers = this.context.plugins.byType<CmsModelModifierPlugin>(
+            CmsModelModifierPlugin.type
+        );
+
+        for (const modifier of modelModifiers) {
+            await modifier.modifyModel(fileModelDefinition);
+        }
+
+        // Finally, register all plugins
+        this.context.plugins.register([groupPlugin, new CmsModelPlugin(fileModelDefinition)]);
+
+        // Now load the file model registered in the previous step
         const fileModel = await this.getModel(FILE_MODEL_ID);
 
         // Overwrite the original `files` storage ops
@@ -98,6 +111,7 @@ export class FileManagerContextSetup {
                 message: `Content model "${modelId}" was not found!`
             });
         }
+
         return model;
     }
 }

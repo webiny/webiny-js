@@ -31,7 +31,8 @@ export const fileCData = {
     name: "filenameC.png",
     size: 123456,
     type: "image/png",
-    tags: ["art", "sketch", "webiny", "file-c"]
+    tags: ["art", "sketch", "webiny", "file-c"],
+    aliases: []
 };
 export const fileDData = {
     id: ids.D,
@@ -39,5 +40,6 @@ export const fileDData = {
     name: "filenameD.png",
     size: 123456,
     type: "image/png",
-    tags: ["scope:apw:file-d", "scope:apw", "scope:apw:media"]
+    tags: ["scope:apw:file-d", "scope:apw", "scope:apw:media"],
+    aliases: []
 };

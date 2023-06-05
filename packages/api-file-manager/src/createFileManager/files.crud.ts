@@ -263,20 +263,10 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         async listFiles(params: FilesListOpts = {}) {
             const permission = await checkBasePermissions(getPermission, { rwd: "r" });
 
-            const {
-                limit = 40,
-                search = "",
-                types = [],
-                tags = [],
-                ids = [],
-                after = null,
-                where: initialWhere,
-                sort: initialSort
-            } = params;
+            const { limit = 40, after = null, where: initialWhere, sort: initialSort } = params;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
-                ...initialWhere,
-                private: false,
+                ...{ meta: { private_not: true }, ...initialWhere },
                 locale: getLocaleCode(),
                 tenant: getTenantId()
             };
@@ -286,35 +276,6 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             if (permission.own === true) {
                 const identity = getIdentity();
                 where.createdBy = identity.id;
-            }
-            /**
-             * We need to map the old GraphQL definition to the new one.
-             * That GQL definition is marked as deprecated.
-             */
-            /**
-             * To have standardized where objects across the applications, we transform the types into type_in.
-             */
-            if (Array.isArray(types) && types.length > 0 && !where.type_in) {
-                where.type_in = types;
-            }
-            /**
-             * We are assigning search to tag and name search.
-             * This should be treated as OR condition in the storage operations.
-             */
-            if (search && !where.search) {
-                where.search = search;
-            }
-            /**
-             * Same as on types/type_in.
-             */
-            if (Array.isArray(tags) && tags.length > 0 && !where.tag_in) {
-                where.tag_in = tags.map(tag => tag.toLowerCase());
-            }
-            /**
-             * Same as on types/type_in.
-             */
-            if (Array.isArray(ids) && ids.length > 0 && !where.id_in) {
-                where.id_in = ids;
             }
 
             const sort =

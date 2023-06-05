@@ -38,23 +38,16 @@ export interface FileInput {
     meta: Record<string, any>;
     tags: string[];
     aliases: string[];
+    extensions?: Record<string, any>;
 }
 
 export interface FileListWhereParams {
-    search?: string;
-    type?: string;
-    type_in?: string[];
-    tag?: string;
-    tag_in?: string[];
-    tag_and_in?: string[];
-    id_in?: string[];
-    id?: string;
+    AND?: FileListWhereParams[];
+    OR?: FileListWhereParams[];
+    [key: string]: any;
 }
 export interface FilesListOpts {
     search?: string;
-    types?: string[];
-    tags?: string[];
-    ids?: string[];
     limit?: number;
     after?: string;
     where?: FileListWhereParams;
@@ -291,24 +284,7 @@ export interface FileManagerFilesStorageOperationsCreateBatchParams {
  * @category FilesStorageOperationsParams
  */
 export interface FileManagerFilesStorageOperationsListParamsWhere {
-    id?: string;
-    id_in?: string[];
-    name?: string;
-    name_contains?: string;
-    tag?: string;
-    tag_contains?: string;
-    tag_and_in?: string[];
-    tag_startsWith?: string;
-    tag_not_startsWith?: string;
-    tag_in?: string[];
-    createdBy?: string;
-    locale: string;
-    tenant: string;
-    private?: boolean;
-    type?: string;
-    type_in?: string[];
-    search?: string;
-    extensions?: Record<string, any>;
+    [key: string]: any;
 }
 /**
  * @category StorageOperations

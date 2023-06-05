@@ -1,7 +1,6 @@
 import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 import { createModelField } from "./createModelField";
-
-export type FileModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
+import { CmsModelGroup } from "@webiny/api-headless-cms/types";
 
 const required = () => {
     return {
@@ -42,7 +41,21 @@ const sizeField = () => {
     });
 };
 
-const privateField = () => {
+const metaWidthField = () => {
+    return createModelField({
+        label: "Width",
+        type: "number"
+    });
+};
+
+const metaHeightField = () => {
+    return createModelField({
+        label: "Height",
+        type: "number"
+    });
+};
+
+const metaPrivateField = () => {
     return createModelField({
         label: "Private",
         type: "boolean"
@@ -54,7 +67,7 @@ const metaField = () => {
         label: "Meta",
         type: "object",
         settings: {
-            fields: [privateField()]
+            fields: [metaPrivateField(), metaWidthField(), metaHeightField()]
         }
     });
 };
@@ -79,9 +92,9 @@ const aliasesField = () => {
 
 export const FILE_MODEL_ID = "fmFile";
 
-export const createFileModelDefinition = (): FileModelDefinition => {
+export const createFileModelDefinition = (group: CmsModelGroup): CmsPrivateModelFull => {
     return {
-        name: "File Manager - File",
+        name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
         layout: [["name"], ["key"], ["type"], ["size"], ["meta"], ["tags"], ["aliases"]],
@@ -95,6 +108,8 @@ export const createFileModelDefinition = (): FileModelDefinition => {
             aliasesField()
         ],
         description: "File Manager - File content model",
-        isPrivate: true
+        isPrivate: true,
+        group,
+        noValidate: true
     };
 };
