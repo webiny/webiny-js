@@ -14,6 +14,14 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     name: "graphql-schema-api-file-manager-s3",
     schema: {
         typeDefs: /* GraphQL */ `
+            type UploadFileResponseDataFile {
+                id: ID!
+                name: String!
+                type: String!
+                size: Long!
+                key: String!
+            }
+            
             input PreSignedPostPayloadInput {
                 name: String!
                 type: String!
@@ -35,7 +43,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             }
 
             type GetPreSignedPostPayloadResponse {
-                error: FileError
+                error: FmError
                 data: GetPreSignedPostPayloadResponseData
             }
 
@@ -52,11 +60,11 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
             type CompleteMultiPartUploadResponse {
                 data: Boolean
-                error: FileError
+                error: FmError
             }
 
             type GetPreSignedPostPayloadsResponse {
-                error: FileError
+                error: FmError
                 data: [GetPreSignedPostPayloadResponseData!]!
             }
 
@@ -71,7 +79,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
             type CreateMultiPartUploadResponse {
                 data: CreateMultiPartUploadResponseData
-                error: FileError
+                error: FmError
             }
 
             input MultiPartUploadFilePartInput {
