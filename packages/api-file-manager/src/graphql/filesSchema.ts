@@ -1,0 +1,93 @@
+import {
+    ErrorResponse,
+    GraphQLSchemaPlugin,
+    ListResponse,
+    Response
+} from "@webiny/handler-graphql";
+import { FileManagerContext, FilesListOpts } from "~/types";
+import { emptyResolver, resolve } from "./utils";
+import { createFilesTypeDefs, CreateFilesTypeDefsParams } from "~/graphql/createFilesTypeDefs";
+
+export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
+    const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
+        typeDefs: createFilesTypeDefs(params),
+        resolvers: {
+            Query: {
+                fileManager: emptyResolver
+            },
+            Mutation: {
+                fileManager: emptyResolver
+            },
+            FmFile: {
+                async src(file, _, context: FileManagerContext) {
+                    const settings = await context.fileManager.getSettings();
+                    return (settings?.srcPrefix || "") + file.key;
+                }
+            },
+            FmQuery: {
+                getFile(_, args: any, context) {
+                    return resolve(() => context.fileManager.getFile(args.id));
+                },
+                async listFiles(_, args: FilesListOpts, context) {
+                    try {
+                        const where = args.where || {};
+                        if (args.search) {
+                            where.OR = [
+                                {
+                                    name_contains: args.search
+                                },
+                                {
+                                    tags_contains: args.search
+                                }
+                            ];
+                        }
+
+                        const [data, meta] = await context.fileManager.listFiles({
+                            ...args,
+                            where
+                        });
+
+                        return new ListResponse(data, meta);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                async listTags(_, args: any, context) {
+                    try {
+                        const tags = await context.fileManager.listTags(args || {});
+
+                        return new Response(tags);
+                    } catch (error) {
+                        return new ErrorResponse(error);
+                    }
+                }
+            },
+            FmMutation: {
+                async createFile(_, args: any, context) {
+                    return resolve(() => context.fileManager.createFile(args.data, args.meta));
+                },
+                async createFiles(_, args: any, context) {
+                    return resolve(() =>
+                        context.fileManager.createFilesInBatch(args.data, args.meta)
+                    );
+                },
+                async updateFile(_, args: any, context) {
+                    return resolve(() => context.fileManager.updateFile(args.id, args.data));
+                },
+                async deleteFile(_, args: any, context) {
+                    return resolve(async () => {
+                        // TODO: Ideally, this should work via a lifecycle hook; first we delete a record from DB, then from cloud storage.
+                        const file = await context.fileManager.getFile(args.id);
+                        return await context.fileManager.storage.delete({
+                            id: file.id,
+                            key: file.key
+                        });
+                    });
+                }
+            }
+        }
+    });
+    fileManagerGraphQL.name = "fm.graphql.files";
+
+    return fileManagerGraphQL;
+};

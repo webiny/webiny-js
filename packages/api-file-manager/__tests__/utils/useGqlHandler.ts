@@ -1,13 +1,5 @@
-import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws/gateway";
-import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { until } from "@webiny/project-utils/testing/helpers/until";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-
-// Graphql
 import {
     CREATE_FILE,
     CREATE_FILES,
@@ -23,19 +15,7 @@ import {
     GET_SETTINGS,
     UPDATE_SETTINGS
 } from "~tests/graphql/fileManagerSettings";
-import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { FilePhysicalStoragePlugin } from "~/plugins/FilePhysicalStoragePlugin";
-import { PluginCollection } from "@webiny/plugins/types";
-import { createFileManagerContext, createFileManagerGraphQL } from "~/index";
-import { FileManagerStorageOperations } from "~/types";
-import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
-
-export interface UseGqlHandlerParams {
-    permissions?: SecurityPermission[];
-    identity?: SecurityIdentity | null;
-    plugins?: PluginCollection;
-}
+import { HandlerParams, handlerPlugins } from "./plugins";
 
 interface InvokeParams {
     httpMethod?: "POST";
@@ -46,50 +26,10 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-export default (params: UseGqlHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
-
-    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
-
+export default (params: HandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
-        plugins: [
-            ...cmsStorage.plugins,
-            ...fileManagerStorage.plugins,
-            createWcpContext(),
-            createWcpGraphQL(),
-            ...i18nStorage.storageOperations,
-            graphqlHandlerPlugins(),
-            ...createTenancyAndSecurity({ permissions, identity }),
-            i18nContext(),
-            mockLocalesPlugins(),
-            new CmsParametersPlugin(async () => {
-                return {
-                    locale: "en-US",
-                    type: "manage"
-                };
-            }),
-            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
-            createFileManagerContext({
-                storageOperations: fileManagerStorage.storageOperations
-            }),
-            createFileManagerGraphQL(),
-            /**
-             * Mock physical file storage plugin.
-             */
-            new FilePhysicalStoragePlugin({
-                // eslint-disable-next-line
-                upload: async () => {},
-                // eslint-disable-next-line
-                delete: async () => {}
-            }),
-            /**
-             * Make sure we dont have undefined plugins value.
-             */
-            ...(plugins || [])
-        ]
+        plugins: handlerPlugins(params)
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.

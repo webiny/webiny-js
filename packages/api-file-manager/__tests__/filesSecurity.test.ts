@@ -3,6 +3,7 @@ import { SecurityPermission, SecurityIdentity } from "@webiny/api-security/types
 import useGqlHandler from "~tests/utils/useGqlHandler";
 
 jest.setTimeout(10000);
+jest.retryTimes(0);
 
 function createFileMock(prefix = "") {
     const id = mdbid();

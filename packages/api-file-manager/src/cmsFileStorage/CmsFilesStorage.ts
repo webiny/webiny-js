@@ -1,5 +1,5 @@
 import omit from "lodash/omit";
-import { HeadlessCms, CmsModel, CmsEntry, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
+import { HeadlessCms, CmsModel, CmsEntry } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
 import {
     File,
@@ -10,15 +10,13 @@ import {
     FileManagerFilesStorageOperationsDeleteParams,
     FileManagerFilesStorageOperationsGetParams,
     FileManagerFilesStorageOperationsListParams,
-    FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsListResponse,
     FileManagerFilesStorageOperationsTagsParams,
     FileManagerFilesStorageOperationsTagsResponse,
     FileManagerFilesStorageOperationsUpdateParams
 } from "~/types";
-
-type StandardFileKey = keyof FileManagerFilesStorageOperationsListParamsWhere;
-type CmsEntryListWhereKey = keyof CmsEntryListWhere;
+import { ListFilesWhereProcessor } from "~/cmsFileStorage/ListFilesWhereProcessor";
+import { ListTagsWhereProcessor } from "~/cmsFileStorage/ListTagsWhereProcessor";
 
 interface ModelContext {
     tenant: string;
@@ -30,6 +28,8 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     private readonly security: Security;
     private readonly model: CmsModel;
     private readonly aliases: FileManagerAliasesStorageOperations;
+    private readonly filesWhereProcessor: ListFilesWhereProcessor;
+    private readonly tagsWhereProcessor: ListTagsWhereProcessor;
 
     static async create(params: {
         fileModel: CmsModel;
@@ -50,6 +50,8 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         this.aliases = aliases;
         this.cms = cms;
         this.security = security;
+        this.filesWhereProcessor = new ListFilesWhereProcessor();
+        this.tagsWhereProcessor = new ListTagsWhereProcessor();
     }
 
     private modelWithContext({ tenant, locale }: ModelContext): CmsModel {
@@ -104,11 +106,12 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
 
         const model = this.modelWithContext({ tenant, locale });
         const [entries, meta] = await this.security.withoutAuthorization(() => {
+            const where = this.filesWhereProcessor.process(params.where);
             return this.cms.listLatestEntries(model, {
                 after: params.after,
                 limit: params.limit,
                 sort: params.sort,
-                where: this.processWhereInput(params.where)
+                where
             });
         });
 
@@ -125,7 +128,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             return this.cms.getUniqueFieldValues(model, {
                 fieldId: "tags",
                 where: {
-                    ...this.processWhereInput(params.where),
+                    ...this.tagsWhereProcessor.process(params.where),
                     latest: true
                 }
             });
@@ -167,55 +170,6 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
 
             return this.getFileFieldValues(updatedEntry);
         });
-    }
-
-    private processWhereInput(
-        input: FileManagerFilesStorageOperationsListParamsWhere
-    ): CmsEntryListWhere {
-        const where: CmsEntryListWhere = {};
-
-        const keyMap: Partial<Record<StandardFileKey, CmsEntryListWhereKey>> = {
-            createdBy: "createdBy",
-            id: "entryId",
-            id_in: "entryId_in",
-            name: "name",
-            name_contains: "name_contains",
-            tag: "tags_in",
-            tag_contains: "tags_contains",
-            tag_not_startsWith: "tags_not_startsWith",
-            tag_startsWith: "tags_startsWith",
-            tag_and_in: "tags_and_in",
-            tag_in: "tags_in",
-            type: "type",
-            type_in: "type_in",
-            extensions: "extensions"
-        };
-
-        (Object.keys(keyMap) as Array<StandardFileKey>).forEach(key => {
-            const cmsKey = keyMap[key];
-            if (cmsKey) {
-                where[cmsKey] = input[key];
-            }
-        });
-
-        if (input.private) {
-            where.meta = { private: true };
-        } else {
-            where.meta = { private_not: true };
-        }
-
-        if (input.search) {
-            where.OR = [
-                {
-                    name_contains: input.search
-                },
-                {
-                    tags_contains: input.search
-                }
-            ];
-        }
-
-        return where;
     }
 
     private getFileFieldValues(entry: CmsEntry) {

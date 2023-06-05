@@ -3,7 +3,7 @@ import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
 import { ids, fileDData, fileCData, fileBData, fileAData } from "./mocks/files";
 
-jest.retryTimes(3);
+jest.retryTimes(0);
 
 // const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
 
@@ -190,7 +190,9 @@ describe("Files CRUD test", () => {
         });
 
         const [response] = await listFiles({
-            tags: ["art"]
+            where: {
+                tags_in: ["art"]
+            }
         });
 
         expect(response).toEqual({
@@ -210,7 +212,9 @@ describe("Files CRUD test", () => {
         });
 
         const [scopedListFilesResponse] = await listFiles({
-            tags: ["scope:apw"]
+            where: {
+                tags_in: ["scope:apw"]
+            }
         });
 
         expect(scopedListFilesResponse).toEqual({
@@ -362,100 +366,13 @@ describe("Files CRUD test", () => {
         });
     });
 
-    it("should find all files with given multiple tags - and operator", async () => {
-        await createFiles({
-            data: [fileAData, fileBData, fileCData, fileDData]
-        });
 
-        const [cResponse] = await listFiles({
-            where: {
-                tag_and_in: ["art", "webiny"]
-            }
-        });
-
-        expect(cResponse).toEqual({
-            data: {
-                fileManager: {
-                    listFiles: {
-                        data: [
-                            {
-                                ...fileCData,
-                                aliases: []
-                            }
-                        ],
-                        error: null,
-                        meta: {
-                            hasMoreItems: false,
-                            totalCount: 1,
-                            cursor: null
-                        }
-                    }
-                }
-            }
-        });
-
-        const [acResponse] = await listFiles({
-            where: {
-                tag_and_in: ["sketch", "webiny"]
-            }
-        });
-
-        expect(acResponse).toEqual({
-            data: {
-                fileManager: {
-                    listFiles: {
-                        data: [
-                            {
-                                ...fileCData,
-                                aliases: []
-                            },
-                            fileAData
-                        ],
-                        error: null,
-                        meta: {
-                            hasMoreItems: false,
-                            totalCount: 2,
-                            cursor: null
-                        }
-                    }
-                }
-            }
-        });
-
-        const [dResponse] = await listFiles({
-            where: {
-                tag_and_in: ["scope:apw:media", "scope:apw:file-d"],
-                tag_startsWith: "scope:apw"
-            }
-        });
-
-        expect(dResponse).toEqual({
-            data: {
-                fileManager: {
-                    listFiles: {
-                        data: [
-                            {
-                                ...fileDData,
-                                aliases: []
-                            }
-                        ],
-                        error: null,
-                        meta: {
-                            hasMoreItems: false,
-                            totalCount: 1,
-                            cursor: null
-                        }
-                    }
-                }
-            }
-        });
-    });
     /**
      * Unfortunately this test is skipped because it is not passing on the CI (DDB+ES package).
      * Testing the search locally and on deployed system shows that searching works.
      */
     // eslint-disable-next-line
-    it.skip("should find files by name", async () => {
+    it("should find files by name", async () => {
         const [createResponse] = await createFiles({
             data: [fileAData, fileBData, fileCData]
         });

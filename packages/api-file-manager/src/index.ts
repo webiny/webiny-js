@@ -18,3 +18,5 @@ export const createFileManagerContext = ({
 export const createFileManagerGraphQL = () => {
     return createGraphQLSchemaPlugin();
 };
+
+export * from "./modelModifier/CmsModelModifier";

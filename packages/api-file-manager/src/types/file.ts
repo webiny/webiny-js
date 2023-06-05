@@ -16,7 +16,7 @@ export interface File {
     locale: string;
     webinyVersion: string;
     /**
-     * User can add new fields to the File object so we must allow it in the types.
+     * User can add new fields to the File object, so we must allow it in the types.
      */
     [key: string]: any;
 }
