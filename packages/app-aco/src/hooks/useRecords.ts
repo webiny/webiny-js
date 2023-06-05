@@ -1,6 +1,8 @@
+import dotPropImmutable from "dot-prop-immutable";
 import { useContext, useEffect, useMemo } from "react";
 import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
 import { DeletableSearchRecordItem, MovableSearchRecordItem, SearchRecordItem } from "~/types";
+import { useAcoApp } from "~/hooks/useAcoApp";
 
 export const useRecords = (folderId?: string) => {
     const context = useContext(SearchRecordsContext);
@@ -8,6 +10,8 @@ export const useRecords = (folderId?: string) => {
     if (!context) {
         throw new Error("useSearchRecords must be used within a SearchRecordsContext");
     }
+
+    const { folderIdPath } = useAcoApp();
 
     const {
         records,
@@ -29,12 +33,9 @@ export const useRecords = (folderId?: string) => {
         if (!folderId) {
             return;
         }
+        const where = dotPropImmutable.set({}, folderIdPath, folderId);
         listRecords({
-            where: {
-                location: {
-                    folderId
-                }
-            }
+            where
         });
     }, [folderId]);
 
@@ -49,14 +50,10 @@ export const useRecords = (folderId?: string) => {
             meta: meta[folderId!] || {},
             records: records.filter(record => record.location.folderId === folderId),
             listRecords(params: ListRecordsParams) {
+                const where = dotPropImmutable.set(params.where || {}, folderIdPath, folderId);
                 return listRecords({
                     ...params,
-                    where: {
-                        ...(params.where || {}),
-                        location: {
-                            folderId
-                        }
-                    }
+                    where
                 });
             },
             getRecord(id: string) {

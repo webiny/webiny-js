@@ -1,3 +1,4 @@
+import dotPropImmutable from "dot-prop-immutable";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
@@ -10,6 +11,7 @@ import {
     SearchRecordItem
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
+import { useAcoApp } from "~/hooks/useAcoApp";
 
 interface UseAcoListParams {
     folderId?: string;
@@ -80,6 +82,7 @@ const getCurrentRecordList = <T = GenericSearchData>(
 export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
     const { folderId, limit: initialLimit = 50, ...initialWhere } = params;
 
+    const { folderIdPath } = useAcoApp();
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
 
@@ -117,12 +120,7 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             };
         }
         if (folderId) {
-            if (!where) {
-                where = {};
-            }
-            where.location = {
-                folderId
-            };
+            where = dotPropImmutable.set(where || {}, folderIdPath, folderId);
         }
 
         listRecords({
@@ -185,20 +183,24 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             ),
             isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
             meta: meta[folderId || "search"] || defaultMeta,
-            listItems({ where, sort: initialSort, after, limit = initialLimit, search }) {
+            listItems({
+                where: initialWhere,
+                sort: initialSort,
+                after,
+                limit = initialLimit,
+                search
+            }) {
                 let sort: ListSearchRecordsSort | undefined = undefined;
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (initialSort?.length) {
                     sort = validateOrGetDefaultDbSort(initialSort);
                     setSort(sort);
                 }
+                let where = {
+                    ...(initialWhere || {})
+                };
                 if (folderId) {
-                    where = {
-                        ...(where || {}),
-                        location: {
-                            folderId
-                        }
-                    };
+                    where = dotPropImmutable.set(where, folderIdPath, folderId);
                 }
 
                 const params: ListRecordsParams = {

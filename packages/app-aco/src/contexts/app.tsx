@@ -10,6 +10,7 @@ import { ApolloClient } from "apollo-client";
 
 export interface AcoAppProviderContext {
     app: AcoApp;
+    folderIdPath: string;
     model: AcoModel;
     client: ApolloClient<any>;
     loading: boolean;
@@ -30,6 +31,7 @@ export const AcoAppContext = React.createContext<AcoAppProviderContext | undefin
 interface BaseAcoAppProviderProps {
     children: React.ReactNode;
     id: string;
+    folderIdPath?: string;
     folderIdQueryString?: string;
     client: ApolloClient<any>;
     createNavigateFolderListLink?: () => string;
@@ -96,7 +98,8 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     getFields,
     folderIdQueryString,
     createNavigateFolderListLink,
-    createNavigateFolderStorageKey
+    createNavigateFolderStorageKey,
+    folderIdPath: initialFolderIdPath
 }) => {
     const [state, setState] = useState<AcoAppProviderState>({
         loading: false,
@@ -105,6 +108,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
         error: null,
         mode: "aco"
     });
+    const folderIdPath = initialFolderIdPath || "location.folderId";
 
     /**
      * The APP Provider can operate in two modes:
@@ -203,6 +207,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     const value = useMemo<AcoAppProviderContext>(() => {
         return {
             app: app as AcoApp,
+            folderIdPath,
             loading,
             client,
             model: model as AcoModel,

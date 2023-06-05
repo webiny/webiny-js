@@ -1,4 +1,5 @@
 import React, { ReactNode, useMemo, useState } from "react";
+import dotPropImmutable from "dot-prop-immutable";
 import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
@@ -129,7 +130,7 @@ const getResponseData = (response: any, mode: AcoAppMode): any => {
 };
 
 export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
-    const { app, client, mode } = useAcoApp();
+    const { app, client, mode, folderIdPath } = useAcoApp();
     const { model } = app;
 
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
@@ -166,7 +167,8 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             async listRecords(params) {
                 const { after, limit, sort: sorting, search, where } = params;
 
-                const folderId = where?.location?.folderId;
+                console.log(where);
+                const folderId = dotPropImmutable.get(where, folderIdPath);
 
                 /**
                  * Avoiding to fetch records in case they have already been fetched.

@@ -42,6 +42,7 @@ export const Table: React.VFC = () => {
     return (
         <AcoProvider
             id={`cms:${model.modelId}`}
+            folderIdPath={"meta.location.folderId"}
             client={client}
             model={model}
             createNavigateFolderListLink={createNavigateFolderListLink}
