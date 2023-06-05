@@ -16,8 +16,8 @@
     { "path": "../pubsub" },
     { "path": "../utils" },
     { "path": "../validation" },
-    { "path": "../api-wcp" },
-    { "path": "../api-headless-cms" }
+    { "path": "../api-headless-cms" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -54,10 +54,10 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
-      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
-      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
-      "@webiny/api-headless-cms": ["../api-headless-cms/src"]
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"]
     },
     "baseUrl": "."
   }
