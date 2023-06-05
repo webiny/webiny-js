@@ -366,7 +366,6 @@ describe("Files CRUD test", () => {
         });
     });
 
-
     /**
      * Unfortunately this test is skipped because it is not passing on the CI (DDB+ES package).
      * Testing the search locally and on deployed system shows that searching works.
