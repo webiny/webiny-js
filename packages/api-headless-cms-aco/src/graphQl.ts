@@ -4,18 +4,23 @@ import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms";
 const createTypeDefs = (models: CmsModel[], manage?: boolean): string => {
     const base: string[] = [
         /* GraphQL */ `
-            type WbyLocation {
+            type Wby_Location {
                 folderId: ID
             }
         `
     ];
     if (manage) {
         base.push(`
-            input WbyMetaLocationInput {
+            # Creation of the entry
+            input Wby_LocationInput {
+                folderId: ID!
+            }
+            # Filtering
+            input Wby_ListWhereMetaLocationInput {
                 folderId: ID
             }
-            input WbyMetaInput {
-                location: WbyMetaLocationInput
+            input Wby_ListWhereMetaInput {
+                location: Wby_ListWhereMetaLocationInput
             }
         `);
     }
@@ -24,14 +29,18 @@ const createTypeDefs = (models: CmsModel[], manage?: boolean): string => {
             models.reduce<string[]>((collection, model) => {
                 if (manage) {
                     collection.push(/* GraphQL */ `
+                        extend input ${model.singularApiName}Input {
+                            wby_location: Wby_LocationInput!
+                        }
+                        
                         extend input ${model.singularApiName}ListWhereInput {
-                            meta: WbyMetaInput
+                            meta: Wby_ListWhereMetaInput
                         }
                     `);
                 }
                 collection.push(/* GraphQL */ `
                     extend type ${model.singularApiName}Meta {
-                        location: WbyLocation
+                        location: Wby_Location
                     }
                 `);
 
