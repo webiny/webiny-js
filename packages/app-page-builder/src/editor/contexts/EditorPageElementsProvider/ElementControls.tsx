@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useRenderer } from "@webiny/app-page-builder-elements";
 import { ElementControlsOverlay } from "./ElementControlsOverlay";
 import { ElementControlHorizontalDropZones } from "./ElementControlHorizontalDropZones";
@@ -7,11 +7,7 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
-
-// Lists elements that, when empty, can receive other elements as children using
-// drag and drop. For now, the element types that are hardcoded. Down the road,
-// we might want to expose this, enabling users to create more complex elements.
-const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell"];
+import { elementIsDroppable } from "~/editor/contexts/EditorPageElementsProvider/elementIsDroppable";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
@@ -64,9 +60,11 @@ export const ElementControls = () => {
         );
     };
 
-    const isEmpty = element.elements.length === 0;
-    const isDroppable = EMPTY_DROPPABLE_ELEMENTS.includes(element.type);
-    if (isEmpty && isDroppable && isDragging) {
+    const isDroppable = useMemo(() => {
+        return elementIsDroppable(element);
+    }, [element.id]);
+
+    if (isDroppable && isDragging) {
         // Here we don't need to render `ElementControlHorizontalDropZones` as it's simply
         // not needed. It's only needed when at least one element has been dropped.
         return (
