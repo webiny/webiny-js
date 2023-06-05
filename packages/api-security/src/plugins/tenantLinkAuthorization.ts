@@ -61,7 +61,7 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
 
     // Although only one group is allowed, we still pretend multiples are possible.
     // This way, in the near future, we can support multiple groups per tenant.
-    return groups.map(group => group.permissions).flat();
+    return getPermissionsFromSecurityGroupsForLocale(groups, locale.code);
 };
 
 export default (config: Config) => {

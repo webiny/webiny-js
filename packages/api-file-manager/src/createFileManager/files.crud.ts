@@ -1,30 +1,22 @@
 import { NotFoundError } from "@webiny/handler-graphql";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CreatedBy,
     File,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
-    FilePermission,
     FilesCRUD,
     FilesListOpts
 } from "~/types";
-import { checkBasePermissions } from "./checkBasePermissions";
+import {
+    canAccessAllRecords,
+    canAccessOnlyOwnRecords,
+    checkBasePermissions,
+    checkOwnPermissions,
+    hasFullAccess
+} from "./utils";
 import { FileManagerConfig } from "~/createFileManager/index";
-
-/**
- * If permission is limited to "own" files only, check that current identity owns the file.
- */
-const checkOwnership = (file: File, permission: FilePermission, identity: SecurityIdentity) => {
-    if (permission?.own === true) {
-        if (file.createdBy.id !== identity.id) {
-            throw new NotAuthorizedError();
-        }
-    }
-};
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -32,7 +24,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         getLocaleCode,
         getTenantId,
         getIdentity,
-        getPermission,
+        getPermissions,
         WEBINY_VERSION
     } = config;
 
@@ -46,7 +38,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         onFileBeforeDelete: createTopic("fileManager.onFileBeforeDelete"),
         onFileAfterDelete: createTopic("fileManager.onFileAfterDelete"),
         async getFile(id: string) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "r" });
+            const permissions = await checkBasePermissions(getPermissions, { rwd: "r" });
 
             const file = await storageOperations.files.get({
                 where: {
@@ -60,12 +52,13 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(file, permission, getIdentity());
+            checkOwnPermissions(getIdentity(), permissions, file);
 
             return file;
         },
         async createFile(input) {
-            await checkBasePermissions(getPermission, { rwd: "w" });
+            await checkBasePermissions(getPermissions, { rwd: "w" });
+
             const identity = getIdentity();
 
             // Extract ID from file key
@@ -110,7 +103,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async updateFile(id, input) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "w" });
+            const permissions = await checkBasePermissions(getPermissions, { rwd: "w" });
 
             const original = await storageOperations.files.get({
                 where: {
@@ -124,7 +117,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(original, permission, getIdentity());
+            checkOwnPermissions(getIdentity(), permissions, original);
 
             const file: File = {
                 ...original,
@@ -174,7 +167,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async deleteFile(id) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "d" });
+            const permissions = await checkBasePermissions(getPermissions, { rwd: "d" });
 
             const file = await storageOperations.files.get({
                 where: {
@@ -188,7 +181,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(file, permission, getIdentity());
+            checkOwnPermissions(getIdentity(), permissions, file);
 
             try {
                 await this.onFileBeforeDelete.publish({ file });
@@ -213,7 +206,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             return true;
         },
         async createFilesInBatch(inputs) {
-            await checkBasePermissions(getPermission, { rwd: "w" });
+            await checkBasePermissions(getPermissions, { rwd: "w" });
 
             const identity = getIdentity();
             const tenant = getTenantId();
@@ -261,7 +254,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async listFiles(params: FilesListOpts = {}) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "r" });
+            const permissions = await checkBasePermissions(getPermissions, { rwd: "r" });
 
             const {
                 limit = 40,
@@ -280,13 +273,15 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 locale: getLocaleCode(),
                 tenant: getTenantId()
             };
+
             /**
              * Always override the createdBy received from the user, if any.
              */
-            if (permission.own === true) {
+            if (canAccessOnlyOwnRecords(permissions)) {
                 const identity = getIdentity();
                 where.createdBy = identity.id;
             }
+
             /**
              * We need to map the old GraphQL definition to the new one.
              * That GQL definition is marked as deprecated.
@@ -341,7 +336,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async listTags({ where: initialWhere, after, limit }) {
-            await checkBasePermissions(getPermission);
+            await checkBasePermissions(getPermissions);
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 ...initialWhere,

@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { Plugins } from "@webiny/app";
 import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
 import { plugins } from "@webiny/plugins";
+import { HasPermission } from "@webiny/app-security";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
 import { ReactComponent as SlackIcon } from "~/assets/icons/slack-logo.svg";
 import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
@@ -17,18 +18,20 @@ const BaseExtension: React.FC = () => {
     return (
         <Plugins>
             <AddMenu name={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
-            <FileManager>
-                {({ showFileManager }) => (
-                    <AddMenu
-                        name={"fileManager"}
-                        label={"File Manager"}
-                        icon={<FileIcon />}
-                        tags={["footer"]}
-                        onClick={showFileManager}
-                        testId={"admin-drawer-footer-menu-file-manager"}
-                    />
-                )}
-            </FileManager>
+            <HasPermission name={"fm.file"}>
+                <FileManager>
+                    {({ showFileManager }) => (
+                        <AddMenu
+                            name={"fileManager"}
+                            label={"File Manager"}
+                            icon={<FileIcon />}
+                            tags={["footer"]}
+                            onClick={showFileManager}
+                            testId={"admin-drawer-footer-menu-file-manager"}
+                        />
+                    )}
+                </FileManager>
+            </HasPermission>
             <AddMenu
                 name={"documentation"}
                 label={"Documentation"}

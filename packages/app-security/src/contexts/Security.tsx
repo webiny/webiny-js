@@ -4,6 +4,8 @@ import { SecurityIdentity, SecurityPermission } from "~/types";
 
 export interface SecurityContext {
     identity: SecurityIdentity | null;
+    getIdentityId: () => string | null;
+
     setIdentity: Dispatch<SetStateAction<SecurityIdentity | null>>;
 
     getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T | null;
@@ -13,6 +15,7 @@ export interface SecurityContext {
 
 export const SecurityContext = React.createContext<SecurityContext>({
     identity: null,
+    getIdentityId: () => null,
     setIdentity: () => {
         return void 0;
     },
@@ -66,6 +69,13 @@ export const SecurityProvider: React.FC = props => {
         [identity]
     );
 
+    const getIdentityId = useCallback(() => {
+        if (!identity) {
+            return null;
+        }
+        return  identity.id || identity.login || null;
+    }, [identity]);
+
     const value = useMemo(() => {
         return {
             identity: identity
@@ -75,6 +85,7 @@ export const SecurityProvider: React.FC = props => {
                       getPermission
                   }
                 : null,
+            getIdentityId,
             setIdentity,
             getPermission,
             getPermissions

@@ -29,12 +29,10 @@ export const createFileManagerContext = (config: Pick<FileManagerConfig, "storag
             return context.tenancy.getCurrentTenant().id;
         };
 
-        const getPermission = async <T extends SecurityPermission = SecurityPermission>(
+        const getPermissions = async <T extends SecurityPermission = SecurityPermission>(
             name: string
-        ): Promise<T | null> => {
-            await context.i18n.checkI18NContentPermission();
-
-            return context.security.getPermission(name);
+        ): Promise<T[]> => {
+            return context.security.getPermissions(name);
         };
 
         if (config.storageOperations.beforeInit) {
@@ -46,7 +44,7 @@ export const createFileManagerContext = (config: Pick<FileManagerConfig, "storag
             getTenantId,
             getLocaleCode,
             getIdentity,
-            getPermission,
+            getPermissions,
             storage: new FileStorage({
                 context
             }),

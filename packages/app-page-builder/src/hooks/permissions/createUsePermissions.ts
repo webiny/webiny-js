@@ -15,14 +15,14 @@ export interface UsePermission {
 const PB_FULL_ACCESS_PERMISSION_NAME = "pb.*";
 
 export const createUsePermissions = (permissionName: string) => (): UsePermission => {
-    const { identity, getPermission, getPermissions } = useSecurity();
+    const { identity, getIdentityId, getPermission, getPermissions } = useSecurity();
 
     const permissionsByName = useMemo((): PageBuilderSecurityPermission[] => {
         return getPermissions(permissionName);
     }, [identity]);
 
     const hasFullAccess = useMemo(
-        (): boolean => !!getPermission(PB_FULL_ACCESS_PERMISSION_NAME),
+        () => !!getPermission(PB_FULL_ACCESS_PERMISSION_NAME),
         [identity]
     );
 
@@ -41,9 +41,9 @@ export const createUsePermissions = (permissionName: string) => (): UsePermissio
                     return true;
                 }
 
-                console.log('woot')
-                if (own && createdById) {
-                    return identity && createdById === identity.login;
+                if (createdById && own) {
+                    const identityId = getIdentityId();
+                    return identity && createdById === identityId;
                 }
 
                 return false;
@@ -69,8 +69,9 @@ export const createUsePermissions = (permissionName: string) => (): UsePermissio
                     return true;
                 }
 
-                if (own && createdById) {
-                    return identity && createdById === identity.login;
+                if (createdById && own) {
+                    const identityId = getIdentityId();
+                    return identity && createdById === identityId;
                 }
 
                 return false;

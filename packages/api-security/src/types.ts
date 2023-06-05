@@ -20,9 +20,9 @@ export interface SecurityAuthorizationPlugin extends Plugin {
 
 // Backwards compatibility - END
 
-export type GetPermission = <T extends SecurityPermission = SecurityPermission>(
+export type GetPermissions = <T extends SecurityPermission = SecurityPermission>(
     name: string
-) => Promise<T | null>;
+) => Promise<T[]>;
 
 export interface Authorizer {
     (): Promise<SecurityPermission[] | null>;

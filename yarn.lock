@@ -42115,6 +42115,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"website-origin-request-router@workspace:apps/website/originRequestRouter":
+  version: 0.0.0-use.local
+  resolution: "website-origin-request-router@workspace:apps/website/originRequestRouter"
+  dependencies:
+    "@webiny/cli": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/pulumi-aws": 0.0.0
+    "@webiny/serverless-cms-aws": 0.0.0
+  languageName: unknown
+  linkType: soft
+
 "website-prerendering-service-flush@workspace:apps/website/prerendering/flush":
   version: 0.0.0-use.local
   resolution: "website-prerendering-service-flush@workspace:apps/website/prerendering/flush"
