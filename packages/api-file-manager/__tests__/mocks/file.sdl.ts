@@ -35,6 +35,32 @@ export default /* GraphQL */ `
         height_not_between: [Number!]
     }
 
+    type FmFile_Extensions {
+        carMake: String
+        year: Number
+    }
+    input FmFile_ExtensionsWhereInput {
+        carMake: String
+        carMake_not: String
+        carMake_in: [String]
+        carMake_not_in: [String]
+        carMake_contains: String
+        carMake_not_contains: String
+
+        year: Number
+        year_not: Number
+        year_in: [Number]
+        year_not_in: [Number]
+        year_lt: Number
+        year_lte: Number
+        year_gt: Number
+        year_gte: Number
+        # there must be two numbers sent in the array
+        year_between: [Number!]
+        # there must be two numbers sent in the array
+        year_not_between: [Number!]
+    }
+
     type FmFile {
         id: ID!
         savedOn: DateTime!
@@ -48,12 +74,18 @@ export default /* GraphQL */ `
         meta: FmFile_Meta
         tags: [String]
         aliases: [String]
+        extensions: FmFile_Extensions
     }
 
     input FmFile_MetaInput {
         private: Boolean
         width: Number
         height: Number
+    }
+
+    input FmFile_ExtensionsInput {
+        carMake: String
+        year: Number
     }
 
     input FmFileCreateInput {
@@ -65,6 +97,7 @@ export default /* GraphQL */ `
         meta: FmFile_MetaInput
         tags: [String!]
         aliases: [String!]
+        extensions: FmFile_ExtensionsInput
     }
 
     input FmFileUpdateInput {
@@ -75,6 +108,7 @@ export default /* GraphQL */ `
         meta: FmFile_MetaInput
         tags: [String]
         aliases: [String]
+        extensions: FmFile_ExtensionsInput
     }
 
     type FmFileResponse {
@@ -160,6 +194,7 @@ export default /* GraphQL */ `
         aliases_contains: String
         aliases_not_contains: String
 
+        extensions: FmFile_ExtensionsWhereInput
         AND: [FmFileListWhereInput!]
         OR: [FmFileListWhereInput!]
     }
