@@ -1,14 +1,12 @@
-// @ts-ignore mdbid doesn't have TS types.
-import mdbid from "mdbid";
-
+import { mdbid } from "@webiny/utils";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { assignPageLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
+import { assignFileLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { FM_FILE_TYPE, ROOT_FOLDER } from "~/contants";
 import { addMimeTag } from "~/utils/createRecordPayload";
 
 describe("Files -> Search records", () => {
     const { fileManager, search } = useGraphQlHandler({
-        plugins: [assignPageLifecycleEvents()]
+        plugins: [assignFileLifecycleEvents()]
     });
 
     const createDummyFile = async (extra = {}) => {
@@ -42,7 +40,7 @@ describe("Files -> Search records", () => {
     });
 
     it("should create a search record on file creation", async () => {
-        const { id, key, size, type, name, createdOn, createdBy, tags, meta, aliases } =
+        const { id, key, size, type, name, createdBy, tags, meta, aliases } =
             await createDummyFile();
 
         expect(tracker.isExecutedOnce("file:beforeCreate")).toEqual(true);
@@ -65,7 +63,6 @@ describe("Files -> Search records", () => {
                 size,
                 type,
                 name,
-                createdOn,
                 createdBy,
                 aliases,
                 meta
@@ -110,14 +107,14 @@ describe("Files -> Search records", () => {
             size: 987654,
             type: "image/png",
             tags: ["image", "file-2"],
-            meta: { any: "meta" },
             aliases: []
         };
 
-        await fileManager.createFiles({
+        const [response] = await fileManager.createFiles({
             data: [file1, file2]
         });
 
+        expect(response.errors).toBeFalsy();
         expect(tracker.isExecutedOnce("file:beforeBatchCreate")).toEqual(true);
         expect(tracker.isExecutedOnce("file:afterBatchCreate")).toEqual(true);
 
@@ -159,7 +156,6 @@ describe("Files -> Search records", () => {
                 size: file2.size,
                 type: file2.type,
                 name: file2.name,
-                meta: file2.meta,
                 aliases: file2.aliases
             }
         });
@@ -186,7 +182,6 @@ describe("Files -> Search records", () => {
             size: 987654,
             type: "image/png",
             tags: ["image", "file-2"],
-            meta: { any: "meta" },
             aliases: []
         };
 
@@ -223,7 +218,9 @@ describe("Files -> Search records", () => {
                 size: file2.size,
                 type: file2.type,
                 name: file2.name,
-                meta: file2.meta,
+                meta: {
+                    private: false
+                },
                 aliases: file2.aliases
             }
         });
