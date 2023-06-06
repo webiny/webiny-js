@@ -111,7 +111,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                         },
                         sort: [
                             {
-                                "id.keyword": "asc"
+                                "id.keyword": { order: "asc", unmapped_type: "keyword" }
                             }
                         ]
                     }
