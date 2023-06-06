@@ -51,7 +51,8 @@ export const ElementControls = () => {
         const { target } = source;
 
         // If the `target` property of the dragged element's plugin is an array, we want to
-        // check if the dragged element can be dropped into the target element.
+        // check if the dragged element can be dropped into the target element (the element
+        // for which this drop zone is rendered).
         if (Array.isArray(target) && target.length > 0) {
             if (!target.includes(element.type)) {
                 return;
