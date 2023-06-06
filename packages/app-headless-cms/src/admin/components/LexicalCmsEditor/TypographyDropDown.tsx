@@ -9,37 +9,40 @@ import { usePageElements } from "@webiny/app-page-builder-elements";
 import { TypographyStyle } from "@webiny/theme/types";
 import { TypographyValue } from "@webiny/lexical-editor/types";
 
+/*
+ * This components support the typography selection for page builder and HCMS.
+ * @TODO Create separate component with composition scopes
+ * */
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
-    const { textBlockSelection, toolbarType } = useRichTextEditor();
+    const { textBlockSelection } = useRichTextEditor();
     const textType = textBlockSelection?.state?.textType;
+
+    const getAllTextStyles = (): TypographyStyle[] => {
+        if (!theme.styles.typography) {
+            return [];
+        }
+        const headingsStyles = theme.styles.typography?.headings || [];
+        const paragraphStyles = theme.styles.typography?.paragraphs || [];
+        return [...headingsStyles, ...paragraphStyles];
+    };
+
+    useEffect(() => {
+        // In static toolbar typography styles always need to be visible.
+        // User from the start can select immediately in witch style he wants to start typing.
+        if (theme?.styles) {
+            setStyles(getAllTextStyles());
+        }
+    }, [theme?.styles]);
 
     useEffect(() => {
         if (textType) {
             switch (textType) {
                 case "heading":
                 case "paragraph":
-                    const headingsStyles = theme.styles.typography?.headings || [];
-                    const paragraphStyles = theme.styles.typography?.paragraphs || [];
-                    let typographyStyles: TypographyStyle[] = [];
-                    /*
-                     * @todo Implement the CMS static toolbar and typography component with composition scope
-                     * */
-                    if (toolbarType === "rich-text-cms-static-toolbar") {
-                        //Show all styles for paragraphs and headers on text selection
-                        typographyStyles = [...headingsStyles, ...paragraphStyles];
-                    } else {
-                        // other toolbars
-                        if (textType === "heading") {
-                            typographyStyles = [...headingsStyles];
-                        }
-                        if (textType === "paragraph") {
-                            typographyStyles = [...paragraphStyles];
-                        }
-                    }
-                    setStyles(typographyStyles);
+                    setStyles(getAllTextStyles());
                     break;
                 case "bullet":
                     setStyles(theme.styles.typography.lists?.filter(x => x.tag === "ul") || []);
@@ -62,7 +65,7 @@ export const TypographyDropDown = () => {
                 <DropDown
                     buttonClassName="toolbar-item typography-dropdown"
                     buttonAriaLabel={"Typography formatting options"}
-                    buttonLabel={value?.name || "Normal"}
+                    buttonLabel={value?.name || "Typography"}
                     stopCloseOnClickSelf={true}
                     disabled={false}
                     showScroll={false}

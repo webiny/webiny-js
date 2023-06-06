@@ -1,5 +1,5 @@
 import React, { createContext, useState } from "react";
-import { TextBlockSelection, ThemeEmotionMap, ToolbarType } from "~/types";
+import { TextBlockSelection, ThemeEmotionMap, ToolbarActionPlugin, ToolbarType } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
 
 export interface RichTextEditorContext {
@@ -13,8 +13,8 @@ export interface RichTextEditorContext {
     setTheme: (theme: WebinyTheme) => void;
     themeEmotionMap?: ThemeEmotionMap;
     setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
-    actionPlugins: { type: string; plugin: Record<string, any> }[];
-    setActionPlugins: (actionPlugins: { type: string; plugin: Record<string, any> }[]) => void;
+    toolbarActionPlugins: ToolbarActionPlugin[];
+    setToolbarActionPlugins: (actionPlugins: ToolbarActionPlugin[]) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -28,9 +28,7 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
-    const [actionPlugins, setActionPlugins] = useState<
-        { type: string; plugin: Record<string, any> }[]
-    >([]);
+    const [toolbarActionPlugins, setToolbarActionPlugins] = useState<ToolbarActionPlugin[]>([]);
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
@@ -53,8 +51,8 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 setTheme,
                 themeEmotionMap,
                 setThemeEmotionMap,
-                actionPlugins,
-                setActionPlugins
+                toolbarActionPlugins,
+                setToolbarActionPlugins
             }}
         >
             {children}

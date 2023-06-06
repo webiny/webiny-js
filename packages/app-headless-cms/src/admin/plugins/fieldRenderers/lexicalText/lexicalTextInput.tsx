@@ -3,7 +3,7 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
-import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
+import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -35,7 +35,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 <Bind>
                     {bind => {
                         return (
-                            <LexicalEditor
+                            <LexicalCmsEditor
                                 value={bind.value}
                                 onChange={bind.onChange}
                                 key={getKey(field, bind as any)}

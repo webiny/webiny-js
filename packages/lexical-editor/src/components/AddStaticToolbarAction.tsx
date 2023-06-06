@@ -9,9 +9,9 @@ interface AddToolbarActionProps {
 export const AddStaticToolbarAction: FC<AddToolbarActionProps> = ({ element }) => {
     const StaticToolbarPlugin = React.memo(
         createComponentPlugin(StaticToolbar, Original => {
-            return function StaticToolbar({ actionPlugins, children }): JSX.Element {
+            return function StaticToolbar({ children }): JSX.Element {
                 return (
-                    <Original actionPlugins={actionPlugins}>
+                    <Original>
                         {element}
                         {children}
                     </Original>
