@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { LexicalValue, ThemeEmotionMap } from "~/types";
+import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { EditorState } from "lexical/LexicalEditorState";
@@ -31,6 +31,7 @@ import { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
     staticToolbar?: React.ReactNode;
+    toolbarActionPlugins?: ToolbarActionPlugin[];
     tag?: string;
     onChange?: (json: LexicalValue) => void;
     value: LexicalValue | null;
@@ -74,7 +75,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     width,
     height,
     theme,
-    themeEmotionMap
+    themeEmotionMap,
+    toolbarActionPlugins
 }: RichTextEditorProps) => {
     const { historyState } = useSharedHistoryContext();
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
@@ -82,12 +84,18 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
-    const { setTheme, setThemeEmotionMap } = useRichTextEditor();
+    const { setTheme, setThemeEmotionMap, setToolbarActionPlugins } = useRichTextEditor();
 
     useEffect(() => {
         setTheme(theme);
         setThemeEmotionMap(themeEmotionMap);
     }, [themeEmotionMap, theme]);
+
+    useEffect(() => {
+        if (toolbarActionPlugins) {
+            setToolbarActionPlugins(toolbarActionPlugins || []);
+        }
+    }, [toolbarActionPlugins]);
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {

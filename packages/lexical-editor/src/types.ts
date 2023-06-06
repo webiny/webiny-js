@@ -47,6 +47,13 @@ export type ToolbarState = {
     heading: NodeState;
 };
 
+export type ImageActionType = "image-action";
+export type ToolbarActionType = ImageActionType | string;
+export interface ToolbarActionPlugin {
+    targetAction: ToolbarActionType;
+    plugin: Record<string, any> | Function | undefined;
+}
+
 /*
  * Represent set of data from the current selection of the text and nodes selected by the user.
  * You can access this object through the @see useRichTextEditor context.
@@ -99,3 +106,6 @@ export type ThemeEmotionMap = {
 
 /* Commands payload types */
 export { ImagePayload } from "~/commands/insertFiles";
+
+/* Lexical editor interfaces */
+export { RichTextEditorProps } from "~/components/Editor/RichTextEditor";

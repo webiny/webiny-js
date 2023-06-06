@@ -5,7 +5,8 @@
     { "path": "../app-page-builder" },
     { "path": "../app-page-builder-elements" },
     { "path": "../lexical-editor" },
-    { "path": "../theme" }
+    { "path": "../theme" },
+    { "path": "../react-composition" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,7 +22,9 @@
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
       "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/theme/*": ["../theme/src/*"],
-      "@webiny/theme": ["../theme/src"]
+      "@webiny/theme": ["../theme/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
     },
     "baseUrl": "."
   }

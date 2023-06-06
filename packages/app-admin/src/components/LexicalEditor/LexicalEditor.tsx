@@ -1,28 +1,25 @@
 import React from "react";
-import { RichTextEditorProps } from "@webiny/ui/RichTextEditor";
 import { FileManager } from "~/components";
-import { LexicalCmsEditor } from "@webiny/lexical-editor-cms-actions";
+import { RichTextEditor as BaseEditor } from "@webiny/lexical-editor";
+import { Theme } from "@webiny/app-theme/types";
+import { RichTextEditorProps } from "@webiny/lexical-editor/types";
+import { usePageElements } from "@webiny/app-page-builder-elements";
+interface lexicalEditorProps extends Omit<RichTextEditorProps, "theme"> {
+    theme?: Theme;
+}
 
-export const LexicalEditor: React.FC<RichTextEditorProps> = props => {
+export const LexicalEditor = (props: lexicalEditorProps) => {
+    const { theme } = usePageElements();
     return (
         <FileManager>
             {({ showFileManager }) => (
-                <LexicalCmsEditor
-                    value={JSON.stringify(props.value)}
-                    onChange={(jsonString: string) => {
-                        if (props?.onChange) {
-                            props?.onChange(JSON.parse(jsonString));
-                        }
-                    }}
-                    placeholder={props?.placeholder || "Please add content"}
-                    styles={{
-                        backgroundColor: "#fff",
-                        border: "1px solid #e1e1e1",
-                        padding: "10px 14px",
-                        minHeight: 200,
-                        maxHeight: 300
-                    }}
-                    toolbarActionPlugins={[{ type: "image-action", plugin: showFileManager }]}
+                <BaseEditor
+                    {...props}
+                    theme={{ ...theme, ...props?.theme }}
+                    toolbarActionPlugins={[
+                        ...(props.toolbarActionPlugins || []),
+                        { targetAction: "image-action", plugin: showFileManager }
+                    ]}
                 />
             )}
         </FileManager>
