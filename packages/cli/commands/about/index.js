@@ -94,7 +94,7 @@ module.exports = {
 
                     // Custom rendering for "Last 10 Commands Executed" section.
                     Object.keys(data).forEach(key => {
-                        if (sectionName === 'Last 10 Commands Executed') {
+                        if (sectionName === "Last 10 Commands Executed") {
                             data[key].forEach((command, index) => {
                                 console.log(`  ${index + 1}. ${command}`);
                             });
