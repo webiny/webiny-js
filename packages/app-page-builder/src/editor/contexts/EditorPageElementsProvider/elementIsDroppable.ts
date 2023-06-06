@@ -8,5 +8,9 @@ export const elementIsDroppable = (element: Element) => {
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(item => item.elementType === element.type);
 
-    return !!elementPlugin?.onReceived;
+    if (!elementPlugin) {
+        return false;
+    }
+
+    return typeof elementPlugin.onReceived === "function";
 };

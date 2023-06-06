@@ -8,5 +8,9 @@ export const getElementTargets = (element: Element) => {
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(item => item.elementType === element.type);
 
-    return elementPlugin?.targets || [];
+    if (!elementPlugin) {
+        return [];
+    }
+
+    return elementPlugin.target || [];
 };
