@@ -47,7 +47,16 @@ export const ElementControls = () => {
     const handler = useEventActionHandler();
     const { isDragging } = useRecoilValue(uiAtom);
 
+
     const dropElementAction = (source: DragObjectWithTypeWithTarget) => {
+        const { target } = source;
+
+        if (Array.isArray(target) && target.length > 0) {
+            if (!target.includes(element.type)) {
+                return;
+            }
+        }
+
         handler.trigger(
             new DropElementActionEvent({
                 source,
@@ -64,21 +73,27 @@ export const ElementControls = () => {
         return elementIsDroppable(element);
     }, [element.id]);
 
-    if (isDroppable && isDragging) {
-        return (
-            <Droppable
-                onDrop={source => dropElementAction(source)}
-                type={element.type}
-                isVisible={() => true}
-            >
-                {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
-            </Droppable>
-        );
+    // When dragging, if the element is droppable, we want to render the drop zones.
+    if (isDragging) {
+        let render = <ElementControlHorizontalDropZones />;
+
+        if (isDroppable) {
+            render = (
+                <>
+                    <Droppable
+                        onDrop={source => dropElementAction(source)}
+                        type={element.type}
+                        isVisible={() => true}
+                    >
+                        {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
+                    </Droppable>
+                    {render}
+                </>
+            );
+        }
+
+        return render;
     }
 
-    return (
-        <ElementControlsOverlay>
-            <ElementControlHorizontalDropZones />
-        </ElementControlsOverlay>
-    );
+    return <ElementControlsOverlay />;
 };

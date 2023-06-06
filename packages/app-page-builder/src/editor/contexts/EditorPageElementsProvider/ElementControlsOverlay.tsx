@@ -13,6 +13,8 @@ import Draggable from "~/editor/components/Draggable";
 import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
 import { ElementControlsOverlayBorders } from "./ElementControlsOverlay/ElementControlsOverlayBorders";
 import { ConnectDragSource } from "react-dnd";
+import { elementIsDraggable } from "./elementIsDraggable";
+import { getElementTargets } from "~/editor/contexts/EditorPageElementsProvider/getElementTargets";
 
 declare global {
     // eslint-disable-next-line
@@ -26,13 +28,6 @@ declare global {
 // Basic border colors.
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
-
-// Until the need for custom targets arises, we're hard-coding the available
-// targets (types of elements onto which another element can be dropped).
-const DEFAULT_TARGETS = ["cell", "block"];
-
-// We're doing the same with the list of non-draggable elements.
-const NON_DRAGGABLE_ELEMENTS = ["cell", "block"];
 
 type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
     className?: String;
@@ -221,20 +216,24 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 
     const { children, dropRef, ...rest } = props;
 
+    const elementTargets = useMemo(() => {
+        return getElementTargets(element);
+    }, [element.id]);
+
     const beginDrag = useCallback(() => {
         const data = { id: element.id, type: element.type };
         setTimeout(() => {
             setUi(enableDraggingMutation);
         });
 
-        return { ...data, target: DEFAULT_TARGETS };
+        return { ...data, target: elementTargets };
     }, [element.id]);
 
     const endDrag = useCallback(() => {
         setUi(disableDraggingMutation);
     }, [element.id]);
 
-    const isDraggable = !NON_DRAGGABLE_ELEMENTS.includes(element.type);
+    const isDraggable = elementIsDraggable(element);
 
     const title = useMemo(() => {
         if (element.data.blockId) {
@@ -256,7 +255,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     return (
         <Draggable
             enabled={isDraggable}
-            target={DEFAULT_TARGETS}
+            target={elementTargets}
             beginDrag={beginDrag}
             endDrag={endDrag}
         >
