@@ -61,12 +61,6 @@ import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSet
 // default presets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 
-import contentGalleryBlock from "theme/pageBlocks/contentGalleryBlock/admin";
-import contentGallery from "theme/pageElements/contentGallery/admin";
-import contentGalleryDropzone from "theme/pageElements/contentGalleryDropzone/admin";
-import droppableElement1 from "theme/pageElements/droppableElement1/admin";
-import droppableElement2 from "theme/pageElements/droppableElement2/admin";
-
 export default [
     // Elements
     document(),
@@ -130,9 +124,4 @@ export default [
     responsiveEditorMode(),
     // Page settings
     pageSettingsPlugins,
-    contentGalleryBlock,
-    contentGallery,
-    contentGalleryDropzone,
-    droppableElement1,
-    droppableElement2
 ];
