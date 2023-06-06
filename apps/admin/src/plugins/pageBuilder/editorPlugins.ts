@@ -123,5 +123,5 @@ export default [
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings
-    pageSettingsPlugins,
+    pageSettingsPlugins
 ];
