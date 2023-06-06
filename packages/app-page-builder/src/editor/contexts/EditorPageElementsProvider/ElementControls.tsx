@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useRenderer } from "@webiny/app-page-builder-elements";
 import { ElementControlsOverlay } from "./ElementControlsOverlay";
 import { ElementControlHorizontalDropZones } from "./ElementControlHorizontalDropZones";
