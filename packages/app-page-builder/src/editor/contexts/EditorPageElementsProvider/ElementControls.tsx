@@ -7,7 +7,7 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
-import {useElementPlugin} from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
@@ -47,10 +47,11 @@ export const ElementControls = () => {
     const handler = useEventActionHandler();
     const { isDragging } = useRecoilValue(uiAtom);
 
-
     const dropElementAction = (source: DragObjectWithTypeWithTarget) => {
         const { target } = source;
 
+        // If the `target` property of the dragged element's plugin is an array, we want to
+        // check if the dragged element can be dropped into the target element.
         if (Array.isArray(target) && target.length > 0) {
             if (!target.includes(element.type)) {
                 return;
