@@ -76,7 +76,9 @@ export const ElementControlHorizontalDropZones = () => {
     const dropElementAction = (source: DragObjectWithTypeWithTarget, position: number) => {
         const { target } = source;
 
-        // If there are restrictions on the types of elements that can be dropped, check them here.
+        // If the `target` property of the dragged element's plugin is an array, we want to
+        // check if the dragged element can be dropped into the target element (the element
+        // for which this drop zone is rendered).
         if (Array.isArray(target) && target.length > 0) {
             if (!target.includes(meta.parentElement.type)) {
                 return;
