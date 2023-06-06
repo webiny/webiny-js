@@ -25,6 +25,8 @@ export default /* GraphQL */ `
         richText: JSON
         variant: ProductApiSingular_Variant
         fieldsObject: ProductApiSingular_FieldsObject
+        # Advanced Content Organization - make required in 5.38.0
+        wbyAco_location: WbyAcoLocation
     }
 
     type ProductApiSingularMeta {
@@ -155,6 +157,7 @@ export default /* GraphQL */ `
 
     input ProductApiSingularInput {
         id: ID
+        wbyAco_location: WbyAcoLocationInput
         title: String!
         category: RefFieldInput!
         price: Number!
@@ -184,6 +187,7 @@ export default /* GraphQL */ `
     }
     
     input ProductApiSingularListWhereInput {
+        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]

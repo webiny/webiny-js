@@ -116,8 +116,7 @@ export const createSearchRecordOperations = (
 
                 const input = {
                     ...original,
-                    location: {
-                        ...original,
+                    wbyAco_location: {
                         folderId
                     }
                 };

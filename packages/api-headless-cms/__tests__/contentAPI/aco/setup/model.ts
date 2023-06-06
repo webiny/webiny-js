@@ -1,4 +1,4 @@
-import { CmsGroupPlugin, CmsModelPlugin } from "@webiny/api-headless-cms";
+import { CmsGroupPlugin, CmsModelPlugin } from "~/index";
 
 export const createGroupPlugin = () => {
     return new CmsGroupPlugin({

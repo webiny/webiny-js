@@ -10,7 +10,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "~/types";
 
 interface Config {
     setupGraphQL?: boolean;

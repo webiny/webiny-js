@@ -2,7 +2,7 @@ import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthenticat
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
 import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createDummyLocales, createPermissions, PermissionsArg } from "./helpers";
@@ -11,7 +11,7 @@ import { ContextPlugin } from "@webiny/api";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { CmsContext, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;

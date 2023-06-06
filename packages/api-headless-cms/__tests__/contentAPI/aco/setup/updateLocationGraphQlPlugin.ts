@@ -1,6 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms";
-import { ACO_TEST_MODEL_ID } from "~tests/setup/model";
+import { CmsGraphQLSchemaPlugin } from "~/index";
+import { ACO_TEST_MODEL_ID } from "./model";
 
 const createUpdateLocationGraphQlPlugin = () => {
     const plugin = new CmsGraphQLSchemaPlugin({
@@ -26,16 +26,11 @@ const createUpdateLocationGraphQlPlugin = () => {
                             if (!model) {
                                 throw new Error(`Model "${ACO_TEST_MODEL_ID}" not found!`);
                             }
-                            const entry = await context.cms.updateEntry(
-                                model,
-                                args.id,
-                                {},
-                                {
-                                    location: {
-                                        folderId: args.folderId
-                                    }
+                            const entry = await context.cms.updateEntry(model, args.id, {
+                                wbyAco_location: {
+                                    folderId: args.folderId
                                 }
-                            );
+                            });
                             return new Response(entry);
                         } catch (ex) {
                             return new ErrorResponse(ex);

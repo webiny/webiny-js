@@ -1561,6 +1561,12 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     values: T;
     /**
+     * Advanced Content Organization
+     */
+    location?: {
+        folderId?: string | null;
+    };
+    /**
      * Settings for the given entry.
      *
      * Introduced with Advanced Publishing Workflow. Will always be inserted once this PR is merged.
@@ -2065,7 +2071,7 @@ export interface OnEntryAfterUpdateTopicParams {
 
 export interface OnEntryUpdateErrorTopicParams {
     error: Error;
-    input: CreateFromCmsEntryInput;
+    input: UpdateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -2199,6 +2205,9 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
+    wbyAco_location?: {
+        folderId?: string | null;
+    };
     [key: string]: any;
 }
 
@@ -2215,6 +2224,9 @@ export interface CreateFromCmsEntryInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
+    wbyAco_location?: {
+        folderId?: string | null;
+    };
     [key: string]: any;
 }
 

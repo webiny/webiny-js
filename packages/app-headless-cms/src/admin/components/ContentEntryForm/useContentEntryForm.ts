@@ -86,7 +86,8 @@ function useEntry(entryFromProps: Partial<CmsContentEntry>) {
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
     const { listQueryVariables } = useContentEntry();
     const { model } = useModel();
-    const { history } = useRouter();
+    const { history, search: routerSearch } = useRouter();
+    const [query] = routerSearch;
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -144,7 +145,18 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         async (formData, form) => {
             setLoading(true);
             const response = await createMutation({
-                variables: { data: formData },
+                variables: {
+                    data: {
+                        ...formData,
+                        /**
+                         * Added for the ACO to work.
+                         * TODO: introduce hook like onEntryPublish, or similar.
+                         */
+                        wbyAco_location: {
+                            folderId: query.get("folderId")
+                        }
+                    }
+                },
                 fetchPolicy: getFetchPolicy(model)
             });
 
@@ -171,12 +183,12 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);
-            } else {
-                goToRevision(entry.id);
+                return entry;
             }
+            goToRevision(entry.id);
             return entry;
         },
-        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
+        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache, query]
     );
 
     const updateContent = useCallback(

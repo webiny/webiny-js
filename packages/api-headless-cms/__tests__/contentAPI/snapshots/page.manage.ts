@@ -18,6 +18,8 @@ export default /* GraphQL */ `
         objective: PageModelApiName_Objective
         reference: PageModelApiName_Reference
         references: [PageModelApiName_References!]
+        # Advanced Content Organization - make required in 5.38.0
+        wbyAco_location: WbyAcoLocation
     }
 
     type PageModelApiNameMeta {
@@ -257,6 +259,7 @@ export default /* GraphQL */ `
 
     input PageModelApiNameInput {
         id: ID
+        wbyAco_location: WbyAcoLocationInput
         content: [PageModelApiName_ContentInput]
         header: PageModelApiName_HeaderInput
         objective: PageModelApiName_ObjectiveInput
@@ -270,6 +273,7 @@ export default /* GraphQL */ `
     }
 
     input PageModelApiNameListWhereInput {
+        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]

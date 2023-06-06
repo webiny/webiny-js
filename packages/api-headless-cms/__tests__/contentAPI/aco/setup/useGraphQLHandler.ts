@@ -2,8 +2,8 @@ import { getIntrospectionQuery } from "graphql";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { createHandlerCore, CreateHandlerCoreParams } from "./plugins";
 import { createGroupPlugin, createModelPlugin } from "./model";
-import { CmsModel } from "@webiny/api-headless-cms/types";
-import { GET_MODEL_QUERY } from "~tests/setup/graphql/contentModel";
+import { CmsModel } from "~/types";
+import { GET_MODEL_QUERY } from "./graphql/contentModel";
 import {
     CREATE_ENTRY_MUTATION,
     CreateEntryInputVariables,
@@ -21,7 +21,7 @@ import {
     ListEntriesResult,
     LIST_ENTRIES_QUERY
 } from "./graphql/contentEntry";
-import { createUpdateLocationGraphQl } from "~tests/setup/updateLocationGraphQlPlugin";
+import { createUpdateLocationGraphQl } from "./updateLocationGraphQlPlugin";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 

@@ -17,6 +17,8 @@ export default /* GraphQL */ `
         product: RefField
         rating: Number
         author: RefField
+        # Advanced Content Organization - make required in 5.38.0
+        wbyAco_location: WbyAcoLocation
     }
 
     type ReviewApiModelMeta {
@@ -36,6 +38,7 @@ export default /* GraphQL */ `
 
     input ReviewApiModelInput {
         id: ID
+        wbyAco_location: WbyAcoLocationInput
         text: String!
         product: RefFieldInput
         rating: Number
@@ -50,6 +53,7 @@ export default /* GraphQL */ `
     }
 
     input ReviewApiModelListWhereInput {
+        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]

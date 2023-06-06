@@ -19,6 +19,9 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
         version
         locked
         status
+        location {
+            folderId
+        }
     }
 `;
 

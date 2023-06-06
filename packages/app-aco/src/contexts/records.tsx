@@ -104,11 +104,15 @@ const mergeRecords = (
     return sortBy(mergedRecords, ["title"]);
 };
 
-const getRecordCount = (records: SearchRecordItem[], folderId?: string | null) => {
+const getRecordCount = (
+    records: SearchRecordItem[],
+    folderIdPath: string,
+    folderId?: string | null
+) => {
     if (!folderId) {
         return records.length;
     }
-    return records.filter(record => record.location.folderId === folderId).length;
+    return records.filter(record => dotPropImmutable.get(record, folderIdPath) === folderId).length;
 };
 
 const mergeAndSortTags = (oldTagItems: TagItem[], newTags: string[]): TagItem[] => {
@@ -167,14 +171,13 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             async listRecords(params) {
                 const { after, limit, sort: sorting, search, where } = params;
 
-                console.log(where);
                 const folderId = dotPropImmutable.get(where, folderIdPath);
 
                 /**
                  * Avoiding to fetch records in case they have already been fetched.
                  * This happens when visiting a list with all records loaded and receives "after" param.
                  */
-                const recordsCount = getRecordCount(records, folderId);
+                const recordsCount = getRecordCount(records, folderIdPath, folderId);
                 const totalCount = meta[folderId || "search"]?.totalCount || 0;
                 if (after && recordsCount === totalCount) {
                     return records;

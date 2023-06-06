@@ -25,6 +25,7 @@
     "@webiny/react-router": "0.0.0",
     "@webiny/ui": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "dot-prop-immutable": "^2.1.1",
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.2.0",

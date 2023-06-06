@@ -30,6 +30,11 @@ export interface CmsReferenceContentEntry {
         entryId: string;
         title: string;
     };
+    meta: {
+        location?: {
+            folderId?: string;
+        };
+    };
     createdOn: Date;
     savedOn: Date;
 }

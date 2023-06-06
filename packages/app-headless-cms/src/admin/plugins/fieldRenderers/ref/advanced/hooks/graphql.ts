@@ -36,6 +36,11 @@ const fields = `
         published {
             id
         }
+        meta {
+            location {
+                folderId
+            }
+        }
     }
     error {
         message
@@ -76,6 +81,9 @@ export interface SearchQueryResponseEntry {
         description?: string;
         image?: string;
         status: CmsContentEntryStatusType;
+        location?: {
+            folderId?: string;
+        };
     };
 }
 
@@ -130,6 +138,9 @@ export const createSearchQuery = (model: CmsModel) => {
                     description
                     image
                     status
+                    location {
+                        folderId
+                    }
                 }
             }
             meta {

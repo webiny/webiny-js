@@ -47,6 +47,19 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
                 data: Boolean
                 error: CmsError
             }
+
+            # Advanced Content Organization
+            type WbyAcoLocation {
+                folderId: ID
+            }
+
+            input WbyAcoLocationInput {
+                folderId: ID!
+            }
+
+            input WbyAcoLocationWhereInput {
+                folderId: ID
+            }
         `,
         resolvers: {}
     });

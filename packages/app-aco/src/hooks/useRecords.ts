@@ -48,7 +48,9 @@ export const useRecords = (folderId?: string) => {
              */
             loading,
             meta: meta[folderId!] || {},
-            records: records.filter(record => record.location.folderId === folderId),
+            records: records.filter(
+                record => dotPropImmutable.get(record, folderIdPath) === folderId
+            ),
             listRecords(params: ListRecordsParams) {
                 const where = dotPropImmutable.set(params.where || {}, folderIdPath, folderId);
                 return listRecords({

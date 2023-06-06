@@ -82,6 +82,9 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
     const { contentModel, canCreate, listQueryVariables, setListQueryVariables, sorters } =
         useContentEntries();
 
+    const { search } = useRouter();
+    const [query] = search;
+
     const formRef = useRef<ContentEntryContextForm>({
         submit: async () => {
             return null;
@@ -130,9 +133,17 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
         [formRef]
     );
 
+    const folderIdPath = useMemo(() => {
+        const folderId = query.get("folderId");
+        if (!folderId) {
+            return "";
+        }
+        return `&folderId=${encodeURIComponent(folderId)}`;
+    }, [query]);
+
     const createEntry = useCallback((): void => {
-        history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
-    }, [contentModel.modelId]);
+        history.push(`/cms/content-entries/${contentModel.modelId}?new=true${folderIdPath}`);
+    }, [contentModel.modelId, folderIdPath]);
 
     let variables: CmsEntryGetQueryVariables | undefined;
     if (version === null && entryId) {

@@ -2,10 +2,8 @@ const entryFields = `
     id
     entryId
     title
-    meta {
-        location {
-            folderId
-        }
+    wbyAco_location {
+        folderId
     }
 `;
 
@@ -35,10 +33,8 @@ interface Entry {
     id: string;
     entryId: string;
     title: string;
-    meta: {
-        location?: {
-            folderId?: string;
-        };
+    wbyAco_location?: {
+        folderId?: string;
     };
 }
 export interface CmsError {
@@ -76,10 +72,8 @@ export const GET_ENTRY_QUERY = /* GraphQL */ `
 export interface ListEntriesInputVariables {
     where?: {
         createdBy?: string;
-        meta?: {
-            location?: {
-                folderId?: string;
-            };
+        wbyAco_location?: {
+            folderId?: string;
         };
     };
 }
@@ -109,6 +103,9 @@ export interface CreateEntryInputVariables {
     data: {
         id?: string;
         title: string;
+        wbyAco_location?: {
+            folderId: string;
+        };
     };
 }
 

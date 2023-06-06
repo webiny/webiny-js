@@ -1,6 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "~/types";
 
 export interface PermissionsArg {
     name: string;

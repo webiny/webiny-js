@@ -72,7 +72,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
     const { canCreate, contentModel } = useContentEntry();
 
     const createEntry = useCallback(() => {
-        const folder = folderId ? `&folderId=${folderId}` : "";
+        const folder = folderId ? `&folderId=${encodeURIComponent(folderId)}` : "";
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true${folder}`);
     }, [canCreate, contentModel, folderId]);
 

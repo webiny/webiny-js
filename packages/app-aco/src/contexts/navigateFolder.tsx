@@ -77,8 +77,10 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
     const navigateToFolder = useCallback(
         (newFolderId?: string): void => {
             const query = new URLSearchParams(location.search);
+            query.delete("new");
+            query.delete("id");
+            query.delete("entryId");
             query.set(folderIdQueryString, newFolderId || "");
-
             return history.push({
                 search: query.toString()
             });

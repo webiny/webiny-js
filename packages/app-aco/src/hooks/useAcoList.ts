@@ -64,6 +64,7 @@ const getCurrentFolderList = (
 
 const getCurrentRecordList = <T = GenericSearchData>(
     records: SearchRecordItem<T>[],
+    folderIdPath: string,
     currentFolderId?: string
 ): SearchRecordItem<T>[] => {
     if (!records) {
@@ -75,7 +76,8 @@ const getCurrentRecordList = <T = GenericSearchData>(
     }
 
     return records.filter(
-        (record): record is SearchRecordItem<T> => record.location?.folderId === currentFolderId
+        (record): record is SearchRecordItem<T> =>
+            dotPropImmutable.get(record, folderIdPath) === currentFolderId
     );
 };
 
@@ -154,6 +156,7 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
     useEffect(() => {
         const subRecords = getCurrentRecordList<T>(
             originalRecords as SearchRecordItem<T>[],
+            folderIdPath,
             folderId
         );
         setRecords(subRecords);

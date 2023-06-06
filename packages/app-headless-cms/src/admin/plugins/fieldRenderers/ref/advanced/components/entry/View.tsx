@@ -4,7 +4,10 @@ import { ReactComponent as ViewIcon } from "./assets/view.svg";
 import { ButtonLink } from "./elements/ButtonLink";
 
 const createEntryUrl = (entry: CmsReferenceContentEntry) => {
-    return `/cms/content-entries/${entry.model.modelId}?id=${entry.id}`;
+    const folderId = entry.meta?.location?.folderId || "";
+    return `/cms/content-entries/${entry.model.modelId}?id=${
+        entry.id
+    }&folderId=${encodeURIComponent(folderId)}`;
 };
 
 interface Props {

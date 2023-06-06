@@ -44,28 +44,27 @@ export const createSystemFields = (): Field[] => {
         },
         {
             id: "meta",
-            type: "object",
+            type: "plainObject",
             storageId: "meta",
             fieldId: "meta",
-            label: "Meta",
+            label: "Meta"
+        },
+        {
+            id: "wbyAco_location",
+            type: "object",
+            storageId: "location",
+            label: "Location",
+            fieldId: "wbyAco_location",
             settings: {
                 fields: [
                     {
-                        id: "location",
-                        type: "object",
-                        storageId: "location",
-                        fieldId: "location",
-                        label: "Location",
+                        id: "folderId",
+                        type: "text",
+                        fieldId: "folderId",
+                        label: "Folder ID",
+                        storageId: "folderId",
                         settings: {
-                            fields: [
-                                {
-                                    id: "folderId",
-                                    type: "text",
-                                    storageId: "folderId",
-                                    fieldId: "folderId",
-                                    label: "Folder ID"
-                                }
-                            ]
+                            path: "location.folderId"
                         }
                     }
                 ]

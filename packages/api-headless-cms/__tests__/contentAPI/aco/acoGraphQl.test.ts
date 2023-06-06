@@ -1,5 +1,4 @@
-import { useGraphQLHandler } from "~tests/setup/useGraphQLHandler";
-import { createHeadlessCmsAco } from "~/index";
+import { useGraphQLHandler } from "./setup/useGraphQLHandler";
 
 jest.retryTimes(0);
 
@@ -15,10 +14,8 @@ const createExpectedListResponse = (folderId?: string) => {
                         id,
                         entryId,
                         title: "Test entry",
-                        meta: {
-                            location: {
-                                folderId: folderId || null
-                            }
+                        wbyAco_location: {
+                            folderId: folderId || null
                         }
                     }
                 ],
@@ -34,16 +31,18 @@ const createExpectedListResponse = (folderId?: string) => {
 };
 
 describe("extending the GraphQL", () => {
-    it("should extend the model meta with a location field", async () => {
+    it("should extend the model with a location field and update location via ACO method", async () => {
         const { getEntry, createEntry, updateEntryLocation } = useGraphQLHandler({
-            plugins: [createHeadlessCmsAco()],
             path: "manage/en-US"
         });
 
         const [createResponse] = await createEntry({
             data: {
                 id: entryId,
-                title: "Test entry"
+                title: "Test entry",
+                wbyAco_location: {
+                    folderId: "ROOT"
+                }
             }
         });
         expect(createResponse).toEqual({
@@ -53,8 +52,8 @@ describe("extending the GraphQL", () => {
                         id,
                         entryId,
                         title: "Test entry",
-                        meta: {
-                            location: null
+                        wbyAco_location: {
+                            folderId: "ROOT"
                         }
                     },
                     error: null
@@ -64,17 +63,15 @@ describe("extending the GraphQL", () => {
 
         const [updateLocationResponse] = await updateEntryLocation({
             id,
-            folderId: "root"
+            folderId: "rootNew"
         });
 
         expect(updateLocationResponse).toMatchObject({
             data: {
                 entry: {
                     data: {
-                        meta: {
-                            location: {
-                                folderId: "root"
-                            }
+                        wbyAco_location: {
+                            folderId: "rootNew"
                         }
                     },
                     error: null
@@ -89,10 +86,8 @@ describe("extending the GraphQL", () => {
             data: {
                 entry: {
                     data: {
-                        meta: {
-                            location: {
-                                folderId: "root"
-                            }
+                        wbyAco_location: {
+                            folderId: "rootNew"
                         }
                     },
                     error: null
@@ -103,39 +98,45 @@ describe("extending the GraphQL", () => {
 
     it("should list entries with location", async () => {
         const { createEntry, updateEntryLocation, listEntries } = useGraphQLHandler({
-            plugins: [createHeadlessCmsAco()],
             path: "manage/en-US"
         });
 
-        await createEntry({
+        const [createResponse] = await createEntry({
             data: {
                 id: entryId,
-                title: "Test entry"
+                title: "Test entry",
+                wbyAco_location: {
+                    folderId: "rootTestingFolder"
+                }
             }
         });
 
-        await updateEntryLocation({
-            id,
-            folderId: "root"
+        expect(createResponse).toMatchObject({
+            data: {
+                entry: {
+                    data: {
+                        wbyAco_location: {
+                            folderId: "rootTestingFolder"
+                        }
+                    },
+                    error: null
+                }
+            }
         });
 
         const [listRootResponse] = await listEntries({
             where: {
-                meta: {
-                    location: {
-                        folderId: "root"
-                    }
+                wbyAco_location: {
+                    folderId: "rootTestingFolder"
                 }
             }
         });
-        expect(listRootResponse).toEqual(createExpectedListResponse("root"));
+        expect(listRootResponse).toEqual(createExpectedListResponse("rootTestingFolder"));
 
         const [listNonExistingResponse] = await listEntries({
             where: {
-                meta: {
-                    location: {
-                        folderId: "nonExisting"
-                    }
+                wbyAco_location: {
+                    folderId: "nonExisting"
                 }
             }
         });
@@ -159,10 +160,8 @@ describe("extending the GraphQL", () => {
         });
         const [listNewFolderIdResponse] = await listEntries({
             where: {
-                meta: {
-                    location: {
-                        folderId: "newFolderId"
-                    }
+                wbyAco_location: {
+                    folderId: "newFolderId"
                 }
             }
         });
@@ -170,10 +169,8 @@ describe("extending the GraphQL", () => {
 
         const [listRootNonExistingResponse] = await listEntries({
             where: {
-                meta: {
-                    location: {
-                        folderId: "root"
-                    }
+                wbyAco_location: {
+                    folderId: "root"
                 }
             }
         });
@@ -190,5 +187,18 @@ describe("extending the GraphQL", () => {
                 }
             }
         });
+
+        await updateEntryLocation({
+            id,
+            folderId: "abcdef#0001"
+        });
+        const [listAbcdefResponse] = await listEntries({
+            where: {
+                wbyAco_location: {
+                    folderId: "abcdef#0001"
+                }
+            }
+        });
+        expect(listAbcdefResponse).toEqual(createExpectedListResponse("abcdef#0001"));
     });
 });

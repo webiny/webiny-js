@@ -77,6 +77,9 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             status: {
                 type: "string"
             },
+            location: {
+                type: "map"
+            },
             values: {
                 type: "map"
             },

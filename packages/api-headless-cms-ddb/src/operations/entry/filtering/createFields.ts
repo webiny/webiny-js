@@ -48,7 +48,13 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
             parents,
             system,
             createPath: params => {
-                if (valuePathPlugin) {
+                if (
+                    valuePathPlugin &&
+                    valuePathPlugin.canUse(
+                        field,
+                        parents.map(p => p.fieldId)
+                    )
+                ) {
                     return valuePathPlugin.createPath(params);
                 }
 
@@ -107,30 +113,6 @@ export const createFields = (params: Params) => {
         type: CmsEntryFieldFilterPathPlugin.type,
         property: "fieldType"
     });
-
-    // const collection = createSystemFields().reduce<Record<string, Field>>((fields, field) => {
-    //     const transformPlugin = transformValuePlugins[field.type];
-    //
-    //     fields[field.fieldId] = {
-    //         ...field,
-    //         parents: [],
-    //         system: true,
-    //         createPath: ({ field }) => {
-    //             return field.settings?.path || field.fieldId;
-    //         },
-    //         transform: value => {
-    //             if (!transformPlugin) {
-    //                 return value;
-    //             }
-    //             return transformPlugin.transform({
-    //                 field,
-    //                 value
-    //             });
-    //         }
-    //     };
-    //
-    //     return fields;
-    // }, {});
 
     const collection = createFieldCollection({
         fields: createSystemFields(),
