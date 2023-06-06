@@ -1,4 +1,3 @@
-import invariant from "invariant";
 import { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import {
     PbEditorPageElementPlugin,
@@ -8,6 +7,7 @@ import {
 } from "~/types";
 import { plugins } from "@webiny/plugins";
 import { DropElementActionArgsType } from "./types";
+import { onReceived } from "~/editor/helpers";
 
 const elementPluginType = "pb-editor-page-element";
 
@@ -48,14 +48,12 @@ export const dropElementAction: EventActionCallable<DropElementActionArgsType> =
         throw new Error(`There is no element with id "${id}"`);
     }
     const plugin = getElementTypePlugin(type);
-    invariant(
-        plugin.onReceived,
-        "To accept drops, element plugin must implement `onReceived` function"
-    );
 
     const sourceElement = await getSourceElement(state, source);
 
-    return plugin.onReceived({
+    const onReceivedCallback = plugin.onReceived || onReceived;
+
+    return onReceivedCallback!({
         state,
         meta,
         source: sourceElement,

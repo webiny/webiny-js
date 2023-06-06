@@ -13,8 +13,7 @@ import Draggable from "~/editor/components/Draggable";
 import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
 import { ElementControlsOverlayBorders } from "./ElementControlsOverlay/ElementControlsOverlayBorders";
 import { ConnectDragSource } from "react-dnd";
-import { elementIsDraggable } from "./elementIsDraggable";
-import { getElementTargets } from "~/editor/contexts/EditorPageElementsProvider/getElementTargets";
+import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
 
 declare global {
     // eslint-disable-next-line
@@ -216,9 +215,13 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 
     const { children, dropRef, ...rest } = props;
 
-    const elementTargets = useMemo(() => {
-        return getElementTargets(element);
-    }, [element.id]);
+    const elementPlugin = useElementPlugin(element);
+    const elementTargets = elementPlugin?.target || [];
+
+    let isDraggable = false;
+    if (elementPlugin) {
+        isDraggable = Array.isArray(elementPlugin?.target) && elementPlugin.target.length > 0;
+    }
 
     const beginDrag = useCallback(() => {
         const data = { id: element.id, type: element.type };
@@ -232,8 +235,6 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     const endDrag = useCallback(() => {
         setUi(disableDraggingMutation);
     }, [element.id]);
-
-    const isDraggable = elementIsDraggable(element);
 
     const title = useMemo(() => {
         if (element.data.blockId) {

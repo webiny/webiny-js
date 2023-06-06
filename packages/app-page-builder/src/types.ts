@@ -513,6 +513,8 @@ export type PbEditorPageElementPlugin = Plugin & {
     render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
     // A function to check if an element can be deleted.
     canDelete?: (params: { element: PbEditorElement }) => boolean;
+    // Can the element receive other elements as children?
+    canReceiveChildren?: boolean,
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
         state: EventActionHandlerCallableState;
