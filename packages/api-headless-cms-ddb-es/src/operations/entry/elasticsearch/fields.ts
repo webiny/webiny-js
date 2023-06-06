@@ -107,51 +107,15 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
-        meta: {
+        wbyAco_location: {
             type: "object",
             systemField: true,
             searchable: true,
             sortable: true,
             field: createSystemField({
-                storageId: "meta",
-                fieldId: "meta",
-                type: "object",
-                settings: {
-                    fields: [
-                        {
-                            id: "location",
-                            fieldId: "location",
-                            storageId: "location",
-                            type: "object",
-                            label: "Location",
-                            settings: {
-                                fields: [
-                                    {
-                                        id: "folderId",
-                                        fieldId: "folderId",
-                                        storageId: "folderId",
-                                        type: "text",
-                                        label: "Folder ID"
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }),
-            parents: []
-        },
-        "meta.location": {
-            type: "object",
-            systemField: true,
-            searchable: true,
-            sortable: true,
-            field: createSystemField({
-                id: "location",
-                fieldId: "location",
                 storageId: "location",
+                fieldId: "wbyAco_location",
                 type: "object",
-                label: "Location",
                 settings: {
                     fields: [
                         {
@@ -164,15 +128,9 @@ const createSystemFields = (): ModelFields => {
                     ]
                 }
             }),
-            parents: [
-                {
-                    fieldId: "meta",
-                    type: "object",
-                    storageId: "meta"
-                }
-            ]
+            parents: []
         },
-        "meta.location.folderId": {
+        "wbyAco_location.folderId": {
             type: "text",
             systemField: true,
             searchable: true,
@@ -186,12 +144,7 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: [
                 {
-                    fieldId: "meta",
-                    type: "object",
-                    storageId: "meta"
-                },
-                {
-                    fieldId: "location",
+                    fieldId: "wbyAco_location",
                     type: "object",
                     storageId: "location"
                 }

@@ -34,7 +34,10 @@ export const createObjectFilterPlugin = () => {
                 if (!field) {
                     throw new WebinyError(
                         `There is no field "${identifier}".`,
-                        "OBJECT_FILTER_FIELD_ERROR"
+                        "OBJECT_FILTER_FIELD_ERROR",
+                        {
+                            fields: Object.keys(fields)
+                        }
                     );
                 }
                 /**
