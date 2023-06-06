@@ -7,7 +7,7 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
-import { elementIsDroppable } from "~/editor/contexts/EditorPageElementsProvider/elementIsDroppable";
+import {useElementPlugin} from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
@@ -69,15 +69,13 @@ export const ElementControls = () => {
         );
     };
 
-    const isDroppable = useMemo(() => {
-        return elementIsDroppable(element);
-    }, [element.id]);
+    const elementPlugin = useElementPlugin(element);
 
     // When dragging, if the element is droppable, we want to render the drop zones.
     if (isDragging) {
         let render = <ElementControlHorizontalDropZones />;
 
-        if (isDroppable) {
+        if (elementPlugin?.canReceiveChildren) {
             render = (
                 <>
                     <Droppable
