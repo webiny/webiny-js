@@ -618,9 +618,9 @@ export type PbEditorBlockPlugin = Plugin & {
     title: string;
     blockCategory: string;
     tags: string[];
-    image: Partial<File>;
     create(): PbEditorElement;
-    preview(): ReactElement;
+    image?: Partial<File>;
+    preview?(): ReactElement;
 };
 
 export type PbEditorBlockCategoryPlugin = Plugin & {
