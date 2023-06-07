@@ -19,9 +19,6 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
         version
         locked
         status
-        location {
-            folderId
-        }
     }
 `;
 
@@ -39,6 +36,9 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         id
         type
         displayName
+    }
+    wbyAco_location {
+        folderId
     }
     ${CONTENT_META_FIELDS}
 `;

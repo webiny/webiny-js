@@ -112,10 +112,8 @@ export const useEntries = (params: Params) => {
                             modifiedBy: entry.modifiedBy,
                             createdOn: entry.createdOn,
                             savedOn: entry.savedOn,
-                            meta: {
-                                location: {
-                                    folderId: entry.meta.location?.folderId
-                                }
+                            location: {
+                                folderId: entry.wbyAco_location?.folderId
                             }
                         };
                     });

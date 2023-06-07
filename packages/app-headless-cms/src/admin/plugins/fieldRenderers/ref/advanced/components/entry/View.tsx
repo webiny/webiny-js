@@ -4,7 +4,7 @@ import { ReactComponent as ViewIcon } from "./assets/view.svg";
 import { ButtonLink } from "./elements/ButtonLink";
 
 const createEntryUrl = (entry: CmsReferenceContentEntry) => {
-    const folderId = entry.meta?.location?.folderId || "";
+    const folderId = entry.wbyAco_location?.folderId || "";
     return `/cms/content-entries/${entry.model.modelId}?id=${
         entry.id
     }&folderId=${encodeURIComponent(folderId)}`;
