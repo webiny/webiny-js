@@ -7,6 +7,7 @@ import {
 import { FileManagerContext, FilesListOpts } from "~/types";
 import { emptyResolver, resolve } from "./utils";
 import { createFilesTypeDefs, CreateFilesTypeDefsParams } from "~/graphql/createFilesTypeDefs";
+import { NotAuthorizedResponse } from "@webiny/api-security";
 
 export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
     const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
@@ -25,6 +26,14 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                 }
             },
             FmQuery: {
+                getFileModel(_, __, context) {
+                    const identity = context.security.getIdentity();
+                    if (!identity) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    return resolve(() => context.cms.getModel("fmFile"));
+                },
                 getFile(_, args: any, context) {
                     return resolve(() => context.fileManager.getFile(args.id));
                 },
