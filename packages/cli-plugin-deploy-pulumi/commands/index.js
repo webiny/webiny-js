@@ -1,3 +1,4 @@
+const { red } = require("chalk");
 const destroy = require("./destroy");
 const deploy = require("./deploy");
 const build = require("./build");
@@ -168,7 +169,7 @@ module.exports = [
             );
 
             yargs.command(
-                "destroy <folder>",
+                "destroy [folder]",
                 `Destroys deployed cloud infrastructure for given project application`,
                 yargs => {
                     yargs.example("$0 destroy api --env=dev");
@@ -181,6 +182,38 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
+
+                    yargs
+                        .option("confirm-destroy-env", {
+                            describe: `Confirm environment name to destroy. Must be passed when destroying the whole project.`,
+                            type: "string"
+                        })
+                        .check(args => {
+                            const { folder, confirmDestroyEnv } = args;
+
+                            // If the folder is not defined, we are destroying the whole project.
+                            // In that case, we must confirm the environment name to destroy.
+                            if (!folder) {
+                                if (!confirmDestroyEnv) {
+                                    throw new Error(
+                                        `Please confirm complete project destruction by appending ${red(
+                                            `--confirm-destroy-env=${args.env}`
+                                        )} to the command.`
+                                    );
+                                }
+
+                                if (confirmDestroyEnv !== args.env) {
+                                    throw new Error(
+                                        `The ${red(
+                                            `--confirm-destroy-env`
+                                        )} option value must match the ${red("env")} option value.`
+                                    );
+                                }
+                            }
+
+                            return true;
+                        });
+
                     yargs.option("debug", {
                         default: false,
                         describe: `Turn on debug logs`,
