@@ -457,6 +457,31 @@ describe("`search` CRUD", () => {
             }
         });
 
+        const [listMovedRecords] = await search.listRecords();
+
+        expect(listMovedRecords).toMatchObject({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                id: record.id,
+                                location: {
+                                    folderId: "folder-1-2-3-4-5-6-7"
+                                }
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
+
         const [movedRecord] = await search.getRecord({ id: record.id });
         expect(movedRecord).toMatchObject({
             data: {

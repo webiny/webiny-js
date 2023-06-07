@@ -2,8 +2,9 @@ import WebinyError from "@webiny/error";
 import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { getRecordFieldValues } from "~/utils/getFieldValues";
 import { AcoSearchRecordStorageOperations } from "./record.types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsModel, UpdateCmsEntryInput } from "@webiny/api-headless-cms/types";
 import { attachAcoRecordPrefix } from "~/utils/acoRecordId";
+import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
 
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
@@ -114,12 +115,20 @@ export const createSearchRecordOperations = (
             return security.withoutAuthorization(async () => {
                 const original = await this.getRecord(model, { id });
 
-                const input = {
-                    ...original,
+                const input: UpdateCmsEntryInput = {
                     wbyAco_location: {
                         folderId
                     }
                 };
+                /**
+                 * We only apply the location to the search record model as we do not want to override the users data.
+                 */
+                const lookFor = `${SEARCH_RECORD_MODEL_ID}-`;
+                if (model.modelId.substring(0, lookFor.length) === lookFor) {
+                    input.location = {
+                        folderId
+                    };
+                }
 
                 await cms.updateEntry(model, attachAcoRecordPrefix(original.id), input);
 
