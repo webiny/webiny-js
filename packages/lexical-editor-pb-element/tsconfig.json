@@ -5,6 +5,7 @@
     { "path": "../app-page-builder" },
     { "path": "../app-page-builder-elements" },
     { "path": "../lexical-editor" },
+    { "path": "../theme" },
     { "path": "../react-composition" },
     { "path": "../ui" }
   ],
@@ -21,6 +22,8 @@
       "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
       "@webiny/lexical-editor": ["../lexical-editor/src"],
+      "@webiny/theme/*": ["../theme/src/*"],
+      "@webiny/theme": ["../theme/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/ui/*": ["../ui/src/*"],

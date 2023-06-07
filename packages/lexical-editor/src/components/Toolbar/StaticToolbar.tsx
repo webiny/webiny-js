@@ -18,24 +18,15 @@ interface useStaticToolbarProps {
     editor: LexicalEditor;
     type: ToolbarType;
     children?: React.ReactNode;
-    actionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
 
 const useStaticToolbar: FC<useStaticToolbarProps> = ({
     editor,
-    actionPlugins,
     type,
     children
 }): JSX.Element | null => {
-    const { setNodeIsText, setActionPlugins, setToolbarType, setTextBlockSelection } =
-        useRichTextEditor();
+    const { setNodeIsText, setToolbarType, setTextBlockSelection } = useRichTextEditor();
     const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
-
-    useEffect(() => {
-        if (actionPlugins) {
-            setActionPlugins(actionPlugins || []);
-        }
-    }, [actionPlugins]);
 
     useEffect(() => {
         if (type) {
@@ -109,9 +100,7 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
 };
 
 export interface StaticToolbarToolbarProps {
-    type: ToolbarType;
     children?: React.ReactNode;
-    actionPlugins?: { type: string; plugin: Record<string, any> }[];
 }
 
 /**
@@ -119,8 +108,8 @@ export interface StaticToolbarToolbarProps {
  */
 export const StaticToolbar = makeComposable<StaticToolbarToolbarProps>(
     "StaticToolbar",
-    ({ type, actionPlugins, children }): JSX.Element | null => {
+    ({ children }): JSX.Element | null => {
         const [editor] = useLexicalComposerContext();
-        return useStaticToolbar({ actionPlugins, editor, type, children });
+        return useStaticToolbar({ editor, type: "static", children });
     }
 );

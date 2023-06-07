@@ -6,24 +6,13 @@ interface AddToolbarActionProps {
     element: JSX.Element;
 }
 
-export const AddStaticToolbarAction: FC<AddToolbarActionProps> = ({
-    element,
-    type: targetType
-}) => {
+export const AddStaticToolbarAction: FC<AddToolbarActionProps> = ({ element }) => {
     const StaticToolbarPlugin = React.memo(
         createComponentPlugin(StaticToolbar, Original => {
-            return function StaticToolbar({ type, actionPlugins, children }): JSX.Element {
-                if (!targetType || targetType === type) {
-                    return (
-                        <Original actionPlugins={actionPlugins} type={type}>
-                            {element}
-                            {children}
-                        </Original>
-                    );
-                }
-
+            return function StaticToolbar({ children }): JSX.Element {
                 return (
-                    <Original actionPlugins={actionPlugins} type={type}>
+                    <Original>
+                        {element}
                         {children}
                     </Original>
                 );

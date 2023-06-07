@@ -36,6 +36,7 @@ export {
     default as SingleImageUpload,
     SingleImageUploadProps
 } from "./components/SingleImageUpload";
+export { LexicalEditor } from "./components/LexicalEditor/LexicalEditor";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
 export type {

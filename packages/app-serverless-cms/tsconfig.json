@@ -21,7 +21,6 @@
     { "path": "../app-tenancy" },
     { "path": "../app-tenant-manager" },
     { "path": "../lexical-editor-actions" },
-    { "path": "../lexical-editor-cms-actions" },
     { "path": "../lexical-editor-pb-element" },
     { "path": "../plugins" }
   ],
@@ -70,8 +69,6 @@
       "@webiny/app-tenant-manager": ["../app-tenant-manager/src"],
       "@webiny/lexical-editor-actions/*": ["../lexical-editor-actions/src/*"],
       "@webiny/lexical-editor-actions": ["../lexical-editor-actions/src"],
-      "@webiny/lexical-editor-cms-actions/*": ["../lexical-editor-cms-actions/src/*"],
-      "@webiny/lexical-editor-cms-actions": ["../lexical-editor-cms-actions/src"],
       "@webiny/lexical-editor-pb-element/*": ["../lexical-editor-pb-element/src/*"],
       "@webiny/lexical-editor-pb-element": ["../lexical-editor-pb-element/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

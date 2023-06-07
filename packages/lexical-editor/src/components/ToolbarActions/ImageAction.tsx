@@ -4,22 +4,21 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { FileManagerFileItem, fileToImagePayload } from "~/utils/files";
 import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 import { LexicalCommand } from "lexical";
-
-const IMAGE_ACTION_TYPE = "image-action";
+import { ToolbarActionPlugin } from "~/types";
 
 export const ImageAction = () => {
     const [editor] = useLexicalComposerContext();
-    const { actionPlugins } = useRichTextEditor();
-    const [imageActionPlugin, setImageActionPlugin] = useState<
-        { type: string; plugin: Record<string, any> | Function } | undefined
-    >();
+    const { toolbarActionPlugins } = useRichTextEditor();
+    const [imageActionPlugin, setImageActionPlugin] = useState<ToolbarActionPlugin | undefined>();
 
     useEffect(() => {
-        if (!!actionPlugins?.length) {
-            const actionPlugin = actionPlugins.find(action => action.type === IMAGE_ACTION_TYPE);
+        if (!!toolbarActionPlugins?.length) {
+            const actionPlugin = toolbarActionPlugins.find(
+                action => action.targetAction === "image-action"
+            );
             setImageActionPlugin(actionPlugin);
         }
-    }, [actionPlugins]);
+    }, [toolbarActionPlugins]);
 
     const handleClick = () => {
         if (typeof imageActionPlugin?.plugin === "function") {

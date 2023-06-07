@@ -6,13 +6,13 @@
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-wcp/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
+    { "path": "../lexical-editor/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../react-router/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../ui-composer/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" },
-    { "path": "../lexical-editor-cms-actions/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

@@ -9,8 +9,6 @@ import { usePageElements } from "@webiny/app-page-builder-elements";
 import { TypographyStyle } from "@webiny/theme/types";
 import { TypographyValue } from "@webiny/lexical-editor/types";
 
-const RICH_TEXT_CMS_TOOLBAR = "rich-text-cms-static-toolbar";
-
 /*
  * This components support the typography selection for page builder and HCMS.
  * @TODO Create separate component with composition scopes
@@ -19,7 +17,7 @@ export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
     const { theme } = usePageElements();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
-    const { textBlockSelection, toolbarType } = useRichTextEditor();
+    const { textBlockSelection } = useRichTextEditor();
     const textType = textBlockSelection?.state?.textType;
 
     const getAllTextStyles = (): TypographyStyle[] => {
@@ -37,32 +35,14 @@ export const TypographyDropDown = () => {
         if (theme?.styles) {
             setStyles(getAllTextStyles());
         }
-    }, [toolbarType === RICH_TEXT_CMS_TOOLBAR]);
+    }, [theme?.styles]);
 
     useEffect(() => {
         if (textType) {
             switch (textType) {
                 case "heading":
                 case "paragraph":
-                    const headingsStyles = theme.styles.typography?.headings || [];
-                    const paragraphStyles = theme.styles.typography?.paragraphs || [];
-                    let typographyStyles: TypographyStyle[] = [];
-                    /*
-                     * @todo Implement the CMS static toolbar and typography component with composition scope
-                     * */
-                    if (toolbarType === RICH_TEXT_CMS_TOOLBAR) {
-                        //Show all styles for paragraphs and headers on text selection
-                        typographyStyles = getAllTextStyles();
-                    } else {
-                        // other toolbars
-                        if (textType === "heading") {
-                            typographyStyles = [...headingsStyles];
-                        }
-                        if (textType === "paragraph") {
-                            typographyStyles = [...paragraphStyles];
-                        }
-                    }
-                    setStyles(typographyStyles);
+                    setStyles(getAllTextStyles());
                     break;
                 case "bullet":
                     setStyles(theme.styles.typography.lists?.filter(x => x.tag === "ul") || []);
@@ -88,7 +68,7 @@ export const TypographyDropDown = () => {
                     buttonLabel={value?.name || "Typography"}
                     stopCloseOnClickSelf={true}
                     disabled={false}
-                    showScroll={false}
+                    showScroll={true}
                 >
                     {styles?.map(option => (
                         <DropDownItem

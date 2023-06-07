@@ -6,7 +6,7 @@ import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
 import { IconButton } from "@webiny/ui/Button";
 import styled from "@emotion/styled";
-import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
+import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -65,7 +65,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
-                            <LexicalEditor
+                            <LexicalCmsEditor
                                 value={bind.field.value}
                                 onChange={bind.field.onChange}
                                 key={getKey(field, bind, index)}

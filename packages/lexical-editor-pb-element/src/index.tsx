@@ -1,5 +1,10 @@
 import React from "react";
-import { ParagraphToolbarPreset, HeadingToolbarPreset } from "@webiny/lexical-editor";
+import {
+    ParagraphToolbarPreset,
+    HeadingToolbarPreset,
+    TypographyAction,
+    LexicalEditorConfig
+} from "@webiny/lexical-editor";
 import { PeTextPlugin } from "~/plugins/PeTextPlugin";
 import { HeadingPlugin } from "~/plugins/HeadingPlugin";
 import { ParagraphPlugin } from "~/plugins/ParagraphPlugin";
@@ -7,12 +12,19 @@ import { RichVariableInputPlugin } from "~/plugins/elementSettings/variables/Ric
 import { TextVariableInputPlugin } from "~/plugins/elementSettings/variables/TextVariableInputPlugin";
 import { PbTextPlugin } from "~/plugins/PbTextPlugin";
 import { TextElementRendererPlugin } from "~/render/plugins/TextElementRendererPlugin";
+import { CompositionScope } from "@webiny/react-composition";
+import { TypographyDropDown } from "~/components/TypographyDropDown";
 
 export const LexicalEditorPlugin = () => {
     return (
         <>
-            <HeadingToolbarPreset />
-            <ParagraphToolbarPreset />
+            <CompositionScope name={"pb"}>
+                <HeadingToolbarPreset />
+                <ParagraphToolbarPreset />
+                <LexicalEditorConfig>
+                    <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
+                </LexicalEditorConfig>
+            </CompositionScope>
             {/* Components */}
             <PeTextPlugin />
             <PbTextPlugin />
