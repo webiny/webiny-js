@@ -48,7 +48,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
                 }
             }
         }
-    }, []);
+    }, [popupCharStylesEditorRef]);
 
     const mouseUpListener = useCallback(() => {
         if (popupCharStylesEditorRef?.current) {
@@ -56,7 +56,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
                 popupCharStylesEditorRef.current.style.pointerEvents = "auto";
             }
         }
-    }, []);
+    }, [popupCharStylesEditorRef]);
 
     useEffect(() => {
         if (popupCharStylesEditorRef?.current) {
