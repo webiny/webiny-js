@@ -66,12 +66,17 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 return undefined;
             }
             return () => {
+                const folderPath = currentFolderId
+                    ? `&folderId=${encodeURIComponent(currentFolderId)}`
+                    : "";
                 history.push(
-                    `/cms/content-entries/${model.modelId}?id=${encodeURIComponent(entry.id)}`
+                    `/cms/content-entries/${model.modelId}?id=${encodeURIComponent(
+                        entry.id
+                    )}${folderPath}`
                 );
             };
         },
-        [canEdit, model.modelId]
+        [canEdit, model.modelId, currentFolderId]
     );
 
     const columns: Columns<Entry> = {
