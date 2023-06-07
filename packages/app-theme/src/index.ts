@@ -12,3 +12,6 @@ export class ThemePlugin extends Plugin {
 }
 
 export * from "@webiny/theme";
+// theme context
+export { ThemeProvider } from "~/providers/ThemeProvider";
+export { useTheme } from "~/hooks/useTheme";
