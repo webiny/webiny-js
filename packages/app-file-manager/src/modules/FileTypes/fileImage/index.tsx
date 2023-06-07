@@ -17,9 +17,14 @@ const styles = css({
 export const imageFileTypePlugin = new FileManagerFileTypePlugin({
     types: ["image/*"],
     actions: [EditAction],
-    render({ file }) {
+    render({ file, width }) {
         return (
-            <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />
+            <Image
+                className={styles}
+                src={file.src}
+                alt={file.name}
+                transform={{ width: width ?? 300 }}
+            />
         );
     }
 });

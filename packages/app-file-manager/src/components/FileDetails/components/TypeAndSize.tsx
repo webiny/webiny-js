@@ -7,9 +7,16 @@ import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { useFile } from "~/components/FileDetails";
 
+const TypeAndSizeWrapper = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
 const InlineIcon = styled(Icon)`
+    margin-right: 5px;
     &.mdc-button__icon {
         display: inline;
+        fill: var(--mdc-theme-text-secondary-on-background);
     }
 `;
 
@@ -24,15 +31,15 @@ export const TypeAndSize = () => {
     }, [file]);
 
     return (
-        <>
+        <TypeAndSizeWrapper>
             <InlineIcon icon={fileTypeIcon} />
-            <Typography use={"subtitle1"}>{file.type}</Typography>
+            <Typography use={"caption"}>{file.type}</Typography>
             <span>&nbsp;-&nbsp;</span>
-            <Typography use={"subtitle1"} tag={"span"}>
+            <Typography use={"caption"} tag={"span"}>
                 {bytes.format(file.size, {
                     unitSeparator: " "
                 })}
             </Typography>
-        </>
+        </TypeAndSizeWrapper>
     );
 };

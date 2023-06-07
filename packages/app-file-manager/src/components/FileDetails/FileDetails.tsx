@@ -15,15 +15,13 @@ import { Name } from "./components/Name";
 import { Tags } from "./components/Tags";
 import { FileDetailsProvider, useFileDetails } from "~/components/FileDetails/FileDetailsProvider";
 import { Preview } from "./components/Preview";
+import { PreviewMeta } from "./components/PreviewMeta";
 import { Actions } from "./components/Actions";
 import { Header } from "./components/Header";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Content } from "./components/Content";
 import { SimpleForm } from "@webiny/app-admin/components/SimpleForm";
 import { Footer } from "./components/Footer";
-import { FlexRow, FlexColumn } from "./components/Flex";
-import { TypeAndSize } from "~/components/FileDetails/components/TypeAndSize";
-import { CreatedOn } from "./components/CreatedOn";
 import { Extensions } from "./components/Extensions";
 import { useFileModel } from "~/hooks/useFileModel";
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
@@ -78,14 +76,7 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
                                     <Elevation z={2} style={{ margin: 20 }}>
                                         <Actions />
                                         <Preview />
-                                        <FlexRow>
-                                            <FlexColumn>
-                                                <TypeAndSize />
-                                            </FlexColumn>
-                                            <FlexColumn>
-                                                <CreatedOn />
-                                            </FlexColumn>
-                                        </FlexRow>
+                                        <PreviewMeta />
                                     </Elevation>
                                 </Content.Panel>
                                 <Content.Panel>

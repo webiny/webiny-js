@@ -3,6 +3,7 @@ import React from "react";
 
 const Horizontal = styled.div`
     display: flex;
+    height: calc(100vh - 160px);
 `;
 
 const Grow = styled.div`
