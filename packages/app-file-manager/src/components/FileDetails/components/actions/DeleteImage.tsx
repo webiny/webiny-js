@@ -4,10 +4,10 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { FileItem } from "@webiny/app-admin/types";
-import { useFile, useFileManagerApi } from "~/index";
+import { useFile, useFileDetails, useFileManagerApi } from "~/index";
 import { useDeleteFile } from "~/hooks/useDeleteFile";
 
-interface DeleteImageActionProps {
+interface DeleteImageProps {
     onDelete?: () => void;
 }
 
@@ -21,12 +21,13 @@ const isImage = (file: FileItem) => {
     return false;
 };
 
-export const DeleteImageAction: React.VFC<DeleteImageActionProps> = ({ onDelete }) => {
+export const DeleteImage: React.VFC<DeleteImageProps> = () => {
     const { file } = useFile();
     const { canEdit } = useFileManagerApi();
+    const { close } = useFileDetails();
     const { openDialogDeleteFile } = useDeleteFile({
         file,
-        onDelete
+        onDelete: close
     });
 
     if (!canEdit(file)) {

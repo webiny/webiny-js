@@ -1,11 +1,10 @@
 import React, { useCallback } from "react";
-
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
-
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 const t = i18n.ns("app-admin/file-manager/hooks/use-delete-file");
 
@@ -24,6 +23,7 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete file`,
+        loading: <CircularProgress label={"Deleting file..."} />,
         message: file && (
             <>
                 <p>
