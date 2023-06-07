@@ -4,24 +4,6 @@ import { Settings } from "~/types";
 import { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext";
 import { ListDbSort } from "@webiny/app-aco/types";
 
-const FILE_FIELDS = /* GraphQL */ `
-    {
-        __typename
-        id
-        name
-        key
-        src
-        size
-        type
-        tags
-        aliases
-        createdOn
-        createdBy {
-            id
-        }
-    }
-`;
-
 const ERROR_FIELDS = /* GraphQL */ `
     {
         code
@@ -59,32 +41,32 @@ export interface ListFilesQueryVariables {
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
+    search?: string;
     where?: {
-        search?: string;
-        type?: string;
+        tags?: string;
+        tags_in?: string[];
+        tags_startsWith?: string;
+        tags_not_startsWith?: string;
         type_in?: string[];
-        tag?: string;
-        tag_in?: string[];
-        tag_and_in?: string[];
-        tag_startsWith?: string;
-        tag_not_startsWith?: string;
         createdBy?: string;
     };
 }
 
-export const LIST_FILES = gql`
+export const LIST_FILES = (FILE_FIELDS: string) => gql`
     query ListFiles(
+        $search: String,
         $limit: Int,
         $after: String,
-        $where: FileWhereInput
+        $where: FmFileListWhereInput
     ) {
         fileManager {
             listFiles(
+                search: $search,
                 limit: $limit,
                 after: $after,
                 where: $where
             ) {
-                data ${FILE_FIELDS}
+                data {}${FILE_FIELDS}
                 meta {
                     cursor
                     totalCount
@@ -94,7 +76,7 @@ export const LIST_FILES = gql`
     }
 `;
 
-export const GET_FILE = gql`
+export const GET_FILE = (FILE_FIELDS: string) => gql`
     query GetFile($id: ID!) {
         fileManager {
             getFile(id: $id) {
@@ -159,8 +141,8 @@ export interface CreateFileMutationVariables {
     meta?: Record<string, any>;
 }
 
-export const CREATE_FILE = gql`
-    mutation CreateFile($data: CreateFileInput!, $meta: JSON) {
+export const CREATE_FILE = (FILE_FIELDS: string) => gql`
+    mutation CreateFile($data: FmFileCreateInput!, $meta: JSON) {
         fileManager {
             createFile(data: $data, meta: $meta) {
                 error ${ERROR_FIELDS}
@@ -184,8 +166,8 @@ export interface UpdateFileMutationVariables {
     data: Partial<FileInput>;
 }
 
-export const UPDATE_FILE = gql`
-    mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
+export const UPDATE_FILE = (FILE_FIELDS: string) => gql`
+    mutation UpdateFile($id: ID!, $data: FmFileUpdateInput!) {
         fileManager {
             updateFile(id: $id, data: $data) {
                 data ${FILE_FIELDS}
@@ -228,6 +210,17 @@ export const GET_FILE_SETTINGS = gql`
                     uploadMinFileSize
                     uploadMaxFileSize
                 }
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const GET_FILE_MODEL = gql`
+    query GetFileModel {
+        fileManager {
+            getFileModel {
+                data 
                 error ${ERROR_FIELDS}
             }
         }
