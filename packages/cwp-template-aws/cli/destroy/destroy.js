@@ -30,32 +30,28 @@ module.exports = async (inputs, context) => {
     const { env } = inputs;
 
     // Ensure Pulumi is installed.
-    await getPulumi({ install: false }).install();
+    const pulumi = await getPulumi({ install: false });
+
+    pulumi.install();
 
     const apiFolder = getApiProjectApplicationFolder(context.project);
     const hasCore = fs.existsSync(path.join(context.project.root, "apps", "core"));
 
     console.log();
-    context.info(`Destroying ${green("apps/website")} project application...`);
+    context.info(`Destroying ${green("Website")} project application...`);
     await destroy("apps/website", env, inputs);
-    context.success(`${green("apps/website")} project application was destroyed successfully.`);
 
     console.log();
-    context.info(`Destroying ${green("apps/admin")} project application...`);
+    context.info(`Destroying ${green("Admin")} project application...`);
     await destroy("apps/admin", env, inputs);
-    context.success(`${green("apps/admin")} project application was destroyed successfully.`);
 
     console.log();
-    context.info(`Destroying ${green(apiFolder)} project application...`);
+    context.info(`Destroying ${green("API")} project application...`);
     await destroy(apiFolder, env, inputs);
-    context.success(`${green(apiFolder)} project application was destroyed successfully.`);
 
     if (hasCore) {
         console.log();
-        context.info(`Destroying ${green("core")} project application...`);
+        context.info(`Destroying ${green("Core")} project application...`);
         await destroy("apps/core", env, inputs);
-        context.success(`${green("core")} project application was destroyed successfully.`);
     }
-
-    console.log(`Destroy complete (${green(env)} environment).`);
 };
