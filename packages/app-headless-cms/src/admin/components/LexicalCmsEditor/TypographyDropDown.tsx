@@ -68,7 +68,7 @@ export const TypographyDropDown = () => {
                     buttonLabel={value?.name || "Typography"}
                     stopCloseOnClickSelf={true}
                     disabled={false}
-                    showScroll={false}
+                    showScroll={true}
                 >
                     {styles?.map(option => (
                         <DropDownItem
