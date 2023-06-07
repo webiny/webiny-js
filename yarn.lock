@@ -13336,6 +13336,7 @@ __metadata:
     "@webiny/app": 0.0.0
     "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
+    "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
