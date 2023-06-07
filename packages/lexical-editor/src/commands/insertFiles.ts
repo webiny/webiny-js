@@ -1,6 +1,7 @@
 import { createCommand, LexicalCommand, LexicalEditor, NodeKey } from "lexical";
 
 export interface ImagePayload {
+    id: string;
     altText: string;
     caption?: LexicalEditor;
     height?: number;

@@ -35,6 +35,7 @@ export const fileToImagePayload = (file: FileManagerFileItem): ImagePayload | nu
     }
 
     const imagePayload = {} as ImagePayload;
+    imagePayload["id"] = file.id;
     imagePayload["src"] = file.src;
     imagePayload["showCaption"] = false;
     imagePayload["captionsEnabled"] = false;

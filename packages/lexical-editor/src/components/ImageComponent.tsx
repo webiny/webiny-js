@@ -48,6 +48,7 @@ function useSuspenseImage(src: string) {
 }
 
 function LazyImage({
+    id,
     altText,
     className,
     imageRef,
@@ -56,6 +57,7 @@ function LazyImage({
     height,
     maxWidth
 }: {
+    id: string;
     altText: string;
     className: string | null;
     height: "inherit" | number;
@@ -67,6 +69,7 @@ function LazyImage({
     useSuspenseImage(src);
     return (
         <img
+            id={id}
             className={className || undefined}
             src={src}
             alt={altText}
@@ -82,6 +85,7 @@ function LazyImage({
 }
 
 export default function ImageComponent({
+    id,
     src,
     altText,
     nodeKey,
@@ -93,6 +97,7 @@ export default function ImageComponent({
     caption,
     captionsEnabled
 }: {
+    id: string;
     altText: string;
     caption: LexicalEditor;
     height: "inherit" | number;
@@ -280,6 +285,7 @@ export default function ImageComponent({
             <>
                 <div draggable={draggable}>
                     <LazyImage
+                        id={id}
                         className={
                             isFocused
                                 ? `focused ${$isNodeSelection(selection) ? "draggable" : ""}`
