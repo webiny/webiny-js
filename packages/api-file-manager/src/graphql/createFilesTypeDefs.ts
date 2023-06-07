@@ -131,8 +131,14 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             data: [FmFile!]
             error: FmError
         }
+            
+        type FmFileModelResponse {
+            data: JSON
+            error: FmError
+        }
 
         extend type FmQuery {
+            getFileModel: FmFileModelResponse!
             getFile(id: ID!): FmFileResponse!
             listFiles(
                 search: String
