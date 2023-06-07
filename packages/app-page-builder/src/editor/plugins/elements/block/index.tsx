@@ -1,7 +1,6 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Block from "./Block";
-import { onReceived } from "~/editor/helpers";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
@@ -83,8 +82,6 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         render(props) {
             return <Block {...props} />;
         },
-
-        // This callback is executed when another element is dropped on the drop zones with type "block"
-        onReceived
+        canReceiveChildren: true
     };
 };

@@ -11,7 +11,7 @@ import {
 } from "~/types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "~/editor/plugins/elementSettings/elementSettingsUtils";
-import { createElement, onReceived } from "~/editor/helpers";
+import { createElement } from "~/editor/helpers";
 import { isLegacyRenderingEngine } from "~/utils";
 
 import lodashGet from "lodash/get";
@@ -83,7 +83,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        onReceived,
+        canReceiveChildren: true,
         render(props) {
             return <Cell {...props} />;
         }
