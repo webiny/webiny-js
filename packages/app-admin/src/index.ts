@@ -37,7 +37,6 @@ export {
     SingleImageUploadProps
 } from "./components/SingleImageUpload";
 export { LexicalEditor } from "./components/LexicalEditor/LexicalEditor";
-export { theme } from "./theme/theme";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
 export type {

@@ -31,8 +31,8 @@ const ImageComponent = React.lazy(
 
 function convertImageElement(domNode: Node): null | DOMConversionOutput {
     if (domNode instanceof HTMLImageElement) {
-        const { alt: altText, src, width, height } = domNode;
-        const node = $createImageNode({ altText, height, src, width });
+        const { id, alt: altText, src, width, height } = domNode;
+        const node = $createImageNode({ id, altText, height, src, width });
         return { node };
     }
     return null;
@@ -40,6 +40,7 @@ function convertImageElement(domNode: Node): null | DOMConversionOutput {
 
 export type SerializedImageNode = Spread<
     {
+        id: string;
         altText: string;
         caption: SerializedEditor;
         height?: number;
@@ -52,6 +53,7 @@ export type SerializedImageNode = Spread<
 >;
 
 export class ImageNode extends DecoratorNode<JSX.Element> {
+    __id: string;
     __src: string;
     __altText: string;
     __width: "inherit" | number;
@@ -68,6 +70,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
     static override clone(node: ImageNode): ImageNode {
         return new ImageNode(
+            node.__id,
             node.__src,
             node.__altText,
             node.__maxWidth,
@@ -81,8 +84,9 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     }
 
     static override importJSON(serializedNode: SerializedImageNode): ImageNode {
-        const { altText, height, width, maxWidth, caption, src, showCaption } = serializedNode;
+        const { id, altText, height, width, maxWidth, caption, src, showCaption } = serializedNode;
         const node = $createImageNode({
+            id,
             altText,
             height,
             maxWidth,
@@ -100,6 +104,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
     override exportDOM(): DOMExportOutput {
         const element = document.createElement("img");
+        element.setAttribute("id", this.__id);
         element.setAttribute("src", this.__src);
         element.setAttribute("alt", this.__altText);
         element.setAttribute("width", this.__width.toString());
@@ -117,6 +122,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     }
 
     constructor(
+        id: string,
         src: string,
         altText: string,
         maxWidth: number,
@@ -128,6 +134,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
         key?: NodeKey
     ) {
         super(key);
+        this.__id = id;
         this.__src = src;
         this.__altText = altText;
         this.__maxWidth = maxWidth;
@@ -140,6 +147,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
     override exportJSON(): SerializedImageNode {
         return {
+            id: this.__id,
             altText: this.getAltText(),
             caption: this.__caption.toJSON(),
             height: this.__height === "inherit" ? 0 : this.__height,
@@ -191,6 +199,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
         return (
             <Suspense fallback={null}>
                 <ImageComponent
+                    id={this.__id}
                     src={this.__src}
                     altText={this.__altText}
                     width={this.__width}
@@ -208,6 +217,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 }
 
 export function $createImageNode({
+    id,
     altText,
     height,
     maxWidth = 500,
@@ -220,6 +230,7 @@ export function $createImageNode({
 }: ImagePayload): ImageNode {
     return $applyNodeReplacement(
         new ImageNode(
+            id,
             src,
             altText,
             maxWidth,
