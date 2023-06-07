@@ -6,9 +6,16 @@ import { Typography } from "@webiny/ui/Typography";
 import { useFile } from "~/components/FileDetails";
 import styled from "@emotion/styled";
 
+const CreatedOnWrapper = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
 const InlineIcon = styled(Icon)`
+    margin-right: 5px;
     &.mdc-button__icon {
         display: inline;
+        fill: var(--mdc-theme-text-secondary-on-background);
     }
 `;
 
@@ -16,11 +23,11 @@ export const CreatedOn = () => {
     const { file } = useFile();
 
     return (
-        <div>
+        <CreatedOnWrapper>
             <InlineIcon icon={<CalendarIcon />} />
-            <Typography use={"subtitle1"} tag={"span"}>
+            <Typography use={"caption"} tag={"span"}>
                 {dayjs(file.createdOn).format("DD MMM YYYY [at] HH:mm")}
             </Typography>
-        </div>
+        </CreatedOnWrapper>
     );
 };

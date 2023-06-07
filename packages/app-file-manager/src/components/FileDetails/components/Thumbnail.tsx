@@ -11,5 +11,9 @@ export const Thumbnail = () => {
 
     // TODO: implement preview rendering using component composition
 
-    return filePlugin ? <>{filePlugin.render({ file })}</> : <span>No Preview Available.</span>;
+    return filePlugin ? (
+        <>{filePlugin.render({ file, width: 600 })}</>
+    ) : (
+        <span>No Preview Available.</span>
+    );
 };

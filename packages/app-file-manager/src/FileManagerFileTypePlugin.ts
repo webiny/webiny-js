@@ -4,6 +4,7 @@ import { FileItem } from "@webiny/app-admin/types";
 
 export interface RenderParams {
     file: FileItem;
+    width?: number;
 }
 
 interface Config {
