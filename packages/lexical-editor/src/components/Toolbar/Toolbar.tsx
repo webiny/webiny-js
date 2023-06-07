@@ -37,7 +37,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ children, type, anchorElem,
 
     const mouseMoveListener = useCallback(
         (e: MouseEvent) => {
-             /* Indicates which mouse button(s) was pressed.
+            /* Indicates which mouse button(s) was pressed.
              / 1 = mouse left button
              / 3 = mouse left and right button in the same time
              / More info: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
