@@ -71,6 +71,12 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
     const containerizedTheme = useMemo(() => {
         const theme = pageBuilder.theme as Theme;
 
+        // On a couple of occasions, we've seen the `theme` object being `null` for a brief moment. This
+        // would happen when the theme is being loaded via a dynamic import, e.g. in a multi-theme setup.
+        if (!theme) {
+            return null;
+        }
+
         return {
             ...pageBuilder.theme,
             breakpoints: Object.keys(theme.breakpoints).reduce((result, breakpointName) => {
@@ -85,7 +91,7 @@ export const EditorPageElementsProvider: React.FC = ({ children }) => {
 
     return (
         <PbPageElementsProvider
-            theme={containerizedTheme}
+            theme={containerizedTheme!}
             renderers={renderers}
             modifiers={modifiers}
             beforeRenderer={ElementControls}

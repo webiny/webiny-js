@@ -11,6 +11,13 @@ import {
     PbEditorElement,
     PbElement
 } from "~/types";
+import {
+    CreateElementActionEvent,
+    updateElementAction,
+    UpdateElementActionArgsType
+} from "~/editor/recoil/actions";
+import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
+import { executeAction } from "~/editor/recoil/eventActions";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
@@ -18,6 +25,7 @@ export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 interface FlatElements {
     [id: string]: PbEditorElement;
 }
+
 export const flattenElements = (el?: PbEditorElement, parent?: string): FlatElements => {
     if (!el || !el.id) {
         return {};
@@ -50,6 +58,7 @@ export const flattenElements = (el?: PbEditorElement, parent?: string): FlatElem
 interface CreateElementCallableOptions {
     [key: string]: any;
 }
+
 interface CreateElementCallable {
     (
         type: string,
@@ -107,6 +116,13 @@ export const addElementToParent = (
             { ...element, parent: parent.id },
             ...parent.elements.slice(position)
         ]
+    };
+};
+
+export const removeElementFromParent = (parent: PbEditorElement, id?: string): PbEditorElement => {
+    return {
+        ...parent,
+        elements: parent.elements.filter(child => child !== id)
     };
 };
 
@@ -237,6 +253,7 @@ export interface UpdateBlockPositionParams {
     sourcePosition: number;
     targetPosition: number;
 }
+
 export const updateBlockPosition = (params: UpdateBlockPositionParams): PbEditorElement => {
     const { parent, sourcePosition: source, targetPosition: target } = params;
     if (source === target) {
@@ -260,4 +277,41 @@ export const moveInPlace = (
     newArray.splice(to, 0, item);
 
     return newArray;
+};
+
+export const onReceived: PbEditorPageElementPlugin["onReceived"] = props => {
+    const { source, target, position, state, meta } = props;
+
+    // Create a copy of the element with a new ID.
+    const element = createDroppedElement(source as any, target);
+
+    // Add the copy into the parent (into the new position),
+    // and also delete the old one.
+    let parent = addElementToParent(element, target, position);
+    parent = removeElementFromParent(parent, source.id);
+
+    // Update parent element.
+    const result = executeAction<UpdateElementActionArgsType>(state, meta, updateElementAction, {
+        element: parent,
+        history: true
+    });
+
+    // If we're just changing the position of an existing element,
+    // then we can exit here (no need to fire the below events).
+    const isDropOfAnExistingElement = !!source.id;
+    if (isDropOfAnExistingElement) {
+        return result;
+    }
+
+    // Trigger drop and create-element events.
+    result.actions.push(new AfterDropElementActionEvent({ element }));
+
+    result.actions.push(
+        new CreateElementActionEvent({
+            element,
+            source: source as PbEditorElement
+        })
+    );
+
+    return result;
 };

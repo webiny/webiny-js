@@ -197,6 +197,25 @@ const AddElement: React.FC = () => {
                                 element,
                                 params
                                     ? () => {
+                                          // If there are restrictions on the types of elements that can be dropped, check them here.
+                                          const selectedElementAllowedTargets = plugin.target;
+                                          const targetedElement = params.type;
+
+                                          const hasRestrictions =
+                                              Array.isArray(selectedElementAllowedTargets) &&
+                                              selectedElementAllowedTargets.length > 0;
+
+                                          if (hasRestrictions) {
+                                              const isAllowed =
+                                                  selectedElementAllowedTargets.includes(
+                                                      targetedElement
+                                                  );
+
+                                              if (!isAllowed) {
+                                                  return;
+                                              }
+                                          }
+
                                           dropElement({
                                               source: { type: plugin.elementType } as any,
                                               target: params as DropElementActionArgsType["target"]
