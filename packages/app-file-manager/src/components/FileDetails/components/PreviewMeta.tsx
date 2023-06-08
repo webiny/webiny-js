@@ -8,6 +8,7 @@ const PreviewMetaWrapper = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 5px;
+    border-top: 1px solid var(--mdc-theme-on-background);
 `;
 
 export const PreviewMeta = () => {
