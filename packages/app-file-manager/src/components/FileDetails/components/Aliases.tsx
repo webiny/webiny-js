@@ -23,13 +23,17 @@ const Fieldset = styled("div")({
 const Header = styled("div")({
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: 15
 });
 
 const DeleteAliasButton = styled(IconButton)`
     position: absolute;
     top: 5px;
     right: 5px;
+`;
+
+const FileAliasMessage = styled('span')`
+    color: var(--mdc-theme-text-secondary-on-background);
+    font-size: 12px;
 `;
 
 const PATHNAME_REGEX = /^\/[/.a-zA-Z0-9-]+$/;
@@ -83,9 +87,11 @@ export const Aliases = () => {
                                 <Typography use={"overline"}>File Aliases</Typography>
                                 <ButtonDefault onClick={addAlias}>+ Add Alias</ButtonDefault>
                             </Header>
-                            <Typography use={"body2"}>
-                                To make your file accessible via custom paths, add one or more
+                            <Typography use={"caption"}>
+                                <FileAliasMessage>
+                                    To make your file accessible via custom paths, add one or more
                                 aliases.
+                                </FileAliasMessage>
                             </Typography>
                         </Fragment>
                     ))}
