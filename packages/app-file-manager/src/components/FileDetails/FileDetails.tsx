@@ -35,6 +35,12 @@ const FileDetailsDrawer = styled(Drawer)`
 
 const FormContainer = styled(SimpleForm)`
     margin: 0;
+    /* Fix for the dir=rtl when a form is inside a drawer placed on the right side */
+    .mdc-floating-label {
+        transform-origin: left top !important;
+        left: 16px !important;
+        right: initial !important;
+    }
 `;
 
 interface FileDetailsInnerProps {
