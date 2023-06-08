@@ -8,7 +8,6 @@
 
 import type {
     DOMConversionMap,
-    DOMConversionOutput,
     DOMExportOutput,
     EditorConfig,
     LexicalEditor,
@@ -28,15 +27,6 @@ const ImageComponent = React.lazy(
     // @ts-ignore
     () => import("../components/ImageComponent")
 );
-
-function convertImageElement(domNode: Node): null | DOMConversionOutput {
-    if (domNode instanceof HTMLImageElement) {
-        const { id, alt: altText, src, width, height } = domNode;
-        const node = $createImageNode({ id, altText, height, src, width });
-        return { node };
-    }
-    return null;
-}
 
 export type SerializedImageNode = Spread<
     {
@@ -113,12 +103,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     }
 
     static importDOM(): DOMConversionMap | null {
-        return {
-            img: () => ({
-                conversion: convertImageElement,
-                priority: 0
-            })
-        };
+        // prevent paste from clipboard
+        return null;
     }
 
     constructor(
