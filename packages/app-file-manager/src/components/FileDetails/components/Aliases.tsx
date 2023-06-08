@@ -22,7 +22,7 @@ const Fieldset = styled("div")({
 
 const Header = styled("div")({
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
 });
 
 const DeleteAliasButton = styled(IconButton)`
@@ -31,7 +31,7 @@ const DeleteAliasButton = styled(IconButton)`
     right: 5px;
 `;
 
-const FileAliasMessage = styled('span')`
+const FileAliasMessage = styled("span")`
     color: var(--mdc-theme-text-secondary-on-background);
     font-size: 12px;
 `;
@@ -90,7 +90,7 @@ export const Aliases = () => {
                             <Typography use={"caption"}>
                                 <FileAliasMessage>
                                     To make your file accessible via custom paths, add one or more
-                                aliases.
+                                    aliases.
                                 </FileAliasMessage>
                             </Typography>
                         </Fragment>
