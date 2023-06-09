@@ -11,7 +11,11 @@ const FILE_FIELDS = /* GraphQL */ `
         type
         tags
         createdOn
-        meta
+        meta {
+            private
+            width
+            height
+        }
     }
 `;
 
@@ -24,7 +28,7 @@ const ERROR_FIELDS = /* GraphQL */ `
 `;
 
 export const CREATE_FILE = gql`
-    mutation CreateFile($data: CreateFileInput!) {
+    mutation CreateFile($data: FmFileCreateInput!) {
         fileManager {
             createFile(data: $data) {
                 error ${ERROR_FIELDS}
