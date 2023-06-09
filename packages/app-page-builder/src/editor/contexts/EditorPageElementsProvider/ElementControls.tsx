@@ -11,7 +11,7 @@ import { uiAtom } from "~/editor/recoil/modules";
 // Lists elements that, when empty, can receive other elements as children using
 // drag and drop. For now, the element types that are hardcoded. Down the road,
 // we might want to expose this, enabling users to create more complex elements.
-const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell"];
+const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell", "tab"];
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
