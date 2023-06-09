@@ -17,7 +17,7 @@ const BaseExtension: React.FC = () => {
     return (
         <Plugins>
             <AddMenu name={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
-            <FileManager>
+            <FileManager show={true}>
                 {({ showFileManager }) => (
                     <AddMenu
                         name={"fileManager"}
