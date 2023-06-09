@@ -1,4 +1,4 @@
-const { createPulumiCommand } = require("../utils");
+const { createPulumiCommand, getPulumiEnvVars } = require("../utils");
 
 module.exports = createPulumiCommand({
     name: "pulumi",
@@ -15,8 +15,7 @@ module.exports = createPulumiCommand({
 
             let stackExists = true;
             try {
-                const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-                const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
+                const { PULUMI_SECRETS_PROVIDER, PULUMI_CONFIG_PASSPHRASE } = getPulumiEnvVars();
 
                 await pulumi.run({
                     command: ["stack", "select", env],

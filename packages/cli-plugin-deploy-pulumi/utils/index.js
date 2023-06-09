@@ -9,9 +9,11 @@ const notify = require("./notify");
 const login = require("./login");
 const mapStackOutput = require("./mapStackOutput");
 const getRandomColorForString = require("./getRandomColorForString");
+const getPulumiEnvVars = require("./getPulumiEnvVars");
 
 module.exports = {
     getPulumi,
+    getPulumiEnvVars,
     getStackOutput,
     createPulumiCommand,
     loadEnvVariables,

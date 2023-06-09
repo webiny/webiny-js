@@ -1,5 +1,5 @@
 const buildPackages = require("./deploy/buildPackages");
-const { createPulumiCommand, runHook, login, notify } = require("../utils");
+const { createPulumiCommand, getPulumiEnvVars, runHook, login, notify } = require("../utils");
 
 module.exports = (params, context) => {
     const command = createPulumiCommand({
@@ -37,8 +37,7 @@ module.exports = (params, context) => {
 
             await login(projectApplication);
 
-            const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-            const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
+            const { PULUMI_SECRETS_PROVIDER, PULUMI_CONFIG_PASSPHRASE } = getPulumiEnvVars();
 
             await pulumi.run({
                 command: ["stack", "select", env],
@@ -48,7 +47,7 @@ module.exports = (params, context) => {
                 },
                 execa: {
                     env: {
-                        PULUMI_CONFIG_PASSPHRASE
+                        PULUMI_CONFIG_PASSPHRASE: PULUMI_CONFIG_PASSPHRASE
                     }
                 }
             });

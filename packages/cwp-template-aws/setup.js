@@ -1,7 +1,6 @@
 const fs = require("fs-extra");
 const path = require("path");
 const execa = require("execa");
-const crypto = require("crypto");
 const renames = require("./setup/renames");
 const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
@@ -14,13 +13,6 @@ const IS_TEST = process.env.NODE_ENV === "test";
 // Automatic detection could be added here.
 function getDefaultRegion() {
     return "us-east-1";
-}
-
-function random(length = 32) {
-    return crypto
-        .randomBytes(Math.ceil(length / 2))
-        .toString("hex")
-        .slice(0, length);
 }
 
 const setup = async args => {
@@ -85,8 +77,6 @@ const setup = async args => {
     const rootEnvFilePath = path.join(projectRoot, ".env");
     let content = fs.readFileSync(rootEnvFilePath).toString();
     content = content.replace("{REGION}", region);
-    content = content.replace("{PULUMI_CONFIG_PASSPHRASE}", random());
-    content = content.replace("{PULUMI_SECRETS_PROVIDER}", "passphrase");
     fs.writeFileSync(rootEnvFilePath, content);
 
     let projectFile = fs.readFileSync(path.join(projectRoot, "webiny.project.ts"), "utf-8");

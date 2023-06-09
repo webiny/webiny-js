@@ -16,8 +16,13 @@ export function getStackOutput<TStackOutput = Record<string, any>>(options: {
 
 interface GetPulumiParams {
     projectApplication?: Record<string, unknown>;
-    pulumi?: Options
+    pulumi?: Options;
     install?: boolean;
 }
 
 export function getPulumi(params: GetPulumiParams): Pulumi;
+
+export function getPulumiEnvVars(): {
+    PULUMI_SECRETS_PROVIDER: string;
+    PULUMI_CONFIG_PASSPHRASE: string;
+};

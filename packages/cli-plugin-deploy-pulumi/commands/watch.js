@@ -17,6 +17,7 @@ const watchPackages = require("./watch/watchPackages");
 const {
     login,
     getPulumi,
+    getPulumiEnvVars,
     getRandomColorForString,
     loadEnvVariables,
     runHook
@@ -112,8 +113,7 @@ module.exports = async (inputs, context) => {
     });
 
     // 1.1. Check if the project application and Pulumi stack exist.
-    let PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-    let PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
+    const { PULUMI_SECRETS_PROVIDER, PULUMI_CONFIG_PASSPHRASE } = getPulumiEnvVars();
 
     if (inputs.deploy && projectApplication) {
         const { env } = inputs;

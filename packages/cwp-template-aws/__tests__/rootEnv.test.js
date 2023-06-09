@@ -40,10 +40,7 @@ describe("root .env file generation test", () => {
     test("should update root .env file correctly", async () => {
         const config = dotenv.parse(fs.readFileSync(path.join(PROJECT_ROOT, ".env")));
         expect(config).toMatchObject({
-            AWS_REGION: "eu-central-1",
-            PULUMI_SECRETS_PROVIDER: "passphrase"
+            AWS_REGION: "eu-central-1"
         });
-
-        expect(config.PULUMI_CONFIG_PASSPHRASE.length).toBe(32);
     });
 });
