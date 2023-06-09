@@ -6,7 +6,7 @@ import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 export const QuoteAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isActive, setIsActive] = useState<boolean>(false);
-    const { textBlockSelection, themeEmotionMap } = useRichTextEditor();
+    const { textBlockSelection, themeEmotionMap, activeEditor } = useRichTextEditor();
     const isQuoteSelected = !!textBlockSelection?.state?.quote.isSelected;
 
     const formatText = () => {
@@ -22,7 +22,7 @@ export const QuoteAction = () => {
 
     useEffect(() => {
         setIsActive(isQuoteSelected);
-    }, [isQuoteSelected]);
+    }, [isQuoteSelected, activeEditor]);
 
     return (
         <button

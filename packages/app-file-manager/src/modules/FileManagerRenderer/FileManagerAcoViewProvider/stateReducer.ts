@@ -1,6 +1,5 @@
 import { FileItem } from "@webiny/app-admin/types";
 import { ListDbSort } from "@webiny/app-aco/types";
-import { FOLDER_ID_DEFAULT } from "~/constants";
 import isEqual from "lodash/isEqual";
 
 interface BaseStateListWhere {
@@ -17,7 +16,7 @@ export interface StateListWhere extends BaseStateListWhere {
 }
 
 export interface State {
-    folderId: string | undefined;
+    folderId?: string;
     showingFileDetails: string | null;
     loadingFileDetails: boolean;
     selected: FileItem[];
@@ -102,7 +101,7 @@ export const getMimeTypeWhereParams = (mimes: string[] | undefined) => {
 
 export const initializeState = ({ accept, scope, own, identity }: InitParams): State => {
     return {
-        folderId: FOLDER_ID_DEFAULT,
+        folderId: undefined,
         showingFileDetails: null,
         loadingFileDetails: false,
         selected: [],

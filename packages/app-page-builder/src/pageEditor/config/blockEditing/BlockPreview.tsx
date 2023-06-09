@@ -20,11 +20,22 @@ interface BlockPreviewProps {
     onEdit: (ev: React.MouseEvent) => void;
     onDelete: (ev: React.MouseEvent) => void;
 }
+
 const BlockPreview: React.FC<BlockPreviewProps> = props => {
     const { plugin, addBlockToContent, onEdit, onDelete } = props;
     const onClickToAddHandler = useCallback(() => {
         addBlockToContent(plugin);
     }, [plugin]);
+
+    let blockPreview = <img src={previewFallback} alt={plugin.title} />;
+
+    const blockPreviewImageSrc = plugin?.image?.src;
+    if (blockPreviewImageSrc) {
+        blockPreview = <img src={blockPreviewImageSrc} alt={plugin.title} />;
+    } else if (typeof plugin.preview === "function") {
+        blockPreview = plugin.preview();
+    }
+
     return (
         <Elevation
             z={1}
@@ -78,13 +89,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                     </Styled.EditBlock>
                 )}
             </Styled.Overlay>
-            <Styled.BlockPreview>
-                {plugin?.image?.src ? (
-                    plugin.preview()
-                ) : (
-                    <img src={previewFallback} alt={plugin.title} />
-                )}
-            </Styled.BlockPreview>
+            <Styled.BlockPreview>{blockPreview}</Styled.BlockPreview>
             <Styled.Title>
                 <Typography use={"overline"}>{plugin.title}</Typography>
             </Styled.Title>
