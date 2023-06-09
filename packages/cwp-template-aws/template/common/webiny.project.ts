@@ -25,9 +25,9 @@ export default {
         ]
     },
     appAliases: {
-        core: "apps/core",
-        api: "apps/api",
-        admin: "apps/admin",
-        website: "apps/website"
+        core: ".webiny/apps/core",
+        api: ".webiny/apps/api",
+        admin: ".webiny/apps/admin",
+        website: ".webiny/apps/website"
     }
 };
