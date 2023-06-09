@@ -10,5 +10,9 @@
 		"@webiny/project-utils": "5.36.0",
 		"@webiny/pulumi": "5.36.0",
 		"@webiny/pulumi-aws": "5.36.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
 	}
 }
