@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { keyframes } from "@emotion/react";
 
 export const FolderList = styled("div")`
     margin: 16px;
@@ -17,23 +16,6 @@ export const FileList = styled("div")`
 const COMPONENT_WIDTH = 200;
 const COMPONENT_HEIGHT = 200;
 
-const grow = keyframes`
-  0% {
-    transform: scale(1)
-  }
-  50% {
-    transform: scale(1.2)
-  }
-  100% {
-    transform: scale(1)
-  }
-`;
-
-type FileWrapperProps = {
-    disableSelect: boolean;
-    selected: boolean;
-};
-
 export const FileBody = styled("div")`
     transition: 200ms ease-in opacity;
     width: ${COMPONENT_WIDTH};
@@ -41,23 +23,54 @@ export const FileBody = styled("div")`
     overflow: hidden;
 `;
 
-export const FileInfoIcon = styled("div")`
+export const FileControls = styled("div")`
     opacity: 0;
     position: absolute;
-    top: 0;
+    top: -25px;
     right: 0;
     z-index: 10;
-    transition: all 150ms ease-in;
+    transition: all 150ms ease-out;
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 
-    &:hover {
-        animation-name: ${grow};
-        animation-duration: 0.4s;
-        animation-timing-function: ease-in;
-        animation-delay: 0.2s;
+export const FileSelectedMarker = styled("div")`
+    position: absolute;
+    z-index: 9;
+    top: 0;
+    opacity: 0.5;
+    width: 100%;
+    height: 200px;
+    background-color: var(--mdc-theme-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+        fill: var(--mdc-theme-surface);
+        width: 100px;
+        height: 100px;
     }
+`;
 
-    & .mdc-icon-button svg {
-        color: var(--mdc-theme-secondary);
+export const FileInfoIcon = styled("div")`
+    & .mdc-icon-button {
+        padding: 0;
+        svg {
+            border: 1px solid var(--mdc-theme-on-background);
+            border-radius: 50%;
+            background-color: var(--mdc-theme-text-hint-on-dark);
+            padding: 10px;
+
+            transition: all 150ms ease-out;
+            color: var(--mdc-theme-text-primary-on-background);
+            scale: 0.7;
+            &:hover {
+                scale: 1;
+            }
+        }
     }
 `;
 
@@ -67,6 +80,22 @@ export const FilePreview = styled("div")`
     background-color: var(--mdc-theme-surface);
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    display: flex;
+    object-fit: cover;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    svg,
+    img {
+        width: 210px;
+        height: auto;
+        max-height: 210px;
+        max-width: 210px;
+    }
+    svg {
+        fill: var(--mdc-theme-text-secondary-on-background);
+    }
 `;
 
 export const FileClickable = styled("div")`
@@ -80,28 +109,49 @@ export const FileClickable = styled("div")`
 
 export const FileLabel = styled("div")`
     padding: 15px 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.8rem;
     color: var(--mdc-theme-on-surface);
     background-color: var(--mdc-theme-on-background);
+    span {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.5;
+        &.type {
+            font-size: 0.7em;
+        }
+        &.name {
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+    }
 `;
 
-export const FileWrapper = styled("div")<FileWrapperProps>`
+export const FileWrapper = styled("div")`
     display: inline-block;
     float: left;
     position: relative;
     z-index: 1;
-    cursor: ${({ disableSelect }) => (disableSelect ? "auto" : "pointer")};
     width: 100%;
     max-width: ${COMPONENT_WIDTH};
     border: 1px solid var(--mdc-theme-on-background);
     border-radius: 2px;
-    box-shadow: ${({ selected }) =>
-        selected ? "0px 0px 0px 2px var(--mdc-theme-primary)" : "none"};
+    overflow: hidden;
+    box-shadow: 0 1px 3px var(--mdc-theme-on-background);
 
-    &:hover ${FileInfoIcon} {
+    &:hover ${FileControls} {
         opacity: 1;
+        top: 0;
+        background: var(--mdc-theme-text-secondary-on-background);
+    }
+    button.webiny-ui-button {
+        width: 100%;
+        svg {
+            fill: var(--mdc-theme-primary);
+        }
+        span.mdc-button__label > span {
+            display: inline-block;
+            width: 75px;
+        }
     }
 `;
