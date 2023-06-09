@@ -54,9 +54,9 @@
   },
   "workspaces": {
     "packages": [
-      "./webiny/apps/admin",
-      "./webiny/apps/website",
-      "./webiny/apps/api/graphql"
+      ".webiny/apps/admin",
+      ".webiny/apps/website",
+      ".webiny/apps/api/graphql"
     ]
   },
   "scripts": {
