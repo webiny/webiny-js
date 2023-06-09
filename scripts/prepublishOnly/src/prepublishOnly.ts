@@ -125,11 +125,11 @@ class PackageLoader {
 const extraFiles: string[] = [
     "packages/cwp-template-aws/template/ddb/dependencies.json",
     "packages/cwp-template-aws/template/ddb-es/dependencies.json",
-    "packages/cwp-template-aws/template/ddb/apps/api/graphql/package.json",
-    "packages/cwp-template-aws/template/ddb-es/apps/api/graphql/package.json",
-    "packages/cwp-template-aws/template/common/apps/admin/package.json",
-    "packages/cwp-template-aws/template/common/apps/theme/package.json",
-    "packages/cwp-template-aws/template/common/apps/website/package.json"
+
+    "packages/cwp-template-aws/template/ddb/.webiny/apps/api/graphql/package.json",
+    "packages/cwp-template-aws/template/ddb-es/.webiny/apps/api/graphql/package.json",
+    "packages/cwp-template-aws/template/common/.webiny/apps/admin/package.json",
+    "packages/cwp-template-aws/template/common/.webiny/apps/website/package.json"
 ];
 
 export const prepublishOnly = async () => {
