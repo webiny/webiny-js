@@ -19,6 +19,7 @@ export interface StateListWhere extends BaseStateListWhere {
 export interface State {
     folderId: string | undefined;
     showingFileDetails: string | null;
+    showingFilters: boolean;
     loadingFileDetails: boolean;
     selected: FileItem[];
     hasPreviouslyUploadedFiles: boolean | null;
@@ -51,6 +52,10 @@ export type Action =
     | {
           type: "showFileDetails";
           id: string | null;
+      }
+    | {
+          type: "showFilters";
+          state: boolean;
       }
     | {
           type: "loadingFileDetails";
@@ -104,6 +109,7 @@ export const initializeState = ({ accept, scope, own, identity }: InitParams): S
     return {
         folderId: FOLDER_ID_DEFAULT,
         showingFileDetails: null,
+        showingFilters: false,
         loadingFileDetails: false,
         selected: [],
         hasPreviouslyUploadedFiles: null,
@@ -161,6 +167,10 @@ export const stateReducer: Reducer = (state: State, action) => {
         }
         case "showFileDetails": {
             next.showingFileDetails = action.id;
+            break;
+        }
+        case "showFilters": {
+            next.showingFilters = action.state;
             break;
         }
         case "loadingFileDetails": {

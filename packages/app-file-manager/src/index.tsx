@@ -3,3 +3,7 @@ export { useFileManagerApi } from "./modules/FileManagerApiProvider/FileManagerA
 export { useFileManagerView } from "./modules/FileManagerRenderer/FileManagerViewProvider";
 export { useFileManagerAcoView } from "./modules/FileManagerRenderer/FileManagerAcoViewProvider";
 export * from "./FileManagerFileTypePlugin";
+export {
+    FileManagerViewConfig,
+    useFileManagerViewConfig
+} from "./modules/FileManagerRenderer/AcoRenderer/FileManagerViewConfig";

@@ -67,11 +67,3 @@ export const createFileModelModifier = (cb: CmsModelModifierCallable) => {
     return new CmsModelModifierPlugin(FILE_MODEL_ID, cb);
 };
 
-// createFileModelModifier(({ modifier }) => {
-//     modifier.addField({
-//         id: "carMake",
-//         fieldId: "carMake",
-//         label: "Car Make",
-//         type: "text"
-//     });
-// });
