@@ -1,6 +1,9 @@
 .idea
 .webpack
 .webiny
+!packages/cwp-template-aws/template/common/.webiny
+!packages/cwp-template-aws/template/ddb/.webiny
+!packages/cwp-template-aws/template/ddb-es/.webiny
 .artifacts
 .env*
 .npmrc
