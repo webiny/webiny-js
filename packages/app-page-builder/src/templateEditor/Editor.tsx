@@ -122,10 +122,10 @@ export const TemplateEditor: React.FC = () => {
                     "pageBuilder.getPageTemplate.data"
                 ) as unknown as PbPageTemplate;
 
-                if (pageTemplateData.modelId) {
+                if (pageTemplateData.templatePageData?.modelId) {
                     const { data: modelData } = await cmsClient.query({
                         query: GET_CONTENT_MODEL,
-                        variables: { modelId: pageTemplateData.modelId }
+                        variables: { modelId: pageTemplateData.templatePageData.modelId }
                     });
 
                     setSourceModel(get(modelData, "getContentModel.data"));
@@ -145,9 +145,7 @@ export const TemplateEditor: React.FC = () => {
                             data: {
                                 ...existingContent.data,
                                 dynamicSource: {
-                                    modelId:
-                                        pageTemplateData?.templatePageData?.modelId ||
-                                        pageTemplateData.modelId,
+                                    modelId: pageTemplateData?.templatePageData?.modelId,
                                     entryId: pageTemplateData?.templatePageData?.entryId
                                 }
                             }

@@ -117,6 +117,12 @@ const SwitchWrapperStyled = styled(SwitchWrapper)`
     margin-left: 10px;
 `;
 
+const ConditionLabel = styled(SettingsTitle)`
+    position: absolute;
+    top: 8px;
+    right: 8px;
+`;
+
 const findConditionLabel = (conditionValue: string, fieldType: string) => {
     const conditionOption = options
         .map(({ type, options }) => {
@@ -145,6 +151,7 @@ type FilterFormProps = {
     defaultValue?: Filter;
     onCancel: () => void;
     onSave: (value: Filter) => void;
+    label?: string;
 };
 
 type FilterConditions = {
@@ -191,11 +198,12 @@ const booleanOptions = [
     }
 ];
 
-const FilterForm: React.FC<FilterFormProps> = ({
+export const FilterForm: React.FC<FilterFormProps> = ({
     sourceModelId,
     defaultValue,
     onCancel,
-    onSave
+    onSave,
+    label
 }) => {
     const [path, setPath] = useState(defaultValue?.path || "");
     const { data: fieldData } = useDynamicField(sourceModelId, defaultValue?.path || "");
@@ -266,9 +274,11 @@ const FilterForm: React.FC<FilterFormProps> = ({
         }
     };
 
+    // We don't support dynamicZone for filter because dynamicZone is not supported in "where" condtion in query
     return (
         <ConditionFormWrapper>
             <ConditionFormTitle>Condition</ConditionFormTitle>
+            {label && <ConditionLabel>{label}</ConditionLabel>}
             <FieldSelect sourceModelId={sourceModelId} value={path} onChange={handlePathChange} />
             {path && (
                 <>
@@ -305,8 +315,8 @@ const FilterForm: React.FC<FilterFormProps> = ({
                             onChange={handleConditionValueChange}
                         >
                             {booleanOptions.map(({ label, value }) => (
-                                <option key={value} value={value}>
-                                    {label}
+                                <option key={value} value={value} defaultValue="true">
+                                    {label || "True"}
                                 </option>
                             ))}
                         </Select>
@@ -331,7 +341,7 @@ type FilterItemProps = {
     onDeleteClick: (index: number) => void;
 };
 
-const FilterItem: React.FC<FilterItemProps> = ({
+export const FilterItem: React.FC<FilterItemProps> = ({
     index,
     sourceModelId,
     filter,

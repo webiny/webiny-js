@@ -4,9 +4,10 @@ import styled from "@emotion/styled";
 import { CSSObject } from "@emotion/react";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useRenderer } from "@webiny/app-page-builder-elements";
+import { variantNames } from "@webiny/app-dynamic-pages/components/Settings/BlockVariantSettings";
 import { plugins } from "@webiny/plugins";
 import { useUI } from "~/editor/hooks/useUI";
-import { useElementById } from "~/editor/hooks/useElementById";
+import { useElementById, useElementWithChildrenById } from "~/editor/hooks/useElementById";
 import { PbEditorElement, PbEditorBlockPlugin } from "~/types";
 import { SetterOrUpdater } from "recoil";
 import Draggable from "~/editor/components/Draggable";
@@ -215,6 +216,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
         PbEditorElement,
         SetterOrUpdater<PbEditorElement>
     ];
+    const parentElement = useElementWithChildrenById(editorElement?.parent || null);
 
     const isActive = activeElementId === element.id;
     const isHighlighted = editorElement.isHighlighted;
@@ -250,8 +252,21 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
             return `${element.type} | ${element.data.dynamicSource.path}`;
         }
 
+        if (parentElement?.data?.isVariantBlock) {
+            const variantIndex = (parentElement.elements as PbEditorElement[]).findIndex(
+                variant => variant.id === parentElement.data.selectedVariantId
+            );
+            return `${element.type} | variant: ${
+                variantNames[variantIndex === -1 ? 0 : variantIndex]
+            }`;
+        }
+
         return element.type;
-    }, [element.data.blockId, element.data.dynamicSource?.path]);
+    }, [
+        element.data.blockId,
+        element.data.dynamicSource?.path,
+        parentElement?.data?.selectedVariantId
+    ]);
 
     // Z-index of element controls overlay depends on the depth of the page element.
     // The deeper the page element is in the content hierarchy, the greater the index.

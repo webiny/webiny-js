@@ -45,9 +45,7 @@ const useImageDynamicValue = (element?: any, path?: string) => {
         data: {
             ...element.data,
             image: {
-                ...element.data.image,
                 file: {
-                    ...element.data.image.file,
                     src
                 }
             }
@@ -85,7 +83,8 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
     };
 
     let content;
-    if (elementToUse.data?.image?.file?.src) {
+
+    if (elementToUse?.data?.image?.file?.src) {
         // Image has its width / height set from its own settings.
         const PbImg = styled.img({
             width: elementToUse.data.image.width,

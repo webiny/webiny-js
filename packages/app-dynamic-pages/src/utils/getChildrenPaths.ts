@@ -1,6 +1,6 @@
 import { PbElement } from "~/types";
 
-export const getChildrenPaths = (elements: any[] = []) => {
+export const getChildrenPaths = (elements: PbElement[] = []) => {
     const paths: string[] = [];
 
     const findDeep = (elements: PbElement[]) => {

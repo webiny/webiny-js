@@ -35,7 +35,11 @@ const createSchema = zod.object({
     layout: zod.string().max(100).optional(),
     pageCategory: zod.string().max(100),
     content: zod.any(),
-    modelId: zod.string().max(100).optional()
+    modelId: zod.string().max(100).optional(),
+    templatePageData: zod.object({
+        modelId: zod.string().max(100).optional(),
+        entryId: zod.string().max(100).optional()
+    })
 });
 
 const updateSchema = zod.object({

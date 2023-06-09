@@ -85,7 +85,9 @@ const DefaultEntrySelector = () => {
     useEffect(() => {
         if (entriesData !== undefined) {
             const activeEntity = entriesData.find(({ id }: { id: string }) => id === values[0]?.id);
-            setSelectedEntryTitle(activeEntity?.title);
+            if (activeEntity !== undefined) {
+                setSelectedEntryTitle(activeEntity?.title);
+            }
         }
     }, [entriesData]);
 
@@ -100,6 +102,7 @@ const DefaultEntrySelector = () => {
         updateTemplate({
             templatePageData: { entryId, modelId: templateAtomValue?.sourceModel?.modelId }
         });
+
         setSelectedEntryTitle(entryTitle);
 
         onDialogClose();

@@ -47,6 +47,9 @@ export const useDynamicDataQuery = ({
                     templateWhereField
                 });
 
+                if (!isMounted.current) {
+                    return;
+                }
                 setData(query);
                 setLoading(false);
             } catch (err) {

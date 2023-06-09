@@ -6,6 +6,7 @@ import { EditorDynamicSourceProvider } from "@webiny/app-dynamic-pages/contexts/
 import { getChildrenPaths } from "@webiny/app-dynamic-pages/utils/getChildrenPaths";
 import { useDynamicDataQuery } from "@webiny/app-dynamic-pages/hooks/useDynamicDataQuery";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { Filter } from "@webiny/app-dynamic-pages/components/Settings/FilterSettings";
 
 export const DynamicElementWrapper = ({
     element,
@@ -30,7 +31,23 @@ export const DynamicElementWrapper = ({
         setTimeout(async () => {
             const elementTree = (await getElementTree({ element })) as PbElement;
 
-            setPaths(getChildrenPaths(elementTree.elements));
+            // For variant blocks query we need paths used inside variant filter conditions
+            if (elementTree.data?.isVariantBlock) {
+                const variantsPaths: string[] = [];
+
+                for (const variant of elementTree.elements) {
+                    variant.data.conditions?.forEach((condition: Filter) =>
+                        variantsPaths.push(condition.path)
+                    );
+                }
+
+                setPaths([
+                    ...new Set([...getChildrenPaths(elementTree.elements), ...variantsPaths])
+                ]);
+            } else {
+                setPaths(getChildrenPaths(elementTree.elements));
+            }
+
             setPbElement(elementTree);
         });
     }, [element]);

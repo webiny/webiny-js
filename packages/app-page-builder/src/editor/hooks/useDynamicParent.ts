@@ -1,5 +1,5 @@
 import { selectorFamily, useRecoilValue } from "recoil";
-import { elementByIdSelector } from "~/editor/recoil/modules";
+import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 
 const dynamicParentSelector = selectorFamily<any | null, string | undefined>({
     key: "dynamicParentSelector",
@@ -9,7 +9,7 @@ const dynamicParentSelector = selectorFamily<any | null, string | undefined>({
                 return null;
             }
 
-            let element = get(elementByIdSelector(id));
+            let element = get(elementWithChildrenByIdSelector(id));
 
             if (!element) {
                 return null;
@@ -20,7 +20,7 @@ const dynamicParentSelector = selectorFamily<any | null, string | undefined>({
             }
 
             while (true) {
-                element = get(elementByIdSelector(element.parent || ""));
+                element = get(elementWithChildrenByIdSelector(element.parent || ""));
 
                 if (!element) {
                     return null;

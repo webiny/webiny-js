@@ -36,13 +36,15 @@ type DynamicSourceSettingsProps = {
     submit: () => void;
     data: Record<string, any>;
     onUnlink?: () => void;
+    onChangeSource?: (modelId: string) => void;
 };
 
 export const DynamicSourceSettings: React.FC<DynamicSourceSettingsProps> = ({
     Bind,
     submit,
     data,
-    onUnlink
+    onUnlink,
+    onChangeSource
 }) => {
     const isDynamic = useMemo(() => {
         return Boolean(get(data, "dynamicSource"));
@@ -58,19 +60,14 @@ export const DynamicSourceSettings: React.FC<DynamicSourceSettingsProps> = ({
                 <>
                     <SourceSettingsWrapper>
                         <span>Source:</span>
-                        <Bind name={"dynamicSource"} afterChange={submit}>
-                            {({ value, onChange }) => (
-                                <ModelSelect
-                                    value={value?.modelId}
-                                    onChange={modelId => {
-                                        onChange({ modelId });
-                                        if (onUnlink) {
-                                            onUnlink();
-                                        }
-                                    }}
-                                />
-                            )}
-                        </Bind>
+                        <ModelSelect
+                            value={selectedModelId}
+                            onChange={modelId => {
+                                if (onChangeSource) {
+                                    onChangeSource(modelId);
+                                }
+                            }}
+                        />
                     </SourceSettingsWrapper>
                     {selectedModelId && (
                         <>
@@ -119,20 +116,15 @@ export const DynamicSourceSettings: React.FC<DynamicSourceSettingsProps> = ({
                     <UnlinkElementWrapper>
                         <span className="unlink-title">Element is dynamic</span>
                         <div>
-                            <Bind name={"dynamicSource"} afterChange={submit}>
-                                {({ onChange }) => (
-                                    <ButtonPrimary
-                                        onClick={() => {
-                                            onChange(undefined);
-                                            if (onUnlink) {
-                                                onUnlink();
-                                            }
-                                        }}
-                                    >
-                                        Unlink Dynamic
-                                    </ButtonPrimary>
-                                )}
-                            </Bind>
+                            <ButtonPrimary
+                                onClick={() => {
+                                    if (onUnlink) {
+                                        onUnlink();
+                                    }
+                                }}
+                            >
+                                Unlink Dynamic
+                            </ButtonPrimary>
                         </div>
                     </UnlinkElementWrapper>
                 </>

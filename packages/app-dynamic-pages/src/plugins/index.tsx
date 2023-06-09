@@ -1,9 +1,9 @@
 import React, { ReactElement } from "react";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
-import { GenericFormData } from "@webiny/form/types";
 import { DynamicSourceSettings } from "~/components/Settings/DynamicSourceSettings";
 import { BasicFieldLinkSettings } from "~/components/Settings/BasicFieldLinkSettings";
+import { BlockVariantSettings } from "~/components/Settings/BlockVariantSettings";
 
 type PbEditorPageElementDataSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-data-settings";
@@ -14,7 +14,19 @@ type PbEditorPageElementDataSettingsPlugin = Plugin & {
         submit: () => void;
         sourceModelId?: string;
     }): ReactElement;
-    onSave?: (data: GenericFormData) => Promise<GenericFormData>;
+};
+
+type PbEditorPageElementParentDataSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-parent-data-settings";
+    elementType: string;
+    render(params: {
+        Bind: BindComponent;
+        data: any;
+        submit: () => void;
+        sourceModelId: string;
+        addVariant: () => void;
+        removeVariant: (index: number) => void;
+    }): ReactElement;
 };
 
 const pbDynamicSourceSettings: PbEditorPageElementDataSettingsPlugin = {
@@ -35,4 +47,13 @@ const pbBasicFieldLinkSettings: PbEditorPageElementDataSettingsPlugin = {
     }
 };
 
-export default () => [pbDynamicSourceSettings, pbBasicFieldLinkSettings];
+const pbBlockVariantSettings: PbEditorPageElementParentDataSettingsPlugin = {
+    name: "pb-element-parent-data-settings-block-variant",
+    type: "pb-editor-page-element-parent-data-settings",
+    elementType: "block",
+    render(props) {
+        return <BlockVariantSettings {...props} />;
+    }
+};
+
+export default () => [pbDynamicSourceSettings, pbBasicFieldLinkSettings, pbBlockVariantSettings];

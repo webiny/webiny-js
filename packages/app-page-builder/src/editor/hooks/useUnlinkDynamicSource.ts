@@ -11,6 +11,9 @@ const removeElementDynamicSource = (el: PbElement): PbElement => {
             // @ts-ignore
             delete el.data?.dynamicSource;
         }
+        if (el.data?.conditions) {
+            el.data.conditions = [];
+        }
         if (el.elements && el.elements.length) {
             el = removeElementDynamicSource(el);
         }
@@ -21,24 +24,42 @@ const removeElementDynamicSource = (el: PbElement): PbElement => {
     return el;
 };
 
-export const useUnlinkBlockDynamic = ({ element }: { element: MaybeElement }) => {
+export const useUnlinkBlockDynamic = () => {
     const { getElementTree } = useEventActionHandler();
     const updateElement = useUpdateElement();
 
-    const onUnlink = useCallback(async (): Promise<void> => {
-        if (element) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { blockId, variables, ...newData } = element.data;
-            const pbElement = (await getElementTree({
-                element: { ...element, data: newData }
-            })) as PbElement;
-            // we make copy of element to delete variableIds from it
-            const elementCopy = cloneDeep(pbElement);
-            const elementWithoutVariableIds = removeElementDynamicSource(elementCopy);
+    const onUnlink = useCallback(
+        async (element: MaybeElement): Promise<void> => {
+            if (element) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { dynamicSource, ...newData } = element.data;
+                const pbElement = (await getElementTree({
+                    element: { ...element, data: newData }
+                })) as PbElement;
+                // we make copy of element to delete dynamicSources from it
+                const elementCopy = cloneDeep(pbElement);
+                const elementWithoutDynamicSources = removeElementDynamicSource(elementCopy);
+                updateElement(elementWithoutDynamicSources);
+            }
+        },
+        [updateElement]
+    );
 
-            updateElement(elementWithoutVariableIds);
-        }
-    }, [element, updateElement]);
+    const onChange = useCallback(
+        async (element: MaybeElement, modelId: string): Promise<void> => {
+            if (element) {
+                const pbElement = (await getElementTree({ element })) as PbElement;
+                // we make copy of element to delete dynamicSources from it
+                const elementCopy = cloneDeep(pbElement);
+                const elementWithoutDynamicSources = removeElementDynamicSource(elementCopy);
+                updateElement({
+                    ...elementWithoutDynamicSources,
+                    data: { ...elementWithoutDynamicSources.data, dynamicSource: { modelId } }
+                });
+            }
+        },
+        [updateElement]
+    );
 
-    return { onUnlink };
+    return { onUnlink, onChange };
 };

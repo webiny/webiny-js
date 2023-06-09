@@ -88,13 +88,17 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
             return Boolean(permission);
         }, [identity]);
 
-        const isReferenceBlock =
-            element !== null && element.type === "block" && !!element.data?.blockId;
+        const isBlock = element !== null && element.type === "block";
+        const isReferenceBlock = isBlock && !!element.data?.blockId;
+        const isVariantBlock =
+            isBlock && (element.data?.isVariantBlock || element.data?.conditions);
         const isStyleTab = props?.label === "Style";
 
         useEffect(() => {
             if (isReferenceBlock) {
                 setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 1));
+            } else if (isVariantBlock) {
+                setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 2));
             } else if (sidebar.activeTabIndex !== 0) {
                 setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 0));
             }

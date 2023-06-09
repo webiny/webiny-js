@@ -26,12 +26,21 @@ const CloneAction: React.FC<CloneActionPropsType> = ({ children }) => {
     const element: PbEditorElement = useRecoilValue(
         elementByIdSelector(activeElementId as string)
     ) as PbEditorElement;
+    const parentElement = useRecoilValue(elementByIdSelector(element?.parent || null));
 
     if (!element) {
         return null;
     }
 
     const onClick = () => {
+        if (parentElement && parentElement.data?.isVariantBlock) {
+            eventActionHandler.trigger(
+                new CloneElementActionEvent({
+                    element: parentElement
+                })
+            );
+        }
+
         eventActionHandler.trigger(
             new CloneElementActionEvent({
                 element: removeVariableId(element)

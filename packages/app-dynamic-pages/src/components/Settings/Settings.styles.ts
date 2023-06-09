@@ -51,7 +51,7 @@ export const ConditionFormWrapper = styled.div`
 export const ConditionFormTitle = styled.span`
     display: inline-block;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 12px;
     color: var(--mdc-theme-text-secondary-on-background);
     text-transform: uppercase;
     margin-bottom: 14px;

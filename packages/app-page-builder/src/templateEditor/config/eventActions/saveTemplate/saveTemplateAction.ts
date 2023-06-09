@@ -94,8 +94,7 @@ export const saveTemplateAction: TemplateEventActionCallable<SaveTemplateActionA
         description: state.template?.description || "",
         layout: state.template?.layout || "",
         pageCategory: state.template?.pageCategory || "",
-        // @ts-ignore
-        templatePageData: state.template?.templatePageData || [],
+        templatePageData: state.template?.templatePageData,
         content: syncTemplateVariables({ ...content, elements })
     };
 
