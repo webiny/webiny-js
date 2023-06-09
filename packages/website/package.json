@@ -11,13 +11,13 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "react": "17.0.2",
     "@babel/runtime": "^7.19.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/app-theme": "0.0.0",
-    "@webiny/theme": "0.0.0",
     "@webiny/app-form-builder": "0.0.0",
-    "@webiny/app-page-builder": "0.0.0"
+    "@webiny/app-page-builder": "0.0.0",
+    "@webiny/app-theme": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/theme": "0.0.0",
+    "react": "17.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

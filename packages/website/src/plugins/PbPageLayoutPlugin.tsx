@@ -2,9 +2,9 @@ import React from "react";
 import { PbPageLayoutPlugin as LegacyPbPageLayoutPlugin } from "@webiny/app-page-builder/plugins";
 import { createLegacyPlugin } from "~/plugins/createLegacyPlugin";
 
-type FbFormLayoutPluginProps = LegacyPbPageLayoutPlugin["layout"];
+type PbPageLayoutPluginProps = LegacyPbPageLayoutPlugin["layout"];
 
-export const FbFormLayoutPlugin = createLegacyPlugin<
-    FbFormLayoutPluginProps,
+export const PbPageLayoutPlugin = createLegacyPlugin<
+    PbPageLayoutPluginProps,
     LegacyPbPageLayoutPlugin
 >(props => new LegacyPbPageLayoutPlugin(props));
