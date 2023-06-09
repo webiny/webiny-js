@@ -139,6 +139,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     return {
         params,
+        identity: identity || defaultIdentity,
         handler,
         invoke,
         fileManager,

@@ -1,4 +1,4 @@
-import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import chunk from "lodash/chunk";
 
 export const insertElasticsearchTestData = async <

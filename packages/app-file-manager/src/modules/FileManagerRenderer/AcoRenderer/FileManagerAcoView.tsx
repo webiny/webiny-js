@@ -1,11 +1,10 @@
-import React, { useRef, useCallback, useState, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Files, { FilesRenderChildren, FilesRules } from "react-butterfiles";
 import { css } from "emotion";
 import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
-import useDeepCompareEffect from "use-deep-compare-effect";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
@@ -13,23 +12,24 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/view_module.svg";
 import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/view_list.svg";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
+import { FolderDialogCreate, useAcoList, useNavigateFolder } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import { ButtonPrimary, ButtonIcon, IconButton, ButtonSecondary } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonPrimary, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Icon } from "@webiny/ui/Icon";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Tooltip } from "@webiny/ui/Tooltip";
-
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
 import { outputFileSelectionError } from "./outputFileSelectionError";
 import LeftSidebar from "./LeftSidebar";
 import { useFileManagerApi } from "~/index";
 import { FileItem } from "@webiny/app-admin/types";
-import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
-
-import { ACO_TYPE } from "~/constants";
-
+import {
+    ListMeta,
+    ListSearchRecordsSort,
+    ListSearchRecordsSortItem,
+    SearchRecordItem
+} from "@webiny/app-aco/types";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { DropFilesHere } from "~/components/DropFilesHere";
 import { Empty } from "~/components/Empty";
@@ -91,6 +91,20 @@ const FileListWrapper = styled("div")({
     }
 });
 
+const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
+    if (!sorting?.length) {
+        return undefined;
+    }
+    return sorting.reduce<ListSearchRecordsSort>((items, item) => {
+        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSearchRecordsSortItem;
+        if (items.includes(sort)) {
+            return items;
+        }
+        items.push(sort);
+        return items;
+    }, []);
+};
+
 export interface FileManagerAcoViewProps {
     onChange?: Function;
     onClose?: () => void;
@@ -111,11 +125,13 @@ const defaultFolderName = t`All files`;
 const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope, own } = props;
 
+    const { navigateToFolder } = useNavigateFolder();
+
     const {
         dragging,
         setDragging,
         folderId,
-        setFolderId,
+        setFolderId: initialSetFolderId,
         getFile,
         hasPreviouslyUploadedFiles,
         setHasPreviouslyUploadedFiles,
@@ -136,6 +152,14 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         uploadFile
     } = useFileManagerAcoView();
 
+    const setFolderId = useCallback(
+        (folderId?: string) => {
+            navigateToFolder(folderId);
+            return initialSetFolderId(folderId);
+        },
+        [initialSetFolderId]
+    );
+
     const {
         folders,
         isListLoading,
@@ -144,7 +168,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         listTitle = defaultFolderName,
         meta,
         records
-    } = useAcoList({ type: ACO_TYPE, folderId, ...listWhere });
+    } = useAcoList<FileItem>({ folderId, limit: 50, ...listWhere });
 
     const uploader = useMemo<BatchFileUploader>(
         () => new BatchFileUploader(uploadFile),
@@ -164,10 +188,13 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     const didMount = useRef(false);
 
     useEffect(() => {
-        const sort = tableSorting.reduce((current, next) => {
-            return { ...current, [next.id]: next.desc ? "DESC" : "ASC" };
-        }, {});
-
+        if (!tableSorting?.length) {
+            return;
+        }
+        const sort = createSort(tableSorting);
+        if (!sort) {
+            return;
+        }
         setListSort(sort);
     }, [tableSorting]);
 
@@ -253,7 +280,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
 
     const searchInput = useRef<HTMLInputElement>(null);
 
-    useDeepCompareEffect(() => {
+    useEffect(() => {
         if (!settings) {
             return;
         }
@@ -269,12 +296,12 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
             };
         });
 
-        setFiles(recordsFile as SearchRecordItem<FileItem>[]);
-    }, [{ ...records }, settings]);
+        setFiles(recordsFile);
+    }, [records, settings]);
 
-    useDeepCompareEffect(() => {
+    useEffect(() => {
         setHasPreviouslyUploadedFiles(Boolean(records.length > 0 || folders.length > 0));
-    }, [{ ...records }, { ...folders }]);
+    }, [records, folders]);
 
     const uploadFiles = async (files: File[]) => {
         uploader.addFiles(files);
@@ -528,7 +555,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                 )}
             </Files>
             <FolderDialogCreate
-                type={ACO_TYPE}
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
                 currentParentId={folderId || null}

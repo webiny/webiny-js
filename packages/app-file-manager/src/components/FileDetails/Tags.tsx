@@ -1,17 +1,16 @@
 import React, { useCallback, useState } from "react";
 import classNames from "classnames";
 import { css } from "emotion";
-import { Chips, Chip } from "@webiny/ui/Chips";
-import { ButtonSecondary, ButtonPrimary, ButtonDefault, IconButton } from "@webiny/ui/Button";
+import { Chip, Chips } from "@webiny/ui/Chips";
+import { ButtonDefault, ButtonPrimary, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Icon } from "@webiny/ui/Icon";
 import { Form, FormOnSubmit } from "@webiny/form";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
 import { ReactComponent as LabelIcon } from "@material-design-icons/svg/outlined/label.svg";
 import { useSnackbar } from "@webiny/app-admin";
-import { useFile, useFileManagerApi, useFileManagerAcoView } from "~/index";
+import { useFile, useFileManagerAcoView, useFileManagerApi } from "~/index";
 import { useTags } from "@webiny/app-aco";
-import { ACO_TYPE } from "~/constants";
 import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
 
 const chipsStyle = css({
@@ -56,7 +55,6 @@ interface TagsProps {
 const Tags: React.VFC<TagsProps> = ({ scope, own }) => {
     const { file } = useFile();
     const { tags } = useTags({
-        type: ACO_TYPE,
         tagsModifier: tagsModifier(scope),
         ...getTagsInitialParams({ scope, own })
     });

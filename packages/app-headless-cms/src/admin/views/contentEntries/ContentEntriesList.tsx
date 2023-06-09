@@ -19,10 +19,10 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import statusLabels from "../../constants/statusLabels";
+import { statuses as statusLabels } from "../../constants/statusLabels";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/useContentEntriesList";
 import { positionValues as PositionValues } from "react-custom-scrollbars";
-import { CmsEditorContentEntry } from "~/types";
+import { CmsContentEntry } from "~/types";
 import {
     ContentEntriesViewConfigFilter,
     useContentEntriesViewConfig
@@ -198,7 +198,7 @@ const ContentEntriesList: React.FC = () => {
                 />
             }
         >
-            {({ data }: { data: CmsEditorContentEntry[] }) => (
+            {({ data }: { data: CmsContentEntry[] }) => (
                 <>
                     <Scrollbar
                         data-testid="default-data-list"

@@ -30,7 +30,7 @@ export interface CrudParams {
 }
 
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
-    return new ContextPlugin<CmsContext>(async context => {
+    const plugin = new ContextPlugin<CmsContext>(async context => {
         const { type, locale } = await getParameters(context);
 
         const getLocale = () => {
@@ -108,4 +108,8 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             await storageOperations.init(context);
         });
     });
+
+    plugin.name = "cms.createContext";
+
+    return plugin;
 };

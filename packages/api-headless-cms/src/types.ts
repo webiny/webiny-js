@@ -642,6 +642,24 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      */
     isSortable: boolean;
     /**
+     * Optional method which creates the storageId.
+     * Primary use is for the datetime field, but if users has some specific fields, they can customize the storageId to their needs.
+     *
+     * ```ts
+     * createStorageId: ({field}) => {
+     *     if (field.settings.type === "time) {
+     *         return `${field.type}_time@${field.id}`
+     *     }
+     *     // use default method
+     *     return undefined;
+     * }
+     * ```
+     */
+    createStorageId?: (params: {
+        model: CmsModel;
+        field: Omit<TField, "storageId"> & Partial<Pick<TField, "storageId">>;
+    }) => string | null | undefined;
+    /**
      * Read API methods.
      */
     read: {
@@ -1543,6 +1561,12 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     values: T;
     /**
+     * Advanced Content Organization
+     */
+    location?: {
+        folderId?: string | null;
+    };
+    /**
      * Settings for the given entry.
      *
      * Introduced with Advanced Publishing Workflow. Will always be inserted once this PR is merged.
@@ -1557,6 +1581,11 @@ export interface CmsEntry<T = CmsEntryValues> {
 
 export interface CmsStorageEntry extends CmsEntry {
     [key: string]: any;
+}
+
+export interface CmsEntryUniqueValue {
+    value: string;
+    count: number;
 }
 
 /**
@@ -2042,7 +2071,7 @@ export interface OnEntryAfterUpdateTopicParams {
 
 export interface OnEntryUpdateErrorTopicParams {
     error: Error;
-    input: CreateFromCmsEntryInput;
+    input: UpdateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -2176,6 +2205,9 @@ export interface EntryBeforeListTopicParams {
  */
 export interface CreateCmsEntryInput {
     id?: string;
+    wbyAco_location?: {
+        folderId?: string | null;
+    };
     [key: string]: any;
 }
 
@@ -2192,6 +2224,9 @@ export interface CreateFromCmsEntryInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
+    wbyAco_location?: {
+        folderId?: string | null;
+    };
     [key: string]: any;
 }
 
@@ -2334,7 +2369,7 @@ export interface CmsEntryContext {
     getUniqueFieldValues: (
         model: CmsModel,
         params: GetUniqueFieldValuesParams
-    ) => Promise<Array<{ value: string; count: number }>>;
+    ) => Promise<CmsEntryUniqueValue[]>;
     /**
      * Lifecycle events - deprecated.
      */
@@ -2941,7 +2976,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     getUniqueFieldValues: (
         model: CmsModel,
         params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
-    ) => Promise<Array<{ value: string; count: number }>>;
+    ) => Promise<CmsEntryUniqueValue[]>;
 }
 
 export enum CONTENT_ENTRY_STATUS {

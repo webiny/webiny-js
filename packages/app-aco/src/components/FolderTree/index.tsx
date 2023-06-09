@@ -15,8 +15,7 @@ import { Container } from "./styled";
 
 import { DndItemData } from "~/types";
 
-type FolderTreeProps = {
-    type: string;
+interface FolderTreeProps {
     title: string;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
     enableCreate?: boolean;
@@ -24,10 +23,9 @@ type FolderTreeProps = {
     onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
-};
+}
 
 export const FolderTree: React.VFC<FolderTreeProps> = ({
-    type,
     title,
     focusedFolderId,
     hiddenFolderIds,
@@ -36,7 +34,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
     onFolderClick,
     onTitleClick
 }) => {
-    const { folders } = useFolders(type);
+    const { folders } = useFolders();
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
     // Little CSS trick here: since the folder title has absolute position, user can drag a folder over it and move it to root folder.
@@ -52,7 +50,6 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
             return (
                 <>
                     <List
-                        type={type}
                         folders={folders}
                         onFolderClick={onFolderClick}
                         focusedFolderId={focusedFolderId}
@@ -73,14 +70,12 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
             </>
         );
     };
-
     return (
         <Container>
             <Title title={title} onClick={onTitleClick} isDragging={isDragging} />
             {renderList()}
             {enableCreate && (
                 <FolderDialogCreate
-                    type={type}
                     open={createDialogOpen}
                     onClose={() => setCreateDialogOpen(false)}
                     currentParentId={undefined}

@@ -1,14 +1,14 @@
 import WebinyError from "@webiny/error";
-
 import { createFileRecordPayload } from "../../utils/createRecordPayload";
-
 import { FmAcoContext, FmFileRecordData } from "~/types";
+import { FM_FILE_TYPE } from "~/contants";
 
 export const onFileAfterBatchCreateHook = ({ fileManager, aco }: FmAcoContext) => {
     /**
      * Intercept file batch creation and create a new search records.
      */
     fileManager.onFileAfterBatchCreate.subscribe(async ({ files, meta }) => {
+        const app = aco.getApp(FM_FILE_TYPE);
         try {
             for (const file of files) {
                 if (file.meta.private) {
@@ -16,7 +16,7 @@ export const onFileAfterBatchCreateHook = ({ fileManager, aco }: FmAcoContext) =
                     continue;
                 }
                 const payload = createFileRecordPayload(file, meta);
-                await aco.search.create<FmFileRecordData>(payload);
+                await app.search.create<FmFileRecordData>(payload);
             }
         } catch (error) {
             throw WebinyError.from(error, {

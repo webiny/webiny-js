@@ -1,5 +1,5 @@
 import { FileItem } from "@webiny/app-admin/types";
-import { ListDbSort } from "@webiny/app-aco/types";
+import { ListSearchRecordsSort } from "@webiny/app-aco/types";
 import { FOLDER_ID_DEFAULT } from "~/constants";
 import isEqual from "lodash/isEqual";
 
@@ -14,6 +14,7 @@ export interface StateListWhere extends BaseStateListWhere {
     search?: string;
     createdBy?: string;
     AND?: BaseStateListWhere[];
+    OR?: BaseStateListWhere[];
 }
 
 export interface State {
@@ -23,7 +24,7 @@ export interface State {
     selected: FileItem[];
     hasPreviouslyUploadedFiles: boolean | null;
     listWhere: StateListWhere;
-    listSort?: ListDbSort;
+    listSort?: ListSearchRecordsSort;
     dragging: boolean;
 }
 
@@ -46,7 +47,7 @@ export type Action =
       }
     | {
           type: "listSort";
-          state: ListDbSort;
+          state: ListSearchRecordsSort;
       }
     | {
           type: "showFileDetails";
@@ -114,7 +115,7 @@ export const initializeState = ({ accept, scope, own, identity }: InitParams): S
             createdBy: own ? identity.id : undefined,
             AND: undefined
         },
-        listSort: {},
+        listSort: [],
         dragging: false
     };
 };

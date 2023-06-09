@@ -9,9 +9,11 @@ import { Loading, LoadingActions } from "~/types";
  * @param loadingHandler: function that handle the loading state.
  * @param apolloQuery: Apollo Query or Mutation
  */
-export const apolloFetchingHandler = async (
+export const apolloFetchingHandler = async <ListSearchRecordsResponse = any,>(
     loadingHandler: (flag: boolean) => void,
-    apolloQuery: () => Promise<ApolloQueryResult<any> | FetchResult<any>>
+    apolloQuery: () => Promise<
+        ApolloQueryResult<ListSearchRecordsResponse> | FetchResult<ListSearchRecordsResponse>
+    >
 ) => {
     loadingHandler(true);
 

@@ -1,12 +1,9 @@
 import React from "react";
-
 import { i18n } from "@webiny/app/i18n";
 import { FolderTree, TagList } from "@webiny/app-aco";
 import { css } from "emotion";
-
 import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
-import { ACO_TYPE, FOLDER_ID_DEFAULT } from "~/constants";
-
+import { FOLDER_ID_DEFAULT } from "~/constants";
 import { TagItem } from "@webiny/app-aco/types";
 
 const t = i18n.ns("app-file-manager/modules/renderer/left-sidebar");
@@ -52,7 +49,6 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
         <div className={style.leftDrawer}>
             <div className={style.wrapper}>
                 <FolderTree
-                    type={ACO_TYPE}
                     title={title}
                     focusedFolderId={currentFolder}
                     onTitleClick={() => onFolderClick(FOLDER_ID_DEFAULT)}
@@ -62,7 +58,6 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
                 />
                 <div className={style.divider} />
                 <TagList
-                    type={ACO_TYPE}
                     initialWhere={getTagsInitialParams({ scope, own })}
                     tagsModifier={tagsModifier(scope)}
                     emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}

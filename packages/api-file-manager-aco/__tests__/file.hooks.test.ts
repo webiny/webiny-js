@@ -1,6 +1,4 @@
-// @ts-ignore mdbid doesn't have TS types.
-import mdbid from "mdbid";
-
+import { mdbid } from "@webiny/utils";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { assignPageLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { FM_FILE_TYPE, ROOT_FOLDER } from "~/contants";
@@ -49,26 +47,35 @@ describe("Files -> Search records", () => {
         expect(tracker.isExecutedOnce("file:afterCreate")).toEqual(true);
 
         const [searchResponse] = await search.getRecord({ id });
-        const searchRecord = searchResponse.data?.search?.getRecord?.data;
 
-        expect(searchRecord).toMatchObject({
-            id,
-            type: FM_FILE_TYPE,
-            title: name,
-            location: {
-                folderId: ROOT_FOLDER
-            },
-            tags: addMimeTag(tags, type),
+        expect(searchResponse).toEqual({
             data: {
-                id,
-                key,
-                size,
-                type,
-                name,
-                createdOn,
-                createdBy,
-                aliases,
-                meta
+                search: {
+                    getRecord: {
+                        data: {
+                            id,
+                            type: FM_FILE_TYPE,
+                            title: name,
+                            content: null,
+                            location: {
+                                folderId: ROOT_FOLDER
+                            },
+                            tags: addMimeTag(tags, type),
+                            data: {
+                                id,
+                                key,
+                                size,
+                                type,
+                                name,
+                                createdOn,
+                                createdBy,
+                                aliases,
+                                meta
+                            }
+                        },
+                        error: null
+                    }
+                }
             }
         });
     });
@@ -110,7 +117,7 @@ describe("Files -> Search records", () => {
             size: 987654,
             type: "image/png",
             tags: ["image", "file-2"],
-            meta: { any: "meta" },
+            meta: { private: false },
             aliases: []
         };
 
@@ -186,45 +193,81 @@ describe("Files -> Search records", () => {
             size: 987654,
             type: "image/png",
             tags: ["image", "file-2"],
-            meta: { any: "meta" },
             aliases: []
         };
 
-        await fileManager.createFiles({
+        const [createFilesResponse] = await fileManager.createFiles({
             data: [file1, file2]
         });
 
-        const [searchResponse1] = await search.getRecord({ id: file1.id });
-        const searchRecordResult1 = searchResponse1.data?.search?.getRecord;
+        expect(createFilesResponse).toMatchObject({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: [
+                            {
+                                ...file1
+                            },
+                            {
+                                ...file2
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
 
-        expect(searchRecordResult1).toMatchObject({
-            data: null,
-            error: {
-                code: "NOT_FOUND",
-                data: { id: file1.id },
-                message: "Record not found."
+        const [searchResponse1] = await search.getRecord({
+            id: file1.id
+        });
+
+        expect(searchResponse1).toEqual({
+            data: {
+                search: {
+                    getRecord: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: {
+                                id: file1.id
+                            },
+                            message: "Record not found."
+                        }
+                    }
+                }
             }
         });
 
         const [searchResponse2] = await search.getRecord({ id: file2.id });
-        const searchRecord2 = searchResponse2.data?.search?.getRecord?.data;
 
-        expect(searchRecord2).toMatchObject({
-            id: file2.id,
-            type: FM_FILE_TYPE,
-            title: file2.name,
-            location: {
-                folderId: ROOT_FOLDER
-            },
-            tags: addMimeTag(file2.tags, file2.type),
+        expect(searchResponse2).toMatchObject({
             data: {
-                id: file2.id,
-                key: file2.key,
-                size: file2.size,
-                type: file2.type,
-                name: file2.name,
-                meta: file2.meta,
-                aliases: file2.aliases
+                search: {
+                    getRecord: {
+                        data: {
+                            id: file2.id,
+                            type: FM_FILE_TYPE,
+                            title: file2.name,
+                            location: {
+                                folderId: ROOT_FOLDER
+                            },
+                            tags: addMimeTag(file2.tags, file2.type),
+                            data: {
+                                id: file2.id,
+                                key: file2.key,
+                                size: file2.size,
+                                type: file2.type,
+                                name: file2.name,
+                                meta: {
+                                    private: false
+                                },
+                                aliases: file2.aliases
+                            }
+                        },
+                        error: null
+                    }
+                }
             }
         });
     });

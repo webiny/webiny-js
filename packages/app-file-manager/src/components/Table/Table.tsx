@@ -1,5 +1,4 @@
 import React, { forwardRef, useMemo, useState } from "react";
-
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
@@ -12,8 +11,6 @@ import bytes from "bytes";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
-import useDeepCompareEffect from "use-deep-compare-effect";
-
 import { FileName, FolderName } from "./Name";
 import { FolderActionDelete } from "./FolderActionDelete";
 import { FolderActionEdit } from "./FolderActionEdit";
@@ -21,10 +18,7 @@ import { RecordActionCopy } from "./RecordActionCopy";
 import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
 import { RecordActionMove } from "./RecordActionMove";
-
-import { ACO_TYPE } from "~/constants";
-
-import { menuStyles, actionsColumnStyles } from "./styled";
+import { actionsColumnStyles, menuStyles } from "./styled";
 import { FileItem } from "@webiny/app/types";
 import { Settings } from "~/types";
 
@@ -53,6 +47,34 @@ interface Entry {
     selectable: boolean;
 }
 
+const createRecordsData = (items: SearchRecordItem<FileItem>[], selectable: boolean): Entry[] => {
+    return items.map(({ data }) => {
+        return {
+            id: data.id,
+            type: "RECORD",
+            title: data.name,
+            createdBy: data.createdBy?.displayName || "-",
+            savedOn: data.createdOn,
+            fileType: data.type,
+            size: data.size,
+            original: data || {},
+            selectable
+        };
+    });
+};
+
+const createFoldersData = (items: FolderItem[]): Entry[] => {
+    return items.map(item => ({
+        id: item.id,
+        type: "FOLDER",
+        title: item.title,
+        createdBy: item.createdBy?.displayName || "-",
+        savedOn: item.createdOn,
+        original: item,
+        selectable: false
+    }));
+};
+
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const {
         folders,
@@ -66,7 +88,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         selectableItems
     } = props;
 
-    const [data, setData] = useState<Entry[]>([]);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -74,39 +95,9 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
-    const createRecordsData = useMemo(() => {
-        return (items: SearchRecordItem<FileItem>[]): Entry[] =>
-            items.map(({ data }) => ({
-                id: data.id,
-                type: "RECORD",
-                title: data.name,
-                createdBy: data.createdBy.displayName,
-                savedOn: data.createdOn,
-                fileType: data.type,
-                size: data.size,
-                original: data || {},
-                selectable: selectableItems
-            }));
-    }, [records]);
-
-    const createFoldersData = useMemo(() => {
-        return (items: FolderItem[]): Entry[] =>
-            items.map(item => ({
-                id: item.id,
-                type: "FOLDER",
-                title: item.title,
-                createdBy: item.createdBy.displayName || "-",
-                savedOn: item.createdOn,
-                original: item,
-                selectable: false
-            }));
-    }, [folders]);
-
-    useDeepCompareEffect(() => {
-        const foldersData = createFoldersData(folders);
-        const files = createRecordsData(records);
-        setData([...foldersData, ...files]);
-    }, [{ ...folders }, { ...records }]);
+    const data = useMemo<Entry[]>(() => {
+        return createFoldersData(folders).concat(createRecordsData(records, selectableItems));
+    }, [folders, records]);
 
     const columns: Columns<Entry> = {
         title: {
@@ -116,9 +107,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                     return (
                         <FileName name={title} id={id} type={fileType} onClick={onRecordClick} />
                     );
-                } else {
-                    return <FolderName name={title} id={id} onClick={onFolderClick} />;
                 }
+                return <FolderName name={title} id={id} onClick={onFolderClick} />;
             },
             enableSorting: true
         },
@@ -127,9 +117,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: ({ fileType }) => {
                 if (fileType) {
                     return fileType;
-                } else {
-                    return "-";
                 }
+                return "-";
             }
         },
         size: {
@@ -137,9 +126,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: ({ size }) => {
                 if (size) {
                     return bytes.format(size, { unitSeparator: " " });
-                } else {
-                    return "-";
                 }
+                return "-";
             }
         },
         savedOn: {
@@ -159,9 +147,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;
-                }
-
-                if (type === "RECORD") {
+                } else if (type === "RECORD") {
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
                             <RecordActionCopy record={original as FileItem} />
@@ -179,24 +165,23 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             <RecordActionDelete record={original as FileItem} />
                         </Menu>
                     );
-                } else {
-                    return (
-                        <Menu handle={<IconButton icon={<More />} />}>
-                            <FolderActionEdit
-                                onClick={() => {
-                                    setUpdateDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
-                            <FolderActionDelete
-                                onClick={() => {
-                                    setDeleteDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
-                        </Menu>
-                    );
                 }
+                return (
+                    <Menu handle={<IconButton icon={<More />} />}>
+                        <FolderActionEdit
+                            onClick={() => {
+                                setUpdateDialogOpen(true);
+                                setSelectedFolder(original as FolderItem);
+                            }}
+                        />
+                        <FolderActionDelete
+                            onClick={() => {
+                                setDeleteDialogOpen(true);
+                                setSelectedFolder(original as FolderItem);
+                            }}
+                        />
+                    </Menu>
+                );
             }
         }
     };
@@ -228,7 +213,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             )}
             {selectedSearchRecord && (
                 <EntryDialogMove
-                    type={ACO_TYPE}
                     searchRecord={selectedSearchRecord}
                     open={moveSearchRecordDialogOpen}
                     onClose={() => setMoveSearchRecordDialogOpen(false)}

@@ -1,23 +1,22 @@
-import { Dispatch, SetStateAction, useCallback, useMemo, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FormOnSubmit } from "@webiny/form";
 import {
-    createCreateFromMutation,
-    createCreateMutation,
-    createUpdateMutation,
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables,
     CmsEntryCreateMutationResponse,
     CmsEntryCreateMutationVariables,
     CmsEntryUpdateMutationResponse,
     CmsEntryUpdateMutationVariables,
-    CmsEntryCreateFromMutationResponse,
-    CmsEntryCreateFromMutationVariables
-} from "~/admin/graphql/contentEntries";
-import { useApolloClient, useCms, useModel, useMutation } from "~/admin/hooks";
-import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
+    createCreateFromMutation,
+    createCreateMutation,
+    createUpdateMutation
+} from "@webiny/app-headless-cms-common";
+import { useCms, useModel, useMutation } from "~/admin/hooks";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
@@ -52,14 +51,16 @@ interface UseContentEntryForm {
 }
 
 export interface UseContentEntryFormParams {
-    entry: Partial<CmsEditorContentEntry>;
+    entry: Partial<CmsContentEntry>;
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
     addEntryToListCache: boolean;
 }
 
-function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
-    // We need to keep track of the entry locally
+function useEntry(entryFromProps: Partial<CmsContentEntry>) {
+    /**
+     * We need to keep track of the entry locally
+     */
     const [entry, setEntry] = useState(entryFromProps);
     const { onEntryRevisionPublish } = useCms();
 
@@ -85,8 +86,8 @@ function useEntry(entryFromProps: Partial<CmsEditorContentEntry>) {
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
     const { listQueryVariables } = useContentEntry();
     const { model } = useModel();
-    const { history } = useRouter();
-    const client = useApolloClient();
+    const { history, search: routerSearch } = useRouter();
+    const [query] = routerSearch;
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -103,7 +104,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
-            // LIST_CONTENT: createListQuery(model),
             CREATE_CONTENT: createCreateMutation(model),
             UPDATE_CONTENT: createUpdateMutation(model),
             CREATE_CONTENT_FROM: createCreateFromMutation(model)
@@ -145,13 +145,26 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         async (formData, form) => {
             setLoading(true);
             const response = await createMutation({
-                variables: { data: formData },
+                variables: {
+                    data: {
+                        ...formData,
+                        /**
+                         * Added for the ACO to work.
+                         * TODO: introduce hook like onEntryPublish, or similar.
+                         */
+                        wbyAco_location: {
+                            folderId: query.get("folderId")
+                        }
+                    }
+                },
                 fetchPolicy: getFetchPolicy(model)
             });
 
             setLoading(false);
 
-            // Finalize "create" process
+            /**
+             * Finalize "create" process
+             */
             if (!response.data) {
                 showSnackbar("Missing response data in Create Entry.");
                 return;
@@ -166,19 +179,16 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
-            if (params.addEntryToListCache) {
-                GQLCache.addEntryToListCache(model, client.cache, entry, listQueryVariables);
-            }
 
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);
-            } else {
-                goToRevision(entry.id);
+                return entry;
             }
+            goToRevision(entry.id);
             return entry;
         },
-        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
+        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache, query]
     );
 
     const updateContent = useCallback(
@@ -231,13 +241,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
-            GQLCache.updateLatestRevisionInListCache(
-                model,
-                client.cache,
-                newRevision,
-                listQueryVariables
-            );
-            GQLCache.addRevisionToRevisionsCache(model, client.cache, newRevision);
 
             showSnackbar("A new revision was created!");
             goToRevision(newRevision.id);

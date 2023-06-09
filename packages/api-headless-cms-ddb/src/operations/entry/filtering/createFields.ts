@@ -10,6 +10,91 @@ interface Params {
     fields: CmsModelField[];
     plugins: PluginsContainer;
 }
+
+interface FieldCollection {
+    [key: string]: Field;
+}
+
+interface AddFieldsToCollectionParams {
+    fields: CmsModelField[];
+    parents: FieldParent[];
+    transformValuePlugins: Record<string, CmsFieldFilterValueTransformPlugin>;
+    valuePathPlugins: Record<string, CmsEntryFieldFilterPathPlugin>;
+    system: boolean;
+}
+
+const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollection => {
+    const { fields, parents, transformValuePlugins, valuePathPlugins, system } = params;
+    return fields.reduce<FieldCollection>((collection, field) => {
+        const transformPlugin = transformValuePlugins[field.type];
+        const valuePathPlugin = valuePathPlugins[field.type];
+
+        const basePath = system ? [] : ["values"];
+        /**
+         * The required fieldId is a product of all of its parents and its own fieldId.
+         */
+        const fieldId = [
+            ...parents,
+            {
+                fieldId: field.fieldId,
+                multipleValues: field.multipleValues
+            }
+        ]
+            .map(f => f.fieldId)
+            .join(".");
+
+        collection[fieldId] = {
+            ...field,
+            parents,
+            system,
+            createPath: params => {
+                if (
+                    valuePathPlugin &&
+                    valuePathPlugin.canUse(
+                        field,
+                        parents.map(p => p.fieldId)
+                    )
+                ) {
+                    return valuePathPlugin.createPath(params);
+                }
+
+                return basePath
+                    .concat(parents.map(parent => parent.fieldId))
+                    .concat([params.field.fieldId])
+                    .join(".");
+            },
+            transform: value => {
+                if (!transformPlugin) {
+                    return value;
+                }
+                return transformPlugin.transform({
+                    field,
+                    value
+                });
+            }
+        };
+        const childFields = field.settings?.fields;
+        if (!childFields?.length) {
+            return collection;
+        }
+
+        const result = createFieldCollection({
+            fields: childFields,
+            parents: [
+                ...parents,
+                {
+                    fieldId: field.fieldId,
+                    multipleValues: field.multipleValues
+                }
+            ],
+            transformValuePlugins,
+            valuePathPlugins,
+            system
+        });
+        Object.assign(collection, result);
+        return collection;
+    }, {});
+};
 /**
  * This method will map the fieldId (fieldId -> field) to the actual field.
  *
@@ -29,92 +114,24 @@ export const createFields = (params: Params) => {
         property: "fieldType"
     });
 
-    const collection = createSystemFields().reduce<Record<string, Field>>((fields, field) => {
-        const transformPlugin = transformValuePlugins[field.type];
+    const collection = createFieldCollection({
+        fields: createSystemFields(),
+        transformValuePlugins,
+        valuePathPlugins,
+        parents: [],
+        system: true
+    });
 
-        fields[field.fieldId] = {
-            ...field,
-            parents: [],
-            system: true,
-            createPath: ({ field }) => {
-                return field.settings?.path || field.fieldId;
-            },
-            transform: value => {
-                if (!transformPlugin) {
-                    return value;
-                }
-                return transformPlugin.transform({
-                    field,
-                    value
-                });
-            }
-        };
+    const result = createFieldCollection({
+        fields,
+        transformValuePlugins,
+        valuePathPlugins,
+        parents: [],
+        system: false
+    });
 
-        return fields;
-    }, {});
-
-    const addFieldsToCollection = (fields: CmsModelField[], parents: FieldParent[] = []): void => {
-        /**
-         * Exit early if no fields are sent.
-         */
-        if (fields.length === 0) {
-            return;
-        }
-        for (const field of fields) {
-            const transformPlugin = transformValuePlugins[field.type];
-            const valuePathPlugin = valuePathPlugins[field.type];
-            /**
-             * The required fieldId is a product of all of its parents and its own fieldId.
-             */
-            const fieldId = [
-                ...parents,
-                {
-                    fieldId: field.fieldId,
-                    multipleValues: field.multipleValues
-                }
-            ]
-                .map(f => f.fieldId)
-                .join(".");
-
-            collection[fieldId] = {
-                ...field,
-                parents,
-                system: false,
-                createPath: params => {
-                    if (valuePathPlugin) {
-                        return valuePathPlugin.createPath(params);
-                    }
-
-                    return ["values"]
-                        .concat(parents.map(parent => parent.fieldId))
-                        .concat([params.field.fieldId])
-                        .join(".");
-                },
-                transform: value => {
-                    if (!transformPlugin) {
-                        return value;
-                    }
-                    return transformPlugin.transform({
-                        field,
-                        value
-                    });
-                }
-            };
-            const childFields = field.settings?.fields;
-            if (!childFields || childFields.length === 0) {
-                continue;
-            }
-            addFieldsToCollection(childFields, [
-                ...parents,
-                {
-                    fieldId: field.fieldId,
-                    multipleValues: field.multipleValues
-                }
-            ]);
-        }
+    return {
+        ...collection,
+        ...result
     };
-
-    addFieldsToCollection(fields);
-
-    return collection;
 };

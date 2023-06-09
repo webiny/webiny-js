@@ -1,9 +1,13 @@
-import { Tenant, TenancyContext } from "@webiny/api-tenancy/types";
+import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
-import { AcoSearchRecordCrud, AcoSearchRecordStorageOperations } from "~/record/record.types";
+import { CmsContext, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+import {
+    AcoSearchRecordCrud,
+    AcoSearchRecordCrudBase,
+    AcoSearchRecordStorageOperations
+} from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
 
 export * from "./folder/folder.types";
@@ -39,6 +43,10 @@ export interface AcoBaseFields {
 export interface AdvancedContentOrganisation {
     folder: AcoFolderCrud;
     search: AcoSearchRecordCrud;
+    apps: IAcoApps;
+    registerApp: (params: IAcoAppRegisterParams) => Promise<IAcoApp>;
+    getApp: (name: string) => IAcoApp;
+    listApps: () => IAcoApp[];
 }
 
 export interface CreateAcoParams {
@@ -63,3 +71,52 @@ export interface AcoContext
  * @deprecated Use AcoContext instead
  */
 export type ACOContext = AcoContext;
+
+/**
+ * Apps
+ */
+export interface IAcoAppAddFieldCallable {
+    (field: CmsModelField): void;
+}
+
+export interface IAcoAppRemoveFieldCallable {
+    (id: string): void;
+}
+
+export interface IAcoAppModifyFieldCallableCallback {
+    (field: CmsModelField): CmsModelField;
+}
+
+export interface IAcoAppModifyFieldCallable {
+    (id: string, cb: IAcoAppModifyFieldCallableCallback): void;
+}
+
+export interface IAcoApp {
+    context: AcoContext;
+    search: AcoSearchRecordCrudBase;
+    folder: AcoFolderCrud;
+    name: string;
+    model: CmsModel;
+    getFields: () => CmsModelField[];
+    addField: IAcoAppAddFieldCallable;
+    removeField: IAcoAppRemoveFieldCallable;
+    modifyField: IAcoAppModifyFieldCallable;
+}
+
+export interface IAcoAppParams {
+    name: string;
+    apiName: string;
+    model: CmsModel;
+    fields: CmsModelField[];
+}
+
+export type IAcoAppsOptions = CreateAcoParams;
+
+export interface IAcoApps {
+    list: () => IAcoApp[];
+    register: (app: IAcoAppParams) => Promise<IAcoApp>;
+}
+
+export interface IAcoAppRegisterParams extends Omit<IAcoAppParams, "model"> {
+    model?: CmsModel;
+}

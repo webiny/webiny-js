@@ -1,32 +1,26 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
 import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
 import { useHistory, useLocation } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import PageTemplatesDialog from "~/admin/views/Pages/PageTemplatesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
 import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
-
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
-
-import { FOLDER_TYPE } from "~/admin/constants/folders";
-
 import { MainContainer, Wrapper } from "./styled";
-
-import { ListMeta, ListDbSort, SearchRecordItem } from "@webiny/app-aco/types";
+import { ListMeta, ListSearchRecordsSort, ListSearchRecordsSortItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
+import { FOLDER_ID_DEFAULT } from "~/admin/constants";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
 
@@ -35,9 +29,25 @@ interface Props {
     defaultFolderName: string;
 }
 
-export const Main = ({ folderId, defaultFolderName }: Props) => {
+const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
+    if (!sorting?.length) {
+        return undefined;
+    }
+    return sorting.reduce<ListSearchRecordsSort>((items, item) => {
+        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSearchRecordsSortItem;
+        if (items.includes(sort)) {
+            return items;
+        }
+        items.push(sort);
+        return items;
+    }, []);
+};
+
+export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolderName }) => {
     const location = useLocation();
     const history = useHistory();
+
+    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
 
     const {
         records,
@@ -47,7 +57,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useAcoList({ type: FOLDER_TYPE, folderId });
+    } = useAcoList<PbPageDataItem>({ folderId });
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -73,7 +83,6 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
 
     const [selected, setSelected] = useState<string[]>([]);
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [sort, setSort] = useState<ListDbSort>();
 
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
@@ -98,24 +107,23 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
     });
 
     useEffect(() => {
-        const sort = tableSorting.reduce((current, next) => {
-            return { ...current, [next.id]: next.desc ? "DESC" : "ASC" };
-        }, {});
-
-        setSort(sort);
-    }, [tableSorting]);
-
-    useEffect(() => {
+        if (!tableSorting?.length) {
+            return;
+        }
+        const sort = createSort(tableSorting);
         const listSortedRecords = async () => {
             await listItems({ sort });
         };
 
         listSortedRecords();
-    }, [sort]);
+    }, [tableSorting]);
 
-    const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
+    const loadMoreRecords = async ({
+        hasMoreItems,
+        cursor
+    }: Pick<ListMeta, "hasMoreItems" | "cursor">) => {
         if (hasMoreItems && cursor) {
-            await listItems({ after: cursor, sort });
+            await listItems({ after: cursor, sort: createSort(tableSorting) });
         }
     };
 
@@ -175,7 +183,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                                 <Table
                                     ref={tableRef}
                                     folders={folders}
-                                    records={records as SearchRecordItem<PbPageDataItem>[]}
+                                    records={records}
                                     loading={isListLoading}
                                     openPreviewDrawer={openPreviewDrawer}
                                     onSelectRow={rows => {
@@ -200,7 +208,6 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
                 </Wrapper>
             </MainContainer>
             <FolderDialogCreate
-                type={FOLDER_TYPE}
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
                 currentParentId={folderId || null}

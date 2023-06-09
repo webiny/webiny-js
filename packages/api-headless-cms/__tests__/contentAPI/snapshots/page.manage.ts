@@ -18,6 +18,8 @@ export default /* GraphQL */ `
         objective: PageModelApiName_Objective
         reference: PageModelApiName_Reference
         references: [PageModelApiName_References!]
+        # Advanced Content Organization - make required in 5.38.0
+        wbyAco_location: WbyAcoLocation
     }
 
     type PageModelApiNameMeta {
@@ -58,6 +60,8 @@ export default /* GraphQL */ `
         nestedObjectNestedTitle_not_in: [String]
         nestedObjectNestedTitle_contains: String
         nestedObjectNestedTitle_not_contains: String
+        nestedObjectNestedTitle_startsWith: String
+        nestedObjectNestedTitle_not_startsWith: String
     }
 
     type PageModelApiName_Content_Objecting_NestedObject {
@@ -71,6 +75,8 @@ export default /* GraphQL */ `
         objectTitle_not_in: [String]
         objectTitle_contains: String
         objectTitle_not_contains: String
+        objectTitle_startsWith: String
+        objectTitle_not_startsWith: String
 
         objectNestedObject: PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
@@ -124,6 +130,8 @@ export default /* GraphQL */ `
         nestedObjectNestedTitle_not_in: [String]
         nestedObjectNestedTitle_contains: String
         nestedObjectNestedTitle_not_contains: String
+        nestedObjectNestedTitle_startsWith: String
+        nestedObjectNestedTitle_not_startsWith: String
     }
 
     type PageModelApiName_Objective_Objecting_NestedObject {
@@ -138,6 +146,8 @@ export default /* GraphQL */ `
         objectTitle_not_in: [String]
         objectTitle_contains: String
         objectTitle_not_contains: String
+        objectTitle_startsWith: String
+        objectTitle_not_startsWith: String
 
         objectNestedObject: PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
@@ -249,6 +259,7 @@ export default /* GraphQL */ `
 
     input PageModelApiNameInput {
         id: ID
+        wbyAco_location: WbyAcoLocationInput
         content: [PageModelApiName_ContentInput]
         header: PageModelApiName_HeaderInput
         objective: PageModelApiName_ObjectiveInput
@@ -262,6 +273,7 @@ export default /* GraphQL */ `
     }
 
     input PageModelApiNameListWhereInput {
+        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]

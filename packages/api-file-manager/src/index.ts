@@ -9,7 +9,7 @@ import { FileStorage } from "~/storage/FileStorage";
 export * from "./plugins";
 
 export const createFileManagerContext = (config: Pick<FileManagerConfig, "storageOperations">) => {
-    return new ContextPlugin<FileManagerContext>(async context => {
+    const plugin = new ContextPlugin<FileManagerContext>(async context => {
         const getLocaleCode = () => {
             const locale = context.i18n.getContentLocale();
             if (!locale) {
@@ -53,6 +53,10 @@ export const createFileManagerContext = (config: Pick<FileManagerConfig, "storag
             WEBINY_VERSION: context.WEBINY_VERSION
         });
     });
+
+    plugin.name = "file-manager.createContext";
+
+    return plugin;
 };
 
 export const createFileManagerGraphQL = () => {

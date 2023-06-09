@@ -1,32 +1,24 @@
 import React, { useCallback, useState } from "react";
-
 import { useTags } from "~/hooks";
-
 import { Loader } from "./Loader";
 import { Empty } from "./Empty";
 import { Tag } from "./Tag";
-
 import { ListTagsWhereQueryVariables, TagItem } from "~/types";
 
-type TagListProps = {
-    type: string;
-    initialWhere?: ListTagsWhereQueryVariables & {
-        AND?: ListTagsWhereQueryVariables;
-        OR?: ListTagsWhereQueryVariables;
-    };
+interface TagListProps {
+    initialWhere?: ListTagsWhereQueryVariables;
     tagsModifier?: (tags: TagItem[]) => TagItem[];
     onTagClick: (tag: TagItem) => void;
     emptyDisclaimer: string;
-};
+}
 
 export const TagList: React.VFC<TagListProps> = ({
-    type,
     initialWhere,
     onTagClick,
     emptyDisclaimer,
     tagsModifier
 }) => {
-    const { tags, loading } = useTags({ type, ...initialWhere, tagsModifier });
+    const { tags, loading } = useTags({ ...initialWhere, tagsModifier });
     const [activeTags, setActiveTags] = useState<TagItem["tag"][]>([]);
 
     const toggleTag = useCallback(

@@ -1,63 +1,54 @@
 import React, { useEffect, useState } from "react";
-
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import {
-    DialogTitle,
     DialogActions,
+    DialogCancel,
     DialogContent,
     DialogOnClose,
-    DialogCancel
+    DialogTitle
 } from "@webiny/ui/Dialog";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
-
 import { FolderTree } from "~/components";
 import { useRecords } from "~/hooks";
-
 import { DialogContainer, DialogFoldersContainer } from "./styled";
+import { MovableSearchRecordItem } from "~/types";
 
-import { SearchRecordItem } from "~/types";
-
-type EntryDialogMoveProps = {
-    type: string;
-    searchRecord: SearchRecordItem;
+interface EntryDialogMoveProps {
+    searchRecord: MovableSearchRecordItem;
     open: boolean;
     onClose: DialogOnClose;
-};
+}
 
 const t = i18n.ns("app-aco/dialogs/dialog-move");
 
 export const EntryDialogMove: React.VFC<EntryDialogMoveProps> = ({
-    type,
     searchRecord,
     onClose,
     open
 }) => {
-    const { updateRecord, loading } = useRecords(type, searchRecord.location.folderId || "ROOT");
+    const { moveRecord, loading } = useRecords(searchRecord.location.folderId || "ROOT");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [folderId, setFolderId] = useState<string>();
     const { showSnackbar } = useSnackbar();
 
     const onSubmit = async () => {
         try {
-            if (folderId) {
-                const { id, title, type, content, data, tags } = searchRecord;
-                await updateRecord({
-                    id,
-                    title,
-                    type,
-                    content,
-                    data,
-                    tags,
-                    location: {
-                        folderId
-                    }
-                });
-
-                showSnackbar(t`Item moved successfully!`);
+            if (!folderId) {
+                setDialogOpen(false);
+                return;
             }
+            const { id } = searchRecord;
+            await moveRecord({
+                id,
+                location: {
+                    folderId
+                }
+            });
+
+            showSnackbar(t`Item moved successfully!`);
             setDialogOpen(false);
         } catch (error) {
             showSnackbar(error.message);
@@ -79,7 +70,6 @@ export const EntryDialogMove: React.VFC<EntryDialogMoveProps> = ({
                         <DialogFoldersContainer>
                             <FolderTree
                                 title={t`Root folder`}
-                                type={type}
                                 focusedFolderId={folderId || searchRecord.location.folderId}
                                 onFolderClick={data => setFolderId(data?.id)}
                                 onTitleClick={() => setFolderId("ROOT")}

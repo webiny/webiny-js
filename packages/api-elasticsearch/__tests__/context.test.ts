@@ -4,7 +4,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "~/types";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 
 /**
  * If adding new default operators, they must be added here as well.

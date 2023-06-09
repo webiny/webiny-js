@@ -1,16 +1,20 @@
+/**
+ * We can safely ignore the error being thrown for the path import.
+ */
+// @ts-ignore
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import elasticsearchClientContextPlugin, {
     createGzipCompression,
     getElasticsearchOperators
 } from "@webiny/api-elasticsearch";
-import { logger } from "@webiny/project-utils/testing/logger";
+import { logger } from "../logger";
 import { createHandler as createDynamoDBHandler } from "@webiny/handler-aws/dynamodb";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 import { elasticIndexManager } from "../helpers/elasticIndexManager";
 import { createElasticsearchClient } from "./createClient";
 import { simulateStream, getDocumentClient } from "../dynamodb";
-import { ElasticsearchClient } from "./client";
+import { ElasticsearchClient } from "./createClient";
 import { PluginCollection } from "../environment";
 
 interface GetElasticsearchClientParams {
