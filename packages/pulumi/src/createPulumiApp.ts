@@ -31,7 +31,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         throw new Error("Couldn't detect Webiny project.");
     }
 
-    const appRelativePath = params.path;
+    const appRelativePath = path.join(".webiny", params.path);
     const appRootPath = path.join(projectRootPath, appRelativePath);
 
     const projectAppWorkspacePath = path.join(

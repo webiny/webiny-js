@@ -232,7 +232,7 @@ export type FbEditorFieldGroup = Plugin & {
     };
 };
 
-export type FbFormLayout = {
+export interface FbFormLayout {
     name: string;
     title: string;
     component: FormLayoutComponent;

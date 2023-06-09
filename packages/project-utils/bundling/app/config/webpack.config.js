@@ -18,7 +18,7 @@ const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const WebpackBar = require("webpackbar");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const { getProjectApplication } = require("@webiny/cli/utils");
+const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -57,6 +57,9 @@ const sassLoader = {
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function (webpackEnv, { paths, options }) {
     const projectApplication = getProjectApplication({ cwd: options.cwd });
+
+    const project = getProject({ cwd: options.cwd });
+    const pluginsFolderPath = path.join(project.root, "plugins");
 
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
@@ -289,7 +292,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
                         {
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
-                            include: [paths.appSrc, paths.appIndexJs, ...paths.allWorkspaces],
+                            include: [paths.appSrc, paths.appIndexJs, ...paths.allWorkspaces, pluginsFolderPath],
                             loader: require.resolve("babel-loader"),
                             options: babelCustomizer({
                                 sourceType: "unambiguous",

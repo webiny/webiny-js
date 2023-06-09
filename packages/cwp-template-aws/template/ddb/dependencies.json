@@ -51,12 +51,9 @@
   },
   "workspaces": {
     "packages": [
-      "apps/admin",
-      "apps/website",
-      "apps/theme",
-      "apps/api/graphql",
-      "apps/api/headlessCMS",
-      "packages/*"
+      "./webiny/apps/admin",
+      "./webiny/apps/website",
+      "./webiny/apps/api/graphql"
     ]
   },
   "scripts": {

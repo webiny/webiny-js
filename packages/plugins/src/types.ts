@@ -7,4 +7,10 @@ export type Plugin<T = Record<string, any>> = {
     [key: string]: any;
 } & T;
 
+export interface PluginBase {
+    type: string;
+    name?: string;
+    init?: () => void;
+}
+
 export type PluginCollection = (Plugin | PluginCollection)[];

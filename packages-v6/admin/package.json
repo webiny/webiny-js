@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@webiny/admin",
+  "name": "@webiny/admin-v6",
   "sideEffects": false,
   "main": "./src/index.tsx",
   "dependencies": {

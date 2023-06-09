@@ -2,7 +2,7 @@ import React, { ComponentType, ReactElement, ReactNode } from "react";
 import { DragObjectWithTypeWithTarget } from "./editor/components/Droppable";
 import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
 import { PbState } from "./editor/recoil/modules/types";
-import { Plugin } from "@webiny/app/types";
+import { Plugin, PluginBase } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
@@ -497,7 +497,8 @@ export interface PbEditorPageElementPluginToolbar {
 }
 
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
-export type PbEditorPageElementPlugin = Plugin & {
+
+export interface PbEditorPageElementPlugin extends PluginBase {
     type: "pb-editor-page-element";
     elementType: string;
     toolbar?: PbEditorPageElementPluginToolbar;
@@ -535,7 +536,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         width: number;
         height: number;
     }) => ReactElement;
-};
+}
 
 export enum OnCreateActions {
     OPEN_SETTINGS = "open-settings",

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plugin } from "@webiny/plugins/types";
+import { Plugin, PluginBase } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
 import { CSSProperties } from "react";
 
@@ -44,7 +44,7 @@ export type FileUploaderPlugin = Plugin & {
     upload(file: File, options: UploadOptions): Promise<UploadedFile>;
 };
 
-export { Plugin };
+export { Plugin, PluginBase };
 
 export interface ImageProps {
     src: string;
