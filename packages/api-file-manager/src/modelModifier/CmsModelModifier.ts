@@ -66,4 +66,3 @@ export class CmsModelModifierPlugin extends Plugin {
 export const createFileModelModifier = (cb: CmsModelModifierCallable) => {
     return new CmsModelModifierPlugin(FILE_MODEL_ID, cb);
 };
-
