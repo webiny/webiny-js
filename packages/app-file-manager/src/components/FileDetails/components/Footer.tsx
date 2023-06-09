@@ -6,7 +6,7 @@ import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { useForm } from "@webiny/form";
 
 const SimpleFormFooterStyled = styled(SimpleFormFooter)`
-    justify-content: space-between;
+    justify-content: flex-end;
 `;
 
 export const Footer = () => {
