@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Files, { FilesRenderChildren, FilesRules } from "react-butterfiles";
-import { css } from "emotion";
 import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
-import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add.svg";
 import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/view_module.svg";
@@ -16,7 +14,6 @@ import { FolderDialogCreate, useAcoList, useNavigateFolder } from "@webiny/app-a
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
-import { Icon } from "@webiny/ui/Icon";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
@@ -38,40 +35,11 @@ import { Grid } from "~/components/Grid";
 import { Table } from "~/components/Table";
 import { Title } from "~/components/Title";
 import { UploadStatus } from "~/components/UploadStatus";
-
 import { BatchFileUploader } from "~/BatchFileUploader";
+import { SearchWidget } from "./components/SearchWidget";
+import { Filters } from "./components/Filters";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
-
-const InputSearch = styled("div")({
-    backgroundColor: "var(--mdc-theme-on-background)",
-    position: "relative",
-    height: 32,
-    padding: 3,
-    width: "100%",
-    borderRadius: 2,
-    "> input": {
-        border: "none",
-        fontSize: 14,
-        width: "calc(100% - 10px)",
-        height: "100%",
-        marginLeft: 32,
-        backgroundColor: "transparent",
-        outline: "none",
-        color: "var(--mdc-theme-text-primary-on-background)"
-    }
-});
-
-const searchIcon = css({
-    "&.mdc-button__icon": {
-        color: "var(--mdc-theme-text-secondary-on-background)",
-        position: "absolute",
-        width: 24,
-        height: 24,
-        left: 8,
-        top: 8
-    }
-});
 
 const FileListWrapper = styled("div")({
     float: "right",
@@ -198,19 +166,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         setListSort(sort);
     }, [tableSorting]);
 
-    const searchOnChange = useCallback(
-        // @ts-ignore
-        debounce(search => {
-            if (search.length) {
-                setListWhere({ search, folderId: undefined });
-            } else {
-                setFolderId(folderId);
-                setListWhere({ search: undefined });
-            }
-        }, 500),
-        [folderId]
-    );
-
     useEffect(() => {
         const listSearchRecords = async () => {
             await listItems({ ...listWhere, sort: listSort });
@@ -277,8 +232,6 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
             esc: onClose
         }
     });
-
-    const searchInput = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!settings) {
@@ -449,18 +402,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                     <OverlayLayout
                         onExited={onClose}
                         barLeft={<Title title={listTitle} />}
-                        barMiddle={
-                            <InputSearch>
-                                <Icon className={searchIcon} icon={<SearchIcon />} />
-                                <input
-                                    ref={searchInput}
-                                    onChange={e => searchOnChange(e.target.value)}
-                                    placeholder={t`Search by filename or tags`}
-                                    disabled={!fileManager.canRead}
-                                    data-testid={"file-manager.search-input"}
-                                />
-                            </InputSearch>
-                        }
+                        barMiddle={<SearchWidget />}
                         barRight={
                             <>
                                 {selected.length > 0 ? (
@@ -539,6 +481,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                         onDrop={() => setDragging(false)}
                                     />
                                 )}
+                                <Filters />
                                 <Scrollbar
                                     onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                                 >

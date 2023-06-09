@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSecurity } from "@webiny/app-security";
 import {
@@ -26,6 +26,8 @@ import {
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
+import { createFieldsList } from "@webiny/app-headless-cms/admin/graphql/createFieldsList";
+import { useFileModel } from "~/hooks/useFileModel";
 
 export interface ListTagsResponseItem {
     tag: string;
@@ -70,9 +72,25 @@ interface ListTagsOptions {
     where?: ListFileTagsQueryVariables["where"];
 }
 
+const getModelFields = (model: ReturnType<typeof useFileModel>) => {
+    const fields = createFieldsList({ model, fields: model.fields });
+    return /* GraphQL */ `{ 
+        __typename 
+        id
+        createdOn
+        createdBy {
+            id
+        }
+        src
+        ${fields} 
+    }`;
+};
+
 const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
     const { identity, getPermission } = useSecurity();
     const client = useApolloClient();
+    const fileModel = useFileModel();
+    const [modelFields] = useState(getModelFields(fileModel));
 
     const fmFilePermission = useMemo<FileManagerSecurityPermission | null>(() => {
         return getPermission<FileManagerSecurityPermission>("fm.file");
@@ -149,7 +167,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             CreateFileMutationResponse,
             CreateFileMutationVariables
         >({
-            mutation: CREATE_FILE,
+            mutation: CREATE_FILE(modelFields),
             variables: {
                 data,
                 meta
@@ -161,7 +179,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
     const updateFile = async (id: string, data: Partial<FileItem>) => {
         await client.mutate<UpdateFileMutationResponse, UpdateFileMutationVariables>({
-            mutation: UPDATE_FILE,
+            mutation: UPDATE_FILE(modelFields),
             variables: {
                 id,
                 data
@@ -180,7 +198,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
     const getFile = async (id: string) => {
         const response = await client.query({
-            query: GET_FILE,
+            query: GET_FILE(modelFields),
             variables: {
                 id
             }
@@ -191,7 +209,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
     const listFiles: FileManagerApiContextData["listFiles"] = async (params = {}) => {
         const { data } = await client.query<ListFilesQueryResponse>({
-            query: LIST_FILES,
+            query: LIST_FILES(modelFields),
             variables: params,
             fetchPolicy: "no-cache"
         });

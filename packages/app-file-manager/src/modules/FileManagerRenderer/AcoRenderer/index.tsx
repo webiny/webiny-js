@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useApolloClient } from "@apollo/react-hooks";
 import {
     createComponentPlugin,
     FileManagerFileItem,
@@ -6,11 +7,11 @@ import {
     FileManagerRenderer as BaseFileManagerRenderer
 } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
+import { AcoProvider } from "@webiny/app-aco";
 import FileManagerAcoView, { FileManagerAcoViewProps } from "./FileManagerAcoView";
 import { FileManagerAcoViewProvider } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
-import { AcoProvider } from "@webiny/app-aco";
 import { FM_ACO_APP, LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/constants";
-import { useApolloClient } from "@apollo/react-hooks";
+import { FileManagerViewWithConfig } from "./FileManagerViewConfig";
 
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
@@ -83,7 +84,9 @@ export const AcoRenderer = createComponentPlugin(BaseFileManagerRenderer, () => 
                     scope={viewProps.scope}
                     own={viewProps.own}
                 >
-                    <FileManagerAcoView {...viewProps} />
+                    <FileManagerViewWithConfig>
+                        <FileManagerAcoView {...viewProps} />
+                    </FileManagerViewWithConfig>
                 </FileManagerAcoViewProvider>
             </AcoProvider>
         );

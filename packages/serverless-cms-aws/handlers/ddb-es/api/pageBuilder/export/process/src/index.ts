@@ -20,7 +20,7 @@ import elasticSearch, {
     createGzipCompression
 } from "@webiny/api-elasticsearch";
 import { createFileManagerContext } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
@@ -51,8 +51,7 @@ export const handler = createHandler({
         i18nDynamoDbStorageOperations(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
-                documentClient,
-                elasticsearchClient
+                documentClient
             })
         }),
         fileManagerS3(),

@@ -4,22 +4,11 @@ import { useSecurity } from "@webiny/app-security";
 import { Settings } from "~/types";
 import { useFileManagerApi } from "~/index";
 import { Action, initializeState, State, StateListWhere, stateReducer } from "./stateReducer";
-import { FOLDER_ID_DEFAULT, DEFAULT_SCOPE } from "~/constants";
+import { FOLDER_ID_DEFAULT } from "~/constants";
 import { useRecords } from "@webiny/app-aco";
 import { ListSearchRecordsSort } from "@webiny/app-aco/types";
 import { FileManagerViewContextData } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { UploadOptions } from "@webiny/app/types";
-
-export const getWhere = (scope: string | undefined) => {
-    if (!scope) {
-        return {
-            tag_not_startsWith: DEFAULT_SCOPE
-        };
-    }
-    return {
-        tag_startsWith: scope
-    };
-};
 
 export interface FileManagerAcoViewContextData<TFileItem extends FileItem = FileItem> {
     state: State;
@@ -39,6 +28,9 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     setListWhere: (state: StateListWhere) => void;
     listSort: ListSearchRecordsSort | undefined;
     setListSort: (state: ListSearchRecordsSort) => void;
+    showFilters: () => void;
+    hideFilters: () => void;
+    showingFilters: boolean;
     dragging: boolean;
     setDragging: (state: boolean) => void;
     showFileDetails: (id: string) => void;
@@ -315,7 +307,14 @@ export const FileManagerAcoViewProvider: React.VFC<FileManagerViewProviderProps>
         hideFileDetails() {
             dispatch({ type: "showFileDetails", id: null });
         },
+        showFilters() {
+            dispatch({ type: "showFilters", state: true });
+        },
+        hideFilters() {
+            dispatch({ type: "showFilters", state: false });
+        },
         showingFileDetails: state.showingFileDetails,
+        showingFilters: state.showingFilters,
         loadingFileDetails: state.loadingFileDetails,
         folderId: state.folderId,
         setFolderId(state = undefined) {

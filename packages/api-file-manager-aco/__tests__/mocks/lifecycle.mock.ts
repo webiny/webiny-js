@@ -4,7 +4,7 @@ import { FmAcoContext } from "~/types";
 
 export const tracker = new LifecycleEventTracker();
 
-export const assignPageLifecycleEvents = () => {
+export const assignFileLifecycleEvents = () => {
     return new ContextPlugin<FmAcoContext>(async context => {
         context.fileManager.onFileBeforeCreate.subscribe(async params => {
             tracker.track("file:beforeCreate", params);

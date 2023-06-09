@@ -359,10 +359,10 @@ describe('Form Builder "Form" Test', () => {
         });
 
         const { data } = exportCSV.data.formBuilder.exportFormSubmissions;
-        expect(data).toMatchObject({
-            src: `https://some.domain.com/files/form_submissions_export.csv`,
-            key: "form_submissions_export.csv"
-        });
+
+        expect(data.src.endsWith("form_submissions_export.csv")).toEqual(true);
+        expect(data.key.endsWith("form_submissions_export.csv")).toEqual(true);
+        expect(data.key.includes("form-submissions")).toEqual(true);
 
         // Parse CSV and verify there are 2 submissions
         const csvFile = path.join(__dirname, data.key);

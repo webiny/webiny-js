@@ -7,7 +7,9 @@ const DATA_FIELD = /* GraphQL */ `
         type
         tags
         aliases
-        meta
+        meta {
+            private
+        }
         createdOn
         createdBy {
             id
@@ -25,7 +27,7 @@ const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_FILE = /* GraphQL */ `
-    mutation CreateFile($data: CreateFileInput!) {
+    mutation CreateFile($data: FmFileCreateInput!) {
         fileManager {
             createFile(data: $data) {
                 data ${DATA_FIELD}
@@ -36,7 +38,7 @@ export const CREATE_FILE = /* GraphQL */ `
 `;
 
 export const CREATE_FILES = /* GraphQL */ `
-    mutation CreateFiles($data: [CreateFileInput]!) {
+    mutation CreateFiles($data: [FmFileCreateInput!]!) {
         fileManager {
             createFiles(data: $data) {
                 data ${DATA_FIELD}
@@ -47,7 +49,7 @@ export const CREATE_FILES = /* GraphQL */ `
 `;
 
 export const UPDATE_FILE = /* GraphQL */ `
-    mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
+    mutation UpdateFile($id: ID!, $data: FmFileUpdateInput!) {
         fileManager {
             updateFile(id: $id, data: $data) {
                 data ${DATA_FIELD}
