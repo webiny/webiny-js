@@ -4,15 +4,30 @@ import React from "react";
  */
 // @ts-ignore
 import LazyLoad from "react-lazy-load";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
+import TimeAgo from "timeago-react";
+import { ButtonSecondary } from "@webiny/ui/Button";
 import { Ripple } from "@webiny/ui/Ripple";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
+import { Typography } from "@webiny/ui/Typography";
+import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/filled/settings.svg";
+import { ReactComponent as DownloadIcon } from "@material-design-icons/svg/filled/download.svg";
+import { ReactComponent as MoveIcon } from "@material-design-icons/svg/filled/drive_file_move.svg";
+import { ReactComponent as SelectIcon } from "@material-design-icons/svg/filled/check_box_outline_blank.svg";
+import { ReactComponent as SelectedIcon } from "@material-design-icons/svg/filled/check_box.svg";
+import { ReactComponent as SelectedMarker } from "@material-design-icons/svg/outlined/check_circle.svg";
+
 import { FileItem } from "@webiny/app-admin/types";
 
 import {
     FileBody,
     FileClickable,
     FileInfoIcon,
+    FileControls,
+    FileSelectedMarker,
     FileLabel,
     FilePreview,
     FileWrapper
@@ -36,25 +51,49 @@ const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFil
             data-testid={"fm-list-wrapper-file"}
         >
             <FileBody>
-                <FileInfoIcon>
-                    <IconButton
-                        icon={<SettingsIcon />}
-                        onClick={() => showFileDetails(file.id)}
-                        data-testid={"fm-file-wrapper-file-info-icon"}
-                    />
-                </FileInfoIcon>
+                <FileControls>
+                    <FileInfoIcon>
+                        <IconButton ripple={false} icon={<DownloadIcon />} />
+                        <IconButton ripple={false} icon={<MoveIcon />} />
+                        <IconButton
+                            ripple={false}
+                            icon={<SettingsIcon />}
+                            onClick={() => showFileDetails(file.id)}
+                            data-testid={"fm-file-wrapper-file-info-icon"}
+                        />
+                    </FileInfoIcon>
+                </FileControls>
+                {selected && (
+                    <FileSelectedMarker>
+                        <SelectedMarker />
+                    </FileSelectedMarker>
+                )}
                 <LazyLoad height={200} offsetVertical={300}>
                     <Ripple>
                         <FilePreview data-testid={"fm-file-wrapper-file-preview"}>
-                            <FileClickable onClick={onSelect} />
+                            <FileClickable />
                             {children}
                         </FilePreview>
                     </Ripple>
                 </LazyLoad>
             </FileBody>
-            <FileLabel onClick={onSelect} data-testid={"fm-file-wrapper-file-label"}>
-                {file.name}
+            <FileLabel data-testid={"fm-file-wrapper-file-label"}>
+                <Typography className="type" use={"overline"}>
+                    {file.type}
+                </Typography>
+                <Typography className="name" use={"body2"}>
+                    {file.name}
+                </Typography>
+                <Typography className="createdOn" use={"caption"}>
+                    <TimeAgo datetime={file.createdOn} />
+                </Typography>
             </FileLabel>
+            {onSelect && (
+                <ButtonSecondary onClick={onSelect}>
+                    {selected ? <SelectedIcon /> : <SelectIcon />}
+                    <span>{selected ? "Selected" : "Select"}</span>
+                </ButtonSecondary>
+            )}
         </FileWrapper>
     );
 };
