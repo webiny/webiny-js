@@ -10,6 +10,7 @@ export interface RunCommandOptions {
     cwd: string;
     command: string;
     env: string;
+
     [key: string]: any;
 }
 
@@ -79,11 +80,17 @@ export interface PulumiOutputToEnvModifier<T extends PulumiOutput = PulumiOutput
 
 export interface ReactAppConfig {
     seal(): { commands: ReactAppCommands };
+
     webpack(modifier: WebpackConfigModifier): void;
+
     babel(modifier: BabelConfigModifier): void;
+
     entry(modifier: EntryModifier): void;
+
     customEnv(modifier: CustomEnvModifier): void;
+
     commands(commands: ReactAppCommandsModifier): void;
+
     pulumiOutputToEnv<T extends PulumiOutput>(
         app: string,
         modifier: ReactAppEnvMap | PulumiOutputToEnvModifier<T>
@@ -104,7 +111,7 @@ const NO_API_MESSAGE = (env: string) => {
 };
 
 function createEnvModifierFromMap(
-    app: `apps/${string}`,
+    app: string,
     map: ReactAppEnvMap,
     options: RunCommandOptions
 ): PulumiOutputToEnvModifier {
@@ -126,7 +133,7 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
     const babelModifiers: BabelConfigModifier[] = [];
     const commandsModifiers: ReactAppCommandsModifier[] = [];
     const customEnvModifiers: CustomEnvModifier[] = [];
-    const pulumiOutputToEnvModifiers: Array<[`apps/${string}`, PulumiOutputToEnvModifier]> = [];
+    const pulumiOutputToEnvModifiers: Array<[string, PulumiOutputToEnvModifier]> = [];
     const entryModifiers: EntryModifier[] = [];
 
     const loadEnvVars = () => {
