@@ -1,0 +1,14 @@
+{
+	"name": "@webiny/infra",
+	"version": "5.36.0",
+	"scripts": {
+		"build": "yarn webiny run build",
+		"watch": "yarn webiny run watch"
+	},
+	"dependencies": {
+		"@webiny/cli": "5.36.0",
+		"@webiny/project-utils": "5.36.0",
+		"@webiny/pulumi": "5.36.0",
+		"@webiny/pulumi-aws": "5.36.0"
+	}
+}
