@@ -29,7 +29,7 @@ export interface CreateAdminPulumiAppParams {
 export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParams) => {
     return createReactPulumiApp({
         name: "admin",
-        folder: "apps/admin",
+        folder: "admin",
         ...projectAppParams
     });
 };

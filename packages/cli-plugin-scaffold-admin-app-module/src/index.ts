@@ -337,7 +337,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 `‣ after you've deployed the extended GraphQL API, continue developing your Admin Area React application locally by running the ${chalk.green(
-                    "yarn webiny watch apps/admin --env dev"
+                    "yarn webiny watch admin --env dev"
                 )} command`
             );
 

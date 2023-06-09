@@ -8,7 +8,7 @@ export const ApiOutput = createAppModule({
     config(app) {
         return app.addHandler(async () => {
             const output = getStackOutput({
-                folder: "apps/api",
+                folder: "api",
                 env: app.params.run.env
             });
 

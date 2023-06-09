@@ -46,7 +46,7 @@ module.exports = (folderOrArgs, env, map) => {
     }
 
     if (!args.folder) {
-        throw new Error(`Please specify a project application folder, for example "apps/admin".`);
+        throw new Error(`Please specify a project application folder, for example "admin".`);
     }
 
     if (!args.env) {

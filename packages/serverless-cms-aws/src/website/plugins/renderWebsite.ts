@@ -20,7 +20,7 @@ export const renderWebsite = {
             return;
         }
 
-        const coreOutput = getStackOutput({ folder: "apps/core", env: params.env });
+        const coreOutput = getStackOutput({ folder: "core", env: params.env });
 
         context.info("Issuing a complete website render job...");
 

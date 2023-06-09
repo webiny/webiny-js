@@ -6,7 +6,7 @@ const { runMigration, printReport } = require("@webiny/data-migration/cli");
  * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
  */
 module.exports = async (params, context) => {
-    const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
+    const apiOutput = getStackOutput({ folder: "api", env: params.env });
 
     context.info("Fetching migration status...");
 

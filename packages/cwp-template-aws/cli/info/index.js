@@ -39,15 +39,15 @@ const printEnvOutput = async (env, context) => {
         context.info(`Stack ${green(apiFolder)} not deployed yet.`);
     }
 
-    output = getStackOutput({ folder: "apps/admin", env });
+    output = getStackOutput({ folder: "admin", env });
     if (output) {
         stacksDeployedCount++;
         console.log([`➜ Admin app: ${green(output.appUrl)}`].join("\n"));
     } else {
-        context.info(`Stack ${green("apps/admin")} not deployed yet.`);
+        context.info(`Stack ${green("admin")} not deployed yet.`);
     }
 
-    output = getStackOutput({ folder: "apps/website", env });
+    output = getStackOutput({ folder: "website", env });
     if (output) {
         stacksDeployedCount++;
         console.log(
@@ -58,7 +58,7 @@ const printEnvOutput = async (env, context) => {
             ].join("\n")
         );
     } else {
-        context.info(`Stack ${green("apps/website")} not deployed yet.`);
+        context.info(`Stack ${green("website")} not deployed yet.`);
     }
 
     if (stacksDeployedCount === 0) {

@@ -17,7 +17,7 @@ export const lambdaEdgeWarning = [
         type: "hook-before-destroy",
         name: "hook-before-destroy-lambda-edge-warning",
         hook(params: Record<string, any>) {
-            const websiteOutput = getStackOutput({ folder: "apps/website", env: params.env });
+            const websiteOutput = getStackOutput({ folder: "website", env: params.env });
 
             if (websiteOutput && websiteOutput.websiteRouterOriginRequestFunction) {
                 websiteRouterOriginRequestFunction =

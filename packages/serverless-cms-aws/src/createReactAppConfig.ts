@@ -85,7 +85,7 @@ export interface ReactAppConfig {
     customEnv(modifier: CustomEnvModifier): void;
     commands(commands: ReactAppCommandsModifier): void;
     pulumiOutputToEnv<T extends PulumiOutput>(
-        app: `apps/${string}`,
+        app: string,
         modifier: ReactAppEnvMap | PulumiOutputToEnvModifier<T>
     ): void;
 }
@@ -100,7 +100,7 @@ export interface Overrides {
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;
 
 const NO_API_MESSAGE = (env: string) => {
-    return `It seems that the API project application isn't deployed!\nBefore continuing, please deploy it by running the following command: yarn webiny deploy apps/api --env=${env}`;
+    return `It seems that the API project application isn't deployed!\nBefore continuing, please deploy it by running the following command: yarn webiny deploy api --env=${env}`;
 };
 
 function createEnvModifierFromMap(

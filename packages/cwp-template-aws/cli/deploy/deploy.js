@@ -51,7 +51,7 @@ module.exports = async (inputs, context) => {
     // then we can be sure this is not the first deployment.
     let isFirstDeployment;
     if (hasCore) {
-        isFirstDeployment = !getStackOutput({ folder: "apps/core", env });
+        isFirstDeployment = !getStackOutput({ folder: "core", env });
     } else {
         isFirstDeployment = !getStackOutput({ folder: apiFolder, env });
     }
@@ -76,7 +76,7 @@ module.exports = async (inputs, context) => {
             isFirstDeployment && console.log();
             context.info(`Deploying ${green("core")} project application...`);
 
-            await deploy("apps/core", env, inputs);
+            await deploy("core", env, inputs);
             context.success(`${green("core")} project application was deployed successfully!`);
             isFirstDeployment && (await sleep(2000));
         }
@@ -91,19 +91,19 @@ module.exports = async (inputs, context) => {
 
         // Deploying `apps/admin` project application.
         console.log();
-        context.info(`Deploying ${green("apps/admin")} project application...`);
+        context.info(`Deploying ${green("admin")} project application...`);
         isFirstDeployment && (await sleep());
 
-        await deploy("apps/admin", env, inputs);
-        context.success(`${green("apps/admin")} project application was deployed successfully!`);
+        await deploy("admin", env, inputs);
+        context.success(`${green("admin")} project application was deployed successfully!`);
 
-        // Deploying `apps/admin` project application.
+        // Deploying `admin` project application.
         console.log();
-        context.info(`Deploying ${green("apps/website")} project application...`);
+        context.info(`Deploying ${green("website")} project application...`);
         isFirstDeployment && (await sleep());
 
-        await deploy("apps/website", env, inputs);
-        context.success(`${green("apps/website")} project application was deployed successfully!`);
+        await deploy("website", env, inputs);
+        context.success(`${green("website")} project application was deployed successfully!`);
 
         await sendEvent({ event: "project-deploy-end" });
     } catch (e) {
@@ -121,8 +121,8 @@ module.exports = async (inputs, context) => {
     const outputs = {
         api: getStackOutput({ folder: apiFolder, env }),
         apps: {
-            admin: getStackOutput({ folder: "apps/admin", env }),
-            site: getStackOutput({ folder: "apps/website", env })
+            admin: getStackOutput({ folder: "admin", env }),
+            site: getStackOutput({ folder: "website", env })
         }
     };
 
@@ -157,7 +157,7 @@ module.exports = async (inputs, context) => {
                 `💡 Tip: to deploy project applications separately, use the ${green(
                     "deploy"
                 )} command (e.g. ${green(
-                    `yarn webiny deploy apps/website --env ${env}`
+                    `yarn webiny deploy website --env ${env}`
                 )}). For additional help, please run ${green("yarn webiny --help")}.`
             ].join("\n")
         );

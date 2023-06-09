@@ -7,7 +7,7 @@ export const createWebsiteAppConfig = (modifier?: ReactAppConfigModifier) => {
 
         config.customEnv(env => ({ ...env, PORT: 3000 }));
 
-        config.pulumiOutputToEnv<ApiOutput>("apps/api", ({ output, env }) => {
+        config.pulumiOutputToEnv<ApiOutput>("api", ({ output, env }) => {
             return {
                 ...env,
                 REACT_APP_GRAPHQL_API_URL: `${output.apiUrl}/graphql`,
