@@ -117,7 +117,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         showFileDetails,
         showingFileDetails,
         toggleSelected,
-        uploadFile
+        uploadFile,
+        searchQuery
     } = useFileManagerAcoView();
 
     const setFolderId = useCallback(
@@ -168,7 +169,22 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
 
     useEffect(() => {
         const listSearchRecords = async () => {
-            await listItems({ ...listWhere, sort: listSort });
+            const where = { ...listWhere };
+            if (searchQuery) {
+                where.OR = [
+                    {
+                        data: {
+                            name_contains: searchQuery
+                        }
+                    },
+                    {
+                        data: {
+                            tags_contains: searchQuery
+                        }
+                    }
+                ];
+            }
+            await listItems({ where, sort: listSort });
         };
 
         if (didMount.current) {
@@ -176,7 +192,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         } else {
             didMount.current = true;
         }
-    }, [JSON.stringify(listWhere), listSort]);
+    }, [JSON.stringify(listWhere), listSort, searchQuery]);
 
     const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
         if (hasMoreItems && cursor) {
@@ -267,34 +283,26 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
             }
 
             if (errors.length > 0) {
-                // We wait 750ms, just for everything to settle down a bit.
-                setTimeout(() => {
-                    showSnackbar(
-                        <>
-                            {t`One or more files were not uploaded successfully:`}
-                            <ol>
-                                {errors.map(({ file, e }) => (
-                                    <li key={file.name}>
-                                        <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
-                                    </li>
-                                ))}
-                            </ol>
-                        </>
-                    );
-                }, 750);
-
+                showSnackbar(
+                    <>
+                        {t`One or more files were not uploaded successfully:`}
+                        <ol>
+                            {errors.map(({ file, e }) => (
+                                <li key={file.name}>
+                                    <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
+                                </li>
+                            ))}
+                        </ol>
+                    </>
+                );
                 return;
             }
 
-            // We wait 750ms, just for everything to settle down a bit.
-            setTimeout(() => showSnackbar(t`File upload complete.`), 750);
+            showSnackbar(t`File upload complete.`);
 
             if (typeof onUploadCompletion === "function") {
-                // We wait 750ms, just for everything to settle down a bit.
-                setTimeout(() => {
-                    onUploadCompletion(uploaded);
-                    onClose && onClose();
-                }, 750);
+                onUploadCompletion(uploaded);
+                onClose && onClose();
             }
         });
     };
@@ -333,7 +341,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     const progress = uploader.progress;
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
-        if (!isListLoading && listWhere.search && records.length === 0) {
+        if (!isListLoading && searchQuery && records.length === 0) {
             return <Empty isSearchResult={true} browseFiles={browseFiles} />;
         }
 

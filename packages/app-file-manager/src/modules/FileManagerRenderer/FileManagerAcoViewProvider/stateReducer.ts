@@ -4,14 +4,15 @@ import { FOLDER_ID_DEFAULT } from "~/constants";
 import isEqual from "lodash/isEqual";
 
 interface BaseStateListWhere {
+    name_contains?: string;
     tags_in?: string[];
+    tags_contains?: string;
     tags_startsWith?: string;
     tags_not_startsWith?: string;
 }
 
 export interface StateListWhere extends BaseStateListWhere {
     folderId?: string;
-    search?: string;
     createdBy?: string;
     AND?: BaseStateListWhere[];
     OR?: BaseStateListWhere[];
@@ -23,6 +24,7 @@ export interface State {
     showingFilters: boolean;
     loadingFileDetails: boolean;
     selected: FileItem[];
+    searchQuery: string;
     hasPreviouslyUploadedFiles: boolean | null;
     listWhere: StateListWhere;
     listSort?: ListSearchRecordsSort;
@@ -57,6 +59,10 @@ export type Action =
     | {
           type: "showFilters";
           state: boolean;
+      }
+    | {
+          type: "searchQuery";
+          value: string;
       }
     | {
           type: "loadingFileDetails";
@@ -111,13 +117,13 @@ export const initializeState = ({ accept, scope, own, identity }: InitParams): S
         folderId: FOLDER_ID_DEFAULT,
         showingFileDetails: null,
         showingFilters: false,
+        searchQuery: "",
         loadingFileDetails: false,
         selected: [],
         hasPreviouslyUploadedFiles: null,
         listWhere: {
             ...getScopeWhereParams(scope),
             ...getMimeTypeWhereParams(accept),
-            search: undefined,
             createdBy: own ? identity.id : undefined,
             AND: undefined
         },
@@ -172,6 +178,10 @@ export const stateReducer: Reducer = (state: State, action) => {
         }
         case "showFilters": {
             next.showingFilters = action.state;
+            break;
+        }
+        case "searchQuery": {
+            next.searchQuery = action.value;
             break;
         }
         case "loadingFileDetails": {

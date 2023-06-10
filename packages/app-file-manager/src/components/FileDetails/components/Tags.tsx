@@ -3,7 +3,6 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { useBind } from "@webiny/form";
 import { useFile, useFileManagerApi, useFileDetails } from "~/index";
 import { useTags } from "@webiny/app-aco";
-import { ACO_TYPE } from "~/constants";
 import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
 
 export const Tags = () => {
@@ -11,9 +10,8 @@ export const Tags = () => {
     const { file } = useFile();
     const { canEdit } = useFileManagerApi();
     const { tags } = useTags({
-        type: ACO_TYPE,
         tagsModifier: tagsModifier(scope),
-        ...getTagsInitialParams({ scope, own })
+        where: getTagsInitialParams({ scope, own })
     });
 
     const bind = useBind({

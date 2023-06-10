@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+// @ts-ignore `debounce` packages has no types.
+import debounce from "debounce";
 import { FileItem } from "@webiny/app-admin/types";
 import { useSecurity } from "@webiny/app-security";
 import { Settings } from "~/types";
@@ -28,6 +30,8 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     setListWhere: (state: StateListWhere) => void;
     listSort: ListSearchRecordsSort | undefined;
     setListSort: (state: ListSearchRecordsSort) => void;
+    setSearchQuery: (query: string) => void;
+    searchQuery: string;
     showFilters: () => void;
     hideFilters: () => void;
     showingFilters: boolean;
@@ -99,7 +103,7 @@ export const FileManagerAcoViewProvider: React.VFC<FileManagerViewProviderProps>
                 }
 
                 // Updating record found in the list
-                const result = [
+                return [
                     ...prevFiles.slice(0, fileIndex),
                     {
                         ...prevFiles[fileIndex],
@@ -107,8 +111,6 @@ export const FileManagerAcoViewProvider: React.VFC<FileManagerViewProviderProps>
                     },
                     ...prevFiles.slice(fileIndex + 1)
                 ];
-
-                return result;
             });
         }
 
@@ -262,6 +264,14 @@ export const FileManagerAcoViewProvider: React.VFC<FileManagerViewProviderProps>
             });
     };
 
+    const setSearchQuery: FileManagerAcoViewContextData["setSearchQuery"] = useCallback(
+        // @ts-ignore
+        debounce(search => {
+            dispatch({ type: "searchQuery", value: search });
+        }, 500),
+        [state.folderId]
+    );
+
     const value: FileManagerAcoViewContextData = {
         state,
         dispatch,
@@ -324,7 +334,9 @@ export const FileManagerAcoViewProvider: React.VFC<FileManagerViewProviderProps>
             });
         },
         listTable,
-        setListTable
+        setListTable,
+        setSearchQuery,
+        searchQuery: state.searchQuery
     };
 
     return (

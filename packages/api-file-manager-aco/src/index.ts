@@ -13,7 +13,16 @@ export const createAcoFileManagerContext = () => {
             );
             return;
         }
-        const app = await context.aco.registerApp(createApp());
+
+        const fileModel = await context.security.withoutAuthorization(() => {
+            return context.cms.getModel("fmFile");
+        });
+
+        if (!fileModel) {
+            throw Error(`Can't setup FM ACO app; missing FmFile model!`);
+        }
+
+        const app = await context.aco.registerApp(createApp(fileModel));
 
         context.fileManagerAco = {
             app

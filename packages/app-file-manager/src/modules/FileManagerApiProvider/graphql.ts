@@ -66,7 +66,7 @@ export const LIST_FILES = (FILE_FIELDS: string) => gql`
                 after: $after,
                 where: $where
             ) {
-                data {}${FILE_FIELDS}
+                data ${FILE_FIELDS}
                 meta {
                     cursor
                     totalCount
@@ -220,7 +220,7 @@ export const GET_FILE_MODEL = gql`
     query GetFileModel {
         fileManager {
             getFileModel {
-                data 
+                data
                 error ${ERROR_FIELDS}
             }
         }

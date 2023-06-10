@@ -89,7 +89,6 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const queryParamsToWhereInput = (queryParams: StateQueryParams): ListFilesQueryVariables => {
         return {
             limit: queryParams.limit,
-            search: queryParams.search,
             where: {
                 ...getWhere(props.scope),
                 createdBy: queryParams.createdBy,

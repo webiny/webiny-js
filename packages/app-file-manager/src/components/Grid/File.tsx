@@ -36,27 +36,35 @@ import {
 export interface FileProps {
     file: FileItem;
     selected: boolean;
-    onSelect: (event?: React.MouseEvent) => void;
+    onSelect?: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
     options?: Array<{ label: string; onClick: (file: Object) => void }>;
+    multiple: boolean;
     children: React.ReactNode;
     showFileDetails: (id: string) => void;
 }
 
-const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFileDetails }) => {
+const File: React.FC<FileProps> = ({
+    file,
+    selected,
+    onSelect,
+    children,
+    showFileDetails,
+    multiple
+}) => {
+    let ctaIcon = null;
+    if (multiple) {
+        ctaIcon = selected ? <SelectedIcon /> : <SelectIcon />;
+    }
+
     return (
-        <FileWrapper
-            selected={selected}
-            disableSelect={!onSelect}
-            data-testid={"fm-list-wrapper-file"}
-        >
+        <FileWrapper data-testid={"fm-list-wrapper-file"}>
             <FileBody>
                 <FileControls>
                     <FileInfoIcon>
-                        <IconButton ripple={false} icon={<DownloadIcon />} />
-                        <IconButton ripple={false} icon={<MoveIcon />} />
+                        <IconButton icon={<DownloadIcon />} />
+                        <IconButton icon={<MoveIcon />} />
                         <IconButton
-                            ripple={false}
                             icon={<SettingsIcon />}
                             onClick={() => showFileDetails(file.id)}
                             data-testid={"fm-file-wrapper-file-info-icon"}
@@ -90,7 +98,7 @@ const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFil
             </FileLabel>
             {onSelect && (
                 <ButtonSecondary onClick={onSelect}>
-                    {selected ? <SelectedIcon /> : <SelectIcon />}
+                    {ctaIcon}
                     <span>{selected ? "Selected" : "Select"}</span>
                 </ButtonSecondary>
             )}
@@ -108,5 +116,5 @@ const MemoizedFile = React.memo(File, (prev, next) => {
     return true;
 });
 
-MemoizedFile.displayName = "MemoizedFile";
-export default MemoizedFile;
+MemoizedFile.displayName = "FileThumbnail";
+export const FileThumbnail = MemoizedFile;

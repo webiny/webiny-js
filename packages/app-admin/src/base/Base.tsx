@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Plugins } from "@webiny/app";
+import { Plugin } from "@webiny/app";
 import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
@@ -15,7 +15,7 @@ const BaseExtension: React.FC = () => {
     plugins.register([globalSearchHotkey, uiLayoutPlugin]);
 
     return (
-        <Plugins>
+        <Plugin>
             <AddMenu name={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
             <FileManager show={true}>
                 {({ showFileManager }) => (
@@ -66,7 +66,7 @@ const BaseExtension: React.FC = () => {
                     <NotFound />
                 </Layout>
             </AddRoute>
-        </Plugins>
+        </Plugin>
     );
 };
 

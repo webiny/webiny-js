@@ -1,6 +1,5 @@
-import React, { useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "@emotion/styled";
-import debounce from "lodash/debounce";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as FilterIcon } from "@material-design-icons/svg/outlined/filter_alt.svg";
 import { Icon } from "@webiny/ui/Icon";
@@ -46,23 +45,9 @@ const InputSearch = styled.div`
 
 export const SearchWidget = () => {
     const fileManager = useFileManagerApi();
-    const { folderId, setFolderId, setListWhere, showingFilters, showFilters, hideFilters } =
-        useFileManagerAcoView();
+    const { showingFilters, showFilters, hideFilters, setSearchQuery } = useFileManagerAcoView();
 
     const searchInput = useRef<HTMLInputElement>(null);
-
-    const searchOnChange = useCallback(
-        // @ts-ignore
-        debounce(search => {
-            if (search.length) {
-                setListWhere({ search, folderId: undefined });
-            } else {
-                setFolderId(folderId);
-                setListWhere({ search: undefined });
-            }
-        }, 500),
-        [folderId]
-    );
 
     const toggleFilters = () => {
         if (showingFilters) {
@@ -77,7 +62,7 @@ export const SearchWidget = () => {
             <SearchBarIcon icon={<SearchIcon />} />
             <input
                 ref={searchInput}
-                onChange={e => searchOnChange(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 placeholder={"Search by filename or tags"}
                 disabled={!fileManager.canRead}
                 data-testid={"file-manager.search-input"}
