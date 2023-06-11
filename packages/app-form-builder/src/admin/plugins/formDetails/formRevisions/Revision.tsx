@@ -72,9 +72,9 @@ const Revision: React.FC<RevisionProps> = props => {
             revision,
             form
         });
-    const { canPublish, canUnpublish, canDelete, canEdit } = usePermission();
+    const { canPublish, canUnpublish, canDelete, canUpdate } = usePermission();
 
-    const showMenu = canEdit(form) || canDelete(form) || canPublish() || canUnpublish();
+    const showMenu = canUpdate(form) || canDelete(form) || canPublish() || canUnpublish();
 
     return (
         <ListItem>

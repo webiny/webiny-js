@@ -108,7 +108,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
     const { location, history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const { canEdit, canDelete } = usePermission();
+    const { canUpdate, canDelete } = usePermission();
 
     const deleteRecord = useCallback(
         async item => {
@@ -319,7 +319,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                         {upperFirst(form.status)} (v{form.version})
                                     </Typography>
                                     <ListActions>
-                                        {canEdit(form) && <EditIcon onClick={editRecord(form)} />}
+                                        {canUpdate(form) && <EditIcon onClick={editRecord(form)} />}
                                         {canDelete(form) && (
                                             <ConfirmationDialog
                                                 title={"Confirmation required!"}
