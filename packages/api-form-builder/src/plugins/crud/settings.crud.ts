@@ -1,4 +1,3 @@
-import * as utils from "./utils";
 import * as models from "./settings.models";
 import {
     Settings,
@@ -12,6 +11,7 @@ import {
     OnSettingsBeforeDelete,
     OnSettingsAfterDelete
 } from "~/types";
+import { checkBaseSettingsPermissions } from "./utils";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
@@ -62,7 +62,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             const { auth, throwOnNotFound } = params || {};
 
             if (auth !== false) {
-                await utils.checkBaseSettingsPermissions(context);
+                await checkBaseSettingsPermissions(context);
             }
 
             let settings: Settings | null = null;
@@ -130,7 +130,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             }
         },
         async updateSettings(this: FormBuilder, data) {
-            await utils.checkBaseSettingsPermissions(context);
+            await checkBaseSettingsPermissions(context);
             const updatedData = new models.UpdateDataModel().populate(data);
             await updatedData.validate();
 
@@ -185,7 +185,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             }
         },
         async deleteSettings(this: FormBuilder) {
-            await utils.checkBaseSettingsPermissions(context);
+            await checkBaseSettingsPermissions(context);
             const settings = await this.getSettings();
             if (!settings) {
                 return;
