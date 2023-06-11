@@ -6,7 +6,7 @@ import mdbid from "mdbid";
 import fetch from "node-fetch";
 import pick from "lodash/pick";
 import WebinyError from "@webiny/error";
-import * as utils from "~/plugins/crud/utils";
+import { checkBaseFormPermissions } from "~/plugins/crud/utils";
 import * as models from "~/plugins/crud/forms.models";
 import {
     FbForm,
@@ -27,6 +27,7 @@ import {
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
+import { sanitizeFormSubmissionData } from "~/plugins/crud/utils/sanitizeFormSubmissionData";
 
 interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
@@ -105,9 +106,18 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             }
         },
         async listFormSubmissions(this: FormBuilder, formId, options = {}) {
-            const { submissions } = await utils.checkBaseFormPermissions(context);
+            const permissions = await checkBaseFormPermissions(context);
 
-            if (typeof submissions !== "undefined" && submissions !== true) {
+            let hasAccessToSubmissions = false;
+            for (let i = 0; i < permissions.length; i++) {
+                const { submissions } = permissions[i];
+                if (submissions === true) {
+                    hasAccessToSubmissions = true;
+                    break;
+                }
+            }
+
+            if (!hasAccessToSubmissions) {
                 throw new NotAuthorizedError();
             }
 
@@ -331,7 +341,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                 addLog: (log: Record<string, any>) => {
                                     submission.logs.push(log);
                                 },
-                                data: utils.sanitizeFormSubmissionData(form.fields, data),
+                                data: sanitizeFormSubmissionData(form.fields, data),
                                 // meta,
                                 trigger: form.triggers[plugin.trigger]
                             });

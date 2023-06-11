@@ -7,7 +7,7 @@ import {
     Response
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { sanitizeFormSubmissionData } from "~/plugins/crud/utils";
+import { sanitizeFormSubmissionData } from "~/plugins/crud/utils/sanitizeFormSubmissionData";
 import { FormBuilderContext, FbFormField } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {

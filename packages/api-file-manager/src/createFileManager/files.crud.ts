@@ -10,11 +10,9 @@ import {
     FilesListOpts
 } from "~/types";
 import {
-    canAccessAllRecords,
     canAccessOnlyOwnRecords,
     checkBasePermissions,
     checkOwnPermissions,
-    hasFullAccess
 } from "./utils";
 import { FileManagerConfig } from "~/createFileManager/index";
 
