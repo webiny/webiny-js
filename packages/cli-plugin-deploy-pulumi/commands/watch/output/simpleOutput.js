@@ -1,13 +1,16 @@
 const os = require("os");
 const logUpdate = require("log-update");
-const { green, yellow } = require("chalk");
+const { green, yellow, gray } = require("chalk");
 
-let logs = [];
-let deployment = yellow("Waiting for code changes...");
+let logs = [yellow("Initializing...")];
+let deployment = gray("Waiting for code changes to deploy...");
 
 let deployingInterval;
 
-const log = () => logUpdate(logs.join(os.EOL) + os.EOL + os.EOL + '—————————————————————————' + os.EOL + deployment);
+const EOL = os.EOL;
+const HL = EOL + "—".repeat(50) + EOL;
+
+const log = () => logUpdate([logs.join(EOL) + HL + deployment].join());
 
 let deployStartedOn = null;
 const getDeployDurationInSeconds = () => Math.round((Date.now() - deployStartedOn) / 1000);
@@ -39,23 +42,9 @@ module.exports = {
     type: "watch-output",
     name: "watch-output-terminal",
     log({ message, type }) {
-        message = message.trim();
+        message = message.trim().replace(/^\s+|\s+$/g, "");
         if (!message) {
             return;
-        }
-
-        if (type === "deploy") {
-            if (message.includes("update aws:")) {
-                return;
-            }
-
-            if (message.includes("Updating...")) {
-                startDeploying();
-            }
-
-            if (message.includes("Update complete.")) {
-                stopDeploying();
-            }
         }
 
         if (type === "build") {
@@ -64,6 +53,16 @@ module.exports = {
 
         if (type === "logs") {
             logs.push(message);
+        }
+
+        if (type === "deploy") {
+            if (message.includes("Updating...")) {
+                startDeploying();
+            }
+
+            if (message.includes("Update complete.")) {
+                stopDeploying();
+            }
         }
 
         log();
