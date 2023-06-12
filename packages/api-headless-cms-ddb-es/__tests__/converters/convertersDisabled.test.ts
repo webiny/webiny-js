@@ -12,6 +12,14 @@ jest.retryTimes(0);
 describe("storage field path converters disabled", () => {
     const { elasticsearch, entryEntity } = useHandler();
 
+    const { index: indexName } = configurations.es({
+        model: {
+            tenant: "root",
+            locale: "en-US",
+            modelId: "converter"
+        }
+    });
+
     beforeEach(async () => {
         await elasticsearch.indices.deleteAll();
     });
@@ -81,6 +89,9 @@ describe("storage field path converters disabled", () => {
                     }
                 }
             }
+        });
+        await elasticsearch.indices.refresh({
+            index: indexName
         });
         /**
          * Then check that we are getting everything properly out of the Elasticsearch, via webiny API.

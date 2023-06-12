@@ -13,6 +13,14 @@ jest.retryTimes(0);
 describe("storage field path converters enabled", () => {
     const { elasticsearch, entryEntity } = useHandler();
 
+    const { index: indexName } = configurations.es({
+        model: {
+            tenant: "root",
+            locale: "en-US",
+            modelId: "converter"
+        }
+    });
+
     beforeEach(async () => {
         await elasticsearch.indices.deleteAll();
     });
@@ -83,14 +91,18 @@ describe("storage field path converters enabled", () => {
                 }
             }
         });
+        await elasticsearch.indices.refresh({
+            index: indexName
+        });
         /**
          * Then check that we are getting everything properly out of the Elasticsearch, via webiny API.
          */
-        const [[listResult]] = await manager.listLatest({
+        const result = await manager.listLatest({
             where: {
                 id: createResult.id
             }
         });
+        const [[listResult]] = result;
         expect(listResult).toMatchObject({
             values: {
                 title: "Title level 0",
