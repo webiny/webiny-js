@@ -5,6 +5,7 @@ import { CacheProvider } from "@emotion/react";
 import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
 import { ThemeProvider } from "@webiny/app-theme";
+import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 
 export interface WebsiteProps extends AppProps {
     apolloClient?: ReturnType<typeof createApolloClient>;
@@ -13,9 +14,9 @@ export interface WebsiteProps extends AppProps {
 const PageBuilderProviderHOC: HigherOrderComponent = PreviousProvider => {
     return function PageBuilderProviderHOC({ children }) {
         return (
-            <ThemeProvider>
+            <PageBuilderProvider>
                 <PreviousProvider>{children}</PreviousProvider>
-            </ThemeProvider>
+            </PageBuilderProvider>
         );
     };
 };
@@ -35,13 +36,15 @@ export const Website: React.FC<WebsiteProps> = ({
     return (
         <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
-                <App
-                    debounceRender={debounceMs}
-                    routes={[...routes, { path: "*", element: <Page /> }]}
-                    providers={[PageBuilderProviderHOC, ...providers]}
-                >
-                    {children}
-                </App>
+                <ThemeProvider>
+                    <App
+                        debounceRender={debounceMs}
+                        routes={[...routes, { path: "*", element: <Page /> }]}
+                        providers={[PageBuilderProviderHOC, ...providers]}
+                    >
+                        {children}
+                    </App>
+                </ThemeProvider>
             </ApolloProvider>
         </CacheProvider>
     );
