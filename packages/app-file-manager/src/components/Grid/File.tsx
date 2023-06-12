@@ -9,16 +9,13 @@ import LazyLoad from "react-lazy-load";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
-import { ButtonSecondary } from "@webiny/ui/Button";
 import { Ripple } from "@webiny/ui/Ripple";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/filled/settings.svg";
 import { ReactComponent as DownloadIcon } from "@material-design-icons/svg/filled/download.svg";
 import { ReactComponent as MoveIcon } from "@material-design-icons/svg/filled/drive_file_move.svg";
-import { ReactComponent as SelectIcon } from "@material-design-icons/svg/filled/check_box_outline_blank.svg";
-import { ReactComponent as SelectedIcon } from "@material-design-icons/svg/filled/check_box.svg";
-import { ReactComponent as SelectedMarker } from "@material-design-icons/svg/outlined/check_circle.svg";
+import { ReactComponent as SelectedMarker } from "@material-design-icons/svg/filled/check_circle.svg";
 
 import { FileItem } from "@webiny/app-admin/types";
 
@@ -39,7 +36,7 @@ export interface FileProps {
     onSelect?: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
     options?: Array<{ label: string; onClick: (file: Object) => void }>;
-    multiple: boolean;
+    multiple?: boolean;
     children: React.ReactNode;
     showFileDetails: (id: string) => void;
 }
@@ -50,13 +47,7 @@ const File: React.FC<FileProps> = ({
     onSelect,
     children,
     showFileDetails,
-    multiple
 }) => {
-    let ctaIcon = null;
-    if (multiple) {
-        ctaIcon = selected ? <SelectedIcon /> : <SelectIcon />;
-    }
-
     return (
         <FileWrapper data-testid={"fm-list-wrapper-file"}>
             <FileBody>
@@ -70,15 +61,18 @@ const File: React.FC<FileProps> = ({
                             data-testid={"fm-file-wrapper-file-info-icon"}
                         />
                     </FileInfoIcon>
-                </FileControls>
-                {selected && (
-                    <FileSelectedMarker>
-                        <SelectedMarker />
+                    <FileSelectedMarker className={selected ? "selected" : ""} onClick={onSelect}>
+                        <div>
+                            <SelectedMarker />
+                        </div>
                     </FileSelectedMarker>
-                )}
+                </FileControls>
                 <LazyLoad height={200} offsetVertical={300}>
                     <Ripple>
-                        <FilePreview data-testid={"fm-file-wrapper-file-preview"}>
+                        <FilePreview
+                            data-testid={"fm-file-wrapper-file-preview"}
+                            className={selected ? "selected" : ""}
+                        >
                             <FileClickable />
                             {children}
                         </FilePreview>
@@ -96,12 +90,6 @@ const File: React.FC<FileProps> = ({
                     <TimeAgo datetime={file.createdOn} />
                 </Typography>
             </FileLabel>
-            {onSelect && (
-                <ButtonSecondary onClick={onSelect}>
-                    {ctaIcon}
-                    <span>{selected ? "Selected" : "Select"}</span>
-                </ButtonSecondary>
-            )}
         </FileWrapper>
     );
 };
