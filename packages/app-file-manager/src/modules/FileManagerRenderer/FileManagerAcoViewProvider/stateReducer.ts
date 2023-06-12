@@ -18,7 +18,7 @@ export interface StateListWhere extends BaseStateListWhere {
 }
 
 export interface State {
-    folderId: string | undefined;
+    folderId?: string;
     showingFileDetails: string | null;
     loadingFileDetails: boolean;
     selected: FileItem[];

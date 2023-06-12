@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     DropOptions,
     getBackendOptions,
@@ -80,9 +80,12 @@ export const List: React.VFC<ListProps> = ({
         }
     };
 
-    const sort = (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
-        return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
-    };
+    const sort = useMemo(
+        () => (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
+            return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
+        },
+        []
+    );
 
     const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
         setOpenFolderIds(folderIds);

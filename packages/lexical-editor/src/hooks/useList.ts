@@ -13,14 +13,14 @@ import {
     insertList,
     outdentList,
     removeList
-} from "~/nodes/list-node/formatList";
+} from "~/nodes/ListNode/formatList";
 import {
     INSERT_ORDERED_WEBINY_LIST_COMMAND,
     INSERT_UNORDERED_WEBINY_LIST_COMMAND,
     REMOVE_WEBINY_LIST_COMMAND
 } from "~/commands/webiny-list";
 
-export function useWebinyList(editor: LexicalEditor): void {
+export function useList(editor: LexicalEditor): void {
     useEffect(() => {
         return mergeRegister(
             editor.registerCommand(

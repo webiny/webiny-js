@@ -46,7 +46,7 @@ export interface FileManagerAcoViewContextData<TFileItem extends FileItem = File
     loadingFileDetails: boolean;
     hideFileDetails: () => void;
     folderId?: string;
-    setFolderId: (folderId: string | undefined) => void;
+    setFolderId: (folderId?: string) => void;
     listTable: boolean;
     setListTable: (mode: boolean) => void;
 }

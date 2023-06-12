@@ -34,7 +34,7 @@ interface LeftSidebarProps {
     currentFolder?: string;
     scope?: string;
     own?: boolean;
-    onFolderClick: (folderId: string | undefined) => void;
+    onFolderClick: (folderId?: string) => void;
 }
 
 const LeftSidebar: React.FC<LeftSidebarProps> = ({
