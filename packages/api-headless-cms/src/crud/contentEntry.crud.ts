@@ -1417,7 +1417,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             input: []
         });
 
-        if (fields.includes(fieldId) === false) {
+        if (!fields.includes(fieldId)) {
             throw new WebinyError(
                 "Cannot list unique entry field values if the field is not searchable.",
                 "LIST_UNIQUE_ENTRY_VALUES_ERROR",

@@ -1,9 +1,11 @@
 import { createHandler } from "@webiny/handler-aws/raw";
 import queueProcessPlugins from "~/queue/process";
-import { getStorageOperations } from "../../../../storageOperations";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { PrerenderingServiceStorageOperations } from "~/types";
 
 export default (...plugins: any[]) => {
-    const storageOperations = getStorageOperations();
+    const { storageOperations } =
+        getStorageOps<PrerenderingServiceStorageOperations>("prerenderingService");
 
     const handler = createHandler({
         plugins: [

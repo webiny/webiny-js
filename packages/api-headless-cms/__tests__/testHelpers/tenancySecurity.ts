@@ -1,23 +1,16 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Plugin } from "@webiny/plugins/Plugin";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import {
+    SecurityIdentity,
+    SecurityPermission,
+    SecurityStorageOperations
+} from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TestContext } from "./types";
-
-// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
 
 interface Config {
     setupGraphQL?: boolean;
@@ -30,23 +23,13 @@ export const createTenancyAndSecurity = ({
     permissions,
     identity
 }: Config): Plugin[] => {
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+
     return [
-        createTenancyContext({
-            storageOperations: tenancyStorageOperations({
-                documentClient,
-                table: table => ({
-                    ...table,
-                    name: process.env.DB_TABLE as string
-                })
-            })
-        }),
+        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
         setupGraphQL ? createTenancyGraphQL() : null,
-        createSecurityContext({
-            storageOperations: securityStorageOperations({
-                documentClient,
-                table: process.env.DB_TABLE
-            })
-        }),
+        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
         setupGraphQL ? createSecurityGraphQL() : null,
         new ContextPlugin<TestContext>(context => {
             context.tenancy.setCurrentTenant({

@@ -1,9 +1,6 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createI18NContext } from "@webiny/api-i18n";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
@@ -28,7 +25,8 @@ import {
 } from "~tests/graphql/record.gql";
 
 import { createAco } from "~/index";
-import { createStorageOperations } from "~tests/utils/storageOperations";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -46,37 +44,25 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
-
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { permissions, identity, plugins = [], storageOperationPlugins } = params;
+    const { permissions, identity, plugins = [] } = params;
 
-    const ops = createStorageOperations({
-        plugins: storageOperationPlugins || []
-    });
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const handler = createHandler({
         plugins: [
-            ...ops.plugins,
+            ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
                 permissions,
                 identity
             }),
-            i18nContext(),
-            i18nDynamoDbStorageOperations(),
+            createI18NContext(),
+            ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
             createHeadlessCmsContext({
-                storageOperations: createHeadlessCmsStorageOperations({
-                    documentClient
-                })
+                storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createAco(),
