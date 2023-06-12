@@ -11,15 +11,7 @@ import {
 } from "~/types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "~/editor/plugins/elementSettings/elementSettingsUtils";
-import { addElementToParent, createDroppedElement, createElement } from "~/editor/helpers";
-import { executeAction } from "~/editor/recoil/eventActions";
-import { UpdateElementActionArgsType } from "~/editor/recoil/actions/updateElement/types";
-import {
-    CreateElementActionEvent,
-    DeleteElementActionEvent,
-    updateElementAction
-} from "~/editor/recoil/actions";
-import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
+import { createElement } from "~/editor/helpers";
 import { isLegacyRenderingEngine } from "~/utils";
 
 import lodashGet from "lodash/get";
@@ -91,42 +83,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        onReceived({ source, position, target, state, meta }) {
-            const element = createDroppedElement(source as any, target);
-            const parent = addElementToParent(element, target, position);
-
-            const result = executeAction<UpdateElementActionArgsType>(
-                state,
-                meta,
-                updateElementAction,
-                {
-                    element: parent,
-                    history: true
-                }
-            );
-
-            result.actions.push(new AfterDropElementActionEvent({ element }));
-
-            if (source.id) {
-                // Delete source element
-                result.actions.push(
-                    new DeleteElementActionEvent({
-                        element: source as PbEditorElement
-                    })
-                );
-
-                return result;
-            }
-
-            result.actions.push(
-                new CreateElementActionEvent({
-                    element,
-                    source: source as PbEditorElement
-                })
-            );
-
-            return result;
-        },
+        canReceiveChildren: true,
         render(props) {
             return <Cell {...props} />;
         }

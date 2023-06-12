@@ -13,7 +13,7 @@ export const generateInitialLexicalValue = (): LexicalValue => {
                     format: "",
                     indent: 0,
                     styles: [],
-                    type: "base-paragraph-node",
+                    type: "paragraph-element",
                     version: 1
                 }
             ],

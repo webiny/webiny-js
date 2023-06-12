@@ -20,7 +20,7 @@ import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 
-import { FOLDER_TYPE } from "~/admin/constants/folders";
+import { FOLDER_TYPE, FOLDER_ID_DEFAULT } from "~/admin/constants/folders";
 
 import { MainContainer, Wrapper } from "./styled";
 
@@ -47,7 +47,7 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         isListLoading,
         isListLoadingMore,
         listItems
-    } = useAcoList({ type: FOLDER_TYPE, folderId });
+    } = useAcoList({ type: FOLDER_TYPE, folderId: folderId || FOLDER_ID_DEFAULT });
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -87,14 +87,14 @@ export const Main = ({ folderId, defaultFolderName }: Props) => {
         setLoading: () => setIsCreateLoading(true),
         clearLoading: () => setIsCreateLoading(false),
         closeDialog: closeCategoriesDialog,
-        folderId
+        folderId: folderId || FOLDER_ID_DEFAULT
     });
 
     const { createPageMutation } = useCreatePage({
         setLoading: () => setIsCreateLoading(true),
         clearLoading: () => setIsCreateLoading(false),
         closeDialog: closeTemplatesDialog,
-        folderId
+        folderId: folderId || FOLDER_ID_DEFAULT
     });
 
     useEffect(() => {

@@ -12,13 +12,14 @@ import {
 import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { $isLinkNode } from "@lexical/link";
-import { $isWebinyListNode, WebinyListNode } from "~/nodes/list-node/WebinyListNode";
+import { $isListNode, ListNode } from "~/nodes/ListNode";
 import { $isHeadingNode as $isBaseHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
 import { $isFontColorNode } from "~/nodes/FontColorNode";
 import { $isParagraphNode } from "~/nodes/ParagraphNode";
 import { $isHeadingNode } from "~/nodes/HeadingNode";
 import { $isQuoteNode } from "~/nodes/QuoteNode";
+import { $isParentElementRTL } from "@lexical/selection";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -42,6 +43,7 @@ const getDefaultToolbarState = (): ToolbarState => {
         italic: false,
         underline: false,
         code: false,
+        isRTL: false,
         link: { isSelected: false },
         list: { isSelected: false },
         typography: { isSelected: false },
@@ -70,18 +72,21 @@ export const getToolbarState = (
         code: textFormat.code
     };
 
+    state.isRTL = $isParentElementRTL(selection);
+
     // link
     state.link.isSelected = $isLinkNode(parent) || $isLinkNode(node);
     if (state.link.isSelected) {
         state.textType = "link";
     }
+
     // font color
     if ($isFontColorNode(node)) {
         state.fontColor.isSelected = true;
     }
 
-    if ($isWebinyListNode(element)) {
-        const parentList = $getNearestNodeOfType<WebinyListNode>(anchorNode, WebinyListNode);
+    if ($isListNode(element)) {
+        const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
         const type = parentList ? parentList.getListType() : element.getListType();
         state.textType = type;
     }
@@ -155,6 +160,7 @@ export const getLexicalTextSelectionState = (
         const node = getSelectedNode(selection);
         const parent = node.getParent();
         const isElementDom = elementDOM !== null;
+        const selectedText = selection.getTextContent();
 
         return {
             // node/element data from selection
@@ -165,6 +171,7 @@ export const getLexicalTextSelectionState = (
             anchorNode,
             selection,
             isElementDom,
+            selectedText,
             state: getToolbarState(selection, node, parent, element, anchorNode)
         };
     }
