@@ -8,7 +8,6 @@ import WebinyError from "@webiny/error";
 import {
     CmsGroupContext,
     CmsGroupListParams,
-    CmsGroupPermission,
     CmsGroup,
     CmsContext,
     HeadlessCmsStorageOperations,
@@ -31,9 +30,12 @@ import { createTopic } from "@webiny/pubsub";
 import { assignBeforeGroupUpdate } from "./contentModelGroup/beforeUpdate";
 import { assignBeforeGroupCreate } from "./contentModelGroup/beforeCreate";
 import { assignBeforeGroupDelete } from "./contentModelGroup/beforeDelete";
-import { checkPermissions as baseCheckPermissions } from "~/utils/permissions";
-import { checkOwnership, validateOwnership } from "~/utils/ownership";
-import { validateGroupAccess } from "~/utils/access";
+import {
+    checkPermissions as baseCheckPermissions,
+    checkOwnership,
+    validateOwnership,
+    validateGroupAccess
+} from "~/utils/permissions";
 import {
     createGroupCreateValidation,
     createGroupUpdateValidation
@@ -112,7 +114,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         );
     };
 
-    const checkPermissions = (check: string): Promise<CmsGroupPermission> => {
+    const checkPermissions = (check: string) => {
         return baseCheckPermissions(context, "cms.contentModelGroup", { rwd: check });
     };
 
@@ -183,11 +185,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
      * CRUD Methods
      */
     const getGroup: CmsGroupContext["getGroup"] = async id => {
-        const permission = await checkPermissions("r");
+        const permissions = await checkPermissions("r");
 
         const group = await getGroupViaDataLoader(id);
-        checkOwnership(context, permission, group);
-        validateGroupAccess(context, permission, group);
+        checkOwnership(context, permissions, group);
+        validateGroupAccess(context, permissions, group);
 
         return group;
     };

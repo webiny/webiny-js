@@ -37,6 +37,7 @@ export const SecurityProvider: React.FC = props => {
             }
 
             const perms = identity.permissions || [];
+            console.log('perms', perms);
             const exactMatch = perms.find(p => p.name === name);
             if (exactMatch) {
                 return exactMatch as T;

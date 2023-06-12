@@ -36,10 +36,14 @@ import { assignModelAfterUpdate } from "./contentModel/afterUpdate";
 import { assignModelAfterDelete } from "./contentModel/afterDelete";
 import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { checkPermissions } from "~/utils/permissions";
 import { filterAsync } from "~/utils/filterAsync";
-import { checkOwnership, validateOwnership } from "~/utils/ownership";
-import { checkModelAccess, validateModelAccess } from "~/utils/access";
+import {
+    checkPermissions,
+    checkOwnership,
+    validateOwnership,
+    checkModelAccess,
+    validateModelAccess
+} from "~/utils/permissions";
 import {
     createModelCreateFromValidation,
     createModelCreateValidation,
@@ -192,10 +196,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     const listModels = async () => {
         return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
-            const permission = await checkModelPermissions("r");
+            const permissions = await checkModelPermissions("r");
             const models = await modelsList();
             return filterAsync(models, async model => {
-                if (!validateOwnership(context, permission, model)) {
+                if (!validateOwnership(context, permissions, model)) {
                     return false;
                 }
                 return validateModelAccess(context, model);
@@ -205,11 +209,11 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
         return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
-            const permission = await checkModelPermissions("r");
+            const permissions = await checkModelPermissions("r");
 
             const model = await modelsGet(modelId);
 
-            checkOwnership(context, permission, model);
+            checkOwnership(context, permissions, model);
             await checkModelAccess(context, model);
 
             return model;

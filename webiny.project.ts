@@ -49,6 +49,7 @@ export default {
         website: "apps/website"
     },
     featureFlags: {
+        copyPermissionsButton: true,
         aacl: {
             teams: true
         }

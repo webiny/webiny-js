@@ -43,25 +43,35 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
             tenant: tenantId
         }));
 
+    const allGroups = [];
+
+    const groups = tenantLink?.data?.groups;
+    if (Array.isArray(groups)) {
+        allGroups.push(...groups);
+    }
+
     if (featureFlags?.aacl.teams) {
         // Pick all groups and teams groups and get permissions from them.
         // Note that we return only permissions that are relevant for current locale.
         const teamsGroups = tenantLink?.data?.teams.map(team => team.groups).flat();
-        if (!Array.isArray(teamsGroups)) {
-            return null;
+        if (Array.isArray(teamsGroups)) {
+            allGroups.push(...teamsGroups);
         }
-
-        return getPermissionsFromSecurityGroupsForLocale(teamsGroups, locale.code);
     }
 
-    const groups = tenantLink?.data?.groups;
-    if (!Array.isArray(groups)) {
-        return null;
+    // If one of the permissions grants full-access, we can return it immediately.
+    const fullAccessPermission = allGroups
+        .map(securityGroup => securityGroup.permissions)
+        .flat()
+        .find(permission => permission.name === "*");
+
+    if (fullAccessPermission) {
+        return [{ name: "*" }];
     }
 
     // Although only one group is allowed, we still pretend multiples are possible.
     // This way, in the near future, we can support multiple groups per tenant.
-    return getPermissionsFromSecurityGroupsForLocale(groups, locale.code);
+    return getPermissionsFromSecurityGroupsForLocale(allGroups, locale.code);
 };
 
 export default (config: Config) => {

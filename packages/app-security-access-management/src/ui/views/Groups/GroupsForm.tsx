@@ -28,6 +28,7 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
+import { featureFlags } from "@webiny/feature-flags";
 
 const t = i18n.ns("app-security/admin/groups/form");
 
@@ -208,17 +209,25 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                 <Grid>
                                     <PermissionsTitleCell span={12}>
                                         <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
-                                        <Tooltip content="Copy as JSON" placement={"top"}>
-                                            <IconButton
-                                                icon={<CopyIcon />}
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(
-                                                        JSON.stringify(data.permissions, null, 2)
-                                                    );
-                                                    showSnackbar("JSON data copied to clipboard.");
-                                                }}
-                                            />
-                                        </Tooltip>
+                                        {featureFlags.copyPermissionsButton && (
+                                            <Tooltip content="Copy as JSON" placement={"top"}>
+                                                <IconButton
+                                                    icon={<CopyIcon />}
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(
+                                                            JSON.stringify(
+                                                                data.permissions,
+                                                                null,
+                                                                2
+                                                            )
+                                                        );
+                                                        showSnackbar(
+                                                            "JSON data copied to clipboard."
+                                                        );
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        )}
                                     </PermissionsTitleCell>
                                     <Cell span={12}>
                                         <Bind name={"permissions"} defaultValue={[]}>

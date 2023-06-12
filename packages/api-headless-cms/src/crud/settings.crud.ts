@@ -18,7 +18,7 @@ export interface CreateSettingsCrudParams {
 export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSettingsContext => {
     const { storageOperations, context, getTenant, getLocale } = params;
 
-    const checkPermissions = (): Promise<CmsSettingsPermission> => {
+    const checkPermissions = (): Promise<CmsSettingsPermission[]> => {
         return baseCheckPermissions(context, "cms.settings");
     };
 

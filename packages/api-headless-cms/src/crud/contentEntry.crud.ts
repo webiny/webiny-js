@@ -61,9 +61,13 @@ import {
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 import { Tenant } from "@webiny/api-tenancy/types";
-import { checkPermissions } from "~/utils/permissions";
-import { checkModelAccess } from "~/utils/access";
-import { checkOwnership, validateOwnership } from "~/utils/ownership";
+import {
+    checkPermissions,
+    checkModelAccess,
+    checkOwnership,
+    validateOwnership,
+    canAccessOnlyOwnRecords
+} from "~/utils/permissions";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import { I18NLocale } from "@webiny/api-i18n/types";
@@ -365,7 +369,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const checkEntryPermissions = (check: {
         rwd?: string;
         pw?: string;
-    }): Promise<CmsEntryPermission> => {
+    }): Promise<CmsEntryPermission[]> => {
         return checkPermissions(context, "cms.contentEntry", check);
     };
 
@@ -410,14 +414,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      */
     const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids) => {
         return context.benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
-            const permission = await checkEntryPermissions({ rwd: "r" });
+            const permissions = await checkEntryPermissions({ rwd: "r" });
             await checkModelAccess(context, model);
 
             const entries = await storageOperations.entries.getByIds(model, {
                 ids
             });
 
-            return entries.filter(entry => validateOwnership(context, permission, entry));
+            return entries.filter(entry => validateOwnership(context, permissions, entry));
         });
     };
     const getEntryById: CmsEntryContext["getEntryById"] = async (model, id) => {
@@ -438,24 +442,24 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         ids
     ) => {
-        const permission = await checkEntryPermissions({ rwd: "r" });
+        const permissions = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
         const entries = await storageOperations.entries.getPublishedByIds(model, {
             ids
         });
 
-        return entries.filter(entry => validateOwnership(context, permission, entry));
+        return entries.filter(entry => validateOwnership(context, permissions, entry));
     };
     const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (model, ids) => {
-        const permission = await checkEntryPermissions({ rwd: "r" });
+        const permissions = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
         const entries = await storageOperations.entries.getLatestByIds(model, {
             ids
         });
 
-        return entries.filter(entry => validateOwnership(context, permission, entry));
+        return entries.filter(entry => validateOwnership(context, permissions, entry));
     };
     const getEntry: CmsEntryContext["getEntry"] = async (model, params) => {
         await checkEntryPermissions({ rwd: "r" });
@@ -486,7 +490,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
     };
     const listEntries: CmsEntryContext["listEntries"] = async (model, params) => {
-        const permission = await checkEntryPermissions({ rwd: "r" });
+        const permissions = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
         const { where: initialWhere, limit: initialLimit } = params;
@@ -501,7 +505,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Possibly only get records which are owned by current user.
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
-        const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+        const ownedBy = canAccessOnlyOwnRecords(permissions) ? getIdentity().id : where.ownedBy;
         if (ownedBy !== undefined) {
             where.ownedBy = ownedBy;
         }
@@ -670,7 +674,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         sourceId,
         inputData
     ) => {
-        const permission = await checkEntryPermissions({ rwd: "w" });
+        const permissions = await checkEntryPermissions({ rwd: "w" });
         await checkModelAccess(context, model);
 
         /**
@@ -723,7 +727,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             validateEntries: false
         });
 
-        checkOwnership(context, permission, originalEntry);
+        checkOwnership(context, permissions, originalEntry);
 
         const identity = getIdentity();
 
@@ -795,7 +799,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
     const updateEntry: CmsEntryContext["updateEntry"] = async (model, id, inputData, metaInput) => {
-        const permission = await checkEntryPermissions({ rwd: "w" });
+        const permissions = await checkEntryPermissions({ rwd: "w" });
         await checkModelAccess(context, model);
 
         /**
@@ -830,7 +834,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             entry: originalEntry
         });
 
-        checkOwnership(context, permission, originalEntry);
+        checkOwnership(context, permissions, originalEntry);
 
         const initialValues = {
             /**
@@ -1005,7 +1009,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         revisionId
     ) => {
-        const permission = await checkEntryPermissions({ rwd: "d" });
+        const permissions = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
 
         const { id: entryId, version } = parseIdentifier(revisionId);
@@ -1028,7 +1032,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry "${revisionId}" was not found!`);
         }
 
-        checkOwnership(context, permission, storageEntryToDelete);
+        checkOwnership(context, permissions, storageEntryToDelete);
 
         const latestEntryRevisionId = latestStorageEntry ? latestStorageEntry.id : null;
 
@@ -1090,7 +1094,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
     const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, entryId) => {
-        const permission = await checkEntryPermissions({ rwd: "d" });
+        const permissions = await checkEntryPermissions({ rwd: "d" });
         await checkModelAccess(context, model);
 
         const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
@@ -1101,7 +1105,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry "${entryId}" was not found!`);
         }
 
-        checkOwnership(context, permission, storageEntry);
+        checkOwnership(context, permissions, storageEntry);
 
         const entry = await entryFromStorageTransform(context, model, storageEntry);
 
@@ -1111,7 +1115,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
     };
     const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
-        const permission = await checkEntryPermissions({ pw: "p" });
+        const permissions = await checkEntryPermissions({ pw: "p" });
         await checkModelAccess(context, model);
 
         const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
@@ -1122,7 +1126,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
         }
 
-        checkOwnership(context, permission, originalStorageEntry);
+        checkOwnership(context, permissions, originalStorageEntry);
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
@@ -1175,7 +1179,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
     const unpublishEntry: CmsEntryContext["unpublishEntry"] = async (model, id) => {
-        const permission = await checkEntryPermissions({ pw: "u" });
+        const permissions = await checkEntryPermissions({ pw: "u" });
 
         const { id: entryId } = parseIdentifier(id);
 
@@ -1196,7 +1200,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
 
-        checkOwnership(context, permission, originalStorageEntry);
+        checkOwnership(context, permissions, originalStorageEntry);
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 

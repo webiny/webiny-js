@@ -1,5 +1,5 @@
 import { NotAuthorizedError } from "@webiny/api-security";
-import { FbFormPermission, FbFormSettingsPermission, FormBuilderContext } from "~/types";
+import { FbFormPermission, FormBuilderContext } from "~/types";
 
 export const checkBaseFormPermissions = async (
     context: FormBuilderContext,
