@@ -10,7 +10,6 @@
     "@webiny/api-apw": "latest",
     "@webiny/api-apw-scheduler-so-ddb": "latest",
     "@webiny/api-file-manager": "latest",
-    "@webiny/api-file-manager-aco": "latest",
     "@webiny/api-file-manager-ddb": "latest",
     "@webiny/api-file-manager-s3": "latest",
     "@webiny/api-form-builder": "latest",

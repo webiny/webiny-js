@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
-import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
+import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -19,11 +19,11 @@ import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
 import { RecordActionMove } from "./RecordActionMove";
 import { actionsColumnStyles, menuStyles } from "./styled";
-import { FileItem } from "@webiny/app/types";
+import { FileItem } from "@webiny/app-admin/types";
 import { Settings } from "~/types";
 
 interface TableProps {
-    records: SearchRecordItem<FileItem>[];
+    records: FileItem[];
     folders: FolderItem[];
     loading?: boolean;
     onRecordClick: (id: string) => void;
@@ -47,8 +47,8 @@ interface Entry {
     selectable: boolean;
 }
 
-const createRecordsData = (items: SearchRecordItem<FileItem>[], selectable: boolean): Entry[] => {
-    return items.map(({ data }) => {
+const createRecordsData = (items: FileItem[], selectable: boolean): Entry[] => {
+    return items.map(data => {
         return {
             id: data.id,
             type: "RECORD",
@@ -92,7 +92,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-    const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
+    const [selectedSearchRecord, setSelectedSearchRecord] = useState<FileItem>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {

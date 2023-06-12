@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import WebinyError from "@webiny/error";
 import { useSecurity } from "@webiny/app-security";
 import {
     CREATE_FILE,
@@ -21,7 +22,8 @@ import {
     ListFilesQueryVariables,
     UPDATE_FILE,
     UpdateFileMutationResponse,
-    UpdateFileMutationVariables
+    UpdateFileMutationVariables,
+    FmError
 } from "../graphql";
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
@@ -48,9 +50,11 @@ export interface FileManagerApiContextData<TFileItem extends FileItem = FileItem
         meta: Record<string, any>,
         options?: UploadFileOptions
     ) => Promise<TFileItem | undefined>;
-    listFiles: (
-        params?: ListFilesQueryVariables
-    ) => Promise<{ files: TFileItem[]; meta: ListFilesListFilesResponse["meta"] }>;
+    listFiles: (params?: ListFilesQueryVariables) => Promise<{
+        files: TFileItem[];
+        meta: ListFilesListFilesResponse["meta"];
+        error: FmError | null;
+    }>;
     listTags: (params?: ListTagsOptions) => Promise<ListTagsResponseItem[]>;
     getSettings(): Promise<Settings>;
 }
@@ -80,6 +84,7 @@ const getModelFields = (model: ReturnType<typeof useFileModel>) => {
         createdOn
         createdBy {
             id
+            displayName
         }
         src
         ${fields} 
@@ -162,15 +167,14 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         [fmFilePermission]
     );
 
-    const createFile = async (data: FileInput, meta: Record<string, any>) => {
+    const createFile = async (data: FileInput) => {
         const response = await client.mutate<
             CreateFileMutationResponse,
             CreateFileMutationVariables
         >({
             mutation: CREATE_FILE(modelFields),
             variables: {
-                data,
-                meta
+                data
             }
         });
 
@@ -204,7 +208,13 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             }
         });
 
-        return response.data?.fileManager.getFile.data;
+        const { data, error } = response.data?.fileManager.getFile;
+
+        if (error) {
+            throw new WebinyError(error);
+        }
+
+        return data;
     };
 
     const listFiles: FileManagerApiContextData["listFiles"] = async (params = {}) => {
@@ -213,8 +223,8 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             variables: params,
             fetchPolicy: "no-cache"
         });
-        const { data: files, meta } = data.fileManager.listFiles;
-        return { files, meta };
+        const { data: files, meta, error } = data.fileManager.listFiles;
+        return { files, meta, error };
     };
 
     const listTags = async (params = {}) => {
@@ -233,7 +243,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
      */
     const uploadFile = async (
         file: File,
-        meta: Record<string, any>,
+        meta: Partial<FileInput>,
         options: UploadFileOptions = {}
     ) => {
         const response = await getFileUploader().upload(file, {
@@ -243,7 +253,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
         const tags = options?.tags || [];
 
-        return await createFile({ ...response, tags }, meta);
+        return await createFile({ ...response, tags, ...meta });
     };
 
     const getSettings = async () => {

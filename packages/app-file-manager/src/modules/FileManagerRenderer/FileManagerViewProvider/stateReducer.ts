@@ -1,58 +1,27 @@
 import { FileItem } from "@webiny/app-admin/types";
-
-export enum ListFilesSort {
-    CREATED_ON_ASC,
-    CREATED_ON_DESC,
-    SIZE_ASC,
-    SIZE_DESC
-}
-
-export interface StateQueryParams {
-    createdBy?: string;
-    search?: string;
-    types?: string[];
-    limit?: number;
-    sort?: number;
-    tags?: string[];
-    scope?: string;
-}
+import {
+    ListFilesSort,
+    ListFilesWhereQueryVariables
+} from "~/modules/FileManagerApiProvider/graphql";
 
 export interface State {
+    folderId: string | undefined;
+    limit: number;
+    activeTags: string[];
+    filters: Record<string, any> | undefined;
     showingFileDetails: string | null;
+    showingFilters: boolean;
+    loadingFileDetails: boolean;
     selected: FileItem[];
+    searchQuery: string;
     hasPreviouslyUploadedFiles: boolean | null;
-    queryParams: StateQueryParams;
+    listWhere: ListFilesWhereQueryVariables;
+    listSort?: ListFilesSort;
     dragging: boolean;
-    uploading: boolean;
-}
-
-export type Action =
-    | {
-          type: "toggleSelected";
-          file: FileItem;
-      }
-    | {
-          type: "queryParams";
-          queryParams: StateQueryParams;
-      }
-    | {
-          type: "showFileDetails";
-          id: string | null;
-      }
-    | {
-          type: "dragging";
-          state: boolean;
-      }
-    | {
-          type: "hasPreviouslyUploadedFiles";
-          state: boolean;
-      };
-
-interface Reducer {
-    (prev: State, action: Action): State;
 }
 
 interface InitParams {
+    folderId: string;
     accept?: string[];
     tags?: string[];
     scope?: string;
@@ -62,73 +31,46 @@ interface InitParams {
 
 const DEFAULT_SCOPE = "scope:";
 
-export const getWhere = (scope: string | undefined) => {
+export const getScopeWhereParams = (scope: string | undefined) => {
     if (!scope) {
         return {
-            tag_not_startsWith: DEFAULT_SCOPE
+            tags_not_startsWith: DEFAULT_SCOPE
         };
     }
     return {
-        tag_startsWith: scope
+        tags_startsWith: scope
     };
 };
 
-export const initializeState = ({ accept, tags, scope, own, identity }: InitParams): State => {
-    return {
-        showingFileDetails: null,
-        selected: [],
-        hasPreviouslyUploadedFiles: null,
-        queryParams: {
-            scope,
-            limit: 50,
-            sort: ListFilesSort.CREATED_ON_DESC,
-            types: accept?.length ? accept : undefined,
-            tags: tags?.length ? tags : undefined,
-            createdBy: own ? identity.id : undefined
-        },
-        dragging: false,
-        uploading: false
-    };
-};
-
-export const stateReducer: Reducer = (state: State, action) => {
-    const next: State = {
-        ...state
-    };
-    switch (action.type) {
-        case "toggleSelected": {
-            const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
-            if (existingIndex < 0) {
-                next.selected.push(action.file);
-            } else {
-                next.selected.splice(existingIndex, 1);
-            }
-            break;
-        }
-        case "queryParams": {
-            next.selected = [];
-            next.queryParams = {
-                ...state.queryParams,
-                ...action.queryParams,
-                types: state.queryParams.types,
-                limit: 50,
-                sort: ListFilesSort.CREATED_ON_DESC
-            };
-            break;
-        }
-        case "showFileDetails": {
-            next.showingFileDetails = action.id;
-            break;
-        }
-        case "dragging": {
-            next.dragging = action.state;
-            break;
-        }
-        case "hasPreviouslyUploadedFiles": {
-            next.hasPreviouslyUploadedFiles = action.state;
-            break;
-        }
+export const getMimeTypeWhereParams = (mimes: string[] | undefined) => {
+    if (!mimes || !mimes.length) {
+        return;
     }
 
-    return next;
+    return {
+        tags_in: mimes.map(mime => `mime:${mime}`)
+    };
+};
+
+export const initializeState = ({ accept, scope, own, identity, folderId }: InitParams): State => {
+    return {
+        folderId,
+        limit: 50,
+        activeTags: [],
+        filters: undefined,
+        showingFileDetails: null,
+        showingFilters: false,
+        searchQuery: "",
+        loadingFileDetails: false,
+        selected: [],
+        hasPreviouslyUploadedFiles: null,
+        listWhere: {
+            ...getScopeWhereParams(scope),
+            ...getMimeTypeWhereParams(accept),
+            createdBy: own ? identity.id : undefined,
+            AND: []
+        },
+        listSort: [],
+        dragging: false
+    };
 };

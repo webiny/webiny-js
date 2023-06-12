@@ -36,6 +36,9 @@ export interface FileInput {
     size: number;
     type: string;
     meta: Record<string, any>;
+    location?: {
+        folderId: string;
+    };
     tags: string[];
     aliases: string[];
     extensions?: Record<string, any>;

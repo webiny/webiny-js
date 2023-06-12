@@ -8,7 +8,6 @@
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
-    { "path": "../api-file-manager-aco/tsconfig.build.json" },
     { "path": "../api-file-manager-ddb/tsconfig.build.json" },
     { "path": "../api-file-manager-s3/tsconfig.build.json" },
     { "path": "../api-form-builder/tsconfig.build.json" },

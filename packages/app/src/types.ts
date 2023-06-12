@@ -17,6 +17,9 @@ export interface FileItem {
         id: string;
         displayName: string;
     };
+    location: {
+        folderId: string;
+    };
     [key: string]: any;
 }
 

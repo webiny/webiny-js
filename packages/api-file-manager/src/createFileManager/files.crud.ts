@@ -26,6 +26,14 @@ const checkOwnership = (file: File, permission: FilePermission, identity: Securi
     }
 };
 
+const ensureMimeTag = (file: File) => {
+    const hasMimeTag = file.tags.some(tag => tag.startsWith("mime:"));
+    if (!hasMimeTag) {
+        file.tags.push(`mime:${file.type}`);
+    }
+    return file.tags;
+};
+
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
         storageOperations,
@@ -76,6 +84,9 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 tags: Array.isArray(input.tags) ? input.tags : [],
                 aliases: Array.isArray(input.aliases) ? input.aliases : [],
                 id: input.id || id,
+                location: {
+                    folderId: input.location?.folderId ?? "ROOT"
+                },
                 meta: {
                     private: false,
                     ...(input.meta || {})
@@ -90,6 +101,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 locale: getLocaleCode(),
                 webinyVersion: WEBINY_VERSION
             };
+
+            file.tags = ensureMimeTag(file);
 
             try {
                 await this.onFileBeforeCreate.publish({ file, meta });
@@ -234,6 +247,9 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                         private: false,
                         ...(input.meta || {})
                     },
+                    location: {
+                        folderId: input.location?.folderId ?? "ROOT"
+                    },
                     tenant,
                     createdOn: new Date().toISOString(),
                     createdBy,
@@ -263,13 +279,24 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         async listFiles(params: FilesListOpts = {}) {
             const permission = await checkBasePermissions(getPermission, { rwd: "r" });
 
-            const { limit = 40, after = null, where: initialWhere, sort: initialSort } = params;
+            const {
+                limit = 40,
+                after = null,
+                where: initialWhere,
+                sort: initialSort,
+                search = null
+            } = params;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...{ meta: { private_not: true }, ...initialWhere },
                 locale: getLocaleCode(),
                 tenant: getTenantId()
             };
+
+            if (search) {
+                where.OR = [{ name_contains: search }, { tags_contains: search }];
+            }
+
             /**
              * Always override the createdBy received from the user, if any.
              */

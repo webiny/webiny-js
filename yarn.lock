@@ -11898,35 +11898,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-aco@0.0.0, @webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco"
-  dependencies:
-    "@babel/cli": ^7.19.3
-    "@babel/core": ^7.19.3
-    "@babel/preset-env": ^7.19.4
-    "@babel/preset-typescript": ^7.18.6
-    "@babel/runtime": ^7.19.0
-    "@webiny/api": 0.0.0
-    "@webiny/api-aco": 0.0.0
-    "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-i18n": 0.0.0
-    "@webiny/api-security": 0.0.0
-    "@webiny/api-tenancy": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/error": 0.0.0
-    "@webiny/handler": 0.0.0
-    "@webiny/handler-aws": 0.0.0
-    "@webiny/handler-graphql": 0.0.0
-    "@webiny/plugins": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    "@webiny/utils": 0.0.0
-    ttypescript: ^1.5.13
-    typescript: ^4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-file-manager-ddb@0.0.0, @webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
@@ -13364,6 +13335,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -13390,6 +13362,7 @@ __metadata:
     prop-types: ^15.7.2
     react: 17.0.2
     react-butterfiles: ^1.3.1
+    react-custom-scrollbars: ^4.2.1
     react-dom: 17.0.2
     react-hotkeyz: ^1.0.4
     react-lazy-load: ^3.1.14
@@ -15381,7 +15354,6 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-aco": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
     "@webiny/api-form-builder": 0.0.0
@@ -16530,7 +16502,6 @@ __metadata:
     "@webiny/api-apw": 0.0.0
     "@webiny/api-apw-scheduler-so-ddb": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-aco": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
     "@webiny/api-form-builder": 0.0.0
@@ -16668,7 +16639,6 @@ __metadata:
   dependencies:
     "@webiny/api-aco": 0.0.0
     "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-aco": 0.0.0
     "@webiny/api-file-manager-ddb": 0.0.0
     "@webiny/api-file-manager-s3": 0.0.0
     "@webiny/api-form-builder": 0.0.0

@@ -1,8 +1,13 @@
-import { FileItem } from "@webiny/app-admin/types";
 import gql from "graphql-tag";
+import { FileItem } from "@webiny/app-admin/types";
 import { Settings } from "~/types";
 import { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext";
-import { ListSearchRecordsSort } from "@webiny/app-aco/types";
+
+export interface FmError {
+    code: string;
+    message: string;
+    data?: Record<string, any> | null;
+}
 
 const ERROR_FIELDS = /* GraphQL */ `
     {
@@ -16,17 +21,17 @@ export interface GetFileManagerSettingsQueryResponse {
     fileManager: {
         getSettings: {
             data: Settings;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }
 
 export interface ListFilesListFilesResponse {
     data: FileItem[];
-    error?: Error | null;
+    error: FmError | null;
     meta: {
         hasMoreItems: boolean;
-        totalItem: number;
+        totalCount: number;
         cursor: string | null;
     };
 }
@@ -37,19 +42,28 @@ export interface ListFilesQueryResponse {
     };
 }
 
+export type ListFilesWhereLocation = { folderId: string } | { folderId_in: string[] };
+
+export type ListFilesSort = ListFilesSortItem[];
+export type ListFilesSortItem = `${string}_ASC` | `${string}_DESC`;
+
+export interface ListFilesWhereQueryVariables {
+    location?: ListFilesWhereLocation;
+    tags?: string;
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+    type_in?: string[];
+    createdBy?: string;
+    AND?: ListFilesWhereQueryVariables[];
+}
+
 export interface ListFilesQueryVariables {
     limit?: number;
     after?: string | null;
-    sort?: ListSearchRecordsSort;
+    sort?: ListFilesSort;
     search?: string;
-    where?: {
-        tags?: string;
-        tags_in?: string[];
-        tags_startsWith?: string;
-        tags_not_startsWith?: string;
-        type_in?: string[];
-        createdBy?: string;
-    };
+    where?: ListFilesWhereQueryVariables;
 }
 
 export const LIST_FILES = (FILE_FIELDS: string) => gql`
@@ -57,6 +71,7 @@ export const LIST_FILES = (FILE_FIELDS: string) => gql`
         $search: String,
         $limit: Int,
         $after: String,
+        $sort: [FmFileListSorter!],
         $where: FmFileListWhereInput
     ) {
         fileManager {
@@ -64,12 +79,19 @@ export const LIST_FILES = (FILE_FIELDS: string) => gql`
                 search: $search,
                 limit: $limit,
                 after: $after,
-                where: $where
+                where: $where,
+                sort: $sort
             ) {
                 data ${FILE_FIELDS}
                 meta {
                     cursor
                     totalCount
+                    hasMoreItems
+                }
+                error {
+                    code
+                    data
+                    message
                 }
             }
         }
@@ -91,20 +113,25 @@ export interface ListFileTagsQueryResponse {
     fileManager: {
         listTags: {
             data: ListTagsResponseItem[];
-            error: Error | null;
+            error: FmError | null;
         };
     };
 }
 
+interface ListFileTagsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+    AND?: ListFileTagsWhereQueryVariables[];
+    OR?: ListFileTagsWhereQueryVariables[];
+}
+
 export interface ListFileTagsQueryVariables {
-    where?: {
-        tag_startsWith?: String;
-        tag_not_startsWith?: String;
-    };
+    where?: ListFileTagsWhereQueryVariables;
 }
 
 export const LIST_TAGS = gql`
-    query ListTags($where: TagWhereInput) {
+    query ListTags($where: FmTagsListWhereInput) {
         fileManager {
             listTags(where: $where) {
                 data {
@@ -121,7 +148,7 @@ export interface CreateFileMutationResponse {
     fileManager: {
         createFile: {
             data: FileItem;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }
@@ -142,9 +169,9 @@ export interface CreateFileMutationVariables {
 }
 
 export const CREATE_FILE = (FILE_FIELDS: string) => gql`
-    mutation CreateFile($data: FmFileCreateInput!, $meta: JSON) {
+    mutation CreateFile($data: FmFileCreateInput!) {
         fileManager {
-            createFile(data: $data, meta: $meta) {
+            createFile(data: $data) {
                 error ${ERROR_FIELDS}
                 data ${FILE_FIELDS}
             }
@@ -156,7 +183,7 @@ export interface UpdateFileMutationResponse {
     fileManager: {
         updateFile: {
             data: FileItem;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }
@@ -181,7 +208,7 @@ export interface DeleteFileMutationResponse {
     fileManager: {
         updateFile: {
             data: boolean;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }

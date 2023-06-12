@@ -2,10 +2,9 @@ import React from "react";
 
 import { ReactComponent as TagIconOutlined } from "@material-design-icons/svg/outlined/label.svg";
 import { ReactComponent as TagIconRound } from "@material-design-icons/svg/round/label.svg";
+import { TagItem } from "@webiny/app-aco/types";
 import { Typography } from "@webiny/ui/Typography";
-
 import { TagContainer, Icon } from "./styled";
-import { TagItem } from "~/types";
 
 type TagProps = {
     tagItem: TagItem;

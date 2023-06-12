@@ -1,19 +1,11 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { NavigateFolderContext } from "~/contexts/navigateFolder";
 
 export const useNavigateFolder = () => {
     const context = useContext(NavigateFolderContext);
     if (!context) {
-        throw new Error("useFolders must be used within a FoldersProvider");
+        throw new Error("useNavigateFolder must be used within a NavigateFolderContext");
     }
 
-    return useMemo(() => {
-        return {
-            currentFolderId: context.currentFolderId,
-            setFolderToStorage: context.setFolderToStorage,
-            navigateToListHome: context.navigateToListHome,
-            navigateToFolder: context.navigateToFolder,
-            navigateToLatestFolder: context.navigateToLatestFolder
-        };
-    }, [context.navigateToLatestFolder, context.currentFolderId]);
+    return context;
 };

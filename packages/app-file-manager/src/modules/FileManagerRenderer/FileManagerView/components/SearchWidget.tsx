@@ -4,8 +4,7 @@ import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outline
 import { ReactComponent as FilterIcon } from "@material-design-icons/svg/outlined/filter_alt.svg";
 import { Icon } from "@webiny/ui/Icon";
 import { IconButton } from "@webiny/ui/Button";
-import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
-import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { useFileManagerApi, useFileManagerView } from "~/index";
 
 const SearchBarIcon = styled(Icon)`
     &.mdc-button__icon {
@@ -45,7 +44,7 @@ const InputSearch = styled.div`
 
 export const SearchWidget = () => {
     const fileManager = useFileManagerApi();
-    const { showingFilters, showFilters, hideFilters, setSearchQuery } = useFileManagerAcoView();
+    const { showingFilters, showFilters, hideFilters, setSearchQuery } = useFileManagerView();
 
     const searchInput = useRef<HTMLInputElement>(null);
 

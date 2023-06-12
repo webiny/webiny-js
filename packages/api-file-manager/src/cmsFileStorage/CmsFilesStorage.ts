@@ -61,6 +61,10 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     async create({ file }: FileManagerFilesStorageOperationsCreateParams): Promise<File> {
         const model = this.modelWithContext(file);
 
+        if (!file.location?.folderId) {
+            file.location = { folderId: "ROOT" };
+        }
+
         const entry = await this.security.withoutAuthorization(() => {
             return this.cms.createEntry(model, file);
         });

@@ -90,6 +90,9 @@ export interface FileItem {
         id: string;
         displayName: string;
     };
+    location: {
+        folderId: string;
+    };
     meta?: {
         private?: boolean;
         width?: number;

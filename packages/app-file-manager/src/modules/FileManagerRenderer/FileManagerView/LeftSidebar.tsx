@@ -1,12 +1,6 @@
 import React from "react";
-import { i18n } from "@webiny/app/i18n";
-import { FolderTree, TagList } from "@webiny/app-aco";
+import { FolderTree } from "@webiny/app-aco";
 import { css } from "emotion";
-import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
-import { FOLDER_ID_DEFAULT } from "~/constants";
-import { TagItem } from "@webiny/app-aco/types";
-
-const t = i18n.ns("app-file-manager/modules/renderer/left-sidebar");
 
 const style = {
     leftDrawer: css({
@@ -30,20 +24,16 @@ const style = {
 
 interface LeftSidebarProps {
     title: string;
-    toggleTag: (tag: TagItem) => void;
     currentFolder?: string;
-    scope?: string;
-    own?: boolean;
     onFolderClick: (folderId: string | undefined) => void;
+    children?: React.ReactNode;
 }
 
-const LeftSidebar: React.FC<LeftSidebarProps> = ({
+export const LeftSidebar: React.FC<LeftSidebarProps> = ({
     title,
-    toggleTag,
     currentFolder,
-    scope,
-    own,
-    onFolderClick
+    onFolderClick,
+    children
 }) => {
     return (
         <div className={style.leftDrawer}>
@@ -51,21 +41,14 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
                 <FolderTree
                     title={title}
                     focusedFolderId={currentFolder}
-                    onTitleClick={() => onFolderClick(FOLDER_ID_DEFAULT)}
+                    onTitleClick={() => onFolderClick("ROOT")}
                     onFolderClick={data => data?.id && onFolderClick(data?.id)}
                     enableActions={true}
                     enableCreate={true}
                 />
                 <div className={style.divider} />
-                <TagList
-                    initialWhere={getTagsInitialParams({ scope, own })}
-                    tagsModifier={tagsModifier(scope)}
-                    emptyDisclaimer={t`No tag found: once you tag a file, it will be displayed here.`}
-                    onTagClick={tag => toggleTag(tag)}
-                />
+                {children}
             </div>
         </div>
     );
 };
-
-export default LeftSidebar;

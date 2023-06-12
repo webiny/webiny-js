@@ -70,7 +70,6 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
     return /* GraphQL */ `
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
 
-
         type FmFile {
             id: ID!
             savedOn: DateTime!
@@ -113,8 +112,9 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         input FmTagsListWhereInput {
-            tag_startsWith: String
-            tag_not_startsWith: String
+            createdBy: String
+            tags_startsWith: String
+            tags_not_startsWith: String
         }
 
         type FmTag {
@@ -151,8 +151,8 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         extend type FmMutation {
-            createFile(data: FmFileCreateInput!, meta: JSON): FmFileResponse!
-            createFiles(data: [FmFileCreateInput!]!, meta: JSON): FmCreateFilesResponse!
+            createFile(data: FmFileCreateInput!): FmFileResponse!
+            createFiles(data: [FmFileCreateInput!]!): FmCreateFilesResponse!
             updateFile(id: ID!, data: FmFileUpdateInput!): FmFileResponse!
             deleteFile(id: ID!): FmBooleanResponse!
         }

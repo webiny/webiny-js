@@ -24,7 +24,7 @@ import { SimpleForm } from "@webiny/app-admin/components/SimpleForm";
 import { Footer } from "./components/Footer";
 import { Extensions } from "./components/Extensions";
 import { useFileModel } from "~/hooks/useFileModel";
-import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { useFileManagerView } from "~/index";
 import { useSnackbar } from "@webiny/app-admin";
 
 const FileDetailsDrawer = styled(Drawer)`
@@ -54,7 +54,7 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
     const [isLoading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const fileModel = useFileModel();
-    const { updateFile } = useFileManagerAcoView();
+    const { updateFile } = useFileManagerView();
     const { close } = useFileDetails();
 
     const hasExtensions = useMemo(() => {

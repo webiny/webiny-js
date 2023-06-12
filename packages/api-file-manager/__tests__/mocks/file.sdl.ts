@@ -223,6 +223,7 @@ export default /* GraphQL */ `
     }
 
     input FmTagsListWhereInput {
+        createdBy: String
         tag_startsWith: String
         tag_not_startsWith: String
     }

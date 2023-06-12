@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Files, { FilesRenderChildren, FilesRules } from "react-butterfiles";
-import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
+import debounce from "lodash/debounce";
+import { positionValues } from "react-custom-scrollbars";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
@@ -10,23 +11,17 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/view_module.svg";
 import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/view_list.svg";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate, useAcoList, useNavigateFolder } from "@webiny/app-aco";
+import { FolderDialogCreate, useNavigateFolder } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { outputFileSelectionError } from "./outputFileSelectionError";
-import LeftSidebar from "./LeftSidebar";
+import { LeftSidebar } from "./LeftSidebar";
 import { useFileManagerApi } from "~/index";
 import { FileItem } from "@webiny/app-admin/types";
-import {
-    ListMeta,
-    ListSearchRecordsSort,
-    ListSearchRecordsSortItem,
-    SearchRecordItem
-} from "@webiny/app-aco/types";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { DropFilesHere } from "~/components/DropFilesHere";
 import { Empty } from "~/components/Empty";
@@ -38,6 +33,8 @@ import { UploadStatus } from "~/components/UploadStatus";
 import { BatchFileUploader } from "~/BatchFileUploader";
 import { SearchWidget } from "./components/SearchWidget";
 import { Filters } from "./components/Filters";
+import { TagsList } from "~/modules/FileManagerRenderer/FileManagerView/components/TagsList";
+import { ListFilesSort, ListFilesSortItem } from "~/modules/FileManagerApiProvider/graphql";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -59,12 +56,12 @@ const FileListWrapper = styled("div")({
     }
 });
 
-const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
+const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
     if (!sorting?.length) {
         return undefined;
     }
-    return sorting.reduce<ListSearchRecordsSort>((items, item) => {
-        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSearchRecordsSortItem;
+    return sorting.reduce<ListFilesSort>((items, item) => {
+        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListFilesSortItem;
         if (items.includes(sort)) {
             return items;
         }
@@ -73,7 +70,7 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     }, []);
 };
 
-export interface FileManagerAcoViewProps {
+export interface FileManagerViewProps {
     onChange?: Function;
     onClose?: () => void;
     files?: FilesRules;
@@ -90,71 +87,27 @@ export interface FileManagerAcoViewProps {
 
 const defaultFolderName = t`All files`;
 
-const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
+const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope, own } = props;
-
     const { navigateToFolder } = useNavigateFolder();
+    const view = useFileManagerView();
 
-    const {
-        dragging,
-        setDragging,
-        folderId,
-        setFolderId: initialSetFolderId,
-        getFile,
-        hasPreviouslyUploadedFiles,
-        setHasPreviouslyUploadedFiles,
-        hideFileDetails,
-        listSort,
-        loadingFileDetails,
-        setListSort,
-        listTable,
-        setListTable,
-        listWhere,
-        setListWhere,
-        selected,
-        setSelected,
-        settings,
-        showFileDetails,
-        showingFileDetails,
-        toggleSelected,
-        uploadFile,
-        searchQuery
-    } = useFileManagerAcoView();
-
-    const setFolderId = useCallback(
-        (folderId?: string) => {
-            navigateToFolder(folderId);
-            return initialSetFolderId(folderId);
-        },
-        [initialSetFolderId]
-    );
-
-    const {
-        folders,
-        isListLoading,
-        isListLoadingMore,
-        listItems,
-        listTitle = defaultFolderName,
-        meta,
-        records
-    } = useAcoList<FileItem>({ folderId, limit: 50, ...listWhere });
+    const setFolderId = useCallback((folderId?: string) => {
+        navigateToFolder(folderId);
+    }, []);
 
     const uploader = useMemo<BatchFileUploader>(
-        () => new BatchFileUploader(uploadFile),
-        [folderId]
+        () => new BatchFileUploader(view.uploadFile),
+        [view.folderId]
     );
 
     const fileManager = useFileManagerApi();
     const { showSnackbar } = useSnackbar();
 
-    const [files, setFiles] = useState<SearchRecordItem<FileItem>[]>([]);
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
-
-    const didMount = useRef(false);
 
     useEffect(() => {
         if (!tableSorting?.length) {
@@ -164,70 +117,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         if (!sort) {
             return;
         }
-        setListSort(sort);
+        view.setListSort(sort);
     }, [tableSorting]);
-
-    useEffect(() => {
-        const listSearchRecords = async () => {
-            const where = { ...listWhere };
-            if (searchQuery) {
-                where.OR = [
-                    {
-                        data: {
-                            name_contains: searchQuery
-                        }
-                    },
-                    {
-                        data: {
-                            tags_contains: searchQuery
-                        }
-                    }
-                ];
-            }
-            await listItems({ where, sort: listSort });
-        };
-
-        if (didMount.current) {
-            listSearchRecords();
-        } else {
-            didMount.current = true;
-        }
-    }, [JSON.stringify(listWhere), listSort, searchQuery]);
-
-    const loadMoreRecords = async ({ hasMoreItems, cursor }: ListMeta) => {
-        if (hasMoreItems && cursor) {
-            await listItems({ ...listWhere, sort: listSort, after: cursor });
-        }
-    };
-
-    const loadMoreOnScroll = useCallback(
-        debounce(async ({ scrollFrame }) => {
-            if (scrollFrame.top > 0.8) {
-                await loadMoreRecords(meta);
-            }
-        }, 200),
-        [meta]
-    );
-
-    const toggleTag = useCallback(async ({ tag, listWhere }) => {
-        const { tag: tagName } = tag;
-
-        const finalTags =
-            listWhere.AND && listWhere.AND[0]?.tags_in && Array.isArray(listWhere.AND[0]?.tags_in)
-                ? listWhere.AND[0].tags_in
-                : [];
-
-        if (finalTags.includes(tagName)) {
-            finalTags.splice(finalTags.indexOf(tagName), 1);
-        } else {
-            finalTags.push(tagName);
-        }
-
-        setListWhere({
-            ...listWhere,
-            AND: finalTags.length ? [{ tags_in: finalTags }] : undefined
-        });
-    }, []);
 
     const getFileUploadErrorMessage = useCallback(e => {
         if (typeof e === "string") {
@@ -250,27 +141,10 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     });
 
     useEffect(() => {
-        if (!settings) {
-            return;
-        }
-
-        const recordsFile = records.map(file => {
-            const src = settings?.srcPrefix + file.data.key;
-            return {
-                ...file,
-                data: {
-                    ...file.data,
-                    src
-                }
-            };
-        });
-
-        setFiles(recordsFile);
-    }, [records, settings]);
-
-    useEffect(() => {
-        setHasPreviouslyUploadedFiles(Boolean(records.length > 0 || folders.length > 0));
-    }, [records, folders]);
+        view.setHasPreviouslyUploadedFiles(
+            Boolean(view.files.length > 0 || view.folders.length > 0)
+        );
+    }, [view.files, view.folders]);
 
     const uploadFiles = async (files: File[]) => {
         uploader.addFiles(files);
@@ -278,8 +152,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
         uploader.onUploadFinished(({ uploaded, errors }) => {
             uploader.reset();
 
-            if (!hasPreviouslyUploadedFiles) {
-                setHasPreviouslyUploadedFiles(true);
+            if (!view.hasPreviouslyUploadedFiles) {
+                view.setHasPreviouslyUploadedFiles(true);
             }
 
             if (errors.length > 0) {
@@ -325,8 +199,8 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
     const [currentFile, setCurrentFile] = useState<FileItem>();
     useEffect(() => {
         const fetchFileDetails = async () => {
-            if (showingFileDetails) {
-                const file = await getFile(showingFileDetails);
+            if (view.showingFileDetails) {
+                const file = await view.getFile(view.showingFileDetails);
                 setCurrentFile(file);
             } else {
                 setCurrentFile(undefined);
@@ -335,37 +209,37 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
 
         // call the function
         fetchFileDetails();
-    }, [showingFileDetails]);
+    }, [view.showingFileDetails]);
 
     const filesBeingUploaded = uploader.getJobs().length;
     const progress = uploader.progress;
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
-        if (!isListLoading && searchQuery && records.length === 0) {
+        if (!view.isListLoading && view.searchQuery && view.files.length === 0) {
             return <Empty isSearchResult={true} browseFiles={browseFiles} />;
         }
 
-        if (!isListLoading && records.length === 0 && folders.length === 0) {
+        if (!view.isListLoading && view.files.length === 0 && view.folders.length === 0) {
             return <Empty isSearchResult={false} browseFiles={browseFiles} />;
         }
 
-        if (listTable) {
+        if (view.listTable) {
             return (
                 <Table
-                    folders={folders}
-                    records={files}
-                    loading={isListLoading}
-                    onRecordClick={showFileDetails}
+                    folders={view.folders}
+                    records={view.files}
+                    loading={view.isListLoading}
+                    onRecordClick={view.showFileDetails}
                     onFolderClick={setFolderId}
                     onSelectRow={rows => {
                         const files = rows
                             .filter(row => row.type === "RECORD")
                             .map(row => row.original as FileItem);
-                        setSelected(files);
+                        view.setSelected(files);
                     }}
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
-                    settings={settings}
+                    settings={view.settings}
                     selectableItems={Boolean(typeof onChange === "function")}
                 />
             );
@@ -373,25 +247,34 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
 
         return (
             <Grid
-                folders={folders}
-                records={files.map(file => file.data)}
-                loading={isListLoading}
-                onRecordClick={showFileDetails}
+                folders={view.folders}
+                records={view.files}
+                loading={view.isListLoading}
+                onRecordClick={view.showFileDetails}
                 onFolderClick={setFolderId}
-                selected={selected}
+                selected={view.selected}
                 multiple={multiple}
-                toggleSelected={toggleSelected}
+                toggleSelected={view.toggleSelected}
                 onChange={onChange}
                 onClose={onClose}
             />
         );
     };
 
+    const loadMoreOnScroll = useCallback(
+        debounce(async ({ scrollFrame }: { scrollFrame: positionValues }) => {
+            if (scrollFrame.top > 0.8) {
+                view.loadMoreFiles();
+            }
+        }, 200),
+        [view.meta]
+    );
+
     return (
         <>
             <Files
                 multiple
-                maxSize={settings ? settings.uploadMaxFileSize + "b" : "1TB"}
+                maxSize={view.settings ? view.settings.uploadMaxFileSize + "b" : "1TB"}
                 multipleMaxSize={"1TB"}
                 accept={accept}
                 onSuccess={files => {
@@ -409,11 +292,11 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                 {({ getDropZoneProps, browseFiles }) => (
                     <OverlayLayout
                         onExited={onClose}
-                        barLeft={<Title title={listTitle} />}
+                        barLeft={<Title title={view.listTitle} />}
                         barMiddle={<SearchWidget />}
                         barRight={
                             <>
-                                {selected.length > 0 ? (
+                                {view.selected.length > 0 ? (
                                     <ButtonPrimary
                                         flat={true}
                                         small={true}
@@ -421,7 +304,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                             (async () => {
                                                 if (typeof onChange === "function") {
                                                     await onChange(
-                                                        multiple ? selected : selected[0]
+                                                        multiple ? view.selected : view.selected[0]
                                                     );
 
                                                     onClose && onClose();
@@ -429,7 +312,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                             })();
                                         }}
                                     >
-                                        {t`Select`} {multiple && `(${selected.length})`}
+                                        {t`Select`} {multiple && `(${view.selected.length})`}
                                     </ButtonPrimary>
                                 ) : (
                                     renderUploadFileAction({ browseFiles })
@@ -445,13 +328,13 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                 </ButtonSecondary>
                                 <Tooltip
                                     content={t`{mode} layout`({
-                                        mode: listTable ? "Grid" : "Table"
+                                        mode: view.listTable ? "Grid" : "Table"
                                     })}
                                     placement={"bottom"}
                                 >
                                     <IconButton
-                                        icon={listTable ? <GridIcon /> : <TableIcon />}
-                                        onClick={() => setListTable(!listTable)}
+                                        icon={view.listTable ? <GridIcon /> : <TableIcon />}
+                                        onClick={() => view.setListTable(!view.listTable)}
                                     >
                                         {t`Switch`}
                                     </IconButton>
@@ -461,32 +344,36 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                     >
                         <>
                             <FileDetails
-                                loading={loadingFileDetails}
+                                loading={view.loadingFileDetails}
                                 file={currentFile}
-                                open={Boolean(showingFileDetails)}
-                                onClose={hideFileDetails}
+                                open={Boolean(view.showingFileDetails)}
+                                onClose={view.hideFileDetails}
                                 scope={scope}
                                 own={own}
                             />
                             <LeftSidebar
                                 title={defaultFolderName}
-                                currentFolder={folderId}
+                                currentFolder={view.folderId}
                                 onFolderClick={setFolderId}
-                                scope={scope}
-                                own={own}
-                                toggleTag={tag => toggleTag({ tag, listWhere })}
-                            />
+                            >
+                                <TagsList
+                                    loading={view.tags.loading}
+                                    activeTags={view.tags.activeTags}
+                                    tags={view.tags.allTags}
+                                    onActivatedTagsChange={view.tags.setActiveTags}
+                                />
+                            </LeftSidebar>
                             <FileListWrapper
                                 {...getDropZoneProps({
                                     onDragEnter: () =>
-                                        hasPreviouslyUploadedFiles && setDragging(true)
+                                        view.hasPreviouslyUploadedFiles && view.setDragging(true)
                                 })}
                                 data-testid={"fm-list-wrapper"}
                             >
-                                {dragging && hasPreviouslyUploadedFiles && (
+                                {view.dragging && view.hasPreviouslyUploadedFiles && (
                                     <DropFilesHere
-                                        onDragLeave={() => setDragging(false)}
-                                        onDrop={() => setDragging(false)}
+                                        onDragLeave={() => view.setDragging(false)}
+                                        onDrop={() => view.setDragging(false)}
                                     />
                                 )}
                                 <Filters />
@@ -495,7 +382,7 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
                                 >
                                     {renderList(browseFiles)}
                                 </Scrollbar>
-                                <BottomInfoBar accept={accept} listing={isListLoadingMore} />
+                                <BottomInfoBar accept={accept} listing={view.isListLoadingMore} />
                                 <UploadStatus
                                     numberOfFiles={filesBeingUploaded}
                                     progress={progress}
@@ -508,14 +395,14 @@ const FileManagerAcoView: React.FC<FileManagerAcoViewProps> = props => {
             <FolderDialogCreate
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
-                currentParentId={folderId || null}
+                currentParentId={view.folderId || null}
             />
         </>
     );
 };
 
-FileManagerAcoView.defaultProps = {
+FileManagerView.defaultProps = {
     multiple: false
 };
 
-export default observer(FileManagerAcoView);
+export default observer(FileManagerView);
