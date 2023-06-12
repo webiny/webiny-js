@@ -2,7 +2,7 @@ const os = require("os");
 const logUpdate = require("log-update");
 const { green, yellow, gray } = require("chalk");
 
-let logs = [yellow("Initializing...")];
+let logs = [];
 let deployment = gray("Waiting for code changes to deploy...");
 
 let deployingInterval;
@@ -10,7 +10,17 @@ let deployingInterval;
 const EOL = os.EOL;
 const HL = EOL + "—".repeat(50) + EOL;
 
-const log = () => logUpdate([logs.join(EOL) + HL + deployment].join());
+const log = () => {
+    let update = "";
+    if (logs.length) {
+        update += logs.join(EOL);
+    }
+
+    update += HL;
+    update += deployment;
+
+    logUpdate(update);
+};
 
 let deployStartedOn = null;
 const getDeployDurationInSeconds = () => Math.round((Date.now() - deployStartedOn) / 1000);

@@ -237,7 +237,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
     const { showImportDialog } = useImportForm();
 
     const listActions = useMemo(() => {
-        if (!canCreate) {
+        if (!canCreate()) {
             return null;
         }
         return (
@@ -257,7 +257,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                 />
             </DataListActionsWrapper>
         );
-    }, [canCreate, showImportDialog]);
+    }, [canCreate(), showImportDialog]);
 
     const multiSelectProps = useMultiSelect({
         useRouter: false,

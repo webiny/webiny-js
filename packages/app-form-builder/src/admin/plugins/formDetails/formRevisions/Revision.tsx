@@ -97,7 +97,7 @@ const Revision: React.FC<RevisionProps> = props => {
                         className={revisionsMenu}
                         data-testid={"fb.form-revisions.action-menu"}
                     >
-                        {canEdit(form) && (
+                        {canUpdate(form) && (
                             <MenuItem
                                 onClick={() => createRevision()}
                                 data-testid={"fb.form-revisions.action-menu.create-revision"}
@@ -108,7 +108,7 @@ const Revision: React.FC<RevisionProps> = props => {
                                 New from current
                             </MenuItem>
                         )}
-                        {revision.status === "draft" && canEdit(form) && (
+                        {revision.status === "draft" && canUpdate(form) && (
                             <MenuItem
                                 onClick={() => editRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.edit"}
