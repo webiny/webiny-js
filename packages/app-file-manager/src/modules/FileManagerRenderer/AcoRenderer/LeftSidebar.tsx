@@ -5,7 +5,7 @@ import { FolderTree, TagList } from "@webiny/app-aco";
 import { css } from "emotion";
 
 import { getTagsInitialParams, tagsModifier } from "~/tagsHelpers";
-import { ACO_TYPE, FOLDER_ID_DEFAULT } from "~/constants";
+import { ACO_TYPE } from "~/constants";
 
 import { TagItem } from "@webiny/app-aco/types";
 
@@ -37,7 +37,7 @@ interface LeftSidebarProps {
     currentFolder?: string;
     scope?: string;
     own?: boolean;
-    onFolderClick: (folderId: string | undefined) => void;
+    onFolderClick: (folderId?: string) => void;
 }
 
 const LeftSidebar: React.FC<LeftSidebarProps> = ({
@@ -55,7 +55,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
                     type={ACO_TYPE}
                     title={title}
                     focusedFolderId={currentFolder}
-                    onTitleClick={() => onFolderClick(FOLDER_ID_DEFAULT)}
+                    onTitleClick={() => onFolderClick(undefined)}
                     onFolderClick={data => data?.id && onFolderClick(data?.id)}
                     enableActions={true}
                     enableCreate={true}

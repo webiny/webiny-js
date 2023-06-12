@@ -61,7 +61,7 @@ export const FoldersProvider = ({ children }: Props) => {
     const context: FoldersContext = {
         folders,
         loading,
-        async listFolders(type: string) {
+        async listFolders(type: string, limit = 10000) {
             if (!type) {
                 throw new Error("Folder `type` is mandatory");
             }
@@ -71,7 +71,7 @@ export const FoldersProvider = ({ children }: Props) => {
                 () =>
                     client.query<ListFoldersResponse, ListFoldersQueryVariables>({
                         query: LIST_FOLDERS,
-                        variables: { type }
+                        variables: { type, limit }
                     })
             );
 

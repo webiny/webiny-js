@@ -2,12 +2,14 @@ const { LatestRelease } = require("./LatestRelease");
 const { BetaRelease } = require("./BetaRelease");
 const { UnstableRelease } = require("./UnstableRelease");
 const { VerdaccioRelease } = require("./VerdaccioRelease");
+const { Release } = require("./Release");
 
 const releaseTypes = {
     latest: LatestRelease,
     beta: BetaRelease,
     unstable: UnstableRelease,
-    verdaccio: VerdaccioRelease
+    verdaccio: VerdaccioRelease,
+    release: Release
 };
 
 const checkReleaseType = type => {

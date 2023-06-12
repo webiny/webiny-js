@@ -33,6 +33,8 @@ import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesLis
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
 import accordion from "@webiny/app-page-builder/render/plugins/elements/accordion";
 import accordionItem from "@webiny/app-page-builder/render/plugins/elements/accordionItem";
+import tabs from "@webiny/app-page-builder/render/plugins/elements/tabs";
+import tab from "@webiny/app-page-builder/render/plugins/elements/tab";
 import carousel from "@webiny/app-page-builder/render/plugins/elements/carousel";
 import carouselElement from "@webiny/app-page-builder/render/plugins/elements/carouselElement";
 
@@ -89,10 +91,12 @@ export default [
     iframe(),
     pagesList(),
     imagesList(),
-    carousel(),
-    carouselElement(),
     accordion(),
     accordionItem(),
+    tabs(),
+    tab(),
+    carousel(),
+    carouselElement(),
 
     // Page settings
     pageSettings(),
