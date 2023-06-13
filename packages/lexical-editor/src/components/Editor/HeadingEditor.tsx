@@ -23,6 +23,7 @@ export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, 
             <QuotePlugin />
             <ClickableLinkPlugin />
             <FloatingLinkEditorPlugin anchorElem={document.body} />
+            {rest?.children}
         </RichTextEditor>
     );
 };

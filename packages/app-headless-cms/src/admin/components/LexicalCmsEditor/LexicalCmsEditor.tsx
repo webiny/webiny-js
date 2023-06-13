@@ -10,15 +10,11 @@ import {
 import { RichTextEditorProps } from "@webiny/lexical-editor/types";
 import { CompositionScope } from "@webiny/react-composition";
 import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
-import { usePageElements } from "@webiny/app-page-builder-elements";
 
 export const LexicalCmsEditor = (props: Omit<RichTextEditorProps, "theme">) => {
-    const { theme } = usePageElements();
-
     return (
         <LexicalEditor
             {...props}
-            theme={theme}
             value={JSON.stringify(props.value)}
             onChange={(jsonString: string) => {
                 if (props?.onChange) {

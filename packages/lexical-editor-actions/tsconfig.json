@@ -3,8 +3,8 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../app-page-builder" },
-    { "path": "../lexical-editor" },
-    { "path": "../app-page-builder-elements" }
+    { "path": "../app-page-builder-elements" },
+    { "path": "../lexical-editor" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -15,10 +15,10 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
       "@webiny/app-page-builder": ["../app-page-builder/src"],
-      "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
-      "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
-      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"]
+      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
+      "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
+      "@webiny/lexical-editor": ["../lexical-editor/src"]
     },
     "baseUrl": "."
   }

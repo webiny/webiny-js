@@ -25,6 +25,7 @@ const ParagraphEditor: React.FC<ParagraphLexicalEditorProps> = ({ placeholder, t
             <CodeHighlightPlugin />
             <ClickableLinkPlugin />
             <FloatingLinkEditorPlugin anchorElem={document.body} />
+            {rest?.children}
         </RichTextEditor>
     );
 };
