@@ -74,7 +74,7 @@ export const subscribeToEvents = (context: Context): void => {
         }
 
         const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
-        // if (featureFlags?.aacl.teams) {
+
         if (updatedUser.team) {
             data.teams = await security
                 .getTeam({ where: { id: updatedUser.team } })
@@ -97,7 +97,7 @@ export const subscribeToEvents = (context: Context): void => {
                     ];
                 });
         }
-        // } else {
+
         if (updatedUser.group) {
             data.groups = await security
                 .getGroup({ where: { id: updatedUser.group } })
@@ -108,7 +108,7 @@ export const subscribeToEvents = (context: Context): void => {
                     return [{ id: group.id, permissions: group.permissions }];
                 });
         }
-        // }
+
 
         await security.updateTenantLinks([
             {

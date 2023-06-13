@@ -16,9 +16,13 @@ const { localStorage } = require("./utils");
 const [, , ...commandParts] = process.argv;
 const fullCommand = "yarn webiny " + commandParts.join(" ");
 
-const ls = localStorage();
-const history = ls.get("history") || [];
-ls.set("history", [fullCommand, ...history]);
+try {
+    const ls = localStorage();
+    const history = ls.get("history") || [];
+    ls.set("history", [fullCommand, ...history]);
+} catch {
+    // Ignore.
+}
 
 yargs
     .usage("Usage: $0 <command> [options]")
