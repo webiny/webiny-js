@@ -1,6 +1,5 @@
-// @ts-ignore
-import mdbid from "mdbid";
-import useGqlHandler from "./useGqlHandler";
+import { mdbid } from "@webiny/utils";
+import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
 import { File } from "~/types";
 

@@ -1,8 +1,4 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
 /**
  * Package @commodo/fields does not have types.
  */

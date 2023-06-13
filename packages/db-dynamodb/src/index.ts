@@ -1,5 +1,5 @@
 import { default as DynamoDbDriver } from "./DynamoDbDriver";
-export * from "./utils/createStandardEntity";
+export * from "./utils";
 export { DbItem } from "./types";
 
 export { DynamoDbDriver };

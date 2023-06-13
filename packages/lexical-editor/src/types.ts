@@ -33,6 +33,8 @@ export type ToolbarState = {
     underline: boolean;
     italic: boolean;
     code: boolean;
+    // is direction of the text right-to-left
+    isRTL: boolean;
     // nodes selection state
     link: NodeState;
     typography: NodeState;
@@ -40,6 +42,8 @@ export type ToolbarState = {
     list: NodeState;
     quote: NodeState;
     textType: LexicalTextType;
+    paragraph: NodeState;
+    heading: NodeState;
 };
 
 /*
@@ -54,6 +58,7 @@ export type TextBlockSelection = {
     node: ElementNode | TextNode;
     anchorNode: ElementNode | TextNode;
     isElementDom: boolean;
+    selectedText: string;
     state: ToolbarState | undefined;
 };
 
@@ -76,12 +81,6 @@ export type TypographyValue = {
 };
 
 /* Nodes */
-export interface WebinyThemeNode {
-    /*
-     * Get theme style id
-     */
-    getStyleId: () => string;
-}
 
 /*
  * Contains IDs of the styles and Emotion generated classes.

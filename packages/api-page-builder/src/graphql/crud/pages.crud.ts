@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import uniqid from "uniqid";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
@@ -50,6 +45,7 @@ import {
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
 import {
+    mdbid,
     createIdentifier,
     createZodError,
     parseIdentifier,

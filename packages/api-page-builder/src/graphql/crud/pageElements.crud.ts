@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import {
     OnPageElementAfterCreateTopicParams,
     OnPageElementAfterDeleteTopicParams,
@@ -26,7 +21,7 @@ import {
     createPageElementsCreateValidation,
     createPageElementsUpdateValidation
 } from "~/graphql/crud/pageElements/validation";
-import { createZodError, removeUndefinedValues } from "@webiny/utils";
+import { createZodError, mdbid, removeUndefinedValues } from "@webiny/utils";
 import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
 
 const PERMISSION_NAME = "pb.page";

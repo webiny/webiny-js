@@ -1,20 +1,30 @@
 import { NotFoundError } from "@webiny/handler-graphql";
+import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CreatedBy,
     File,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
+    FilePermission,
     FilesCRUD,
     FilesListOpts
 } from "~/types";
-import {
-    canAccessOnlyOwnRecords,
-    checkBasePermissions,
-    checkOwnPermissions,
-} from "./utils";
+import { canAccessOnlyOwnRecords, checkBasePermissions, checkOwnPermissions } from "./utils";
 import { FileManagerConfig } from "~/createFileManager/index";
+
+/**
+ * If permission is limited to "own" files only, check that current identity owns the file.
+ */
+const checkOwnership = (file: File, permission: FilePermission, identity: SecurityIdentity) => {
+    if (permission?.own === true) {
+        if (file.createdBy.id !== identity.id) {
+            throw new NotAuthorizedError();
+        }
+    }
+};
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -54,9 +64,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
 
             return file;
         },
-        async createFile(input) {
-            await checkBasePermissions(getPermissions, { rwd: "w" });
-
+        async createFile(input, meta) {
+            await checkBasePermissions(getPermission, { rwd: "w" });
             const identity = getIdentity();
 
             // Extract ID from file key
@@ -83,11 +92,11 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             };
 
             try {
-                await this.onFileBeforeCreate.publish({ file });
+                await this.onFileBeforeCreate.publish({ file, meta });
 
                 const result = await storageOperations.files.create({ file });
 
-                await this.onFileAfterCreate.publish({ file });
+                await this.onFileAfterCreate.publish({ file, meta });
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -203,7 +212,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
 
             return true;
         },
-        async createFilesInBatch(inputs) {
+        async createFilesInBatch(inputs, meta) {
             await checkBasePermissions(getPermissions, { rwd: "w" });
 
             const identity = getIdentity();
@@ -234,11 +243,11 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             });
 
             try {
-                await this.onFileBeforeBatchCreate.publish({ files });
+                await this.onFileBeforeBatchCreate.publish({ files, meta });
                 const results = await storageOperations.files.createBatch({
                     files
                 });
-                await this.onFileAfterBatchCreate.publish({ files });
+                await this.onFileAfterBatchCreate.publish({ files, meta });
                 return results;
             } catch (ex) {
                 throw new WebinyError(

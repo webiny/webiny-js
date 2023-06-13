@@ -7,11 +7,7 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
-
-// Lists elements that, when empty, can receive other elements as children using
-// drag and drop. For now, the element types that are hardcoded. Down the road,
-// we might want to expose this, enabling users to create more complex elements.
-const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell"];
+import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
@@ -28,17 +24,41 @@ export const ElementControls = () => {
         return null;
     }
 
-    // If the current element is a child of a pre-made block (via the Blocks module),
+    // If the current element is a child of a pre-made block,
     // then we don't want to render any controls for any child elements.
     const isBlockChild = meta?.parentBlockElement;
     if (isBlockChild) {
         return null;
     }
 
+    // If the current element is a child of a pre-made template block,
+    // then we don't want to render any controls for any child elements.
+    const isTemplateBlockChild = meta?.parentTemplateBlockElement;
+    if (isTemplateBlockChild) {
+        // We don't want to prevent block editing in the template editor. We only want to do it
+        // in the page editor, when working with pages that were created from a template. In the
+        // page editor, within the `data.template` object, we have a `slug` property, which is not
+        // available in the template editor. That give us the ability to distinguish between the two.
+        if (meta.parentDocumentElement.data.template.slug) {
+            return null;
+        }
+    }
+
     const handler = useEventActionHandler();
     const { isDragging } = useRecoilValue(uiAtom);
 
     const dropElementAction = (source: DragObjectWithTypeWithTarget) => {
+        const { target } = source;
+
+        // If the `target` property of the dragged element's plugin is an array, we want to
+        // check if the dragged element can be dropped into the target element (the element
+        // for which this drop zone is rendered).
+        if (Array.isArray(target) && target.length > 0) {
+            if (!target.includes(element.type)) {
+                return;
+            }
+        }
+
         handler.trigger(
             new DropElementActionEvent({
                 source,
@@ -51,25 +71,29 @@ export const ElementControls = () => {
         );
     };
 
-    const isEmpty = element.elements.length === 0;
-    const isDroppable = EMPTY_DROPPABLE_ELEMENTS.includes(element.type);
-    if (isEmpty && isDroppable && isDragging) {
-        // Here we don't need to render `ElementControlHorizontalDropZones` as it's simply
-        // not needed. It's only needed when at least one element has been dropped.
-        return (
-            <Droppable
-                onDrop={source => dropElementAction(source)}
-                type={element.type}
-                isVisible={() => true}
-            >
-                {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
-            </Droppable>
-        );
+    const elementPlugin = useElementPlugin(element);
+
+    // When dragging, if the element is droppable, we want to render the drop zones.
+    if (isDragging) {
+        let render = <ElementControlHorizontalDropZones />;
+
+        if (elementPlugin?.canReceiveChildren) {
+            render = (
+                <>
+                    <Droppable
+                        onDrop={source => dropElementAction(source)}
+                        type={element.type}
+                        isVisible={() => true}
+                    >
+                        {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
+                    </Droppable>
+                    {render}
+                </>
+            );
+        }
+
+        return render;
     }
 
-    return (
-        <ElementControlsOverlay>
-            <ElementControlHorizontalDropZones />
-        </ElementControlsOverlay>
-    );
+    return <ElementControlsOverlay />;
 };

@@ -39,4 +39,3 @@ module.exports.getPulumiVersions = async () => {
 
     return [pulumi, pulumiAws];
 };
-

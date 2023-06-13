@@ -1,8 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import zod from "zod";
 import uniqid from "uniqid";
 
@@ -32,6 +27,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
+import { mdbid } from "@webiny/utils";
 
 const createSchema = zod.object({
     title: zod.string().max(100),

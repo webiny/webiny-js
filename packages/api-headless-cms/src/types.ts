@@ -2141,6 +2141,25 @@ export interface OnEntryRevisionDeleteErrorTopicParams {
     model: CmsModel;
 }
 
+export interface OnEntryBeforeDeleteMultipleTopicParams {
+    model: CmsModel;
+    entries: CmsEntry[];
+    ids: string[];
+}
+
+export interface OnEntryAfterDeleteMultipleTopicParams {
+    model: CmsModel;
+    entries: CmsEntry[];
+    ids: string[];
+}
+
+export interface OnEntryDeleteMultipleErrorTopicParams {
+    model: CmsModel;
+    entries: CmsEntry[];
+    ids: string[];
+    error: Error;
+}
+
 export interface OnEntryBeforeGetTopicParams {
     model: CmsModel;
     where: CmsEntryListWhere;
@@ -2177,6 +2196,36 @@ export interface UpdateCmsEntryInput {
 }
 
 /**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface GetUniqueFieldValuesParams {
+    where: CmsEntryListWhere;
+    fieldId: string;
+}
+
+/**
+ * @category CmsEntry
+ */
+export interface CmsDeleteEntryOptions {
+    /**
+     * Runs the delete commands even if the entry is not found in the DynamoDB.
+     * This is to force clean the entry records that might have been left behind a failed delete.
+     */
+    force?: boolean;
+}
+
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface DeleteMultipleEntriesParams {
+    entries: string[];
+}
+
+export type DeleteMultipleEntriesResponse = { id: string }[];
+
+/**
  * Cms Entry CRUD methods in the context.
  *
  * @category Context
@@ -2186,7 +2235,7 @@ export interface CmsEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    getEntry: (model: CmsModel, params: CmsEntryGetParams) => Promise<CmsEntry | null>;
+    getEntry: (model: CmsModel, params: CmsEntryGetParams) => Promise<CmsEntry>;
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
@@ -2198,24 +2247,24 @@ export interface CmsEntryContext {
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
-    listEntries: (
+    listEntries: <T = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryListParams
-    ) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * Lists the latest entries. Used for manage API.
      */
-    listLatestEntries: (
+    listLatestEntries: <T = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * List published entries. Used for read API.
      */
-    listPublishedEntries: (
+    listPublishedEntries: <T = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * List published entries by IDs.
      */
@@ -2257,7 +2306,14 @@ export interface CmsEntryContext {
     /**
      * Delete entry with all its revisions.
      */
-    deleteEntry: (model: CmsModel, id: string) => Promise<void>;
+    deleteEntry: (model: CmsModel, id: string, options?: CmsDeleteEntryOptions) => Promise<void>;
+    /**
+     * Delete multiple entries
+     */
+    deleteMultipleEntries: (
+        model: CmsModel,
+        params: DeleteMultipleEntriesParams
+    ) => Promise<DeleteMultipleEntriesResponse>;
     /**
      * Publish entry.
      */
@@ -2271,7 +2327,16 @@ export interface CmsEntryContext {
      */
     getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
     /**
-     * Lifecyle events - deprecated.
+     * List all unique values for a given field.
+     *
+     * @internal
+     */
+    getUniqueFieldValues: (
+        model: CmsModel,
+        params: GetUniqueFieldValuesParams
+    ) => Promise<Array<{ value: string; count: number }>>;
+    /**
+     * Lifecycle events - deprecated.
      */
     /**
      * @deprecated
@@ -2660,10 +2725,11 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
 }
 
 export interface CmsEntryStorageOperationsDeleteParams {
-    /**
-     * Entry that is going to be deleted.
-     */
     entry: CmsEntry;
+}
+
+export interface CmsEntryStorageOperationsDeleteEntriesParams {
+    entries: string[];
 }
 
 export interface CmsEntryStorageOperationsPublishParams<
@@ -2691,6 +2757,11 @@ export interface CmsEntryStorageOperationsUnpublishParams<
      * The modified entry that is going to be saved as unpublished, with transformations on it.
      */
     storageEntry: T;
+}
+
+export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
+    where: CmsEntryListWhere;
+    fieldId: string;
 }
 
 export interface CmsEntryStorageOperationsGetByIdsParams {
@@ -2848,6 +2919,13 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      */
     delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
     /**
+     * Delete multiple entries, with a limit on how much can be deleted in one call.
+     */
+    deleteMultipleEntries: (
+        model: CmsModel,
+        params: CmsEntryStorageOperationsDeleteEntriesParams
+    ) => Promise<void>;
+    /**
      * Publish the entry.
      */
     publish: (model: CmsModel, params: CmsEntryStorageOperationsPublishParams<T>) => Promise<T>;
@@ -2855,6 +2933,15 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Unpublish the entry.
      */
     unpublish: (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams<T>) => Promise<T>;
+    /**
+     * Method to list all the unique values for the given field id.
+     * Simplest use case would be to aggregate tags for some content.
+     * @internal
+     */
+    getUniqueFieldValues: (
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
+    ) => Promise<Array<{ value: string; count: number }>>;
 }
 
 export enum CONTENT_ENTRY_STATUS {

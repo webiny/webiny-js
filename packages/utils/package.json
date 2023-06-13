@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@webiny/error": "0.0.0",
+    "mdbid": "^1.0.0",
     "nanoid": "^3.3.4",
     "nanoid-dictionary": "^4.3.0",
     "p-retry": "^4.6.2"

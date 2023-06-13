@@ -2,7 +2,6 @@ import lodashCloneDeep from "lodash/cloneDeep";
 import WebinyError from "@webiny/error";
 import {
     CmsEntry,
-    CmsEntryStorageOperations,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -32,11 +31,15 @@ import {
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
-import { CmsIndexEntry } from "~/types";
+import {
+    ElasticsearchSearchResponse,
+    SearchBody as ElasticsearchSearchBody
+} from "@webiny/api-elasticsearch/types";
+import { CmsEntryStorageOperations, CmsIndexEntry } from "~/types";
 import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 const getEntryData = (input: CmsEntry): CmsEntry => {
     const output: any = {
@@ -582,10 +585,11 @@ export const createEntriesStorageOperations = (
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
+        const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
-            id: entry.id,
+            id,
             locale: model.locale,
             tenant: model.tenant
         });
@@ -634,7 +638,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -650,7 +654,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry
+                    id
                 }
             );
         }
@@ -785,6 +789,100 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
+    };
+
+    const deleteMultipleEntries: CmsEntryStorageOperations["deleteMultipleEntries"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entries } = params;
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need all the revisions of the entries we want to delete.
+         */
+        const revisions = await dataLoaders.getAllEntryRevisions({
+            model,
+            ids: entries
+        });
+        /**
+         * Then we need to construct the queries for all the revisions and entries.
+         */
+        const items: Record<string, DocumentClient.WriteRequest>[] = [];
+        const esItems: Record<string, DocumentClient.WriteRequest>[] = [];
+        for (const id of entries) {
+            /**
+             * Latest item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            esItems.push(
+                esEntity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "L"
+                })
+            );
+            /**
+             * Published item.
+             */
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
+            esItems.push(
+                esEntity.deleteBatch({
+                    PK: createPartitionKey({
+                        id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: "P"
+                })
+            );
+        }
+        /**
+         * Exact revisions of all the entries
+         */
+        for (const revision of revisions) {
+            items.push(
+                entity.deleteBatch({
+                    PK: createPartitionKey({
+                        id: revision.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
+                    SK: createRevisionSortKey({
+                        version: revision.version
+                    })
+                })
+            );
+        }
+
+        await batchWriteAll({
+            table: entity.table,
+            items
+        });
+        await batchWriteAll({
+            table: esEntity.table,
+            items: esItems
+        });
     };
 
     const list: CmsEntryStorageOperations["list"] = async (initialModel, params) => {
@@ -1412,12 +1510,107 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const getUniqueFieldValues: CmsEntryStorageOperations["getUniqueFieldValues"] = async (
+        model,
+        params
+    ) => {
+        const { where, fieldId } = params;
+
+        const { index } = configurations.es({
+            model
+        });
+
+        try {
+            const result = await elasticsearch.indices.exists({
+                index
+            });
+            if (!result?.body) {
+                return [];
+            }
+        } catch (ex) {
+            throw new WebinyError(
+                "Could not determine if Elasticsearch index exists.",
+                "ELASTICSEARCH_INDEX_CHECK_ERROR",
+                {
+                    error: ex,
+                    index
+                }
+            );
+        }
+
+        const initialBody = createElasticsearchBody({
+            model,
+            params: {
+                limit: 1,
+                where
+            },
+            plugins
+        });
+
+        const field = model.fields.find(f => f.fieldId === fieldId);
+        if (!field) {
+            throw new WebinyError(
+                `Could not find field with given "fieldId" value.`,
+                "FIELD_NOT_FOUND",
+                {
+                    fieldId
+                }
+            );
+        }
+
+        const body: ElasticsearchSearchBody = {
+            ...initialBody,
+            /**
+             * We do not need any hits returned, we only need the aggregations.
+             */
+            size: 0,
+            aggregations: {
+                getUniqueFieldValues: {
+                    terms: {
+                        field: `values.${field.storageId}.keyword`,
+                        size: 1000000
+                    }
+                }
+            }
+        };
+
+        let response: ElasticsearchSearchResponse<string> | undefined = undefined;
+
+        try {
+            response = await elasticsearch.search({
+                index,
+                body
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Error in the Elasticsearch query.",
+                ex.code || "ELASTICSEARCH_ERROR",
+                {
+                    error: ex,
+                    index,
+                    model,
+                    body
+                }
+            );
+        }
+
+        const values = response.body.aggregations["getUniqueFieldValues"] || { buckets: [] };
+
+        return values.buckets.map(file => {
+            return {
+                value: file.key,
+                count: file.doc_count
+            };
+        });
+    };
+
     return {
         create,
         createRevisionFrom,
         update,
         delete: deleteEntry,
         deleteRevision,
+        deleteMultipleEntries,
         get,
         publish,
         unpublish,
@@ -1429,6 +1622,8 @@ export const createEntriesStorageOperations = (
         getByIds,
         getLatestByIds,
         getPublishedByIds,
-        getPreviousRevision
+        getPreviousRevision,
+        getUniqueFieldValues,
+        dataLoaders
     };
 };

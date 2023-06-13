@@ -1,7 +1,6 @@
 import WebinyError from "@webiny/error";
 import {
     PageTemplate,
-    PageTemplateStorageOperations,
     PageTemplateStorageOperationsCreateParams,
     PageTemplateStorageOperationsDeleteParams,
     PageTemplateStorageOperationsGetParams,
@@ -17,7 +16,7 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { PageTemplateDynamoDbFieldPlugin } from "~/plugins/definitions/PageTemplateDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGSI1PK, createPrimaryPK } from "./keys";
-import { DataContainer } from "~/types";
+import { DataContainer, PageTemplateStorageOperations } from "~/types";
 
 const createType = (): string => {
     return "pb.pageTemplate";
@@ -219,6 +218,7 @@ export const createPageTemplateStorageOperations = ({
     };
 
     return {
+        dataLoader,
         get,
         list,
         create,

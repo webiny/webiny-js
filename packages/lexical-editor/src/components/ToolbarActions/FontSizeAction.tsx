@@ -105,7 +105,7 @@ export const FontSizeAction = () => {
                 });
             })
         );
-    }, [activeEditor, editor, updateToolbar]);
+    }, [activeEditor, editor]);
 
     useEffect(() => {
         return editor.registerCommand(

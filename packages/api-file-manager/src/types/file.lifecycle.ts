@@ -3,18 +3,22 @@ import { File } from "./file";
 
 export interface OnFileBeforeCreateTopicParams<TFile extends File = File> {
     file: TFile;
+    meta?: Record<string, any>;
 }
 
 export interface OnFileAfterCreateTopicParams<TFile extends File = File> {
     file: TFile;
+    meta?: Record<string, any>;
 }
 
 export interface OnFileBeforeBatchCreateTopicParams<TFile extends File = File> {
     files: TFile[];
+    meta?: Record<string, any>;
 }
 
 export interface OnFileAfterBatchCreateTopicParams<TFile extends File = File> {
     files: TFile[];
+    meta?: Record<string, any>;
 }
 
 export interface OnFileBeforeUpdateTopicParams<TFile extends File = File> {

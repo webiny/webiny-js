@@ -142,6 +142,19 @@ const deleteCategoryMutation = (model: CmsModel) => {
     `;
 };
 
+const deleteCategoriesMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DeleteCategories($entries: [ID!]!) {
+            deleteCategories: deleteMultiple${model.pluralApiName}(entries: $entries) {
+                data {
+                    id
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
 const publishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation PublishCategory($revision: ID!) {
@@ -246,6 +259,16 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                     variables
                 },
                 headers
+            });
+        },
+        async deleteCategories(entries: string[]) {
+            return await contentHandler.invoke({
+                body: {
+                    query: deleteCategoriesMutation(model),
+                    variables: {
+                        entries
+                    }
+                }
             });
         },
         async publishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {

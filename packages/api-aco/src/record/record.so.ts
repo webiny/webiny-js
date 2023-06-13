@@ -58,6 +58,36 @@ export const createSearchRecordOperations = (
                 return [entries.map(entry => getRecordFieldValues(entry, baseFields)), meta];
             });
         },
+        listTags(params) {
+            return withModel(async model => {
+                const { where } = params;
+
+                const items = await cms.getUniqueFieldValues(model, {
+                    where: {
+                        ...(where || {}),
+                        latest: true
+                    },
+                    fieldId: "tags"
+                });
+
+                const tags = items
+                    .map(item => ({ tag: item.value, count: item.count }))
+                    .sort((a, b) => {
+                        return a.tag < b.tag ? -1 : 1;
+                    })
+                    .sort((a, b) => {
+                        return a.count > b.count ? -1 : 1;
+                    });
+
+                const meta = {
+                    hasMoreItems: false,
+                    totalCount: tags.length,
+                    cursor: null
+                };
+
+                return [tags, meta];
+            });
+        },
         createRecord({ data: SearchRecordData }) {
             return withModel(async model => {
                 const { tags = [], data = {}, ...rest } = SearchRecordData;

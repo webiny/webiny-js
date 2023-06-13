@@ -2,21 +2,12 @@ import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Block from "./Block";
 import {
-    CreateElementActionEvent,
-    DeleteElementActionEvent,
-    updateElementAction,
-    UpdateElementActionArgsType
-} from "~/editor/recoil/actions";
-import { addElementToParent, createDroppedElement } from "~/editor/helpers";
-import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorElement,
     PbEditorElementPluginArgs
 } from "~/types";
-import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
-import { executeAction } from "~/editor/recoil/eventActions";
 
 export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const elementSettings = [
@@ -91,47 +82,6 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         render(props) {
             return <Block {...props} />;
         },
-
-        // This callback is executed when another element is dropped on the drop zones with type "block"
-        onReceived({ source, target, position, state, meta }) {
-            const element = createDroppedElement(source as any, target);
-
-            const block = addElementToParent(element, target, position);
-
-            const result = executeAction<UpdateElementActionArgsType>(
-                state,
-                meta,
-                updateElementAction,
-                {
-                    element: block,
-                    history: true
-                }
-            );
-
-            result.actions.push(
-                new AfterDropElementActionEvent({
-                    element
-                })
-            );
-
-            if (source.id) {
-                // Delete source element
-                result.actions.push(
-                    new DeleteElementActionEvent({
-                        element: source as PbEditorElement
-                    })
-                );
-
-                return result;
-            }
-
-            result.actions.push(
-                new CreateElementActionEvent({
-                    element,
-                    source: source as PbEditorElement
-                })
-            );
-            return result;
-        }
+        canReceiveChildren: true
     };
 };

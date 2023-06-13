@@ -1,9 +1,7 @@
 import groupAuthorization from "~/plugins/groupAuthorization";
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader";
 import { createSecurityGraphQL, createSecurityContext } from "~/index";
 
@@ -30,47 +28,30 @@ import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
 import { customAuthenticator } from "./mocks/customAuthenticator";
 import { triggerAuthentication } from "./mocks/triggerAuthentication";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
+import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { SecurityStorageOperations } from "~/types";
 
 type UseGqlHandlerParams = {
     plugins?: PluginCollection;
 };
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
-
 export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { plugins: [] };
     opts = Object.assign({}, defaults, opts);
 
-    // @ts-ignore
-    if (typeof __getStorageOperations !== "function") {
-        throw new Error(`There is no global "__getStorageOperations" function.`);
-    }
-    // @ts-ignore
-    const { storageOperations } = __getStorageOperations();
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
             graphqlHandlerPlugins(),
-            // TODO: tenancy storage operations need to be loaded dynamically, but for now this will do since we only have DDB storage for this app.
             createTenancyContext({
-                storageOperations: tenancyStorageOperations({
-                    documentClient,
-                    table: table => ({
-                        ...table,
-                        name: process.env.DB_TABLE as string
-                    })
-                })
+                storageOperations: tenancyStorage.storageOperations
             }),
             createTenancyGraphQL(),
-            createSecurityContext({ storageOperations }),
+            createSecurityContext({ storageOperations: securityStorage.storageOperations }),
             createSecurityGraphQL(),
             authenticateUsingHttpHeader(),
             triggerAuthentication(),

@@ -1,22 +1,11 @@
 import useGqlHandler from "../useGqlHandler";
-import { extraFields, fileData, simpleRichTextData } from "~tests/crud/mocks/data";
 import { createExpectedTags, createMockFileData } from "~tests/crud/mocks/file";
 
 jest.retryTimes(0);
 
 describe("Files CRUD ddb/es", () => {
-    const {
-        createFile,
-        updateFile,
-        getFile,
-        listFiles,
-        listTags,
-        clearElasticsearch,
-        until,
-        createElasticsearchIndice,
-        elasticsearch,
-        getIndexName
-    } = useGqlHandler();
+    const { listTags, clearElasticsearch, createElasticsearchIndice, elasticsearch, getIndexName } =
+        useGqlHandler();
 
     const locale = "en-US";
     const tenant = "root";
@@ -35,117 +24,6 @@ describe("Files CRUD ddb/es", () => {
         await clearElasticsearch({
             locale,
             tenant
-        });
-    });
-
-    test("it should create a new file with custom richText field and then update it", async () => {
-        /**
-         * Create the file with custom field.
-         */
-        const [createResponse] = await createFile(
-            {
-                data: fileData
-            },
-            extraFields
-        );
-
-        expect(createResponse).toEqual({
-            data: {
-                fileManager: {
-                    createFile: {
-                        data: fileData,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        /**
-         * Wait until the data is available.
-         */
-        await until(
-            () => listFiles({}).then(([data]: any) => data),
-            ({ data }: any) => {
-                return (
-                    data.fileManager.listFiles.data.length === 1 &&
-                    data.fileManager.listFiles.data[0].id === fileData.id
-                );
-            },
-            { name: "list all files after create", tries: 10 }
-        );
-        /**
-         * The file must contain that custom field.
-         */
-        const [getResponse] = await getFile(
-            {
-                id: fileData.id
-            },
-            ["id"].concat(extraFields)
-        );
-
-        expect(getResponse).toEqual({
-            data: {
-                fileManager: {
-                    getFile: {
-                        data: {
-                            ...fileData
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        /**
-         * Update the file data custom field with some new data.
-         */
-        const { id, ...data } = fileData;
-        const [updateResponse] = await updateFile(
-            {
-                id,
-                data: {
-                    ...data,
-                    richText: simpleRichTextData
-                }
-            },
-            ["id"].concat(extraFields)
-        );
-        expect(updateResponse).toEqual({
-            data: {
-                fileManager: {
-                    updateFile: {
-                        data: {
-                            ...fileData,
-                            richText: simpleRichTextData
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        /**
-         * The file must contain updated custom field.
-         */
-        const [getUpdatedResponse] = await getFile(
-            {
-                id: fileData.id
-            },
-            ["id"].concat(extraFields)
-        );
-
-        expect(getUpdatedResponse).toEqual({
-            data: {
-                fileManager: {
-                    getFile: {
-                        data: {
-                            ...fileData,
-                            richText: simpleRichTextData
-                        },
-                        error: null
-                    }
-                }
-            }
         });
     });
 
