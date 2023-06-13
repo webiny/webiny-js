@@ -2,18 +2,48 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../api" },
-    { "path": "../api-authentication" },
-    { "path": "../api-tenancy" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" },
-    { "path": "../plugins" },
-    { "path": "../pubsub" },
-    { "path": "../utils" },
-    { "path": "../validation" },
-    { "path": "../api-wcp" },
-    { "path": "../handler-aws" }
+    {
+      "path": "../api"
+    },
+    {
+      "path": "../api-authentication"
+    },
+    {
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../feature-flags"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../pubsub"
+    },
+    {
+      "path": "../utils"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../api-wcp"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../wcp"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -30,6 +60,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
@@ -45,7 +77,9 @@
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }
