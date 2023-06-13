@@ -18,6 +18,7 @@ const DATA_FIELD = /* GraphQL */ `
         title
         content
         data
+        tags
         savedOn
     }
 `;
@@ -42,9 +43,9 @@ export const CREATE_RECORD = gql`
 `;
 
 export const LIST_RECORDS = gql`
-    query ListRecords ($type: String!, $location: SearchLocationInput!, $limit: Int, $after: String, $sort: AcoSort!) {
+    query ListRecords ($where: SearchRecordListWhereInput, $limit: Int, $after: String, $sort: AcoSort!, $search: String) {
         search {
-            listRecords(where: { type: $type, location: $location }, limit: $limit, after: $after, sort: $sort) {
+            listRecords(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
                 data ${DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
@@ -80,6 +81,20 @@ export const DELETE_RECORD = gql`
         search {
             deleteRecord(id: $id) {
                 data
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_TAGS = gql`
+    query ListTags($where: SearchRecordTagListWhereInput) {
+        search {
+            listTags(where: $where) {
+                data {
+                    tag
+                }
+                meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
             }
         }

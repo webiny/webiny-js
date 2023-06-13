@@ -3,7 +3,8 @@ import {
     assertNotError,
     createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
-    insertTestData,
+    groupMigrations,
+    insertDynamoDbTestData,
     logTestNameBeforeEachTest
 } from "~tests/utils";
 import { testData } from "./002.data";
@@ -25,22 +26,24 @@ describe("5.35.0-002", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(0);
-        expect(data.skipped.length).toBe(1);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         const handler = createDdbMigrationHandler({ table, migrations: [PageBuilder_5_35_0_002] });
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(1);
-        expect(data.skipped.length).toBe(0);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
+        expect(grouped.notApplicable.length).toBe(0);
 
         // ASSERT PAGE BUILDER SETTINGS CHANGES
         const legacySettings = createLegacySettingsEntity(table);
@@ -107,21 +110,27 @@ describe("5.35.0-002", () => {
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         const handler = createDdbMigrationHandler({ table, migrations: [PageBuilder_5_35_0_002] });
 
         // Should run the migration
-        process.stdout.write("[First run]\n");
-        const firstRun = await handler();
-        assertNotError(firstRun.error);
-        expect(firstRun.data.executed.length).toBe(1);
+        {
+            process.stdout.write("[First run]\n");
+            const firstRun = await handler();
+            assertNotError(firstRun.error);
+            const grouped = groupMigrations(firstRun.data.migrations);
+            expect(grouped.executed.length).toBe(1);
+        }
 
         // Should skip the migration
-        process.stdout.write("[Second run]\n");
-        const secondRun = await handler();
-        assertNotError(secondRun.error);
-        expect(secondRun.data.executed.length).toBe(0);
-        expect(secondRun.data.skipped.length).toBe(1);
-        expect(secondRun.data.notApplicable.length).toBe(0);
+        {
+            process.stdout.write("[Second run]\n");
+            const secondRun = await handler();
+            assertNotError(secondRun.error);
+            const grouped = groupMigrations(secondRun.data.migrations);
+            expect(grouped.executed.length).toBe(0);
+            expect(grouped.skipped.length).toBe(1);
+            expect(grouped.notApplicable.length).toBe(0);
+        }
     });
 });

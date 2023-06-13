@@ -1,5 +1,6 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
+import set from "lodash/set";
 import Cell from "./Cell";
 import {
     DisplayMode,
@@ -10,15 +11,8 @@ import {
 } from "~/types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "~/editor/plugins/elementSettings/elementSettingsUtils";
-import { addElementToParent, createDroppedElement, createElement } from "~/editor/helpers";
-import { executeAction } from "~/editor/recoil/eventActions";
-import { UpdateElementActionArgsType } from "~/editor/recoil/actions/updateElement/types";
-import {
-    CreateElementActionEvent,
-    DeleteElementActionEvent,
-    updateElementAction
-} from "~/editor/recoil/actions";
-import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
+import { createElement } from "~/editor/helpers";
+import { isLegacyRenderingEngine } from "~/utils";
 
 import lodashGet from "lodash/get";
 
@@ -29,8 +23,16 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         "pb-editor-page-element-style-settings-border",
         "pb-editor-page-element-style-settings-shadow",
         "pb-editor-page-element-style-settings-padding",
-        "pb-editor-page-element-style-settings-margin"
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-settings-mirror-cell"
     ];
+
+    if (!isLegacyRenderingEngine) {
+        defaultSettings.push(
+            "pb-editor-page-element-style-settings-horizontal-align-flex",
+            "pb-editor-page-element-style-settings-cell-vertical-align"
+        );
+    }
 
     const elementType = kebabCase(args.elementType || "cell");
 
@@ -71,44 +73,18 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
                     }
                 }
             };
-            return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
-        },
-        onReceived({ source, position, target, state, meta }) {
-            const element = createDroppedElement(source as any, target);
-            const parent = addElementToParent(element, target, position);
 
-            const result = executeAction<UpdateElementActionArgsType>(
-                state,
-                meta,
-                updateElementAction,
-                {
-                    element: parent,
-                    history: true
-                }
-            );
-
-            result.actions.push(new AfterDropElementActionEvent({ element }));
-
-            if (source.id) {
-                // Delete source element
-                result.actions.push(
-                    new DeleteElementActionEvent({
-                        element: source as PbEditorElement
-                    })
+            if (!isLegacyRenderingEngine) {
+                set(
+                    defaultValue,
+                    "data.settings.horizontalAlignFlex",
+                    createInitialPerDeviceSettingValue("flex-start", DisplayMode.DESKTOP)
                 );
-
-                return result;
             }
 
-            result.actions.push(
-                new CreateElementActionEvent({
-                    element,
-                    source: source as PbEditorElement
-                })
-            );
-
-            return result;
+            return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
+        canReceiveChildren: true,
         render(props) {
             return <Cell {...props} />;
         }

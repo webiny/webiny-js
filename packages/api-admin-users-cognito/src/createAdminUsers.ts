@@ -1,13 +1,9 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import cloneDeep from "lodash/cloneDeep";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { mdbid } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { AdminUser, AdminUsers, AdminUsersStorageOperations, CreatedBy, System } from "./types";
 import { createUserLoaders } from "./createAdminUsers/users.loaders";
@@ -134,6 +130,7 @@ export const createAdminUsers = ({
                  * Always delete `password` from the user data!
                  */
                 delete (user as any)["password"];
+
                 try {
                     result = await storageOperations.createUser({ user });
                 } catch (err) {
@@ -143,6 +140,7 @@ export const createAdminUsers = ({
                         data: { user: result || user }
                     });
                 }
+
                 try {
                     await onUserAfterCreate.publish({ user: result, inputData: data });
                 } catch (err) {
@@ -155,13 +153,17 @@ export const createAdminUsers = ({
 
                 loaders.getUser.clear(result.id).prime(result.id, result);
             } catch (e) {
+                if (e.code === "CREATE_USER_ERROR") {
+                    // User not created? Undo the previous seats increment.
+                    await decrementWcpSeats();
+                }
+
                 await onUserCreateError.publish({
                     user,
                     inputData: data,
                     error: e
                 });
-                // If something failed, let's undo the previous incrementWcpSeats call.
-                await decrementWcpSeats();
+
                 throw e;
             }
 

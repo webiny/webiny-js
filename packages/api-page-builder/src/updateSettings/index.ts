@@ -21,7 +21,7 @@ export interface HandlerResponse {
 function createSettings(data: Settings): SettingsInput {
     return {
         ...data.prerendering,
-        websiteUrl: data.websiteUrl
+        websiteUrl: data.websiteUrl || ""
     };
 }
 

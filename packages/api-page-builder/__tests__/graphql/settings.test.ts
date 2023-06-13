@@ -196,55 +196,83 @@ describe("Settings Test", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await updateSettings({
+        /**
+         * Should have no settings yet
+         */
+        const [settingsResponse] = await getSettings();
+        expect(settingsResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    getSettings: {
+                        data: null,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [updateSettingsResponse] = await updateSettings({
             data: {
                 pages: {
                     home: page.id
                 }
             }
-        }).then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        updateSettings: {
+        });
+        expect(updateSettingsResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    updateSettings: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
                             data: null,
-                            error: {
-                                code: "NOT_FOUND",
-                                data: null,
-                                message: "Page not found."
-                            }
+                            message: "Page not found."
                         }
                     }
                 }
-            })
-        );
+            }
+        });
 
-        await publishPage({ id: page.id });
+        const [publishPageResponse] = await publishPage({ id: page.id });
+
+        expect(publishPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    publishPage: {
+                        data: {
+                            id: page.id,
+                            status: "published"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         const [pid] = page.id.split("#");
 
-        await updateSettings({
+        const [updateSettingsAfterPublishResponse] = await updateSettings({
             data: {
                 pages: {
                     home: page.id
                 }
             }
-        }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        updateSettings: {
-                            data: {
-                                pages: {
-                                    home: pid
-                                }
-                            },
-                            error: null
-                        }
+        });
+
+        expect(updateSettingsAfterPublishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updateSettings: {
+                        data: {
+                            pages: {
+                                home: pid
+                            }
+                        },
+                        error: null
                     }
                 }
-            })
-        );
+            }
+        });
 
         await getSettings().then(([res]) =>
             expect(res).toMatchObject({

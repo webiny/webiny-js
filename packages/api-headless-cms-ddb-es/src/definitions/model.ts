@@ -35,6 +35,14 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 type: "string",
                 required: true
             },
+            singularApiName: {
+                type: "string",
+                required: true
+            },
+            pluralApiName: {
+                type: "string",
+                required: true
+            },
             locale: {
                 type: "string",
                 required: true
@@ -42,6 +50,9 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
             group: {
                 type: "map",
                 required: true
+            },
+            icon: {
+                type: "string"
             },
             description: {
                 type: "string"
@@ -76,6 +87,12 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 required: true
             },
             titleFieldId: {
+                type: "string"
+            },
+            descriptionFieldId: {
+                type: "string"
+            },
+            imageFieldId: {
                 type: "string"
             },
             tenant: {

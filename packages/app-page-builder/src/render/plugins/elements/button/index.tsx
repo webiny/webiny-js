@@ -9,6 +9,7 @@ import { createButton } from "@webiny/app-page-builder-elements/renderers/button
 import { plugins } from "@webiny/plugins";
 import { isLegacyRenderingEngine } from "~/utils";
 import React from "react";
+import { Link } from "@webiny/react-router";
 
 // @ts-ignore Resolve once we deprecate legacy rendering engine.
 const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
@@ -27,6 +28,15 @@ const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
                       variables: plugin.variables
                   };
               });
+          },
+          linkComponent: ({ href, children, ...rest }) => {
+              return (
+                  // While testing, we noticed that the `href` prop is sometimes `null` or `undefined`.
+                  // Hence the `href || ""` part. This fixes the issue.
+                  <Link to={href || ""} {...rest}>
+                      {children}
+                  </Link>
+              );
           }
       });
 

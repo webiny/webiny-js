@@ -19,7 +19,7 @@ export const GET_SETTINGS_QUERY = `
 `;
 
 export const SAVE_SETTINGS_MUTATION = `
-    mutation SaveSettings($data: TransportSettingsInput!) {
+    mutation SaveSettings($data: MailerTransportSettingsInput!) {
         mailer {
             saveSettings(data: $data) {
                 data {

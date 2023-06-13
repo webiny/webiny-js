@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Check for Command
         id: command
-        uses: xt0rted/slash-command-action@v1
+        uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           command: cypress
@@ -213,15 +213,6 @@ jobs:
         working-directory: dev
         run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: dev/cypress
-          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
-
   e2e-wby-cms-ddb-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
     needs: [e2e-wby-cms-ddb-init, e2e-wby-cms-ddb-project-setup]
@@ -279,15 +270,6 @@ jobs:
         working-directory: dev
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
-
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: dev/cypress
-          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
   e2e-wby-cms-ddb-es-init:
     name: E2E (DDB+ES) - Init
@@ -476,15 +458,6 @@ jobs:
         working-directory: dev
         run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: dev/cypress
-          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
-
   e2e-wby-cms-ddb-es-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb+es, ${{ matrix.os }}, Node v${{ matrix.node }})
     needs: [e2e-wby-cms-ddb-es-init, e2e-wby-cms-ddb-es-project-setup]
@@ -545,12 +518,3 @@ jobs:
         working-directory: dev
         timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
-
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: dev/cypress
-          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.

@@ -1,11 +1,7 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import { QueueAddJobEvent } from "./types";
 import { PrerenderingServiceStorageOperations, QueueJob } from "~/types";
 import { EventPlugin } from "@webiny/handler";
+import { mdbid } from "@webiny/utils";
 
 export interface CreateQueueAddParams {
     storageOperations: PrerenderingServiceStorageOperations;
@@ -42,11 +38,11 @@ export default (params: CreateQueueAddParams) => {
                 data: null,
                 error: null
             };
-        } catch (e) {
-            log("An error occurred while trying to add to prerendering queue...", e);
+        } catch (ex) {
+            console.error("An error occurred while trying to add to prerendering queue...", ex);
             return {
                 data: null,
-                error: e
+                error: ex
             };
         }
     });

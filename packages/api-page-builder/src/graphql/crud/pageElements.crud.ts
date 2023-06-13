@@ -1,19 +1,3 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-/**
- * Package commodo-fields-object does not have types.
- */
-// @ts-ignore
-import { object } from "commodo-fields-object";
-import { validation } from "@webiny/validation";
 import {
     OnPageElementAfterCreateTopicParams,
     OnPageElementAfterDeleteTopicParams,
@@ -33,22 +17,11 @@ import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
-
-const CreateDataModel = withFields({
-    name: string({ validation: validation.create("required,maxLength:100") }),
-    type: string({ validation: validation.create("required,in:element:block") }),
-    category: string({ validation: validation.create("required,maxLength:100") }),
-    content: object({ validation: validation.create("required") }),
-    preview: object({ validation: validation.create("required") })
-})();
-
-const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("maxLength:100") }),
-    type: string({ validation: validation.create("in:element:block") }),
-    category: string({ validation: validation.create("maxLength:100") }),
-    content: object(),
-    preview: object()
-})();
+import {
+    createPageElementsCreateValidation,
+    createPageElementsUpdateValidation
+} from "~/graphql/crud/pageElements/validation";
+import { createZodError, mdbid, removeUndefinedValues } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.page";
 
@@ -58,6 +31,7 @@ export interface CreatePageElementsCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createPageElementsCrud = (params: CreatePageElementsCrudParams): PageElementsCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
@@ -176,16 +150,16 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
         async createPageElement(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
+            const validation = await createPageElementsCreateValidation().safeParseAsync(input);
+            if (!validation.success) {
+                throw createZodError(validation.error);
+            }
 
             const id: string = mdbid();
             const identity = context.security.getIdentity();
 
-            const data: PageElement = await createDataModel.toJSON();
-
             const pageElement: PageElement = {
-                ...data,
+                ...validation.data,
                 tenant: getTenantId(),
                 locale: getLocaleCode(),
                 id,
@@ -202,7 +176,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
                     pageElement
                 });
                 const result = await storageOperations.pageElements.create({
-                    input: data,
+                    input: validation.data,
                     pageElement
                 });
                 await onPageElementAfterCreate.publish({
@@ -233,10 +207,12 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
+            const validation = await createPageElementsUpdateValidation().safeParseAsync(input);
+            if (!validation.success) {
+                throw createZodError(validation.error);
+            }
 
-            const data = await updateDataModel.toJSON({ onlyDirty: true });
+            const data = removeUndefinedValues(validation.data);
 
             const pageElement: PageElement = {
                 ...original,

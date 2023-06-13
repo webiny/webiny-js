@@ -19,6 +19,10 @@ import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/c
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
+import accordion from "@webiny/app-page-builder/editor/plugins/elements/accordion";
+import accordionItem from "@webiny/app-page-builder/editor/plugins/elements/accordionItem";
+import tabs from "@webiny/app-page-builder/editor/plugins/elements/tabs";
+import tab from "@webiny/app-page-builder/editor/plugins/elements/tab";
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -44,6 +48,7 @@ import border from "@webiny/app-page-builder/editor/plugins/elementSettings/bord
 import shadow from "@webiny/app-page-builder/editor/plugins/elementSettings/shadow";
 import padding from "@webiny/app-page-builder/editor/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/editor/plugins/elementSettings/margin";
+import mirrorCell from "@webiny/app-page-builder/editor/plugins/elementSettings/mirror-cell";
 import width from "@webiny/app-page-builder/editor/plugins/elementSettings/width";
 import height from "@webiny/app-page-builder/editor/plugins/elementSettings/height";
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
@@ -51,8 +56,13 @@ import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import action from "@webiny/app-page-builder/editor/plugins/elementSettings/action";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
+import cellSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/cell";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import property from "@webiny/app-page-builder/editor/plugins/elementSettings/property";
+import accordionSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordion";
+import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordionItem";
+import tabsSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tabs";
+import tabSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tab";
 // Responsive editor mode
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
@@ -83,6 +93,10 @@ export default [
     twitter(),
     codesandbox(),
     pagesList(),
+    accordion(),
+    accordionItem(),
+    tabs(),
+    tab(),
     // grid presets
     ...gridPresets,
     // Element groups
@@ -107,6 +121,7 @@ export default [
     shadow,
     padding,
     margin,
+    mirrorCell,
     align,
     clone,
     deleteElement,
@@ -116,8 +131,13 @@ export default [
     link,
     action,
     gridSettings,
+    cellSettings,
     textSettings,
     property,
+    accordionSettings,
+    accordionItemSettings,
+    tabsSettings,
+    tabSettings,
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings

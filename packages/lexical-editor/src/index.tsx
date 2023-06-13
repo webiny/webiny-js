@@ -3,6 +3,8 @@ export { LexicalHtmlRenderer } from "~/components/LexicalHtmlRenderer";
 // hooks
 export { useRichTextEditor } from "~/hooks/useRichTextEditor";
 export { useFontColorPicker } from "~/hooks/useFontColorPicker";
+export { useTypographyAction } from "~/hooks/useTypographyAction";
+export { useTextAlignmentAction } from "~/hooks/useTextAlignmentAction";
 // UI elements
 export { Divider } from "~/ui/Divider";
 export { DropDownItem } from "~/ui/DropDown";
@@ -18,6 +20,8 @@ export { LinkAction } from "~/components/ToolbarActions/LinkAction";
 export { NumberedListAction } from "~/components/ToolbarActions/NumberedListAction";
 export { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
 export { UnderlineAction } from "~/components/ToolbarActions/UnderlineAction";
+export { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
+export { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction";
 // toolbars
 export { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
 export { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
@@ -43,6 +47,7 @@ export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeTyp
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
+export { clearNodeFormatting } from "~/utils/nodes/clearNodeFormating";
 // types
 export * as types from "./types";
 // config

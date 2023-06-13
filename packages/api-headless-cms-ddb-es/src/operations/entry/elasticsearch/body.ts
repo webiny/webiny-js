@@ -27,7 +27,7 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
      */
     const modelFields = createModelFields({
         plugins,
-        fields: model.fields
+        model
     });
 
     /**

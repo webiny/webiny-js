@@ -1,6 +1,7 @@
 import sanitizeImageTransformations from "./sanitizeImageTransformations";
 import { getObjectParams } from "../../utils";
-import { SUPPORTED_IMAGES, SUPPORTED_TRANSFORMABLE_IMAGES, getImageKey } from "../utils";
+import * as newUtils from "../utils";
+import * as legacyUtils from "../legacyUtils";
 import { ClientContext } from "@webiny/handler-client/types";
 import S3 from "aws-sdk/clients/s3";
 
@@ -46,17 +47,20 @@ export interface ProcessParams {
     context: ClientContext;
 }
 export default {
-    canProcess: (params: CanProcessParams) => {
-        return SUPPORTED_IMAGES.includes(params.file.extension);
+    canProcess: ({ file }: CanProcessParams) => {
+        const utils = file.name.includes("/") ? newUtils : legacyUtils;
+        return utils.SUPPORTED_IMAGES.includes(file.extension);
     },
     async process({ s3, file, options, context }: ProcessParams) {
         // Loaders must return {object, params} object.
         let objectParams;
 
+        const utils = file.name.includes("/") ? newUtils : legacyUtils;
+
         const transformations = sanitizeImageTransformations(options);
 
-        if (transformations && SUPPORTED_TRANSFORMABLE_IMAGES.includes(file.extension)) {
-            objectParams = getObjectParams(getImageKey({ key: file.name, transformations }));
+        if (transformations && utils.SUPPORTED_TRANSFORMABLE_IMAGES.includes(file.extension)) {
+            objectParams = getObjectParams(utils.getImageKey({ key: file.name, transformations }));
             try {
                 return {
                     object: await s3.getObject(objectParams).promise(),
@@ -80,7 +84,7 @@ export default {
             }
         }
 
-        objectParams = getObjectParams(getImageKey({ key: file.name }));
+        objectParams = getObjectParams(utils.getImageKey({ key: file.name }));
         try {
             return {
                 object: await s3.getObject(objectParams).promise(),

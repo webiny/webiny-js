@@ -74,7 +74,7 @@ const GeneralTab = () => {
 
     const predefinedValuesEnabled = useMemo(
         (): boolean =>
-            fieldPlugin.field.allowPredefinedValues &&
+            (fieldPlugin.field.allowPredefinedValues || false) &&
             typeof fieldPlugin.field.renderPredefinedValues === "function",
         [field.fieldId]
     );

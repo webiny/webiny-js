@@ -7,7 +7,7 @@ import {
     Response
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { sanitizeFormSubmissionData } from "~/plugins/crud/utils";
+import { sanitizeFormSubmissionData, flattenSubmissionMeta } from "~/plugins/crud/utils";
 import { FormBuilderContext, FbFormField } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
@@ -211,9 +211,15 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 form: FbSubmissionFormData
             }
 
+            type FbSubmissionMetaUrl {
+                location: String
+                query: JSON
+            }
+
             type FbSubmissionMeta {
                 ip: String
                 submittedOn: DateTime
+                url: FbSubmissionMetaUrl
             }
 
             type FbListSubmissionsMeta {
@@ -554,6 +560,22 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         }
 
                         /**
+                         * Add meta fields.
+                         */
+                        for (let i = 0; i < submissions.length; i++) {
+                            const flattenedSubmissionMeta = flattenSubmissionMeta(
+                                submissions[i].meta.url || {},
+                                "meta_url"
+                            );
+
+                            for (const metaKey in flattenedSubmissionMeta) {
+                                if (!fields[metaKey]) {
+                                    fields[metaKey] = metaKey;
+                                }
+                            }
+                        }
+
+                        /**
                          * Build rows.
                          */
                         for (let i = 0; i < submissions.length; i++) {
@@ -561,6 +583,15 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                                 fieldsData,
                                 submissions[i].data
                             );
+
+                            const flattenedSubmissionMeta = flattenSubmissionMeta(
+                                submissions[i].meta.url || {},
+                                "meta_url"
+                            );
+                            for (const metaKey in flattenedSubmissionMeta) {
+                                submissionData[metaKey] = flattenedSubmissionMeta[metaKey];
+                            }
+
                             const row: Record<string, string> = {};
 
                             row["Date submitted (UTC)"] = format(
@@ -598,7 +629,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             hideInFileManager: true
                         });
 
-                        const settings = await fileManager.settings.getSettings();
+                        const settings = await fileManager.getSettings();
 
                         const result = {
                             key,

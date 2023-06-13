@@ -29,7 +29,7 @@ export const fieldContainer = css({
     position: "relative",
     flex: "1 100%",
     backgroundColor: "var(--mdc-theme-background)",
-    padding: "0 15px 5px",
+    padding: "2px 15px 2px",
     margin: 10,
     borderRadius: 2,
     border: "1px solid var(--mdc-theme-on-background)",

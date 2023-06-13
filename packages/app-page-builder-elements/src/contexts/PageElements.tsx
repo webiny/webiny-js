@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
+import { ThemeProvider } from "@emotion/react";
 import {
     PageElementsContextValue,
     PageElementsProviderProps,
@@ -122,5 +123,11 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         afterRenderer
     };
 
-    return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;
+    return (
+        // We're passing an empty object just in case `theme` object is not provided.
+        // This can happen in multi-theme setups, where the theme is loaded asynchronously.
+        <ThemeProvider theme={theme || {}}>
+            <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>
+        </ThemeProvider>
+    );
 };

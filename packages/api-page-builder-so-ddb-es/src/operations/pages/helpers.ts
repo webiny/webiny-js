@@ -40,21 +40,37 @@ export const getESPageData = (page: Page) => {
     };
 };
 
-export const getESLatestPageData = (plugins: PluginsContainer, page: Page) => {
+export const getESLatestPageData = (
+    plugins: PluginsContainer,
+    page: Page,
+    input: Record<string, any> = {}
+) => {
     const data = { ...getESPageData(page), latest: true };
-    return modifyData(data, page, plugins);
+    return modifyData({ data, page, plugins, input });
 };
 
-export const getESPublishedPageData = (plugins: PluginsContainer, page: Page) => {
+export const getESPublishedPageData = (
+    plugins: PluginsContainer,
+    page: Page,
+    input: Record<string, any> = {}
+) => {
     const data = { ...getESPageData(page), published: true };
-    return modifyData(data, page, plugins);
+    return modifyData({ data, page, plugins, input });
 };
 
-const modifyData = (data: Record<string, any>, page: Page, plugins: PluginsContainer) => {
+interface ModifyDataParams {
+    input: Record<string, any>;
+    data: Record<string, any>;
+    page: Page;
+    plugins: PluginsContainer;
+}
+
+const modifyData = (params: ModifyDataParams) => {
+    const { data, page, plugins, input } = params;
     const pagePlugins = plugins.byType<IndexPageDataPlugin>(IndexPageDataPlugin.type);
 
     for (const plugin of pagePlugins) {
-        plugin.apply({ page, data, plugins });
+        plugin.apply({ page, data, plugins, input });
     }
 
     return data;

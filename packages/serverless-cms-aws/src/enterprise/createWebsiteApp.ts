@@ -3,7 +3,7 @@ import {
     CreateWebsitePulumiAppParams
 } from "@webiny/pulumi-aws/enterprise";
 import { PluginCollection } from "@webiny/plugins/types";
-import { generateCommonHandlers, renderWebsite } from "~/website/plugins";
+import { generateCommonHandlers, lambdaEdgeWarning, renderWebsite } from "~/website/plugins";
 import { uploadAppToS3 } from "~/react/plugins";
 import { pbLegacyRenderingWarningPlugins } from "~/utils/pbLegacyRenderingWarning";
 
@@ -16,7 +16,8 @@ export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) 
         uploadAppToS3({ folder: "apps/website" }),
         generateCommonHandlers,
         renderWebsite,
-        pbLegacyRenderingWarningPlugins
+        pbLegacyRenderingWarningPlugins,
+        lambdaEdgeWarning
     ];
 
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];

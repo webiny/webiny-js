@@ -27,7 +27,12 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     content: string;
     location: Location;
     data: TData;
+    tags: string[];
 }
+
+export type TagItem = {
+    tag: string;
+};
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 
@@ -75,6 +80,7 @@ export interface ListFoldersResponse {
 
 export interface ListFoldersQueryVariables {
     type: string;
+    limit: number;
 }
 
 export interface GetFolderResponse {
@@ -140,12 +146,47 @@ export interface ListSearchRecordsResponse {
     };
 }
 
+export interface ListSearchRecordsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
 export interface ListSearchRecordsQueryVariables {
-    type: string;
-    location: Location;
+    where: ListSearchRecordsWhereQueryVariables & {
+        type: string;
+        location?: Location;
+        createdBy?: string;
+        AND?: ListSearchRecordsWhereQueryVariables[];
+        OR?: ListSearchRecordsWhereQueryVariables[];
+    };
+    search?: string;
     limit?: number;
     after?: string | null;
     sort?: ListDbSort;
+}
+
+export interface ListTagsResponse {
+    search: {
+        listTags: {
+            data: string[] | null;
+            error: Error | null;
+        };
+    };
+}
+
+export interface ListTagsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
+export interface ListTagsQueryVariables {
+    where: ListTagsWhereQueryVariables & {
+        type: string;
+        AND?: [ListTagsWhereQueryVariables];
+        OR?: [ListTagsWhereQueryVariables];
+    };
 }
 
 export interface GetSearchRecordResponse {

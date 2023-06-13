@@ -166,3 +166,20 @@ export const DELETE_PAGE_TEMPLATE = gql`
         }
     }
 `;
+
+export const CREATE_TEMPLATE_FROM_PAGE = gql`
+    mutation PbCreateTemplateFromPage($pageId: ID!, $data: PbCreateTemplateFromPageInput) {
+        pageBuilder {
+            pageTemplate: createTemplateFromPage(pageId: $pageId, data: $data) {
+                data {
+                    ${PAGE_TEMPLATE_BASE_FIELDS}
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;

@@ -3,7 +3,7 @@ import { usePageElements } from "~/hooks/usePageElements";
 import { Renderer, Element } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
-import { CSSObject, ClassNames } from "@emotion/core";
+import { CSSObject, ClassNames } from "@emotion/react";
 
 interface GetStylesParams {
     theme: Theme;

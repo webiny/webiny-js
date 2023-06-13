@@ -1,9 +1,3 @@
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-import { validation } from "@webiny/validation";
 import {
     BlockCategoriesCrud,
     BlockCategory,
@@ -27,19 +21,11 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
-
-const CreateDataModel = withFields({
-    slug: string({ validation: validation.create("required,slug") }),
-    name: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
-    icon: string({ validation: validation.create("required,maxLength:255") }),
-    description: string({ validation: validation.create("required,minLength:1,maxLength:100") })
-})();
-
-const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("minLength:1,maxLength:100") }),
-    icon: string({ validation: validation.create("maxLength:255") }),
-    description: string({ validation: validation.create("minLength:1,maxLength:100") })
-})();
+import {
+    createBlockCategoryCreateValidation,
+    createBlockCategoryUpdateValidation
+} from "~/graphql/crud/blockCategories/validation";
+import { createZodError, removeUndefinedValues } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.blockCategory";
 
@@ -49,6 +35,7 @@ export interface CreateBlockCategoriesCrudParams {
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
+
 export const createBlockCategoriesCrud = (
     params: CreateBlockCategoriesCrudParams
 ): BlockCategoriesCrud => {
@@ -176,8 +163,12 @@ export const createBlockCategoriesCrud = (
         async createBlockCategory(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
+            const validationResult = await createBlockCategoryCreateValidation().safeParseAsync(
+                input
+            );
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
 
             const existingBlockCategory = await this.getBlockCategory(input.slug, {
                 auth: false
@@ -188,7 +179,7 @@ export const createBlockCategoriesCrud = (
 
             const identity = context.security.getIdentity();
 
-            const data: BlockCategory = await createDataModel.toJSON();
+            const data = removeUndefinedValues(validationResult.data);
 
             const blockCategory: BlockCategory = {
                 ...data,
@@ -238,10 +229,14 @@ export const createBlockCategoriesCrud = (
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
+            const validationResult = await createBlockCategoryUpdateValidation().safeParseAsync(
+                input
+            );
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
 
-            const data = await updateDataModel.toJSON({ onlyDirty: true });
+            const data = removeUndefinedValues(validationResult.data);
 
             const blockCategory: BlockCategory = {
                 ...original,

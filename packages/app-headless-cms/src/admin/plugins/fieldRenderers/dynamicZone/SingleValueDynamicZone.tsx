@@ -7,12 +7,12 @@ import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/Templat
 import {
     BindComponentRenderProp,
     CmsDynamicZoneTemplate,
-    CmsEditorFieldRendererProps,
+    CmsModelFieldRendererProps,
     CmsModel,
     CmsModelField
 } from "~/types";
 
-type GetBind = CmsEditorFieldRendererProps["getBind"];
+type GetBind = CmsModelFieldRendererProps["getBind"];
 
 interface SingleValueDynamicZoneProps {
     field: CmsModelField;
@@ -21,12 +21,12 @@ interface SingleValueDynamicZoneProps {
     getBind: GetBind;
 }
 
-export const SingleValueDynamicZone = ({
+export const SingleValueDynamicZone: React.VFC<SingleValueDynamicZoneProps> = ({
     field,
     bind,
     contentModel,
     getBind
-}: SingleValueDynamicZoneProps) => {
+}) => {
     const onTemplate = (template: CmsDynamicZoneTemplate) => {
         bind.onChange({ _templateId: template.id });
     };

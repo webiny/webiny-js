@@ -11,6 +11,7 @@ import { MetaJSON, Package } from "./types";
 import { getHardwareInfo } from "./getHardwareInfo";
 
 interface BuildOptions {
+    p?: string | string[];
     debug?: boolean;
     cache?: boolean;
     buildOverrides?: string;
@@ -25,8 +26,18 @@ export const buildPackages = async () => {
 
     printHardwareReport();
 
+    let packagesWhitelist: string[] = [];
+    if (options.p) {
+        if (Array.isArray(options.p)) {
+            packagesWhitelist = options.p;
+        } else {
+            packagesWhitelist = [options.p];
+        }
+    }
+
     const { batches, packagesNoCache, allPackages } = await getBatches({
-        cache: options.cache ?? true
+        cache: options.cache ?? true,
+        packagesWhitelist
     });
 
     if (!packagesNoCache.length) {
@@ -51,10 +62,12 @@ export const buildPackages = async () => {
     );
     const metaJson = getBuildMeta();
 
+    const totalBatches = `${batches.length}`.padStart(2, "0");
+
     const tasks = new Listr<BuildContext>(
         batches.map<ListrTask>((packageNames, index) => {
             const id = `${index + 1}`.padStart(2, "0");
-            const title = `[${id}/${batches.length}] Batch #${id} (${packageNames.length} packages)`;
+            const title = `[${id}/${totalBatches}] Batch #${id} (${packageNames.length} packages)`;
 
             return {
                 title,

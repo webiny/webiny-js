@@ -111,7 +111,7 @@ export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props,
         >
             {tabs.map(item => {
                 if (!item.visible) {
-                    return null;
+                    return <RmwcTab tag={"div"} style={{ display: "none" }} key={item.id} />;
                 }
 
                 const style = item.style || {};

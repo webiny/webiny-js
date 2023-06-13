@@ -1,19 +1,20 @@
 import {
-    CmsModelFieldToGraphQLPlugin,
-    CmsModel,
-    CmsModelField,
-    CmsModelDynamicZoneField,
-    CmsDynamicZoneTemplate,
     ApiEndpoint,
+    CmsDynamicZoneTemplate,
     CmsFieldTypePlugins,
-    CmsModelFieldToGraphQLCreateResolver
+    CmsModel,
+    CmsModelDynamicZoneField,
+    CmsModelField,
+    CmsModelFieldToGraphQLCreateResolver,
+    CmsModelFieldToGraphQLPlugin
 } from "~/types";
-import { createReadTypeName, createTypeName } from "~/utils/createTypeName";
+import { createTypeName } from "~/utils/createTypeName";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 import { createGraphQLInputField } from "../helpers";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}_${createReadTypeName(field.fieldId)}`;
+    return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 };
 
 const getFieldTemplates = (field: CmsModelDynamicZoneField): CmsDynamicZoneTemplate[] => {
@@ -24,6 +25,7 @@ const getFieldTemplates = (field: CmsModelDynamicZoneField): CmsDynamicZoneTempl
 };
 
 interface CreateTypeDefsForTemplatesParams {
+    models: CmsModel[];
     model: CmsModel;
     field: CmsModelField;
     type: ApiEndpoint;
@@ -33,6 +35,7 @@ interface CreateTypeDefsForTemplatesParams {
 }
 
 const createTypeDefsForTemplates = ({
+    models,
     model,
     field,
     type,
@@ -45,12 +48,13 @@ const createTypeDefsForTemplates = ({
 
     templates.forEach(template => {
         const typeName = [
-            createTypeName(model.modelId),
+            model.singularApiName,
             createTypeName(field.fieldId),
             template.gqlTypeName
         ].join("_");
 
         const result = createTypeFromFields({
+            models,
             typeOfType,
             model,
             type,
@@ -76,23 +80,53 @@ const remapTemplateValue = (value: any, typeName: string) => {
     return { ...value[templateType], __typename: `${typeName}_${templateType}` };
 };
 
-const createResolver: CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> = ({
-    model,
-    field
-}) => {
-    return parent => {
-        const value = parent[field.fieldId];
-        if (!value) {
-            return value;
-        }
+const createResolver = (
+    endpointType: ApiEndpoint
+): CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> => {
+    return ({ model, models, field, fieldTypePlugins, createFieldResolvers }) => {
+        const resolver = (parent: any) => {
+            const value = parent[field.fieldId];
+            if (!value) {
+                return value;
+            }
 
-        const typeName = `${createTypeName(model.modelId)}_${createTypeName(field.fieldId)}`;
+            const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
-        if (field.multipleValues && Array.isArray(value)) {
-            return value.map(v => remapTemplateValue(v, typeName));
-        }
+            if (field.multipleValues && Array.isArray(value)) {
+                return value.map(v => remapTemplateValue(v, typeName));
+            }
 
-        return remapTemplateValue(value, typeName);
+            return remapTemplateValue(value, typeName);
+        };
+
+        const templates = getFieldTemplates(field);
+
+        const { templateTypes } = createTypeDefsForTemplates({
+            models,
+            field,
+            type: endpointType,
+            typeOfType: "type",
+            model,
+            fieldTypePlugins,
+            templates
+        });
+
+        const typeResolvers = templateTypes.reduce<
+            Record<string, Record<string, GraphQLFieldResolver>>
+        >((typeResolvers, templateType, index) => {
+            return {
+                ...typeResolvers,
+                ...createFieldResolvers({
+                    graphQLType: templateType,
+                    fields: field.settings.templates[index].fields
+                })
+            };
+        }, {});
+
+        return {
+            resolver,
+            typeResolvers
+        };
     };
 };
 
@@ -125,11 +159,12 @@ export const createDynamicZoneField =
                 }
             },
             read: {
-                createTypeField({ model, field, fieldTypePlugins }) {
+                createTypeField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
                     const unionTypeName = createUnionTypeName(model, field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        models,
                         field,
                         type: "read",
                         typeOfType: "type",
@@ -147,14 +182,15 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.join("\n")
                     };
                 },
-                createResolver
+                createResolver: createResolver("read")
             },
             manage: {
-                createTypeField({ model, field, fieldTypePlugins }) {
+                createTypeField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
                     const unionTypeName = createUnionTypeName(model, field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        models,
                         field,
                         type: "manage",
                         typeOfType: "type",
@@ -180,10 +216,11 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.concat(templateIds).join("\n")
                     };
                 },
-                createInputField({ model, field, fieldTypePlugins }) {
+                createInputField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
+                        models,
                         field,
                         type: "manage",
                         typeOfType: "input",
@@ -192,9 +229,7 @@ export const createDynamicZoneField =
                         templates
                     });
 
-                    const typeName = `${createTypeName(model.modelId)}_${createTypeName(
-                        field.fieldId
-                    )}`;
+                    const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
                     const inputProperties = templateTypes.map(inputTypeName => {
                         const key = inputTypeName.replace(`${typeName}_`, "").replace("Input", "");
@@ -222,7 +257,7 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.join("\n")
                     };
                 },
-                createResolver
+                createResolver: createResolver("manage")
             }
         };
     };

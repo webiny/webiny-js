@@ -1,12 +1,10 @@
-import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import path from "path";
 import fs from "fs";
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbPlugins from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createFormBuilder } from "~/index";
@@ -39,8 +37,11 @@ import {
 } from "./graphql/formSubmission";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
-import { createTenancyAndSecurity } from "./tenancySecurity";
+import { createTenancyAndSecurity, defaultIdentity } from "./tenancySecurity";
 import { PluginCollection } from "@webiny/plugins/types";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { FormBuilderStorageOperations } from "~/types";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -57,47 +58,29 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-const defaultIdentity: SecurityIdentity = {
-    id: "12345678",
-    type: "admin",
-    displayName: "John Doe"
-};
-
 export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
-    // @ts-ignore
-    if (typeof __getStorageOperations !== "function") {
-        throw new Error(`There is no global "__getStorageOperations" function.`);
-    }
-    // @ts-ignore
-    const { createStorageOperations, getGlobalPlugins } = __getStorageOperations();
-    if (typeof createStorageOperations !== "function") {
-        throw new Error(
-            `A product of "__getStorageOperations" must be a function to initialize storage operations.`
-        );
-    }
-    if (typeof getGlobalPlugins === "function") {
-        plugins.push(...getGlobalPlugins());
-    }
+    const i18nStorage = getStorageOps("i18n");
+    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const formBuilderStorage = getStorageOps<FormBuilderStorageOperations>("formBuilder");
 
     const handler = createHandler({
         plugins: [
             ...plugins,
+            ...formBuilderStorage.plugins,
             createWcpContext(),
             createWcpGraphQL(),
             graphqlHandlerPlugins(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
+            ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
-            i18nDynamoDbStorageOperations(),
+            i18nStorage.storageOperations as any,
             mockLocalesPlugins(),
-            fileManagerPlugins(),
-            fileManagerDynamoDbPlugins(),
-            /**
-             * We need to create the form builder API app.
-             * It requires storage operations and plugins from the storage operations.
-             */
+            createFileManagerContext({
+                storageOperations: fileManagerStorage.storageOperations
+            }),
+            createFileManagerGraphQL(),
             createFormBuilder({
-                storageOperations: createStorageOperations()
+                storageOperations: formBuilderStorage.storageOperations
             }),
             {
                 type: "api-file-manager-storage",

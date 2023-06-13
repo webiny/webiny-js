@@ -1,19 +1,7 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
-/**
- * Package @commodo/fields does not have types.
- */
-// @ts-ignore
-import { withFields, string } from "@commodo/fields";
-/**
- * Package commodo-fields-object does not have types.
- */
-// @ts-ignore
-import { object } from "commodo-fields-object";
-import { validation } from "@webiny/validation";
+import checkBasePermissions from "./utils/checkBasePermissions";
+import checkOwnPermissions from "./utils/checkOwnPermissions";
+import WebinyError from "@webiny/error";
+import cloneDeep from "lodash/cloneDeep";
 import {
     OnPageBlockAfterCreateTopicParams,
     OnPageBlockAfterDeleteTopicParams,
@@ -28,26 +16,13 @@ import {
     PageBlockStorageOperationsListParams,
     PbContext
 } from "~/types";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
-import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
-import cloneDeep from "lodash/cloneDeep";
-
-const CreateDataModel = withFields({
-    name: string({ validation: validation.create("required,maxLength:100") }),
-    blockCategory: string({ validation: validation.create("required,slug") }),
-    content: object({ validation: validation.create("required") }),
-    preview: object({ validation: validation.create("required") })
-})();
-
-const UpdateDataModel = withFields({
-    name: string({ validation: validation.create("maxLength:100") }),
-    blockCategory: string({ validation: validation.create("slug") }),
-    content: object(),
-    preview: object()
-})();
+import {
+    createPageBlocksCreateValidation,
+    createPageBlocksUpdateValidation
+} from "~/graphql/crud/pageBlocks/validation";
+import { createZodError, mdbid, removeUndefinedValues } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.block";
 
@@ -168,18 +143,20 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         async createPageBlock(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
+            const validationResult = await createPageBlocksCreateValidation().safeParseAsync(input);
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
 
-            const blockCategory = await this.getBlockCategory(input.blockCategory);
+            const data = validationResult.data;
+
+            const blockCategory = await this.getBlockCategory(data.blockCategory);
             if (!blockCategory) {
                 throw new NotFoundError(`Block category not found!`);
             }
 
             const id: string = mdbid();
             const identity = context.security.getIdentity();
-
-            const data: PageBlock = await createDataModel.toJSON();
 
             const pageBlock: PageBlock = {
                 ...data,
@@ -230,19 +207,19 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            if (input.blockCategory) {
-                const blockCategory = await this.getBlockCategory(input.blockCategory);
+            const validationResult = await createPageBlocksUpdateValidation().safeParseAsync(input);
+            if (!validationResult.success) {
+                throw createZodError(validationResult.error);
+            }
+
+            const data = removeUndefinedValues(validationResult.data);
+
+            if (data.blockCategory) {
+                const blockCategory = await this.getBlockCategory(data.blockCategory);
                 if (!blockCategory) {
                     throw new NotFoundError(`Requested page block category doesn't exist.`);
                 }
-            } else {
-                delete input["blockCategory"];
             }
-
-            const updateDataModel = new UpdateDataModel().populate(input);
-            await updateDataModel.validate();
-
-            const data = await updateDataModel.toJSON({ onlyDirty: true });
 
             const pageBlock: PageBlock = {
                 ...original,

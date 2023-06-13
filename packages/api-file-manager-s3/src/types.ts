@@ -4,16 +4,20 @@ export interface PresignedPostPayloadData {
     name: string;
     type: string;
     size: number;
-    keyPrefix: string;
+    id?: string;
+    key?: string;
+    keyPrefix?: string;
+}
+
+export interface FileData {
+    id: string;
+    name: string;
+    key: string;
+    type: string;
+    size: number;
 }
 
 export interface PresignedPostPayloadDataResponse {
     data: S3.PresignedPost;
-    file: {
-        id: string;
-        name: string;
-        key: string;
-        type: string;
-        size: number;
-    };
+    file: FileData;
 }

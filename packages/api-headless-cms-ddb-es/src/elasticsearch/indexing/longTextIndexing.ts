@@ -13,12 +13,6 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
          * We take the raw value, before it was prepared via `transformToStorage` for storage (there might be some transform due to DynamoDB) and store it in the Elasticsearch to be indexed.
          */
         return {
-            /**
-             * // TODO @Bruno validate and test
-             * I have no idea why we encoded the raw value. We will see in testing and when upgrading our test projects.
-             * // TODO remove comments when tested and verified.
-             */
-            // value: rawValue ? encodeURIComponent(rawValue) : "",
             value: Array.isArray(rawValue) ? rawValue : rawValue || ""
         };
     },
@@ -30,8 +24,8 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
      */
     fromIndex({ value }) {
         if (Array.isArray(value)) {
-            return value.map(decodeURIComponent);
+            return value;
         }
-        return value ? decodeURIComponent(value) : "";
+        return value || "";
     }
 });

@@ -85,7 +85,6 @@ export interface OnPageBeforeUpdateTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
     input: Record<string, any>;
-    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
@@ -94,7 +93,6 @@ export interface OnPageAfterUpdateTopicParams<TPage extends Page = Page> {
     original: TPage;
     page: TPage;
     input: Record<string, any>;
-    meta?: Record<string, any>;
 }
 /**
  * @category Lifecycle events
@@ -213,11 +211,7 @@ export interface PagesCrud {
         page: string,
         meta?: Record<string, any>
     ): Promise<TPage>;
-    updatePage<TPage extends Page = Page>(
-        id: string,
-        data: PbUpdatePageInput,
-        meta?: Record<string, any>
-    ): Promise<TPage>;
+    updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
@@ -521,6 +515,12 @@ export interface OnMenuAfterDeleteTopicParams {
     menu: Menu;
 }
 
+interface CreateMenuInput {
+    title: string;
+    slug: string;
+    description: string;
+    items: any[];
+}
 /**
  * @category Menu
  */
@@ -528,7 +528,7 @@ export interface MenusCrud {
     getMenu(slug: string, options?: MenuGetOptions): Promise<Menu | null>;
     getPublicMenu(slug: string): Promise<Menu>;
     listMenus(params?: ListMenuParams): Promise<Menu[]>;
-    createMenu(data: Record<string, any>): Promise<Menu>;
+    createMenu(data: CreateMenuInput): Promise<Menu>;
     updateMenu(slug: string, data: Record<string, any>): Promise<Menu>;
     deleteMenu(slug: string): Promise<Menu>;
     /**
@@ -579,7 +579,7 @@ export interface DefaultSettingsCrudOptions {
 
 export interface SettingsUpdateTopicMetaParams {
     diff: {
-        pages: Array<[PageSpecialType, string, string, Page]>;
+        pages: [PageSpecialType, string | null | undefined, string, Page][];
     };
 }
 /**
@@ -899,10 +899,19 @@ export interface PageContentWithTemplate extends PbPageElement {
  * @category PageTemplates
  */
 export interface PageTemplatesCrud {
-    getPageTemplate(params: GetPageTemplateParams): Promise<PageTemplate | null>;
+    getPageTemplate(
+        params: GetPageTemplateParams,
+        options?: {
+            auth: boolean;
+        }
+    ): Promise<PageTemplate | null>;
     listPageTemplates(params?: ListPageTemplatesParams): Promise<PageTemplate[]>;
     createPageTemplate(data: PageTemplateInput): Promise<PageTemplate>;
     createPageFromTemplate(data: CreatePageFromTemplateParams): Promise<Page>;
+    createTemplateFromPage(
+        pageId: string,
+        data: Pick<PageTemplate, "title" | "description" | "slug">
+    ): Promise<PageTemplate>;
     // Copy relevant data from page template to page instance, by reference.
     copyTemplateDataToPage(template: PageTemplate, page: Page): void;
     updatePageTemplate(id: string, data: Record<string, any>): Promise<PageTemplate>;

@@ -7,8 +7,8 @@ import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { Provider as ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
-import { Provider as ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
+import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
+import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 import { useQuery } from "~/admin/hooks";
 import {
@@ -18,7 +18,7 @@ import {
 } from "~/admin/graphql/contentModels";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { useNewRefEntryDialog } from "../hooks/useNewRefEntryDialog";
-import { CmsEditorContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsModel } from "~/types";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
@@ -43,7 +43,7 @@ const dialogContainerStyles = css`
 `;
 
 interface EntryFormProps {
-    onCreate: (entry: CmsEditorContentEntry) => void;
+    onCreate: (entry: CmsContentEntry) => void;
 }
 const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     const { setFormRef, contentModel } = useContentEntry();
@@ -53,9 +53,9 @@ const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
             <ContentEntryForm
                 onSubmit={data => {
                     /**
-                     * We know that data is CmsEditorContentEntry.
+                     * We know that data is CmsContentEntry.
                      */
-                    return onCreate(data as unknown as CmsEditorContentEntry);
+                    return onCreate(data as unknown as CmsContentEntry);
                 }}
                 onForm={form => setFormRef(form)}
                 entry={{}}
@@ -88,7 +88,7 @@ export const NewEntryButton = () => {
 interface NewRefEntryProps {
     modelId: string;
     children: React.ReactElement;
-    onChange: (entry: CmsEditorContentEntry) => void;
+    onChange: (entry: CmsContentEntry) => void;
 }
 
 const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
@@ -118,7 +118,7 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
     const hideDialog = useCallback(() => setOpen(false), []);
 
     const onCreate = useCallback(
-        (entry: CmsEditorContentEntry) => {
+        (entry: CmsContentEntry) => {
             if (!contentModel) {
                 setOpen(false);
                 return;

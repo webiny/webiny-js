@@ -1,17 +1,17 @@
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
-import { getDocumentClient, getTable } from "~/operations/utils";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
 
-export interface TableParams {
-    context: FileManagerContext;
+export interface CreateTableParams {
+    table?: string;
+    documentClient: DocumentClient;
 }
-export default (params: TableParams): Table => {
-    const { context } = params;
+
+export const createTable = ({ table, documentClient }: CreateTableParams) => {
     return new Table({
-        name: process.env.DB_TABLE_FILE_MANGER || process.env.DB_TABLE || getTable(context),
+        name: table || String(process.env.DB_TABLE),
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: getDocumentClient(context),
+        DocumentClient: documentClient,
         indexes: {
             GSI1: {
                 partitionKey: "GSI1_PK",

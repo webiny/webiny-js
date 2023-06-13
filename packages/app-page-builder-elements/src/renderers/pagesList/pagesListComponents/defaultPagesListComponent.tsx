@@ -3,7 +3,7 @@ import { PagesListComponent, PagesListPage } from "./../types";
 import { LinkComponent } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 import styled from "@emotion/styled";
-import { CSSObject } from "@emotion/core";
+import { CSSObject } from "@emotion/react";
 import { usePageElements } from "~/hooks/usePageElements";
 
 declare global {
@@ -165,10 +165,10 @@ export const createDefaultPagesListComponent = (
                         width: "100%"
                     },
                     "pb-pages-list-default-list-li-info": {
-                        h3: theme.styles.typography.heading3,
-                        p: theme.styles.typography.paragraph1,
+                        h3: theme.styles.typography.headings.stylesById("heading3"),
+                        p: theme.styles.typography.paragraphs.stylesById("paragraph1"),
                         div: {
-                            ...theme.styles.typography.paragraph1,
+                            ...theme.styles.typography.paragraphs.stylesById("paragraph1"),
                             color: "#616161",
                             fontSize: ".8rem",
                             fontWeight: 400,
@@ -184,7 +184,7 @@ export const createDefaultPagesListComponent = (
                 justifyContent: "space-around",
                 width: "100%",
                 a: {
-                    ...theme.styles.typography.paragraph1,
+                    ...theme.styles.typography.paragraphs.stylesById("paragraph1"),
                     color: theme.styles.colors.color1,
                     display: "flex",
                     alignItems: "center",

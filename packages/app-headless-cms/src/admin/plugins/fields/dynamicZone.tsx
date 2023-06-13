@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { DynamicZone } from "~/admin/plugins/fields/dynamicZone/DynamicZone";
 import { createFieldsList } from "~/admin/graphql/createFieldsList";
 import { createTypeName } from "~/utils/createTypeName";
-import { CmsEditorFieldTypePlugin, CmsModelFieldValidatorsGroup } from "~/types";
+import { CmsModelFieldTypePlugin, CmsModelFieldValidatorsGroup } from "~/types";
 import { commonValidators } from "./dynamicZone/commonValidators";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
@@ -15,7 +15,7 @@ const listValidators: CmsModelFieldValidatorsGroup = {
     description: "These validators are applied to the entire dynamic zone."
 };
 
-export const dynamicZoneField: CmsEditorFieldTypePlugin = {
+export const dynamicZoneField: CmsModelFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-dynamic-zone",
     field: {
@@ -38,7 +38,7 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
         },
         listValidators,
         canAccept(_, draggable) {
-            return draggable.fieldType !== "dynamicZone";
+            return draggable.fieldType !== "dynamicZone" && draggable.fieldType !== "ref";
         },
         multipleValuesLabel: t`Use as a list of values`,
         createField() {
@@ -58,13 +58,13 @@ export const dynamicZoneField: CmsEditorFieldTypePlugin = {
         },
         graphql: {
             queryField({ model, field }) {
-                const prefix = `${createTypeName(model.modelId)}_${createTypeName(field.fieldId)}`;
+                const prefix = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
                 const templates = field.settings?.templates || [];
 
                 const fragments = templates.map(template => {
                     return `...on ${prefix}_${template.gqlTypeName} {
                         ${createFieldsList({ model, fields: template.fields || [] })}
-                        _templateId 
+                        _templateId
                         __typename
                     }`;
                 });

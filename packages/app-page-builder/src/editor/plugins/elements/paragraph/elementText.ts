@@ -21,9 +21,11 @@ const lexicalText = JSON.stringify({
                     }
                 ],
                 direction: "ltr",
+                styles: [],
                 format: "",
                 indent: 0,
-                type: "paragraph",
+                tag: "p",
+                type: "paragraph-element",
                 version: 1
             }
         ],

@@ -16,11 +16,16 @@ import importProcessPlugins from "@webiny/api-page-builder-import-export/import/
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
+import { createAcoFileManagerImportExportContext } from "@webiny/api-file-manager-aco";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
@@ -41,8 +46,11 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbStorageOperation(),
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({
+                documentClient
+            })
+        }),
         fileManagerS3(),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
@@ -62,7 +70,22 @@ export const handler = createHandler({
             handlers: {
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
-        })
+        }),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
+        createAco(),
+        createAcoPageBuilderImportExportContext(),
+        createAcoFileManagerImportExportContext()
     ],
     http: { debug }
 });

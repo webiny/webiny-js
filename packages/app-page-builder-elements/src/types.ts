@@ -1,8 +1,8 @@
 export * from "@webiny/theme/types";
 
 import React, { HTMLAttributes } from "react";
-import { type CSSObject } from "@emotion/core";
-import { Theme, StylesObject, ThemeBreakpoints } from "@webiny/theme/types";
+import { type CSSObject } from "@emotion/react";
+import { StylesObject, ThemeBreakpoints, Theme } from "@webiny/theme/types";
 
 export interface Page {
     id: string;

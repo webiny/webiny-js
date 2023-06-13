@@ -17,10 +17,12 @@ export const pageModel: CmsModel = {
     },
     description: "Page",
     modelId: "page",
+    singularApiName: "PageModelApiName",
+    pluralApiName: "PagesModelApiName",
     savedOn: "2022-12-19T19:10:02.731Z",
     titleFieldId: "id",
     lockedFields: [],
-    layout: [["kcq9kt40"], ["peeeyhtc"], ["t4pfesadsa"]],
+    layout: [["kcq9kt40"], ["peeeyhtc"], ["t4pfesadsa"], ["ahterwfesi2"], ["ahterwfesi3"]],
     tags: ["type:model"],
     fields: [
         {
@@ -305,6 +307,73 @@ export const pageModel: CmsModel = {
                                 },
                                 renderer: {
                                     name: "dynamicZone"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            id: "ahterwfesi2",
+            fieldId: "reference",
+            type: "dynamicZone",
+            label: "Reference",
+            settings: {
+                templates: [
+                    {
+                        layout: [["gt409u8qhgoudsahfds"]],
+                        name: "AuthorReference Field",
+                        gqlTypeName: "Author",
+                        icon: "fas/file-text",
+                        description: "Reference field test.",
+                        id: "tg9u4h3qgfsauighafs",
+                        fields: [
+                            {
+                                id: "gt409u8qhgoudsahfds",
+                                fieldId: "author",
+                                label: "Reference Field",
+                                type: "ref",
+                                settings: {
+                                    models: [
+                                        {
+                                            modelId: "author"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            id: "ahterwfesi3",
+            fieldId: "references",
+            type: "dynamicZone",
+            multipleValues: true,
+            label: "Reference",
+            settings: {
+                templates: [
+                    {
+                        layout: [["gt409u8qhgoudsahfds"]],
+                        name: "AuthorReference Field",
+                        gqlTypeName: "Author",
+                        icon: "fas/file-text",
+                        description: "Reference field test.",
+                        id: "tg9u4h3qgfsauighafs",
+                        fields: [
+                            {
+                                id: "gt409u8qhgoudsahfds",
+                                fieldId: "author",
+                                label: "Reference Field",
+                                type: "ref",
+                                settings: {
+                                    models: [
+                                        {
+                                            modelId: "author"
+                                        }
+                                    ]
                                 }
                             }
                         ]

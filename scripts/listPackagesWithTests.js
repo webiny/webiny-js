@@ -17,59 +17,98 @@ const CUSTOM_HANDLERS = {
     // TODO: bring back project-utils tests.
     "project-utils": () => [],
 
-    // Split "api-file-manager" tests.
+    "api-tenancy": () => {
+        return ["packages/api-tenancy --storage=ddb"];
+    },
+
+    "api-security": () => {
+        return ["packages/api-security --storage=ddb"];
+    },
+
+    "api-i18n": () => {
+        return ["packages/api-i18n --storage=ddb"];
+    },
+
+    "api-tenant-manager": () => {
+        return ["packages/api-tenant-manager --storage=ddb"];
+    },
+
+    "api-admin-users-cognito": () => {
+        return ["packages/api-admin-users-cognito --storage=ddb"];
+    },
+
     "api-file-manager": () => {
         return [
-            "packages/api-file-manager/* --keyword=fm:ddb --keyword=fm:base",
-            "packages/api-file-manager/* --keyword=fm:ddb-es --keyword=fm:base"
+            "packages/api-file-manager --storage=ddb",
+            "packages/api-file-manager --storage=ddb-es,ddb"
         ];
     },
+    "api-file-manager-ddb-es": () => {
+        return ["packages/api-file-manager-ddb-es --storage=ddb-es,ddb"];
+    },
 
-    // Split "api-form-builder" tests.
     "api-form-builder": () => {
         return [
-            "packages/api-form-builder/* --keyword=fb:ddb --keyword=fb:base",
-            "packages/api-form-builder/* --keyword=fb:ddb-es --keyword=fb:base"
+            "packages/api-form-builder --storage=ddb",
+            "packages/api-form-builder --storage=ddb-es,ddb"
         ];
     },
 
-    // Split "api-page-builder" tests.
+    "api-form-builder-so-ddb-es": () => {
+        return ["packages/api-form-builder-so-ddb-es --storage=ddb-es,ddb"];
+    },
+
     "api-page-builder": () => {
         return [
-            "packages/api-page-builder/* --keyword=pb:ddb --keyword=pb:base",
-            "packages/api-page-builder/* --keyword=pb:ddb-es --keyword=pb:base"
+            "packages/api-page-builder --storage=ddb",
+            "packages/api-page-builder --storage=ddb-es,ddb"
         ];
     },
-    // Split "api-headless-cms" tests.
+    "api-page-builder-so-ddb-es": () => {
+        return ["packages/api-page-builder-so-ddb-es --storage=ddb-es,ddb"];
+    },
+
+    "api-page-builder-import-export": () => {
+        return ["packages/api-page-builder-import-export --storage=ddb"];
+    },
+
+    "api-prerendering-service": () => {
+        return ["packages/api-prerendering-service --storage=ddb"];
+    },
+
+    "api-mailer": () => {
+        return ["packages/api-mailer --storage=ddb", "packages/api-mailer --storage=ddb-es,ddb"];
+    },
+
     "api-headless-cms": () => {
         return [
-            "packages/api-headless-cms/* --keyword=cms:ddb --keyword=cms:base",
-            "packages/api-headless-cms/* --keyword=cms:ddb-es --keyword=cms:base"
+            "packages/api-headless-cms --storage=ddb",
+            "packages/api-headless-cms --storage=ddb-es,ddb"
         ];
     },
-    // Split "api-apw" tests.
+    "api-headless-cms-ddb-es": () => {
+        return ["packages/api-headless-cms-ddb-es --storage=ddb-es,ddb"];
+    },
     "api-apw": () => {
-        // TODO 1: we had to disable these temporarily because APW relies on WCP, and in our
-        // TODO 1: CI/CD, we're not testing a WCP-enabled Webiny project yet (which causes errors).
-        // TODO 1: Let's bring this ASAP or at least before releasing APW in Q3/2022.
-        //return [];
-
         return [
-            //     // TODO 2: APW tests currently only work with DynamoDB-only (it's hard-coded in the tests).
-            //     // TODO 2: That is because we currently have no way to load multiple storage operations at the same time.
-            "packages/api-apw/*"
-            //     // "packages/api-apw/* --keyword=cms:ddb --keyword=apw:base",
-            //     // "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
+            "packages/api-apw --storage=ddb"
+            // TODO: With ddb-es setup, some tests are failing!
+            // "packages/api-apw --storage=ddb-es,ddb"
         ];
     },
-    // Setup "api-aco" tests.
     "api-aco": () => {
-        return ["packages/api-aco/* --keyword=cms:ddb --keyword=aco:base"];
+        return ["packages/api-aco --storage=ddb", "packages/api-aco --storage=ddb-es,ddb"];
     },
-    // Setup "api-page-builder-aco" tests.
     "api-page-builder-aco": () => {
         return [
-            "packages/api-page-builder-aco/* --keyword=cms:ddb --keyword=aco:base --keyword=pb:ddb --keyword=pb:base --keyword=api-page-builder-aco:base"
+            "packages/api-page-builder-aco --storage=ddb",
+            "packages/api-page-builder-aco --storage=ddb-es,ddb"
+        ];
+    },
+    "api-file-manager-aco": () => {
+        return [
+            "packages/api-file-manager-aco --storage=ddb",
+            "packages/api-file-manager-aco --storage=ddb-es,ddb"
         ];
     }
 };
@@ -93,8 +132,8 @@ function hasTestFiles(folder) {
             if (hasTFiles) {
                 return true;
             }
-        } else {
-            return testFilePattern.test(filepath);
+        } else if (testFilePattern.test(filepath)) {
+            return true;
         }
     }
     return false;

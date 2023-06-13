@@ -1,29 +1,17 @@
-import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import createGraphQLHandlerPlugins from "@webiny/handler-graphql";
-import { createTenancyAndSecurity } from "./context/tenancySecurity";
-import { createPermissions, PermissionsArg } from "./context/helpers";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createI18NContext } from "@webiny/api-i18n";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import { createMailer } from "~/index";
-import { contextSecurity } from "./graphQLHandler";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { createMailerContext, createMailerGraphQL } from "~/index";
+import { createTenancyAndSecurity } from "./context/tenancySecurity";
+import { createPermissions, PermissionsArg } from "./context/helpers";
+import { contextSecurity } from "./graphQLHandler";
 
 export interface CreateHandlerParams {
     permissions?: PermissionsArg[];
@@ -39,13 +27,11 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
     };
     const { permissions, identity, plugins = [] } = params || {};
 
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const i18nStorage = getStorageOps<any[]>("i18n");
+
     return [
-        dbPlugins({
-            table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
+        ...cmsStorage.plugins,
         createGraphQLHandlerPlugins(),
         ...createTenancyAndSecurity({
             permissions: [...createPermissions(permissions)],
@@ -54,8 +40,8 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
         contextSecurity({ tenant, identity }),
         apiKeyAuthentication({ identityType: "api-key" }),
         apiKeyAuthorization({ identityType: "api-key" }),
-        i18nContext(),
-        i18nDynamoDbStorageOperations(),
+        createI18NContext(),
+        ...i18nStorage.storageOperations,
         /**
          * for the page builder we must define the current locale and type
          * we can do that via the CmsParametersPlugin
@@ -73,11 +59,10 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
          * usage of more than one storageOperations at a time with the help of --keyword flag.
          */
         createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient
-            })
+            storageOperations: cmsStorage.storageOperations
         }),
-        ...createMailer(),
+        ...createMailerContext(),
+        ...createMailerGraphQL(),
         plugins
     ];
 };

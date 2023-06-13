@@ -1,5 +1,7 @@
 import { Plugin } from "@webiny/plugins/types";
 import {
+    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
+    CmsModel,
     CmsModelField,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
@@ -65,4 +67,15 @@ export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOper
 
 export interface StorageOperationsFactory {
     (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
+}
+
+export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
+    dataLoaders: DataLoadersHandlerInterface;
+}
+
+export interface DataLoadersHandlerInterfaceClearAllParams {
+    model: Pick<CmsModel, "tenant" | "locale">;
+}
+export interface DataLoadersHandlerInterface {
+    clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

@@ -107,7 +107,7 @@ export class PageBuilder_5_35_0_002 {
                     logger.info(
                         `Tenant ${tenant.name} (${tenant.id}) is not installed. Skipping migration of settings.`
                     );
-                    return;
+                    continue;
                 }
 
                 logger.info(`Updating PB settings for tenant ${tenant.name} (${tenant.id}).`);

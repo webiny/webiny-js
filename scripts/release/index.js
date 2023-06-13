@@ -2,8 +2,13 @@ const yargs = require("yargs");
 const { ConsoleLogger } = require("../ConsoleLogger");
 const { getReleaseType } = require("./releaseTypes");
 
+// Disable default handling of `--version` parameter.
+yargs.version(false);
+
 async function runRelease() {
-    const { type, tag } = yargs.argv;
+    const { type, tag, gitReset, version, createGithubRelease } = yargs.argv;
+
+    console.log({ type, tag, gitReset, version });
     if (!type) {
         throw Error(`Missing required "--type" option.`);
     }
@@ -15,6 +20,18 @@ async function runRelease() {
 
     if (tag) {
         release.setTag(tag);
+    }
+
+    if (version) {
+        release.setVersion(version);
+    }
+
+    if (gitReset) {
+        release.setResetAllChanges(gitReset);
+    }
+
+    if (createGithubRelease) {
+        release.setCreateGithubRelease(createGithubRelease);
     }
 
     await release.execute();

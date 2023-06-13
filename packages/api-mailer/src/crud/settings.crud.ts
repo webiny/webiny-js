@@ -1,5 +1,6 @@
 import WebinyError from "@webiny/error";
 import {
+    ExtendedTransportSettings,
     MailerContext,
     MailerContextObject,
     MailerSettingsContext,
@@ -16,13 +17,14 @@ import {
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 import { SETTINGS_MODEL_ID } from "./settings/model";
-import { transformValuesFromEntry, transformInputToEntryValues } from "~/crud/settings/transform";
+import { transformInputToEntryValues, transformValuesFromEntry } from "~/crud/settings/transform";
 import { getSecret } from "~/crud/settings/secret";
 import { createValidation, updateValidation } from "~/crud/settings/validation";
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
 
+const defaultPort = 25;
 /**
  * Note that settings cannot be used if there is no secret defined.
  */
@@ -57,19 +59,22 @@ export const createSettingsCrud = async (
     } catch (ex) {}
 
     const getModel = async (): Promise<CmsModel> => {
-        try {
-            context.security.disableAuthorization();
-            const model = await context.cms.getModel(SETTINGS_MODEL_ID);
-            if (model) {
-                return model;
+        return context.security.withoutAuthorization(async () => {
+            try {
+                const model = await context.cms.getModel(SETTINGS_MODEL_ID);
+                if (model) {
+                    return model;
+                }
+            } catch (ex) {
+                throw new WebinyError(ex.message, ex.code, ex.data);
             }
-        } catch (ex) {
-            throw new WebinyError(ex.message, ex.code, ex.data);
-        } finally {
-            context.security.enableAuthorization();
-        }
-        throw new WebinyError(`Missing CMS Model "${SETTINGS_MODEL_ID}".`, "CMS_MODEL_MISSING", {
-            modelId: SETTINGS_MODEL_ID
+            throw new WebinyError(
+                `Missing CMS Model "${SETTINGS_MODEL_ID}".`,
+                "CMS_MODEL_MISSING",
+                {
+                    modelId: SETTINGS_MODEL_ID
+                }
+            );
         });
     };
 
@@ -130,48 +135,47 @@ export const createSettingsCrud = async (
             const model = await getModel();
 
             const tenant = getTenant();
-            try {
-                context.security.disableAuthorization();
-                await onSettingsBeforeGet.publish({
-                    tenant
-                });
-                /**
-                 * We always list because we have no id or something like that to query by.
-                 * This should return one setting anyway.
-                 */
-                const [entries] = await context.cms.listLatestEntries(model, {
-                    limit: 1,
-                    sort: ["createdOn_DESC"]
-                });
-                const [entry] = entries;
-                if (!entry) {
-                    return null;
+            return await context.security.withoutAuthorization(async () => {
+                try {
+                    await onSettingsBeforeGet.publish({
+                        tenant
+                    });
+                    /**
+                     * We always list because we have no id or something like that to query by.
+                     * This should return one setting anyway.
+                     */
+                    const [entries] = await context.cms.listLatestEntries(model, {
+                        limit: 1,
+                        sort: ["createdOn_DESC"]
+                    });
+                    const [entry] = entries;
+                    if (!entry) {
+                        return null;
+                    }
+                    const settings = transformValuesFromEntry({
+                        entry: entry as CmsEntry<TransportSettings>,
+                        secret
+                    });
+
+                    const passwordlessSettings: TransportSettings = {
+                        ...settings,
+                        password: ""
+                    };
+
+                    await onSettingsAfterGet.publish({
+                        tenant,
+                        settings: passwordlessSettings
+                    });
+
+                    return settings;
+                } catch (ex) {
+                    await onSettingsGetError.publish({
+                        tenant,
+                        error: ex
+                    });
                 }
-                const settings = transformValuesFromEntry({
-                    entry: entry as CmsEntry<TransportSettings>,
-                    secret
-                });
-
-                const passwordlessSettings: TransportSettings = {
-                    ...settings,
-                    password: ""
-                };
-
-                await onSettingsAfterGet.publish({
-                    tenant,
-                    settings: passwordlessSettings
-                });
-
-                return settings;
-            } catch (ex) {
-                await onSettingsGetError.publish({
-                    tenant,
-                    error: ex
-                });
-            } finally {
-                context.security.enableAuthorization();
-            }
-            return null;
+                return null;
+            });
         },
         /**
          * Method should not be used outside of mailer
@@ -195,46 +199,41 @@ export const createSettingsCrud = async (
 
             const { password, ...settings } = result.data;
 
-            if (!settings.port) {
-                settings.port = 25;
-            }
-
             const passwordlessSettings: TransportSettings = {
                 ...settings,
+                port: settings.port || defaultPort,
                 password: ""
             };
 
-            try {
-                context.security.disableAuthorization();
+            return await context.security.withoutAuthorization(async () => {
+                try {
+                    await onSettingsBeforeCreate.publish({
+                        settings: passwordlessSettings
+                    });
 
-                await onSettingsBeforeCreate.publish({
-                    settings: passwordlessSettings
-                });
+                    await context.cms.createEntry(
+                        model,
+                        transformInputToEntryValues({
+                            values: {
+                                ...passwordlessSettings,
+                                password
+                            },
+                            secret
+                        })
+                    );
 
-                await context.cms.createEntry(
-                    model,
-                    transformInputToEntryValues({
-                        values: {
-                            ...settings,
-                            password
-                        },
-                        secret
-                    })
-                );
-
-                await onSettingsAfterCreate.publish({
-                    settings: passwordlessSettings
-                });
-                return passwordlessSettings;
-            } catch (ex) {
-                await onSettingsCreateError.publish({
-                    settings: passwordlessSettings,
-                    error: ex
-                });
-                throw new WebinyError(ex.message, ex.code, ex.data);
-            } finally {
-                context.security.enableAuthorization();
-            }
+                    await onSettingsAfterCreate.publish({
+                        settings: passwordlessSettings
+                    });
+                    return passwordlessSettings;
+                } catch (ex) {
+                    await onSettingsCreateError.publish({
+                        settings: passwordlessSettings,
+                        error: ex
+                    });
+                    throw new WebinyError(ex.message, ex.code, ex.data);
+                }
+            });
         },
         /**
          * Method should not be used outside of mailer
@@ -255,62 +254,59 @@ export const createSettingsCrud = async (
                     errors: result.error.errors
                 });
             }
-            let original = initialOriginal;
+
+            let dbOriginal: ExtendedTransportSettings | null = null;
+            if (!initialOriginal) {
+                dbOriginal = await this.getSettings();
+            }
+            const original = initialOriginal || dbOriginal;
             if (!original) {
-                original = await this.getSettings();
-                if (!original) {
-                    throw new WebinyError(
-                        `You are trying to update settings, but there is no existing record. Create it first!`,
-                        "NOT_FOUND"
-                    );
-                }
+                throw new WebinyError(
+                    `You are trying to update settings, but there is no existing record. Create it first!`,
+                    "NOT_FOUND"
+                );
             }
 
             const { password, ...settings } = result.data;
 
-            if (!settings.port) {
-                settings.port = original.port || 25;
-            }
-
             const passwordlessSettings: TransportSettings = {
                 ...settings,
+                port: settings.port || original.port || defaultPort,
                 password: ""
             };
-            try {
-                context.security.disableAuthorization();
+            return await context.security.withoutAuthorization(async () => {
+                try {
+                    await onSettingsBeforeUpdate.publish({
+                        settings: passwordlessSettings,
+                        original: original
+                    });
 
-                await onSettingsBeforeUpdate.publish({
-                    settings: passwordlessSettings,
-                    original
-                });
+                    const transformedInput = transformInputToEntryValues({
+                        values: {
+                            ...passwordlessSettings,
+                            password: password || original.password
+                        },
+                        secret
+                    });
+                    /**
+                     * We want to make sure that old password gets stored again in case no password was sent in update input.
+                     */
+                    await context.cms.updateEntry(model, original.id, transformedInput);
 
-                const transformedInput = transformInputToEntryValues({
-                    values: {
-                        ...settings,
-                        password: password || original.password
-                    },
-                    secret
-                });
-                /**
-                 * We want to make sure that old password gets stored again in case no password was sent in update input.
-                 */
-                await context.cms.updateEntry(model, original.id, transformedInput);
-
-                await onSettingsAfterUpdate.publish({
-                    settings: passwordlessSettings,
-                    original
-                });
-                return passwordlessSettings;
-            } catch (ex) {
-                await onSettingsUpdateError.publish({
-                    original,
-                    settings: passwordlessSettings,
-                    error: ex
-                });
-                throw new WebinyError(ex.message, ex.code, ex.data);
-            } finally {
-                context.security.enableAuthorization();
-            }
+                    await onSettingsAfterUpdate.publish({
+                        settings: passwordlessSettings,
+                        original
+                    });
+                    return passwordlessSettings;
+                } catch (ex) {
+                    await onSettingsUpdateError.publish({
+                        original,
+                        settings: passwordlessSettings,
+                        error: ex
+                    });
+                    throw new WebinyError(ex.message, ex.code, ex.data);
+                }
+            });
         },
         async saveSettings(this: MailerContextObject, params) {
             const { input } = params;

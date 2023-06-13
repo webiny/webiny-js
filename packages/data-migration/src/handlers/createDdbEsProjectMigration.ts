@@ -1,24 +1,27 @@
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
 import { Table } from "dynamodb-toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
-import { createContainer, Constructor } from "@webiny/ioc";
+import { Constructor, createContainer } from "@webiny/ioc";
 import {
     DataMigration,
+    ExecutionTimeLimiter,
     MigrationEventHandlerResponse,
     MigrationEventPayload,
     MigrationRepository
 } from "~/types";
 import {
     ElasticsearchClientSymbol,
-    MigrationRepositorySymbol,
-    PrimaryDynamoTableSymbol,
     ElasticsearchDynamoTableSymbol,
-    MigrationSymbol
+    ExecutionTimeLimiterSymbol,
+    MigrationRepositorySymbol,
+    MigrationSymbol,
+    PrimaryDynamoTableSymbol
 } from "~/symbols";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
 import { MigrationRepositoryImpl } from "~/repository/migrations.repository";
 import { devVersionErrorResponse } from "~/handlers/devVersionErrorResponse";
 import { createPatternMatcher } from "~/handlers/createPatternMatcher";
+import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbEsDataMigrationConfig {
     elasticsearchClient: ElasticsearchClient;
@@ -27,6 +30,7 @@ interface CreateDdbEsDataMigrationConfig {
     migrations: Constructor<DataMigration>[];
     isMigrationApplicable?: IsMigrationApplicable;
     repository?: MigrationRepository;
+    timeLimiter?: ExecutionTimeLimiter;
 }
 
 export const createDdbEsProjectMigration = ({
@@ -35,13 +39,15 @@ export const createDdbEsProjectMigration = ({
     primaryTable,
     dynamoToEsTable,
     isMigrationApplicable = undefined,
-    repository = undefined
+    repository = undefined,
+    ...config
 }: CreateDdbEsDataMigrationConfig) => {
     return createRawEventHandler<MigrationEventPayload, any, MigrationEventHandlerResponse>(
-        async ({ payload }) => {
+        async ({ payload, lambdaContext }) => {
             const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
 
-            if (projectVersion === "0.0.0") {
+            const version = semverCoerce(projectVersion);
+            if (version?.version === "0.0.0") {
                 return devVersionErrorResponse();
             }
 
@@ -50,6 +56,10 @@ export const createDdbEsProjectMigration = ({
             container.bind(PrimaryDynamoTableSymbol).toConstantValue(primaryTable);
             container.bind(ElasticsearchDynamoTableSymbol).toConstantValue(dynamoToEsTable);
             container.bind(ElasticsearchClientSymbol).toConstantValue(elasticsearchClient);
+
+            const timeLimiter: ExecutionTimeLimiter =
+                config.timeLimiter || lambdaContext?.getRemainingTimeInMillis || (() => 0);
+            container.bind(ExecutionTimeLimiterSymbol).toConstantValue(timeLimiter);
 
             if (repository) {
                 // Repository implementation provided by the user.
@@ -70,11 +80,14 @@ export const createDdbEsProjectMigration = ({
 
             // Inject dependencies and execute.
             try {
-                const data = await container
-                    .resolve(MigrationRunner)
-                    .execute(projectVersion, patternMatcher || isMigrationApplicable);
+                const runner = await container.resolve(MigrationRunner);
 
-                return { data };
+                if (payload.command === "execute") {
+                    await runner.execute(projectVersion, patternMatcher || isMigrationApplicable);
+                    return;
+                }
+
+                return { data: await runner.getStatus() };
             } catch (err) {
                 return { error: { message: err.message } };
             }

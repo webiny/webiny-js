@@ -1,14 +1,10 @@
 /**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
-/**
  * Package @commodo/fields does not have types.
  */
 // @ts-ignore
 import { string, withFields } from "@commodo/fields";
 import { validation } from "@webiny/validation";
+import { mdbid } from "@webiny/utils";
 import {
     ApwContentTypes,
     ApwScheduleAction,

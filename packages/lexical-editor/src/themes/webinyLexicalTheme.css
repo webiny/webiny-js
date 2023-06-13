@@ -4,6 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+/**
+ * This are fallback styles for Webiny.
+ */
+
  .ContentEditable__root{
    font-size: inherit;
    line-height: 1.25;
@@ -34,25 +39,26 @@
 }
 .WebinyLexical__h1 {
   font-size: 24px;
-  color: rgb(5, 5, 5);
-  font-weight: 400;
-  margin: 0;
+  font-weight: inherit;
+  margin: inherit;
 }
+
 .WebinyLexical__h2 {
   font-size: 15px;
-  color: rgb(101, 103, 107);
-  font-weight: 700;
-  margin: 0;
-  text-transform: uppercase;
+  font-weight: inherit;
+  margin: inherit;
 }
+
 .WebinyLexical__h3 {
   font-size: 12px;
-  margin: 0;
-  text-transform: uppercase;
+  font-weight: inherit;
+  margin: inherit;
 }
+
 .WebinyLexical__textBold {
   font-weight: bold;
 }
+
 .WebinyLexical__textItalic {
   font-style: italic;
 }
@@ -65,14 +71,17 @@
 .WebinyLexical__textUnderlineStrikethrough {
   text-decoration: underline line-through;
 }
+
 .WebinyLexical__textSubscript {
   font-size: 0.8em;
   vertical-align: sub !important;
 }
+
 .WebinyLexical__textSuperscript {
   font-size: 0.8em;
   vertical-align: super;
 }
+
 .WebinyLexical__textCode {
   background-color: rgb(240, 242, 245);
   padding: 1px 0.25rem;
@@ -206,8 +215,6 @@
   border: 0;
   cursor: pointer;
 }
-
-
 .WebinyLexical__tableAddRows:hover {
   background-color: #c9dbf0;
 }

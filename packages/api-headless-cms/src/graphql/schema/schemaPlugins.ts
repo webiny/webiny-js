@@ -1,17 +1,18 @@
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext, CmsModel } from "~/types";
+import { CmsContext, CmsModel } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
-import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { createFieldTypePluginRecords } from "~/graphql/schema/createFieldTypePluginRecords";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
 }
+
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<CmsGraphQLSchemaPlugin[]> => {
@@ -28,27 +29,12 @@ export const generateSchemaPlugins = async (
     }
 
     // Structure plugins for faster access
-    const fieldTypePlugins = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce<CmsFieldTypePlugins>((acc, pl) => {
-            acc[pl.fieldType] = pl;
-            return acc;
-        }, {});
+    const fieldTypePlugins = createFieldTypePluginRecords(plugins);
 
     const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
         CmsGraphQLSchemaSorterPlugin.type
     );
 
-    // const schemas = getSchemaFromFieldPlugins({
-    //     models,
-    //     fieldTypePlugins,
-    //     type
-    // });
-
-    // const newPlugins: CmsGraphQLSchemaPlugin[] = [];
-    // for (const schema of schemas) {
-    //     newPlugins.push(new CmsGraphQLSchemaPlugin(schema));
-    // }
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldTypePlugins,
@@ -56,13 +42,20 @@ export const generateSchemaPlugins = async (
     });
 
     models
-        .filter(model => model.fields.length > 0)
+        .filter(model => {
+            return model.fields.length > 0;
+        })
         .forEach(model => {
             switch (type) {
                 case "manage":
                     {
                         const plugin = new CmsGraphQLSchemaPlugin({
-                            typeDefs: createManageSDL({ model, fieldTypePlugins, sorterPlugins }),
+                            typeDefs: createManageSDL({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                sorterPlugins
+                            }),
                             resolvers: createManageResolvers({
                                 models,
                                 model,
@@ -79,7 +72,12 @@ export const generateSchemaPlugins = async (
                 case "read":
                     {
                         const plugin = new CmsGraphQLSchemaPlugin({
-                            typeDefs: createReadSDL({ model, fieldTypePlugins, sorterPlugins }),
+                            typeDefs: createReadSDL({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                sorterPlugins
+                            }),
                             resolvers: cms.READ
                                 ? createReadResolvers({
                                       models,

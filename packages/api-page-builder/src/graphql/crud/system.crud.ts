@@ -4,7 +4,7 @@ import { preparePageData } from "./install/welcomeToWebinyPageData";
 import { preparePageDataLegacy } from "./install/welcomeToWebinyPageDataLegacy";
 import { notFoundPageData } from "./install/notFoundPageData";
 import { notFoundPageDataLegacy } from "./install/notFoundPageDataLegacy";
-import savePageAssets from "./install/utils/savePageAssets";
+import { savePageAssets } from "./install/utils/savePageAssets";
 import {
     Category,
     OnSystemAfterInstallTopicParams,
@@ -151,12 +151,13 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         title: "Main Menu",
                         slug: "main-menu",
                         description:
-                            "The main menu of the website, containing links to most important pages."
+                            "The main menu of the website, containing links to most important pages.",
+                        items: []
                     });
                 }
 
                 // 5. Create sample pages.
-                const fmSettings = await fileManager.settings.getSettings();
+                const fmSettings = await fileManager.getSettings();
 
                 let welcomeToWebinyPageContent, notFoundPageContent;
                 if (featureFlags.pbLegacyRenderingEngine === true) {

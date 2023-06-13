@@ -1,9 +1,5 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
+import { mdbid } from "@webiny/utils";
 import { ErrorResponse, Response, ListResponse } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -40,12 +36,14 @@ export default new GraphQLSchemaPlugin<Context>({
         input CreateTenantInput {
             name: String!
             description: String!
+            tags: [String!]!
             settings: TenantSettingsInput!
         }
 
         input UpdateTenantInput {
             name: String!
             description: String!
+            tags: [String!]!
             settings: TenantSettingsInput!
         }
 
@@ -100,11 +98,9 @@ export default new GraphQLSchemaPlugin<Context>({
                     await checkPermissions(context);
                     const tenant = context.tenancy.getCurrentTenant();
                     const newTenant = await context.tenancy.createTenant({
+                        ...args.data,
                         id: mdbid(),
-                        name: args.data.name,
-                        description: args.data.description,
-                        parent: tenant.id,
-                        settings: args.data.settings
+                        parent: tenant.id
                     });
 
                     return new Response(newTenant);

@@ -12,8 +12,10 @@ const featureVersion = semver.coerce("5.33.0") as SemVer;
 const isBetaOrNext = (model: CmsModel): boolean => {
     if (!model.webinyVersion) {
         return false;
+    } else if (model.webinyVersion.startsWith("0.0.0")) {
+        return true;
     }
-    return model.webinyVersion.match(/next|beta/) !== null;
+    return model.webinyVersion.match(/next|beta|unstable/) !== null;
 };
 
 const isFeatureEnabled = (model: CmsModel): boolean => {
@@ -21,13 +23,15 @@ const isFeatureEnabled = (model: CmsModel): boolean => {
      * In case of disabled webinyVersion value, we disable this feature.
      * This is only for testing...
      */
-    if (model.webinyVersion === "disable") {
+    const disableConversion = !!process.env.WEBINY_API_TEST_STORAGE_ID_CONVERSION_DISABLE;
+    if (model.webinyVersion === "disable" || disableConversion) {
         return false;
     }
     /**
      * If is a test environment, always have this turned on.
      */
-    if (process.env.NODE_ENV === "test" || isBetaOrNext(model) === true) {
+    const nodeEnv = process.env.NODE_ENV as string;
+    if (nodeEnv === "test" || nodeEnv === "disable" || isBetaOrNext(model)) {
         return true;
     }
     /**
@@ -111,23 +115,22 @@ export const createValueKeyFromStorageConverter = (params: Params): CmsModelConv
     };
 };
 
-interface AttachConvertersParams {
-    plugins: PluginsContainer;
-    model: CmsModel;
-}
-export const attachCmsModelFieldConverters = (
-    params: AttachConvertersParams
-): StorageOperationsCmsModel => {
-    const { model, plugins } = params;
-    return {
-        ...model,
-        convertValueKeyToStorage: createValueKeyToStorageConverter({
-            model,
-            plugins
-        }),
-        convertValueKeyFromStorage: createValueKeyFromStorageConverter({
-            model,
-            plugins
-        })
+export const createCmsModelFieldConvertersAttachFactory = (plugins: PluginsContainer) => {
+    return (model: StorageOperationsCmsModel | CmsModel): StorageOperationsCmsModel => {
+        const storageModel = model as Partial<StorageOperationsCmsModel>;
+        if (!!storageModel.convertValueKeyToStorage && !!storageModel.convertValueKeyFromStorage) {
+            return storageModel as StorageOperationsCmsModel;
+        }
+        return {
+            ...model,
+            convertValueKeyToStorage: createValueKeyToStorageConverter({
+                model,
+                plugins
+            }),
+            convertValueKeyFromStorage: createValueKeyFromStorageConverter({
+                model,
+                plugins
+            })
+        };
     };
 };

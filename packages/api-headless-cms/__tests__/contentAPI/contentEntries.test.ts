@@ -99,6 +99,7 @@ describe("Content entries", () => {
     const {
         createFruit,
         publishFruit,
+        deleteFruit,
         getContentEntries,
         getLatestContentEntries,
         getPublishedContentEntries,
@@ -242,6 +243,8 @@ describe("Content entries", () => {
                         entryId: apple.entryId,
                         status: apple.meta.status,
                         title: apple.name,
+                        description: apple.description,
+                        image: null,
                         model: {
                             modelId: apple.meta.modelId,
                             name: "Fruit"
@@ -278,6 +281,8 @@ describe("Content entries", () => {
                             entryId: apple.entryId,
                             status: apple.meta.status,
                             title: apple.name,
+                            description: apple.description,
+                            image: null,
                             model: {
                                 modelId: apple.meta.modelId,
                                 name: "Fruit"
@@ -288,6 +293,8 @@ describe("Content entries", () => {
                             entryId: banana.entryId,
                             status: "unpublished",
                             title: banana.name,
+                            description: banana.description,
+                            image: null,
                             model: {
                                 modelId: banana.meta.modelId,
                                 name: "Fruit"
@@ -298,6 +305,8 @@ describe("Content entries", () => {
                             entryId: strawberry.entryId,
                             status: strawberry.meta.status,
                             title: strawberry.name,
+                            description: strawberry.description,
+                            image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
                                 name: "Fruit"
@@ -327,6 +336,8 @@ describe("Content entries", () => {
                         entryId: thirdBanana.entryId,
                         status: "draft",
                         title: thirdBanana.name,
+                        description: thirdBanana.description,
+                        image: null,
                         model: {
                             modelId: thirdBanana.meta.modelId,
                             name: "Fruit"
@@ -363,6 +374,8 @@ describe("Content entries", () => {
                             entryId: apple.entryId,
                             status: "published",
                             title: apple.name,
+                            description: apple.description,
+                            image: null,
                             model: {
                                 modelId: apple.meta.modelId,
                                 name: "Fruit"
@@ -373,6 +386,8 @@ describe("Content entries", () => {
                             entryId: thirdBanana.entryId,
                             status: "draft",
                             title: thirdBanana.name,
+                            description: thirdBanana.description,
+                            image: null,
                             model: {
                                 modelId: thirdBanana.meta.modelId,
                                 name: "Fruit"
@@ -383,6 +398,8 @@ describe("Content entries", () => {
                             entryId: strawberry.entryId,
                             status: "published",
                             title: strawberry.name,
+                            description: strawberry.description,
+                            image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
                                 name: "Fruit"
@@ -411,6 +428,8 @@ describe("Content entries", () => {
                         entryId: secondBanana.entryId,
                         status: "published",
                         title: secondBanana.name,
+                        description: secondBanana.description,
+                        image: null,
                         model: {
                             modelId: secondBanana.meta.modelId,
                             name: "Fruit"
@@ -447,6 +466,8 @@ describe("Content entries", () => {
                             entryId: apple.entryId,
                             status: "published",
                             title: apple.name,
+                            description: apple.description,
+                            image: null,
                             model: {
                                 modelId: apple.meta.modelId,
                                 name: "Fruit"
@@ -457,6 +478,8 @@ describe("Content entries", () => {
                             entryId: secondBanana.entryId,
                             status: "published",
                             title: secondBanana.name,
+                            description: secondBanana.description,
+                            image: null,
                             model: {
                                 modelId: secondBanana.meta.modelId,
                                 name: "Fruit"
@@ -467,6 +490,8 @@ describe("Content entries", () => {
                             entryId: strawberry.entryId,
                             status: "published",
                             title: strawberry.name,
+                            description: strawberry.description,
+                            image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
                                 name: "Fruit"
@@ -622,6 +647,57 @@ describe("Content entries", () => {
                             title: greenApple.name
                         }
                     ],
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should process the delete of non existing entry", async () => {
+        const { greenApple } = await setupFruits();
+        /**
+         * First we should delete the fruit.
+         */
+        const [deleteSuccessResponse] = await deleteFruit({
+            revision: greenApple.entryId
+        });
+        expect(deleteSuccessResponse).toEqual({
+            data: {
+                deleteFruit: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+        /**
+         * If we repeat the operation we should get the non existing entry error.
+         */
+        const [deleteFailResponse] = await deleteFruit({
+            revision: greenApple.entryId
+        });
+        expect(deleteFailResponse).toMatchObject({
+            data: {
+                deleteFruit: {
+                    data: null,
+                    error: {
+                        message: `Entry "${greenApple.entryId}" was not found!`
+                    }
+                }
+            }
+        });
+        /**
+         * And if we force deletion, we should get the success response.
+         */
+        const [deleteForceSuccessResponse] = await deleteFruit({
+            revision: greenApple.entryId,
+            options: {
+                force: true
+            }
+        });
+        expect(deleteForceSuccessResponse).toEqual({
+            data: {
+                deleteFruit: {
+                    data: true,
                     error: null
                 }
             }

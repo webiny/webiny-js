@@ -1,8 +1,6 @@
-import { CmsEntry, CmsGroup, CmsModel, CmsModelField } from "~/types";
+import { CmsGroup, CmsModelField } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
-import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 
 describe("multiple values in field", () => {
     const manageOpts = { path: "manage/en-US" };
@@ -27,30 +25,6 @@ describe("multiple values in field", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsGroup) => {
-        const model = models.find(m => m.modelId === "category");
-        if (!model) {
-            throw new Error(`Could not find model "category".`);
-        }
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                group: contentModelGroup.id,
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        return create.data.createContentModel.data;
-    };
-
     test("multiple value field is correctly created", async () => {
         const contentModelGroup = await setupContentModelGroup();
 
@@ -62,6 +36,8 @@ describe("multiple values in field", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -142,6 +118,8 @@ describe("multiple values in field", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
+                singularApiName: model.singularApiName,
+                pluralApiName: model.pluralApiName,
                 group: contentModelGroup.id
             }
         });
@@ -170,193 +148,6 @@ describe("multiple values in field", () => {
                             fieldId: "availableSizes",
                             type: "text"
                         }
-                    }
-                }
-            }
-        });
-    });
-    /**
-     * Removed in 5.33.0 because users can now remove fields whenever they want to.
-     */
-    test.skip("should not allow to change or removal of locked multiple values field", async () => {
-        const { createCategory } = useCategoryManageHandler({
-            ...manageOpts
-        });
-        const contentModelGroup = await setupContentModelGroup();
-
-        const categoryContentModel = await setupCategoryModel(contentModelGroup);
-
-        const [createCategoryResponse] = await createCategory({
-            data: {
-                title: "Vegetables",
-                slug: "vegetables"
-            }
-        });
-        const category = createCategoryResponse.data.createCategory.data as CmsEntry;
-
-        const productModel = models.find(m => m.modelId === "product");
-        if (!productModel) {
-            throw new Error(`Could not find model "product".`);
-        }
-        const [createResponse] = await createContentModelMutation({
-            data: {
-                name: productModel.name,
-                modelId: productModel.modelId,
-                group: contentModelGroup.id
-            }
-        });
-
-        const contentModel = createResponse.data.createContentModel.data as CmsModel;
-
-        await updateContentModelMutation({
-            modelId: contentModel.modelId,
-            data: {
-                fields: productModel.fields,
-                layout: productModel.layout
-            }
-        });
-
-        // create a entry so fields get locked
-        const { createProduct } = useProductManageHandler({
-            ...manageOpts
-        });
-
-        const availableOn = "2020-12-25";
-        const [createProductResponse] = await createProduct({
-            data: {
-                title: "Potato",
-                price: 100.02,
-                availableOn,
-                color: "white",
-                availableSizes: ["s", "m"],
-                image: "file.jpg",
-                category: {
-                    modelId: categoryContentModel.modelId,
-                    id: category.id
-                },
-                richText: [
-                    {
-                        tag: "p",
-                        value: "some text"
-                    }
-                ]
-            }
-        });
-
-        expect(createProductResponse).toEqual({
-            data: {
-                createProduct: {
-                    data: {
-                        id: expect.any(String),
-                        entryId: expect.any(String),
-                        createdOn: expect.stringMatching(/^20/),
-                        createdBy: {
-                            id: "id-12345678",
-                            displayName: "John Doe",
-                            type: "admin"
-                        },
-                        savedOn: expect.stringMatching(/^20/),
-                        category: {
-                            modelId: categoryContentModel.modelId,
-                            id: category.id,
-                            entryId: category.entryId
-                        },
-                        title: "Potato",
-                        color: "white",
-                        image: "file.jpg",
-                        price: 100.02,
-                        availableOn,
-                        availableSizes: ["s", "m"],
-                        inStock: null,
-                        itemsInStock: null,
-                        variant: null,
-                        richText: [
-                            {
-                                tag: "p",
-                                value: "some text"
-                            }
-                        ],
-                        meta: {
-                            locked: false,
-                            modelId: "product",
-                            publishedOn: null,
-                            revisions: [
-                                {
-                                    id: expect.any(String),
-                                    title: "Potato"
-                                }
-                            ],
-                            status: "draft",
-                            title: "Potato",
-                            version: 1
-                        }
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const fieldsWithNoMultipleValues = productModel.fields.filter(
-            field => !field.multipleValues
-        );
-
-        const [removedMultipleValuesResponse] = await updateContentModelMutation({
-            modelId: contentModel.modelId,
-            data: {
-                titleFieldId: null,
-                fields: fieldsWithNoMultipleValues,
-                layout: fieldsWithNoMultipleValues.map(field => {
-                    return [field.id];
-                })
-            }
-        });
-
-        expect(removedMultipleValuesResponse).toMatchObject({
-            data: {
-                updateContentModel: {
-                    data: null,
-                    error: {
-                        code: "ENTRY_FIELD_USED",
-                        data: {},
-                        message: expect.stringMatching(
-                            `Cannot remove the field "text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
-                        )
-                    }
-                }
-            }
-        });
-
-        const modifiedMultipleValuesFields = productModel.fields.map(field => {
-            if (!field.multipleValues) {
-                return field;
-            }
-            return {
-                ...field,
-                multipleValues: false
-            };
-        });
-
-        const [changedMultipleValuesResponse] = await updateContentModelMutation({
-            modelId: contentModel.modelId,
-            data: {
-                titleFieldId: null,
-                fields: modifiedMultipleValuesFields,
-                layout: modifiedMultipleValuesFields.map(field => {
-                    return [field.id];
-                })
-            }
-        });
-
-        expect(changedMultipleValuesResponse).toMatchObject({
-            data: {
-                updateContentModel: {
-                    data: null,
-                    error: {
-                        code: "ENTRY_FIELD_USED",
-                        data: {},
-                        message: expect.stringMatching(
-                            `Cannot change "multipleValues" for the "text@([a-zA-Z0-9_-]+)" field because it's already in use in created content.`
-                        )
                     }
                 }
             }

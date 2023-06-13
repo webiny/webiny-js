@@ -15,12 +15,20 @@ import importProcessPlugins from "@webiny/api-page-builder-import-export/import/
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch, { createElasticsearchClient } from "@webiny/api-elasticsearch";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
+import elasticSearch, {
+    createElasticsearchClient,
+    createGzipCompression
+} from "@webiny/api-elasticsearch";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
+import { createAcoFileManagerImportExportContext } from "@webiny/api-file-manager-aco";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
@@ -35,6 +43,7 @@ const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [
+        createGzipCompression(),
         dynamoDbPlugins(),
         logsPlugins(),
         elasticSearch(elasticsearchClient),
@@ -47,8 +56,12 @@ export const handler = createHandler({
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbElasticStorageOperation(),
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({
+                documentClient,
+                elasticsearchClient
+            })
+        }),
         // Add File storage S3 plugin for API file manager.
         fileManagerS3(),
         createPageBuilderContext({
@@ -69,7 +82,23 @@ export const handler = createHandler({
         }),
         importProcessPlugins({
             handlers: { process: process.env.AWS_LAMBDA_FUNCTION_NAME }
-        })
+        }),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
+        createAco(),
+        createAcoPageBuilderImportExportContext(),
+        createAcoFileManagerImportExportContext()
     ],
     http: { debug }
 });

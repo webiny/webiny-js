@@ -32,7 +32,7 @@ interface TemplateDialogProps {
     onTemplate: (template: CmsDynamicZoneTemplate) => void;
 }
 
-export const TemplateDialog = (props: TemplateDialogProps) => {
+export const TemplateDialog: React.VFC<TemplateDialogProps> = props => {
     const [showWarning, setWarning] = useState(false);
     const newTemplate = !Boolean(props.template);
     const dialogTitle = newTemplate ? "Add Template" : "Edit Template";

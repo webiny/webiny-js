@@ -1,4 +1,6 @@
 import refInput from "./refInput";
 import refInputs from "./refInputs";
+import { createAdvancedRefRenderer } from "./advanced";
+import { createSimpleRefRenderer } from "./simple";
 
-export default [refInput, refInputs];
+export default [...createAdvancedRefRenderer(), refInput, refInputs, ...createSimpleRefRenderer()];

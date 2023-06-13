@@ -9,40 +9,48 @@ import {
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface RenderFieldsParams {
+    models: CmsModel[];
     model: CmsModel;
+    fields: CmsModelField[];
     type: ApiEndpoint;
     fieldTypePlugins: CmsFieldTypePlugins;
 }
+
 interface RenderFields {
     (params: RenderFieldsParams): CmsModelFieldDefinition[];
 }
 
 export const renderFields: RenderFields = ({
+    models,
     model,
+    fields,
     type,
     fieldTypePlugins
 }): CmsModelFieldDefinition[] => {
-    return model.fields
-        .map(field => renderField({ model, type, field, fieldTypePlugins }))
+    return fields
+        .map(field => renderField({ models, model, type, field, fieldTypePlugins }))
         .filter(Boolean) as CmsModelFieldDefinition[];
 };
 
-interface RenderFieldParams extends RenderFieldsParams {
+interface RenderFieldParams extends Omit<RenderFieldsParams, "fields"> {
     field: CmsModelField;
 }
 
 export const renderField = ({
+    models,
     model,
     type,
     field,
     fieldTypePlugins
 }: RenderFieldParams): CmsModelFieldDefinition | null => {
-    const plugin: CmsModelFieldToGraphQLPlugin = fieldTypePlugins[getBaseFieldType(field)];
+    const plugin = fieldTypePlugins[getBaseFieldType(field)];
     if (!plugin) {
         // Let's not render the field if it does not exist in the field plugins.
         return null;
     }
-    const defs = plugin[type].createTypeField({
+    const { createTypeField } = plugin[type] as CmsModelFieldToGraphQLPlugin["manage"];
+    const defs = createTypeField({
+        models,
         model,
         field,
         fieldTypePlugins

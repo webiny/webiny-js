@@ -169,6 +169,18 @@ i.right-align {
   background-image: url("../../images/icons/text-right.svg");
 }
 
+i.indent {
+  background-image: url("../../images/icons/indent.svg");
+}
+
+i.outdent {
+  background-image: url("../../images/icons/outdent.svg");
+}
+
+i.justify-align {
+  background-image: url("../../images/icons/justify.svg");
+}
+
 i.chevron-down {
   background-color: transparent;
   background-size: contain;

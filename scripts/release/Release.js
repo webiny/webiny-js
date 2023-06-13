@@ -10,6 +10,7 @@ const { Octokit } = require("@octokit/rest");
 class Release {
     tag = undefined;
     version = undefined;
+    resetAllChanges = true;
     mostRecentVersion = undefined;
     createGithubRelease = false;
 
@@ -41,8 +42,15 @@ class Release {
         this.version = version;
     }
 
+    /**
+     * @param {boolean|string} flag Boolean or "latest" to mark release as "latest" on Github
+     */
     setCreateGithubRelease(flag) {
         this.createGithubRelease = flag;
+    }
+
+    setResetAllChanges(reset) {
+        this.resetAllChanges = reset;
     }
 
     async execute() {
@@ -104,7 +112,7 @@ class Release {
         await execa("yarn", lernaPublishArgs, { stdio: "inherit" });
         this.logger.info(`Packages were published to NPM under %s dist-tag`, this.tag);
 
-        if (this.createGithubRelease) {
+        if (this.createGithubRelease !== false) {
             // Generate changelog, tag commit, and create Github release.
             const lernaJSON = await loadJSON("lerna.json");
             const versionTag = `v${lernaJSON.version}`;
@@ -122,8 +130,10 @@ class Release {
             this.logger.info("Created Github release: %s", release.html_url);
         }
 
-        // Reset all changes made during versioing.
-        await execa("git", ["reset", "--hard", "HEAD"]);
+        // Reset all changes made during versioning.
+        if (this.resetAllChanges) {
+            await execa("git", ["reset", "--hard", "HEAD"]);
+        }
 
         this.logger.success("Release process has finished successfully!");
     }
@@ -184,7 +194,9 @@ class Release {
             tag_name: tag,
             name: tag,
             body: changelog,
-            prerelease: false
+            prerelease: false,
+            // `make_latest` is of type `string`
+            make_latest: this.createGithubRelease === "latest" ? "true" : "false"
         });
     }
 }

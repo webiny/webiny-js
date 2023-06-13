@@ -3,7 +3,8 @@ import {
     assertNotError,
     createDdbMigrationHandler,
     getPrimaryDynamoDbTable,
-    insertTestData,
+    groupMigrations,
+    insertDynamoDbTestData,
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
@@ -22,22 +23,24 @@ describe("5.35.0-003", () => {
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(0);
-        expect(data.skipped.length).toBe(1);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
     });
 
     it("should execute migration", async () => {
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         const handler = createDdbMigrationHandler({ table, migrations: [AdminUsers_5_35_0_003] });
         const { data, error } = await handler();
 
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
-        expect(data.executed.length).toBe(1);
-        expect(data.skipped.length).toBe(0);
-        expect(data.notApplicable.length).toBe(0);
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
+        expect(grouped.notApplicable.length).toBe(0);
 
         const allUsers = await scanTable(table, {
             index: "GSI1",
@@ -54,21 +57,27 @@ describe("5.35.0-003", () => {
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
-        await insertTestData(table, testData);
+        await insertDynamoDbTestData(table, testData);
         const handler = createDdbMigrationHandler({ table, migrations: [AdminUsers_5_35_0_003] });
 
         // Should run the migration
-        process.stdout.write("[First run]\n");
-        const firstRun = await handler();
-        assertNotError(firstRun.error);
-        expect(firstRun.data.executed.length).toBe(1);
+        {
+            process.stdout.write("[First run]\n");
+            const { data, error } = await handler();
+            assertNotError(error);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toBe(1);
+        }
 
         // Should skip the migration
-        process.stdout.write("[Second run]\n");
-        const secondRun = await handler();
-        assertNotError(secondRun.error);
-        expect(secondRun.data.executed.length).toBe(0);
-        expect(secondRun.data.skipped.length).toBe(1);
-        expect(secondRun.data.notApplicable.length).toBe(0);
+        {
+            process.stdout.write("[Second run]\n");
+            const { data, error } = await handler();
+            assertNotError(error);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toBe(0);
+            expect(grouped.skipped.length).toBe(1);
+            expect(grouped.notApplicable.length).toBe(0);
+        }
     });
 });

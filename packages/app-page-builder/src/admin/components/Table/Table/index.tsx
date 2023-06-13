@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
 
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
+import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -26,7 +26,7 @@ import statusLabels from "~/admin/constants/pageStatusesLabels";
 import { FOLDER_TYPE } from "~/admin/constants/folders";
 
 import { PbPageDataItem } from "~/types";
-import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
+import { actionsColumnStyles, menuStyles } from "./styled";
 
 interface Props {
     records: SearchRecordItem<PbPageDataItem>[];
@@ -131,6 +131,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             meta: {
                 alignEnd: true
             },
+            className: actionsColumnStyles,
             cell: ({ type, original }) => {
                 if (!original) {
                     return <></>;
@@ -138,7 +139,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
                 if (type === "RECORD") {
                     return (
-                        <Menu handle={<IconButton icon={<More />} />}>
+                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
                             <RecordActionEdit record={original as PbPageDataItem} />
                             <RecordActionPreview record={original as PbPageDataItem} />
                             <RecordActionPublish record={original as PbPageDataItem} />

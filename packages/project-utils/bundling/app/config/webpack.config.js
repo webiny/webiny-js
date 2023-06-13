@@ -18,6 +18,7 @@ const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const WebpackBar = require("webpackbar");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const { getProjectApplication } = require("@webiny/cli/utils");
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -55,6 +56,8 @@ const sassLoader = {
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function (webpackEnv, { paths, options }) {
+    const projectApplication = getProjectApplication({ cwd: options.cwd });
+
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
 
@@ -89,7 +92,7 @@ module.exports = function (webpackEnv, { paths, options }) {
     // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
     const publicUrl = isEnvProduction ? publicPath.slice(0, -1) : isEnvDevelopment && "";
     // Get environment variables to inject into our app.
-    const env = getClientEnvironment(publicUrl);
+    const env = getClientEnvironment({ publicUrl, projectApplication });
 
     return {
         mode: isEnvProduction ? "production" : isEnvDevelopment && "development",
@@ -212,6 +215,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                 .map(ext => `.${ext}`)
                 .filter(ext => useTypeScript || !ext.includes("ts")),
             alias: {
+                os: require.resolve("os-browserify/browser"),
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 "react-native": require.resolve("react-native-web"),
@@ -225,8 +229,10 @@ module.exports = function (webpackEnv, { paths, options }) {
                 ...(modules.webpackAliases || {})
             },
             fallback: {
-                path: require.resolve("path-browserify"),
-                buffer: require.resolve("buffer/")
+                assert: require.resolve("assert-browserify"),
+                buffer: require.resolve("buffer/"),
+                crypto: require.resolve("crypto-browserify"),
+                path: require.resolve("path-browserify")
             }
         },
 

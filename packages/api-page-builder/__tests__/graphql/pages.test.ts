@@ -386,12 +386,24 @@ describe("CRUD Test", () => {
 
     test("get page with resolved reference block", async () => {
         // Create page block and add element inside of it
-        await createBlockCategory({
+        const [createBlockCategoryResponse] = await createBlockCategory({
             data: {
                 slug: "block-category",
                 name: "block-category-name",
                 icon: "block-category-icon",
                 description: "block-category-description"
+            }
+        });
+        expect(createBlockCategoryResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    createBlockCategory: {
+                        data: {
+                            slug: "block-category"
+                        },
+                        error: null
+                    }
+                }
             }
         });
 
@@ -418,12 +430,26 @@ describe("CRUD Test", () => {
 
         const pageElementData = createPageElementResponse.data.pageBuilder.createPageElement.data;
 
-        await updatePageBlock({
+        const updatedContent = {
+            ...blockData.content,
+            elements: [...blockData.content.elements, pageElementData]
+        };
+        const [updatePageBlockResult] = await updatePageBlock({
             id: blockData.id,
             data: {
-                content: {
-                    ...blockData.content,
-                    elements: [...blockData.content.elements, pageElementData]
+                content: updatedContent
+            }
+        });
+        expect(updatePageBlockResult).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePageBlock: {
+                        data: {
+                            id: blockData.id,
+                            content: updatedContent
+                        },
+                        error: null
+                    }
                 }
             }
         });

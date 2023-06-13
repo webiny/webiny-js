@@ -4,3 +4,5 @@ import { PageElasticsearchIndexPlugin } from "~/plugins/definitions/PageElastics
 export const base = new PageElasticsearchIndexPlugin({
     body: getBaseConfiguration()
 });
+
+base.name = "pageBuilder.elasticsearch.index.page.default";

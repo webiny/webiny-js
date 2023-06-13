@@ -165,7 +165,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
              */
             const cmsModelField = model.fields.find(f => f.fieldId === fieldId);
             if (!cmsModelField && !fields[fieldId]) {
-                throw new WebinyError(`There is no CMS Model Field field "${fieldId}".`);
+                throw new WebinyError(`There is no CMS Model Field "${fieldId}".`);
             } else if (cmsModelField) {
                 fieldId = cmsModelField.fieldId;
             }

@@ -1,7 +1,15 @@
+import readline from "readline";
 import LambdaClient from "aws-sdk/clients/lambda";
 import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { MigrationEventHandlerResponse } from "@webiny/data-migration";
+import { printReport, runMigration, getDuration } from "@webiny/data-migration/cli";
+
+const clearLine = () => {
+    if (process.stdout.isTTY) {
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
+    }
+};
 
 /**
  * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
@@ -15,49 +23,52 @@ export const executeDataMigrations = {
             return;
         }
 
+        // No need to run migrations if we're doing a preview.
+        if (params.inputs.preview) {
+            return;
+        }
+
         const apiOutput = getStackOutput({ folder: "apps/api", env: params.env });
 
-        context.info("Invoking data migrations Lambda function...");
+        context.info("Executing data migrations Lambda function...");
 
         try {
             const lambdaClient = new LambdaClient({
                 region: apiOutput.region
             });
 
-            const response = await lambdaClient
-                .invoke({
-                    FunctionName: apiOutput["migrationLambdaArn"],
-                    InvocationType: "RequestResponse"
-                })
-                .promise();
+            const response = await runMigration({
+                lambdaClient,
+                functionName: apiOutput["migrationLambdaArn"],
+                payload: {
+                    version: process.env.WEBINY_VERSION || context.version
+                },
+                statusCallback: ({ status, migrations }) => {
+                    clearLine();
+                    if (status === "running") {
+                        const currentMigration = migrations.find(mig => mig.status === "running");
+                        if (currentMigration) {
+                            const duration = getDuration(currentMigration.startedOn as string);
+                            process.stdout.write(
+                                `Running data migration ${currentMigration.id} (${duration})...`
+                            );
+                        }
+                        return;
+                    }
 
-            const { data, error } = JSON.parse(
-                response.Payload as string
-            ) as MigrationEventHandlerResponse;
-
-            if (error) {
-                context.error(error.message);
-            } else {
-                const logItems = [
-                    data.executed.length ? ["Executed:"] : undefined,
-                    ...data.executed.map(mig => {
-                        return [`- %s: ${mig.description} (%sms)`, mig.id, mig.result.duration];
-                    }),
-                    data.skipped.length ? ["Skipped:"] : undefined,
-                    ...data.skipped.map(mig => {
-                        return [`- %s: ${mig.description} (reason: %s)`, mig.id, mig.reason];
-                    })
-                ].filter(Boolean);
-                context.success("Data migration Lambda executed successfully!");
-                if (logItems.length) {
-                    logItems.forEach(line => context.info(...(line as string[])));
-                } else {
-                    context.info("No applicable migrations were found.");
+                    if (status === "init") {
+                        process.stdout.write(`Checking data migrations...`);
+                    }
                 }
-            }
+            });
+
+            clearLine();
+
+            printReport({ response, context, migrationLambdaArn: apiOutput["migrationLambdaArn"] });
         } catch (e) {
             context.error(`An error occurred while executing data migrations Lambda function!`);
             console.log(e);
+            throw e;
         }
     }
 };

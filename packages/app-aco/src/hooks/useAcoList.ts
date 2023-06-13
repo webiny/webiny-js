@@ -6,9 +6,24 @@ import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 
-import { FolderItem, ListDbSort, SearchRecordItem } from "~/types";
+import {
+    FolderItem,
+    ListDbSort,
+    ListSearchRecordsWhereQueryVariables,
+    SearchRecordItem
+} from "~/types";
 
-export const useAcoList = (type: string, originalFolderId?: string) => {
+interface UseAcoListParams {
+    type: string;
+    folderId?: string;
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+}
+
+export const useAcoList = (params: UseAcoListParams) => {
+    const { type, folderId, ...initialWhere } = params;
+
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
 
@@ -24,8 +39,6 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
     const { folders: originalFolders, loading: foldersLoading, listFolders } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
 
-    const folderId = originalFolderId || "ROOT";
-
     const getCurrentFolderList = (
         folders: FolderItem[],
         currentFolderId?: string
@@ -33,11 +46,27 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
         if (!folders) {
             return [];
         }
-        if (currentFolderId) {
-            return folders.filter(folder => folder.parentId === currentFolderId);
+        if (!folderId || folderId === "ROOT") {
+            // checking for parentId value fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
+            return folders.filter(folder => !folder.parentId || folder.parentId === "ROOT");
         } else {
-            return folders.filter(folder => !folder.parentId);
+            return folders.filter(folder => folder.parentId === currentFolderId);
         }
+    };
+
+    const getCurrentRecordList = (
+        records: SearchRecordItem[],
+        currentFolderId?: string
+    ): SearchRecordItem[] | [] => {
+        if (!records) {
+            return [];
+        }
+
+        if (!currentFolderId) {
+            return records;
+        }
+
+        return records.filter(record => record.location.folderId === currentFolderId);
     };
 
     /**
@@ -55,7 +84,7 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
             listFolders(type);
         }
 
-        listRecords({ type, folderId, sort });
+        listRecords({ type, folderId, sort, ...initialWhere });
     }, [type, folderId]);
 
     /**
@@ -64,10 +93,10 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
      * - we return the current folder name.
      */
     useDeepCompareEffect(() => {
-        const subFolders = getCurrentFolderList(originalFolders[type], originalFolderId);
+        const subFolders = getCurrentFolderList(originalFolders[type], folderId);
         setFolders(sortTableItems(subFolders, sort));
 
-        const currentFolder = originalFolders[type]?.find(folder => folder.id === originalFolderId);
+        const currentFolder = originalFolders[type]?.find(folder => folder.id === folderId);
         setListTitle(currentFolder?.title || undefined);
     }, [{ ...originalFolders[type] }, folderId]);
 
@@ -76,9 +105,9 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
      * - we return the `records` list filtered by the current `folderId`.
      */
     useDeepCompareEffect(() => {
-        const subRecords = originalRecords.filter(record => record.location.folderId === folderId);
+        const subRecords = getCurrentRecordList(originalRecords[type], folderId);
         setRecords(subRecords);
-    }, [{ ...originalRecords }, folderId]);
+    }, [{ ...originalRecords[type] }, folderId]);
 
     /**
      * Any time we receive a new `sort` value:
@@ -93,20 +122,32 @@ export const useAcoList = (type: string, originalFolderId?: string) => {
             folders,
             records,
             listTitle,
-            isListLoading:
+            isListLoading: Boolean(
                 recordsLoading.INIT ||
-                foldersLoading.INIT ||
-                recordsLoading.LIST ||
-                foldersLoading.LIST,
-            isListLoadingMore: recordsLoading.LIST_MORE,
-            meta: meta[folderId] || {},
-            listItems(params: { after?: string; limit?: number; sort?: ListDbSort }) {
+                    foldersLoading.INIT ||
+                    recordsLoading.LIST ||
+                    foldersLoading.LIST
+            ),
+            isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
+            meta: meta[folderId || "search"] || {},
+            listItems(params: {
+                folderId?: string;
+                after?: string;
+                limit?: number;
+                sort?: ListDbSort;
+                search?: string;
+                tags_in?: string[];
+                tags_startsWith?: string;
+                tags_not_startsWith?: string;
+                AND?: ListSearchRecordsWhereQueryVariables[];
+                OR?: ListSearchRecordsWhereQueryVariables[];
+            }) {
                 // We store `sort` param to local state to handle `folders` and future `records` sorting.
                 if (params.sort && Object.values(params.sort).length > 0) {
                     setSort(validateOrGetDefaultDbSort(params.sort));
                 }
 
-                return listRecords({ ...params, type, folderId });
+                return listRecords({ type, folderId, ...params });
             }
         }),
         [folders, records, foldersLoading, recordsLoading, meta]

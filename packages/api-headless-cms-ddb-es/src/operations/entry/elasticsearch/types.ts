@@ -17,10 +17,10 @@ export interface ModelFieldParent {
 export interface ModelField {
     unmappedType?: string;
     keyword?: boolean;
-    isSearchable: boolean;
-    isSortable: boolean;
+    searchable: boolean;
+    sortable: boolean;
     type: FieldType;
-    isSystemField?: boolean;
+    systemField?: boolean;
     field: CmsModelField;
     path?: ModelFieldPath;
     fullTextSearch?: boolean;

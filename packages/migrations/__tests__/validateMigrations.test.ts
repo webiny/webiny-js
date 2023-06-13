@@ -3,7 +3,8 @@ import {
     createDdbEsMigrationHandler,
     createDdbMigrationHandler,
     getDynamoToEsTable,
-    getPrimaryDynamoDbTable
+    getPrimaryDynamoDbTable,
+    groupMigrations
 } from "~tests/utils";
 import { migrations as ddbMigrations } from "~/ddb";
 import { migrations as ddbEsMigrations } from "~/ddb-es";
@@ -33,16 +34,16 @@ describe("Validate Migrations", () => {
         });
 
         const { data, error } = await handler();
-
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
         // GOAL: Expect all registered migrations to be processed.
         // A vast majority of migrations will not actually be executed, because the conditions for execution
         // will not be met, due to the system not being installed, data records missing, etc.
         // However, all migrations will have their `shouldExecute` method invoked. Thus, we have to add
         // `executed` and `skipped` migrations for this assertion to be correct.
-        expect(data.executed.length + data.skipped.length).toEqual(migrations.length);
-        expect(data.notApplicable.length).toEqual(0);
+        expect(grouped.executed.length + grouped.skipped.length).toEqual(migrations.length);
+        expect(grouped.notApplicable.length).toEqual(0);
     });
 
     it("should run all DDB-ES migrations", async () => {
@@ -54,15 +55,15 @@ describe("Validate Migrations", () => {
         });
 
         const { data, error } = await handler();
-
         assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
 
         // GOAL: Expect all registered migrations to be processed.
         // A vast majority of migrations will not actually be executed, because the conditions for execution
         // will not be met, due to the system not being installed, data records missing, etc.
         // However, all migrations will have their `shouldExecute` method invoked. Thus, we have to add
         // `executed` and `skipped` migrations for this assertion to be correct.
-        expect(data.executed.length + data.skipped.length).toEqual(migrations.length);
-        expect(data.notApplicable.length).toEqual(0);
+        expect(grouped.executed.length + grouped.skipped.length).toEqual(migrations.length);
+        expect(grouped.notApplicable.length).toEqual(0);
     });
 });
