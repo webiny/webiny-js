@@ -9,33 +9,34 @@ import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 
 const Dialog = styled.div`
-    background-color: rgba(0, 0, 0, 0.32);
-    height: 100%;
-    width: 100%;
+  background-color: rgba(0, 0, 0, 0.32);
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  z-index: 2312321;
+  top: 0;
+
+  .dialog {
     position: fixed;
-    z-index: 2312321;
-    top: 0;
+    top: 25%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+    background-color: white;
+    width: 700px;
+    height: 500px;
+    z-index: auto;
+    box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
 
-    .dialog {
-        position: fixed;
-        top: 25%;
-        left: 50%;
-        /* bring your own prefixes */
-        transform: translate(-50%, -50%);
-        background-color: white;
-        width: 700px;
-        height: 500px;
-        z-index: auto;
+    ul {
+      overflow-y: scroll;
+      height: 444px;
 
-        ul {
-            overflow-y: scroll;
-            height: 444px;
-
-            li {
-                padding: 10px;
-            }
-        }
+      li {
+        padding: 10px;
+      }
     }
+  }
 `;
 
 export const OmniSearch = () => {
