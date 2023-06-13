@@ -8,7 +8,7 @@ export const CannotUseAaclAlert: React.FC = () => {
             Layer (AACL) is not activated. <br />
             <br />
             To learn more, please visit the official&nbsp;
-            <a href={"https://www.webiny.com/docs/wcp/overview"} target={"_blank"}>
+            <a href={"https://www.webiny.com/docs/wcp/overview"} target={"_blank"} rel={"noreferrer"}>
                 documentation
             </a>
             .

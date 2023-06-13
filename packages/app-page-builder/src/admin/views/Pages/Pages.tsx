@@ -1,7 +1,6 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -13,7 +12,7 @@ import useImportPage from "./hooks/useImportPage";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import PageTemplatesDialog from "./PageTemplatesDialog";
-import { PageBuilderSecurityPermission, PbPageTemplate } from "~/types";
+import { PbPageTemplate } from "~/types";
 import { usePagesPermissions } from "~/hooks/permissions";
 
 const Pages: React.FC = () => {

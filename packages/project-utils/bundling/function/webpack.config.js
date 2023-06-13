@@ -1,7 +1,6 @@
 const path = require("path");
 const fs = require("fs");
 const webpack = require("webpack");
-const WebpackBar = require("webpackbar");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 const { version } = require("@webiny/project-utils/package.json");

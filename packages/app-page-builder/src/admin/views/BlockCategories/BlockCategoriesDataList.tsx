@@ -33,12 +33,6 @@ import { useBlockCategoriesPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/block-categories/data-list");
 
-interface CreatableItem {
-    createdBy?: {
-        id?: string;
-    };
-}
-
 interface Sorter {
     label: string;
     sort: string;

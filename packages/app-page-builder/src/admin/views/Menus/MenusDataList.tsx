@@ -6,7 +6,6 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { LIST_MENUS, DELETE_MENU } from "./graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { useSecurity } from "@webiny/app-security";
 
 import {
     DataList,
@@ -27,7 +26,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { PageBuilderSecurityPermission, PbMenu } from "~/types";
+import { PbMenu } from "~/types";
 import { useMenusPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
@@ -58,6 +57,7 @@ interface MenuDataListResponse {
 interface PageBuilderMenusDataListProps {
     canCreate: boolean;
 }
+
 const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ canCreate }) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
