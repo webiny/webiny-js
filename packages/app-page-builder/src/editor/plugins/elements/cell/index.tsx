@@ -23,7 +23,8 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         "pb-editor-page-element-style-settings-border",
         "pb-editor-page-element-style-settings-shadow",
         "pb-editor-page-element-style-settings-padding",
-        "pb-editor-page-element-style-settings-margin"
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-settings-mirror-cell"
     ];
 
     if (!isLegacyRenderingEngine) {
