@@ -1,7 +1,7 @@
 import dbPlugins from "@webiny/handler-db";
 import { PluginCollection } from "@webiny/plugins/types";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createRawHandler, createRawEventHandler } from "@webiny/handler-aws";
+import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { CmsContext } from "~/types";
@@ -13,6 +13,8 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/getElasticsearchClient";
+import { createTable } from "~/definitions/table";
+import { createEntryEntity } from "~/definitions/entry";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -20,10 +22,20 @@ interface UseHandlerParams {
 
 export const useHandler = (params: UseHandlerParams = {}) => {
     const { plugins = [] } = params;
+
     const documentClient = getDocumentClient();
     const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
     const i18nStorage = getStorageOps<any[]>("i18n");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+
+    const table = createTable({
+        documentClient
+    });
+    const entryEntity = createEntryEntity({
+        table,
+        entityName: "CmsEntries",
+        attributes: {}
+    });
 
     const handler = createRawHandler<any, CmsContext>({
         plugins: [
@@ -69,6 +81,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             return handler(payload, {} as any);
         },
         elasticsearch: elasticsearchClient,
-        documentClient
+        documentClient,
+        table,
+        entryEntity
     };
 };

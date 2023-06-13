@@ -22,6 +22,7 @@
     "@types/react": "17.0.39",
     "@webiny/app": "0.0.0",
     "@webiny/app-security": "0.0.0",
+    "@webiny/app-theme": "0.0.0",
     "@webiny/app-wcp": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/plugins": "0.0.0",
