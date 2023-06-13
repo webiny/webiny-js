@@ -6,7 +6,7 @@ import { validation } from "@webiny/validation";
 import { BindComponent } from "@webiny/form/types";
 import { UTC_TIMEZONES } from "@webiny/utils";
 
-export const Date = ({ fieldFormat, Bind }: { fieldFormat: string; Bind: BindComponent }) => {
+export const DateTime = ({ fieldFormat, Bind }: { fieldFormat: string; Bind: BindComponent }) => {
     if (fieldFormat === "time") {
         return (
             <Grid>

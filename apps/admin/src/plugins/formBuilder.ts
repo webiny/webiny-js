@@ -12,7 +12,7 @@ import editorFieldTextarea from "@webiny/app-form-builder/admin/plugins/editor/f
 import editorFieldNumber from "@webiny/app-form-builder/admin/plugins/editor/formFields/number";
 import editorFieldRadioButtons from "@webiny/app-form-builder/admin/plugins/editor/formFields/radioButtons";
 import editorFieldCheckboxes from "@webiny/app-form-builder/admin/plugins/editor/formFields/checkboxes";
-import editorFieldDateAndTime from "@webiny/app-form-builder/admin/plugins/editor/formFields/dateAndTime";
+import editorFieldDateAndTime from "@webiny/app-form-builder/admin/plugins/editor/formFields/dateTime";
 import editorFieldFirstName from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/firstName";
 import editorFieldLastName from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/lastName";
 import editorFieldEmail from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/email";
