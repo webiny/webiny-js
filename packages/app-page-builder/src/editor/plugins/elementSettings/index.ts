@@ -7,6 +7,7 @@ import border from "./border";
 import shadow from "./shadow";
 import padding from "./padding";
 import margin from "./margin";
+import mirrorCell from "./mirror-cell";
 import width from "./width";
 import height from "./height";
 import align from "./align";
@@ -24,6 +25,7 @@ export default [
     shadow,
     padding,
     margin,
+    mirrorCell,
     ...align,
     clone,
     deleteElement,

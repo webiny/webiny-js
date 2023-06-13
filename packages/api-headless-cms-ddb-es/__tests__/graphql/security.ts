@@ -2,34 +2,23 @@ import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthenticat
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { ContextPlugin } from "@webiny/api";
 import { createTenancyContext } from "@webiny/api-tenancy";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
+import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
 import { createSecurityContext } from "@webiny/api-security";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { CmsContext } from "~/types";
+import { SecurityStorageOperations } from "@webiny/api-security/types";
 import { BeforeHandlerPlugin } from "@webiny/handler";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { CmsContext } from "~/types";
 
-interface SecurityParams {
-    documentClient: DocumentClient;
-}
+export const createSecurity = () => {
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
 
-export const createSecurity = (params: SecurityParams) => {
-    const { documentClient } = params;
     return [
         createTenancyContext({
-            storageOperations: tenancyStorageOperations({
-                documentClient,
-                table: table => ({
-                    ...table,
-                    name: process.env.DB_TABLE as string
-                })
-            })
+            storageOperations: tenancyStorage.storageOperations
         }),
         createSecurityContext({
-            storageOperations: securityStorageOperations({
-                documentClient,
-                table: process.env.DB_TABLE
-            })
+            storageOperations: securityStorage.storageOperations
         }),
         new ContextPlugin<CmsContext>(context => {
             context.tenancy.setCurrentTenant({

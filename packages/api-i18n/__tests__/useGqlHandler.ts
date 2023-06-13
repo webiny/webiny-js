@@ -9,6 +9,7 @@ import i18nPlugins from "~/graphql";
 import { apiCallsFactory } from "./helpers";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { I18NContext } from "~/types";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -18,23 +19,15 @@ type UseGqlHandlerParams = {
 
 export default (params: UseGqlHandlerParams = {}) => {
     const { plugins: extraPlugins } = params;
-    // @ts-ignore
-    if (typeof __getStorageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
-    }
-    // @ts-ignore
-    const storageOperations = __getStorageOperationsPlugins();
-    if (typeof storageOperations !== "function") {
-        throw new Error(
-            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
-        );
-    }
+
+    const i18nStorage = getStorageOps("i18n");
+
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
             createWcpContext(),
             createWcpGraphQL(),
-            storageOperations(),
+            i18nStorage.storageOperations,
             ...createTenancyAndSecurity(),
             graphqlHandler(),
             {

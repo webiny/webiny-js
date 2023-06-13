@@ -11,6 +11,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-admin-users-cognito": "0.0.0",
     "@webiny/app-form-builder": "0.0.0",
+    "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-page-builder": "0.0.0",
     "@webiny/app-page-builder-editor": "0.0.0",
     "@webiny/app-serverless-cms": "0.0.0",
@@ -53,6 +54,7 @@
         "theme",
         "theme-1",
         "@webiny/app-apw",
+        "@webiny/app-headless-cms",
         "@webiny/cli",
         "@webiny/react-properties",
         "tslib"

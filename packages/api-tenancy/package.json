@@ -6,9 +6,6 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "keywords": [
-    "tenancy:base"
-  ],
   "description": "Tenancy base to create and access tenants.",
   "author": "Webiny LTD",
   "license": "MIT",
@@ -28,7 +25,7 @@
     "@babel/core": "^7.19.3",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "jest": "^28.1.0",
+    "jest": "^29.5.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

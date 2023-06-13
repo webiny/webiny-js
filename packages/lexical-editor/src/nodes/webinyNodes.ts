@@ -7,8 +7,8 @@ import { MarkNode } from "@lexical/mark";
 import { OverflowNode } from "@lexical/overflow";
 import { FontColorNode } from "~/nodes/FontColorNode";
 import { TypographyElementNode } from "~/nodes/TypographyElementNode";
-import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
-import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { ListNode } from "~/nodes/ListNode";
+import { ListItemNode } from "~/nodes/ListItemNode";
 import { ParagraphNode as BaseParagraphNode } from "lexical";
 import { HeadingNode } from "~/nodes/HeadingNode";
 import { ParagraphNode } from "~/nodes/ParagraphNode";
@@ -26,9 +26,9 @@ export const WebinyNodes: ReadonlyArray<
           with: <T extends { new (...args: any): any }>(node: InstanceType<T>) => LexicalNode;
       }
 > = [
+    ListNode,
+    ListItemNode,
     ImageNode,
-    WebinyListNode,
-    WebinyListItemNode,
     CodeNode,
     HashtagNode,
     CodeHighlightNode,

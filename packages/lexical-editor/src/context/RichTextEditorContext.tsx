@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
 import { TextBlockSelection, ThemeEmotionMap, ToolbarType } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
+import { LexicalEditor } from "lexical";
 
 export interface RichTextEditorContext {
     nodeIsText: boolean;
@@ -15,6 +16,10 @@ export interface RichTextEditorContext {
     setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
     actionPlugins: { type: string; plugin: Record<string, any> }[];
     setActionPlugins: (actionPlugins: { type: string; plugin: Record<string, any> }[]) => void;
+    activeEditor?: LexicalEditor;
+    setActiveEditor: (editor: LexicalEditor) => void;
+    isEditable: boolean;
+    setIsEditable: (isEditable: boolean) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -31,6 +36,8 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     const [actionPlugins, setActionPlugins] = useState<
         { type: string; plugin: Record<string, any> }[]
     >([]);
+    const [activeEditor, setActiveEditor] = useState<LexicalEditor>();
+    const [isEditable, setIsEditable] = useState<boolean>(false);
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
@@ -53,6 +60,10 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 setTheme,
                 themeEmotionMap,
                 setThemeEmotionMap,
+                activeEditor,
+                setActiveEditor,
+                isEditable,
+                setIsEditable,
                 actionPlugins,
                 setActionPlugins
             }}

@@ -24,7 +24,8 @@ class LatestRelease extends Release {
             // Determine version using conventional commits specs.
             return "--conventional-commits";
         });
-        this.setCreateGithubRelease(true);
+        // By setting `latest`, this release will be marked as `latest` on Github
+        this.setCreateGithubRelease("latest");
     }
 
     setTag(tag) {

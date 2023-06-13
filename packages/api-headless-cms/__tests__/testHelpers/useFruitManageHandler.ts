@@ -139,8 +139,8 @@ const updateFruitMutation = (model: CmsModel) => {
 
 const deleteFruitMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation DeleteFruit($revision: ID!) {
-            deleteFruit: delete${model.singularApiName}(revision: $revision) {
+        mutation DeleteFruit($revision: ID!, $options: CmsDeleteEntryOptions) {
+            deleteFruit: delete${model.singularApiName}(revision: $revision, options: $options) {
                 data
                 ${errorFields}
             }

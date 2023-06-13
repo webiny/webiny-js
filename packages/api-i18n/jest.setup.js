@@ -1,14 +1,10 @@
 const base = require("../../jest.config.base");
-const items = require("@webiny/project-utils/testing/presets")(
+const presets = require("@webiny/project-utils/testing/presets")(
     ["@webiny/api-i18n", "storage-operations"],
-    "storage-operations"
+    ["@webiny/api-security", "storage-operations"],
+    ["@webiny/api-tenancy", "storage-operations"]
 );
 
-module.exports = items.map(item => {
-    return {
-        ...base({ path: __dirname }, item.presets),
-        name: item.name,
-        displayName: item.name,
-        keywords: item.package.keywords
-    };
-});
+module.exports = {
+    ...base({ path: __dirname }, presets)
+};

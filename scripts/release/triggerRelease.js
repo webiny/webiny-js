@@ -4,12 +4,14 @@ const { Octokit } = require("@octokit/rest");
 const { ConsoleLogger } = require("../ConsoleLogger");
 const { checkReleaseType } = require("./releaseTypes");
 
+yargs.version(false);
+
 /**
  * A simple script that will trigger the "release" GitHub workflow.
  */
 
 (async () => {
-    const { branch, type, token, tag } = yargs.argv;
+    const { branch, type, token, tag, version, createGithubRelease } = yargs.argv;
 
     try {
         if (!branch) {
@@ -32,8 +34,17 @@ const { checkReleaseType } = require("./releaseTypes");
 
         logger.info("Branch: %s", branch);
         logger.info("Type: %s", type);
+
         if (tag) {
             logger.info("Tag: %s", tag);
+        }
+
+        if (version) {
+            logger.info("Version: %s", version);
+        }
+
+        if (createGithubRelease) {
+            logger.info("Create Github Release: %s", createGithubRelease);
         }
 
         const octokit = new Octokit({ auth: `token ${token}` });
@@ -45,7 +56,9 @@ const { checkReleaseType } = require("./releaseTypes");
             client_payload: {
                 branch,
                 type,
-                tag
+                tag,
+                version,
+                createGithubRelease
             }
         });
 

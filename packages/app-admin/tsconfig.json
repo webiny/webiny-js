@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-security" },
+    { "path": "../app-theme" },
     { "path": "../app-wcp" },
     { "path": "../form" },
     { "path": "../lexical-editor-cms-actions" },
@@ -25,6 +26,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-theme/*": ["../app-theme/src/*"],
+      "@webiny/app-theme": ["../app-theme/src"],
       "@webiny/app-wcp/*": ["../app-wcp/src/*"],
       "@webiny/app-wcp": ["../app-wcp/src"],
       "@webiny/form/*": ["../form/src/*"],

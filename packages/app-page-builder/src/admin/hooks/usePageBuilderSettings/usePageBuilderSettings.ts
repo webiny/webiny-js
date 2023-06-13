@@ -87,7 +87,7 @@ export function usePageBuilderSettings() {
 
     const getPageUrl = (page: Pick<PbPageData, "id" | "status" | "path">): string => {
         const preview = page.status !== "published";
-        const url = getWebsiteUrl(preview) + page.path;
+        const url = [getWebsiteUrl(preview), page.path].join("");
         if (!preview) {
             return url;
         }

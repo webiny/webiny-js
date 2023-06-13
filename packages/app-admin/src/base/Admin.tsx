@@ -9,6 +9,7 @@ import { SearchProvider } from "./ui/Search";
 import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { ThemeProvider } from "@webiny/app-theme";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -22,17 +23,19 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
 
     return (
         <ApolloProvider>
-            <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
-                <App>
-                    <Provider hoc={TelemetryProvider} />
-                    <Provider hoc={UiStateProvider} />
-                    <Provider hoc={SearchProvider} />
-                    <Provider hoc={UserMenuProvider} />
-                    <Provider hoc={NavigationProvider} />
-                    <Base />
-                    {children}
-                </App>
-            </WcpProvider>
+            <ThemeProvider>
+                <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
+                    <App>
+                        <Provider hoc={TelemetryProvider} />
+                        <Provider hoc={UiStateProvider} />
+                        <Provider hoc={SearchProvider} />
+                        <Provider hoc={UserMenuProvider} />
+                        <Provider hoc={NavigationProvider} />
+                        <Base />
+                        {children}
+                    </App>
+                </WcpProvider>
+            </ThemeProvider>
         </ApolloProvider>
     );
 };
