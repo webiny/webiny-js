@@ -1,13 +1,12 @@
-const { bold } = require("chalk");
-const { getNpxVersion } = require("./getNpxVersion");
-const { getPulumiVersions } = require("./getPulumiVersions");
-const { getYarnVersion } = require("./getYarnVersion");
-const { getUser } = require("../wcp/utils");
-const localStorage = require("../../utils/localStorage");
-
 const NO_VALUE = "-";
 
 const getData = async context => {
+    const { getUser } = require("../wcp/utils");
+    const { getNpxVersion } = require("./getNpxVersion");
+    const { getPulumiVersions } = require("./getPulumiVersions");
+    const { getYarnVersion } = require("./getYarnVersion");
+    const localStorage = require("../../utils/localStorage");
+
     const [pulumiVersion, pulumiAwsVersion] = await getPulumiVersions();
 
     const commandsHistory = localStorage().get("history") || [];
@@ -90,6 +89,8 @@ module.exports = {
                     if (index > 0) {
                         console.log();
                     }
+
+                    const { bold } = require("chalk");
                     console.log(bold(sectionName));
 
                     // Custom rendering for "Last 10 Commands Executed" section.
