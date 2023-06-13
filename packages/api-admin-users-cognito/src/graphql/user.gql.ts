@@ -17,6 +17,7 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 
 import { featureFlags } from "@webiny/feature-flags";
 
+
 export default [
     new GraphQLSchemaPlugin<AdminUsersContext>({
         typeDefs: /* GraphQL */ `
@@ -48,7 +49,7 @@ export default [
                 lastName: String!
                 password: String!
                 avatar: JSON
-                group: String!
+                ${featureFlags?.aacl?.teams ? "group: String" : "group: String!"}
             }
 
             """

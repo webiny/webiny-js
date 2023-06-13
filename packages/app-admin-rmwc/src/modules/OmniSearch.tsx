@@ -18,7 +18,7 @@ const Dialog = styled.div`
 
   .dialog {
     position: fixed;
-    top: 25%;
+    top: 300px;
     left: 50%;
     /* bring your own prefixes */
     transform: translate(-50%, -50%);

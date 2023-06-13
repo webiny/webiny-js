@@ -71,31 +71,78 @@ async function updateTenantLinks(
         links
             .filter(link => {
                 const linkGroups = link.data?.groups;
-                if (!Array.isArray(linkGroups) || !linkGroups.length) {
-                    return false;
+                const linkHasGroups = Array.isArray(linkGroups) && linkGroups.length;
+                if (linkHasGroups) {
+                    const linkHasGroup = linkGroups.some(item => item.id === updatedGroup.id);
+                    if (linkHasGroup) {
+                        return true;
+                    }
                 }
 
-                return linkGroups.some(item => item.id === updatedGroup.id);
+                const linkTeams = link.data?.teams;
+                const linkHasTeams = Array.isArray(linkTeams) && linkTeams.length;
+                if (linkHasTeams) {
+                    const linkHasTeamWithGroup = linkTeams.some(team =>
+                        team.groups.some(teamGroup => teamGroup.id === updatedGroup.id)
+                    );
+
+                    if (linkHasTeamWithGroup) {
+                        return true;
+                    }
+                }
+
+                return false;
             })
             .map(link => {
-                const linkGroups = link.data!.groups;
+                const data = { ...link.data };
 
-                return {
-                    ...link,
-                    data: {
-                        ...link.data,
-                        groups: linkGroups.map(linkGroup => {
-                            if (linkGroup.id !== updatedGroup.id) {
-                                return linkGroup;
+                const linkGroups = link.data?.groups;
+                const linkHasGroups = Array.isArray(linkGroups) && linkGroups.length;
+                if (linkHasGroups) {
+                    const linkHasGroup = linkGroups.some(item => item.id === updatedGroup.id);
+                    if (linkHasGroup) {
+                        data.groups = linkGroups.map(item => {
+                            if (item.id !== updatedGroup.id) {
+                                return item;
                             }
 
                             return {
                                 id: updatedGroup.id,
                                 permissions: updatedGroup.permissions
                             };
-                        })
+                        });
                     }
-                };
+                }
+
+                const linkTeams = link.data?.teams;
+                const linkHasTeams = Array.isArray(linkTeams) && linkTeams.length;
+                if (linkHasTeams) {
+                    const linkHasTeamWithGroup = linkTeams.some(team =>
+                        team.groups.some(teamGroup => teamGroup.id === updatedGroup.id)
+                    );
+
+                    if (linkHasTeamWithGroup) {
+                        data.teams = linkTeams.map(team => {
+                            const teamGroups = team.groups.map(teamGroup => {
+                                if (teamGroup.id !== updatedGroup.id) {
+                                    return teamGroup;
+                                }
+
+                                return {
+                                    id: updatedGroup.id,
+                                    permissions: updatedGroup.permissions
+                                };
+                            });
+
+                            return {
+                                ...team,
+                                groups: teamGroups
+                            };
+                        });
+                    }
+                }
+
+                return { ...link, data };
             })
     );
 }
