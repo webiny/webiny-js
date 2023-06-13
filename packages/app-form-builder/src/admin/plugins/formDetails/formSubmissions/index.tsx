@@ -23,7 +23,6 @@ export default [
 
             const fbFormPermissions = getPermissions("fb.form");
 
-
             if (!fbFormPermissions.length) {
                 return null;
             }

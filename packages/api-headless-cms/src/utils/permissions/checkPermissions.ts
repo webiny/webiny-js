@@ -17,7 +17,9 @@ const RWD: Record<string, string> = {
     d: "delete"
 };
 
-export const checkPermissions = async <TPermission extends BaseCmsSecurityPermission = BaseCmsSecurityPermission>(
+export const checkPermissions = async <
+    TPermission extends BaseCmsSecurityPermission = BaseCmsSecurityPermission
+>(
     context: CmsContext,
     name: string,
     check: Check = {}

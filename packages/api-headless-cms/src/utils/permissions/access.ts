@@ -87,7 +87,6 @@ export const validateModelAccess = async (
 
             return true;
         }
-
     }
 
     return false;

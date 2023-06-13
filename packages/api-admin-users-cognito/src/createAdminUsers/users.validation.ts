@@ -23,7 +23,7 @@ const UpdateUserDataModel = withFields({
     firstName: string({ validation: validation.create("minLength:2") }),
     lastName: string({ validation: validation.create("minLength:2") }),
     group: string(),
-    team: string(),
+    team: string()
 })();
 
 export const attachUserValidation = (

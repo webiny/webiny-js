@@ -37,7 +37,7 @@ export const SecurityProvider: React.FC = props => {
             }
 
             const perms = identity.permissions || [];
-            console.log('perms', perms);
+            console.log("perms", perms);
             const exactMatch = perms.find(p => p.name === name);
             if (exactMatch) {
                 return exactMatch as T;
@@ -74,7 +74,7 @@ export const SecurityProvider: React.FC = props => {
         if (!identity) {
             return null;
         }
-        return  identity.id || identity.login || null;
+        return identity.id || identity.login || null;
     }, [identity]);
 
     const value = useMemo(() => {

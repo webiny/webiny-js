@@ -60,7 +60,7 @@ const Icon: React.FC<IconProps> = ({ group }) => {
 export const ContentGroupsMenuItems: React.FC = () => {
     const response = useQuery<ListMenuCmsGroupsQueryResponse>(LIST_MENU_CONTENT_GROUPS_MODELS);
     const groups: CmsGroup[] = get(response, "data.listContentModelGroups.data") || [];
-    console.log('grpe', groups)
+    console.log("grpe", groups);
 
     if (!groups || groups.length === 0) {
         return null;

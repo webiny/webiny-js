@@ -17,7 +17,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 
 import { featureFlags } from "@webiny/feature-flags";
 
-
 export default [
     new GraphQLSchemaPlugin<AdminUsersContext>({
         typeDefs: /* GraphQL */ `

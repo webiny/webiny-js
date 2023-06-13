@@ -33,7 +33,6 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             return permissionsLoader;
         }
 
-
         const shouldEnableAuthorization = performAuthorization;
         permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
             // Authorizers often need to query business-related data, and since the identity is not yet
