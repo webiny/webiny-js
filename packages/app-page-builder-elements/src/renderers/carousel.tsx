@@ -4,25 +4,10 @@ import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 
-let pbCarouselCheck: Promise<void>;
-
 const initializeSwiper = async () => {
     if (typeof window === "undefined") {
         return;
     }
-
-    if (!pbCarouselCheck) {
-        pbCarouselCheck = new Promise<void>(resolve => {
-            const interval = setInterval(() => {
-                if (document.querySelector("swiper-container")) {
-                    clearInterval(interval);
-                    resolve();
-                }
-            }, 333);
-        });
-    }
-
-    await pbCarouselCheck;
 
     const register = await import("swiper/element/bundle");
 
@@ -91,8 +76,8 @@ declare global {
 }
 
 export const createCarousel = () => {
-    registerCarousel();
     return createRenderer(() => {
+        registerCarousel();
         const { getElement } = useRenderer();
         const element = getElement();
 

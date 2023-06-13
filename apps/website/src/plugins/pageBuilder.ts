@@ -37,7 +37,6 @@ import tabs from "@webiny/app-page-builder/render/plugins/elements/tabs";
 import tab from "@webiny/app-page-builder/render/plugins/elements/tab";
 import carousel from "@webiny/app-page-builder/render/plugins/elements/carousel";
 import carouselElement from "@webiny/app-page-builder/render/plugins/elements/carouselElement";
-
 /**
  * Page settings plugins (seo, social, etc.).
  */

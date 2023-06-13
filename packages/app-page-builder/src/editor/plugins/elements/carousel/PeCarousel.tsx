@@ -30,6 +30,7 @@ const PeCarouselWrapper = styled.div`
         align-items: center;
     }
     & swiper-container {
+        padding: 20px 0;
         max-width: 1100px;
         --swiper-navigation-color: ${props => props.theme.styles.colors.color1};
         --swiper-navigation-size: 40px;
@@ -37,6 +38,7 @@ const PeCarouselWrapper = styled.div`
         --swiper-pagination-bottom: 0;
     }
     & .carousel-element-wrapper {
+        width: 100%;
         max-width: calc(95% - 41px);
     }
 `;

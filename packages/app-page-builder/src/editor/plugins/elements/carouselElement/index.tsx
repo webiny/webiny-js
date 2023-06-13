@@ -66,45 +66,6 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         render(props) {
             return <CarouselElement {...props} />;
         },
-        onReceived({ source, target, position, state, meta }) {
-            const element = createDroppedElement(source as any, target);
-
-            const block = addElementToParent(element, target, position);
-
-            const result = executeAction<UpdateElementActionArgsType>(
-                state,
-                meta,
-                updateElementAction,
-                {
-                    element: block,
-                    history: true
-                }
-            );
-
-            result.actions.push(
-                new AfterDropElementActionEvent({
-                    element
-                })
-            );
-
-            if (source.id) {
-                // Delete source element
-                result.actions.push(
-                    new DeleteElementActionEvent({
-                        element: source as PbEditorElement
-                    })
-                );
-
-                return result;
-            }
-
-            result.actions.push(
-                new CreateElementActionEvent({
-                    element,
-                    source: source as PbEditorElement
-                })
-            );
-            return result;
-        }
+        canReceiveChildren: true
     };
 };
