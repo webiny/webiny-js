@@ -50,7 +50,7 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
         allGroups.push(...groups);
     }
 
-    if (featureFlags?.aacl.teams) {
+    if (featureFlags?.aacl?.teams) {
         // Pick all groups and teams groups and get permissions from them.
         // Note that we return only permissions that are relevant for current locale.
         const teamsGroups = tenantLink?.data?.teams.map(team => team.groups).flat();

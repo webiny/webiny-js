@@ -1,8 +1,10 @@
 export type FeatureFlags<TFeatureFlags = {}> = {
-    copyPermissionsButton?: boolean;
     aacl?: {
         teams?: boolean;
     };
+    copyPermissionsButton?: boolean;
+    experimentalAdminOmniSearch?: boolean;
+    pbLegacyRenderingEngine?: boolean;
 } & TFeatureFlags;
 
 let featureFlags: FeatureFlags = {};

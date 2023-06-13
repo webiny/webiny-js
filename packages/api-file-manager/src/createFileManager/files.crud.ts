@@ -1,30 +1,16 @@
 import { NotFoundError } from "@webiny/handler-graphql";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CreatedBy,
     File,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
-    FilePermission,
     FilesCRUD,
     FilesListOpts
 } from "~/types";
 import { canAccessOnlyOwnRecords, checkBasePermissions, checkOwnPermissions } from "./utils";
 import { FileManagerConfig } from "~/createFileManager/index";
-
-/**
- * If permission is limited to "own" files only, check that current identity owns the file.
- */
-const checkOwnership = (file: File, permission: FilePermission, identity: SecurityIdentity) => {
-    if (permission?.own === true) {
-        if (file.createdBy.id !== identity.id) {
-            throw new NotAuthorizedError();
-        }
-    }
-};
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -65,7 +51,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             return file;
         },
         async createFile(input, meta) {
-            await checkBasePermissions(getPermission, { rwd: "w" });
+            await checkBasePermissions(getPermissions, { rwd: "w" });
             const identity = getIdentity();
 
             // Extract ID from file key

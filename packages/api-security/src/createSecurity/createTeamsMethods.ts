@@ -1,8 +1,5 @@
-/**
- * Package mdbid does not have types.
- */
-// @ts-ignore
-import mdbid from "mdbid";
+import { mdbid } from "@webiny/utils";
+
 /**
  * Package deep-equal does not have types.
  */

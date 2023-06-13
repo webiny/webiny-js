@@ -1375,7 +1375,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const getUniqueFieldValues: CmsEntryContext["getUniqueFieldValues"] = async (model, params) => {
-        const permission = await checkEntryPermissions({ rwd: "r" });
+        const permissions = await checkEntryPermissions({ rwd: "r" });
         await checkModelAccess(context, model);
 
         const { where: initialWhere, fieldId } = params;
@@ -1387,7 +1387,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Possibly only get records which are owned by current user.
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
-        const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+        const ownedBy = canAccessOnlyOwnRecords(permissions) ? getIdentity().id : where.ownedBy;
         if (ownedBy !== undefined) {
             where.ownedBy = ownedBy;
         }

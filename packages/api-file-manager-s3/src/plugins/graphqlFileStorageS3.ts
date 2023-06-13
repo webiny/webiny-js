@@ -4,7 +4,7 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload";
 import WebinyError from "@webiny/error";
-import { checkPermission } from "~/plugins/checkPermission";
+import { checkPermissions } from "~/plugins/checkPermissions";
 import { PresignedPostPayloadData } from "~/types";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase";
 import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase";
@@ -95,7 +95,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             FmQuery: {
                 getPreSignedPostPayload: async (_, args: any, context) => {
                     try {
-                        await checkPermission(context, { rwd: "w" });
+                        await checkPermissions(context, { rwd: "w" });
 
                         const file = args.data as PresignedPostPayloadData;
 
@@ -118,7 +118,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 getPreSignedPostPayloads: async (_, args, context) => {
-                    await checkPermission(context, { rwd: "w" });
+                    await checkPermissions(context, { rwd: "w" });
 
                     const files = args.data as PresignedPostPayloadData[];
 
@@ -148,7 +148,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             },
             FmMutation: {
                 createMultiPartUpload: async (_, args, context) => {
-                    await checkPermission(context, { rwd: "w" });
+                    await checkPermissions(context, { rwd: "w" });
 
                     const s3Client = new S3({
                         region: process.env.AWS_REGION,
@@ -176,7 +176,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 completeMultiPartUpload: async (_, args, context) => {
-                    await checkPermission(context, { rwd: "w" });
+                    await checkPermissions(context, { rwd: "w" });
 
                     const s3Client = new S3({
                         region: process.env.AWS_REGION,

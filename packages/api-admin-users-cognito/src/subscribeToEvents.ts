@@ -2,7 +2,6 @@ import { PermissionsTenantLink, SecurityContext } from "@webiny/api-security/typ
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
 import { migration } from "~/migration";
-import { featureFlags } from "@webiny/feature-flags";
 
 type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
@@ -24,7 +23,6 @@ export const subscribeToEvents = (context: Context): void => {
 
         const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
 
-        // if (featureFlags?.aacl.teams) {
         if (user.team) {
             const team = await security.getTeam({ where: { id: user.team } });
             const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
@@ -38,12 +36,11 @@ export const subscribeToEvents = (context: Context): void => {
                 }
             ];
         }
-        // } else {
+
         if (user.group) {
             const group = await security.getGroup({ where: { id: user.group } });
             data.groups = [{ id: group.id, permissions: group.permissions }];
         }
-        // }
 
         await security.createTenantLinks([
             {
@@ -108,7 +105,6 @@ export const subscribeToEvents = (context: Context): void => {
                     return [{ id: group.id, permissions: group.permissions }];
                 });
         }
-
 
         await security.updateTenantLinks([
             {
