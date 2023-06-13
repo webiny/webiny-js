@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FileManager } from "~/components";
 import { RichTextEditor as BaseEditor } from "@webiny/lexical-editor";
 import { RichTextEditorProps } from "@webiny/lexical-editor/types";
