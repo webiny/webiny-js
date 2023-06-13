@@ -21,7 +21,6 @@
     "react-hamburger-menu": "^1.1.1"
   },
   "devDependencies": {
-    "@types/gtag.js": "^0.0.12",
     "@types/react-hamburger-menu": "^0.0.4"
   }
 }
