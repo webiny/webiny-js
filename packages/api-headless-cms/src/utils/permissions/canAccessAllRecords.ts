@@ -1,5 +1,5 @@
 import { BaseCmsSecurityPermission } from "~/types";
-import hasFullAccess from "./hasFullAccess";
+import { hasFullAccess } from "./hasFullAccess";
 
 export const canAccessAllRecords = (permissions: BaseCmsSecurityPermission[]): boolean => {
     // First pass - check if we have full access to Page Builder.

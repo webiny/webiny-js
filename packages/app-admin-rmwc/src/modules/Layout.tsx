@@ -12,7 +12,8 @@ import {
     Tags
 } from "@webiny/app-admin";
 import { TopAppBarPrimary, TopAppBarSection } from "@webiny/ui/TopAppBar";
-import {OmniSearch} from "~/modules/OmniSearch";
+import { OmniSearch } from "~/modules/OmniSearch";
+import { featureFlags } from "@webiny/feature-flags";
 
 const RMWCLayout = (): React.FC<LayoutProps> => {
     return function RMWCLayout({ title, children }) {
@@ -35,7 +36,7 @@ const RMWCLayout = (): React.FC<LayoutProps> => {
                 </Tags>
                 <div style={{ paddingTop: 67 }}>{children}</div>
                 <Navigation />
-                <OmniSearch />
+                {featureFlags.experimentalAdminOmniSearch && <OmniSearch />}
             </Fragment>
         );
     };

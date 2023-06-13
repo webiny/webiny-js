@@ -261,11 +261,11 @@ export default [
         new GraphQLSchemaPlugin<AdminUsersContext>({
             typeDefs: /* GraphQL */ `
                 extend input AdminUsersCreateInput {
-                    team: String!
+                    team: ID
                 }
 
                 extend input AdminUsersUpdateInput {
-                    team: String
+                    team: ID
                 }
 
                 extend type AdminUser {

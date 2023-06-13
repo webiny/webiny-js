@@ -50,6 +50,7 @@ export default {
     },
     featureFlags: {
         copyPermissionsButton: true,
+        experimentalAdminOmniSearch: true,
         aacl: {
             teams: true
         }

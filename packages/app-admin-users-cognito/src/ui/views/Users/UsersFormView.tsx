@@ -18,6 +18,7 @@ import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
 import { config as appConfig } from "@webiny/app/config";
+import { featureFlags } from "@webiny/feature-flags";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -91,31 +92,34 @@ export class UsersFormView extends UIView {
 
         avatar.moveAbove(simpleForm.getFormContainer());
 
-        const accordion = new AccordionElement("accordion", {
-            items: [
-                {
-                    id: "bio",
-                    title: "Bio",
-                    description: "Account information",
-                    icon: <SettingsIcon />,
-                    open: true
-                },
-                {
-                    id: "groups",
-                    title: "Groups",
-                    description: "Assign to security group",
-                    icon: <SecurityIcon />,
-                    open: true
-                },
-                {
-                    id: "teams",
-                    title: "Teams",
-                    description: "Assign to team",
-                    icon: <SecurityIcon />,
-                    open: true
-                }
-            ]
-        });
+        const items = [
+            {
+                id: "bio",
+                title: "Bio",
+                description: "Account information",
+                icon: <SettingsIcon />,
+                open: true
+            },
+            {
+                id: "groups",
+                title: "Groups",
+                description: "Assign to security group",
+                icon: <SecurityIcon />,
+                open: true
+            }
+        ];
+
+        if (featureFlags?.aacl?.teams) {
+            items.push({
+                id: "teams",
+                title: "Teams",
+                description: "Assign to team",
+                icon: <SecurityIcon />,
+                open: true
+            });
+        }
+
+        const accordion = new AccordionElement("accordion", { items });
 
         simpleForm.getFormContentElement().useGrid(false);
         simpleForm.getFormContentElement().addElement(accordion);
@@ -163,7 +167,13 @@ export class UsersFormView extends UIView {
                 new GroupAutocompleteElement("group", {
                     name: "group",
                     label: "Group",
-                    validators: () => validation.create("required")
+                    validators: () => {
+                        const validators = [];
+                        if (!featureFlags?.aacl?.teams) {
+                            validators.push(validation.create("required"));
+                        }
+                        return validators;
+                    }
                 })
             );
         }
@@ -175,7 +185,6 @@ export class UsersFormView extends UIView {
                 new TeamAutocompleteElement("team", {
                     name: "team",
                     label: "Team"
-                    // validators: () => validation.create("required")
                 })
             );
         }
