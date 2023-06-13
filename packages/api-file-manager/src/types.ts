@@ -299,6 +299,7 @@ export interface FileManagerFilesStorageOperationsListParams {
     sort: string[];
     limit: number;
     after: string | null;
+    search?: string;
 }
 
 /**

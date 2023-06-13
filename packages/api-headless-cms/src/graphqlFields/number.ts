@@ -28,6 +28,7 @@ export const createNumberField = (): CmsModelFieldToGraphQLPlugin => {
         fieldType: "number",
         isSortable: true,
         isSearchable: true,
+        fullTextSearch: true,
         read: {
             createGetFilters({ field }) {
                 return `${field.fieldId}: Number`;

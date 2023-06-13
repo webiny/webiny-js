@@ -41,13 +41,7 @@ export interface FileProps {
     showFileDetails: (id: string) => void;
 }
 
-const File: React.FC<FileProps> = ({
-    file,
-    selected,
-    onSelect,
-    children,
-    showFileDetails,
-}) => {
+const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFileDetails }) => {
     return (
         <FileWrapper data-testid={"fm-list-wrapper-file"}>
             <FileBody>
@@ -61,11 +55,16 @@ const File: React.FC<FileProps> = ({
                             data-testid={"fm-file-wrapper-file-info-icon"}
                         />
                     </FileInfoIcon>
-                    <FileSelectedMarker className={selected ? "selected" : ""} onClick={onSelect}>
-                        <div>
-                            <SelectedMarker />
-                        </div>
-                    </FileSelectedMarker>
+                    {onSelect ? (
+                        <FileSelectedMarker
+                            className={selected ? "selected" : ""}
+                            onClick={onSelect}
+                        >
+                            <div>
+                                <SelectedMarker />
+                            </div>
+                        </FileSelectedMarker>
+                    ) : null}
                 </FileControls>
                 <LazyLoad height={200} offsetVertical={300}>
                     <Ripple>

@@ -28,10 +28,14 @@ import {
 import { useApolloClient } from "@apollo/react-hooks";
 import { AcoAppContext } from "~/contexts/app";
 
+interface ListFoldersParams {
+    backgroundRefresh?: boolean;
+}
+
 interface FoldersContext {
     folders?: FolderItem[] | null;
     loading: Loading<LoadingActions>;
-    listFolders: () => Promise<FolderItem[]>;
+    listFolders: (params?: ListFoldersParams) => Promise<FolderItem[]>;
     getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (folder: Omit<FolderItem, "type">) => Promise<FolderItem>;
@@ -73,16 +77,18 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
         return {
             folders,
             loading,
-            async listFolders() {
+            async listFolders(params = {}) {
+                const backgroundRefresh = params.backgroundRefresh ?? false;
                 const { data: response } = await apolloFetchingHandler<ListFoldersResponse>(
-                    loadingHandler("LIST", setLoading),
+                    loadingHandler("LIST", backgroundRefresh ? undefined : setLoading),
                     () =>
                         client.query<ListFoldersResponse, ListFoldersQueryVariables>({
                             query: LIST_FOLDERS,
                             variables: {
                                 type,
                                 limit: 10000
-                            }
+                            },
+                            fetchPolicy: backgroundRefresh ? "network-only" : "cache-first"
                         })
                 );
 
@@ -164,6 +170,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                     return [data, ...(prev || [])];
                 });
 
+                context.listFolders({ backgroundRefresh: true });
+
                 return data;
             },
 
@@ -210,6 +218,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                     return next;
                 });
 
+                context.listFolders({ backgroundRefresh: true });
+
                 return data;
             },
 
@@ -243,6 +253,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                     }
                     return prev.filter(f => f.id !== id);
                 });
+
+                context.listFolders({ backgroundRefresh: true });
 
                 return true;
             }

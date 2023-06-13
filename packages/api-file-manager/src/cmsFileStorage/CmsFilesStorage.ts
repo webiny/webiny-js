@@ -115,7 +115,8 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
                 after: params.after,
                 limit: params.limit,
                 sort: params.sort,
-                where
+                where,
+                search: params.search
             });
         });
 
@@ -181,6 +182,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             id: entry.entryId,
             createdBy: entry.createdBy,
             createdOn: entry.createdOn,
+            savedOn: entry.savedOn,
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,

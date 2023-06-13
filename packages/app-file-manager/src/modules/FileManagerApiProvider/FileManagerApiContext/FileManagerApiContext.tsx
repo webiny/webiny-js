@@ -30,6 +30,7 @@ import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
 import { createFieldsList } from "@webiny/app-headless-cms/admin/graphql/createFieldsList";
 import { useFileModel } from "~/hooks/useFileModel";
+import omit from "lodash/omit";
 
 export interface ListTagsResponseItem {
     tag: string;
@@ -74,6 +75,7 @@ interface UploadFileOptions {
 
 interface ListTagsOptions {
     where?: ListFileTagsQueryVariables["where"];
+    refetch?: boolean;
 }
 
 const getModelFields = (model: ReturnType<typeof useFileModel>) => {
@@ -82,6 +84,7 @@ const getModelFields = (model: ReturnType<typeof useFileModel>) => {
         __typename 
         id
         createdOn
+        savedOn
         createdBy {
             id
             displayName
@@ -186,7 +189,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             mutation: UPDATE_FILE(modelFields),
             variables: {
                 id,
-                data
+                data: omit(data, ["createdOn", "savedOn", "createdBy"])
             }
         });
     };
@@ -227,10 +230,11 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         return { files, meta, error };
     };
 
-    const listTags = async (params = {}) => {
+    const listTags: FileManagerApiContextData["listTags"] = async ({ where, refetch } = {}) => {
         const { data } = await client.query<ListFileTagsQueryResponse>({
             query: LIST_TAGS,
-            variables: params
+            variables: { where },
+            fetchPolicy: refetch ? "network-only" : "cache-first"
         });
 
         return data.fileManager.listTags.data;

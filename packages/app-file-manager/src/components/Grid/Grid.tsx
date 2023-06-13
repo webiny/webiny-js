@@ -5,7 +5,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { FileThumbnail } from "./File";
 import { FileList, FolderList } from "./styled";
 import { FolderItem } from "@webiny/app-aco/types";
-import { FileItem } from "@webiny/app/types";
+import { FileItem } from "@webiny/app-admin/types";
 import { Thumbnail } from "~/components/FileDetails/components/Thumbnail";
 import { FileProvider } from "~/components/FileDetails/FileProvider";
 
@@ -19,7 +19,7 @@ interface GridProps {
     onFolderClick: (id: string) => void;
     selected: FileItem[];
     multiple?: boolean;
-    toggleSelected: (file: FileItem) => void | undefined;
+    toggleSelected: (file: FileItem) => void;
     onChange?: Function;
     onClose?: Function;
 }

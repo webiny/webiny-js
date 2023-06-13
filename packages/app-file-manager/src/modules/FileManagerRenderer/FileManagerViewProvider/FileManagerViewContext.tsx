@@ -1,72 +1,62 @@
-import React, { useCallback, useEffect, useState } from "react";
-import debounce from "lodash/debounce";
+import React, { useEffect, useMemo, useState } from "react";
+import omit from "lodash/omit";
 import { FileItem } from "@webiny/app-admin/types";
-import { useSecurity } from "@webiny/app-security";
-import { FileTag, Settings } from "~/types";
+import { FileTag } from "~/types";
 import { useFileManagerApi } from "~/index";
-import {
-    getMimeTypeWhereParams,
-    getScopeWhereParams,
-    initializeState,
-    State
-} from "./stateReducer";
+import { initializeState, State } from "./state";
 import { FolderItem, ListMeta, ListSearchRecordsSort } from "@webiny/app-aco/types";
 import { UploadOptions } from "@webiny/app/types";
 import { sortTableItems } from "@webiny/app-aco/sorting";
 import { useFolders, useNavigateFolder } from "@webiny/app-aco";
-import {
-    ListFilesQueryVariables,
-    ListFilesWhereLocation,
-    ListFilesWhereQueryVariables
-} from "~/modules/FileManagerApiProvider/graphql";
+import { ListFilesQueryVariables } from "~/modules/FileManagerApiProvider/graphql";
 import { useListFiles } from "./useListFiles";
 import { useTags } from "./useTags";
 
-export interface FileManagerViewContextData<TFileItem extends FileItem = FileItem> {
-    getFile: (id: string) => Promise<TFileItem | undefined>;
+type PublicState = Omit<State, "activeTags">;
+
+export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> extends PublicState {
+    accept: string[];
     createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
     deleteFile: (id: string) => Promise<void>;
-    updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
-    uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
-    dragging: boolean;
     files: FileItem[];
+    folderId: string;
+    folders: FolderItem[];
+    getFile: (id: string) => Promise<TFileItem | undefined>;
+    hideFileDetails: () => void;
+    hideFilters: () => void;
+    isListLoading: boolean;
+    isListLoadingMore: boolean;
+    areFilesSelectable: boolean;
+    listTitle: string;
+    loadMoreFiles: () => void;
+    meta: ListMeta | undefined;
+    multiple: boolean;
+    onClose: () => void;
+    onChange: Function;
+    onUploadCompletion: (files: FileItem[]) => void;
+    own: boolean;
+    scope?: string;
+    setDragging: (state: boolean) => void;
+    setFilters: (data: Record<string, any>) => void;
+    setFolderId: (folderId: string) => void;
+    setListSort: (state: ListSearchRecordsSort) => void;
+    setListTable: (mode: boolean) => void;
+    setSearchQuery: (query: string) => void;
+    setSelected: (files: TFileItem[]) => void;
+    showFileDetails: (id: string) => void;
+    showFilters: () => void;
     tags: {
         allTags: FileTag[];
         activeTags: string[];
         setActiveTags: (tags: string[]) => void;
         loading: boolean;
     };
-    meta: ListMeta | undefined;
-    folderId?: string;
-    folders: FolderItem[];
-    hasPreviouslyUploadedFiles: boolean | null;
-    hideFileDetails: () => void;
-    hideFilters: () => void;
-    isListLoading: boolean;
-    isListLoadingMore: boolean;
-    listSort: ListSearchRecordsSort | undefined;
-    listTable: boolean;
-    listTitle: string | undefined;
-    loadingFileDetails: boolean;
-    loadMoreFiles: () => void;
-    searchQuery: string;
-    selected: TFileItem[];
-    setDragging: (state: boolean) => void;
-    setFilters: (data: Record<string, any>) => void;
-    setHasPreviouslyUploadedFiles: (flag: boolean) => void;
-    setListSort: (state: ListSearchRecordsSort) => void;
-    setListTable: (mode: boolean) => void;
-    setSearchQuery: (query: string) => void;
-    setSelected: (files: TFileItem[]) => void;
-    settings: Settings | undefined;
-    showFileDetails: (id: string) => void;
-    showFilters: () => void;
-    showingFileDetails: string | null;
-    showingFilters: boolean;
     toggleSelected: (file: TFileItem) => void;
+    updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
+    uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
 }
 
-export const FileManagerViewContext = React.createContext<FileManagerViewContextData | undefined>(
+export const FileManagerViewContext = React.createContext<FileManagerViewContext | undefined>(
     undefined
 );
 
@@ -86,11 +76,18 @@ const getCurrentFolderList = (
 };
 
 export interface FileManagerViewProviderProps {
+    onChange?: Function;
+    onClose?: () => void;
+    multiple?: boolean;
     accept: string[];
-    tags: string[];
+    maxSize?: number | string;
+    multipleMaxCount?: number;
+    multipleMaxSize?: number | string;
+    onUploadCompletion?: Function;
+    tags?: string[];
     scope?: string;
     own?: boolean;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 type UploadFileOptions = Pick<UploadOptions, "onProgress">;
@@ -98,105 +95,28 @@ type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 export type Loading<T extends string> = { [P in T]?: boolean };
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
 
-function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
-    if (Array.isArray(value)) {
-        return value.length ? value : undefined;
-    }
-
-    return fallback;
-}
-
 export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = ({
     children,
     ...props
 }) => {
-    const { identity } = useSecurity();
+    const modifiers = { scope: props.scope, own: props.own, accept: props.accept };
     const fileManager = useFileManagerApi();
-    const [settings, setSettings] = useState<Settings | undefined>(undefined);
-    const [listTable, setListTable] = useState<boolean>(false);
-    const [folders, setFolders] = useState<FolderItem[]>([]);
-    const [listTitle, setListTitle] = useState<string | undefined>();
-    const {
-        folders: originalFolders,
-        loading: foldersLoading,
-        getDescendantFolders
-    } = useFolders();
-    const { currentFolderId = "ROOT" } = useNavigateFolder();
-    const { loading, files, meta, listFiles, setFiles } = useListFiles();
-    const tags = useTags({ scope: props.scope, own: props.own });
+    const { folders: originalFolders, loading: foldersLoading } = useFolders();
+    const { currentFolderId = "ROOT", navigateToFolder } = useNavigateFolder();
+    const tags = useTags(modifiers);
+    const [state, setState] = useState(initializeState());
 
-    const [state, setState] = useState(
-        initializeState({ ...props, identity, folderId: currentFolderId || "ROOT" })
-    );
-
-    const queryParamsToWhereInput = (state: State) => {
-        const isSearch = state.searchQuery || state.filters || state.activeTags.length;
-
-        const AND: ListFilesWhereQueryVariables[] = [];
-
-        if (state.filters) {
-            AND.push(state.filters);
+    const { loading, files, meta, listFiles, setFiles, getListVariables } = useListFiles({
+        folderId: currentFolderId,
+        modifiers,
+        state,
+        onFirstLoad(meta) {
+            setState(state => ({
+                ...state,
+                hasPreviouslyUploadedFiles: meta.totalCount > 0
+            }));
         }
-
-        if (Array.isArray(state.listWhere.AND)) {
-            AND.push(...state.listWhere.AND);
-        }
-
-        if (state.activeTags.length) {
-            AND.push({ tags_in: state.activeTags });
-        }
-
-        let locationWhere: ListFilesWhereLocation | undefined = {
-            folderId: currentFolderId
-        };
-
-        if (isSearch) {
-            if (currentFolderId === "ROOT") {
-                locationWhere = undefined;
-            } else {
-                locationWhere = {
-                    folderId_in: getDescendantFolders(currentFolderId)
-                };
-            }
-        }
-
-        const queryParams: ListFilesQueryVariables = {
-            limit: 50,
-            sort: state.listSort,
-            search: state.searchQuery || undefined,
-            where: {
-                ...getScopeWhereParams(props.scope),
-                ...getMimeTypeWhereParams(props.accept),
-                location: locationWhere,
-                createdBy: props.own ? identity!.id : undefined,
-                tags_in: nonEmptyArray(addScopePrefix(state.listWhere.tags_in)),
-                AND: AND.filter(Boolean) as ListFilesWhereQueryVariables[]
-            }
-        };
-
-        if (!queryParams.where?.AND?.length) {
-            delete queryParams.where?.AND;
-        }
-
-        return queryParams;
-    };
-
-    const loadFiles = debounce(
-        (action: LoadingActions, params?: Partial<ListFilesQueryVariables>) => {
-            if (loading.INIT || loading[action]) {
-                return;
-            }
-            const queryVariables = queryParamsToWhereInput(state);
-            listFiles({ ...queryVariables, ...params });
-        },
-        50
-    );
-
-    const loadMoreFiles = () => {
-        if (meta?.cursor) {
-            loadFiles("LIST_MORE", { after: meta.cursor });
-        }
-    };
+    });
 
     useEffect(() => {
         loadFiles("INIT");
@@ -204,31 +124,49 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
     useEffect(() => {
         loadFiles("LIST");
-    }, [state.listWhere, state.searchQuery, state.filters, state.activeTags]);
+    }, [state.searchQuery, state.filters, state.activeTags, state.listSort]);
 
-    useEffect(() => {
+    const loadFiles = async (action: LoadingActions, params?: Partial<ListFilesQueryVariables>) => {
+        if (loading.INIT || loading[action]) {
+            return;
+        }
+        const queryVariables = getListVariables();
+        await listFiles({ ...queryVariables, ...params });
+        setState(state => ({
+            ...state,
+            isSearch: Boolean(state.searchQuery || state.filters || state.activeTags.length)
+        }));
+    };
+
+    const loadMoreFiles = () => {
+        if (meta?.cursor) {
+            loadFiles("LIST_MORE", { after: meta.cursor });
+        }
+    };
+
+    const resetSearchParameters = (folderId: string) => {
+        const folder = (originalFolders || []).find(folder => folder.id === folderId);
+
         setState(state => ({
             ...state,
             filters: undefined,
             searchQuery: "",
-            activeTags: []
+            activeTags: [],
+            searchLabel: folder ? `Searching files in "${folder.title}"` : `Searching all files`
         }));
-    }, [currentFolderId]);
+    };
 
-    /**
-     * Any time we receive a `folders` list update:
-     * - we return the list filtered by the current `type` and parent `folderId`, sorted according to the current `sort` value;
-     * - we return the current folder name.
-     */
-    useEffect(() => {
+    const { folders, listTitle } = useMemo(() => {
+        // Filter sub-folders and sort them accordingly
         const subFolders = getCurrentFolderList(originalFolders, currentFolderId);
-        setFolders(() => {
-            return sortTableItems(subFolders, state.listSort);
-        });
+        const folders = sortTableItems(subFolders, state.listSort, { name: "title" });
 
+        // Get current folder name
         const currentFolder = originalFolders?.find(folder => folder.id === currentFolderId);
-        setListTitle(currentFolder?.title || undefined);
-    }, [originalFolders, currentFolderId]);
+        const listTitle = currentFolder?.title || "";
+
+        return { folders, listTitle };
+    }, [originalFolders, currentFolderId, state.listSort]);
 
     const getFile = async (id: string) => {
         const fileInState = files.find(file => file.id === id);
@@ -278,20 +216,15 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
     const getSettings = async () => {
         const settings = await fileManager.getSettings();
-        setSettings(settings);
+        setState(state => ({
+            ...state,
+            settings
+        }));
     };
 
     useEffect(() => {
         getSettings();
     }, []);
-
-    const setHasPreviouslyUploadedFiles: FileManagerViewContextData["setHasPreviouslyUploadedFiles"] =
-        flag => {
-            setState(state => ({
-                ...state,
-                hasPreviouslyUploadedFiles: flag
-            }));
-        };
 
     const createFile = async (data: FileItem) => {
         if (data.tags) {
@@ -322,6 +255,8 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             return;
         }
 
+        const newTags = data.tags?.filter(tag => !tags.tags.some(t => t.tag === tag));
+
         if (data.tags) {
             data.tags = addScopePrefix(data.tags);
         }
@@ -331,6 +266,10 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         }
 
         await fileManager.updateFile(id, data);
+
+        if (newTags) {
+            tags.addTags(newTags);
+        }
 
         setFiles(files => {
             const index = files.findIndex(file => file.id === id);
@@ -370,7 +309,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
      * @param file
      * @param options
      */
-    const uploadFile: FileManagerViewContextData["uploadFile"] = async (file, options = {}) => {
+    const uploadFile: FileManagerViewContext["uploadFile"] = async (file, options = {}) => {
         const tags = props.scope ? [props.scope] : [];
         const meta = {
             location: {
@@ -409,42 +348,114 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             });
     };
 
-    const setSearchQuery: FileManagerViewContextData["setSearchQuery"] = useCallback(
-        // @ts-ignore
-        debounce(search => {
+    const context: FileManagerViewContext = {
+        ...omit(state, ["activeTags"]),
+        accept: props.accept,
+        areFilesSelectable: Boolean(props.onChange),
+        createFile,
+        deleteFile,
+        files,
+        folderId: currentFolderId,
+        folders: state.isSearch ? [] : folders,
+        getFile,
+        hideFileDetails() {
             setState(state => ({
                 ...state,
-                searchQuery: search
+                showingFileDetails: null
             }));
-        }, 500),
-        [currentFolderId]
-    );
-
-    const value: FileManagerViewContextData = {
-        files,
-        getFile,
-        createFile,
-        updateFile,
-        deleteFile,
-        uploadFile,
-        settings,
-        selected: state.selected,
-        hasPreviouslyUploadedFiles: state.hasPreviouslyUploadedFiles,
-        setHasPreviouslyUploadedFiles,
-        listSort: state.listSort,
-        dragging: state.dragging,
-        showingFileDetails: state.showingFileDetails,
-        showingFilters: state.showingFilters,
-        loadingFileDetails: state.loadingFileDetails,
-        loadMoreFiles,
-        meta,
-        folderId: currentFolderId,
+        },
+        hideFilters() {
+            setState(state => ({
+                ...state,
+                showingFilters: false
+            }));
+        },
         isListLoading: Boolean(
             loading.INIT || foldersLoading.INIT || loading.LIST || foldersLoading.LIST
         ),
         isListLoadingMore: Boolean(loading.LIST_MORE),
-        listTable,
-        folders,
+        listTitle,
+        loadMoreFiles,
+        meta,
+        multiple: Boolean(props.multiple),
+        onChange(value: any[]) {
+            if (typeof props.onChange === "function") {
+                props.onChange(value);
+            }
+
+            context.onClose();
+        },
+        onClose() {
+            if (typeof props.onClose === "function") {
+                props.onClose();
+            }
+        },
+        onUploadCompletion(files) {
+            setState(state => ({
+                ...state,
+                hasPreviouslyUploadedFiles: true
+            }));
+
+            if (typeof props.onUploadCompletion === "function") {
+                props.onUploadCompletion(files);
+                context.onClose();
+            }
+        },
+        own: Boolean(props.own),
+        scope: props.scope,
+        setDragging(value = true) {
+            setState(state => ({
+                ...state,
+                dragging: value
+            }));
+        },
+        setFilters(data) {
+            setState(state => ({
+                ...state,
+                selected: [],
+                filters: data
+            }));
+        },
+        setFolderId(folderId) {
+            resetSearchParameters(folderId);
+            navigateToFolder(folderId);
+        },
+        setListSort(sort: ListSearchRecordsSort) {
+            setState(state => ({
+                ...state,
+                listSort: sort
+            }));
+        },
+        setListTable(flag) {
+            setState(state => ({
+                ...state,
+                listTable: flag
+            }));
+        },
+        setSearchQuery(search) {
+            setState(state => ({
+                ...state,
+                searchQuery: search
+            }));
+        },
+        setSelected(files: FileItem[]) {
+            setState(state => ({
+                ...state,
+                selected: files
+            }));
+        },
+        showFileDetails(id: string) {
+            setState(state => ({
+                ...state,
+                showingFileDetails: id
+            }));
+        },
+        showFilters() {
+            setState(state => ({
+                ...state,
+                showingFilters: true
+            }));
+        },
         tags: {
             loading: tags.loading,
             allTags: tags.tags,
@@ -456,19 +467,9 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 }));
             }
         },
-        listTitle,
-        setListTable,
-        setSearchQuery,
-        searchQuery: state.searchQuery,
-        setSelected(files: FileItem[]) {
-            setState(state => ({
-                ...state,
-                selected: files
-            }));
-        },
         toggleSelected(file: FileItem) {
             setState(state => {
-                const existingIndex = state.selected.findIndex(item => item.src === file.src);
+                const existingIndex = state.selected.findIndex(item => item.id === file.id);
                 const selected = state.selected;
 
                 if (existingIndex < 0) {
@@ -483,52 +484,13 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 };
             });
         },
-        setListSort(sort: ListSearchRecordsSort) {
-            setState(state => ({
-                ...state,
-                listSort: sort
-            }));
-        },
-        setFilters(data) {
-            setState(state => ({
-                ...state,
-                selected: [],
-                filters: data
-            }));
-        },
-        setDragging(value = true) {
-            setState(state => ({
-                ...state,
-                dragging: value
-            }));
-        },
-        showFileDetails(id: string) {
-            setState(state => ({
-                ...state,
-                showingFileDetails: id
-            }));
-        },
-        hideFileDetails() {
-            setState(state => ({
-                ...state,
-                showingFileDetails: null
-            }));
-        },
-        showFilters() {
-            setState(state => ({
-                ...state,
-                showingFilters: true
-            }));
-        },
-        hideFilters() {
-            setState(state => ({
-                ...state,
-                showingFilters: false
-            }));
-        }
+        updateFile,
+        uploadFile
     };
 
     return (
-        <FileManagerViewContext.Provider value={value}>{children}</FileManagerViewContext.Provider>
+        <FileManagerViewContext.Provider value={context}>
+            {children}
+        </FileManagerViewContext.Provider>
     );
 };

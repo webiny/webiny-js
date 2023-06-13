@@ -26,14 +26,6 @@ const checkOwnership = (file: File, permission: FilePermission, identity: Securi
     }
 };
 
-const ensureMimeTag = (file: File) => {
-    const hasMimeTag = file.tags.some(tag => tag.startsWith("mime:"));
-    if (!hasMimeTag) {
-        file.tags.push(`mime:${file.type}`);
-    }
-    return file.tags;
-};
-
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
         storageOperations,
@@ -93,6 +85,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 },
                 tenant: getTenantId(),
                 createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
@@ -101,8 +94,6 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 locale: getLocaleCode(),
                 webinyVersion: WEBINY_VERSION
             };
-
-            file.tags = ensureMimeTag(file);
 
             try {
                 await this.onFileBeforeCreate.publish({ file, meta });
@@ -252,6 +243,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     },
                     tenant,
                     createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     createdBy,
                     locale,
                     webinyVersion: WEBINY_VERSION
@@ -284,7 +276,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 after = null,
                 where: initialWhere,
                 sort: initialSort,
-                search = null
+                search
             } = params;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
@@ -292,10 +284,6 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 locale: getLocaleCode(),
                 tenant: getTenantId()
             };
-
-            if (search) {
-                where.OR = [{ name_contains: search }, { tags_contains: search }];
-            }
 
             /**
              * Always override the createdBy received from the user, if any.
@@ -312,7 +300,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     where,
                     after,
                     limit,
-                    sort
+                    sort,
+                    search
                 });
             } catch (ex) {
                 throw new WebinyError(

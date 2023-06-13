@@ -1,10 +1,11 @@
-import React, { useRef } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as FilterIcon } from "@material-design-icons/svg/outlined/filter_alt.svg";
 import { Icon } from "@webiny/ui/Icon";
 import { IconButton } from "@webiny/ui/Button";
 import { useFileManagerApi, useFileManagerView } from "~/index";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const SearchBarIcon = styled(Icon)`
     &.mdc-button__icon {
@@ -44,28 +45,33 @@ const InputSearch = styled.div`
 
 export const SearchWidget = () => {
     const fileManager = useFileManagerApi();
-    const { showingFilters, showFilters, hideFilters, setSearchQuery } = useFileManagerView();
-
-    const searchInput = useRef<HTMLInputElement>(null);
+    const view = useFileManagerView();
 
     const toggleFilters = () => {
-        if (showingFilters) {
-            hideFilters();
+        if (view.showingFilters) {
+            view.hideFilters();
         } else {
-            showFilters();
+            view.showFilters();
         }
     };
 
     return (
         <InputSearch>
             <SearchBarIcon icon={<SearchIcon />} />
-            <input
-                ref={searchInput}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder={"Search by filename or tags"}
-                disabled={!fileManager.canRead}
-                data-testid={"file-manager.search-input"}
-            />
+            <DelayedOnChange
+                value={view.searchQuery}
+                onChange={value => view.setSearchQuery(value)}
+            >
+                {({ value, onChange }) => (
+                    <input
+                        value={value}
+                        onChange={e => onChange(e.target.value)}
+                        placeholder={view.searchLabel || "Search all files"}
+                        disabled={!fileManager.canRead}
+                        data-testid={"file-manager.search-input"}
+                    />
+                )}
+            </DelayedOnChange>
             <FilterButton icon={<FilterIcon />} onClick={toggleFilters} />
         </InputSearch>
     );

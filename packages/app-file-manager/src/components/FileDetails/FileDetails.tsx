@@ -45,8 +45,6 @@ const FormContainer = styled(SimpleForm)`
 
 interface FileDetailsInnerProps {
     file: FileItem;
-    scope?: string;
-    own?: boolean;
     onClose: () => void;
 }
 
@@ -121,8 +119,6 @@ export interface FileDetailsProps {
     file?: FileItem;
     open: boolean;
     loading: boolean;
-    scope?: string;
-    own?: boolean;
     onClose: () => void;
 }
 
@@ -152,11 +148,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({
             <DrawerContent dir="ltr">
                 {loading && <CircularProgress label={"Loading file details..."} />}
                 {file && (
-                    <FileDetailsProvider
-                        hideFileDetails={onClose}
-                        scope={rest.scope}
-                        own={rest.own}
-                    >
+                    <FileDetailsProvider hideFileDetails={onClose}>
                         <FileDetailsInner file={file} onClose={onClose} {...rest} />
                     </FileDetailsProvider>
                 )}

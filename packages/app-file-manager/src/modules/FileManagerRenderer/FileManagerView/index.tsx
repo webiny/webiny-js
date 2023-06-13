@@ -6,8 +6,11 @@ import {
     FileManagerRenderer as BaseFileManagerRenderer
 } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
-import FileManagerView, { FileManagerViewProps } from "./FileManagerView";
-import { FileManagerViewProvider } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
+import FileManagerView from "./FileManagerView";
+import {
+    FileManagerViewProvider,
+    FileManagerViewProviderProps
+} from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { FM_ACO_APP } from "~/constants";
 import { FileManagerViewWithConfig } from "./FileManagerViewConfig";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders";
@@ -59,7 +62,7 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
             (onChange as FileManagerOnChange<FileManagerFileItem>)(formatFileItem(value));
         };
 
-        const viewProps: FileManagerViewProps = {
+        const viewProps: FileManagerViewProviderProps = {
             ...forwardProps,
             onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
             accept: images ? accept || imagesAccept : accept || []
@@ -68,14 +71,9 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
         return (
             <FoldersProvider type={FM_ACO_APP}>
                 <NavigateFolderProvider>
-                    <FileManagerViewProvider
-                        accept={viewProps.accept || []}
-                        tags={viewProps.tags || []}
-                        scope={viewProps.scope}
-                        own={viewProps.own}
-                    >
+                    <FileManagerViewProvider {...viewProps}>
                         <FileManagerViewWithConfig>
-                            <FileManagerView {...viewProps} />
+                            <FileManagerView />
                         </FileManagerViewWithConfig>
                     </FileManagerViewProvider>
                 </NavigateFolderProvider>

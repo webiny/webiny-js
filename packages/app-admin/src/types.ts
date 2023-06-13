@@ -86,6 +86,7 @@ export interface FileItem {
     tags: string[];
     aliases: string[];
     createdOn: string;
+    savedOn: string;
     createdBy: {
         id: string;
         displayName: string;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
 import { DEFAULT_SCOPE } from "~/constants";
@@ -15,15 +15,6 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
     const [tags, setTags] = useState<FileTag[]>([]);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        setLoading(true);
-        const where = getTagsInitialParams({ scope, own });
-        fileManager.listTags({ where }).then(tags => {
-            setLoading(false);
-            setTags(tagsModifier(tags));
-        });
-    }, []);
-
     const getTagsInitialParams = useCallback(
         ({ scope, own }: UseTagsParams) => {
             return {
@@ -33,6 +24,29 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
         },
         [scope, own, identity]
     );
+
+    const where = useMemo(() => getTagsInitialParams({ scope, own }), [getTagsInitialParams]);
+
+    useEffect(() => {
+        setLoading(true);
+        fileManager.listTags({ where }).then(tags => {
+            setLoading(false);
+            setTags(tagsModifier(tags));
+        });
+    }, []);
+
+    const addTags = (tags: string[]) => {
+        if (!tags.length) {
+            return;
+        }
+
+        setTags(state => {
+            const newTags = tags.map(tag => ({ tag, count: 1 }));
+            return tagsModifier([...state, ...newTags]);
+        });
+
+        fileManager.listTags({ where, refetch: true });
+    };
 
     const tagsModifier = useCallback(
         (tags: FileTag[]) => {
@@ -52,6 +66,7 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
 
     return {
         loading,
-        tags
+        tags,
+        addTags
     };
 };

@@ -25,7 +25,7 @@ const style = {
 interface LeftSidebarProps {
     title: string;
     currentFolder?: string;
-    onFolderClick: (folderId: string | undefined) => void;
+    onFolderClick: (folderId: string) => void;
     children?: React.ReactNode;
 }
 

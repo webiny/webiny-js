@@ -1,4 +1,5 @@
 import React, { createContext } from "react";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
 export interface FileDetailsContext {
     close: () => void;
@@ -9,19 +10,13 @@ export interface FileDetailsContext {
 export const FileDetailsContext = createContext<FileDetailsContext | undefined>(undefined);
 
 interface FileDetailsProviderProps {
-    scope?: string;
-    own?: boolean;
     hideFileDetails: () => void;
     children: React.ReactNode;
 }
 
-export const FileDetailsProvider = ({
-    hideFileDetails,
-    scope,
-    own,
-    children
-}: FileDetailsProviderProps) => {
-    const value: FileDetailsContext = { close: hideFileDetails, scope, own: Boolean(own) };
+export const FileDetailsProvider = ({ hideFileDetails, children }: FileDetailsProviderProps) => {
+    const view = useFileManagerView();
+    const value: FileDetailsContext = { close: hideFileDetails, scope: view.scope, own: view.own };
 
     return <FileDetailsContext.Provider value={value}>{children}</FileDetailsContext.Provider>;
 };

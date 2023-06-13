@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import Files, { FilesRenderChildren, FilesRules } from "react-butterfiles";
+import Files, { FilesRenderChildren } from "react-butterfiles";
 import styled from "@emotion/styled";
 import debounce from "lodash/debounce";
 import { positionValues } from "react-custom-scrollbars";
@@ -11,7 +11,7 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { ReactComponent as GridIcon } from "@material-design-icons/svg/outlined/view_module.svg";
 import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/view_list.svg";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate, useNavigateFolder } from "@webiny/app-aco";
+import { FolderDialogCreate } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
@@ -27,7 +27,7 @@ import { DropFilesHere } from "~/components/DropFilesHere";
 import { Empty } from "~/components/Empty";
 import { FileDetails } from "~/components/FileDetails";
 import { Grid } from "~/components/Grid";
-import { Table } from "~/components/Table";
+import { Table, TableProps } from "~/components/Table";
 import { Title } from "~/components/Title";
 import { UploadStatus } from "~/components/UploadStatus";
 import { BatchFileUploader } from "~/BatchFileUploader";
@@ -70,44 +70,37 @@ const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
     }, []);
 };
 
-export interface FileManagerViewProps {
-    onChange?: Function;
-    onClose?: () => void;
-    files?: FilesRules;
-    multiple?: boolean; // Does not affect <Files> component, it always allows multiple selection.
-    accept: Array<string>;
-    maxSize?: number | string;
-    multipleMaxCount?: number;
-    multipleMaxSize?: number | string;
-    onUploadCompletion?: Function;
-    tags?: string[];
-    scope?: string;
-    own?: boolean;
-}
-
 const defaultFolderName = t`All files`;
 
-const FileManagerView: React.FC<FileManagerViewProps> = props => {
-    const { onClose, onChange, accept, multiple = false, onUploadCompletion, scope, own } = props;
-    const { navigateToFolder } = useNavigateFolder();
+const FileManagerView = () => {
     const view = useFileManagerView();
-
-    const setFolderId = useCallback((folderId?: string) => {
-        navigateToFolder(folderId);
-    }, []);
+    const fileManager = useFileManagerApi();
+    const { showSnackbar } = useSnackbar();
 
     const uploader = useMemo<BatchFileUploader>(
         () => new BatchFileUploader(view.uploadFile),
         [view.folderId]
     );
 
-    const fileManager = useFileManagerApi();
-    const { showSnackbar } = useSnackbar();
-
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
     const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
+    const [currentFile, setCurrentFile] = useState<FileItem>();
+
+    useEffect(() => {
+        const fetchFileDetails = async () => {
+            if (view.showingFileDetails) {
+                const file = await view.getFile(view.showingFileDetails);
+                setCurrentFile(file);
+            } else {
+                setCurrentFile(undefined);
+            }
+        };
+
+        // call the function
+        fetchFileDetails();
+    }, [view.showingFileDetails]);
 
     useEffect(() => {
         if (!tableSorting?.length) {
@@ -136,25 +129,15 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     useHotkeys({
         zIndex: 50,
         keys: {
-            esc: onClose
+            esc: view.onClose
         }
     });
-
-    useEffect(() => {
-        view.setHasPreviouslyUploadedFiles(
-            Boolean(view.files.length > 0 || view.folders.length > 0)
-        );
-    }, [view.files, view.folders]);
 
     const uploadFiles = async (files: File[]) => {
         uploader.addFiles(files);
 
         uploader.onUploadFinished(({ uploaded, errors }) => {
             uploader.reset();
-
-            if (!view.hasPreviouslyUploadedFiles) {
-                view.setHasPreviouslyUploadedFiles(true);
-            }
 
             if (errors.length > 0) {
                 showSnackbar(
@@ -174,10 +157,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
 
             showSnackbar(t`File upload complete.`);
 
-            if (typeof onUploadCompletion === "function") {
-                onUploadCompletion(uploaded);
-                onClose && onClose();
-            }
+            view.onUploadCompletion(uploaded);
         });
     };
 
@@ -196,26 +176,11 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         [fileManager.canCreate]
     );
 
-    const [currentFile, setCurrentFile] = useState<FileItem>();
-    useEffect(() => {
-        const fetchFileDetails = async () => {
-            if (view.showingFileDetails) {
-                const file = await view.getFile(view.showingFileDetails);
-                setCurrentFile(file);
-            } else {
-                setCurrentFile(undefined);
-            }
-        };
-
-        // call the function
-        fetchFileDetails();
-    }, [view.showingFileDetails]);
-
     const filesBeingUploaded = uploader.getJobs().length;
     const progress = uploader.progress;
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
-        if (!view.isListLoading && view.searchQuery && view.files.length === 0) {
+        if (!view.isListLoading && view.isSearch && view.files.length === 0) {
             return <Empty isSearchResult={true} browseFiles={browseFiles} />;
         }
 
@@ -224,23 +189,34 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         }
 
         if (view.listTable) {
+            const onSelectRow: TableProps["onSelectRow"] | undefined = view.areFilesSelectable
+                ? rows => {
+                      const files = rows
+                          .filter(row => row.$type === "RECORD")
+                          .map(row => row.original as FileItem);
+
+                      if (view.multiple) {
+                          view.setSelected(files);
+                      } else {
+                          view.onChange(files[0]);
+                      }
+                  }
+                : undefined;
+
             return (
                 <Table
+                    canSelectAllRows={view.multiple}
                     folders={view.folders}
                     records={view.files}
+                    selectedRecords={view.selected}
                     loading={view.isListLoading}
                     onRecordClick={view.showFileDetails}
-                    onFolderClick={setFolderId}
-                    onSelectRow={rows => {
-                        const files = rows
-                            .filter(row => row.type === "RECORD")
-                            .map(row => row.original as FileItem);
-                        view.setSelected(files);
-                    }}
+                    onFolderClick={view.setFolderId}
+                    onSelectRow={onSelectRow}
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
                     settings={view.settings}
-                    selectableItems={Boolean(typeof onChange === "function")}
+                    selectableItems={view.areFilesSelectable}
                 />
             );
         }
@@ -251,12 +227,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 records={view.files}
                 loading={view.isListLoading}
                 onRecordClick={view.showFileDetails}
-                onFolderClick={setFolderId}
+                onFolderClick={view.setFolderId}
                 selected={view.selected}
-                multiple={multiple}
+                multiple={view.multiple}
                 toggleSelected={view.toggleSelected}
-                onChange={onChange}
-                onClose={onClose}
+                onChange={view.areFilesSelectable ? view.onChange : undefined}
+                onClose={view.onClose}
             />
         );
     };
@@ -276,7 +252,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 multiple
                 maxSize={view.settings ? view.settings.uploadMaxFileSize + "b" : "1TB"}
                 multipleMaxSize={"1TB"}
-                accept={accept}
+                accept={view.accept}
                 onSuccess={files => {
                     const filesToUpload = files
                         .map(file => file.src.file)
@@ -291,7 +267,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             >
                 {({ getDropZoneProps, browseFiles }) => (
                     <OverlayLayout
-                        onExited={onClose}
+                        onExited={view.onClose}
                         barLeft={<Title title={view.listTitle} />}
                         barMiddle={<SearchWidget />}
                         barRight={
@@ -300,19 +276,9 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                     <ButtonPrimary
                                         flat={true}
                                         small={true}
-                                        onClick={() => {
-                                            (async () => {
-                                                if (typeof onChange === "function") {
-                                                    await onChange(
-                                                        multiple ? view.selected : view.selected[0]
-                                                    );
-
-                                                    onClose && onClose();
-                                                }
-                                            })();
-                                        }}
+                                        onClick={() => view.onChange(view.selected)}
                                     >
-                                        {t`Select`} {multiple && `(${view.selected.length})`}
+                                        {t`Select`} {view.multiple && `(${view.selected.length})`}
                                     </ButtonPrimary>
                                 ) : (
                                     renderUploadFileAction({ browseFiles })
@@ -348,13 +314,11 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 file={currentFile}
                                 open={Boolean(view.showingFileDetails)}
                                 onClose={view.hideFileDetails}
-                                scope={scope}
-                                own={own}
                             />
                             <LeftSidebar
                                 title={defaultFolderName}
                                 currentFolder={view.folderId}
-                                onFolderClick={setFolderId}
+                                onFolderClick={view.setFolderId}
                             >
                                 <TagsList
                                     loading={view.tags.loading}
@@ -382,7 +346,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                 >
                                     {renderList(browseFiles)}
                                 </Scrollbar>
-                                <BottomInfoBar accept={accept} listing={view.isListLoadingMore} />
+                                <BottomInfoBar
+                                    accept={view.accept}
+                                    listing={view.isListLoadingMore}
+                                />
                                 <UploadStatus
                                     numberOfFiles={filesBeingUploaded}
                                     progress={progress}
@@ -399,10 +366,6 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             />
         </>
     );
-};
-
-FileManagerView.defaultProps = {
-    multiple: false
 };
 
 export default observer(FileManagerView);

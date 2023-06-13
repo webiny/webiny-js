@@ -1,11 +1,18 @@
 import { sortTableItems, validateOrGetDefaultDbSort } from "@webiny/app-aco/sorting";
 import sortBy from "lodash/sortBy";
+import { useFolders } from "@webiny/app-aco";
 import { ListMeta } from "@webiny/app-aco/types";
+import { useSecurity } from "@webiny/app-security";
 import { FileItem } from "@webiny/app-admin/types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Loading, LoadingActions } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
-import { ListFilesQueryVariables } from "~/modules/FileManagerApiProvider/graphql";
+import {
+    ListFilesQueryVariables,
+    ListFilesWhereLocation,
+    ListFilesWhereQueryVariables
+} from "~/modules/FileManagerApiProvider/graphql";
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
+import { getScopeWhereParams, State } from "./state";
 
 const mergeRecords = (oldRecords: FileItem[], newRecords: FileItem[]): FileItem[] => {
     if (!newRecords.length) {
@@ -28,8 +35,30 @@ const mergeRecords = (oldRecords: FileItem[], newRecords: FileItem[]): FileItem[
     return sortBy(mergedRecords, ["name"]);
 };
 
-export function useListFiles() {
+function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
+    if (Array.isArray(value)) {
+        return value.length ? value : undefined;
+    }
+
+    return fallback;
+}
+
+interface UseListFilesParams {
+    modifiers: {
+        scope?: string;
+        own?: boolean;
+        accept: string[];
+    };
+    folderId: string;
+    state: State;
+    onFirstLoad: (meta: ListMeta) => void;
+}
+
+export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseListFilesParams) {
+    const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
+    const { getDescendantFolders } = useFolders();
+    const firstLoad = useRef(true);
     const [meta, setMeta] = useState<ListMeta | undefined>(undefined);
     const [files, setFiles] = useState<FileItem[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>({});
@@ -82,13 +111,60 @@ export function useListFiles() {
                 INIT: false
             };
         });
+
+        if (firstLoad.current) {
+            firstLoad.current = false;
+            onFirstLoad(fmResponse.meta);
+        }
+    };
+
+    const getListVariables = () => {
+        const isSearch = state.searchQuery || state.filters || state.activeTags.length;
+
+        const AND: ListFilesWhereQueryVariables[] = [];
+
+        if (state.filters) {
+            AND.push(state.filters);
+        }
+
+        if (state.activeTags.length) {
+            AND.push({ tags_in: state.activeTags });
+        }
+
+        let locationWhere: ListFilesWhereLocation | undefined = { folderId };
+
+        if (isSearch) {
+            if (folderId === "ROOT") {
+                locationWhere = undefined;
+            } else {
+                locationWhere = {
+                    folderId_in: getDescendantFolders(folderId)
+                };
+            }
+        }
+
+        const queryParams: ListFilesQueryVariables = {
+            limit: 50,
+            sort: state.listSort,
+            search: state.searchQuery || undefined,
+            where: {
+                ...getScopeWhereParams(modifiers.scope),
+                location: locationWhere,
+                createdBy: modifiers.own ? identity!.id : undefined,
+                type_in: nonEmptyArray(modifiers.accept),
+                AND: AND.length > 0 ? AND : undefined
+            }
+        };
+
+        return queryParams;
     };
 
     return {
-        files,
+        files: files || [],
         loading,
         meta,
         setFiles,
-        listFiles
+        listFiles,
+        getListVariables
     };
 }

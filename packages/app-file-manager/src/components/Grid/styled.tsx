@@ -107,13 +107,13 @@ export const FileInfoIcon = styled("div")`
                 scale: 1;
             }
         }
-        &:nth-child(1) {
+        &:nth-of-type(1) {
             transition-delay: 0ms;
         }  
-        &:nth-child(2) {
+        &:nth-of-type(2) {
             transition-delay: 50ms;
         }  
-        &:nth-child(3) {
+        &:nth-of-type(3) {
             transition-delay: 100ms;
         }  
     }
@@ -130,7 +130,6 @@ export const FilePreview = styled("div")`
     object-fit: cover;
     justify-content: center;
     align-items: center;
-    display: flex;
     transition: all 150ms ease-out;
     svg,
     img {

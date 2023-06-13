@@ -11,6 +11,7 @@ export interface File {
     tags: string[];
     aliases: string[];
     createdOn: string;
+    savedOn: string;
     createdBy: CreatedBy;
     /**
      * Added with new storage operations refactoring.
