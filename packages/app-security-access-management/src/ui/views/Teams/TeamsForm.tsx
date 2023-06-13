@@ -179,7 +179,7 @@ export const TeamsForm: React.FC<TeamsFormProps> = () => {
                                 <Cell span={12}>
                                     <Bind name="groups">
                                         <GroupsMultiAutoComplete
-                                            label={t`Groups`}
+                                            label={t`Roles`}
                                             disabled={systemTeam}
                                             data-testid="admin.am.team.new.groups"
                                         />

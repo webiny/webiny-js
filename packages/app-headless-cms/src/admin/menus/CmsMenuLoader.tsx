@@ -17,7 +17,6 @@ const CmsMenuLoaderComponent: React.FC = () => {
     const hasAccess =
         canAccessManageEndpoint && (canReadContentModels || canReadContentModelGroups);
 
-    console.log("hesaks", canAccessManageEndpoint);
     if (!hasAccess) {
         return null;
     }

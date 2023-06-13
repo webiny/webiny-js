@@ -30,7 +30,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
 import { featureFlags } from "@webiny/feature-flags";
 
-const t = i18n.ns("app-security/admin/groups/form");
+const t = i18n.ns("app-security/admin/roles/form");
 
 const ButtonWrapper = styled.div`
     display: flex;
@@ -63,7 +63,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
 
             const { error } = data.security.group;
             if (error) {
-                history.push("/access-management/groups");
+                history.push("/access-management/roles");
                 showSnackbar(error.message);
             }
         }
@@ -117,7 +117,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/access-management/groups?id=${group.id}`);
+            !isUpdate && history.push(`/access-management/roles?id=${group.id}`);
             showSnackbar(t`Group saved successfully!`);
         },
         [id]
@@ -136,10 +136,10 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
-                        onClick={() => history.push("/access-management/groups?new=true")}
+                        onClick={() => history.push("/access-management/roles?new=true")}
                     >
                         <ButtonIcon icon={<AddIcon />} />
-                        {t`New Group`}
+                        {t`New Role`}
                     </ButtonDefault>
                 }
             />
@@ -243,7 +243,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                             <SimpleFormFooter>
                                 <ButtonWrapper>
                                     <ButtonDefault
-                                        onClick={() => history.push("/access-management/groups")}
+                                        onClick={() => history.push("/access-management/roles")}
                                     >{t`Cancel`}</ButtonDefault>
                                     <ButtonPrimary
                                         data-testid="admin.am.group.new.save"

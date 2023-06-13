@@ -22,8 +22,8 @@ export const AccessManagementExtension = () => {
     return (
         <Plugins>
             <HasPermission name={Permission.Groups}>
-                <AddRoute exact path={"/access-management/groups"}>
-                    <Layout title={"Access Management - Groups"}>
+                <AddRoute exact path={"/access-management/roles"}>
+                    <Layout title={"Access Management - Roles"}>
                         <Groups />
                     </Layout>
                 </AddRoute>
@@ -47,9 +47,9 @@ export const AccessManagementExtension = () => {
                     <AddMenu name={"settings.accessManagement"} label={"Access Management"}>
                         <HasPermission name={Permission.Groups}>
                             <AddMenu
-                                name={"settings.accessManagement.groups"}
-                                label={"Groups"}
-                                path={"/access-management/groups"}
+                                name={"settings.accessManagement.roles"}
+                                label={"Roles"}
+                                path={"/access-management/roles"}
                             />
                         </HasPermission>
                         {featureFlags?.aacl?.teams && (

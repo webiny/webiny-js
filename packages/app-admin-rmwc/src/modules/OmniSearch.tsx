@@ -29,12 +29,22 @@ const Dialog = styled.div`
         box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14),
             0px 9px 46px 8px rgba(0, 0, 0, 0.12);
 
-        ul {
+        > ul {
             overflow-y: scroll;
             height: 444px;
 
-            li {
-                padding: 15px 15px 10px 15px;
+            > li {
+                padding: 5px 15px 5px 15px;
+
+                .section-name {
+                    bottom-bottom: 1px solid var(--mdc-theme-on-background);
+                }
+
+                ul {
+                    li {
+                        padding: 7px 0;
+                    }
+                }
             }
         }
     }
@@ -119,23 +129,51 @@ export const OmniSearch = () => {
                         onChange={setFilter}
                     />
                     <ul>
-                        {filteredItems.map(item => {
-                            return (
-                                <li key={item.path}>
-                                    <div>
-                                        {/* @ts-ignore*/}
-                                        <Link to={item.path} onClick={hideOmniSearch}>
-                                            {item.label}
-                                        </Link>
-                                    </div>
-                                    <div>
-                                        <Typography use={"caption"}>
-                                            {item.breadcrumb.join(" / ")}
-                                        </Typography>
-                                    </div>
-                                </li>
-                            );
-                        })}
+                        <li>
+                            <div className={"section-name"}>
+                                <Typography use={"overline"}>Apps</Typography>
+                            </div>
+                            <div className={"section-items"}>
+                                <ul>
+                                    {filteredItems.map(item => {
+                                        return (
+                                            <li key={item.path}>
+                                                <div>
+                                                    {/* @ts-ignore*/}
+                                                    <Link to={item.path} onClick={hideOmniSearch}>
+                                                        {item.label}
+                                                    </Link>
+                                                </div>
+                                                <div>
+                                                    <Typography use={"caption"}>
+                                                        {item.breadcrumb.join(" / ")}
+                                                    </Typography>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div className={"section-name"}>
+                                <Typography use={"overline"}>Other</Typography>
+                            </div>
+                            <div className={"section-items"}>
+                                <ul>
+                                    <li>
+                                        <div>
+                                            Copy current tenant ID
+                                        </div>
+                                        <div>
+                                            <Typography use={"caption"}>
+                                                Copies current tenant ID into clipboard.
+                                            </Typography>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </Dialog>
