@@ -79,6 +79,7 @@ export const getToolbarState = (
     if (state.link.isSelected) {
         state.textType = "link";
     }
+
     // font color
     if ($isFontColorNode(node)) {
         state.fontColor.isSelected = true;

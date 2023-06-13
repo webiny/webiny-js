@@ -7,6 +7,8 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createPermissions } from "../utils/helpers";
 import { ApwContext } from "~/types";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { ApwScheduleActionStorageOperations } from "~/scheduler/types";
 
 interface Params {
     plugins?: any;
@@ -15,10 +17,11 @@ interface Params {
 export default (params: Params = {}) => {
     const { plugins: extraPlugins = [] } = params;
 
-    // @ts-ignore
-    const { storageOperations } = __getStorageOperations();
+    const apwScheduleStorage = getStorageOps<ApwScheduleActionStorageOperations>("apwSchedule");
+
     const handler = createHandler<unknown, ApwContext>({
         plugins: [
+            ...apwScheduleStorage.plugins,
             ...createTenancyAndSecurity(),
             graphqlHandler(),
             {
@@ -48,7 +51,7 @@ export default (params: Params = {}) => {
             }),
             new ContextPlugin<any>(async context => {
                 context.scheduleAction = createScheduler({
-                    storageOperations,
+                    storageOperations: apwScheduleStorage.storageOperations,
                     getTenant: () => {
                         return {
                             id: "root",
@@ -59,6 +62,7 @@ export default (params: Params = {}) => {
                             settings: {
                                 domains: []
                             },
+                            tags: [],
                             createdOn: new Date().toISOString(),
                             savedOn: new Date().toISOString()
                         };

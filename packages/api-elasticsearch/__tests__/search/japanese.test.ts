@@ -278,7 +278,7 @@ describe("Japanese search", () => {
                                     title
                                 },
                                 _score: null,
-                                _type: "_doc",
+                                // _type: "_doc",
                                 sort: [id]
                             };
                         }),

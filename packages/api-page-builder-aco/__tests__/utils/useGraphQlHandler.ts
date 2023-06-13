@@ -1,13 +1,10 @@
 import createGraphQLHandler from "@webiny/handler-graphql";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createI18NContext } from "@webiny/api-i18n";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-
 import { createTenancyAndSecurity } from "./tenancySecurity";
 
 import {
@@ -22,13 +19,14 @@ import { CREATE_CATEGORY } from "~tests/graphql/categories.gql";
 import { GET_RECORD, LIST_RECORDS } from "~tests/graphql/record.gql";
 
 import { createAcoPageBuilderContext } from "~/index";
-import { createStorageOperations } from "~tests/utils/storageOperations";
 import {
     createPageBuilderContext,
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
-import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import { createAco } from "@webiny/api-aco";
+import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -52,39 +50,29 @@ const defaultIdentity: SecurityIdentity = {
     displayName: "John Doe"
 };
 
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
-
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { permissions, identity, plugins = [], storageOperationPlugins } = params;
+    const { permissions, identity, plugins = [] } = params;
 
-    const ops = createStorageOperations({
-        plugins: storageOperationPlugins || []
-    });
+    const i18nStorage = getStorageOps<any[]>("i18n");
+    const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const handler = createHandler({
         plugins: [
-            ...ops.plugins,
+            ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
-            i18nContext(),
-            i18nDynamoDbStorageOperations(),
+            createI18NContext(),
+            ...i18nStorage.storageOperations,
             mockLocalesPlugins(),
-            createHeadlessCmsContext({
-                storageOperations: ops.storageOperations
+            new CmsParametersPlugin(async () => {
+                return {
+                    locale: "en-US",
+                    type: "manage"
+                };
             }),
-            createHeadlessCmsGraphQL(),
-            createPageBuilderContext({
-                storageOperations: createPageBuilderStorageOperations({
-                    documentClient
-                })
-            }),
+            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createPageBuilderContext({ storageOperations: pageBuilderStorage.storageOperations }),
             createPageBuilderGraphQL(),
             createAco(),
             createAcoPageBuilderContext(),

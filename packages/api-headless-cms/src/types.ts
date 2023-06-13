@@ -2334,7 +2334,7 @@ export interface CmsEntryContext {
     getUniqueFieldValues: (
         model: CmsModel,
         params: GetUniqueFieldValuesParams
-    ) => Promise<string[]>;
+    ) => Promise<Array<{ value: string; count: number }>>;
     /**
      * Lifecycle events - deprecated.
      */
@@ -2941,7 +2941,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     getUniqueFieldValues: (
         model: CmsModel,
         params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
-    ) => Promise<string[]>;
+    ) => Promise<Array<{ value: string; count: number }>>;
 }
 
 export enum CONTENT_ENTRY_STATUS {

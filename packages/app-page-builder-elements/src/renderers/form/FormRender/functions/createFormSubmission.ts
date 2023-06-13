@@ -61,11 +61,20 @@ export default async ({
         }
     });
 
+    const query = new URLSearchParams(location.search);
+
     const variables = {
         revision: formData!.id,
         reCaptchaResponseToken,
         data: formSubmissionData,
-        meta: { ip: await getClientIp() }
+        meta: {
+            ip: await getClientIp(),
+            submittedOn: new Date().toISOString(),
+            url: {
+                location: location.href,
+                query: Object.fromEntries(query)
+            }
+        }
     };
 
     const response = await dataLoaders.submitForm({ variables });
