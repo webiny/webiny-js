@@ -20,7 +20,6 @@ import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerImportExportContext } from "@webiny/api-file-manager-aco";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 
@@ -78,8 +77,7 @@ export const handler = createHandler({
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
         }),
-        createAcoPageBuilderImportExportContext(),
-        createAcoFileManagerImportExportContext()
+        createAcoPageBuilderImportExportContext()
     ],
     http: { debug }
 });
