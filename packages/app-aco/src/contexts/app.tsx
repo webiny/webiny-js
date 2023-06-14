@@ -5,8 +5,8 @@ import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
 import { Loader } from "~/components/FolderTree/Loader";
 import { DisplayError } from "./DisplayError";
-import { NavigateFolderProvider } from "~/contexts/navigateFolder";
 import { ApolloClient } from "apollo-client";
+import { NavigateFolderWithRouterProvider } from "~/contexts/navigateFolderWithRouter";
 
 export interface AcoAppProviderContext {
     app: AcoApp;
@@ -240,13 +240,13 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
         <AcoAppContext.Provider value={value}>
             <FoldersContextProvider>
                 <SearchRecordsContextProvider>
-                    <NavigateFolderProvider
+                    <NavigateFolderWithRouterProvider
                         folderIdQueryString={folderIdQueryString}
                         createListLink={createNavigateFolderListLink}
                         createStorageKey={createNavigateFolderStorageKey}
                     >
                         {children}
-                    </NavigateFolderProvider>
+                    </NavigateFolderWithRouterProvider>
                 </SearchRecordsContextProvider>
             </FoldersContextProvider>
         </AcoAppContext.Provider>

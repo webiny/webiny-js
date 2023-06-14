@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useContext, useMemo, useState } from "react";
 
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
 
@@ -25,13 +25,17 @@ import {
     UpdateFolderResponse,
     UpdateFolderVariables
 } from "~/types";
-import { useAcoApp } from "~/hooks";
 import { useApolloClient } from "@apollo/react-hooks";
+import { AcoAppContext } from "~/contexts/app";
+
+interface ListFoldersParams {
+    backgroundRefresh?: boolean;
+}
 
 interface FoldersContext {
     folders?: FolderItem[] | null;
     loading: Loading<LoadingActions>;
-    listFolders: () => Promise<FolderItem[]>;
+    listFolders: (params?: ListFoldersParams) => Promise<FolderItem[]>;
     getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (folder: Omit<FolderItem, "type">) => Promise<FolderItem>;
@@ -41,6 +45,7 @@ interface FoldersContext {
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
 
 interface Props {
+    type?: string;
     children: ReactNode;
 }
 
@@ -55,10 +60,16 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
-export const FoldersProvider: React.VFC<Props> = ({ children }) => {
+export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
     const client = useApolloClient();
-    const { app } = useAcoApp();
-    const type = app.id;
+    const appContext = useContext(AcoAppContext);
+    const app = appContext ? appContext.app : undefined;
+
+    const type = props.type ?? app?.id;
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
+
     const [folders, setFolders] = useState<FolderItem[] | null>(null);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
 
@@ -66,16 +77,18 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
         return {
             folders,
             loading,
-            async listFolders() {
+            async listFolders(params = {}) {
+                const backgroundRefresh = params.backgroundRefresh ?? false;
                 const { data: response } = await apolloFetchingHandler<ListFoldersResponse>(
-                    loadingHandler("LIST", setLoading),
+                    loadingHandler("LIST", backgroundRefresh ? undefined : setLoading),
                     () =>
                         client.query<ListFoldersResponse, ListFoldersQueryVariables>({
                             query: LIST_FOLDERS,
                             variables: {
-                                type: app.id,
+                                type,
                                 limit: 10000
-                            }
+                            },
+                            fetchPolicy: backgroundRefresh ? "network-only" : "cache-first"
                         })
                 );
 
@@ -157,6 +170,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     return [data, ...(prev || [])];
                 });
 
+                context.listFolders({ backgroundRefresh: true });
+
                 return data;
             },
 
@@ -203,6 +218,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     return next;
                 });
 
+                context.listFolders({ backgroundRefresh: true });
+
                 return data;
             },
 
@@ -236,6 +253,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children }) => {
                     }
                     return prev.filter(f => f.id !== id);
                 });
+
+                context.listFolders({ backgroundRefresh: true });
 
                 return true;
             }
