@@ -367,6 +367,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         hideFilters() {
             setState(state => ({
                 ...state,
+                filters: undefined,
                 showingFilters: false
             }));
         },

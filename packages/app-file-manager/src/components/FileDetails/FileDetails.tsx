@@ -24,12 +24,14 @@ import { SimpleForm } from "@webiny/app-admin/components/SimpleForm";
 import { Footer } from "./components/Footer";
 import { Extensions } from "./components/Extensions";
 import { useFileModel } from "~/hooks/useFileModel";
-import { useFileManagerView } from "~/index";
+import { useFileManagerView, useFileManagerViewConfig } from "~/index";
 import { useSnackbar } from "@webiny/app-admin";
 
-const FileDetailsDrawer = styled(Drawer)`
+type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
+
+const FileDetailsDrawer = styled(Drawer)<FileDetailsDrawerProps>`
     &.mdc-drawer {
-        width: 1000px;
+        width: ${props => props.width};
     }
 `;
 
@@ -68,50 +70,48 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
     };
 
     return (
-        <FileProvider file={file}>
-            <Form data={file} onSubmit={onSubmit}>
-                {() => (
-                    <DrawerContent dir="ltr">
-                        {isLoading ? <CircularProgress label={"Saving file..."} /> : null}
-                        <FormContainer>
-                            <Header />
-                            <Content>
-                                <Content.Panel>
-                                    <Elevation z={2} style={{ margin: 20 }}>
-                                        <Actions />
-                                        <Preview />
-                                        <PreviewMeta />
-                                    </Elevation>
-                                </Content.Panel>
-                                <Content.Panel>
-                                    <Tabs>
-                                        <Tab label={"Basic Details"}>
-                                            <Grid>
-                                                <Cell span={12}>
-                                                    <Name />
-                                                </Cell>
-                                                <Cell span={12}>
-                                                    <Tags />
-                                                </Cell>
-                                                <Cell span={12}>
-                                                    <Aliases />
-                                                </Cell>
-                                            </Grid>
+        <Form data={file} onSubmit={onSubmit}>
+            {() => (
+                <DrawerContent dir="ltr">
+                    {isLoading ? <CircularProgress label={"Saving file..."} /> : null}
+                    <FormContainer>
+                        <Header />
+                        <Content>
+                            <Content.Panel>
+                                <Elevation z={2} style={{ margin: 20 }}>
+                                    <Actions />
+                                    <Preview />
+                                    <PreviewMeta />
+                                </Elevation>
+                            </Content.Panel>
+                            <Content.Panel>
+                                <Tabs>
+                                    <Tab label={"Basic Details"}>
+                                        <Grid>
+                                            <Cell span={12}>
+                                                <Name />
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Tags />
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Aliases />
+                                            </Cell>
+                                        </Grid>
+                                    </Tab>
+                                    {hasExtensions ? (
+                                        <Tab label={"Advanced Details"}>
+                                            <Extensions model={fileModel} />
                                         </Tab>
-                                        {hasExtensions ? (
-                                            <Tab label={"Advanced Details"}>
-                                                <Extensions model={fileModel} />
-                                            </Tab>
-                                        ) : null}
-                                    </Tabs>
-                                </Content.Panel>
-                            </Content>
-                            <Footer />
-                        </FormContainer>
-                    </DrawerContent>
-                )}
-            </Form>
-        </FileProvider>
+                                    ) : null}
+                                </Tabs>
+                            </Content.Panel>
+                        </Content>
+                        <Footer />
+                    </FormContainer>
+                </DrawerContent>
+            )}
+        </Form>
     );
 };
 
@@ -122,13 +122,7 @@ export interface FileDetailsProps {
     onClose: () => void;
 }
 
-export const FileDetails: React.FC<FileDetailsProps> = ({
-    open,
-    onClose,
-    loading,
-    file,
-    ...rest
-}) => {
+export const FileDetails: React.FC<FileDetailsProps> = ({ open, onClose, loading, file }) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -137,23 +131,28 @@ export const FileDetails: React.FC<FileDetailsProps> = ({
         }
     });
 
+    const { fileDetails } = useFileManagerViewConfig();
+
     return (
-        <FileDetailsDrawer
-            dir="rtl"
-            modal
-            open={open}
-            onClose={onClose}
-            data-testid={"fm.file-details.drawer"}
-        >
-            <DrawerContent dir="ltr">
-                {loading && <CircularProgress label={"Loading file details..."} />}
-                {file && (
-                    <FileDetailsProvider hideFileDetails={onClose}>
-                        <FileDetailsInner file={file} onClose={onClose} {...rest} />
-                    </FileDetailsProvider>
-                )}
-            </DrawerContent>
-        </FileDetailsDrawer>
+        <FileProvider file={file}>
+            <FileDetailsDrawer
+                width={fileDetails.width}
+                dir="rtl"
+                modal
+                open={open}
+                onClose={onClose}
+                data-testid={"fm.file-details.drawer"}
+            >
+                <DrawerContent dir="ltr">
+                    {loading && <CircularProgress label={"Loading file details..."} />}
+                    {file && (
+                        <FileDetailsProvider hideFileDetails={onClose}>
+                            <FileDetailsInner file={file} onClose={onClose} />
+                        </FileDetailsProvider>
+                    )}
+                </DrawerContent>
+            </FileDetailsDrawer>
+        </FileProvider>
     );
 };
 

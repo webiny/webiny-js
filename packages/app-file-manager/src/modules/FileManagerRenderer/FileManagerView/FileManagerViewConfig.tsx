@@ -2,6 +2,7 @@ import React, { useContext, useMemo, useState } from "react";
 import { makeComposable, Compose, HigherOrderComponent } from "@webiny/app-admin";
 import { Property, Properties, toObject } from "@webiny/react-properties";
 import { Browser, BrowserConfig } from "./configComponents/Browser";
+import { FileDetails, FileDetailsConfig } from "./configComponents/FileDetails";
 
 const FileManagerViewConfigApply = makeComposable("FileManagerViewConfigApply", ({ children }) => {
     return <>{children}</>;
@@ -25,6 +26,7 @@ export const FileManagerViewConfig = ({ children }: { children: React.ReactNode 
 };
 
 FileManagerViewConfig.Browser = Browser;
+FileManagerViewConfig.FileDetails = FileDetails;
 
 interface ViewContext {
     properties: Property[];
@@ -52,6 +54,7 @@ export const FileManagerViewWithConfig = ({ children }: { children: React.ReactN
 
 interface FileManagerViewConfigData {
     browser: BrowserConfig;
+    fileDetails: FileDetailsConfig;
 }
 
 export function useFileManagerViewConfig() {
@@ -62,6 +65,9 @@ export function useFileManagerViewConfig() {
     }, [properties]);
 
     return {
-        browser: config.browser || {}
+        browser: config.browser || {},
+        fileDetails: config.fileDetails || {
+            width: "1000px"
+        }
     };
 }

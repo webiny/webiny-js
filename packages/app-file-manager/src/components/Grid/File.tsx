@@ -47,7 +47,9 @@ const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFil
             <FileBody>
                 <FileControls>
                     <FileInfoIcon>
-                        <IconButton icon={<DownloadIcon />} />
+                        <a rel="noreferrer" target={"_blank"} href={`${file.src}?original`}>
+                            <IconButton icon={<DownloadIcon />} />
+                        </a>
                         <IconButton icon={<MoveIcon />} />
                         <IconButton
                             icon={<SettingsIcon />}
