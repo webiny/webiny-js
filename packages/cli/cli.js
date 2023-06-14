@@ -10,15 +10,6 @@ require("./utils/loadEnvVariables");
 const { blue, red } = require("chalk");
 const context = require("./context");
 const { createCommands } = require("./commands");
-const { localStorage } = require("./utils");
-
-// Save the full command in the history.
-const [, , ...commandParts] = process.argv;
-const fullCommand = "yarn webiny " + commandParts.join(" ");
-
-const ls = localStorage();
-const history = ls.get("history") || [];
-ls.set("history", [fullCommand, ...history]);
 
 yargs
     .usage("Usage: $0 <command> [options]")

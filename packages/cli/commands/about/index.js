@@ -1,17 +1,12 @@
-const { bold } = require("chalk");
-const { getNpxVersion } = require("./getNpxVersion");
-const { getPulumiVersions } = require("./getPulumiVersions");
-const { getYarnVersion } = require("./getYarnVersion");
-const { getUser } = require("../wcp/utils");
-const localStorage = require("../../utils/localStorage");
-
 const NO_VALUE = "-";
 
 const getData = async context => {
-    const [pulumiVersion, pulumiAwsVersion] = await getPulumiVersions();
+    const { getUser } = require("../wcp/utils");
+    const { getNpxVersion } = require("./getNpxVersion");
+    const { getPulumiVersions } = require("./getPulumiVersions");
+    const { getYarnVersion } = require("./getYarnVersion");
 
-    const commandsHistory = localStorage().get("history") || [];
-    const last10Commands = commandsHistory.slice(1, 11); // We skip the first command, which is the current one.
+    const [pulumiVersion, pulumiAwsVersion] = await getPulumiVersions();
 
     return [
         {
@@ -54,12 +49,6 @@ const getData = async context => {
                 NPX: await getNpxVersion(),
                 Yarn: await getYarnVersion()
             }
-        },
-        {
-            sectionName: "Last 10 Commands Executed",
-            data: {
-                Commands: last10Commands
-            }
         }
     ];
 };
@@ -90,16 +79,11 @@ module.exports = {
                     if (index > 0) {
                         console.log();
                     }
+
+                    const { bold } = require("chalk");
                     console.log(bold(sectionName));
 
-                    // Custom rendering for "Last 10 Commands Executed" section.
                     Object.keys(data).forEach(key => {
-                        if (sectionName === "Last 10 Commands Executed") {
-                            data[key].forEach((command, index) => {
-                                console.log(`  ${index + 1}. ${command}`);
-                            });
-                            return;
-                        }
                         console.log(key.padEnd(30), data[key] || NO_VALUE);
                     });
                 });
