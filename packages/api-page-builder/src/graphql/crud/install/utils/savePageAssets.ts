@@ -51,7 +51,7 @@ export const savePageAssets = async ({
                 size: buffer.length,
                 type: file.type,
                 hideInFileManager: Boolean(file.meta.private),
-                keyPrefix: "demo-pages/"
+                keyPrefix: "demo-pages"
             };
         });
 

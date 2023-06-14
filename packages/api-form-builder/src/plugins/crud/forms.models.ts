@@ -102,6 +102,13 @@ export const FormSubmissionCreateDataModel = withFields({
             ip: string({}),
             submittedOn: string({
                 value: new Date().toISOString()
+            }),
+            url: fields({
+                value: {},
+                instanceOf: withFields({
+                    location: string(),
+                    query: object()
+                })()
             })
         })()
     }),

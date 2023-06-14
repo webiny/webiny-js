@@ -195,6 +195,10 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
         }
     }, [textData]);
 
+    if (usingLexicalEditor) {
+        return null;
+    }
+
     return (
         <Accordion
             title={"Text"}
@@ -206,47 +210,53 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
             }
         >
             <>
-                {!usingLexicalEditor && (
-                    <>
-                        <Wrapper containerClassName={classes.grid} label={"Color"}>
-                            <BaseColorPicker
-                                value={text.color}
-                                updateValue={updateColor}
-                                updatePreview={updateColorPreview}
-                            />
-                        </Wrapper>
-                        {options.useCustomTag && (
-                            <Wrapper
-                                containerClassName={classes.grid}
-                                label={"Heading Type"}
-                                leftCellSpan={5}
-                                rightCellSpan={7}
-                            >
-                                <SelectField value={text.tag} onChange={updateTag}>
-                                    {options.tags.map(tag => (
-                                        <option value={tag} key={tag}>
-                                            {tag.toUpperCase()}
-                                        </option>
-                                    ))}
-                                </SelectField>
-                            </Wrapper>
-                        )}
-                        <Wrapper
-                            containerClassName={classes.grid}
-                            label={"Typography"}
-                            leftCellSpan={5}
-                            rightCellSpan={7}
-                        >
-                            <SelectField
-                                value={text.typography}
-                                onChange={updateTypography}
-                                disabled={themeTypographyOptions.length === 0}
-                            >
-                                {themeTypographyOptions}
-                            </SelectField>
-                        </Wrapper>
-                    </>
+                <Wrapper containerClassName={classes.grid} label={"Color"}>
+                    <BaseColorPicker
+                        value={text.color}
+                        updateValue={updateColor}
+                        updatePreview={updateColorPreview}
+                    />
+                </Wrapper>
+                {options.useCustomTag && (
+                    <Wrapper
+                        containerClassName={classes.grid}
+                        label={"Heading Type"}
+                        leftCellSpan={5}
+                        rightCellSpan={7}
+                    >
+                        <SelectField value={text.tag} onChange={updateTag}>
+                            {options.tags.map(tag => (
+                                <option value={tag} key={tag}>
+                                    {tag.toUpperCase()}
+                                </option>
+                            ))}
+                        </SelectField>
+                    </Wrapper>
                 )}
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Typography"}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                >
+                    <SelectField
+                        value={text.typography}
+                        onChange={updateTypography}
+                        disabled={themeTypographyOptions.length === 0}
+                    >
+                        {themeTypographyOptions}
+                    </SelectField>
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Alignment"}
+                    leftCellSpan={3}
+                    rightCellSpan={9}
+                    leftCellClassName={classes.leftCellStyle}
+                    rightCellClassName={classes.rightCellStyle}
+                >
+                    <TextAlignment value={text.alignment} onChange={updateAlignment} />
+                </Wrapper>
 
                 {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
                     <Grid className={classes.warningMessageGrid}>
@@ -266,16 +276,6 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                         </Cell>
                     </Grid>
                 )}
-                <Wrapper
-                    containerClassName={classes.grid}
-                    label={"Alignment"}
-                    leftCellSpan={3}
-                    rightCellSpan={9}
-                    leftCellClassName={classes.leftCellStyle}
-                    rightCellClassName={classes.rightCellStyle}
-                >
-                    <TextAlignment value={text.alignment} onChange={updateAlignment} />
-                </Wrapper>
             </>
         </Accordion>
     );

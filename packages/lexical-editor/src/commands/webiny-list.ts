@@ -1,7 +1,7 @@
 import { createCommand, LexicalCommand } from "lexical";
 
 export type WebinyListCommandPayload = {
-    themeStyleId: string;
+    themeStyleId?: string;
 };
 
 export const INSERT_UNORDERED_WEBINY_LIST_COMMAND: LexicalCommand<WebinyListCommandPayload> =

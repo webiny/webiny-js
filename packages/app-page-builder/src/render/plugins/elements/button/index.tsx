@@ -31,7 +31,9 @@ const render: PbRenderElementPlugin["render"] = isLegacyRenderingEngine
           },
           linkComponent: ({ href, children, ...rest }) => {
               return (
-                  <Link to={href!} {...rest}>
+                  // While testing, we noticed that the `href` prop is sometimes `null` or `undefined`.
+                  // Hence the `href || ""` part. This fixes the issue.
+                  <Link to={href || ""} {...rest}>
                       {children}
                   </Link>
               );
