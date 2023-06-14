@@ -1,10 +1,10 @@
 import { useContext } from "react";
-import { FileManagerViewContext, FileManagerViewContextData } from "./FileManagerViewContext";
+import { FileManagerViewContext } from "./FileManagerViewContext";
 import { FileItem } from "@webiny/app-admin/types";
 
 export function useFileManagerView<TFileItem extends FileItem = FileItem>() {
-    const context = useContext<FileManagerViewContextData<TFileItem>>(
-        FileManagerViewContext as unknown as React.Context<FileManagerViewContextData<TFileItem>>
+    const context = useContext<FileManagerViewContext<TFileItem>>(
+        FileManagerViewContext as unknown as React.Context<FileManagerViewContext<TFileItem>>
     );
     if (!context) {
         throw new Error("useFileManagerView() must be used within a FileManagerViewProvider");

@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { makeAutoObservable, runInAction, action } from "mobx";
 import { FileItem } from "@webiny/app-admin/types";
-import { FileManagerViewContextData } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
+import { FileManagerViewContext } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
 export interface FileError {
     file: File;
@@ -28,13 +28,13 @@ class FileJob {
 }
 
 export class BatchFileUploader {
-    private readonly uploader: FileManagerViewContextData["uploadFile"];
+    private readonly uploader: FileManagerViewContext["uploadFile"];
     private fileJobs: FileJob[] = [];
     private onUploadFinishedCallback: OnUploadFinishedCallback | undefined;
     private uploading = false;
     private uploadStatus: Map<string, number> = new Map();
 
-    constructor(uploader: FileManagerViewContextData["uploadFile"]) {
+    constructor(uploader: FileManagerViewContext["uploadFile"]) {
         this.uploader = uploader;
         makeAutoObservable(this);
     }

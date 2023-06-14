@@ -5,9 +5,13 @@ export interface File {
     type: string;
     name: string;
     meta: Record<string, any>;
+    location: {
+        folderId: string;
+    };
     tags: string[];
     aliases: string[];
     createdOn: string;
+    savedOn: string;
     createdBy: CreatedBy;
     /**
      * Added with new storage operations refactoring.

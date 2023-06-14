@@ -61,6 +61,10 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     async create({ file }: FileManagerFilesStorageOperationsCreateParams): Promise<File> {
         const model = this.modelWithContext(file);
 
+        if (!file.location?.folderId) {
+            file.location = { folderId: "ROOT" };
+        }
+
         const entry = await this.security.withoutAuthorization(() => {
             return this.cms.createEntry(model, file);
         });
@@ -111,7 +115,8 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
                 after: params.after,
                 limit: params.limit,
                 sort: params.sort,
-                where
+                where,
+                search: params.search
             });
         });
 
@@ -177,6 +182,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             id: entry.entryId,
             createdBy: entry.createdBy,
             createdOn: entry.createdOn,
+            savedOn: entry.savedOn,
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,

@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
-import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
+import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
 import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
-import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
+import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -19,120 +19,146 @@ import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
 import { RecordActionMove } from "./RecordActionMove";
 import { actionsColumnStyles, menuStyles } from "./styled";
-import { FileItem } from "@webiny/app/types";
+import { FileItem } from "@webiny/app-admin/types";
 import { Settings } from "~/types";
 
-interface TableProps {
-    records: SearchRecordItem<FileItem>[];
+export interface TableProps {
+    records: FileItem[];
     folders: FolderItem[];
+    selectedRecords: FileItem[];
     loading?: boolean;
     onRecordClick: (id: string) => void;
     onFolderClick: (id: string) => void;
-    onSelectRow: (rows: Entry[] | []) => void;
+    onSelectRow: ((rows: Entry[] | []) => void) | undefined;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     settings?: Settings;
     selectableItems: boolean;
+    canSelectAllRows: boolean;
 }
 
-interface Entry {
+type FileEntry = {
+    $type: "RECORD";
+    $selectable: boolean;
     id: string;
-    type: "RECORD" | "FOLDER";
+    name: string;
+    createdBy: string;
+    savedOn: string;
+    type: string;
+    size: number;
+    original: FileItem;
+};
+
+type FolderEntry = {
+    $type: "FOLDER";
+    $selectable: boolean;
+    id: string;
     title: string;
     createdBy: string;
     savedOn: string;
-    fileType?: string;
-    size?: number;
-    original: FileItem | FolderItem;
-    selectable: boolean;
-}
+    original: FolderItem;
+};
 
-const createRecordsData = (items: SearchRecordItem<FileItem>[], selectable: boolean): Entry[] => {
-    return items.map(({ data }) => {
+type Entry = FolderEntry | FileEntry;
+
+const createRecordsData = (items: FileItem[], selectable: boolean): FileEntry[] => {
+    return items.map(data => {
         return {
+            $type: "RECORD",
+            $selectable: selectable,
             id: data.id,
-            type: "RECORD",
-            title: data.name,
+            name: data.name,
             createdBy: data.createdBy?.displayName || "-",
-            savedOn: data.createdOn,
-            fileType: data.type,
+            savedOn: data.savedOn,
+            type: data.type,
             size: data.size,
-            original: data || {},
-            selectable
+            original: data || {}
         };
     });
 };
 
-const createFoldersData = (items: FolderItem[]): Entry[] => {
+const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
     return items.map(item => ({
+        $type: "FOLDER",
+        $selectable: false,
         id: item.id,
-        type: "FOLDER",
         title: item.title,
         createdBy: item.createdBy?.displayName || "-",
-        savedOn: item.createdOn,
-        original: item,
-        selectable: false
+        savedOn: item.savedOn,
+        original: item
     }));
 };
+
+function isFileEntry(entry: Entry): entry is FileEntry {
+    return entry.$type === "RECORD";
+}
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const {
         folders,
         records,
+        selectedRecords,
+        onSelectRow,
         loading,
         onRecordClick,
         onFolderClick,
-        onSelectRow,
         sorting,
         onSortingChange,
-        selectableItems
+        selectableItems,
+        canSelectAllRows
     } = props;
 
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-    const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
+    const [selectedSearchRecord, setSelectedSearchRecord] = useState<FileItem>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
-        return createFoldersData(folders).concat(createRecordsData(records, selectableItems));
+        return [...createFoldersData(folders), ...createRecordsData(records, selectableItems)];
     }, [folders, records]);
 
     const columns: Columns<Entry> = {
-        title: {
+        name: {
             header: "Name",
-            cell: ({ id, title, type, fileType }) => {
-                if (type === "RECORD") {
+            enableSorting: true,
+            cell: (item: Entry) => {
+                if (isFileEntry(item)) {
                     return (
-                        <FileName name={title} id={id} type={fileType} onClick={onRecordClick} />
+                        <FileName
+                            name={item.name}
+                            id={item.id}
+                            type={item.type}
+                            onClick={onRecordClick}
+                        />
                     );
                 }
-                return <FolderName name={title} id={id} onClick={onFolderClick} />;
-            },
-            enableSorting: true
+                return <FolderName name={item.title} id={item.id} onClick={onFolderClick} />;
+            }
         },
-        fileType: {
+        type: {
             header: "Type",
-            cell: ({ fileType }) => {
-                if (fileType) {
-                    return fileType;
+            cell: (item: Entry) => {
+                if (isFileEntry(item)) {
+                    return item.type;
                 }
                 return "-";
             }
         },
         size: {
             header: "Size",
-            cell: ({ size }) => {
-                if (size) {
-                    return bytes.format(size, { unitSeparator: " " });
+            enableSorting: true,
+            cell: (item: Entry) => {
+                if (isFileEntry(item)) {
+                    return bytes.format(item.size, { unitSeparator: " " });
                 }
                 return "-";
             }
         },
         savedOn: {
             header: "Last modified",
-            cell: ({ savedOn }) => <TimeAgo datetime={savedOn} />,
+            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
             enableSorting: true
         },
         createdBy: {
@@ -144,40 +170,42 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 alignEnd: true
             },
             className: actionsColumnStyles,
-            cell: ({ type, original }) => {
-                if (!original) {
+            cell: (item: Entry) => {
+                if (!item.original) {
                     return <></>;
-                } else if (type === "RECORD") {
+                } else if (isFileEntry(item)) {
+                    const { original } = item;
                     return (
-                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
-                            <RecordActionCopy record={original as FileItem} />
+                        <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
+                            <RecordActionCopy record={original} />
                             <RecordActionEdit id={original.id} onClick={onRecordClick} />
-                            <RecordActionMove
-                                onClick={() => {
-                                    setMoveSearchRecordDialogOpen(true);
-                                    setSelectedSearchRecord(() =>
-                                        records.find(
-                                            record => record.id === (original as FileItem).id
-                                        )
-                                    );
-                                }}
-                            />
-                            <RecordActionDelete record={original as FileItem} />
+                            {/*<RecordActionMove*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setMoveSearchRecordDialogOpen(true);*/}
+                            {/*        setSelectedSearchRecord(() =>*/}
+                            {/*            records.find(record => record.id === original.id)*/}
+                            {/*        );*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+                            <RecordActionDelete record={original} />
                         </Menu>
                     );
                 }
+
+                const { original } = item;
+
                 return (
-                    <Menu handle={<IconButton icon={<More />} />}>
+                    <Menu handle={<IconButton icon={<MoreIcon />} />}>
                         <FolderActionEdit
                             onClick={() => {
                                 setUpdateDialogOpen(true);
-                                setSelectedFolder(original as FolderItem);
+                                setSelectedFolder(original);
                             }}
                         />
                         <FolderActionDelete
                             onClick={() => {
                                 setDeleteDialogOpen(true);
-                                setSelectedFolder(original as FolderItem);
+                                setSelectedFolder(original);
                             }}
                         />
                     </Menu>
@@ -188,14 +216,17 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
 
     return (
         <div ref={ref}>
-            <DataTable
+            <DataTable<Entry>
+                canSelectAllRows={canSelectAllRows}
                 columns={columns}
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
+                isRowSelectable={row => row.original.$selectable}
                 sorting={sorting}
                 onSortingChange={onSortingChange}
+                selectedRows={createRecordsData(selectedRecords, true)}
             />
             {selectedFolder && (
                 <>

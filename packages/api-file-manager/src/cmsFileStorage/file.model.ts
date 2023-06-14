@@ -99,6 +99,27 @@ export const createFileModelDefinition = (group: CmsModelGroup): CmsPrivateModel
         titleFieldId: "name",
         layout: [["name"], ["key"], ["type"], ["size"], ["meta"], ["tags"], ["aliases"]],
         fields: [
+            {
+                id: "location",
+                type: "object",
+                storageId: "location",
+                label: "Location",
+                fieldId: "location",
+                settings: {
+                    fields: [
+                        {
+                            id: "folderId",
+                            type: "text",
+                            fieldId: "folderId",
+                            label: "Folder ID",
+                            storageId: "folderId",
+                            settings: {
+                                path: "location.folderId"
+                            }
+                        }
+                    ]
+                }
+            },
             nameField(),
             keyField(),
             typeField(),

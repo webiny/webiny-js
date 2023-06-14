@@ -24,7 +24,7 @@ import { SimpleForm } from "@webiny/app-admin/components/SimpleForm";
 import { Footer } from "./components/Footer";
 import { Extensions } from "./components/Extensions";
 import { useFileModel } from "~/hooks/useFileModel";
-import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { useFileManagerView } from "~/index";
 import { useSnackbar } from "@webiny/app-admin";
 
 const FileDetailsDrawer = styled(Drawer)`
@@ -45,8 +45,6 @@ const FormContainer = styled(SimpleForm)`
 
 interface FileDetailsInnerProps {
     file: FileItem;
-    scope?: string;
-    own?: boolean;
     onClose: () => void;
 }
 
@@ -54,7 +52,7 @@ const FileDetailsInner: React.FC<FileDetailsInnerProps> = ({ file }) => {
     const [isLoading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const fileModel = useFileModel();
-    const { updateFile } = useFileManagerAcoView();
+    const { updateFile } = useFileManagerView();
     const { close } = useFileDetails();
 
     const hasExtensions = useMemo(() => {
@@ -121,8 +119,6 @@ export interface FileDetailsProps {
     file?: FileItem;
     open: boolean;
     loading: boolean;
-    scope?: string;
-    own?: boolean;
     onClose: () => void;
 }
 
@@ -152,11 +148,7 @@ export const FileDetails: React.FC<FileDetailsProps> = ({
             <DrawerContent dir="ltr">
                 {loading && <CircularProgress label={"Loading file details..."} />}
                 {file && (
-                    <FileDetailsProvider
-                        hideFileDetails={onClose}
-                        scope={rest.scope}
-                        own={rest.own}
-                    >
+                    <FileDetailsProvider hideFileDetails={onClose}>
                         <FileDetailsInner file={file} onClose={onClose} {...rest} />
                     </FileDetailsProvider>
                 )}

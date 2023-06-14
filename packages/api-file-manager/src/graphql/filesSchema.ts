@@ -39,22 +39,7 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                 },
                 async listFiles(_, args: FilesListOpts, context) {
                     try {
-                        const where = args.where || {};
-                        if (args.search) {
-                            where.OR = [
-                                {
-                                    name_contains: args.search
-                                },
-                                {
-                                    tags_contains: args.search
-                                }
-                            ];
-                        }
-
-                        const [data, meta] = await context.fileManager.listFiles({
-                            ...args,
-                            where
-                        });
+                        const [data, meta] = await context.fileManager.listFiles(args);
 
                         return new ListResponse(data, meta);
                     } catch (e) {

@@ -76,12 +76,16 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 tags: Array.isArray(input.tags) ? input.tags : [],
                 aliases: Array.isArray(input.aliases) ? input.aliases : [],
                 id: input.id || id,
+                location: {
+                    folderId: input.location?.folderId ?? "ROOT"
+                },
                 meta: {
                     private: false,
                     ...(input.meta || {})
                 },
                 tenant: getTenantId(),
                 createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
@@ -234,8 +238,12 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                         private: false,
                         ...(input.meta || {})
                     },
+                    location: {
+                        folderId: input.location?.folderId ?? "ROOT"
+                    },
                     tenant,
                     createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     createdBy,
                     locale,
                     webinyVersion: WEBINY_VERSION
@@ -263,13 +271,20 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         async listFiles(params: FilesListOpts = {}) {
             const permission = await checkBasePermissions(getPermission, { rwd: "r" });
 
-            const { limit = 40, after = null, where: initialWhere, sort: initialSort } = params;
+            const {
+                limit = 40,
+                after = null,
+                where: initialWhere,
+                sort: initialSort,
+                search
+            } = params;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...{ meta: { private_not: true }, ...initialWhere },
                 locale: getLocaleCode(),
                 tenant: getTenantId()
             };
+
             /**
              * Always override the createdBy received from the user, if any.
              */
@@ -285,7 +300,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     where,
                     after,
                     limit,
-                    sort
+                    sort,
+                    search
                 });
             } catch (ex) {
                 throw new WebinyError(

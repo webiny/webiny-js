@@ -1,26 +1,24 @@
-import React, { useCallback, useState } from "react";
-import { useTags } from "~/hooks";
+import React, { useCallback } from "react";
 import { Loader } from "./Loader";
 import { Empty } from "./Empty";
 import { Tag } from "./Tag";
-import { ListTagsWhereQueryVariables, TagItem } from "~/types";
+import { TagItem } from "@webiny/app-aco/types";
 
 interface TagListProps {
-    initialWhere?: ListTagsWhereQueryVariables;
-    tagsModifier?: (tags: TagItem[]) => TagItem[];
-    onTagClick: (tag: TagItem) => void;
-    emptyDisclaimer: string;
+    loading: boolean;
+    onActivatedTagsChange: (tags: string[]) => void;
+    tags: TagItem[];
+    activeTags: string[];
+    emptyDisclaimer?: string;
 }
 
-export const TagList: React.VFC<TagListProps> = ({
-    initialWhere,
-    onTagClick,
+export const TagsList: React.VFC<TagListProps> = ({
+    loading,
+    tags,
     emptyDisclaimer,
-    tagsModifier
+    onActivatedTagsChange,
+    activeTags
 }) => {
-    const { tags, loading } = useTags({ ...initialWhere, tagsModifier });
-    const [activeTags, setActiveTags] = useState<TagItem["tag"][]>([]);
-
     const toggleTag = useCallback(
         (tag: TagItem["tag"]) => {
             const finalTags = Array.isArray(activeTags) ? [...activeTags] : [];
@@ -31,12 +29,12 @@ export const TagList: React.VFC<TagListProps> = ({
                 finalTags.push(tag);
             }
 
-            setActiveTags(finalTags);
+            onActivatedTagsChange(finalTags);
         },
         [activeTags]
     );
 
-    if (!tags.length && (loading.INIT || loading.LIST)) {
+    if (loading) {
         return <Loader />;
     }
 
@@ -50,7 +48,6 @@ export const TagList: React.VFC<TagListProps> = ({
                         active={activeTags.includes(tagItem.tag)}
                         onTagClick={tagItem => {
                             toggleTag(tagItem.tag);
-                            onTagClick(tagItem);
                         }}
                     />
                 ))}

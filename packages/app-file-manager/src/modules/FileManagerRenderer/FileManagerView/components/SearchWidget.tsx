@@ -1,12 +1,11 @@
-import React, { useCallback, useRef } from "react";
+import React from "react";
 import styled from "@emotion/styled";
-import debounce from "lodash/debounce";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as FilterIcon } from "@material-design-icons/svg/outlined/filter_alt.svg";
 import { Icon } from "@webiny/ui/Icon";
 import { IconButton } from "@webiny/ui/Button";
-import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
-import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { useFileManagerApi, useFileManagerView } from "~/index";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const SearchBarIcon = styled(Icon)`
     &.mdc-button__icon {
@@ -46,42 +45,33 @@ const InputSearch = styled.div`
 
 export const SearchWidget = () => {
     const fileManager = useFileManagerApi();
-    const { folderId, setFolderId, setListWhere, showingFilters, showFilters, hideFilters } =
-        useFileManagerAcoView();
-
-    const searchInput = useRef<HTMLInputElement>(null);
-
-    const searchOnChange = useCallback(
-        // @ts-ignore
-        debounce(search => {
-            if (search.length) {
-                setListWhere({ search, folderId: undefined });
-            } else {
-                setFolderId(folderId);
-                setListWhere({ search: undefined });
-            }
-        }, 500),
-        [folderId]
-    );
+    const view = useFileManagerView();
 
     const toggleFilters = () => {
-        if (showingFilters) {
-            hideFilters();
+        if (view.showingFilters) {
+            view.hideFilters();
         } else {
-            showFilters();
+            view.showFilters();
         }
     };
 
     return (
         <InputSearch>
             <SearchBarIcon icon={<SearchIcon />} />
-            <input
-                ref={searchInput}
-                onChange={e => searchOnChange(e.target.value)}
-                placeholder={"Search by filename or tags"}
-                disabled={!fileManager.canRead}
-                data-testid={"file-manager.search-input"}
-            />
+            <DelayedOnChange
+                value={view.searchQuery}
+                onChange={value => view.setSearchQuery(value)}
+            >
+                {({ value, onChange }) => (
+                    <input
+                        value={value}
+                        onChange={e => onChange(e.target.value)}
+                        placeholder={view.searchLabel || "Search all files"}
+                        disabled={!fileManager.canRead}
+                        data-testid={"file-manager.search-input"}
+                    />
+                )}
+            </DelayedOnChange>
             <FilterButton icon={<FilterIcon />} onClick={toggleFilters} />
         </InputSearch>
     );

@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
-import { useFileManagerAcoView } from "~/modules/FileManagerRenderer/FileManagerAcoViewProvider";
+import { useFileManagerView } from "~/index";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const t = i18n.ns("app-admin/file-manager/hooks/use-delete-file");
@@ -18,7 +18,7 @@ const Filename = styled("span")`
 `;
 
 export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
-    const { deleteFile } = useFileManagerAcoView();
+    const { deleteFile } = useFileManagerView();
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({

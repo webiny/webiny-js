@@ -24,7 +24,7 @@ export const FileBody = styled("div")`
 `;
 
 export const FileControls = styled("div")`
-    opacity: 0;
+    opacity: 1;
     position: absolute;
     top: -25px;
     right: 0;
@@ -40,28 +40,64 @@ export const FileControls = styled("div")`
 export const FileSelectedMarker = styled("div")`
     position: absolute;
     z-index: 9;
-    top: 0;
-    opacity: 0.5;
     width: 100%;
-    height: 200px;
-    background-color: var(--mdc-theme-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 100%;
+    cursor: pointer;
+    > div {
+        width: 32px;
+        height: 32px;
+        position: absolute;
+        right: 0;
+        top: 24px;
+        padding: 2px;
+        margin: 5px;
+        background-color: var(--mdc-theme-surface);
+        box-shadow: 0px 0px 4px var(--mdc-theme-on-background);
+        border-radius: 50%;
+        border: 1px solid var(--mdc-theme-on-background);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.95;
+    }
     svg {
-        fill: var(--mdc-theme-surface);
-        width: 100px;
-        height: 100px;
+        transition: all 150ms ease-out;
+        fill: var(--mdc-theme-text-secondary-on-background);
+        width: 32px;
+        height: 32px;
+        opacity: 0.35;
+        scale: 0.8;
+    }
+    &:hover {
+        svg {
+            opacity: 0.9;
+            scale: 0.9;
+        }
+    }
+    &.selected {
+        > div {
+            background-color: var(--mdc-theme-primary);
+        }
+        svg {
+            opacity: 1;
+            scale: 1;
+            fill: var(--mdc-theme-surface);
+        }
     }
 `;
 
 export const FileInfoIcon = styled("div")`
-    & .mdc-icon-button {
+    display: flex;
+    & button {
+        transition: all 150ms ease-out;
+        top: 50px;
+        opacity: 0;
         padding: 0;
         svg {
             border: 1px solid var(--mdc-theme-on-background);
             border-radius: 50%;
-            background-color: var(--mdc-theme-text-hint-on-dark);
+            background-color: var(--mdc-theme-surface);
             padding: 10px;
 
             transition: all 150ms ease-out;
@@ -70,6 +106,15 @@ export const FileInfoIcon = styled("div")`
             &:hover {
                 scale: 1;
             }
+        }
+        &:nth-of-type(1) {
+            transition-delay: 0ms;
+        }
+        &:nth-of-type(2) {
+            transition-delay: 50ms;
+        }
+        &:nth-of-type(3) {
+            transition-delay: 100ms;
         }
     }
 `;
@@ -85,7 +130,7 @@ export const FilePreview = styled("div")`
     object-fit: cover;
     justify-content: center;
     align-items: center;
-    display: flex;
+    transition: all 150ms ease-out;
     svg,
     img {
         width: 210px;
@@ -95,6 +140,12 @@ export const FilePreview = styled("div")`
     }
     svg {
         fill: var(--mdc-theme-text-secondary-on-background);
+    }
+    &.selected {
+        scale: 0.8;
+        border: 2px solid var(--mdc-theme-primary);
+        border-radius: 2px;
+        box-shadow: 2px 2px 4px var(--mdc-theme-on-background);
     }
 `;
 
@@ -108,7 +159,7 @@ export const FileClickable = styled("div")`
 `;
 
 export const FileLabel = styled("div")`
-    padding: 15px 10px;
+    padding: 25px 10px 15px 10px;
     color: var(--mdc-theme-on-surface);
     background-color: var(--mdc-theme-on-background);
     span {
@@ -141,17 +192,17 @@ export const FileWrapper = styled("div")`
 
     &:hover ${FileControls} {
         opacity: 1;
-        top: 0;
-        background: var(--mdc-theme-text-secondary-on-background);
-    }
-    button.webiny-ui-button {
-        width: 100%;
-        svg {
-            fill: var(--mdc-theme-primary);
-        }
-        span.mdc-button__label > span {
-            display: inline-block;
-            width: 75px;
+        button {
+            opacity: 1;
+            top: 125px;
+            width: 100%;
+            svg {
+                fill: var(--mdc-theme-primary);
+            }
+            span.mdc-button__label > span {
+                display: inline-block;
+                width: 75px;
+            }
         }
     }
 `;
