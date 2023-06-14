@@ -1,5 +1,7 @@
 export type FeatureFlags<TFeatureFlags = {}> = {
     aacl?: {
+        // This flag can only be enabled if the Teams feature is enabled on the WCP side.
+        // See `packages/cli/commands/wcp/aaclHooks.js`.
         teams?: boolean;
     };
     copyPermissionsButton?: boolean;
