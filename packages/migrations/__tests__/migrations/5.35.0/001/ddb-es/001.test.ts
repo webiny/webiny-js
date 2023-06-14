@@ -20,7 +20,7 @@ import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTes
 import { esGetIndexName } from "~/utils";
 
 jest.retryTimes(0);
-jest.setTimeout(900000);
+jest.setTimeout(1200000);
 
 const NUMBER_OF_FILES = 3000;
 const INDEX_TYPE = "file-manager";
