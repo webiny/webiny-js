@@ -10,28 +10,28 @@ export const createApp = (): IAcoAppRegisterParams => {
                 id: "id",
                 fieldId: "id",
                 type: "text",
-                storageId: "id",
+                storageId: "text@id",
                 label: "ID"
             },
             {
                 id: "pid",
                 fieldId: "pid",
                 type: "text",
-                storageId: "pid",
+                storageId: "text@pid",
                 label: "Page ID"
             },
             {
                 id: "title",
                 fieldId: "title",
                 type: "text",
-                storageId: "title",
+                storageId: "text@title",
                 label: "Title"
             },
             {
                 id: "createdBy",
                 fieldId: "createdBy",
                 type: "object",
-                storageId: "createdBy",
+                storageId: "object@createdBy",
                 label: "Created By",
                 settings: {
                     fields: [
@@ -39,21 +39,21 @@ export const createApp = (): IAcoAppRegisterParams => {
                             id: "id",
                             fieldId: "id",
                             type: "text",
-                            storageId: "id",
+                            storageId: "text@id",
                             label: "ID"
                         },
                         {
                             id: "displayName",
                             fieldId: "displayName",
                             type: "text",
-                            storageId: "displayName",
+                            storageId: "text@displayName",
                             label: "Display Name"
                         },
                         {
                             id: "type",
                             fieldId: "type",
                             type: "text",
-                            storageId: "type",
+                            storageId: "text@type",
                             label: "Type"
                         }
                     ]
@@ -63,42 +63,42 @@ export const createApp = (): IAcoAppRegisterParams => {
                 id: "createdOn",
                 fieldId: "createdOn",
                 type: "datetime",
-                storageId: "createdOn",
+                storageId: "datetime@createdOn",
                 label: "Created On"
             },
             {
                 id: "savedOn",
                 fieldId: "savedOn",
                 type: "datetime",
-                storageId: "savedOn",
+                storageId: "datetime@savedOn",
                 label: "Saved On"
             },
             {
                 id: "status",
                 fieldId: "status",
                 type: "text",
-                storageId: "status",
+                storageId: "text@status",
                 label: "Status"
             },
             {
                 id: "version",
                 fieldId: "version",
                 type: "number",
-                storageId: "version",
+                storageId: "number@version",
                 label: "Version"
             },
             {
                 id: "locked",
                 fieldId: "locked",
                 type: "boolean",
-                storageId: "locked",
+                storageId: "boolean@locked",
                 label: "Locked"
             },
             {
                 id: "path",
                 fieldId: "path",
                 type: "text",
-                storageId: "path",
+                storageId: "text@path",
                 label: "Path"
             }
         ]

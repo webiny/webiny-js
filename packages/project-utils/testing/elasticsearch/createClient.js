@@ -98,6 +98,7 @@ const attachCustomEvents = client => {
     const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
     const originalExists = client.indices.exists;
+    const originalBulk = client.bulk;
 
     const registerIndex = input => {
         const names = Array.isArray(input) ? input : [input];
@@ -128,6 +129,24 @@ const attachCustomEvents = client => {
         });
 
         return response;
+    };
+    /**
+     * We need to refresh all the indexes into which we have inserted data.
+     */
+    client.bulk = async (...args) => {
+        const result = await originalBulk.apply(client, args);
+
+        const body = args[0]?.body;
+        if (Array.isArray(body)) {
+            const indexes = body.map(item => item.index?._index).filter(Boolean);
+            for (const index of indexes) {
+                await client.indices.refresh({
+                    index
+                });
+            }
+        }
+
+        return result;
     };
 
     client.indices.deleteAll = async () => {

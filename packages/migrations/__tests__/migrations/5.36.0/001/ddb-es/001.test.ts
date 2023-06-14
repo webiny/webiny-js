@@ -135,6 +135,27 @@ describe("5.36.0-001", () => {
         }
     };
 
+    const insertEmptyFileIndexes = async () => {
+        const tenants = createTenantsData().map(tenant => tenant.data.id);
+        const testLocales = createLocalesData();
+
+        for (const tenant of tenants) {
+            const locales = testLocales
+                .filter(item => item.PK === `T#${tenant}#I18N#L`)
+                .map(locale => locale.code) as string[];
+
+            for (const locale of locales) {
+                await esCreateIndex({
+                    elasticsearchClient: elasticsearchClient,
+                    tenant,
+                    locale,
+                    type: INDEX_TYPE,
+                    isHeadlessCmsModel: false
+                });
+            }
+        }
+    };
+
     logTestNameBeforeEachTest();
 
     it("should not run if no tenant found", async () => {
@@ -175,8 +196,29 @@ describe("5.36.0-001", () => {
         expect(grouped.notApplicable.length).toBe(0);
     });
 
-    it("should not run if no files found", async () => {
+    it("should not run if no files found - no index found", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: ddbTable,
+            dynamoToEsTable: ddbToEsTable,
+            elasticsearchClient,
+            migrations: [AcoRecords_5_36_0_001]
+        });
+
+        const { data, error } = await handler();
+
+        assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
+    });
+
+    it("should not run if no files found - empty index", async () => {
+        await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+        await insertEmptyFileIndexes();
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,

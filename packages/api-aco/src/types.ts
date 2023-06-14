@@ -117,6 +117,4 @@ export interface IAcoApps {
     register: (app: IAcoAppParams) => Promise<IAcoApp>;
 }
 
-export interface IAcoAppRegisterParams extends Omit<IAcoAppParams, "model"> {
-    model?: CmsModel;
-}
+export type IAcoAppRegisterParams = Omit<IAcoAppParams, "model">;

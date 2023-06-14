@@ -1,4 +1,4 @@
-name: Release (latest)
+name: Custom Release
 
 on:
   workflow_dispatch:
@@ -12,8 +12,8 @@ env:
   YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
 jobs:
-  npm-release-latest:
-    name: NPM release ("latest" tag)
+  npm-release:
+    name: NPM release ("${{ github.event.client_payload.tag }}" tag)
     runs-on: ubuntu-latest
     environment: release
     steps:
@@ -42,4 +42,9 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Version and Publish
-        run: yarn release --type=${{ github.event.client_payload.type }} --tag=${{ github.event.client_payload.tag }}
+        run: >
+          yarn release 
+          --type=${{ github.event.client_payload.type }} 
+          --tag=${{ github.event.client_payload.tag }} 
+          --version=${{ github.event.client_payload.version }} 
+          --createGithubRelease=${{ github.event.client_payload.createGithubRelease }}

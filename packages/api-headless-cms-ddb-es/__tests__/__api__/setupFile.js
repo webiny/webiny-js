@@ -10,6 +10,7 @@ const { configurations } = require("../../dist/configurations");
 const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 const { setStorageOps } = require("@webiny/project-utils/testing/environment");
 const { getElasticsearchClient } = require("@webiny/project-utils/testing/elasticsearch");
+const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -104,6 +105,7 @@ module.exports = () => {
                 documentClient,
                 elasticsearch: elasticsearchClient,
                 plugins: [
+                    getElasticsearchOperators(),
                     createCmsEntryElasticsearchBodyModifierPlugin({
                         modifyBody: ({ body }) => {
                             if (!body.sort.customSorter) {

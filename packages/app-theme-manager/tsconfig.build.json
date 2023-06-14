@@ -6,6 +6,7 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
     { "path": "../app-tenant-manager/tsconfig.build.json" },
+    { "path": "../app-theme/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },

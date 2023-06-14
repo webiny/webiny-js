@@ -13183,6 +13183,7 @@ __metadata:
     "@types/store": ^2.0.2
     "@webiny/app": 0.0.0
     "@webiny/app-security": 0.0.0
+    "@webiny/app-theme": 0.0.0
     "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
@@ -14097,6 +14098,7 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
+    "@webiny/app-theme": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -15067,6 +15069,8 @@ __metadata:
     jsonpack: ^1.1.5
     lodash: ^4.17.21
     pluralize: ^8.0.0
+    ttypescript: ^1.5.13
+    typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
