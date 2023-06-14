@@ -48,7 +48,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAAcl = useMemo(() => {
-        return !getPermission<AaclPermission>("aacl");
+        return !getPermission<AaclPermission>("aacl", true);
     }, []);
 
     const { getLocales } = useI18N();

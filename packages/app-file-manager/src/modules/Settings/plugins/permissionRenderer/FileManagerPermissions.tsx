@@ -49,7 +49,7 @@ export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAAcl = useMemo(() => {
-        return !getPermission<AaclPermission>("aacl");
+        return !getPermission<AaclPermission>("aacl", true);
     }, []);
 
     const onFormChange = useCallback(

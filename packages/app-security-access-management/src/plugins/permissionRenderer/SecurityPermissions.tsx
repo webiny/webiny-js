@@ -33,7 +33,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAacl = useMemo(() => {
-        return !getPermission<AaclPermission>("aacl");
+        return !getPermission<AaclPermission>("aacl", true);
     }, []);
 
     const onFormChange = useCallback(
