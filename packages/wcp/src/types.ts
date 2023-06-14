@@ -11,27 +11,46 @@ export declare type WcpProjectEnvironment = {
 
 export declare type EncryptedWcpProjectLicense = string;
 
+export enum PROJECT_PACKAGE_FEATURE_NAME {
+    SEATS = "seats",
+    MT = "multiTenancy",
+    APW = "advancedPublishingWorkflow",
+    AACL = "advancedAccessControlLayer"
+}
+
+enum MT_OPTIONS_MAX_COUNT_TYPE {
+    SEAT_BASED = "seatBased",
+    FIXED = "fixed"
+}
+
 export interface DecryptedWcpProjectLicense {
     orgId: string;
     projectId: string;
     package: {
         features: {
-            seats: {
+            [PROJECT_PACKAGE_FEATURE_NAME.SEATS]: {
                 // This is always true because WCP projects immediately get access to seats (by default 1 seat).
                 enabled: true;
                 options: {
                     maxCount: number;
                 };
             };
-            multiTenancy: {
+            [PROJECT_PACKAGE_FEATURE_NAME.MT]: {
                 // This is always true because WCP projects immediately get access to multi-tenancy.
                 enabled: true;
+                options: {
+                    maxCount: {
+                        type: MT_OPTIONS_MAX_COUNT_TYPE;
+                        count?: number;
+                    };
+                };
             };
-            advancedPublishingWorkflow: {
+            [PROJECT_PACKAGE_FEATURE_NAME.APW]: {
                 enabled: boolean;
             };
-            advancedAccessControlLayer: {
+            [PROJECT_PACKAGE_FEATURE_NAME.AACL]: {
                 enabled: boolean;
+                options?: Partial<{ teams: boolean }>;
             };
         };
     };
