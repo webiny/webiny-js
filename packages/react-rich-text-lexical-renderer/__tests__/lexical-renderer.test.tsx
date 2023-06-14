@@ -8,10 +8,10 @@ import {
     defaultHeadingValue,
     defaultParagraphValue,
     expectedHeadingRenderedValue,
-    expectedParagraphRenderedValue,
+    expectedParagraphRenderedValue, LexicalJsonCmsDataInput,
     notCorrectValue
 } from "./lexical-content";
-import { emptyEditorContent } from "./lexical-render";
+import {emptyEditorContent, LexicalCmsInputRender} from "./lexical-render";
 
 describe("Test Rich Lexical Renderer", () => {
     it("Paragraph string value type is rendered", async () => {
@@ -49,10 +49,11 @@ describe("Test Rich Lexical Renderer", () => {
         expect(container.innerHTML).toEqual(emptyEditorContent);
     });
 
-    /* it("Complex CMS saved content is rendered", async () => {
+    it("Lexical CMS input includes title, paragraph, list and quote", async () => {
+        const consoleSpy = jest.spyOn(console, 'log');
         // ARRANGE
-        render(<RichTextLexicalRenderer value={expectedHeadingRenderedValue} />);
+        const { container } = render(<RichTextLexicalRenderer value={LexicalJsonCmsDataInput} />);
         // ACT
-        await screen.findByText(expectedHeadingRenderedValue);
-    });*/
+        expect(container.innerHTML).toEqual(LexicalCmsInputRender);
+    });
 });
