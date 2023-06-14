@@ -24,7 +24,7 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
     // NPM package just to get the I18N context which the user would need to set up manually.
     const locale = context.i18n.getContentLocale() as { code: string };
     if (!locale) {
-        return [];
+        return null;
     }
 
     if (!identity || identity.type !== config.identityType) {
@@ -43,9 +43,13 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
             tenant: tenantId
         }));
 
+    if (!tenantLink) {
+        return null;
+    }
+
     const allGroups = [];
 
-    const groups = tenantLink?.data?.groups;
+    const groups = tenantLink.data?.groups;
     if (Array.isArray(groups)) {
         allGroups.push(...groups);
     }
@@ -53,7 +57,7 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
     if (featureFlags?.aacl?.teams) {
         // Pick all groups and teams groups and get permissions from them.
         // Note that we return only permissions that are relevant for current locale.
-        const teamsGroups = tenantLink?.data?.teams.map(team => team.groups).flat();
+        const teamsGroups = tenantLink.data?.teams.map(team => team.groups).flat();
         if (Array.isArray(teamsGroups)) {
             allGroups.push(...teamsGroups);
         }
