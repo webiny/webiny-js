@@ -1,15 +1,17 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { RichTextLexicalRenderer } from "~/index";
 import React from "react";
 import {
     defaultHeadingValue,
     defaultParagraphValue,
     expectedHeadingRenderedValue,
-    expectedParagraphRenderedValue
+    expectedParagraphRenderedValue,
+    notCorrectValue
 } from "./lexical-content";
+import { emptyEditorContent } from "./lexical-render";
 
 describe("Test Rich Lexical Renderer", () => {
     it("Paragraph string value type is rendered", async () => {
@@ -24,6 +26,27 @@ describe("Test Rich Lexical Renderer", () => {
         const { container } = render(<RichTextLexicalRenderer value={defaultHeadingValue} />);
         // ACT
         expect(container.innerHTML).toContain(expectedHeadingRenderedValue);
+    });
+
+    it("Handle null as value", async () => {
+        // ARRANGE
+        const { container } = render(<RichTextLexicalRenderer value={null} />);
+        // ACT
+        expect(container.innerHTML).toEqual(emptyEditorContent);
+    });
+
+    it("Handle undefined as value", async () => {
+        // ARRANGE
+        const { container } = render(<RichTextLexicalRenderer value={undefined} />);
+        // ACT
+        expect(container.innerHTML).toEqual(emptyEditorContent);
+    });
+
+    it("Handle wrong lexical value", async () => {
+        // ARRANGE
+        const { container } = render(<RichTextLexicalRenderer value={notCorrectValue} />);
+        // ACT
+        expect(container.innerHTML).toEqual(emptyEditorContent);
     });
 
     /* it("Complex CMS saved content is rendered", async () => {

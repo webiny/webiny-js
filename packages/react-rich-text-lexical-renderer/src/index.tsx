@@ -3,8 +3,10 @@ import { LexicalNode, LexicalValue, Klass } from "@webiny/lexical-editor/types";
 import { LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { ThemeProvider, useTheme } from "@webiny/app-theme";
 
+type RendererLexicalValue = LexicalValue | Record<string, any> | null | undefined;
+
 interface RichTextLexicalRenderer {
-    value: LexicalValue | Record<string, any> | null;
+    value: RendererLexicalValue;
     theme?: Record<string, any>;
     nodes?: Klass<LexicalNode>[];
 }
@@ -12,15 +14,16 @@ interface RichTextLexicalRenderer {
 const LexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
     const { theme } = useTheme();
 
-    if (!props?.value) {
-        return null;
-    }
+    const getValue = (value: RendererLexicalValue): string | null => {
+        if (!value) {
+            return null;
+        }
+        return typeof props?.value === "string" ? props.value : JSON.stringify(props.value);
+    };
 
-    // Lexical editor state expect string, check and stringify if value is object.
-    const value = typeof props?.value === "string" ? props.value : JSON.stringify(props.value);
     return (
         <LexicalHtmlRenderer
-            value={value}
+            value={getValue(props?.value)}
             theme={{ ...theme, ...props?.theme }}
             nodes={props.nodes}
         />

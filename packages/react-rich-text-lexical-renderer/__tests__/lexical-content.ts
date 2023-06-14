@@ -68,3 +68,6 @@ export const defaultHeadingValue = {
 };
 
 export const expectedHeadingRenderedValue = "Heading";
+
+// Simulate the header component with default content like in Page builder
+export const notCorrectValue = "some default text that si not correct value for lexical";
