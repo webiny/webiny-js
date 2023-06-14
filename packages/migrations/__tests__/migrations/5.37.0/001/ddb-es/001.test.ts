@@ -117,7 +117,7 @@ describe("5.37.0-001", () => {
             ]
         });
 
-        expect(searchRecordsBeforeMigrations.length).toEqual(0);
+        expect(searchRecordsBeforeMigrations).toHaveLength(0);
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
@@ -138,6 +138,15 @@ describe("5.37.0-001", () => {
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);
+
+        const searchRecordsAfterMigrations = await scanTable(ddbTable, {
+            filters: []
+        });
+        const cmsEntries = searchRecordsAfterMigrations.filter(r => {
+            return r.entity === "CmsEntries";
+        });
+
+        expect(cmsEntries).toHaveLength(ddbPages.length * 2);
         /**
          * We are expecting that the AcoRecords_5_37_0_001 will be executed.
          * For the AcoRecords_5_35_0_006 it is possible that it is a second iteration of the migration runs and at that point it is not executed.

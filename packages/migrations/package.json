@@ -27,6 +27,8 @@
     "@webiny/cli": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "jest-dynalite": "^3.2.0"
+    "jest-dynalite": "^3.2.0",
+    "ttypescript": "^1.5.13",
+    "typescript": "4.7.4"
   }
 }

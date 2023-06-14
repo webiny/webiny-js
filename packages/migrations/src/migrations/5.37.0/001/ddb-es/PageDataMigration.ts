@@ -31,7 +31,6 @@ import {
 
 import { PB_ACO_SEARCH_MODEL_ID, PB_PAGE_TYPE, ROOT_FOLDER } from "../constants";
 import { getCompressedData } from "../utils/getCompressedData";
-import { scanTable } from "~tests/utils";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -321,10 +320,6 @@ export class AcoRecords_5_37_0_001_PageData implements DataMigration<PageDataMig
                                 logger.error(error.message);
                             }
                         });
-
-                        const result = await scanTable(this.ddbEsEntryEntity.table);
-                        const x = [...result];
-                        console.log(x);
 
                         // Update checkpoint after every batch
                         migrationStatus[groupId] = cursor;
