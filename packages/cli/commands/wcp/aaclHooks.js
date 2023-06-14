@@ -23,8 +23,6 @@ const checkTeamsLicense = async (args, context) => {
         projectEnvironmentApiKey
     });
 
-    console.log(JSON.stringify(projectLicense, null, 2));
-
     if (!projectLicense?.package?.features?.advancedAccessControlLayer?.options?.teams) {
         throw new Error(
             "Cannot continue because the Teams feature has been enabled, but the project doesn't have access to it."
