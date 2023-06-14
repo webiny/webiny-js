@@ -2,6 +2,34 @@ import { useContext, useEffect, useMemo } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { FolderItem } from "~/types";
 
+const getDescendantFolders = (folders: FolderItem[], folderId?: string) => {
+    if (!folderId || folderId === "ROOT" || !folders.length) {
+        return [];
+    }
+
+    const folderMap = new Map(folders.map(folder => [folder.id, folder]));
+    const result = [] as string[];
+
+    const findChildren = (folderId: string) => {
+        const folder = folderMap.get(folderId);
+        if (!folder) {
+            return;
+        }
+
+        result.push(folder.id);
+
+        folders.forEach(child => {
+            if (child.parentId === folder.id) {
+                findChildren(child.id);
+            }
+        });
+    };
+
+    findChildren(folderId);
+
+    return result;
+};
+
 export const useFolders = () => {
     const context = useContext(FoldersContext);
     if (!context) {
@@ -46,6 +74,9 @@ export const useFolders = () => {
             },
             deleteFolder(folder: Pick<FolderItem, "id">) {
                 return deleteFolder(folder);
+            },
+            getDescendantFolders(from?: string) {
+                return getDescendantFolders(folders || [], from);
             }
         }),
         [folders, loading]
