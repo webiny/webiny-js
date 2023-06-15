@@ -3,6 +3,7 @@ import { AcoApp, AcoAppMode, AcoError, AcoModel, AcoModelField } from "~/types";
 import { createGetAppQuery, GetAppResult, GetAppVariables } from "~/graphql/app.gql";
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
+import { DialogsProvider as DialogsContextProvider } from "../dialogs";
 import { Loader } from "~/components/FolderTree/Loader";
 import { DisplayError } from "./DisplayError";
 import { ApolloClient } from "apollo-client";
@@ -245,7 +246,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                         createListLink={createNavigateFolderListLink}
                         createStorageKey={createNavigateFolderStorageKey}
                     >
-                        {children}
+                        <DialogsContextProvider>{children}</DialogsContextProvider>
                     </NavigateFolderWithRouterProvider>
                 </SearchRecordsContextProvider>
             </FoldersContextProvider>

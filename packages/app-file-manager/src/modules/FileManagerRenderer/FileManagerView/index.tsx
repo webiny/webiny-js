@@ -15,6 +15,7 @@ import { FM_ACO_APP } from "~/constants";
 import { FileManagerViewWithConfig } from "./FileManagerViewConfig";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders";
 import { NavigateFolderProvider } from "./NavigateFolderProvider";
+import { DialogsProvider } from "@webiny/app-aco";
 
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
@@ -71,11 +72,13 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
         return (
             <FoldersProvider type={FM_ACO_APP}>
                 <NavigateFolderProvider>
-                    <FileManagerViewProvider {...viewProps}>
-                        <FileManagerViewWithConfig>
-                            <FileManagerView />
-                        </FileManagerViewWithConfig>
-                    </FileManagerViewProvider>
+                    <DialogsProvider>
+                        <FileManagerViewProvider {...viewProps}>
+                            <FileManagerViewWithConfig>
+                                <FileManagerView />
+                            </FileManagerViewWithConfig>
+                        </FileManagerViewProvider>
+                    </DialogsProvider>
                 </NavigateFolderProvider>
             </FoldersProvider>
         );

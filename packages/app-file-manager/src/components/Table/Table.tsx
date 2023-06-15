@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
-import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
-import { FolderItem } from "@webiny/app-aco/types";
+import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
+import { FolderItem, Location } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -47,6 +47,7 @@ type FileEntry = {
     type: string;
     size: number;
     original: FileItem;
+    location: Location;
 };
 
 type FolderEntry = {
@@ -72,7 +73,8 @@ const createRecordsData = (items: FileItem[], selectable: boolean): FileEntry[] 
             savedOn: data.savedOn,
             type: data.type,
             size: data.size,
-            original: data || {}
+            original: data || {},
+            location: data.location
         };
     });
 };
@@ -111,9 +113,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-
-    const [selectedSearchRecord, setSelectedSearchRecord] = useState<FileItem>();
-    const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
         return [...createFoldersData(folders), ...createRecordsData(records, selectableItems)];
@@ -174,19 +173,12 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 if (!item.original) {
                     return <></>;
                 } else if (isFileEntry(item)) {
-                    const { original } = item;
+                    const { original, location } = item;
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
                             <RecordActionCopy record={original} />
                             <RecordActionEdit id={original.id} onClick={onRecordClick} />
-                            {/*<RecordActionMove*/}
-                            {/*    onClick={() => {*/}
-                            {/*        setMoveSearchRecordDialogOpen(true);*/}
-                            {/*        setSelectedSearchRecord(() =>*/}
-                            {/*            records.find(record => record.id === original.id)*/}
-                            {/*        );*/}
-                            {/*    }}*/}
-                            {/*/>*/}
+                            <RecordActionMove record={{ id: original.id, location }} />
                             <RecordActionDelete record={original} />
                         </Menu>
                     );
@@ -241,13 +233,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         onClose={() => setDeleteDialogOpen(false)}
                     />
                 </>
-            )}
-            {selectedSearchRecord && (
-                <EntryDialogMove
-                    searchRecord={selectedSearchRecord}
-                    open={moveSearchRecordDialogOpen}
-                    onClose={() => setMoveSearchRecordDialogOpen(false)}
-                />
             )}
         </div>
     );
