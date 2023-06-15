@@ -101,6 +101,9 @@ const attachCustomEvents = client => {
     const originalBulk = client.bulk;
 
     const registerIndex = input => {
+        if (!input) {
+            return;
+        }
         const names = Array.isArray(input) ? input : [input];
         for (const name of names) {
             registeredIndexes.add(name);
@@ -137,12 +140,20 @@ const attachCustomEvents = client => {
         const result = await originalBulk.apply(client, args);
 
         const body = args[0]?.body;
-        if (Array.isArray(body)) {
-            const indexes = body.map(item => item.index?._index).filter(Boolean);
-            for (const index of indexes) {
+        if (!Array.isArray(body)) {
+            return result;
+        }
+
+        const indexes = Array.from(new Set(body.map(item => item.index?._index).filter(Boolean)));
+        for (const index of indexes) {
+            registerIndex(index);
+            try {
                 await client.indices.refresh({
-                    index
+                    index,
+                    ignore_unavailable: true
                 });
+            } catch (ex) {
+                logger.warn(`Could not refresh index "${index}": ${ex.message}`);
             }
         }
 
