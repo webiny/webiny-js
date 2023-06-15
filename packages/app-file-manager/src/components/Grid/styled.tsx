@@ -122,7 +122,8 @@ export const FileInfoIcon = styled("div")`
 export const FilePreview = styled("div")`
     text-align: center;
     position: relative;
-    background-color: var(--mdc-theme-surface);
+    background: repeating-conic-gradient(var(--mdc-theme-surface) 0% 25%, transparent 0% 50%) 50%/18px
+        18px;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -130,22 +131,19 @@ export const FilePreview = styled("div")`
     object-fit: cover;
     justify-content: center;
     align-items: center;
-    transition: all 150ms ease-out;
+    display: flex;
     svg,
     img {
-        width: 210px;
-        height: auto;
+        width: 100%;
+        height: 100%;
         max-height: 210px;
         max-width: 210px;
+        object-fit: contain;
+        box-sizing: border-box;
+        transition: all 150ms ease-out;
     }
     svg {
         fill: var(--mdc-theme-text-secondary-on-background);
-    }
-    &.selected {
-        scale: 0.8;
-        border: 2px solid var(--mdc-theme-primary);
-        border-radius: 2px;
-        box-shadow: 2px 2px 4px var(--mdc-theme-on-background);
     }
 `;
 

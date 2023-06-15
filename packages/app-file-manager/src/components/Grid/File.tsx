@@ -9,7 +9,6 @@ import LazyLoad from "react-lazy-load";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
-import { Ripple } from "@webiny/ui/Ripple";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/filled/settings.svg";
@@ -69,15 +68,13 @@ const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFil
                     ) : null}
                 </FileControls>
                 <LazyLoad height={200} offsetVertical={300}>
-                    <Ripple>
-                        <FilePreview
-                            data-testid={"fm-file-wrapper-file-preview"}
-                            className={selected ? "selected" : ""}
-                        >
-                            <FileClickable />
-                            {children}
-                        </FilePreview>
-                    </Ripple>
+                    <FilePreview
+                        data-testid={"fm-file-wrapper-file-preview"}
+                        className={selected ? "selected" : ""}
+                    >
+                        <FileClickable />
+                        {children}
+                    </FilePreview>
                 </LazyLoad>
             </FileBody>
             <FileLabel data-testid={"fm-file-wrapper-file-label"}>
