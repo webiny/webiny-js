@@ -1,11 +1,12 @@
 import React from "react";
 import get from "lodash/get";
+import styled from "@emotion/styled";
 import { FileItem } from "@webiny/app-admin/types";
 import { useFile } from "~/components/FileDetails";
 import getFileTypePlugin from "~/getFileTypePlugin";
 import { CopyUrl } from "./actions/CopyUrl";
 import { DeleteImage } from "./actions/DeleteImage";
-import styled from "@emotion/styled";
+import { Download } from "./actions/Download";
 
 const ActionsContainer = styled.div`
     text-align: center;
@@ -22,6 +23,7 @@ export const Actions = () => {
 
     return (
         <ActionsContainer>
+            <Download />
             <CopyUrl />
             {actions.map((Component: React.FC<{ file: FileItem }>, index: number) => (
                 <Component key={index} file={file} />

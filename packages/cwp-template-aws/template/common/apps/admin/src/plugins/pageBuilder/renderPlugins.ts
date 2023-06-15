@@ -21,6 +21,8 @@ import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesLis
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
 import accordion from "@webiny/app-page-builder/render/plugins/elements/accordion";
 import accordionItem from "@webiny/app-page-builder/render/plugins/elements/accordionItem";
+import tabs from "@webiny/app-page-builder/render/plugins/elements/tabs";
+import tab from "@webiny/app-page-builder/render/plugins/elements/tab";
 // Page settings
 import pageSettings from "@webiny/app-page-builder/render/plugins/pageSettings";
 // Element settings
@@ -63,6 +65,8 @@ export default [
     imagesList(),
     accordion(),
     accordionItem(),
+    tabs(),
+    tab(),
     // Page settings
     pageSettings(),
     // Element settings

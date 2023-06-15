@@ -7,42 +7,52 @@ import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
 
-export const WrapperDroppable = styled.div<{ below: boolean }>(({ below }) => ({
-    height: "25px",
+interface WrapperDroppableProps {
+    below: boolean;
+    zIndex: number;
+}
+
+export const WrapperDroppable = styled.div<WrapperDroppableProps>(({ below, zIndex }) => ({
+    height: "10px",
     width: "100%",
     position: "absolute",
     [below ? "bottom" : "top"]: 0,
     left: 0,
-    zIndex: 10
+    zIndex: zIndex
 }));
 
-const InnerDiv = styled.div({
+interface InnerDivProps {
+    zIndex: number;
+}
+
+const InnerDiv = styled.div<InnerDivProps>(({ zIndex }) => ({
     height: 5,
     width: "100%", //"calc(100% - 50px)",
-    zIndex: 10,
+    zIndex: zIndex,
     borderRadius: 5,
     boxSizing: "border-box",
     display: "none"
-});
+}));
 
 interface OuterDivProps {
     isOver: boolean;
     below: boolean;
+    zIndex: number;
     children: React.ReactNode;
 }
 
 const OuterDiv = React.memo<OuterDivProps>(
     styled.div(
-        {
+        ({ zIndex }) => ({
             margin: 0,
             padding: 0,
             width: "100%",
-            zIndex: 10,
+            zIndex,
             backgroundColor: "transparent",
             position: "absolute",
             display: "flex",
             justifyContent: "center"
-        },
+        }),
         (props: OuterDivProps) => ({
             [props.below ? "bottom" : "top"]: 0,
             [InnerDiv as unknown as string]: {
@@ -55,14 +65,8 @@ const OuterDiv = React.memo<OuterDivProps>(
     )
 );
 
-const allowedParentElementTypes = ["block", "cell"];
-
 export const ElementControlHorizontalDropZones = () => {
     const { getElement, meta } = useRenderer();
-    if (!meta.parentElement || !allowedParentElementTypes.includes(meta.parentElement.type)) {
-        return null;
-    }
-
     const { isDragging } = useRecoilValue(uiAtom);
     const element = getElement();
     const handler = useEventActionHandler();
@@ -70,6 +74,17 @@ export const ElementControlHorizontalDropZones = () => {
     const { type } = element;
 
     const dropElementAction = (source: DragObjectWithTypeWithTarget, position: number) => {
+        const { target } = source;
+
+        // If the `target` property of the dragged element's plugin is an array, we want to
+        // check if the dragged element can be dropped into the target element (the element
+        // for which this drop zone is rendered).
+        if (Array.isArray(target) && target.length > 0) {
+            if (!target.includes(meta.parentElement.type)) {
+                return;
+            }
+        }
+
         handler.trigger(
             new DropElementActionEvent({
                 source,
@@ -86,6 +101,10 @@ export const ElementControlHorizontalDropZones = () => {
         return null;
     }
 
+    // Z-index of element controls overlay depends on the depth of the page element.
+    // The deeper the page element is in the content hierarchy, the greater the index.
+    const zIndex = meta.depth * 10 * 2;
+
     return (
         <>
             <Droppable
@@ -94,9 +113,9 @@ export const ElementControlHorizontalDropZones = () => {
                 type={type}
             >
                 {({ drop, isOver }) => (
-                    <WrapperDroppable ref={drop} below={false}>
-                        <OuterDiv isOver={isOver} below={false}>
-                            <InnerDiv />
+                    <WrapperDroppable ref={drop} below={false} zIndex={zIndex}>
+                        <OuterDiv isOver={isOver} below={false} zIndex={zIndex}>
+                            <InnerDiv zIndex={zIndex} />
                         </OuterDiv>
                     </WrapperDroppable>
                 )}
@@ -108,9 +127,9 @@ export const ElementControlHorizontalDropZones = () => {
                     type={type}
                 >
                     {({ drop, isOver }) => (
-                        <WrapperDroppable ref={drop} below>
-                            <OuterDiv isOver={isOver} below>
-                                <InnerDiv />
+                        <WrapperDroppable ref={drop} below zIndex={zIndex}>
+                            <OuterDiv isOver={isOver} below zIndex={zIndex}>
+                                <InnerDiv zIndex={zIndex} />
                             </OuterDiv>
                         </WrapperDroppable>
                     )}

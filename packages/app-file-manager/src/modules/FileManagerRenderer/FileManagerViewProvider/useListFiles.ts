@@ -1,39 +1,19 @@
-import { sortTableItems, validateOrGetDefaultDbSort } from "@webiny/app-aco/sorting";
-import sortBy from "lodash/sortBy";
+import { useRef, useState } from "react";
+import isEqual from "lodash/isEqual";
+import { validateOrGetDefaultDbSort } from "@webiny/app-aco/sorting";
 import { useFolders } from "@webiny/app-aco";
 import { ListMeta } from "@webiny/app-aco/types";
 import { useSecurity } from "@webiny/app-security";
 import { FileItem } from "@webiny/app-admin/types";
-import { useRef, useState } from "react";
 import { Loading, LoadingActions } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import {
     ListFilesQueryVariables,
+    ListFilesSort,
     ListFilesWhereLocation,
     ListFilesWhereQueryVariables
 } from "~/modules/FileManagerApiProvider/graphql";
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
 import { getScopeWhereParams, State } from "./state";
-
-const mergeRecords = (oldRecords: FileItem[], newRecords: FileItem[]): FileItem[] => {
-    if (!newRecords.length) {
-        return oldRecords;
-    }
-
-    const mergedRecords = newRecords.reduce(
-        (items, record) => {
-            const index = items.findIndex(item => item.id === record.id);
-            if (index === -1) {
-                items.push(record);
-                return items;
-            }
-            items[index] = record;
-            return items;
-        },
-        [...oldRecords]
-    ); // merge the two arrays
-
-    return sortBy(mergedRecords, ["name"]);
-};
 
 function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
     if (Array.isArray(value)) {
@@ -62,6 +42,7 @@ export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseLis
     const [meta, setMeta] = useState<ListMeta | undefined>(undefined);
     const [files, setFiles] = useState<FileItem[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>({});
+    const [lastSort, setLastSort] = useState<ListFilesSort | undefined>(undefined);
 
     const listFiles = async (params: ListFilesQueryVariables) => {
         const { after, limit, sort: sorting, search, where } = params;
@@ -73,11 +54,6 @@ export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseLis
         const hasMoreItems = meta?.hasMoreItems || true;
         if (after && !hasMoreItems) {
             return;
-        }
-
-        // Remove records in case of sorting change and not a paginated request.
-        if (sorting && !after) {
-            setFiles([]);
         }
 
         const action = after ? "LIST_MORE" : "LIST";
@@ -93,22 +69,27 @@ export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseLis
             after
         });
 
-        setLoading({ [action]: false });
-
         setFiles(prev => {
-            /**
-             * In case of paginated request, we merge the fetched records with the existing ones, and then sort them.
-             * Otherwise, we sort the fetched records and set them as the new records.
-             */
-            return sortTableItems(mergeRecords(after ? prev : [], fmResponse.files), sort);
+            // If there's no cursor, or sorting changed, it means we're receiving a new list of files from scratch.
+            if (!after || !isEqual(sorting, lastSort)) {
+                return fmResponse.files;
+            }
+
+            // Otherwise, we're merging results with the previous state.
+            return [...prev, ...fmResponse.files];
         });
+
+        // We need to keep track of the last used sorting. If sorting is changed, it means we're loading
+        // a completely new list of files (starting from "page 1").
+        setLastSort(sorting);
 
         setMeta(fmResponse.meta);
 
         setLoading(prev => {
             return {
                 ...prev,
-                INIT: false
+                INIT: false,
+                [action]: false
             };
         });
 
