@@ -118,26 +118,62 @@ describe("5.37.0-001", () => {
         });
 
         expect(searchRecordsBeforeMigrations).toHaveLength(0);
+        /**
+         * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
+         */
+        const handlerPrepare = createDdbEsMigrationHandler({
+            primaryTable: ddbTable,
+            elasticsearchClient,
+            dynamoToEsTable: ddbToEsTable,
+            migrations: [AcoRecords_5_35_0_006]
+        });
+        const { data: dataPrepare, error: errorPrepare } = await handlerPrepare();
 
+        assertNotError(errorPrepare);
+        const groupedPrepare = groupMigrations(dataPrepare.migrations);
+        expect(groupedPrepare.executed.length).toBe(1);
+        expect(groupedPrepare.skipped.length).toBe(0);
+        expect(groupedPrepare.notApplicable.length).toBe(0);
+
+        const ddbSearchRecordsPrepare = await scanTable(ddbTable, {
+            entity: "CmsEntries",
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "acoSearchRecord"
+                }
+            ]
+        });
+
+        const ddbEsSearchRecordsPrepare = await scanTable(ddbToEsTable, {
+            entity: "CmsEntriesElasticsearch",
+            filters: [
+                {
+                    attr: "index",
+                    contains: "acosearchrecord"
+                }
+            ]
+        });
+
+        expect(ddbSearchRecordsPrepare.length).toBe(ddbPages.length * 2);
+        expect(ddbEsSearchRecordsPrepare.length).toBe(ddbPages.length);
+        /**
+         * And then we execute current the 5.37.0_001 migration.
+         */
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [
-                /**
-                 * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
-                 */
-                AcoRecords_5_35_0_006,
-                /**
-                 * And then we execute current the 5.37.0_001 migration.
-                 */
-                AcoRecords_5_37_0_001
-            ]
+            migrations: [AcoRecords_5_37_0_001]
         });
         const { data, error } = await handler();
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBeGreaterThanOrEqual(1);
+        expect(grouped.skipped.length).toBeGreaterThanOrEqual(0);
+        expect(grouped.notApplicable.length).toBe(0);
 
         const searchRecordsAfterMigrations = await scanTable(ddbTable, {
             filters: []
@@ -259,20 +295,27 @@ describe("5.37.0-001", () => {
             numberOfPages: 1
         });
 
+        /**
+         * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
+         */
+        const handlerPrepare = createDdbEsMigrationHandler({
+            primaryTable: ddbTable,
+            elasticsearchClient,
+            dynamoToEsTable: ddbToEsTable,
+            migrations: [AcoRecords_5_35_0_006]
+        });
+        /**
+         * We do not need to check values in the response as those are tested already.
+         */
+        await handlerPrepare();
+        /**
+         * And then we execute current the 5.37.0_001 migration.
+         */
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [
-                /**
-                 * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
-                 */
-                AcoRecords_5_35_0_006,
-                /**
-                 * And then we execute current the 5.37.0_001 migration.
-                 */
-                AcoRecords_5_37_0_001
-            ]
+            migrations: [AcoRecords_5_37_0_001]
         });
 
         // Should run the migration
@@ -281,7 +324,7 @@ describe("5.37.0-001", () => {
             const { data, error } = await handler();
             assertNotError(error);
             const grouped = groupMigrations(data.migrations);
-            expect(grouped.executed.length).toBe(2);
+            expect(grouped.executed.length).toBe(1);
         }
 
         // Should skip the migration
@@ -291,7 +334,7 @@ describe("5.37.0-001", () => {
             assertNotError(error);
             const grouped = groupMigrations(data.migrations);
             expect(grouped.executed.length).toBe(0);
-            expect(grouped.skipped.length).toBe(2);
+            expect(grouped.skipped.length).toBe(1);
             expect(grouped.notApplicable.length).toBe(0);
         }
     });
