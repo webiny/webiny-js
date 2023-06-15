@@ -8,12 +8,14 @@ import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Dro
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
 import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { useSnackbar } from "@webiny/app-admin";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
 // - drag and drop functionality
 export const ElementControls = () => {
     const { getElement, meta } = useRenderer();
+    const { showSnackbar } = useSnackbar();
 
     const element = getElement();
 
@@ -55,6 +57,7 @@ export const ElementControls = () => {
         // for which this drop zone is rendered).
         if (Array.isArray(target) && target.length > 0) {
             if (!target.includes(element.type)) {
+                showSnackbar("The currently active page element cannot receive child elements.");
                 return;
             }
         }
