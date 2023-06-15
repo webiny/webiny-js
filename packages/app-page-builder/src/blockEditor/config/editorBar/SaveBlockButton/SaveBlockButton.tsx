@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
+import { useLocation, useNavigate } from "@webiny/react-router";
 import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useRouter } from "@webiny/react-router";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { EditorBar } from "~/editor";
@@ -19,7 +19,8 @@ const SpinnerWrapper = styled.div`
 const DefaultSaveBlockButton: React.FC = () => {
     const [block] = useBlock();
     const eventActionHandler = useEventActionHandler();
-    const { history } = useRouter();
+    const location = useLocation();
+    const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
     const { setDisplayMode } = useDisplayMode();
@@ -33,7 +34,11 @@ const DefaultSaveBlockButton: React.FC = () => {
                     debounce: false,
                     onFinish: () => {
                         setLoading(false);
-                        history.push(`/page-builder/page-blocks`);
+                        if (location.key === "default") {
+                            navigate(`/page-builder/page-blocks?category=${block.blockCategory}`);
+                        } else {
+                            navigate(-1);
+                        }
                         showSnackbar(`Block "${block.name}" saved successfully!`);
                     }
                 })
