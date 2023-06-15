@@ -1,12 +1,5 @@
 import React from "react";
-import { WebinyListPlugin } from "@webiny/lexical-editor/plugins/WebinyListPLugin/WebinyListPlugin";
-import {
-    ClickableLinkPlugin,
-    CodeHighlightPlugin,
-    FloatingLinkEditorPlugin,
-    LinkPlugin,
-    StaticToolbar
-} from "@webiny/lexical-editor";
+import { StaticToolbar } from "@webiny/lexical-editor";
 import { RichTextEditorProps } from "@webiny/lexical-editor/types";
 import { CompositionScope } from "@webiny/react-composition";
 import { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
@@ -35,12 +28,6 @@ export const LexicalCmsEditor = (props: Omit<RichTextEditorProps, "theme">) => {
                 minHeight: 200,
                 maxHeight: 350
             }}
-        >
-            <LinkPlugin />
-            <WebinyListPlugin />
-            <CodeHighlightPlugin />
-            <ClickableLinkPlugin />
-            <FloatingLinkEditorPlugin anchorElem={document.body} />
-        </LexicalEditor>
+        />
     );
 };

@@ -5,6 +5,7 @@ import { useRenderer } from "@webiny/app-page-builder-elements/hooks/useRenderer
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { createRenderer } from "@webiny/app-page-builder-elements";
+import { CompositionScope } from "@webiny/app-admin";
 
 const mediumEditorOptions: CoreOptions = {
     toolbar: {
@@ -25,7 +26,11 @@ const PeParagraph = createRenderer(() => {
     const isActive = activeElementId === element.id;
 
     if (isActive) {
-        return <Text tag={"p"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />;
+        return (
+            <CompositionScope name={"pb.paragraph"}>
+                <Text tag={"p"} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />
+            </CompositionScope>
+        );
     }
 
     const __html = variableValue || element.data.text.data.text;

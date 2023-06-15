@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, Fragment, useCallback, useEffect, useState } from "react";
 import {
     $getSelection,
     $isRangeSelection,
@@ -6,33 +6,21 @@ import {
     LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
-import { ToolbarType } from "~/types";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { mergeRegister } from "@lexical/utils";
-import { makeComposable } from "@webiny/react-composition";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./StaticToolbar.css";
 import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
+import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 
 interface useStaticToolbarProps {
     editor: LexicalEditor;
-    type: ToolbarType;
-    children?: React.ReactNode;
 }
 
-const useStaticToolbar: FC<useStaticToolbarProps> = ({
-    editor,
-    type,
-    children
-}): JSX.Element | null => {
-    const { setNodeIsText, setToolbarType, setTextBlockSelection } = useRichTextEditor();
+const useStaticToolbar: FC<useStaticToolbarProps> = ({ editor }) => {
+    const { setNodeIsText, setTextBlockSelection } = useRichTextEditor();
     const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
-
-    useEffect(() => {
-        if (type) {
-            setToolbarType(type);
-        }
-    }, [type]);
+    const { toolbarElements } = useLexicalEditorConfig();
 
     const updateToolbar = useCallback(() => {
         editor.getEditorState().read(() => {
@@ -96,20 +84,20 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({
         );
     }, [updateToolbar, editor, toolbarActiveEditor]);
 
-    return <div className="static-toolbar">{editor.isEditable() && children}</div>;
+    return (
+        <div className="static-toolbar">
+            {editor.isEditable() && (
+                <>
+                    {toolbarElements.map(action => (
+                        <Fragment key={action.name}>{action.element}</Fragment>
+                    ))}
+                </>
+            )}
+        </div>
+    );
 };
 
-export interface StaticToolbarToolbarProps {
-    children?: React.ReactNode;
-}
-
-/**
- * @description Main toolbar container
- */
-export const StaticToolbar = makeComposable<StaticToolbarToolbarProps>(
-    "StaticToolbar",
-    ({ children }): JSX.Element | null => {
-        const [editor] = useLexicalComposerContext();
-        return useStaticToolbar({ editor, type: "static", children });
-    }
-);
+export const StaticToolbar = () => {
+    const [editor] = useLexicalComposerContext();
+    return useStaticToolbar({ editor });
+};

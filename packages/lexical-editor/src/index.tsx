@@ -44,7 +44,6 @@ export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/LexicalUpdateStatePlugin";
 // composition
 export { AddToolbarAction } from "~/components/AddToolbarAction";
-export { AddStaticToolbarAction } from "~/components/AddStaticToolbarAction";
 export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
 export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeType";
 // utils
@@ -56,4 +55,7 @@ export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 // types
 export * as types from "./types";
 // config
-export { LexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+export {
+    LexicalEditorConfig,
+    useLexicalEditorConfig
+} from "~/components/LexicalEditorConfig/LexicalEditorConfig";

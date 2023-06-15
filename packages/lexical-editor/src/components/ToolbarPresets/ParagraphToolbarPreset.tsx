@@ -1,6 +1,5 @@
 import React from "react";
 import { BoldAction } from "~/components/ToolbarActions/BoldAction";
-import { AddToolbarAction } from "~/components/AddToolbarAction";
 import { ItalicAction } from "~/components/ToolbarActions/ItalicAction";
 import { UnderlineAction } from "~/components/ToolbarActions/UnderlineAction";
 import { CodeHighlightAction } from "~/components/ToolbarActions/CodeHighlightAction";
@@ -13,25 +12,28 @@ import { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
 import { FontColorAction } from "~/components/ToolbarActions/FontColorAction";
 import { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
 import { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction";
+import { LexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+
+const { ToolbarElement } = LexicalEditorConfig;
 
 export const ParagraphToolbarPreset = () => {
     return (
-        <>
-            <AddToolbarAction element={<FontSizeAction />} type={"paragraph"} />
-            <AddToolbarAction element={<FontColorAction />} type={"paragraph"} />
-            <AddToolbarAction element={<TypographyAction />} type={"paragraph"} />
-            <AddToolbarAction element={<TextAlignmentAction />} type={"paragraph"} />
-            <AddToolbarAction element={<Divider />} type={"paragraph"} />
-            <AddToolbarAction element={<BoldAction />} type={"paragraph"} />
-            <AddToolbarAction element={<ItalicAction />} type={"paragraph"} />
-            <AddToolbarAction element={<UnderlineAction />} type={"paragraph"} />
-            <AddToolbarAction element={<CodeHighlightAction />} type={"paragraph"} />
-            <AddToolbarAction element={<Divider />} type={"paragraph"} />
-            <AddToolbarAction element={<NumberedListAction />} type={"paragraph"} />
-            <AddToolbarAction element={<BulletListAction />} type={"paragraph"} />
-            <AddToolbarAction element={<Divider />} type={"paragraph"} />
-            <AddToolbarAction element={<LinkAction />} type={"paragraph"} />
-            <AddToolbarAction element={<QuoteAction />} type={"paragraph"} />
-        </>
+        <LexicalEditorConfig>
+            <ToolbarElement name="FontSizeAction" element={<FontSizeAction />} />
+            <ToolbarElement name="FontColorAction" element={<FontColorAction />} />
+            <ToolbarElement name="TypographyAction" element={<TypographyAction />} />
+            <ToolbarElement name="TextAlignmentAction" element={<TextAlignmentAction />} />
+            <ToolbarElement name="Divider1" element={<Divider />} />
+            <ToolbarElement name="BoldAction" element={<BoldAction />} />
+            <ToolbarElement name="ItalicAction" element={<ItalicAction />} />
+            <ToolbarElement name="UnderlineAction" element={<UnderlineAction />} />
+            <ToolbarElement name="CodeHighlightAction" element={<CodeHighlightAction />} />
+            <ToolbarElement name="Divider2" element={<Divider />} />
+            <ToolbarElement name="NumberedListAction" element={<NumberedListAction />} />
+            <ToolbarElement name="BulletListAction" element={<BulletListAction />} />
+            <ToolbarElement name="Divider3" element={<Divider />} />
+            <ToolbarElement name="LinkAction" element={<LinkAction />} />
+            <ToolbarElement name="QuoteAction" element={<QuoteAction />} />
+        </LexicalEditorConfig>
     );
 };

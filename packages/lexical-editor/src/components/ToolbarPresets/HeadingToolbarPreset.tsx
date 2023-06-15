@@ -1,6 +1,5 @@
 import React from "react";
 import { BoldAction } from "~/components/ToolbarActions/BoldAction";
-import { AddToolbarAction } from "~/components/AddToolbarAction";
 import { ItalicAction } from "~/components/ToolbarActions/ItalicAction";
 import { UnderlineAction } from "~/components/ToolbarActions/UnderlineAction";
 import { CodeHighlightAction } from "~/components/ToolbarActions/CodeHighlightAction";
@@ -10,21 +9,24 @@ import { Divider } from "~/ui/Divider";
 import { FontColorAction } from "~/components/ToolbarActions/FontColorAction";
 import { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
 import { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction";
+import { LexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+
+const { ToolbarElement } = LexicalEditorConfig;
 
 export const HeadingToolbarPreset = () => {
     return (
-        <>
-            <AddToolbarAction element={<FontSizeAction />} type={"heading"} />
-            <AddToolbarAction element={<FontColorAction />} type={"heading"} />
-            <AddToolbarAction element={<TypographyAction />} type={"heading"} />
-            <AddToolbarAction element={<TextAlignmentAction />} type={"heading"} />
-            <AddToolbarAction element={<Divider />} type={"heading"} />
-            <AddToolbarAction element={<BoldAction />} type={"heading"} />
-            <AddToolbarAction element={<ItalicAction />} type={"heading"} />
-            <AddToolbarAction element={<UnderlineAction />} type={"heading"} />
-            <AddToolbarAction element={<CodeHighlightAction />} type={"heading"} />
-            <AddToolbarAction element={<Divider />} type={"heading"} />
-            <AddToolbarAction element={<LinkAction />} type={"heading"} />
-        </>
+        <LexicalEditorConfig>
+            <ToolbarElement name={"FontSizeAction"} element={<FontSizeAction />} />
+            <ToolbarElement name={"FontColorAction"} element={<FontColorAction />} />
+            <ToolbarElement name={"TypographyAction"} element={<TypographyAction />} />
+            <ToolbarElement name={"TextAlignmentAction"} element={<TextAlignmentAction />} />
+            <ToolbarElement name={"Divider1"} element={<Divider />} />
+            <ToolbarElement name={"BoldAction"} element={<BoldAction />} />
+            <ToolbarElement name={"ItalicAction"} element={<ItalicAction />} />
+            <ToolbarElement name={"UnderlineAction"} element={<UnderlineAction />} />
+            <ToolbarElement name={"CodeHighlightAction"} element={<CodeHighlightAction />} />
+            <ToolbarElement name={"Divider2"} element={<Divider />} />
+            <ToolbarElement name={"LinkAction"} element={<LinkAction />} />
+        </LexicalEditorConfig>
     );
 };

@@ -2,8 +2,7 @@ import React from "react";
 import {
     ParagraphToolbarPreset,
     HeadingToolbarPreset,
-    TypographyAction,
-    LexicalEditorConfig
+    TypographyAction
 } from "@webiny/lexical-editor";
 import { PeTextPlugin } from "~/plugins/PeTextPlugin";
 import { HeadingPlugin } from "~/plugins/HeadingPlugin";
@@ -18,13 +17,13 @@ import { TypographyDropDown } from "~/components/TypographyDropDown";
 export const LexicalEditorPlugin = () => {
     return (
         <>
-            <CompositionScope name={"pb"}>
-                <HeadingToolbarPreset />
+            <CompositionScope name={"pb.paragraph"}>
                 <ParagraphToolbarPreset />
-                <LexicalEditorConfig>
-                    <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
-                </LexicalEditorConfig>
             </CompositionScope>
+            <CompositionScope name={"pb.heading"}>
+                <HeadingToolbarPreset />
+            </CompositionScope>
+            <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
             {/* Components */}
             <PeTextPlugin />
             <PbTextPlugin />

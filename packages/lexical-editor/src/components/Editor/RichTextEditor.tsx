@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
@@ -27,6 +27,10 @@ import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { ClassNames } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 import { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
+import {
+    LexicalEditorWithConfig,
+    useLexicalEditorConfig
+} from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -78,6 +82,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     themeEmotionMap,
     toolbarActionPlugins
 }: RichTextEditorProps) => {
+    const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
     const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
     const scrollRef = useRef(null);
@@ -108,13 +113,18 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         width: width || ""
     };
 
+    const configNodes = config.nodes.map(node => node.node);
+    const configPlugins = config.plugins.map(plugin => (
+        <Fragment key={plugin.name}>{plugin.element}</Fragment>
+    ));
+
     const initialConfig = {
         editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
         namespace: "webiny",
         onError: (error: Error) => {
             throw error;
         },
-        nodes: [...WebinyNodes, ...(nodes || [])],
+        nodes: [...WebinyNodes, ...configNodes, ...(nodes || [])],
         theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap }
     };
 
@@ -145,6 +155,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     {onBlur && <BlurEventPlugin onBlur={onBlur} />}
                     {focus && <AutoFocusPlugin />}
                     {/* External plugins and components */}
+                    {configPlugins}
                     {children}
                     <RichTextPlugin
                         contentEditable={
@@ -170,18 +181,20 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
  */
 export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEditor", props => {
     return (
-        <RichTextEditorProvider>
-            <ClassNames>
-                {({ css }) => {
-                    const themeEmotionMap =
-                        props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
-                    return (
-                        <SharedHistoryContext>
-                            <BaseRichTextEditor {...props} themeEmotionMap={themeEmotionMap} />
-                        </SharedHistoryContext>
-                    );
-                }}
-            </ClassNames>
-        </RichTextEditorProvider>
+        <LexicalEditorWithConfig>
+            <RichTextEditorProvider>
+                <ClassNames>
+                    {({ css }) => {
+                        const themeEmotionMap =
+                            props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
+                        return (
+                            <SharedHistoryContext>
+                                <BaseRichTextEditor {...props} themeEmotionMap={themeEmotionMap} />
+                            </SharedHistoryContext>
+                        );
+                    }}
+                </ClassNames>
+            </RichTextEditorProvider>
+        </LexicalEditorWithConfig>
     );
 });
