@@ -6,8 +6,6 @@ import { createStorageOperations as securityStorageOperations } from "@webiny/ap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-
-// Changed authorization.
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import tenantLinksPermissionsAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";

@@ -6,8 +6,7 @@ import { createStorageOperations as securityStorageOperations } from "@webiny/ap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
-import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
+import tenantLinksPermissionsAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import createAdminUsersApp from "@webiny/api-admin-users-cognito";
@@ -85,14 +84,14 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
     apiKeyAuthorization({ identityType: "api-key" }),
 
     /**
-     * Authorization plugin to fetch permissions from a security group associated with the identity.
+     * Authorization plugin to fetch permissions from a security role or team associated with the identity.
      */
-    groupAuthorization({ identityType: "admin" }),
+    tenantLinksPermissionsAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to fetch permissions from the parent tenant.
      */
-    parentTenantGroupAuthorization({ identityType: "admin" }),
+    tenantLinksPermissionsAuthorization({ identityType: "admin", parent: true }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.
