@@ -3,12 +3,12 @@ const logUpdate = require("log-update");
 const { green, yellow, gray } = require("chalk");
 
 let logs = [];
-let deployment = gray("Waiting for code changes to deploy...");
+let deployment = gray("Automatic re-deployments enabled. Watching for code changes...");
 
 let deployingInterval;
 
 const EOL = os.EOL;
-const HL = EOL + "—".repeat(50) + EOL;
+const HL = EOL + "—".repeat(62) + EOL;
 
 const log = () => {
     let update = "";
@@ -24,6 +24,7 @@ const log = () => {
 
 let deployStartedOn = null;
 const getDeployDurationInSeconds = () => Math.round((Date.now() - deployStartedOn) / 1000);
+
 
 const startDeploying = () => {
     let dotsCount = 3;

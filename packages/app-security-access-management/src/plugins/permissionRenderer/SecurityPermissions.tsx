@@ -156,7 +156,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                 <Elevation z={1} style={{ marginTop: 10 }}>
                                     <Grid>
                                         <Cell span={12}>
-                                            <Typography use={"overline"}>{t`Groups`}</Typography>
+                                            <Typography use={"overline"}>{t`Roles`}</Typography>
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind name={"groupAccessScope"}>

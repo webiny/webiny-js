@@ -8,7 +8,10 @@ export interface SecurityContext {
 
     setIdentity: Dispatch<SetStateAction<SecurityIdentity | null>>;
 
-    getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T | null;
+    getPermission<T extends SecurityPermission = SecurityPermission>(
+        name: string,
+        exact?: boolean
+    ): T | null;
 
     getPermissions<T extends SecurityPermission = SecurityPermission>(name: string): T[];
 }
@@ -31,7 +34,10 @@ export const SecurityProvider: React.FC = props => {
     const [identity, setIdentity] = useState<SecurityIdentity | null>(null);
 
     const getPermission = useCallback(
-        <T extends SecurityPermission = SecurityPermission>(name: string): T | null => {
+        <T extends SecurityPermission = SecurityPermission>(
+            name: string,
+            exact?: boolean
+        ): T | null => {
             if (!identity) {
                 return null;
             }
@@ -40,6 +46,8 @@ export const SecurityProvider: React.FC = props => {
             const exactMatch = perms.find(p => p.name === name);
             if (exactMatch) {
                 return exactMatch as T;
+            } else if (exact) {
+                return null;
             }
 
             // Try matching using patterns
