@@ -250,7 +250,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                         onClick={ev => {
                                             form.submit(ev);
                                         }}
-                                    >{t`Save group`}</ButtonPrimary>
+                                    >{t`Save role`}</ButtonPrimary>
                                 </ButtonWrapper>
                             </SimpleFormFooter>
                         )}
