@@ -46,7 +46,9 @@ describe("Files CRUD ddb/es", () => {
             await elasticsearch.indices.create({
                 index,
                 body: {
-                    index: disableIndexing
+                    settings: {
+                        index: disableIndexing
+                    }
                 }
             });
         } catch (ex) {
