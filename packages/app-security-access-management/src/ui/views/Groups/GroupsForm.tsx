@@ -118,7 +118,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
             }
 
             !isUpdate && history.push(`/access-management/roles?id=${group.id}`);
-            showSnackbar(t`Group saved successfully!`);
+            showSnackbar(t`Role saved successfully!`);
         },
         [id]
     );
@@ -132,7 +132,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display group details or create a...`}
+                title={t`Click on the left side list to display role details or create a...`}
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
@@ -199,7 +199,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                 <Grid>
                                     <Cell span={12}>
                                         <Alert type={"info"} title={"Permissions are locked"}>
-                                            This is a protected system group and you can&apos;t
+                                            This is a protected system role and you can&apos;t
                                             modify its permissions.
                                         </Alert>
                                     </Cell>
