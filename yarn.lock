@@ -15309,6 +15309,7 @@ __metadata:
     identity-obj-proxy: ^3.0.0
     prettier: ^2.3.2
     react: 17.0.2
+    theme: 0.0.0
   languageName: unknown
   linkType: soft
 
@@ -40373,6 +40374,13 @@ __metadata:
     react-hamburger-menu: ^1.1.1
   languageName: unknown
   linkType: soft
+
+"theme@npm:0.0.0":
+  version: 0.0.0
+  resolution: "theme@npm:0.0.0"
+  checksum: c7d7a0fd5797a5799f621dc07dc5f94a1e4f016b70517d76a6d42c7a1707dfc75caa788f5735610223adaea9312fae9de867f110c8cba8e2832c0f448137e501
+  languageName: node
+  linkType: hard
 
 "thenify-all@npm:^1.0.0":
   version: 1.6.0

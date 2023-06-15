@@ -13,47 +13,60 @@ import {
     notCorrectValue
 } from "./lexical-content";
 import { emptyEditorContent, LexicalCmsInputRender } from "./lexical-render";
+import theme from "theme/theme";
 
 describe("Test Rich Lexical Renderer", () => {
     it("Paragraph string value type is rendered", async () => {
         // ARRANGE
         const { container } = render(<RichTextLexicalRenderer value={defaultParagraphValue} />);
-        // ACT
+        // ASSERT
         expect(container.innerHTML).toContain(expectedParagraphRenderedValue);
     });
 
     it("Header object value type is rendered", async () => {
         // ARRANGE
         const { container } = render(<RichTextLexicalRenderer value={defaultHeadingValue} />);
-        // ACT
+        // ASSERT
         expect(container.innerHTML).toContain(expectedHeadingRenderedValue);
     });
 
     it("Handle null as value", async () => {
         // ARRANGE
         const { container } = render(<RichTextLexicalRenderer value={null} />);
-        // ACT
+        // ASSERT
         expect(container.innerHTML).toEqual(emptyEditorContent);
     });
 
     it("Handle undefined as value", async () => {
         // ARRANGE
         const { container } = render(<RichTextLexicalRenderer value={undefined} />);
-        // ACT
+        // ASSERT
         expect(container.innerHTML).toEqual(emptyEditorContent);
     });
 
     it("Handle wrong lexical value", async () => {
         // ARRANGE
         const { container } = render(<RichTextLexicalRenderer value={notCorrectValue} />);
-        // ACT
+        // ASSERT
         expect(container.innerHTML).toEqual(emptyEditorContent);
     });
 
     it("Lexical CMS input includes title, paragraph, list and quote", async () => {
         // ARRANGE
         const { container } = render(<RichTextLexicalRenderer value={LexicalJsonCmsDataInput} />);
-        // ACT
+        // ASSERT
         expect(container.innerHTML).toEqual(LexicalCmsInputRender);
     });
+
+    it("Lexical CMS input with theme", async () => {
+        // ARRANGE
+        const { container } = render(<RichTextLexicalRenderer value={LexicalJsonCmsDataInput} theme={theme} />);
+        // ASSERT
+        // editor is here
+        expect(container.innerHTML.includes("editor")).toBeTruthy();
+        // emotion produced css classes are here
+        expect(container.innerHTML.includes("css-")).toBeTruthy();
+        expect(container.innerHTML.includes("-lx")).toBeTruthy();
+    });
+
 });
