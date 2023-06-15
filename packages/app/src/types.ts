@@ -3,27 +3,6 @@ import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
 import { CSSProperties } from "react";
 
-export interface FileItem {
-    id: string;
-    name: string;
-    key: string;
-    src: string;
-    size: number;
-    type: string;
-    tags: string[];
-    aliases: string[];
-    createdOn: string;
-    savedOn: string;
-    createdBy: {
-        id: string;
-        displayName: string;
-    };
-    location: {
-        folderId: string;
-    };
-    [key: string]: any;
-}
-
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
     onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
