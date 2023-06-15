@@ -102,8 +102,8 @@ export class UsersFormView extends UIView {
             },
             {
                 id: "groups",
-                title: "Groups",
-                description: "Assign to security group",
+                title: "Roles",
+                description: "Assign to security role",
                 icon: <SecurityIcon />,
                 open: true
             }
