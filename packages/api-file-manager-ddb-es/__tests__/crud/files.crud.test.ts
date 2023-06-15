@@ -1,30 +1,25 @@
 import useGqlHandler from "../useGqlHandler";
 import { createExpectedTags, createMockFileData } from "~tests/crud/mocks/file";
+import { getDefaultPrefix } from "~tests/defaultPrefix";
 
 jest.retryTimes(0);
 
 describe("Files CRUD ddb/es", () => {
-    const { listTags, clearElasticsearch, createElasticsearchIndice, elasticsearch, getIndexName } =
-        useGqlHandler();
+    const { listTags, createElasticsearchIndice, elasticsearch, getIndexName } = useGqlHandler();
 
     const locale = "en-US";
     const tenant = "root";
 
     beforeEach(async () => {
-        await clearElasticsearch({
-            locale,
-            tenant
-        });
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX = getDefaultPrefix();
+        await elasticsearch.indices.deleteAll();
         await createElasticsearchIndice({
             locale,
             tenant
         });
     });
     afterEach(async () => {
-        await clearElasticsearch({
-            locale,
-            tenant
-        });
+        await elasticsearch.indices.deleteAll();
     });
 
     const disableIndexing = {
