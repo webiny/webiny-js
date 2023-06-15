@@ -176,12 +176,18 @@ describe("5.37.0-001", () => {
         expect(grouped.notApplicable.length).toBe(0);
 
         const searchRecordsAfterMigrations = await scanTable(ddbTable, {
-            filters: []
+            filters: [
+                {
+                    attr: "_et",
+                    eq: "CmsEntries"
+                }
+            ]
         });
         const cmsEntries = searchRecordsAfterMigrations.filter(r => {
             return r.modelId === PB_ACO_SEARCH_MODEL_ID;
         });
 
+        expect(searchRecordsAfterMigrations).toHaveLength(ddbPages.length * 2);
         expect(cmsEntries).toHaveLength(ddbPages.length * 2);
         /**
          * We are expecting that the AcoRecords_5_37_0_001 will be executed.
