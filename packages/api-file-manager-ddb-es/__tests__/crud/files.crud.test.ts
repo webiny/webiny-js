@@ -90,31 +90,49 @@ describe("Files CRUD ddb/es", () => {
             },
             statusCode: 200
         });
-        /**
-         * Then let's re-enable indexing.
-         */
-        await elasticsearch.indices.putSettings({
-            index,
-            body: {
-                index: enableIndexing
-            }
-        });
-        /**
-         * ... Refresh the index.
-         */
-        await elasticsearch.indices.refresh({
-            index
-        });
+        try {
+            /**
+             * Then let's re-enable indexing.
+             */
+            await elasticsearch.indices.putSettings({
+                index,
+                body: {
+                    index: enableIndexing
+                }
+            });
+        } catch (ex) {
+            console.log(`Could not put settings for index ${index}: ${ex.message}`);
+            throw ex;
+        }
+
+        try {
+            /**
+             * ... Refresh the index.
+             */
+            await elasticsearch.indices.refresh({
+                index
+            });
+        } catch (ex) {
+            console.log(`Could not refresh index ${index}: ${ex.message}`);
+            throw ex;
+        }
 
         const expectedTags = createExpectedTags({
             amount: maxFiles,
             tenant,
             locale
         });
+
+        let response: any;
         /**
          * And then list the tags.
          */
-        const [response] = await listTags();
+        try {
+            [response] = await listTags();
+        } catch (ex) {
+            console.log(`Could not list tags: ${ex.message}`);
+            throw ex;
+        }
         /**
          * Must be the amount of files + 2 (one for tenant and one for locale).
          */
