@@ -16,7 +16,7 @@ export const BulletListAction = () => {
     useEffect(() => {
         const isListBulletType = textBlockSelection?.state?.textType === "bullet";
         setIsActive(isListBulletType);
-    }, [isListSelected]);
+    }, [textBlockSelection?.state?.textType, isListSelected]);
 
     const formatBulletList = () => {
         if (!isActive) {
@@ -25,7 +25,6 @@ export const BulletListAction = () => {
                 : undefined;
             // will update the active state in the useEffect
             editor.dispatchCommand(INSERT_UNORDERED_WEBINY_LIST_COMMAND, { themeStyleId: styleId });
-            setIsActive(true);
         } else {
             editor.dispatchCommand(REMOVE_WEBINY_LIST_COMMAND, undefined);
         }
