@@ -42,15 +42,17 @@ describe("Files CRUD ddb/es", () => {
         /**
          * Let's create an index, make it not actually index anything, so we can insert data faster.
          */
-        await elasticsearch.indices.create({
-            index
-        });
-        await elasticsearch.indices.putSettings({
-            index,
-            body: {
-                index: disableIndexing
-            }
-        });
+        try {
+            await elasticsearch.indices.create({
+                index,
+                body: {
+                    index: disableIndexing
+                }
+            });
+        } catch (ex) {
+            console.log(`Could not create index ${index}: ${ex.message}`);
+            throw ex;
+        }
 
         const operations: any[] = [];
         /**
