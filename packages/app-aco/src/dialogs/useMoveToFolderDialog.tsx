@@ -40,7 +40,7 @@ export const Message: React.VFC<MessageProps> = ({ helpText, focusedFolderId }) 
                             title={t`Root folder`}
                             focusedFolderId={value.id}
                             onFolderClick={data => data && onChange(data)}
-                            onTitleClick={() => onChange({ id: "ROOT", title: t`Root folder` })}
+                            onTitleClick={() => onChange({ id: "ROOT", title: t`All files` })}
                             enableCreate={true}
                         />
                     )}
