@@ -143,14 +143,14 @@ describe("5.37.0-001", () => {
             filters: []
         });
         const cmsEntries = searchRecordsAfterMigrations.filter(r => {
-            return r.entity === "CmsEntries";
+            return r.modelId === PB_ACO_SEARCH_MODEL_ID;
         });
 
         expect(cmsEntries).toHaveLength(ddbPages.length * 2);
         /**
          * We are expecting that the AcoRecords_5_37_0_001 will be executed.
          * For the AcoRecords_5_35_0_006 it is possible that it is a second iteration of the migration runs and at that point it is not executed.
-         * Because of that, we are checking for skipped to be 1 or less and executed to be 1 or more.
+         * Because of that, we are checking for skipped to be 1 or less and executed to be 1 or 2.
          */
         expect(grouped.executed.length).toBeGreaterThanOrEqual(1);
         expect(grouped.executed.length).toBeLessThanOrEqual(2);
@@ -162,7 +162,7 @@ describe("5.37.0-001", () => {
             filters: [
                 {
                     attr: "modelId",
-                    eq: "acoSearchRecord-pbpage"
+                    eq: PB_ACO_SEARCH_MODEL_ID
                 }
             ]
         });
