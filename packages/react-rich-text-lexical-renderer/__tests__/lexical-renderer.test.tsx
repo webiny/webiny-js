@@ -60,7 +60,9 @@ describe("Test Rich Lexical Renderer", () => {
 
     it("Lexical CMS input with theme", async () => {
         // ARRANGE
-        const { container } = render(<RichTextLexicalRenderer value={LexicalJsonCmsDataInput} theme={theme} />);
+        const { container } = render(
+            <RichTextLexicalRenderer value={LexicalJsonCmsDataInput} theme={theme} />
+        );
         // ASSERT
         // editor is here
         expect(container.innerHTML.includes("editor")).toBeTruthy();
@@ -68,5 +70,4 @@ describe("Test Rich Lexical Renderer", () => {
         expect(container.innerHTML.includes("css-")).toBeTruthy();
         expect(container.innerHTML.includes("-lx")).toBeTruthy();
     });
-
 });
