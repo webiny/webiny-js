@@ -3,7 +3,7 @@ import { ReactComponent as CopyContentIcon } from "@material-design-icons/svg/ou
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useCopyFile } from "~/hooks/useCopyFile";
-import { useFile } from "~/components/FileDetails";
+import { useFile } from "~/hooks/useFile";
 
 export const CopyUrl = () => {
     const { file } = useFile();

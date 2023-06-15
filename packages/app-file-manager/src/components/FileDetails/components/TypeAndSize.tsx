@@ -5,7 +5,7 @@ import { ReactComponent as ImageIcon } from "@material-design-icons/svg/outlined
 import { ReactComponent as FileIcon } from "@material-design-icons/svg/outlined/insert_drive_file.svg";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
-import { useFile } from "~/components/FileDetails";
+import { useFile } from "~/hooks/useFile";
 
 const TypeAndSizeWrapper = styled.div`
     display: flex;

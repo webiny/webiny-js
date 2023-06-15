@@ -2,7 +2,7 @@ import React from "react";
 import { ReactComponent as DownloadIcon } from "@material-design-icons/svg/outlined/download.svg";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useFile } from "~/components/FileDetails";
+import { useFile } from "~/hooks/useFile";
 
 export const Download = () => {
     const { file } = useFile();

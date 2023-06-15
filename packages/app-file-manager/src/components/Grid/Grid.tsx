@@ -7,7 +7,7 @@ import { FileList, FolderList } from "./styled";
 import { FolderItem } from "@webiny/app-aco/types";
 import { FileItem } from "@webiny/app-admin/types";
 import { Thumbnail } from "~/components/FileDetails/components/Thumbnail";
-import { FileProvider } from "~/components/FileDetails/FileProvider";
+import { FileProvider } from "~/contexts/FileProvider";
 
 const t = i18n.ns("app-admin/file-manager/components/grid");
 

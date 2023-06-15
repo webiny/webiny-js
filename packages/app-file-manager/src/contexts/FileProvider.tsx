@@ -1,14 +1,14 @@
-import { FileItem } from "@webiny/app-admin/types";
 import React, { createContext } from "react";
+import { FileItem } from "@webiny/app-admin/types";
 
 export interface FileContext {
-    file: FileItem | undefined;
+    file: FileItem;
 }
 
 export const FileContext = createContext<FileContext | undefined>(undefined);
 
 interface FileProviderProps {
-    file: FileItem | undefined;
+    file: FileItem;
     children: React.ReactNode;
 }
 

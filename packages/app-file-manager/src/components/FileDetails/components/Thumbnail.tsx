@@ -1,6 +1,6 @@
 import React from "react";
 import getFileTypePlugin from "~/getFileTypePlugin";
-import { useFile } from "~/components/FileDetails";
+import { useFile } from "~/hooks/useFile";
 
 /**
  * This component is used in the file grid to render thumbnails, as well as in the File Details preview.

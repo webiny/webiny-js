@@ -9,11 +9,10 @@ import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
-import { FileProvider } from "./FileProvider";
 import { Aliases } from "./components/Aliases";
 import { Name } from "./components/Name";
 import { Tags } from "./components/Tags";
-import { FileDetailsProvider, useFileDetails } from "~/components/FileDetails/FileDetailsProvider";
+import { FileDetailsProvider } from "~/components/FileDetails/FileDetailsProvider";
 import { Preview } from "./components/Preview";
 import { PreviewMeta } from "./components/PreviewMeta";
 import { Actions } from "./components/Actions";
@@ -26,6 +25,8 @@ import { Extensions } from "./components/Extensions";
 import { useFileModel } from "~/hooks/useFileModel";
 import { useFileManagerView, useFileManagerViewConfig } from "~/index";
 import { useSnackbar } from "@webiny/app-admin";
+import { useFileDetails } from "~/hooks/useFileDetails";
+import { FileProvider } from "~/contexts/FileProvider";
 
 type FileDetailsDrawerProps = React.ComponentProps<typeof Drawer> & { width: string };
 
@@ -134,27 +135,24 @@ export const FileDetails: React.FC<FileDetailsProps> = ({ open, onClose, loading
     const { fileDetails } = useFileManagerViewConfig();
 
     return (
-        <FileProvider file={file}>
-            <FileDetailsDrawer
-                width={fileDetails.width}
-                dir="rtl"
-                modal
-                open={open}
-                onClose={onClose}
-                data-testid={"fm.file-details.drawer"}
-            >
-                <DrawerContent dir="ltr">
-                    {loading && <CircularProgress label={"Loading file details..."} />}
-                    {file && (
+        <FileDetailsDrawer
+            width={fileDetails.width}
+            dir="rtl"
+            modal
+            open={open}
+            onClose={onClose}
+            data-testid={"fm.file-details.drawer"}
+        >
+            <DrawerContent dir="ltr">
+                {loading && <CircularProgress label={"Loading file details..."} />}
+                {file && (
+                    <FileProvider file={file}>
                         <FileDetailsProvider hideFileDetails={onClose}>
                             <FileDetailsInner file={file} onClose={onClose} />
                         </FileDetailsProvider>
-                    )}
-                </DrawerContent>
-            </FileDetailsDrawer>
-        </FileProvider>
+                    </FileProvider>
+                )}
+            </DrawerContent>
+        </FileDetailsDrawer>
     );
 };
-
-export { useFile } from "./FileProvider";
-export { useFileDetails } from "./FileDetailsProvider";

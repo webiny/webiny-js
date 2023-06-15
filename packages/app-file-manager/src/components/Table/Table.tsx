@@ -21,6 +21,7 @@ import { RecordActionMove } from "./RecordActionMove";
 import { actionsColumnStyles, menuStyles } from "./styled";
 import { FileItem } from "@webiny/app-admin/types";
 import { Settings } from "~/types";
+import { FileProvider } from "~/contexts/FileProvider";
 
 export interface TableProps {
     records: FileItem[];
@@ -173,14 +174,19 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 if (!item.original) {
                     return <></>;
                 } else if (isFileEntry(item)) {
-                    const { original, location } = item;
+                    const { original } = item;
                     return (
-                        <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
-                            <RecordActionCopy record={original} />
-                            <RecordActionEdit id={original.id} onClick={onRecordClick} />
-                            <RecordActionMove record={{ id: original.id, location }} />
-                            <RecordActionDelete record={original} />
-                        </Menu>
+                        <FileProvider file={original}>
+                            <Menu
+                                className={menuStyles}
+                                handle={<IconButton icon={<MoreIcon />} />}
+                            >
+                                <RecordActionCopy record={original} />
+                                <RecordActionEdit id={original.id} onClick={onRecordClick} />
+                                <RecordActionMove />
+                                <RecordActionDelete record={original} />
+                            </Menu>
+                        </FileProvider>
                     );
                 }
 

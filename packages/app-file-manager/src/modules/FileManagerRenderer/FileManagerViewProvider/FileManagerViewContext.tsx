@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import omit from "lodash/omit";
 import { FileItem } from "@webiny/app-admin/types";
 import { FileTag } from "~/types";
@@ -30,6 +30,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
     listTitle: string;
     loadMoreFiles: () => void;
     meta: ListMeta | undefined;
+    moveFileToFolder: (fileId: string, folderId: string) => Promise<void>;
     multiple: boolean;
     onClose: () => void;
     onChange: Function;
@@ -328,6 +329,14 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         return newFile;
     };
 
+    const moveFileToFolder: FileManagerViewContext["moveFileToFolder"] = async (
+        fileId,
+        folderId
+    ) => {
+        await updateFile(fileId, { location: { folderId } });
+        setFiles(files => files.filter(file => file.id !== fileId));
+    };
+
     const addScopePrefix = (tags: string[] = []) => {
         if (!props.scope) {
             return tags;
@@ -378,6 +387,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         listTitle,
         loadMoreFiles,
         meta,
+        moveFileToFolder,
         multiple: Boolean(props.multiple),
         onChange(value: any[]) {
             if (typeof props.onChange === "function") {
@@ -445,12 +455,12 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 selected: files
             }));
         },
-        showFileDetails(id: string) {
+        showFileDetails: useCallback((id: string) => {
             setState(state => ({
                 ...state,
                 showingFileDetails: id
             }));
-        },
+        }, []),
         showFilters() {
             setState(state => ({
                 ...state,

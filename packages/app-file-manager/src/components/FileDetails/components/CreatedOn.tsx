@@ -3,8 +3,8 @@ import dayjs from "dayjs";
 import { ReactComponent as CalendarIcon } from "@material-design-icons/svg/outlined/today.svg";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
-import { useFile } from "~/components/FileDetails";
 import styled from "@emotion/styled";
+import { useFile } from "~/hooks/useFile";
 
 const CreatedOnWrapper = styled.div`
     display: flex;

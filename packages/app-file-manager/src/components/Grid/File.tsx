@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 /**
  * Package react-lazy-load has no types.
  */
@@ -28,6 +28,7 @@ import {
     FilePreview,
     FileWrapper
 } from "./styled";
+import { useMoveFileToFolder } from "~/hooks/useMoveFileToFolder";
 
 export interface FileProps {
     file: FileItem;
@@ -40,7 +41,19 @@ export interface FileProps {
     showFileDetails: (id: string) => void;
 }
 
-const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFileDetails }) => {
+export const FileThumbnail: React.FC<FileProps> = ({
+    file,
+    selected,
+    onSelect,
+    children,
+    showFileDetails
+}) => {
+    const showDetails = useCallback(() => {
+        showFileDetails(file.id);
+    }, [file.id]);
+
+    const moveToFolder = useMoveFileToFolder(file);
+
     return (
         <FileWrapper data-testid={"fm-list-wrapper-file"}>
             <FileBody>
@@ -49,10 +62,10 @@ const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFil
                         <a rel="noreferrer" target={"_blank"} href={`${file.src}?original`}>
                             <IconButton icon={<DownloadIcon />} />
                         </a>
-                        <IconButton icon={<MoveIcon />} />
+                        <IconButton icon={<MoveIcon />} onClick={moveToFolder} />
                         <IconButton
                             icon={<SettingsIcon />}
-                            onClick={() => showFileDetails(file.id)}
+                            onClick={showDetails}
                             data-testid={"fm-file-wrapper-file-info-icon"}
                         />
                     </FileInfoIcon>
@@ -91,16 +104,3 @@ const File: React.FC<FileProps> = ({ file, selected, onSelect, children, showFil
         </FileWrapper>
     );
 };
-
-const MemoizedFile = React.memo(File, (prev, next) => {
-    if (prev.selected !== next.selected) {
-        return false;
-    } else if (prev.file.name !== next.file.name) {
-        return false;
-    }
-
-    return true;
-});
-
-MemoizedFile.displayName = "FileThumbnail";
-export const FileThumbnail = MemoizedFile;
