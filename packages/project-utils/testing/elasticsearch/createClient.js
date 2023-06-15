@@ -56,7 +56,7 @@ const createDeleteIndexCallable = client => {
             try {
                 const { body: exists } = await client.indices.exists({
                     index,
-                    ignore_unavailable: false
+                    ignore_unavailable: true
                 });
                 if (!exists) {
                     return;
@@ -123,7 +123,13 @@ const attachCustomEvents = client => {
          */
         await deleteIndexCallable(params.index);
 
-        const response = await originalCreate.apply(client.indices, [params, options]);
+        let response;
+        try {
+            response = await originalCreate.apply(client.indices, [params, options]);
+        } catch (ex) {
+            logger.error(`Failed to create index "${params.index}": ${ex.message}`);
+            throw ex;
+        }
 
         registeredIndexes.add(params.index);
 
