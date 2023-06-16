@@ -19,7 +19,7 @@ export const executeDataMigrations = {
     name: "hook-after-deploy-api-execute-data-migrations",
     async hook({ inputs, env, projectApplication }: Record<string, any>, context: CliContext) {
         // Only run migrations for `api` app
-        if (projectApplication.name !== "api") {
+        if (projectApplication.id !== "api") {
             return;
         }
 
