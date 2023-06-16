@@ -17,25 +17,48 @@ export const webinySelect = css`
         left: 0;
         right: 0;
     }
-    &.webiny-ui-select--small {
+
+    &.webiny-ui-select--size-medium {
         &.mdc-select, .mdc-select__anchor {
-            height: 35px;
+            height: 40px;
             .mdc-select__native-control {
                 paddingTop: 0;
             }
-            .mdc-select__selected-text{
-                padding-top: 5px;
-            }
             .mdc-select__dropdown-icon{
-                bottom: 5px;
+                bottom: 8px;
             }
             .mdc-select__selected-text{
-                padding-top: 5px !important;
+                padding-top: 6px !important;
                 padding-left: 10px;
+                font-size: 0.95rem;
+                height: 40px;
             }
         &.mdc-select--box {
             .mdc-select__native-control {
-                height: 35px;
+                height: 40px;
+                paddingTop: 5px;
+            }
+        }
+    }
+
+    &.webiny-ui-select--size-small {
+        &.mdc-select, .mdc-select__anchor {
+            height: 30px;
+            .mdc-select__native-control {
+                paddingTop: 0;
+            }
+            .mdc-select__dropdown-icon{
+                bottom: 3px;
+            }
+            .mdc-select__selected-text{
+                padding-top: 1px !important;
+                padding-left: 10px;
+                font-size: 0.9rem;
+                height: 30px;
+            }
+        &.mdc-select--box {
+            .mdc-select__native-control {
+                height: 30px;
                 paddingTop: 5px;
             }
         }

@@ -43,8 +43,8 @@ export type InputProps<TValue = any> = FormComponentProps<TValue> &
         // For testing purposes.
         "data-testid"?: string;
 
-        // Size - small or large
-        size?: "small" | "large";
+        // Size - small, medium or large
+        size?: "small" | "medium" | "large";
     };
 
 /**
@@ -153,7 +153,7 @@ export const Input: React.FC<InputProps> = props => {
                 className={classNames(
                     "webiny-ui-input",
                     webinyInputStyles,
-                    props.size ? `webiny-ui-input--${props.size}` : null
+                    props.size ? `webiny-ui-input--size-${props.size}` : null
                 )}
                 data-testid={props["data-testid"]}
             />

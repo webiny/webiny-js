@@ -8,10 +8,20 @@ export const webinyInputStyles = css`
     .mdc-text-field__input:-webkit-autofill + .mdc-floating-label {
         transform: translateY(-106%) scale(0.75);
     }
-    &.webiny-ui-input--small {
+    
+    // medium input styles
+    &.webiny-ui-input--size-medium {
         &.mdc-text-field {
-            height: 35px;
+            height: 40px;
             font-size: 0.85em;
+        }
+    }
+
+    // small input styles
+    &.webiny-ui-input--size-small {
+        &.mdc-text-field {
+            height: 30px;
+            font-size: 0.75em;
         }
     }
 `;

@@ -44,6 +44,9 @@ export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: React.ReactNode;
+
+    // Size - small, medium or large
+    size?: "small" | "medium" | "large";
 }
 
 interface State {
@@ -266,7 +269,11 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         };
 
         return (
-            <div className={classNames(autoCompleteStyle, className)}>
+            <div className={classNames(
+                autoCompleteStyle, 
+                this.props.size ? `webiny-ui-autocomplete--size-${this.props.size}` : null,
+                className,
+                )}>
                 <Downshift {...downshiftProps} ref={this.downshift}>
                     {({ getInputProps, openMenu, ...rest }) => (
                         <div>
@@ -275,6 +282,8 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                     // This prop is above `otherInputProps` since it can be overridden by the user.
                                     trailingIcon: this.props.loading && <Spinner />,
                                     ...otherInputProps,
+                                    // @ts-ignore
+                                    size: this.props.size,
                                     // @ts-ignore
                                     validation,
                                     rawOnChange: true,
