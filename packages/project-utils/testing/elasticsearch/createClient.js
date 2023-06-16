@@ -56,7 +56,7 @@ const createDeleteIndexCallable = client => {
             try {
                 const { body: exists } = await client.indices.exists({
                     index,
-                    ignore_unavailable: false
+                    ignore_unavailable: true
                 });
                 if (!exists) {
                     return;
@@ -98,9 +98,11 @@ const attachCustomEvents = client => {
     const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
     const originalExists = client.indices.exists;
-    const originalBulk = client.bulk;
 
     const registerIndex = input => {
+        if (!input) {
+            return;
+        }
         const names = Array.isArray(input) ? input : [input];
         for (const name of names) {
             registeredIndexes.add(name);
@@ -120,7 +122,13 @@ const attachCustomEvents = client => {
          */
         await deleteIndexCallable(params.index);
 
-        const response = await originalCreate.apply(client.indices, [params, options]);
+        let response;
+        try {
+            response = await originalCreate.apply(client.indices, [params, options]);
+        } catch (ex) {
+            logger.error(`Failed to create index "${params.index}": ${ex.message}`);
+            throw ex;
+        }
 
         registeredIndexes.add(params.index);
 
@@ -129,24 +137,6 @@ const attachCustomEvents = client => {
         });
 
         return response;
-    };
-    /**
-     * We need to refresh all the indexes into which we have inserted data.
-     */
-    client.bulk = async (...args) => {
-        const result = await originalBulk.apply(client, args);
-
-        const body = args[0]?.body;
-        if (Array.isArray(body)) {
-            const indexes = body.map(item => item.index?._index).filter(Boolean);
-            for (const index of indexes) {
-                await client.indices.refresh({
-                    index
-                });
-            }
-        }
-
-        return result;
     };
 
     client.indices.deleteAll = async () => {
@@ -165,6 +155,28 @@ const attachCustomEvents = client => {
         }
         logger.debug(`Finished "client.indices.deleteAll".\n`);
     };
+
+    client.indices.refreshAll = async () => {
+        logger.debug(`Running "client.indices.refreshAll".`);
+        const indexes = Array.from(registeredIndexes.values());
+        if (indexes.length === 0) {
+            return;
+        }
+        logger.debug(indexes, "Refreshing all indexes.");
+        for (const index of indexes) {
+            try {
+                await client.indices.refresh({
+                    index,
+                    ignore_unavailable: true
+                });
+            } catch (ex) {
+                logger.error(`Could not refresh index "${index}": ${ex.message}`);
+                throw ex;
+            }
+        }
+        logger.debug(`Finished "client.indices.refreshAll".\n`);
+    };
+
     client.indices.registerIndex = registerIndex;
 
     return client;

@@ -1,30 +1,25 @@
 import useGqlHandler from "../useGqlHandler";
 import { createExpectedTags, createMockFileData } from "~tests/crud/mocks/file";
+import { getDefaultPrefix } from "~tests/defaultPrefix";
 
 jest.retryTimes(0);
 
 describe("Files CRUD ddb/es", () => {
-    const { listTags, clearElasticsearch, createElasticsearchIndice, elasticsearch, getIndexName } =
-        useGqlHandler();
+    const { listTags, createElasticsearchIndice, elasticsearch, getIndexName } = useGqlHandler();
 
     const locale = "en-US";
     const tenant = "root";
 
     beforeEach(async () => {
-        await clearElasticsearch({
-            locale,
-            tenant
-        });
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX = getDefaultPrefix();
+        await elasticsearch.indices.deleteAll();
         await createElasticsearchIndice({
             locale,
             tenant
         });
     });
     afterEach(async () => {
-        await clearElasticsearch({
-            locale,
-            tenant
-        });
+        await elasticsearch.indices.deleteAll();
     });
 
     const disableIndexing = {
@@ -47,15 +42,19 @@ describe("Files CRUD ddb/es", () => {
         /**
          * Let's create an index, make it not actually index anything, so we can insert data faster.
          */
-        await elasticsearch.indices.create({
-            index
-        });
-        await elasticsearch.indices.putSettings({
-            index,
-            body: {
-                index: disableIndexing
-            }
-        });
+        try {
+            await elasticsearch.indices.create({
+                index,
+                body: {
+                    settings: {
+                        index: disableIndexing
+                    }
+                }
+            });
+        } catch (ex) {
+            console.log(`Could not create index ${index}: ${ex.message}`);
+            throw ex;
+        }
 
         const operations: any[] = [];
         /**
@@ -91,31 +90,49 @@ describe("Files CRUD ddb/es", () => {
             },
             statusCode: 200
         });
-        /**
-         * Then let's re-enable indexing.
-         */
-        await elasticsearch.indices.putSettings({
-            index,
-            body: {
-                index: enableIndexing
-            }
-        });
-        /**
-         * ... Refresh the index.
-         */
-        await elasticsearch.indices.refresh({
-            index
-        });
+        try {
+            /**
+             * Then let's re-enable indexing.
+             */
+            await elasticsearch.indices.putSettings({
+                index,
+                body: {
+                    index: enableIndexing
+                }
+            });
+        } catch (ex) {
+            console.log(`Could not put settings for index ${index}: ${ex.message}`);
+            throw ex;
+        }
+
+        try {
+            /**
+             * ... Refresh the index.
+             */
+            await elasticsearch.indices.refresh({
+                index
+            });
+        } catch (ex) {
+            console.log(`Could not refresh index ${index}: ${ex.message}`);
+            throw ex;
+        }
 
         const expectedTags = createExpectedTags({
             amount: maxFiles,
             tenant,
             locale
         });
+
+        let response: any;
         /**
          * And then list the tags.
          */
-        const [response] = await listTags();
+        try {
+            [response] = await listTags();
+        } catch (ex) {
+            console.log(`Could not list tags: ${ex.message}`);
+            throw ex;
+        }
         /**
          * Must be the amount of files + 2 (one for tenant and one for locale).
          */

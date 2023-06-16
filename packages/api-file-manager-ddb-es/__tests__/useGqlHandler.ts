@@ -69,21 +69,6 @@ export default (params?: UseGqlHandlerParams) => {
         return cfg.index;
     };
 
-    const clearElasticsearch = async (params: ElasticsearchIndiceParams) => {
-        const index = getIndexName(params);
-        try {
-            return await elasticsearch.indices.delete({
-                index,
-                ignore_unavailable: true
-            });
-        } catch (ex) {
-            console.log(`Could not delete elasticsearch index: ${index}`);
-            console.log(ex.message);
-            console.log(JSON.stringify(ex));
-        }
-        return null;
-    };
-
     const createElasticsearchIndice = async (params: ElasticsearchIndiceParams) => {
         return elasticsearch.indices.create({
             index: getIndexName(params),
@@ -148,7 +133,6 @@ export default (params?: UseGqlHandlerParams) => {
         handler,
         invoke,
         elasticsearch,
-        clearElasticsearch,
         createElasticsearchIndice,
         getIndexName,
         // Files

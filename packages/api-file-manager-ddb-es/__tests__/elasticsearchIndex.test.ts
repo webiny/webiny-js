@@ -1,4 +1,5 @@
 import { configurations } from "~/configurations";
+import { getDefaultPrefix } from "~tests/defaultPrefix";
 
 describe("Elasticsearch index", () => {
     const withLocaleItems = [
@@ -9,9 +10,10 @@ describe("Elasticsearch index", () => {
         ["root,", "de"]
     ];
 
-    beforeEach(() => {
+    beforeEach(async () => {
         process.env.ELASTICSEARCH_SHARED_INDEXES = undefined;
         process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = undefined;
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX = getDefaultPrefix();
     });
 
     it.each(withLocaleItems)(

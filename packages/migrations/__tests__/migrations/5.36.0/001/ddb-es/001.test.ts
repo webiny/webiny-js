@@ -118,20 +118,20 @@ describe("5.36.0-001", () => {
                     esFiles.push(file);
                 }
 
-                // Inserting useful data: file records
-                await insertDynamoDbTestData(ddbTable, ddbFiles);
-                await insertDynamoDbTestData(ddbToEsTable, ddbFiles);
-                await insertElasticsearchTestData<File>(elasticsearchClient, esFiles, item => {
-                    return esGetIndexName({
-                        tenant: item.tenant,
-                        locale: item.locale,
-                        type: INDEX_TYPE
-                    });
-                });
-
                 // Track generated files
                 numberOfGeneratedFiles += numberOfFiles;
             }
+            // Inserting useful data: file records
+            await insertDynamoDbTestData(ddbTable, ddbFiles);
+            await insertDynamoDbTestData(ddbToEsTable, ddbFiles);
+            await insertElasticsearchTestData<File>(elasticsearchClient, esFiles, item => {
+                return esGetIndexName({
+                    tenant: item.tenant,
+                    locale: item.locale,
+                    type: INDEX_TYPE
+                });
+            });
+            await elasticsearchClient.indices.refreshAll();
         }
     };
 
@@ -250,8 +250,6 @@ describe("5.36.0-001", () => {
         });
 
         const { data, error } = await handler();
-
-        console.log(JSON.stringify(data, null, 2));
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);
