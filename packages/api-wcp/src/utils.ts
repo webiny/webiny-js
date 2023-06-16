@@ -1,5 +1,7 @@
 import { WcpProjectEnvironment } from "@webiny/wcp/types";
 import { decrypt } from "@webiny/wcp";
+import fetch from "node-fetch";
+import { WcpFetchParams } from "~/createWcp";
 
 export function getWcpProjectEnvironment(): WcpProjectEnvironment | null {
     if (process.env.WCP_PROJECT_ENVIRONMENT) {
@@ -26,6 +28,31 @@ export const getWcpProjectLicenseCacheKey = () => {
     // - "cached-license-0-1"
     // - "cached-license-23-12"
     return `cached-project-license-${currentHourOfTheDay}-${Math.ceil(currentMinuteOfTheHour / 5)}`;
+};
+
+export const wcpFetch = async ({ url, authorization, body }: WcpFetchParams) => {
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { authorization },
+        body: JSON.stringify(body)
+    });
+
+    const { status, statusText } = response;
+    if (response.ok) {
+        return {
+            error: false,
+            status,
+            statusText,
+            message: ""
+        };
+    }
+
+    try {
+        const json = await response.json();
+        return { error: true, status, statusText, message: json.message };
+    } catch (e) {
+        return { error: true, status, statusText, message: "" };
+    }
 };
 
 export const AACL_RELEASE_DATE = "2023-06-05";

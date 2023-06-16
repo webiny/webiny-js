@@ -1,4 +1,4 @@
-import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import { DecryptedWcpProjectLicense, MT_OPTIONS_MAX_COUNT_TYPE } from "@webiny/wcp/types";
 
 export const mockCreateGetWcpProjectLicense = (
     licenseModifier?: (license: DecryptedWcpProjectLicense) => void
@@ -14,7 +14,10 @@ export const mockCreateGetWcpProjectLicense = (
                         maxCount: 1
                     }
                 },
-                multiTenancy: { enabled: true },
+                multiTenancy: {
+                    enabled: true,
+                    options: { maxCount: { type: MT_OPTIONS_MAX_COUNT_TYPE.SEAT_BASED } }
+                },
                 advancedPublishingWorkflow: { enabled: false },
                 advancedAccessControlLayer: { enabled: false }
             }

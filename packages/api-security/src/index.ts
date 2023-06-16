@@ -23,7 +23,6 @@ export { default as NotAuthorizedError } from "./NotAuthorizedError";
 
 export interface SecurityConfig extends MultiTenancyAppConfig {
     storageOperations: SecurityStorageOperations;
-    teams?: boolean;
 }
 
 type Context = SecurityContext & TenancyContext & WcpContext;

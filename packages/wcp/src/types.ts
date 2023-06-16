@@ -18,7 +18,7 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     AACL = "advancedAccessControlLayer"
 }
 
-enum MT_OPTIONS_MAX_COUNT_TYPE {
+export enum MT_OPTIONS_MAX_COUNT_TYPE {
     SEAT_BASED = "seatBased",
     FIXED = "fixed"
 }

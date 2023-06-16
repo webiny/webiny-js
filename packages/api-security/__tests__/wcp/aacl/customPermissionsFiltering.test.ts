@@ -14,8 +14,7 @@ describe("Custom permissions filtering test", () => {
             { name: "security.*" },
             { name: "adminUsers.*" },
             { name: "i18n.*" },
-            { name: "*" },
-            { aacl: null, name: "wcp" }
+            { name: "*" }
         ]);
     });
 });

@@ -8,6 +8,7 @@ const fullPermissions = {
 describe("without authorization", function () {
     let security: Security;
     const config: SecurityConfig = {
+        advancedAccessControlLayer: true,
         storageOperations: {} as any,
         getTenant: () => {
             return "root";

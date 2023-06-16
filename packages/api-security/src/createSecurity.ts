@@ -175,7 +175,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                 permissions.push({
                     name: "aacl",
                     legacy: aaclEnabled === null,
-                    teams: featureFlags?.aacl?.teams
+                    teams: featureFlags?.aacl?.teams || false
                 });
 
                 return permissions;

@@ -22,7 +22,7 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
     // we'll just ignore the TS error for now and pretend I18N is always available.
     // This way we make the setup easier for the end user; no need to create an extra
     // NPM package just to get the I18N context which the user would need to set up manually.
-    const locale = context.i18n.getContentLocale() as { code: string };
+    const locale = context.i18n?.getContentLocale() as { code: string };
     if (!locale) {
         return null;
     }
