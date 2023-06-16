@@ -24,8 +24,6 @@ interface ListProps {
     hiddenFolderIds?: string[];
     enableActions?: boolean;
     onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
-    onDragStart: () => void;
-    onDragEnd: () => void;
 }
 
 export const List: React.VFC<ListProps> = ({
@@ -33,15 +31,13 @@ export const List: React.VFC<ListProps> = ({
     onFolderClick,
     focusedFolderId,
     hiddenFolderIds,
-    enableActions,
-    onDragStart,
-    onDragEnd
+    enableActions
 }) => {
     const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
-    const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
-    const [openFolderIds, setOpenFolderIds] = useState<NodeModel<DndItemData>["id"][]>([]);
+    const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
+    const [openFolderIds, setOpenFolderIds] = useState<NodeModel<DndItemData>["id"][]>([ROOT_ID]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -67,7 +63,7 @@ export const List: React.VFC<ListProps> = ({
             const item = folders.find(folder => folder.id === dragSourceId);
 
             if (!item) {
-                throw new Error("Folder not found");
+                throw new Error("Folder not found!");
             }
 
             setTreeData(newTree);
@@ -82,13 +78,16 @@ export const List: React.VFC<ListProps> = ({
 
     const sort = useMemo(
         () => (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
+            if (a.data!.id === ROOT_ID || b.data!.id === ROOT_ID) {
+                return 1;
+            }
             return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
         },
         []
     );
 
     const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
-        setOpenFolderIds(folderIds);
+        setOpenFolderIds([ROOT_ID, ...folderIds]);
     };
 
     return (
@@ -96,11 +95,9 @@ export const List: React.VFC<ListProps> = ({
             <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
                 <Tree
                     tree={treeData}
-                    rootId={ROOT_ID}
+                    rootId={"0"}
                     onDrop={handleDrop}
                     onChangeOpen={handleChangeOpen}
-                    onDragStart={onDragStart}
-                    onDragEnd={onDragEnd}
                     sort={sort}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
@@ -122,7 +119,6 @@ export const List: React.VFC<ListProps> = ({
                     )}
                     dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
                     classes={{
-                        root: "treeRoot",
                         dropTarget: "dropTarget",
                         draggingSource: "draggingSource",
                         placeholder: "placeholderContainer"

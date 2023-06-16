@@ -2,6 +2,20 @@ import { InitialOpen, NodeModel } from "@minoru/react-dnd-treeview";
 import { DndItemData, FolderItem } from "~/types";
 import { ROOT_ID } from "./constants";
 
+const rootFolder: FolderItem = {
+    id: "ROOT",
+    title: "Root",
+    parentId: "0",
+    slug: "ROOT",
+    createdOn: "",
+    createdBy: {
+        id: "",
+        displayName: ""
+    },
+    savedOn: "",
+    type: "$ROOT"
+};
+
 /**
  * Transform an array of folders returned by useFolders hook into an array of elements for the tree component.
  *
@@ -15,13 +29,14 @@ export const createTreeData = (
     focusedNodeId?: string,
     hiddenFolderIds: string[] = []
 ): NodeModel<DndItemData>[] => {
-    return folders
+    return [rootFolder, ...folders]
         .map(item => {
             const { id, parentId, title, slug, type, createdOn, createdBy, savedOn } = item;
 
             return {
                 id,
-                parent: parentId?.toLowerCase() || ROOT_ID, // toLowerCase() fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
+                // toLowerCase() fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
+                parent: parentId?.toLowerCase() || ROOT_ID,
                 text: title,
                 droppable: true,
                 data: {
