@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from "react";
-import { makeComposable, Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { makeComposable, Compose, HigherOrderComponent } from "@webiny/react-composition";
 import { Property, Properties, toObject } from "@webiny/react-properties";
 import { ToolbarElement, ToolbarElementConfig } from "./components/ToolbarElement";
 import { Plugin, PluginConfig } from "./components/Plugin";

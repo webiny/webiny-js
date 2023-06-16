@@ -16,17 +16,17 @@ const { ToolbarElement } = LexicalEditorConfig;
 export const HeadingToolbarPreset = () => {
     return (
         <LexicalEditorConfig>
-            <ToolbarElement name={"FontSizeAction"} element={<FontSizeAction />} />
-            <ToolbarElement name={"FontColorAction"} element={<FontColorAction />} />
-            <ToolbarElement name={"TypographyAction"} element={<TypographyAction />} />
-            <ToolbarElement name={"TextAlignmentAction"} element={<TextAlignmentAction />} />
-            <ToolbarElement name={"Divider1"} element={<Divider />} />
-            <ToolbarElement name={"BoldAction"} element={<BoldAction />} />
-            <ToolbarElement name={"ItalicAction"} element={<ItalicAction />} />
-            <ToolbarElement name={"UnderlineAction"} element={<UnderlineAction />} />
-            <ToolbarElement name={"CodeHighlightAction"} element={<CodeHighlightAction />} />
-            <ToolbarElement name={"Divider2"} element={<Divider />} />
-            <ToolbarElement name={"LinkAction"} element={<LinkAction />} />
+            <ToolbarElement name={"fontSize"} element={<FontSizeAction />} />
+            <ToolbarElement name={"fontColor"} element={<FontColorAction />} />
+            <ToolbarElement name={"typography"} element={<TypographyAction />} />
+            <ToolbarElement name={"textAlignment"} element={<TextAlignmentAction />} />
+            <ToolbarElement name={"divider1"} element={<Divider />} />
+            <ToolbarElement name={"bold"} element={<BoldAction />} />
+            <ToolbarElement name={"italic"} element={<ItalicAction />} />
+            <ToolbarElement name={"underline"} element={<UnderlineAction />} />
+            <ToolbarElement name={"codeHighlight"} element={<CodeHighlightAction />} />
+            <ToolbarElement name={"divider2"} element={<Divider />} />
+            <ToolbarElement name={"link"} element={<LinkAction />} />
         </LexicalEditorConfig>
     );
 };

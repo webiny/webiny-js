@@ -24,8 +24,6 @@ export { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
 export { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction";
 export { ImageAction } from "~/components/ToolbarActions/ImageAction";
 // toolbars
-export { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
-export { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
 export { Toolbar } from "~/components/Toolbar/Toolbar";
 export { StaticToolbar } from "~/components/Toolbar/StaticToolbar";
 // presets
@@ -42,10 +40,6 @@ export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlight
 export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/LexicalUpdateStatePlugin";
-// composition
-export { AddToolbarAction } from "~/components/AddToolbarAction";
-export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
-export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeType";
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";

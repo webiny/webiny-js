@@ -10,8 +10,7 @@ import { TypographyStyle } from "@webiny/theme/types";
 import { TypographyValue } from "@webiny/lexical-editor/types";
 
 /*
- * This components support the typography selection for page builder and HCMS.
- * @TODO Create separate component with composition scopes
+ * This components support the typography selection for page builde.
  * */
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
