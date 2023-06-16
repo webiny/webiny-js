@@ -145,6 +145,17 @@ export const FilePreview = styled("div")`
     svg {
         fill: var(--mdc-theme-text-secondary-on-background);
     }
+    &.selected {
+        img,
+        svg {
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 10px;
+            border-radius: 2px;
+            scale: 0.8;
+            box-shadow: 2px 2px 4px var(--mdc-theme-on-background);
+            border: 2px solid var(--mdc-theme-primary);
+        }
+    }
 `;
 
 export const FileClickable = styled("div")`
