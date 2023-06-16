@@ -10,7 +10,7 @@ const DropdownContainer = styled.div`
 export const FilterByType = () => {
     const bind = useBind({
         name: "type_startsWith",
-        defaultValue: "all",
+        defaultValue: "",
         beforeChange(value, cb) {
             cb(value === "all" ? undefined : value);
         }
@@ -25,7 +25,7 @@ export const FilterByType = () => {
 
     return (
         <DropdownContainer>
-            <Select {...bind} label={"Filter by type"} options={options} />
+            <Select {...bind} placeholder={"Filter by type"} options={options} size="small" />
         </DropdownContainer>
     );
 };

@@ -15,7 +15,7 @@ const FiltersContainer = styled.div`
 
 const CloseButton = styled(IconButton)`
     position: absolute;
-    top: 16px;
+    top: 3px;
     right: 12px;
 `;
 
