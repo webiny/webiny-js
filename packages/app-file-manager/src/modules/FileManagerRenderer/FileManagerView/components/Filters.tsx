@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
+import { ReactComponent as CloseFilterIcon } from "@material-design-icons/svg/outlined/filter_alt_off.svg";
 import { IconButton } from "@webiny/ui/Button";
 import { useFileManagerView, useFileManagerViewConfig } from "~/index";
 import styled from "@emotion/styled";
@@ -47,7 +47,7 @@ export const Filters = () => {
                     </>
                 )}
             </Form>
-            <CloseButton onClick={hideFilters} icon={<CloseIcon />} />
+            <CloseButton onClick={hideFilters} icon={<CloseFilterIcon />} />
         </FiltersContainer>
     );
 };
