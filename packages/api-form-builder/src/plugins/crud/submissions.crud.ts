@@ -107,7 +107,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             let hasAccessToSubmissions = false;
             for (let i = 0; i < permissions.length; i++) {
                 const { submissions } = permissions[i];
-                if (submissions === true) {
+                if (typeof submissions === "undefined" || submissions === true) {
                     hasAccessToSubmissions = true;
                     break;
                 }

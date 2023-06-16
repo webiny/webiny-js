@@ -10,7 +10,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { tenantLinksPermissionsAuthorization } from "@webiny/api-security/plugins/tenantLinksPermissionsAuthorization";
+import { createTenantLinkAuthorizer } from "@webiny/api-security/plugins/tenantLinkAuthorization";
 
 interface Config {
     permissions?: SecurityPermission[];
@@ -56,7 +56,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 context.security.addAuthorizer(async () => [{ name: "*" }]);
             } else {
                 context.security.addAuthorizer(
-                    tenantLinksPermissionsAuthorization({
+                    createTenantLinkAuthorizer({
                         identityType: "admin",
                         testTenantLink: {
                             data: { teams: [], groups: [{ id: "admin", permissions }] }
