@@ -25,7 +25,7 @@ export const FilterByType = () => {
 
     return (
         <DropdownContainer>
-            <Select {...bind} placeholder={"Filter by type"} options={options} size="small" />
+            <Select {...bind} placeholder={"Filter by type"} options={options} size="medium" />
         </DropdownContainer>
     );
 };
