@@ -145,7 +145,7 @@ export class AcoRecords_5_37_0_001_PageData implements DataMigration<PageDataMig
 
                 if (newAcoIndexExists) {
                     logger.info(`New Elasticsearch Pages ACO Records index found; skipping.`);
-                    return false;
+                    continue;
                 }
                 return true;
             }
