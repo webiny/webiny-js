@@ -1,25 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 
-const initializeSwiper = async () => {
-    if (typeof window === "undefined") {
-        return;
-    }
-
-    const register = await import("swiper/element/bundle");
-
-    register.register();
-};
-
-const registerCarousel = () => {
-    new Promise<void>(async resolve => {
-        await initializeSwiper();
-        resolve();
-    });
-};
 export type CarouselRenderer = ReturnType<typeof createCarousel>;
 
 const CarouselWrapper = styled.div`
@@ -77,9 +61,21 @@ declare global {
 
 export const createCarousel = () => {
     return createRenderer(() => {
-        registerCarousel();
         const { getElement } = useRenderer();
         const element = getElement();
+
+        useEffect(() => {
+            const initializeSwiper = async () => {
+                if (typeof window === "undefined") {
+                    return;
+                }
+
+                const register = await import("swiper/element/bundle");
+
+                register.register();
+            };
+            initializeSwiper();
+        }, []);
 
         const { arrowsToggle = true, bulletsToggle = true } = element?.data?.settings?.carousel;
 

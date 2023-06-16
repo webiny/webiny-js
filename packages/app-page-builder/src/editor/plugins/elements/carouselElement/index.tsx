@@ -1,22 +1,9 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import { createInitialPerDeviceSettingValue } from "~/editor/plugins/elementSettings/elementSettingsUtils";
-import {
-    CreateElementActionEvent,
-    DeleteElementActionEvent,
-    updateElementAction,
-    UpdateElementActionArgsType
-} from "~/editor/recoil/actions";
 import CarouselElement from "./CarouselElement";
-import { addElementToParent, createDroppedElement, createElement } from "~/editor/helpers";
-import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
-import { executeAction } from "~/editor/recoil/eventActions";
-import {
-    PbEditorPageElementPlugin,
-    PbEditorElementPluginArgs,
-    DisplayMode,
-    PbEditorElement
-} from "~/types";
+import { createElement } from "~/editor/helpers";
+import { PbEditorPageElementPlugin, PbEditorElementPluginArgs, DisplayMode } from "~/types";
 
 export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const defaultSettings = [

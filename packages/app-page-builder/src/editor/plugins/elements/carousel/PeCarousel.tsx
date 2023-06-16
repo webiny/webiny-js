@@ -6,8 +6,6 @@ import { useRecoilValue } from "recoil";
 import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 import { register } from "swiper/element/bundle";
 
-register();
-
 declare global {
     // eslint-disable-next-line
     namespace JSX {
@@ -54,9 +52,13 @@ const PeCarousel = createRenderer(() => {
 
     const { arrowsToggle = true, bulletsToggle = true } = element?.data?.settings?.carousel;
 
+    // We need to increase the zIndex of PeCarousel here so we could add elements inside of carousel-element
+    // Without this zIndex drag'n'drop and click to add features would not work
     const zIndex = meta.depth * 10;
 
     useEffect(() => {
+        register();
+
         const swiperContainer = swiperRef?.current;
         const params = {
             rebuildOnUpdate: true
