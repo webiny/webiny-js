@@ -4,7 +4,7 @@ import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outline
 import { ReactComponent as FilterIcon } from "@material-design-icons/svg/outlined/filter_alt.svg";
 import { Icon } from "@webiny/ui/Icon";
 import { IconButton } from "@webiny/ui/Button";
-import { useFileManagerApi, useFileManagerView } from "~/index";
+import { useFileManagerApi, useFileManagerView, useFileManagerViewConfig } from "~/index";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const SearchBarIcon = styled(Icon)`
@@ -46,6 +46,7 @@ const InputSearch = styled.div`
 export const SearchWidget = () => {
     const fileManager = useFileManagerApi();
     const view = useFileManagerView();
+    const { browser } = useFileManagerViewConfig();
 
     const toggleFilters = () => {
         if (view.showingFilters) {
@@ -72,7 +73,9 @@ export const SearchWidget = () => {
                     />
                 )}
             </DelayedOnChange>
-            <FilterButton icon={<FilterIcon />} onClick={toggleFilters} />
+            {browser.filters.length > 0 ? (
+                <FilterButton icon={<FilterIcon />} onClick={toggleFilters} />
+            ) : null}
         </InputSearch>
     );
 };

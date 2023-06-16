@@ -333,7 +333,7 @@ describe("Files CRUD test", () => {
 
         const [response] = await listTags({
             where: {
-                tag_not_startsWith: "scope:apw"
+                tags_not_startsWith: "scope:apw"
             }
         });
 
@@ -350,7 +350,7 @@ describe("Files CRUD test", () => {
 
         const [scopedListTagsResponse] = await listTags({
             where: {
-                tag_startsWith: "scope:apw"
+                tags_startsWith: "scope:apw"
             }
         });
 

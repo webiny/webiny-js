@@ -1,45 +1,30 @@
 import React, { useState } from "react";
-
-import { NodeModel } from "@minoru/react-dnd-treeview";
-
 import { useFolders } from "~/hooks/useFolders";
-
 import { CreateButton } from "./ButtonCreate";
 import { Empty } from "./Empty";
 import { Loader } from "./Loader";
 import { List } from "./List";
-import { Title } from "./Title";
 import { FolderDialogCreate } from "~/components";
-
 import { Container } from "./styled";
+import { FolderItem } from "~/types";
 
-import { DndItemData } from "~/types";
-
-interface FolderTreeProps {
-    title: string;
-    onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
+export interface FolderTreeProps {
+    onFolderClick: (data: FolderItem) => void;
     enableCreate?: boolean;
     enableActions?: boolean;
-    onTitleClick?: (event: React.MouseEvent<HTMLElement>) => void;
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
 }
 
 export const FolderTree: React.VFC<FolderTreeProps> = ({
-    title,
     focusedFolderId,
     hiddenFolderIds,
     enableActions,
     enableCreate,
-    onFolderClick,
-    onTitleClick
+    onFolderClick
 }) => {
     const { folders } = useFolders();
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
-
-    // Little CSS trick here: since the folder title has absolute position, user can drag a folder over it and move it to root folder.
-    // While we are moving folders around we disable any title pointer event.
-    const [isDragging, setIsDragging] = useState<boolean>(false);
 
     const renderList = () => {
         if (!folders) {
@@ -55,8 +40,6 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
                         focusedFolderId={focusedFolderId}
                         hiddenFolderIds={hiddenFolderIds}
                         enableActions={enableActions}
-                        onDragStart={() => setIsDragging(true)}
-                        onDragEnd={() => setIsDragging(false)}
                     />
                     {enableCreate && <CreateButton onClick={() => setCreateDialogOpen(true)} />}
                 </>
@@ -72,13 +55,12 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
     };
     return (
         <Container>
-            <Title title={title} onClick={onTitleClick} isDragging={isDragging} />
             {renderList()}
             {enableCreate && (
                 <FolderDialogCreate
                     open={createDialogOpen}
                     onClose={() => setCreateDialogOpen(false)}
-                    currentParentId={undefined}
+                    currentParentId={focusedFolderId}
                 />
             )}
         </Container>

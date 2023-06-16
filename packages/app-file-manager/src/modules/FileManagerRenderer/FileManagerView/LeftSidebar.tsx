@@ -13,7 +13,7 @@ const style = {
         overflowY: "scroll"
     }),
     wrapper: css({
-        padding: " 16px 8px"
+        padding: "8px"
     }),
     divider: css({
         height: "1px",
@@ -23,14 +23,12 @@ const style = {
 };
 
 interface LeftSidebarProps {
-    title: string;
     currentFolder?: string;
     onFolderClick: (folderId: string) => void;
     children?: React.ReactNode;
 }
 
 export const LeftSidebar: React.FC<LeftSidebarProps> = ({
-    title,
     currentFolder,
     onFolderClick,
     children
@@ -39,10 +37,8 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
         <div className={style.leftDrawer}>
             <div className={style.wrapper}>
                 <FolderTree
-                    title={title}
                     focusedFolderId={currentFolder}
-                    onTitleClick={() => onFolderClick("ROOT")}
-                    onFolderClick={data => data?.id && onFolderClick(data?.id)}
+                    onFolderClick={data => onFolderClick(data.id)}
                     enableActions={true}
                     enableCreate={true}
                 />

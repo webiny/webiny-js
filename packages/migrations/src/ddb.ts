@@ -7,6 +7,8 @@ import { CmsModels_5_35_0_005 } from "~/migrations/5.35.0/005";
 import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb";
 // 5.36.0
 import { AcoRecords_5_36_0_001 } from "~/migrations/5.36.0/001/ddb";
+// 5.37.0
+import { AcoRecords_5_37_0_001 } from "~/migrations/5.37.0/001/ddb";
 
 export const migrations = () => {
     return [
@@ -16,6 +18,7 @@ export const migrations = () => {
         Tenancy_5_35_0_004,
         CmsModels_5_35_0_005,
         AcoRecords_5_35_0_006,
-        AcoRecords_5_36_0_001
+        AcoRecords_5_36_0_001,
+        AcoRecords_5_37_0_001
     ];
 };

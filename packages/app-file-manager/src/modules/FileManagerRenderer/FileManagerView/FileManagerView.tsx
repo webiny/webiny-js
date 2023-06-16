@@ -70,8 +70,6 @@ const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
     }, []);
 };
 
-const defaultFolderName = t`All files`;
-
 const FileManagerView = () => {
     const view = useFileManagerView();
     const fileManager = useFileManagerApi();
@@ -316,7 +314,6 @@ const FileManagerView = () => {
                                 onClose={view.hideFileDetails}
                             />
                             <LeftSidebar
-                                title={defaultFolderName}
                                 currentFolder={view.folderId}
                                 onFolderClick={view.setFolderId}
                             >

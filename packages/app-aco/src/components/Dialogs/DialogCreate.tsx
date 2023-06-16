@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-
+import slugify from "slugify";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
@@ -10,13 +10,9 @@ import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-import slugify from "slugify";
-
 import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
-
 import { DialogContainer, DialogFoldersContainer } from "./styled";
-
 import { FolderItem } from "~/types";
 
 interface FolderDialogCreateProps {
@@ -36,7 +32,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
 }) => {
     const { loading, createFolder } = useFolders();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [parentId, setParentId] = useState<string | null>();
+    const [parentId, setParentId] = useState<string>(currentParentId || "ROOT");
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = useCallback(
@@ -44,7 +40,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
             try {
                 await createFolder({
                     ...data,
-                    parentId: parentId || null
+                    parentId: parentId === "ROOT" ? null : parentId
                 });
                 setDialogOpen(false);
                 showSnackbar(t`Folder created successfully!`);
@@ -54,6 +50,12 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
         },
         [parentId]
     );
+
+    useEffect(() => {
+        if (currentParentId !== parentId) {
+            setParentId(currentParentId || "ROOT");
+        }
+    }, [currentParentId]);
 
     const generateSlug = useCallback((form: FormAPI) => {
         return () => {
@@ -75,16 +77,16 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
     }, []);
 
     useEffect(() => {
-        setParentId(currentParentId);
-    }, [currentParentId]);
-
-    useEffect(() => {
         setDialogOpen(open);
     }, [open, setDialogOpen]);
 
     if (!dialogOpen) {
         return null;
     }
+
+    const onFolderClick = (data: FolderItem) => {
+        setParentId(data.id);
+    };
 
     return (
         <DialogContainer open={dialogOpen} onClose={onClose}>
@@ -117,10 +119,8 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
                                     <Typography use="body1">{t`Parent folder`}</Typography>
                                     <DialogFoldersContainer>
                                         <FolderTree
-                                            title={t`Root folder`}
-                                            focusedFolderId={parentId || undefined}
-                                            onFolderClick={data => setParentId(data?.id || null)}
-                                            onTitleClick={() => setParentId(null)}
+                                            focusedFolderId={parentId}
+                                            onFolderClick={onFolderClick}
                                         />
                                     </DialogFoldersContainer>
                                 </Cell>

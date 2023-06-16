@@ -69,10 +69,8 @@ export const EntryDialogMove: React.VFC<EntryDialogMoveProps> = ({
                         <Typography use="body1">{t`Choose the folder where you want to move the item. You can always create a new one if you prefer.`}</Typography>
                         <DialogFoldersContainer>
                             <FolderTree
-                                title={t`Root folder`}
                                 focusedFolderId={folderId || searchRecord.location.folderId}
                                 onFolderClick={data => setFolderId(data?.id)}
-                                onTitleClick={() => setFolderId("ROOT")}
                                 enableCreate={true}
                             />
                         </DialogFoldersContainer>
