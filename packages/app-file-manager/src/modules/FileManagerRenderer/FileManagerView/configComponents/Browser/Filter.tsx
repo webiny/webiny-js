@@ -1,5 +1,5 @@
 import React from "react";
-import { Property } from "@webiny/react-properties";
+import { Property, useIdGenerator } from "@webiny/react-properties";
 
 export interface FilterConfig {
     name: string;
@@ -21,22 +21,24 @@ export const Filter: React.FC<FilterProps> = ({
     before = undefined,
     remove = false
 }) => {
-    const placeBefore = before !== undefined ? `filter:${before}` : undefined;
-    const placeAfter = after !== undefined ? `filter:${after}` : undefined;
+    const getId = useIdGenerator("filter");
+
+    const placeAfter = after !== undefined ? getId(after) : undefined;
+    const placeBefore = before !== undefined ? getId(before) : undefined;
 
     return (
         <Property id="browser" name={"browser"}>
             <Property
-                id={`filter:${name}`}
+                id={getId(name)}
                 name={"filters"}
                 remove={remove}
                 array={true}
                 before={placeBefore}
                 after={placeAfter}
             >
-                <Property id={`filter:${name}:name`} name={"name"} value={name} />
+                <Property id={getId(name, "name")} name={"name"} value={name} />
                 {element ? (
-                    <Property id={`filter:${name}:element`} name={"element"} value={element} />
+                    <Property id={getId(name, "element")} name={"element"} value={element} />
                 ) : null}
             </Property>
         </Property>

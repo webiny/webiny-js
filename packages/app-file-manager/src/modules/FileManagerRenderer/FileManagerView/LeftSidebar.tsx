@@ -38,8 +38,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
             <div className={style.wrapper}>
                 <FolderTree
                     focusedFolderId={currentFolder}
-                    onTitleClick={() => onFolderClick("ROOT")}
-                    onFolderClick={data => data?.id && onFolderClick(data?.id)}
+                    onFolderClick={data => onFolderClick(data.id)}
                     enableActions={true}
                     enableCreate={true}
                 />

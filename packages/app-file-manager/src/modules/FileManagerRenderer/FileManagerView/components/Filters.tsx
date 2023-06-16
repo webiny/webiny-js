@@ -22,9 +22,8 @@ const CloseButton = styled(IconButton)`
 export const Filters = () => {
     const { showingFilters, setFilters, hideFilters } = useFileManagerView();
     const { browser } = useFileManagerViewConfig();
-    const filters = browser.filters || [];
 
-    if (!showingFilters) {
+    if (!showingFilters || !browser.filters.length) {
         return null;
     }
 
@@ -41,7 +40,7 @@ export const Filters = () => {
             <Form data={{}} onChange={applyFilters}>
                 {() => (
                     <>
-                        {filters.map(filter => (
+                        {browser.filters.map(filter => (
                             <span key={filter.name}>{filter.element}</span>
                         ))}
                     </>

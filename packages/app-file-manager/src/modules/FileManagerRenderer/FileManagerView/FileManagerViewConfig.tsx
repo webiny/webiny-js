@@ -64,10 +64,15 @@ export function useFileManagerViewConfig() {
         return toObject<FileManagerViewConfigData>(properties);
     }, [properties]);
 
-    return {
-        browser: config.browser || {},
-        fileDetails: config.fileDetails || {
-            width: "1000px"
-        }
-    };
+    const browser = config.browser || {};
+
+    return useMemo(
+        () => ({
+            browser: { ...browser, filters: [...(browser.filters || [])] },
+            fileDetails: config.fileDetails || {
+                width: "1000px"
+            }
+        }),
+        [config]
+    );
 }
