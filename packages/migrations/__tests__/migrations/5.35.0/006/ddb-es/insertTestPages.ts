@@ -137,6 +137,9 @@ export const insertTestPages = async (params: InsertTestPagesParams) => {
             type: INDEX_TYPE
         });
     });
+
+    await elasticsearchClient.indices.refreshAll();
+
     return {
         ddbPages,
         ddbEsPages,

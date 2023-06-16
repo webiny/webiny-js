@@ -3,6 +3,7 @@ import { ElasticsearchClientOptions } from "../../../api-elasticsearch/src/clien
 
 interface ElasticsearchClient extends Client {
     indices: Client["indices"] & {
+        refreshAll: () => Promise<any>;
         deleteAll: () => Promise<any>;
         registerIndex: (names: string[] | string) => void;
     };

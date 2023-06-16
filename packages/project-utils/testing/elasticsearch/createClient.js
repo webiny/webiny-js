@@ -98,7 +98,6 @@ const attachCustomEvents = client => {
     const registeredIndexes = new Set();
     const originalCreate = client.indices.create;
     const originalExists = client.indices.exists;
-    const originalBulk = client.bulk;
 
     const registerIndex = input => {
         if (!input) {
@@ -139,32 +138,6 @@ const attachCustomEvents = client => {
 
         return response;
     };
-    /**
-     * We need to refresh all the indexes into which we have inserted data.
-     */
-    client.bulk = async (...args) => {
-        const result = await originalBulk.apply(client, args);
-
-        const body = args[0]?.body;
-        if (!Array.isArray(body)) {
-            return result;
-        }
-
-        const indexes = Array.from(new Set(body.map(item => item.index?._index).filter(Boolean)));
-        for (const index of indexes) {
-            registerIndex(index);
-            try {
-                await client.indices.refresh({
-                    index,
-                    ignore_unavailable: true
-                });
-            } catch (ex) {
-                logger.warn(`Could not refresh index "${index}": ${ex.message}`);
-            }
-        }
-
-        return result;
-    };
 
     client.indices.deleteAll = async () => {
         logger.debug(`Running "client.indices.deleteAll".`);
@@ -182,6 +155,28 @@ const attachCustomEvents = client => {
         }
         logger.debug(`Finished "client.indices.deleteAll".\n`);
     };
+
+    client.indices.refreshAll = async () => {
+        logger.debug(`Running "client.indices.refreshAll".`);
+        const indexes = Array.from(registeredIndexes.values());
+        if (indexes.length === 0) {
+            return;
+        }
+        logger.debug(indexes, "Refreshing all indexes.");
+        for (const index of indexes) {
+            try {
+                await client.indices.refresh({
+                    index,
+                    ignore_unavailable: true
+                });
+            } catch (ex) {
+                logger.error(`Could not refresh index "${index}": ${ex.message}`);
+                throw ex;
+            }
+        }
+        logger.debug(`Finished "client.indices.refreshAll".\n`);
+    };
+
     client.indices.registerIndex = registerIndex;
 
     return client;
