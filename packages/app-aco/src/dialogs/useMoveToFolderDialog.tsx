@@ -37,10 +37,8 @@ export const Message: React.VFC<MessageProps> = ({ helpText, focusedFolderId }) 
                 <Bind name={"folder"} defaultValue={{ id: focusedFolderId }}>
                     {({ value, onChange }) => (
                         <FolderTree
-                            title={t`Root`}
                             focusedFolderId={value.id}
-                            onFolderClick={data => data && onChange(data)}
-                            onTitleClick={() => onChange({ id: "ROOT", title: t`Root` })}
+                            onFolderClick={onChange}
                             enableCreate={true}
                         />
                     )}
