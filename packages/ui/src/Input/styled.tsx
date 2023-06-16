@@ -8,7 +8,7 @@ export const webinyInputStyles = css`
     .mdc-text-field__input:-webkit-autofill + .mdc-floating-label {
         transform: translateY(-106%) scale(0.75);
     }
-    
+
     // medium input styles
     &.webiny-ui-input--size-medium {
         &.mdc-text-field {

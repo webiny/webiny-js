@@ -24,7 +24,7 @@ export const autoCompleteStyle = css({
             }
         }
     },
-    '&.webiny-ui-autocomplete--size-medium': {
+    "&.webiny-ui-autocomplete--size-medium": {
         ".mdc-elevation--z1": {
             top: 40
         },
@@ -34,7 +34,7 @@ export const autoCompleteStyle = css({
             }
         }
     },
-    '&.webiny-ui-autocomplete--size-small': {
+    "&.webiny-ui-autocomplete--size-small": {
         ".mdc-elevation--z1": {
             top: 30
         },

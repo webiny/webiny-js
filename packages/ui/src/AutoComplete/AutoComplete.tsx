@@ -269,11 +269,13 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         };
 
         return (
-            <div className={classNames(
-                autoCompleteStyle, 
-                this.props.size ? `webiny-ui-autocomplete--size-${this.props.size}` : null,
-                className,
-                )}>
+            <div
+                className={classNames(
+                    autoCompleteStyle,
+                    this.props.size ? `webiny-ui-autocomplete--size-${this.props.size}` : null,
+                    className
+                )}
+            >
                 <Downshift {...downshiftProps} ref={this.downshift}>
                     {({ getInputProps, openMenu, ...rest }) => (
                         <div>
