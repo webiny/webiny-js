@@ -37,7 +37,7 @@ export const List: React.VFC<ListProps> = ({
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndFolderItem>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
-    const [openFolderIds, setOpenFolderIds] = useState<NodeModel<DndFolderItem>["id"][]>([ROOT_ID]);
+    const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_ID]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -86,7 +86,7 @@ export const List: React.VFC<ListProps> = ({
         []
     );
 
-    const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
+    const handleChangeOpen = (folderIds: string[]) => {
         setOpenFolderIds([ROOT_ID, ...folderIds]);
     };
 
@@ -97,7 +97,7 @@ export const List: React.VFC<ListProps> = ({
                     tree={treeData}
                     rootId={"0"}
                     onDrop={handleDrop}
-                    onChangeOpen={handleChangeOpen}
+                    onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
                     canDrag={item => item!.id !== ROOT_ID}
                     render={(node, { depth, isOpen, onToggle }) => (
