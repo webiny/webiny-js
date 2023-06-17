@@ -25,7 +25,6 @@ const log = () => {
 let deployStartedOn = null;
 const getDeployDurationInSeconds = () => Math.round((Date.now() - deployStartedOn) / 1000);
 
-
 const startDeploying = () => {
     let dotsCount = 3;
     deployStartedOn = Date.now();
