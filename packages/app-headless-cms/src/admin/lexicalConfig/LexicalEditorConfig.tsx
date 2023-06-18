@@ -36,7 +36,7 @@ const NodeConfig = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement
  * Lexical editor public Config API
  */
 export const LexicalEditorConfig = ({ children }: { children: React.ReactNode }) => {
-    return { children };
+    return <>{children}</>;
 };
 
 LexicalEditorConfig.ToolbarAction = ToolbarAction;

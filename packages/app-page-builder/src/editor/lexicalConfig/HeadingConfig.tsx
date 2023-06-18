@@ -32,10 +32,8 @@ const HeadingToolbarNode = (props: React.ComponentProps<typeof BaseConfig.Toolba
     );
 };
 
-export const HeadingConfig = ({ children }: { children: React.ReactNode }) => {
-    return <>{children}</>;
+export const Heading = {
+    ToolbarAction: HeadingToolbarAction,
+    Plugin: HeadingToolbarPlugin,
+    Node: HeadingToolbarNode
 };
-
-HeadingConfig.ToolbarAction = HeadingToolbarAction;
-HeadingConfig.Plugin = HeadingToolbarPlugin;
-HeadingConfig.Node = HeadingToolbarNode;

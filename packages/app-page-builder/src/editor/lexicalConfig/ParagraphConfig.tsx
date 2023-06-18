@@ -32,10 +32,8 @@ const ParagraphToolbarNode = (props: React.ComponentProps<typeof BaseConfig.Tool
     );
 };
 
-export const ParagraphConfig = ({ children }: { children: React.ReactNode }) => {
-    return { children };
+export const Paragraph = {
+    ToolbarAction: ParagraphToolbarAction,
+    Plugin: ParagraphToolbarPlugin,
+    Node: ParagraphToolbarNode
 };
-
-ParagraphConfig.ToolbarAction = ParagraphToolbarAction;
-ParagraphConfig.Plugin = ParagraphToolbarPlugin;
-ParagraphConfig.Node = ParagraphToolbarNode;
