@@ -15,10 +15,16 @@
       "path": "../error"
     },
     {
+      "path": "../db-dynamodb"
+    },
+    {
       "path": "../feature-flags"
     },
     {
       "path": "../handler"
+    },
+    {
+      "path": "../handler-db"
     },
     {
       "path": "../handler-graphql"
@@ -60,10 +66,14 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
       "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
