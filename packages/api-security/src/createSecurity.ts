@@ -9,7 +9,7 @@ import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMeth
 import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
 import { createTopic } from "@webiny/pubsub";
 import { AACL_RELEASE_DATE } from "@webiny/api-wcp";
-import { WcpPermission } from "@webiny/api-wcp/types";
+import { AaclPermission } from "@webiny/api-wcp/types";
 import { featureFlags } from "@webiny/feature-flags";
 
 export interface GetTenant {
@@ -150,7 +150,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             // Now we start checking whether we want to return all permissions, or we
             // need to omit the custom ones because of the one of the following reasons.
 
-            let aaclEnabled: WcpPermission["aacl"] = config.advancedAccessControlLayer === true;
+            let aaclEnabled: boolean | "legacy" = config.advancedAccessControlLayer === true;
 
             if (!aaclEnabled) {
                 // Are we dealing with an old Webiny project?
@@ -160,23 +160,23 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                     tenant: "root"
                 });
                 const securityInstalledOn = securitySystemRecord?.installedOn;
-                const isWcpAdvancedAccessControlLayer =
-                    securityInstalledOn && securityInstalledOn >= AACL_RELEASE_DATE;
+                const isWcpAacl = securityInstalledOn && securityInstalledOn >= AACL_RELEASE_DATE;
+                const isLegacyAacl = !isWcpAacl;
 
-                if (!isWcpAdvancedAccessControlLayer) {
-                    aaclEnabled = null;
+                if (isLegacyAacl) {
+                    aaclEnabled = "legacy";
                 }
             }
 
             // If Advanced Access Control Layer (AACL) can be used or if we are
             // dealing with an old Webiny project, we don't need to do anything.
-            if (aaclEnabled || aaclEnabled === null) {
+            if (aaclEnabled === true || aaclEnabled === "legacy") {
                 // Pushing the value of `aacl` can help us in making similar checks on the frontend side.
                 permissions.push({
                     name: "aacl",
                     legacy: aaclEnabled === null,
                     teams: featureFlags?.aacl?.teams || false
-                });
+                } as AaclPermission);
 
                 return permissions;
             }

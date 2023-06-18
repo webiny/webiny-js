@@ -22,11 +22,8 @@ export interface CachedWcpProjectLicense {
     license: DecryptedWcpProjectLicense | null;
 }
 
-export type WcpPermission = {
-    name: "wcp";
-
-    // If boolean, tells us whether the project has access to the Advanced Access Control Layer (AACL)
-    // feature, based on the project's WCP license. `null` means we're dealing with an old, non-WCP,
-    // project, meaning access should be allowed, even without a valid WCP license.
-    aacl: boolean | null;
+export type AaclPermission = {
+    name: "aacl";
+    legacy: boolean;
+    teams: boolean;
 };
