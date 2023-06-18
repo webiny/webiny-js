@@ -112,6 +112,7 @@ export const Input: React.FC<InputProps> = props => {
         icon,
         trailingIcon,
         onEnter,
+        size,
         ...rest
     } = props;
 
@@ -153,7 +154,7 @@ export const Input: React.FC<InputProps> = props => {
                 className={classNames(
                     "webiny-ui-input",
                     webinyInputStyles,
-                    props.size ? `webiny-ui-input--size-${props.size}` : null
+                    props.size ? `webiny-ui-input--size-${size}` : null
                 )}
                 data-testid={props["data-testid"]}
             />
