@@ -16,35 +16,32 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
     const identity = context.security.getIdentity();
     const tenant = context.tenancy.getCurrentTenant();
 
-    // For
-    let tenantLink = config.testTenantLink;
+    // @ts-ignore
+    // I18N is not a dependency of this package. Yet, it always goes hand in hand with it.
+    // Since, in the future, we'll most probably merge all of these base packages into one,
+    // we'll just ignore the TS error for now and pretend I18N is always available.
+    // This way we make the setup easier for the end user; no need to create an extra
+    // NPM package just to get the I18N context which the user would need to set up manually.
+    const locale = context.i18n?.getContentLocale() as { code: string };
+    if (!locale) {
+        return null;
+    }
 
-    if (!tenantLink) {
-        // @ts-ignore
-        // I18N is not a dependency of this package. Yet, it always goes hand in hand with it.
-        // Since, in the future, we'll most probably merge all of these base packages into one,
-        // we'll just ignore the TS error for now and pretend I18N is always available.
-        // This way we make the setup easier for the end user; no need to create an extra
-        // NPM package just to get the I18N context which the user would need to set up manually.
-        const locale = context.i18n?.getContentLocale() as { code: string };
-        if (!locale) {
-            return null;
-        }
+    if (!identity || identity.type !== config.identityType) {
+        return null;
+    }
 
-        if (!identity || identity.type !== config.identityType) {
-            return null;
-        }
+    const tenantId = config.parent ? tenant.parent : tenant.id;
+    if (!tenantId) {
+        return null;
+    }
 
-        const tenantId = config.parent ? tenant.parent : tenant.id;
-        if (!tenantId) {
-            return null;
-        }
-
-        tenantLink = await context.security.getTenantLinkByIdentity<PermissionsTenantLink>({
+    const tenantLink =
+        config.testTenantLink ||
+        (await context.security.getTenantLinkByIdentity<PermissionsTenantLink>({
             identity: identity.id,
             tenant: tenantId
-        });
-    }
+        }));
 
     if (!tenantLink) {
         return null;
