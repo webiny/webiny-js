@@ -22,7 +22,7 @@ describe(`Custom permissions test (no WCP access but we're dealing with an old p
         expect(await context.security.listPermissions()).toEqual([
             ...customPermissions,
 
-            // `aacl: null` means we're dealing with an old, non-WCP, Webiny project.
+            // `legacy: true` means we're dealing with an old, non-WCP, Webiny project.
             { name: "aacl", legacy: true, teams: false }
         ]);
     });

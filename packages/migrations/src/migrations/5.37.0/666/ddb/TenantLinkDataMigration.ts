@@ -1,11 +1,10 @@
+// @ts-nocheck
 import { Table } from "dynamodb-toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { executeWithRetry } from "@webiny/utils";
 
-import { createDdbEntryEntity } from "../entities/createEntryEntity";
-import { createLocaleEntity } from "../entities/createLocaleEntity";
-import { createDdbFileEntity } from "../entities/createFileEntity";
+import { createTenantLinkEntity } from "../entities/createTenantLinkEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
 
 import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
@@ -24,24 +23,20 @@ const isGroupMigrationCompleted = (
 export type FileDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
 export class TenantLinkRecords_5_37_0_666_FileData implements DataMigration<FileDataMigrationCheckpoint> {
-    private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
-    private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
-    private readonly fileEntity: ReturnType<typeof createDdbFileEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
+    private readonly tenantLinkEntity: ReturnType<typeof createTenantLinkEntity>;
 
     constructor(table: Table) {
-        this.entryEntity = createDdbEntryEntity(table);
-        this.localeEntity = createLocaleEntity(table);
-        this.fileEntity = createDdbFileEntity(table);
         this.tenantEntity = createTenantEntity(table);
+        this.tenantLinkEntity = createTenantLinkEntity(table);
     }
 
     getId() {
-        return "FileData";
+        return "TenantLinkData";
     }
 
     getDescription() {
-        return "Migrate FmFile Data -> Create ACO Search Records";
+        return "Migrate Tenant Links Data 22";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
@@ -52,7 +47,7 @@ export class TenantLinkRecords_5_37_0_666_FileData implements DataMigration<File
         }
 
         for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
+            const locales = await this.listTenantLinks({ tenant });
             if (locales.length === 0) {
                 logger.info(`No locales found in tenant "${tenant.data.id}".`);
                 continue;
@@ -102,9 +97,10 @@ export class TenantLinkRecords_5_37_0_666_FileData implements DataMigration<File
         const migrationStatus = context.checkpoint || {};
 
         for (const tenant of tenants) {
-            const locales = await this.listLocales({ tenant });
+            const tenantLinks = await this.listTenantLinks({ tenant });
 
-            for (const locale of locales) {
+            for (const locale of tenantLinks) {
+                // TODO
                 const groupId = `${tenant.data.id}:${locale.code}`;
                 const status = migrationStatus[groupId];
 
@@ -215,66 +211,15 @@ export class TenantLinkRecords_5_37_0_666_FileData implements DataMigration<File
         });
     }
 
-    private async listLocales({ tenant }: ListLocalesParams): Promise<I18NLocale[]> {
+    private async listTenantLinks({ tenant }: ListLocalesParams): Promise<I18NLocale[]> {
         return await queryAll<I18NLocale>({
-            entity: this.localeEntity,
-            partitionKey: `T#${tenant.data.id}#I18N#L`,
+            entity: this.tenantLinkEntity,
+            partitionKey: `T#${tenant.data.id}`,
             options: {
+                index: "GSI1",
                 gte: " "
             }
         });
     }
 
-    private async createSearchRecordCommonFields(file: File) {
-        const {
-            tenant,
-            id,
-            key,
-            size,
-            type,
-            name,
-            meta,
-            createdOn,
-            createdBy,
-            tags,
-            aliases,
-            locale
-        } = file;
-
-        return {
-            createdBy,
-            createdOn,
-            entryId: `wby-aco-${id}`,
-            id: `wby-aco-${id}#0001`,
-            locked: false,
-            locale,
-            modelId: ACO_SEARCH_MODEL_ID,
-            modifiedBy: createdBy,
-            ownedBy: createdBy,
-            savedOn: createdOn,
-            status: "draft",
-            tenant,
-            version: 1,
-            webinyVersion: process.env.WEBINY_VERSION,
-            values: {
-                "text@title": name,
-                "wby-aco-json@data": {
-                    id,
-                    key,
-                    size,
-                    type,
-                    name,
-                    createdOn,
-                    createdBy,
-                    aliases,
-                    meta
-                },
-                "object@location": {
-                    "text@folderId": ROOT_FOLDER
-                },
-                "text@tags": addMimeTag(tags, type),
-                "text@type": FM_FILE_TYPE
-            }
-        };
-    }
 }

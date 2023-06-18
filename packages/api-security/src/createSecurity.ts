@@ -174,7 +174,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                 // Pushing the value of `aacl` can help us in making similar checks on the frontend side.
                 permissions.push({
                     name: "aacl",
-                    legacy: aaclEnabled === null,
+                    legacy: aaclEnabled === "legacy",
                     teams: featureFlags?.aacl?.teams || false
                 } as AaclPermission);
 
