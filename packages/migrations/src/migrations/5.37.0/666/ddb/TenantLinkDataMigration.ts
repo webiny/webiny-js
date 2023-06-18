@@ -22,7 +22,9 @@ const isGroupMigrationCompleted = (
 
 export type FileDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
-export class TenantLinkRecords_5_37_0_666_FileData implements DataMigration<FileDataMigrationCheckpoint> {
+export class TenantLinkRecords_5_37_0_666_FileData
+    implements DataMigration<FileDataMigrationCheckpoint>
+{
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly tenantLinkEntity: ReturnType<typeof createTenantLinkEntity>;
 
@@ -221,5 +223,4 @@ export class TenantLinkRecords_5_37_0_666_FileData implements DataMigration<File
             }
         });
     }
-
 }
