@@ -1,6 +1,4 @@
 import React from "react";
-import { ReactComponent as CloseFilterIcon } from "@material-design-icons/svg/outlined/filter_alt_off.svg";
-import { IconButton } from "@webiny/ui/Button";
 import { useFileManagerView, useFileManagerViewConfig } from "~/index";
 import styled from "@emotion/styled";
 import { Form, FormOnSubmit } from "@webiny/form";
@@ -13,14 +11,8 @@ const FiltersContainer = styled.div`
     border-bottom: 1px solid var(--mdc-theme-on-background);
 `;
 
-const CloseButton = styled(IconButton)`
-    position: absolute;
-    top: 3px;
-    right: 12px;
-`;
-
 export const Filters = () => {
-    const { showingFilters, setFilters, hideFilters } = useFileManagerView();
+    const { showingFilters, setFilters } = useFileManagerView();
     const { browser } = useFileManagerViewConfig();
 
     if (!showingFilters || !browser.filters.length) {
@@ -46,7 +38,6 @@ export const Filters = () => {
                     </>
                 )}
             </Form>
-            <CloseButton onClick={hideFilters} icon={<CloseFilterIcon />} />
         </FiltersContainer>
     );
 };

@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import { ReactComponent as FilterIcon } from "@material-design-icons/svg/outlined/filter_alt.svg";
+import { ReactComponent as CloseFilterIcon } from "@material-design-icons/svg/outlined/filter_alt_off.svg";
 import { Icon } from "@webiny/ui/Icon";
 import { IconButton } from "@webiny/ui/Button";
 import { useFileManagerApi, useFileManagerView, useFileManagerViewConfig } from "~/index";
@@ -74,7 +75,10 @@ export const SearchWidget = () => {
                 )}
             </DelayedOnChange>
             {browser.filters.length > 0 ? (
-                <FilterButton icon={<FilterIcon />} onClick={toggleFilters} />
+                <FilterButton
+                    icon={view.showingFilters ? <CloseFilterIcon /> : <FilterIcon />}
+                    onClick={toggleFilters}
+                />
             ) : null}
         </InputSearch>
     );

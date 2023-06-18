@@ -50,6 +50,8 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
         allTags: FileTag[];
         activeTags: string[];
         setActiveTags: (tags: string[]) => void;
+        filterMode: "AND" | "OR";
+        setFilterMode(mode: "AND" | "OR"): void;
         loading: boolean;
     };
     toggleSelected: (file: TFileItem) => void;
@@ -125,7 +127,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
     useEffect(() => {
         loadFiles("LIST");
-    }, [state.searchQuery, state.filters, state.activeTags, state.listSort]);
+    }, [state.searchQuery, state.filters, state.activeTags, state.listSort, state.tagsFilterMode]);
 
     const loadFiles = async (action: LoadingActions, params?: Partial<ListFilesQueryVariables>) => {
         if (loading.INIT || loading[action]) {
@@ -471,6 +473,13 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             loading: tags.loading,
             allTags: tags.tags,
             activeTags: state.activeTags,
+            filterMode: state.tagsFilterMode,
+            setFilterMode(mode) {
+              setState(state => ({
+                  ...state,
+                  tagsFilterMode: mode
+              }))
+            },
             setActiveTags(activeTags) {
                 setState(state => ({
                     ...state,

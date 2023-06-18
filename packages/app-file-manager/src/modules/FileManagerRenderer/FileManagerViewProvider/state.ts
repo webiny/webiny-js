@@ -18,6 +18,7 @@ export interface State {
     settings: Settings | undefined;
     showingFileDetails: string | null;
     showingFilters: boolean;
+    tagsFilterMode: "AND" | "OR";
 }
 const DEFAULT_SCOPE = "scope:";
 
@@ -48,6 +49,7 @@ export const initializeState = (): State => {
         selected: [],
         settings: undefined,
         showingFileDetails: null,
-        showingFilters: false
+        showingFilters: false,
+        tagsFilterMode: "OR"
     };
 };

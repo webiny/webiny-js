@@ -109,7 +109,11 @@ export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseLis
         }
 
         if (state.activeTags.length) {
-            AND.push({ tags_in: state.activeTags });
+            if (state.tagsFilterMode == "OR") {
+                AND.push({ tags_in: state.activeTags });
+            } else {
+                AND.push(...state.activeTags.map(tag => ({ tags_in: [tag] })));
+            }
         }
 
         let locationWhere: ListFilesWhereLocation | undefined = { folderId };

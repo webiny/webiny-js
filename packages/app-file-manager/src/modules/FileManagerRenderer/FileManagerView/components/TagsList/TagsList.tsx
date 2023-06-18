@@ -3,6 +3,8 @@ import { Loader } from "./Loader";
 import { Empty } from "./Empty";
 import { Tag } from "./Tag";
 import { TagItem } from "@webiny/app-aco/types";
+import { Select } from "@webiny/ui/Select";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 
 interface TagListProps {
     loading: boolean;
@@ -12,6 +14,17 @@ interface TagListProps {
     emptyDisclaimer?: string;
 }
 
+const options = [
+    {
+        value: "OR",
+        label: "Match any tag"
+    },
+    {
+        value: "AND",
+        label: "Match all tags"
+    }
+];
+
 export const TagsList: React.VFC<TagListProps> = ({
     loading,
     tags,
@@ -19,6 +32,8 @@ export const TagsList: React.VFC<TagListProps> = ({
     onActivatedTagsChange,
     activeTags
 }) => {
+    const fmView = useFileManagerView();
+
     const toggleTag = useCallback(
         (tag: TagItem["tag"]) => {
             const finalTags = Array.isArray(activeTags) ? [...activeTags] : [];
@@ -41,6 +56,16 @@ export const TagsList: React.VFC<TagListProps> = ({
     if (tags.length > 0) {
         return (
             <>
+                {tags.length > 1 ? (
+                    <Select
+                        disabled={fmView.tags.activeTags.length < 2}
+                        size={"medium"}
+                        value={fmView.tags.filterMode}
+                        onChange={mode => fmView.tags.setFilterMode(mode)}
+                        options={options}
+                    />
+                ) : null}
+
                 {tags.map((tagItem, index) => (
                     <Tag
                         key={`tag-${index}`}
