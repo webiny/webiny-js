@@ -4,19 +4,16 @@ import { SidebarContainer } from "./styled";
 
 interface Props {
     folderId?: string;
-    defaultFolderName: string;
 }
 
-export const Sidebar: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
-    const { navigateToListHome, navigateToFolder } = useNavigateFolder();
+export const Sidebar: React.VFC<Props> = ({ folderId }) => {
+    const { navigateToFolder } = useNavigateFolder();
 
     return (
         <SidebarContainer>
             <FolderTree
-                title={defaultFolderName}
                 focusedFolderId={folderId}
-                onTitleClick={() => navigateToListHome()}
-                onFolderClick={data => data?.id && navigateToFolder(data?.id)}
+                onFolderClick={data => navigateToFolder(data.id)}
                 enableActions={true}
                 enableCreate={true}
             />

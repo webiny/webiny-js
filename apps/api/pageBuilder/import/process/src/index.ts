@@ -5,10 +5,7 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
-import {
-    createPageBuilderGraphQL,
-    createPageBuilderContext
-} from "@webiny/api-page-builder/graphql";
+import { createPageBuilderContext } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -23,12 +20,7 @@ import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerImportExportContext } from "@webiny/api-file-manager-aco";
-import {
-    CmsParametersPlugin,
-    createHeadlessCmsContext,
-    createHeadlessCmsGraphQL
-} from "@webiny/api-headless-cms";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 
 const documentClient = new DocumentClient({
@@ -62,7 +54,6 @@ export const handler = createHandler({
                 locale
             };
         }),
-        createHeadlessCmsGraphQL(),
         createAco(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({ documentClient })
@@ -73,7 +64,6 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createPageBuilderGraphQL(),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient
@@ -87,8 +77,7 @@ export const handler = createHandler({
                 process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
         }),
-        createAcoPageBuilderImportExportContext(),
-        createAcoFileManagerImportExportContext()
+        createAcoPageBuilderImportExportContext()
     ],
     http: { debug }
 });

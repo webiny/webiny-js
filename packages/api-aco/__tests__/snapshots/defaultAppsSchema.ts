@@ -3,6 +3,7 @@ export const createDefaultAppsSchemaSnapshot = () => {
         type AcoSearchRecordWebiny_Location {
           folderId: String
         }
+        
         input AcoSearchRecordWebiny_LocationWhereInput {
           folderId: String
           folderId_not: String
@@ -19,6 +20,7 @@ export const createDefaultAppsSchemaSnapshot = () => {
           displayName: String
           type: String
         }
+        
         input AcoSearchRecordWebiny_Data_IdentityWhereInput {
           id: String
           id_not: String
@@ -55,6 +57,7 @@ export const createDefaultAppsSchemaSnapshot = () => {
           customVersion: Number
           customLocked: Boolean
         }
+        
         input AcoSearchRecordWebiny_DataWhereInput {
           someText: String
           someText_not: String

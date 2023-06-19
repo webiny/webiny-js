@@ -11,10 +11,11 @@ import { css } from "emotion";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries/table");
 
-const ModelName = styled("div")({
-    padding: "10px",
-    fontSize: "24px"
-});
+const ModelName = styled.div`
+    padding: 10px 0;
+    font-size: 24px;
+`;
+
 const ModelId = styled("span")({
     color: "var(--mdc-theme-text-secondary-on-background)"
 });
@@ -26,11 +27,10 @@ const disabled = css({
 
 interface Props {
     folderId?: string;
-    defaultFolderName: string;
 }
 
-export const Sidebar: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
-    const { navigateToListHome, navigateToFolder } = useNavigateFolder();
+export const Sidebar: React.VFC<Props> = ({ folderId }) => {
+    const { navigateToFolder } = useNavigateFolder();
 
     const { model } = useModel();
 
@@ -62,10 +62,8 @@ export const Sidebar: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
                 </Typography>
             </ModelName>
             <FolderTree
-                title={defaultFolderName}
                 focusedFolderId={folderId}
-                onTitleClick={() => navigateToListHome()}
-                onFolderClick={data => data?.id && navigateToFolder(data?.id)}
+                onFolderClick={data => navigateToFolder(data.id)}
                 enableActions={true}
                 enableCreate={true}
             />

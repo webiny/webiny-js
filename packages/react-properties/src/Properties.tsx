@@ -33,6 +33,58 @@ interface PropertiesContext {
     replaceProperty(id: string, property: Property): void;
 }
 
+function putPropertyBefore(properties: Property[], property: Property, before: string) {
+    const existingIndex = properties.findIndex(prop => prop.id === property.id);
+    if (existingIndex > -1) {
+        const existingProperty = properties[existingIndex];
+        const newProperties = properties.filter(p => p.id !== property.id);
+        const targetIndex = newProperties.findIndex(prop => prop.id === before);
+        return [
+            ...newProperties.slice(0, targetIndex),
+            existingProperty,
+            ...newProperties.slice(targetIndex)
+        ];
+    }
+
+    const targetIndex = properties.findIndex(prop => prop.id === before);
+
+    return [...properties.slice(0, targetIndex), property, ...properties.slice(targetIndex)];
+}
+
+function putPropertyAfter(properties: Property[], property: Property, after: string) {
+    const existingIndex = properties.findIndex(prop => prop.id === property.id);
+
+    if (existingIndex > -1) {
+        const [removedProperty] = properties.splice(existingIndex, 1);
+        const targetIndex = properties.findIndex(prop => prop.id === after);
+        return [
+            ...properties.slice(0, targetIndex + 1),
+            removedProperty,
+            ...properties.slice(targetIndex + 1)
+        ];
+    }
+
+    const targetIndex = properties.findIndex(prop => prop.id === after);
+
+    return [
+        ...properties.slice(0, targetIndex + 1),
+        property,
+        ...properties.slice(targetIndex + 1)
+    ];
+}
+
+function mergeProperty(properties: Property[], property: Property) {
+    const index = properties.findIndex(prop => prop.id === property.id);
+    if (index > -1) {
+        return [
+            ...properties.slice(0, index),
+            { ...properties[index], ...property },
+            ...properties.slice(index + 1)
+        ];
+    }
+    return properties;
+}
+
 const PropertiesContext = createContext<PropertiesContext | undefined>(undefined);
 
 interface PropertiesProps {
@@ -56,36 +108,26 @@ export const Properties: React.FC<PropertiesProps> = ({ onChange, children }) =>
             },
             addProperty(property, options = {}) {
                 setProperties(properties => {
-                    // If a property with this ID already exists, merge the two properties.
                     const index = properties.findIndex(prop => prop.id === property.id);
+
                     if (index > -1) {
-                        return [
-                            ...properties.slice(0, index),
-                            { ...properties[index], ...property },
-                            ...properties.slice(index + 1)
-                        ];
+                        const newProperties = mergeProperty(properties, property);
+                        if (options.after) {
+                            return putPropertyAfter(newProperties, property, options.after);
+                        }
+                        if (options.before) {
+                            return putPropertyBefore(newProperties, property, options.before);
+                        }
+
+                        return newProperties;
                     }
 
                     if (options.after) {
-                        const index = properties.findIndex(prop => prop.id === options.after);
-                        if (index > -1) {
-                            return [
-                                ...properties.slice(0, index + 1),
-                                property,
-                                ...properties.slice(index + 1)
-                            ];
-                        }
+                        return putPropertyAfter(properties, property, options.after);
                     }
 
                     if (options.before) {
-                        const index = properties.findIndex(prop => prop.id === options.before);
-                        if (index > -1) {
-                            return [
-                                ...properties.slice(0, index),
-                                property,
-                                ...properties.slice(index)
-                            ];
-                        }
+                        return putPropertyBefore(properties, property, options.before);
                     }
 
                     return [...properties, property];

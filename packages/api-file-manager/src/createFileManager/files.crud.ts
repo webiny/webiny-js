@@ -76,12 +76,16 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 tags: Array.isArray(input.tags) ? input.tags : [],
                 aliases: Array.isArray(input.aliases) ? input.aliases : [],
                 id: input.id || id,
+                location: {
+                    folderId: input.location?.folderId ?? "ROOT"
+                },
                 meta: {
                     private: false,
                     ...(input.meta || {})
                 },
                 tenant: getTenantId(),
                 createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
@@ -234,8 +238,12 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                         private: false,
                         ...(input.meta || {})
                     },
+                    location: {
+                        folderId: input.location?.folderId ?? "ROOT"
+                    },
                     tenant,
                     createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     createdBy,
                     locale,
                     webinyVersion: WEBINY_VERSION
@@ -265,56 +273,24 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
 
             const {
                 limit = 40,
-                search = "",
-                types = [],
-                tags = [],
-                ids = [],
                 after = null,
                 where: initialWhere,
-                sort: initialSort
+                sort: initialSort,
+                search
             } = params;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
-                ...initialWhere,
-                private: false,
+                ...{ meta: { private_not: true }, ...initialWhere },
                 locale: getLocaleCode(),
                 tenant: getTenantId()
             };
+
             /**
              * Always override the createdBy received from the user, if any.
              */
             if (permission.own === true) {
                 const identity = getIdentity();
                 where.createdBy = identity.id;
-            }
-            /**
-             * We need to map the old GraphQL definition to the new one.
-             * That GQL definition is marked as deprecated.
-             */
-            /**
-             * To have standardized where objects across the applications, we transform the types into type_in.
-             */
-            if (Array.isArray(types) && types.length > 0 && !where.type_in) {
-                where.type_in = types;
-            }
-            /**
-             * We are assigning search to tag and name search.
-             * This should be treated as OR condition in the storage operations.
-             */
-            if (search && !where.search) {
-                where.search = search;
-            }
-            /**
-             * Same as on types/type_in.
-             */
-            if (Array.isArray(tags) && tags.length > 0 && !where.tag_in) {
-                where.tag_in = tags.map(tag => tag.toLowerCase());
-            }
-            /**
-             * Same as on types/type_in.
-             */
-            if (Array.isArray(ids) && ids.length > 0 && !where.id_in) {
-                where.id_in = ids;
             }
 
             const sort =
@@ -324,7 +300,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     where,
                     after,
                     limit,
-                    sort
+                    sort,
+                    search
                 });
             } catch (ex) {
                 throw new WebinyError(

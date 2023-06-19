@@ -5,6 +5,7 @@ import React, { useCallback } from "react";
 import { render } from "@testing-library/react";
 import { Properties, Property, useParentProperty, toObject } from "~/index";
 import { getLastCall } from "./utils";
+import { Filter } from "./Filter";
 
 interface GroupProps {
     name: string;
@@ -24,14 +25,18 @@ const Group: React.FC<GroupProps> = ({ name, label, children }) => {
 interface FieldProps {
     name: string;
     label?: string;
+    after?: string;
+    before?: string;
     remove?: boolean;
     replace?: string;
 }
 
-const Field: React.FC<FieldProps> = ({ name, label, replace, remove = false }) => {
+const Field: React.FC<FieldProps> = ({ name, label, replace, after, before, remove = false }) => {
     const parentProperty = useParentProperty();
 
     const id = parentProperty ? parentProperty.id : undefined;
+    const placeAfter = after !== undefined ? `${id}:field:${after}` : undefined;
+    const placeBefore = before !== undefined ? `${id}:field:${before}` : undefined;
 
     const getId = useCallback(
         (suffix = undefined) => [id, "field", name, suffix].filter(Boolean).join(":"),
@@ -40,7 +45,15 @@ const Field: React.FC<FieldProps> = ({ name, label, replace, remove = false }) =
     const toReplace = replace !== undefined ? `${id}:field:${replace}` : undefined;
 
     return (
-        <Property id={getId()} name={"field"} array remove={remove} replace={toReplace}>
+        <Property
+            id={getId()}
+            name={"field"}
+            array
+            remove={remove}
+            replace={toReplace}
+            after={placeAfter}
+            before={placeBefore}
+        >
             <Property id={getId("name")} name={"name"} value={name} />
             {label ? <Property id={getId("label")} name={"label"} value={label} /> : null}
         </Property>
@@ -428,6 +441,147 @@ describe("Test Properties", () => {
                         { name: "link", label: "Link" },
                         { name: "component", label: "Component" }
                     ]
+                }
+            ]
+        });
+    });
+
+    it("should add property after an existing one", async () => {
+        const onChange = jest.fn();
+
+        const view = (
+            <Properties onChange={onChange}>
+                {/* Define base properties */}
+                <Group name={"styleSettings"} label={"Style Settings"}>
+                    <Field name={"color"} label={"Color"} />
+                    <Field name={"component"} label={"Component"} />
+                </Group>
+                {/* Add new element after an existing element. */}
+                <Group name={"styleSettings"}>
+                    <Field name={"link"} label={"Link"} after={"color"} />
+                </Group>
+            </Properties>
+        );
+
+        render(view);
+
+        const properties = getLastCall(onChange);
+
+        expect(toObject(properties)).toEqual({
+            settingsGroup: [
+                {
+                    name: "styleSettings",
+                    label: "Style Settings",
+                    field: [
+                        { name: "color", label: "Color" },
+                        { name: "link", label: "Link" },
+                        { name: "component", label: "Component" }
+                    ]
+                }
+            ]
+        });
+    });
+
+    it("should add property before an existing one", async () => {
+        const onChange = jest.fn();
+
+        const view = (
+            <Properties onChange={onChange}>
+                {/* Define base properties */}
+                <Group name={"styleSettings"} label={"Style Settings"}>
+                    <Field name={"color"} label={"Color"} />
+                    <Field name={"component"} label={"Component"} />
+                </Group>
+                {/* Add new elements before existing elements. */}
+                <Group name={"styleSettings"}>
+                    <Field name={"link"} label={"Link"} before={"color"} />
+                    <Field name={"page"} label={"Homepage"} before={"component"} />
+                </Group>
+            </Properties>
+        );
+
+        render(view);
+
+        const properties = getLastCall(onChange);
+
+        expect(toObject(properties)).toEqual({
+            settingsGroup: [
+                {
+                    name: "styleSettings",
+                    label: "Style Settings",
+                    field: [
+                        { name: "link", label: "Link" },
+                        { name: "color", label: "Color" },
+                        { name: "page", label: "Homepage" },
+                        { name: "component", label: "Component" }
+                    ]
+                }
+            ]
+        });
+    });
+
+    it("should change the position of the existing property", async () => {
+        const onChange = jest.fn();
+
+        const view = (
+            <Properties onChange={onChange}>
+                {/* Define base properties */}
+                <Group name={"styleSettings"} label={"Style Settings"}>
+                    <Field name={"color"} label={"Color"} />
+                    <Field name={"component"} label={"Component"} />
+                </Group>
+                {/* Change position of existing element. */}
+                <Group name={"styleSettings"}>
+                    <Field name={"component"} before={"color"} />
+                </Group>
+            </Properties>
+        );
+
+        render(view);
+
+        const properties = getLastCall(onChange);
+
+        expect(toObject(properties)).toEqual({
+            settingsGroup: [
+                {
+                    name: "styleSettings",
+                    label: "Style Settings",
+                    field: [
+                        { name: "component", label: "Component" },
+                        { name: "color", label: "Color" }
+                    ]
+                }
+            ]
+        });
+    });
+});
+
+describe("Custom Properties", () => {
+    it("should change the position of the existing property", async () => {
+        const onChange = jest.fn();
+
+        const view = (
+            <Properties onChange={onChange}>
+                <Filter name={"filter-1"} />
+                <Filter name={"filter-2"} />
+                <Filter name={"filter-3"} before={"filter-2"} />
+            </Properties>
+        );
+
+        render(view);
+
+        const properties = getLastCall(onChange);
+
+        expect(toObject(properties)).toEqual({
+            filters: [
+                {
+                    name: "filter-1"
+                },
+                {
+                    name: "filter-3"
+                },
+                {
+                    name: "filter-2"
                 }
             ]
         });

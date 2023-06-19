@@ -1,6 +1,6 @@
 import { CmsEntry, CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
 import { createFieldResolversFactory } from "@webiny/api-headless-cms/graphql/schema/createFieldResolvers";
-import { IAcoApp } from "~/types";
+import { AcoContext, IAcoApp } from "~/types";
 import { resolve, resolveList } from "~/utils/resolve";
 import { parseIdentifier } from "@webiny/utils";
 import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
@@ -45,29 +45,29 @@ export const createAppResolvers = (params: Params): Resolvers => {
 
     const resolvers: Resolvers = {
         SearchQuery: {
-            [`get${apiName}`]: async (_: unknown, args: any) => {
+            [`get${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
                 return resolve(() => {
-                    checkPermissions(app.context);
+                    checkPermissions(context);
                     return app.search.get(args.id);
                 });
             },
-            [`list${apiName}`]: async (_: unknown, args: any) => {
+            [`list${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
                 return resolveList(() => {
-                    checkPermissions(app.context);
+                    checkPermissions(context);
                     return app.search.list(args);
                 });
             },
-            [`list${apiName}Tags`]: async (_: unknown, args: any) => {
+            [`list${apiName}Tags`]: async (_: unknown, args: any, context: AcoContext) => {
                 return resolveList(() => {
-                    checkPermissions(app.context);
+                    checkPermissions(context);
                     return app.search.listTags(args);
                 });
             }
         },
         SearchMutation: {
-            [`create${apiName}`]: async (_: unknown, args: any) => {
+            [`create${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
                 return resolve(() => {
-                    checkPermissions(app.context);
+                    checkPermissions(context);
                     const { id } = parseIdentifier(args.data?.id);
                     return app.search.create({
                         ...args.data,
@@ -75,23 +75,23 @@ export const createAppResolvers = (params: Params): Resolvers => {
                     });
                 });
             },
-            [`update${apiName}`]: async (_: unknown, args: any) => {
+            [`update${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
                 return resolve(() => {
-                    checkPermissions(app.context);
+                    checkPermissions(context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.update(id, args.data || {});
                 });
             },
-            [`move${apiName}`]: async (_: unknown, args: any) => {
+            [`move${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
                 return resolve(() => {
-                    checkPermissions(app.context);
+                    checkPermissions(context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.move(id, args.folderId);
                 });
             },
-            [`delete${apiName}`]: async (_: unknown, args: any) => {
+            [`delete${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
                 return resolve(() => {
-                    checkPermissions(app.context);
+                    checkPermissions(context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.delete(id);
                 });

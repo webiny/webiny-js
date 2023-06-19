@@ -12,7 +12,7 @@ type ArrowIconContainerProps = {
 export const Container = styled("div")<ContainerProps>`
     display: flex;
     align-items: center;
-    padding: 4px 32px 4px 0;
+    padding: 4px 0 4px 4px;
     background: ${props => props.isFocused && "var(--mdc-theme-on-background)"};
     color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;

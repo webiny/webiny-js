@@ -8,7 +8,6 @@ import {
 } from "@webiny/handler-graphql/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 
@@ -55,12 +54,7 @@ export interface HeadlessCms
  *
  * @category Context
  */
-export interface CmsContext
-    extends Context,
-        DbContext,
-        // HttpContext,
-        I18NContext,
-        FileManagerContext {
+export interface CmsContext extends Context, DbContext, I18NContext {
     cms: HeadlessCms;
 }
 

@@ -42,8 +42,6 @@
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
-    "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-file-manager-ddb": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-ddb-es": "0.0.0",
     "@webiny/api-i18n": "0.0.0",

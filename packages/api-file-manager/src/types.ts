@@ -6,6 +6,7 @@ import { Context } from "@webiny/api/types";
 import { FileLifecycleEvents } from "./types/file.lifecycle";
 import { File } from "./types/file";
 import { Topic } from "@webiny/pubsub/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 export * from "./types/file.lifecycle";
 export * from "./types/file";
 
@@ -13,7 +14,12 @@ export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD, Syste
     storage: FileStorage;
 }
 
-export interface FileManagerContext extends Context, SecurityContext, TenancyContext, I18NContext {
+export interface FileManagerContext
+    extends Context,
+        SecurityContext,
+        TenancyContext,
+        I18NContext,
+        CmsContext {
     fileManager: FileManagerContextObject;
 }
 
@@ -30,25 +36,21 @@ export interface FileInput {
     size: number;
     type: string;
     meta: Record<string, any>;
+    location?: {
+        folderId: string;
+    };
     tags: string[];
     aliases: string[];
+    extensions?: Record<string, any>;
 }
 
 export interface FileListWhereParams {
-    search?: string;
-    type?: string;
-    type_in?: string[];
-    tag?: string;
-    tag_in?: string[];
-    tag_and_in?: string[];
-    id_in?: string[];
-    id?: string;
+    AND?: FileListWhereParams[];
+    OR?: FileListWhereParams[];
+    [key: string]: any;
 }
 export interface FilesListOpts {
     search?: string;
-    types?: string[];
-    tags?: string[];
-    ids?: string[];
     limit?: number;
     after?: string;
     where?: FileListWhereParams;
@@ -285,20 +287,7 @@ export interface FileManagerFilesStorageOperationsCreateBatchParams {
  * @category FilesStorageOperationsParams
  */
 export interface FileManagerFilesStorageOperationsListParamsWhere {
-    id?: string;
-    id_in?: string[];
-    name?: string;
-    name_contains?: string;
-    tag?: string;
-    tag_contains?: string;
-    tag_in?: string[];
-    createdBy?: string;
-    locale: string;
-    tenant: string;
-    private?: boolean;
-    type?: string;
-    type_in?: string[];
-    search?: string;
+    [key: string]: any;
 }
 /**
  * @category StorageOperations
@@ -310,6 +299,7 @@ export interface FileManagerFilesStorageOperationsListParams {
     sort: string[];
     limit: number;
     after: string | null;
+    search?: string;
 }
 
 /**
@@ -385,9 +375,15 @@ export interface FileManagerFilesStorageOperations {
     ) => Promise<FileManagerFilesStorageOperationsTagsResponse[]>;
 }
 
+export interface FileManagerAliasesStorageOperations {
+    storeAliases(file: File): Promise<void>;
+    deleteAliases(file: File): Promise<void>;
+}
+
 export interface FileManagerStorageOperations<TContext = FileManagerContext> {
     beforeInit?: (context: TContext) => Promise<void>;
     files: FileManagerFilesStorageOperations;
+    aliases: FileManagerAliasesStorageOperations;
     settings: FileManagerSettingsStorageOperations;
     system: FileManagerSystemStorageOperations;
 }

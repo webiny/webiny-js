@@ -3,6 +3,7 @@ export const createCustomAppsSchemaSnapshot = () => {
         type AcoSearchRecordCustomTestingApp_Location {
           folderId: String
         }
+        
         input AcoSearchRecordCustomTestingApp_LocationWhereInput {
           folderId: String
           folderId_not: String
@@ -19,6 +20,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           displayName: String
           type: String
         }
+        
         input AcoSearchRecordCustomTestingApp_Data_IdentityWhereInput {
           id: String
           id_not: String
@@ -57,6 +59,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           customWebinyTextField: String
           customWebinyNumberField: Number
         }
+        
         input AcoSearchRecordCustomTestingApp_DataWhereInput {
           someText: String
           someText_not: String

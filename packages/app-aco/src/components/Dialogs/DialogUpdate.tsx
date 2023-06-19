@@ -105,13 +105,13 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                             <Typography use="body1">{t`Parent folder`}</Typography>
                                             <DialogFoldersContainer>
                                                 <FolderTree
-                                                    title={t`Root folder`}
                                                     focusedFolderId={parentId || undefined}
                                                     hiddenFolderIds={[folder.id]}
                                                     onFolderClick={data =>
-                                                        setParentId(data?.id || null)
+                                                        setParentId(
+                                                            data.id === "ROOT" ? null : data.id
+                                                        )
                                                     }
-                                                    onTitleClick={() => setParentId(null)}
                                                 />
                                             </DialogFoldersContainer>
                                         </Cell>

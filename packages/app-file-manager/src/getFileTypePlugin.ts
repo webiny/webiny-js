@@ -1,8 +1,7 @@
 import invariant from "invariant";
 import minimatch from "minimatch";
 import { plugins } from "@webiny/plugins";
-import { FileItem } from "@webiny/app/types";
-import { AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
+import { FileItem, AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
 import { FileManagerFileTypePlugin } from "~/index";
 
 export default function getFileTypePlugin(

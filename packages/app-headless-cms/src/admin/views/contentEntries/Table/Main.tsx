@@ -27,7 +27,6 @@ import { FOLDER_ID_DEFAULT } from "~/admin/constants";
 
 interface Props {
     folderId?: string;
-    defaultFolderName: string;
 }
 
 const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
@@ -44,7 +43,8 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     }, []);
 };
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolderName }) => {
+export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
+    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
     const {
         /**
          * TODO refactor useAcoList to accept exact generic type
@@ -52,7 +52,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
          */
         records: initialRecords,
         folders: initialFolders,
-        listTitle = defaultFolderName,
+        listTitle,
         meta,
         isListLoading,
         isListLoadingMore,
@@ -70,9 +70,9 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
     const { canCreate, contentModel } = useContentEntry();
 
     const createEntry = useCallback(() => {
-        const folder = initialFolderId ? `&folderId=${encodeURIComponent(initialFolderId)}` : "";
+        const folder = folderId ? `&folderId=${encodeURIComponent(folderId)}` : "";
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true${folder}`);
-    }, [canCreate, contentModel, initialFolderId]);
+    }, [canCreate, contentModel, folderId]);
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
@@ -135,11 +135,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
     }, [initialFolders]);
 
     if (!showEmptyView) {
-        return (
-            <>
-                <ContentEntry />
-            </>
-        );
+        return <ContentEntry />;
     }
 
     return (
@@ -188,7 +184,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
             <FolderDialogCreate
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
-                currentParentId={initialFolderId || null}
+                currentParentId={folderId || null}
             />
         </>
     );

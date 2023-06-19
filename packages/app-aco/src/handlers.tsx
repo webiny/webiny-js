@@ -31,9 +31,12 @@ export const apolloFetchingHandler = async <ListSearchRecordsResponse = any,>(
  */
 export const loadingHandler = (
     action: LoadingActions,
-    setState: Dispatch<SetStateAction<Loading<LoadingActions>>>
+    setState?: Dispatch<SetStateAction<Loading<LoadingActions>>>
 ) => {
     return (flag: boolean) => {
+        if (!setState) {
+            return;
+        }
         setState(state => {
             return {
                 ...state,

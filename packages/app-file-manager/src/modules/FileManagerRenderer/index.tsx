@@ -1,6 +1,15 @@
 import React from "react";
-import { AcoRenderer } from "./AcoRenderer";
+import { FileManagerViewConfig } from "~/index";
+import { FileManagerRenderer } from "./FileManagerView";
+import { FilterByType } from "./filters/FilterByType";
 
-export const FileManagerRendererModule: React.VFC = () => {
-    return <AcoRenderer />;
+export const FileManagerRendererModule = () => {
+    return (
+        <>
+            <FileManagerRenderer />
+            <FileManagerViewConfig>
+                <FileManagerViewConfig.Browser.Filter name={"type"} element={<FilterByType />} />
+            </FileManagerViewConfig>
+        </>
+    );
 };

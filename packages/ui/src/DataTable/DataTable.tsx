@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo } from "react";
+import React, { ReactElement, useMemo } from "react";
 
 import {
     DataTableContent,
@@ -17,7 +17,9 @@ import {
     ColumnDef,
     getSortedRowModel,
     OnChangeFn,
-    SortingState
+    SortingState,
+    RowSelectionState,
+    Row
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
@@ -54,6 +56,7 @@ export type Columns<T> = {
 };
 
 export type DefaultData = {
+    id: string;
     /*
      * Define if a specific row can be selected.
      */
@@ -65,54 +68,73 @@ export type Sorting = SortingState;
 export type OnSortingChange = OnChangeFn<Sorting>;
 
 interface Props<T> {
-    /*
-     * Columns definition.
-     */
-    columns: Columns<T>;
-    /*
-     * Data to display into DataTable body.
-     */
-    data: T[];
-    /*
-     * Callback that receives the selected rows.
-     */
-    onSelectRow?: (rows: T[] | []) => void;
-    /*
-     * Render the skeleton state at the initial data loading.
-     */
-    loadingInitial?: boolean;
-    /*
-     * The number of columns to affix to the side of the table when scrolling.
-     */
-    stickyColumns?: number;
-    /*
-     * The number of rows to affix to the top of the table when scrolling.
-     */
-    stickyRows?: number;
-    /*
+    /**
      * Show or hide borders.
      */
     bordered?: boolean;
-    /*
-     * Sorting state.
+    /**
+     * Controls whether "select all" action is allowed.
      */
-    sorting?: Sorting;
-    /*
+    canSelectAllRows?: boolean;
+    /**
+     * Columns definition.
+     */
+    columns: Columns<T>;
+    /**
+     * Data to display into DataTable body.
+     */
+    data: T[];
+    /**
+     * Callback that is called to determine if the row is selectable.
+     */
+    isRowSelectable?: (row: Row<T>) => boolean;
+    /**
+     * Render the skeleton state at the initial data loading.
+     */
+    loadingInitial?: boolean;
+    /**
+     * Callback that receives the selected rows.
+     */
+    onSelectRow?: (rows: T[]) => void;
+    /**
      * Callback that receives current sorting state.
      */
     onSortingChange?: OnSortingChange;
+    /**
+     * Selected rows.
+     */
+    selectedRows?: T[];
+    /**
+     * Sorting state.
+     */
+    sorting?: Sorting;
+    /**
+     * The number of columns to affix to the side of the table when scrolling.
+     */
+    stickyColumns?: number;
+    /**
+     * The number of rows to affix to the top of the table when scrolling.
+     */
+    stickyRows?: number;
 }
 
 export interface ColumnDirectionProps {
     direction?: "asc" | "desc";
 }
 
+interface DefineColumnsOptions<T> {
+    canSelectAllRows: boolean;
+    onSelectRow: Props<T>["onSelectRow"];
+    loadingInitial: Props<T>["loadingInitial"];
+}
+
 const defineColumns = <T,>(
     columns: Props<T>["columns"],
-    onSelectRow: Props<T>["onSelectRow"],
-    loadingInitial: Props<T>["loadingInitial"]
-): ColumnDef<T>[] =>
-    useMemo(() => {
+    options: DefineColumnsOptions<T>
+): ColumnDef<T>[] => {
+    const { canSelectAllRows, onSelectRow, loadingInitial } = options;
+
+    return useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
             id: key,
             ...columns[key as keyof typeof columns]
@@ -143,14 +165,21 @@ const defineColumns = <T,>(
             ? [
                   {
                       id: "datatable-select-column",
-                      header: ({ table }) =>
-                          !loadingInitial && (
-                              <Checkbox
-                                  indeterminate={table.getIsSomeRowsSelected()}
-                                  value={table.getIsAllRowsSelected()}
-                                  onChange={e => table.toggleAllPageRowsSelected(e)}
-                              />
-                          ),
+                      header: ({ table }) => {
+                          if (!canSelectAllRows) {
+                              return null;
+                          }
+
+                          return (
+                              !loadingInitial && (
+                                  <Checkbox
+                                      indeterminate={table.getIsSomeRowsSelected()}
+                                      value={table.getIsAllRowsSelected()}
+                                      onChange={e => table.toggleAllPageRowsSelected(e)}
+                                  />
+                              )
+                          );
+                      },
                       cell: info => {
                           if (!info.row.getCanSelect()) {
                               return <></>;
@@ -183,6 +212,7 @@ const defineColumns = <T,>(
             return column;
         });
     }, [columns, onSelectRow, loadingInitial]);
+};
 
 const defineData = <T,>(
     data: Props<T>["data"],
@@ -217,32 +247,41 @@ export const DataTable = <T extends Object & DefaultData>({
     stickyRows,
     bordered,
     sorting,
-    onSortingChange
+    onSortingChange,
+    isRowSelectable,
+    canSelectAllRows = true,
+    selectedRows = []
 }: Props<T>) => {
-    const [rowSelection, setRowSelection] = React.useState({});
+    const rowSelection = useMemo(() => {
+        return selectedRows.reduce<RowSelectionState>((acc, item) => {
+            const recordIndex = data.findIndex(rec => rec.id === item.id);
+            return { ...acc, [recordIndex]: true };
+        }, {});
+    }, [selectedRows, data]);
+
+    const onRowSelectionChange: OnChangeFn<RowSelectionState> = updater => {
+        if (typeof onSelectRow === "function") {
+            const newSelection = typeof updater === "function" ? updater(rowSelection) : updater;
+            const selection = Object.keys(newSelection).map(key => data[parseInt(key)]);
+            onSelectRow(selection);
+        }
+    };
 
     const table = useReactTable({
         data: defineData(data, loadingInitial),
-        columns: defineColumns(columns, onSelectRow, loadingInitial),
+        columns: defineColumns(columns, { canSelectAllRows, onSelectRow, loadingInitial }),
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         state: {
             rowSelection,
             sorting
         },
-        enableRowSelection: row => row.original.selectable || false,
-        onRowSelectionChange: setRowSelection,
+        enableRowSelection: isRowSelectable,
+        onRowSelectionChange,
         enableSorting: !!onSortingChange,
         manualSorting: true,
         onSortingChange
     });
-
-    useEffect(() => {
-        if (onSelectRow && typeof onSelectRow === "function") {
-            const dataSelected = table.getSelectedRowModel().flatRows.map(row => row.original);
-            onSelectRow(dataSelected);
-        }
-    }, [rowSelection]);
 
     return (
         <Table stickyColumns={stickyColumns} stickyRows={stickyRows} bordered={bordered}>
@@ -272,10 +311,7 @@ export const DataTable = <T extends Object & DefaultData>({
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <DataTableRow
-                            key={row.id}
-                            selected={rowSelection.hasOwnProperty(row.index)}
-                        >
+                        <DataTableRow key={row.id} selected={row.getIsSelected()}>
                             {row.getVisibleCells().map(cell => (
                                 <DataTableCell key={cell.id} {...cell.column.columnDef.meta}>
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

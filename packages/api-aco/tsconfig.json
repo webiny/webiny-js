@@ -17,8 +17,7 @@
     { "path": "../api-tenancy-so-ddb" },
     { "path": "../api-wcp" },
     { "path": "../handler-aws" },
-    { "path": "../plugins" },
-    { "path": "../utils" }
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
