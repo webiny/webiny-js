@@ -48,15 +48,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
 
     const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
 
-    const {
-        records,
-        folders,
-        listTitle,
-        meta,
-        isListLoading,
-        isListLoadingMore,
-        listItems
-    } = useAcoList<PbPageDataItem>({ folderId });
+    const { records, folders, listTitle, meta, isListLoading, isListLoadingMore, listItems } =
+        useAcoList<PbPageDataItem>({ folderId });
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
