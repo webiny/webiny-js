@@ -21,6 +21,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { ROOT_ID } from "@webiny/app-aco/components/FolderTree/List/constants";
+import { useRecords } from "@webiny/app-aco";
 
 /**
  * Used for some fields to convert their values.
@@ -93,6 +94,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const entry = useEntry(params.entry);
+
+    const { addRecordToCache } = useRecords();
 
     const renderPlugins = useMemo(
         () => plugins.byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
@@ -187,6 +190,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
+
+            if (params.addEntryToListCache) {
+                addRecordToCache(entry);
+            }
 
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {

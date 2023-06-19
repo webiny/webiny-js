@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 
-type ContainerProps = {
+interface ContainerProps {
     hasClickAction: boolean;
     isDragging: boolean;
-};
+}
 
 export const Container = styled("div")<ContainerProps>`
     position: absolute;

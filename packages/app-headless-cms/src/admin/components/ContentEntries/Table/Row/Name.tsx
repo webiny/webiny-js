@@ -46,7 +46,7 @@ interface EntryNameProps {
 }
 export const EntryName: React.VFC<EntryNameProps> = ({ record, onClick }) => {
     return (
-        <Title onClick={onClick}>
+        <Title onClick={onClick} className="cms-record-title">
             <Icon>
                 <File />
             </Icon>

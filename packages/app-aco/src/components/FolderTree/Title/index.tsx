@@ -5,15 +5,20 @@ import { Typography } from "@webiny/ui/Typography";
 
 import { Container, IconContainer } from "./styled";
 
-type TitleProps = {
+interface TitleProps {
     title: string;
     isDragging: boolean;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
-};
+}
 
 export const Title: React.VFC<TitleProps> = ({ title, onClick, isDragging }) => {
     return (
-        <Container onClick={onClick} hasClickAction={Boolean(onClick)} isDragging={isDragging}>
+        <Container
+            onClick={onClick}
+            hasClickAction={Boolean(onClick)}
+            isDragging={isDragging}
+            data-testid="aco-folder-tree-title"
+        >
             <IconContainer>
                 <Dashboard />
             </IconContainer>

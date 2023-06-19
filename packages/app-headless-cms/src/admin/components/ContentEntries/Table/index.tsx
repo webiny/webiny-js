@@ -123,7 +123,10 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
                 if (type === "RECORD") {
                     return (
-                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
+                        <Menu
+                            className={`${menuStyles} record-menu`}
+                            handle={<IconButton icon={<More />} />}
+                        >
                             <RecordActionEdit
                                 record={record}
                                 onClick={createEditEntry(record.original)}

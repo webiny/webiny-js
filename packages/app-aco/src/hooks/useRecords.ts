@@ -22,7 +22,9 @@ export const useRecords = (folderId?: string) => {
         createRecord,
         updateRecord,
         moveRecord,
-        deleteRecord
+        deleteRecord,
+        addRecordToCache,
+        removeRecordFromCache
     } = context;
 
     useEffect(() => {
@@ -72,7 +74,9 @@ export const useRecords = (folderId?: string) => {
             },
             deleteRecord(record: DeletableSearchRecordItem) {
                 return deleteRecord(record);
-            }
+            },
+            addRecordToCache,
+            removeRecordFromCache
         }),
         [records, loading, meta]
     );

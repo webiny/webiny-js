@@ -76,7 +76,7 @@ describe("Headless CMS - Content Entries", () => {
             const newEntryTitle2 = newEntryTitle + " - 2nd";
 
             // a) Click on "New Entry" button
-            cy.findAllByTestId("new-record-button").first().click();
+            cy.findAllByTestId("new-entry-button").first().click();
             // b) Fill entry details
             cy.findByTestId("cms-content-form").within(() => {
                 cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
@@ -88,20 +88,34 @@ describe("Headless CMS - Content Entries", () => {
             cy.get(".react-spinner-material").should("not.exist");
             // d) Verify success message
             cy.findByText(`${newModel} entry created successfully!`).should("exist");
+            /**
+             * As ACO was introduced, there is a new step - navigate to root folder
+             */
+            cy.findByTestId("aco-folder-tree-title").click({ force: true });
 
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("li")
+                cy.get("tbody")
                     .first()
                     .within(() => {
-                        cy.findByText(newEntryTitle).should("exist");
-                        cy.findByText(/Draft/i).should("exist");
-                        cy.findByText(/\(v1\)/i).should("exist");
+                        cy.get("tr").within(() => {
+                            cy.findByText(newEntryTitle).should("exist");
+                            cy.findByText(/Draft/i).should("exist");
+                            cy.findByText(/\(v1\)/i).should("exist");
+                        });
                     });
             });
 
             // Loading should not be visible
             cy.get(".react-spinner-material").should("not.exist");
+            // We should navigate to the new entry
+            cy.get("div.cms-record-title")
+                .first()
+                .within(() => {
+                    cy.findByText(newEntryTitle).should("exist");
+                })
+                .click({ force: true });
+            cy.get(".mdc-text-field__input").should("exist");
 
             // Publish entry
             cy.findByTestId("cms-content-save-publish-content-button").click();
