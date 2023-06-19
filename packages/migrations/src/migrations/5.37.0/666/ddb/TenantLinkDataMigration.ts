@@ -8,11 +8,8 @@ import { createTenantLinkEntity } from "../entities/createTenantLinkEntity";
 import { createTenantEntity } from "../entities/createTenantEntity";
 
 import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
-import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
 
-import { I18NLocale, ListLocalesParams, Tenant, File, FileItem } from "../types";
-
-import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "../constants";
+import { I18NLocale, ListLocalesParams, Tenant, FileItem } from "../types";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
