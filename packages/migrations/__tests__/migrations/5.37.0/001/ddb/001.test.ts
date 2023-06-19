@@ -75,25 +75,35 @@ describe("5.37.0-001", () => {
         await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
         const ddbPages = await insertTestPages(table);
 
+        /**
+         * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
+         */
+        const handlerPrepare = createDdbMigrationHandler({
+            table,
+            migrations: [AcoRecords_5_35_0_006]
+        });
+        const { data: dataPrepare, error: errorPrepare } = await handlerPrepare();
+
+        assertNotError(errorPrepare);
+        const groupedPrepare = groupMigrations(dataPrepare.migrations);
+
+        expect(groupedPrepare.executed.length).toBe(1);
+        expect(groupedPrepare.skipped.length).toBe(0);
+        expect(groupedPrepare.notApplicable.length).toBe(0);
+
+        /**
+         * And then we execute current the 5.37.0_001 migration.
+         */
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [
-                /**
-                 * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
-                 */
-                AcoRecords_5_35_0_006,
-                /**
-                 * And then we execute current the 5.37.0_001 migration.
-                 */
-                AcoRecords_5_37_0_001
-            ]
+            migrations: [AcoRecords_5_37_0_001]
         });
         const { data, error } = await handler();
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);
 
-        expect(grouped.executed.length).toBe(2);
+        expect(grouped.executed.length).toBe(1);
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
@@ -197,18 +207,22 @@ describe("5.37.0-001", () => {
         await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
         await insertTestPages(table, 1);
 
+        /**
+         * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
+         */
+        const handlerPrepare = createDdbMigrationHandler({
+            table,
+            migrations: [AcoRecords_5_35_0_006]
+        });
+
+        await handlerPrepare();
+
+        /**
+         * And then we execute current the 5.37.0_001 migration.
+         */
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [
-                /**
-                 * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
-                 */
-                AcoRecords_5_35_0_006,
-                /**
-                 * And then we execute current the 5.37.0_001 migration.
-                 */
-                AcoRecords_5_37_0_001
-            ]
+            migrations: [AcoRecords_5_37_0_001]
         });
 
         // Should run the migration
@@ -217,7 +231,7 @@ describe("5.37.0-001", () => {
             const { data, error } = await handler();
             assertNotError(error);
             const grouped = groupMigrations(data.migrations);
-            expect(grouped.executed.length).toBe(2);
+            expect(grouped.executed.length).toBe(1);
         }
 
         // Should skip the migration
@@ -227,7 +241,7 @@ describe("5.37.0-001", () => {
             assertNotError(error);
             const grouped = groupMigrations(data.migrations);
             expect(grouped.executed.length).toBe(0);
-            expect(grouped.skipped.length).toBe(2);
+            expect(grouped.skipped.length).toBe(1);
             expect(grouped.notApplicable.length).toBe(0);
         }
     });
