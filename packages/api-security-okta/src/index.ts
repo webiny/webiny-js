@@ -1,6 +1,6 @@
 export { createIdentityType } from "./createIdentityType";
 export { createAuthenticator } from "./createAuthenticator";
 export type { AuthenticatorConfig } from "./createAuthenticator";
-export { createTenantLinksPermissionsAuthorizer } from "./createTenantLinksPermissionsAuthorizer";
-export type { GroupAuthorizerConfig } from "./createTenantLinksPermissionsAuthorizer";
+export { createGroupAuthorizer } from "./createGroupAuthorizer";
+export type { GroupAuthorizerConfig } from "./createGroupAuthorizer";
 export { createOkta } from "./createOkta";

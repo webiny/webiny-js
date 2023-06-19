@@ -23,7 +23,7 @@ jest.mock("@webiny/wcp", () => {
 
 // This import statement needs to be here.
 // @see https://stackoverflow.com/a/67114668
-import { createMockContextHandler } from "./useTestHandler";
+import { createMockContextHandler } from "./mockContextHandler";
 
 describe(`Custom permissions (no WCP access) test`, () => {
     test("should not be able to use custom permissions if the license doesn't permit it", async () => {

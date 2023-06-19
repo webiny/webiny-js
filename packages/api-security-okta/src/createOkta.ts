@@ -1,8 +1,8 @@
 import { createAuthenticator, AuthenticatorConfig } from "~/createAuthenticator";
 import {
-    createTenantLinksPermissionsAuthorizer,
+    createGroupAuthorizer,
     GroupAuthorizerConfig
-} from "~/createTenantLinksPermissionsAuthorizer";
+} from "~/createGroupAuthorizer";
 import { createIdentityType } from "~/createIdentityType";
 import { extendTenancy } from "./extendTenancy";
 
@@ -19,7 +19,7 @@ export const createOkta = (config: CreateOktaConfig) => {
             issuer: config.issuer,
             getIdentity: config.getIdentity
         }),
-        createTenantLinksPermissionsAuthorizer({
+        createGroupAuthorizer({
             identityType,
             getGroupSlug: config.getGroupSlug
         }),

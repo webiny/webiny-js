@@ -1,4 +1,4 @@
-import { createMockContextHandler } from "./useTestHandler";
+import { createMockContextHandler } from "./mockContextHandler";
 import { customPermissions } from "./mocks/customPermissions";
 
 describe(`Custom permissions test (no WCP access but we're dealing with an old project)`, () => {

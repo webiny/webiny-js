@@ -52,7 +52,7 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 );
             });
 
-            const groupAuthorizer = createTenantLinkAuthorizer({
+            const tenantLinkAuthorizer = createTenantLinkAuthorizer({
                 identityType: "admin"
             })(context);
 
@@ -61,7 +61,7 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                     return [{ name: "*" }];
                 }
 
-                return groupAuthorizer();
+                return tenantLinkAuthorizer();
             });
         }),
         new BeforeHandlerPlugin<SecurityContext & AdminUsersContext>(context => {
