@@ -50,3 +50,13 @@ export const SkeletonWrapper = styled("div")`
         margin-bottom: 0;
     }
 `;
+
+export const TagListWrapper = styled("div")({
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    padding: "0 10px",
+    '.tag-filter': {
+        width: 110,
+    }
+});

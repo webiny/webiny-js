@@ -5,6 +5,8 @@ import { Tag } from "./Tag";
 import { TagItem } from "@webiny/app-aco/types";
 import { Select } from "@webiny/ui/Select";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
+import { Typography } from "@webiny/ui/Typography";
+import {TagListWrapper} from "./styled";
 
 interface TagListProps {
     loading: boolean;
@@ -17,11 +19,11 @@ interface TagListProps {
 const options = [
     {
         value: "OR",
-        label: "Match any tag"
+        label: "Match any"
     },
     {
         value: "AND",
-        label: "Match all tags"
+        label: "Match all"
     }
 ];
 
@@ -56,15 +58,19 @@ export const TagsList: React.VFC<TagListProps> = ({
     if (tags.length > 0) {
         return (
             <>
-                {tags.length > 1 ? (
-                    <Select
-                        disabled={fmView.tags.activeTags.length < 2}
-                        size={"medium"}
-                        value={fmView.tags.filterMode}
-                        onChange={mode => fmView.tags.setFilterMode(mode)}
-                        options={options}
-                    />
-                ) : null}
+                <TagListWrapper>
+                    <Typography use="subtitle1">Filter by tag</Typography>
+                    {tags.length > 1 ? (
+                        <Select
+                            disabled={fmView.tags.activeTags.length < 2}
+                            size={"small"}
+                            value={fmView.tags.filterMode}
+                            onChange={mode => fmView.tags.setFilterMode(mode)}
+                            options={options}
+                            className="tag-filter"
+                        />
+                    ) : null}
+                </TagListWrapper>
 
                 {tags.map((tagItem, index) => (
                     <Tag
