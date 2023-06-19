@@ -46,7 +46,6 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
 };
 
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolderName }) => {
-    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
     const {
         /**
          * TODO refactor useAcoList to accept exact generic type
@@ -61,7 +60,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
         listItems,
         limit
     } = useAcoList({
-        folderId
+        folderId: initialFolderId || FOLDER_ID_DEFAULT
     });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
@@ -72,9 +71,9 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
     const { canCreate, contentModel } = useContentEntry();
 
     const createEntry = useCallback(() => {
-        const folder = folderId ? `&folderId=${encodeURIComponent(folderId)}` : "";
+        const folder = initialFolderId ? `&folderId=${encodeURIComponent(initialFolderId)}` : "";
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true${folder}`);
-    }, [canCreate, contentModel, folderId]);
+    }, [canCreate, contentModel, initialFolderId]);
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
@@ -191,7 +190,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
             <FolderDialogCreate
                 open={showFoldersDialog}
                 onClose={closeFoldersDialog}
-                currentParentId={folderId || null}
+                currentParentId={initialFolderId || null}
             />
         </>
     );
