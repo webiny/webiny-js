@@ -60,6 +60,20 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
+const rootFolder: FolderItem = {
+    id: "ROOT",
+    title: "Root",
+    parentId: "0",
+    slug: "ROOT",
+    createdOn: "",
+    createdBy: {
+        id: "",
+        displayName: ""
+    },
+    savedOn: "",
+    type: "$ROOT"
+};
+
 export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
     const client = useApolloClient();
     const appContext = useContext(AcoAppContext);
@@ -102,8 +116,10 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                     throw new Error(error?.message || "Could not fetch folders");
                 }
 
+                const foldersWithRoot = [rootFolder, ...(data || [])];
+
                 setFolders(() => {
-                    return data || [];
+                    return foldersWithRoot;
                 });
 
                 setLoading(prev => ({
@@ -111,7 +127,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                     INIT: false
                 }));
 
-                return data;
+                return foldersWithRoot;
             },
 
             async getFolder(id) {

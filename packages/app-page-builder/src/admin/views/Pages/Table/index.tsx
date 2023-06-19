@@ -16,14 +16,14 @@ const t = i18n.ns("app-page-builder/admin/views/pages/table");
 const View: React.VFC = () => {
     const { currentFolderId } = useNavigateFolder();
 
-    const defaultFolderName = t`All pages`;
+    const rootFolderLabel = t`All pages`;
     return (
         <SplitView>
             <LeftPanel span={2}>
-                <Sidebar folderId={currentFolderId} defaultFolderName={defaultFolderName} />
+                <Sidebar folderId={currentFolderId} rootFolderLabel={rootFolderLabel} />
             </LeftPanel>
             <RightPanel span={10}>
-                <Main folderId={currentFolderId} defaultFolderName={defaultFolderName} />
+                <Main folderId={currentFolderId} rootFolderLabel={rootFolderLabel} />
             </RightPanel>
         </SplitView>
     );

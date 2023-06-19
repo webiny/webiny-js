@@ -26,11 +26,11 @@ const disabled = css({
 
 interface Props {
     folderId?: string;
-    defaultFolderName: string;
+    rootFolderLabel: string;
 }
 
-export const Sidebar: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
-    const { navigateToListHome, navigateToFolder } = useNavigateFolder();
+export const Sidebar: React.VFC<Props> = ({ folderId, rootFolderLabel }) => {
+    const { navigateToFolder } = useNavigateFolder();
 
     const { model } = useModel();
 
@@ -62,10 +62,9 @@ export const Sidebar: React.VFC<Props> = ({ folderId, defaultFolderName }) => {
                 </Typography>
             </ModelName>
             <FolderTree
-                title={defaultFolderName}
+                rootFolderLabel={rootFolderLabel}
                 focusedFolderId={folderId}
-                onTitleClick={() => navigateToListHome()}
-                onFolderClick={data => data?.id && navigateToFolder(data?.id)}
+                onFolderClick={data => navigateToFolder(data.id)}
                 enableActions={true}
                 enableCreate={true}
             />

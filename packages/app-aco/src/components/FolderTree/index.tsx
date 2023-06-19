@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useFolders } from "~/hooks/useFolders";
 import { CreateButton } from "./ButtonCreate";
 import { Empty } from "./Empty";
@@ -11,6 +11,7 @@ import { FolderItem } from "~/types";
 export interface FolderTreeProps {
     onFolderClick: (data: FolderItem) => void;
     enableCreate?: boolean;
+    rootFolderLabel?: string;
     enableActions?: boolean;
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
@@ -21,21 +22,35 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
     hiddenFolderIds,
     enableActions,
     enableCreate,
-    onFolderClick
+    onFolderClick,
+    rootFolderLabel
 }) => {
     const { folders } = useFolders();
+    const localFolders = useMemo(() => {
+        if (!folders) {
+            return [];
+        }
+
+        return folders.reduce<FolderItem[]>((acc, item) => {
+            if (item.id === "ROOT" && rootFolderLabel) {
+                return [...acc, { ...item, title: rootFolderLabel }];
+            }
+            return [...acc, item];
+        }, []);
+    }, [folders]);
+
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
     const renderList = () => {
-        if (!folders) {
+        if (!localFolders) {
             return <Loader />;
         }
 
-        if (folders.length > 0) {
+        if (localFolders.length > 0) {
             return (
                 <>
                     <List
-                        folders={folders}
+                        folders={localFolders}
                         onFolderClick={onFolderClick}
                         focusedFolderId={focusedFolderId}
                         hiddenFolderIds={hiddenFolderIds}

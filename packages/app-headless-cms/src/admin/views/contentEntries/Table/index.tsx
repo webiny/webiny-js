@@ -13,15 +13,15 @@ const t = i18n.ns("app-headless-cms/admin/content-entries/table");
 const View: React.VFC = () => {
     const { currentFolderId } = useNavigateFolder();
 
-    const defaultFolderName = t`All entries`;
+    const rootFolderLabel = t`All entries`;
     return (
         <SplitView>
             <LeftPanel span={2}>
-                <Sidebar folderId={currentFolderId} defaultFolderName={defaultFolderName} />
+                <Sidebar folderId={currentFolderId} rootFolderLabel={rootFolderLabel} />
             </LeftPanel>
             <RightPanel span={10}>
                 <ContentEntryProvider>
-                    <Main folderId={currentFolderId} defaultFolderName={defaultFolderName} />
+                    <Main folderId={currentFolderId} rootFolderLabel={rootFolderLabel} />
                 </ContentEntryProvider>
             </RightPanel>
         </SplitView>

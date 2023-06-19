@@ -26,7 +26,7 @@ const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
 
 interface Props {
     folderId?: string;
-    defaultFolderName: string;
+    rootFolderLabel: string;
 }
 
 const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
@@ -43,7 +43,7 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     }, []);
 };
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolderName }) => {
+export const Main: React.VFC<Props> = ({ folderId: initialFolderId, rootFolderLabel }) => {
     const location = useLocation();
     const history = useHistory();
 
@@ -52,7 +52,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
     const {
         records,
         folders,
-        listTitle = defaultFolderName,
+        listTitle = rootFolderLabel,
         meta,
         isListLoading,
         isListLoadingMore,

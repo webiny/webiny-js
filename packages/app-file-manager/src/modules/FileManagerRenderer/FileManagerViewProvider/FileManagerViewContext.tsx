@@ -166,7 +166,10 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
         // Get current folder name
         const currentFolder = originalFolders?.find(folder => folder.id === currentFolderId);
-        const listTitle = currentFolder?.title || "";
+        let listTitle = "";
+        if (currentFolder && currentFolder.id !== "ROOT") {
+            listTitle = currentFolder.title;
+        }
 
         return { folders, listTitle };
     }, [originalFolders, currentFolderId, state.listSort]);
@@ -475,10 +478,10 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             activeTags: state.activeTags,
             filterMode: state.tagsFilterMode,
             setFilterMode(mode) {
-              setState(state => ({
-                  ...state,
-                  tagsFilterMode: mode
-              }))
+                setState(state => ({
+                    ...state,
+                    tagsFilterMode: mode
+                }));
             },
             setActiveTags(activeTags) {
                 setState(state => ({

@@ -2,20 +2,6 @@ import { InitialOpen, NodeModel } from "@minoru/react-dnd-treeview";
 import { DndFolderItem, FolderItem } from "~/types";
 import { ROOT_ID } from "./constants";
 
-const rootFolder: FolderItem = {
-    id: "ROOT",
-    title: "Root",
-    parentId: "0",
-    slug: "ROOT",
-    createdOn: "",
-    createdBy: {
-        id: "",
-        displayName: ""
-    },
-    savedOn: "",
-    type: "$ROOT"
-};
-
 /**
  * Transform an array of folders returned by useFolders hook into an array of elements for the tree component.
  *
@@ -29,7 +15,7 @@ export const createTreeData = (
     focusedNodeId?: string,
     hiddenFolderIds: string[] = []
 ): NodeModel<DndFolderItem>[] => {
-    return [rootFolder, ...folders]
+    return folders
         .map(item => {
             const { id, parentId, title } = item;
 
