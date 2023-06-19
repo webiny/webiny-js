@@ -23,6 +23,8 @@ import accordion from "@webiny/app-page-builder/editor/plugins/elements/accordio
 import accordionItem from "@webiny/app-page-builder/editor/plugins/elements/accordionItem";
 import tabs from "@webiny/app-page-builder/editor/plugins/elements/tabs";
 import tab from "@webiny/app-page-builder/editor/plugins/elements/tab";
+import carousel from "@webiny/app-page-builder/editor/plugins/elements/carousel";
+import carouselElement from "@webiny/app-page-builder/editor/plugins/elements/carouselElement";
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -63,6 +65,9 @@ import accordionSettings from "@webiny/app-page-builder/editor/plugins/elementSe
 import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordionItem";
 import tabsSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tabs";
 import tabSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tab";
+import carouselSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carousel";
+import carouselElementSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselElement";
+import carouselStylesSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselStyles";
 // Responsive editor mode
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
@@ -97,6 +102,8 @@ export default [
     accordionItem(),
     tabs(),
     tab(),
+    carousel(),
+    carouselElement(),
     // grid presets
     ...gridPresets,
     // Element groups
@@ -138,6 +145,9 @@ export default [
     accordionItemSettings,
     tabsSettings,
     tabSettings,
+    carouselSettings,
+    carouselElementSettings,
+    carouselStylesSettings,
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings
