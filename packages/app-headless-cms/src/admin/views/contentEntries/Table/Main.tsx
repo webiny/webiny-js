@@ -17,7 +17,6 @@ import {
 import { Sorting } from "@webiny/ui/DataTable";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
-import { Header as ContentEntryHeader } from "./Header";
 import { useRouter } from "@webiny/react-router";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 import {
@@ -60,7 +59,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         listItems,
         limit
     } = useAcoList({
-        folderId
+        folderId: initialFolderId || FOLDER_ID_DEFAULT
     });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
@@ -136,12 +135,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     }, [initialFolders]);
 
     if (!showEmptyView) {
-        return (
-            <>
-                <ContentEntryHeader />
-                <ContentEntry />
-            </>
-        );
+        return <ContentEntry />;
     }
 
     return (
