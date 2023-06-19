@@ -15,7 +15,7 @@ import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
-import { Table } from "~/admin/components/Table/Table";
+import { Table, TableProps } from "~/admin/components/Table/Table";
 import { MainContainer, Wrapper } from "./styled";
 import { ListMeta, ListSearchRecordsSort, ListSearchRecordsSortItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
@@ -150,6 +150,13 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
         }
     }, [showPreviewDrawer]);
 
+    const onSelectRow: TableProps["onSelectRow"] = rows => {
+        // `row.id` is internally mapped to `page.pid`.
+        const ids = rows.filter(row => row.$type === "RECORD").map(row => row.id);
+
+        setSelected(ids);
+    };
+
     return (
         <>
             <MainContainer>
@@ -186,11 +193,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
                                     records={records}
                                     loading={isListLoading}
                                     openPreviewDrawer={openPreviewDrawer}
-                                    onSelectRow={rows => {
-                                        //@ts-ignore
-                                        const ids = rows.map(row => row.original.pid);
-                                        setSelected(ids);
-                                    }}
+                                    onSelectRow={onSelectRow}
+                                    selectedRows={selected}
                                     sorting={tableSorting}
                                     onSortingChange={setTableSorting}
                                 />
