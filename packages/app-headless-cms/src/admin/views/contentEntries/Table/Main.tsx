@@ -28,7 +28,6 @@ import { FOLDER_ID_DEFAULT } from "~/admin/constants";
 
 interface Props {
     folderId?: string;
-    rootFolderLabel: string;
 }
 
 const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
@@ -45,7 +44,7 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     }, []);
 };
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId, rootFolderLabel }) => {
+export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
     const {
         /**
@@ -54,7 +53,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, rootFolderLa
          */
         records: initialRecords,
         folders: initialFolders,
-        listTitle = rootFolderLabel,
+        listTitle,
         meta,
         isListLoading,
         isListLoadingMore,

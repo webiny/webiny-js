@@ -37,26 +37,12 @@ export const EmptyContainer = styled("div")`
     fill: currentColor;
 `;
 
-export const LoaderContainer = styled("div")`
-    padding: 8px 4px;
-`;
-
-export const SkeletonWrapper = styled("div")`
-    width: 85%;
-    margin: 0 8px 8px;
-    height: 24px;
-
-    &:last-of-type {
-        margin-bottom: 0;
-    }
-`;
-
 export const TagListWrapper = styled("div")({
     display: "flex",
     justifyContent: "space-between",
     marginBottom: 10,
     padding: "0 10px",
-    '.tag-filter': {
-        width: 110,
+    ".tag-filter": {
+        width: 110
     }
 });

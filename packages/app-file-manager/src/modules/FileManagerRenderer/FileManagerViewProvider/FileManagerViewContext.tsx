@@ -149,13 +149,15 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
     const resetSearchParameters = (folderId: string) => {
         const folder = (originalFolders || []).find(folder => folder.id === folderId);
+        const isRoot = folder ? folder.id === "ROOT" : false;
 
         setState(state => ({
             ...state,
             filters: undefined,
             searchQuery: "",
             activeTags: [],
-            searchLabel: folder ? `Searching files in "${folder.title}"` : `Searching all files`
+            searchLabel:
+                folder && !isRoot ? `Search files in "${folder.title}"` : `Search all files`
         }));
     };
 
@@ -166,12 +168,8 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
         // Get current folder name
         const currentFolder = originalFolders?.find(folder => folder.id === currentFolderId);
-        let listTitle = "";
-        if (currentFolder && currentFolder.id !== "ROOT") {
-            listTitle = currentFolder.title;
-        }
 
-        return { folders, listTitle };
+        return { folders, listTitle: currentFolder?.title || "" };
     }, [originalFolders, currentFolderId, state.listSort]);
 
     const getFile = async (id: string) => {

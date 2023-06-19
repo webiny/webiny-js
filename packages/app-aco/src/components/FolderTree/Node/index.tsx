@@ -52,7 +52,7 @@ export const Node: React.VFC<NodeProps> = ({
     const isRoot = node.id === "ROOT";
     // Move the placeholder line to the left based on the element depth within the tree.
     // Let's add some pixels so that the element is detached from the container but takes up the whole length while it's highlighted during dnd.
-    const indent = depth === 1 ? 8 : (depth - 1) * 24 + 8;
+    const indent = depth === 1 ? 4 : (depth - 1) * 20 + 8;
 
     const dragOverProps = useDragOver(node.id, isOpen, onToggle);
 

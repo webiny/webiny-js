@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
-import { Loader } from "./Loader";
+import { Loader } from "@webiny/app-aco";
 import { Empty } from "./Empty";
 import { Tag } from "./Tag";
 import { TagItem } from "@webiny/app-aco/types";
 import { Select } from "@webiny/ui/Select";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { Typography } from "@webiny/ui/Typography";
-import {TagListWrapper} from "./styled";
+import { TagListWrapper } from "./styled";
 
 interface TagListProps {
     loading: boolean;

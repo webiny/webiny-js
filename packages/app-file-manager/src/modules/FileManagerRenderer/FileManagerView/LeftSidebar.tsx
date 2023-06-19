@@ -1,26 +1,23 @@
 import React from "react";
+import styled from "@emotion/styled";
 import { FolderTree } from "@webiny/app-aco";
-import { css } from "emotion";
 
-const style = {
-    leftDrawer: css({
-        float: "left",
-        display: "block",
-        width: 269,
-        height: "calc(100vh - 64px)",
-        backgroundColor: "var(--mdc-theme-surface)",
-        borderRight: "1px solid var(--mdc-theme-on-background)",
-        overflowY: "scroll"
-    }),
-    wrapper: css({
-        padding: "8px"
-    }),
-    divider: css({
-        height: "1px",
-        backgroundColor: "var(--mdc-theme-on-background)",
-        margin: "12px 8px 16px"
-    })
-};
+const Divider = styled.div`
+    height: 1px;
+    background-color: var(--mdc-theme-on-background);
+    margin: 12px 8px;
+`;
+
+const LeftSidebarContainer = styled.div`
+    padding: 8px;
+    float: left;
+    display: block;
+    width: 269px;
+    height: calc(100vh - 64px);
+    background-color: var(--mdc-theme-surface);
+    border-right: 1px solid var(--mdc-theme-on-background);
+    overflow-y: scroll;
+`;
 
 interface LeftSidebarProps {
     currentFolder?: string;
@@ -34,17 +31,15 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
     children
 }) => {
     return (
-        <div className={style.leftDrawer}>
-            <div className={style.wrapper}>
-                <FolderTree
-                    focusedFolderId={currentFolder}
-                    onFolderClick={data => onFolderClick(data.id)}
-                    enableActions={true}
-                    enableCreate={true}
-                />
-                <div className={style.divider} />
-                {children}
-            </div>
-        </div>
+        <LeftSidebarContainer>
+            <FolderTree
+                focusedFolderId={currentFolder}
+                onFolderClick={data => onFolderClick(data.id)}
+                enableActions={true}
+                enableCreate={true}
+            />
+            <Divider />
+            {children}
+        </LeftSidebarContainer>
     );
 };

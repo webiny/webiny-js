@@ -62,9 +62,9 @@ const defaultLoading: Record<LoadingActions, boolean> = {
 
 const rootFolder: FolderItem = {
     id: "ROOT",
-    title: "Root",
+    title: "Home",
     parentId: "0",
-    slug: "ROOT",
+    slug: "",
     createdOn: "",
     createdBy: {
         id: "",

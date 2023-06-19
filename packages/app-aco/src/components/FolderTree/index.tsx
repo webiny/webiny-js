@@ -8,6 +8,8 @@ import { FolderDialogCreate } from "~/components";
 import { Container } from "./styled";
 import { FolderItem } from "~/types";
 
+export { Loader };
+
 export interface FolderTreeProps {
     onFolderClick: (data: FolderItem) => void;
     enableCreate?: boolean;
@@ -42,7 +44,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
     const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
     const renderList = () => {
-        if (!localFolders) {
+        if (!folders) {
             return <Loader />;
         }
 

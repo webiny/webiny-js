@@ -146,7 +146,7 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
         });
 
         const currentFolder = originalFolders?.find(folder => folder.id === folderId);
-        setListTitle(currentFolder?.title || undefined);
+        setListTitle(currentFolder?.title);
     }, [originalFolders, folderId]);
 
     /**
