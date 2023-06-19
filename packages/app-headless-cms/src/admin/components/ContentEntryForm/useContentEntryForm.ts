@@ -20,6 +20,7 @@ import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
+import { ROOT_ID } from "@webiny/app-aco/components/FolderTree/List/constants";
 
 /**
  * Used for some fields to convert their values.
@@ -98,9 +99,16 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         []
     );
 
-    const goToRevision = useCallback(id => {
-        history.push(`/cms/content-entries/${model.modelId}?id=${encodeURIComponent(id)}`);
-    }, []);
+    const goToRevision = useCallback(
+        id => {
+            const fId = query.get("folderId");
+            const folderId = fId ? `&folderId=${encodeURIComponent(fId)}` : "";
+            history.push(
+                `/cms/content-entries/${model.modelId}?id=${encodeURIComponent(id)}${folderId}`
+            );
+        },
+        [query]
+    );
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
@@ -153,7 +161,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                          * TODO: introduce hook like onEntryPublish, or similar.
                          */
                         wbyAco_location: {
-                            folderId: query.get("folderId")
+                            folderId: query.get("folderId") || ROOT_ID
                         }
                     }
                 },
