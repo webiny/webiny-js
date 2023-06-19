@@ -17,7 +17,7 @@ export const webinySelect = css`
         left: 0;
         right: 0;
     }
-
+    
     &.webiny-ui-select--size-medium {
         &.mdc-select, .mdc-select__anchor {
             height: 40px;
@@ -33,10 +33,12 @@ export const webinySelect = css`
                 font-size: 0.95rem;
                 height: 40px;
             }
-        &.mdc-select--box {
-            .mdc-select__native-control {
-                height: 40px;
-                paddingTop: 5px;
+
+            &.mdc-select--box {
+                .mdc-select__native-control {
+                    height: 40px;
+                    paddingTop: 5px;
+                }
             }
         }
     }
@@ -56,10 +58,11 @@ export const webinySelect = css`
                 font-size: 0.9rem;
                 height: 30px;
             }
-        &.mdc-select--box {
-            .mdc-select__native-control {
-                height: 30px;
-                paddingTop: 5px;
+            &.mdc-select--box {
+                .mdc-select__native-control {
+                    height: 30px;
+                    paddingTop: 5px;
+                }
             }
         }
     }
