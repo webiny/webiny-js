@@ -31,7 +31,7 @@ import tenantManager from "@webiny/api-tenant-manager";
 /**
  * APW
  */
-import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
+import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
@@ -59,6 +59,12 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
+        createHeadlessCmsGraphQL(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
                 documentClient
@@ -84,12 +90,6 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient
-            })
-        }),
-        createHeadlessCmsGraphQL(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })

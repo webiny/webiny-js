@@ -122,6 +122,7 @@ context("Search, Sort and Filter Content Entries", () => {
         );
     });
 
+    // TODO - fix this test
     it.skip("should search entries", () => {
         // Should show "no records found" when searching for non existing entry
         cy.findByTestId("default-data-list.search").within(() => {
@@ -149,6 +150,7 @@ context("Search, Sort and Filter Content Entries", () => {
         });
     });
 
+    // TODO - fix this test
     it.skip("should sort entries", () => {
         cy.visit(`/cms/content-entries/${createdModel.modelId}`);
         // Sort groups by "Newest to Oldest"
@@ -186,6 +188,7 @@ context("Search, Sort and Filter Content Entries", () => {
         });
     });
 
+    // TODO - fix this test
     it.skip("should filter entries by status", () => {
         cy.visit(`/cms/content-entries/${createdModel.modelId}`);
         // Get all items with "draft" status

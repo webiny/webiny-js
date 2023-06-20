@@ -13,6 +13,7 @@ context("File Manager View - CRUD", () => {
         cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
     });
 
+    // TODO - fix this test
     it.skip("should upload, edit and delete image", () => {
         // Drop file
         cy.findByTestId("fm-list-wrapper").dropFile("sample.jpeg", "image/jpeg");
@@ -47,6 +48,7 @@ context("File Manager View - CRUD", () => {
         cy.findByText("File deleted successfully.");
     });
 
+    // TODO - fix this test
     it.skip("only images should contain thumbnail and only images should be displayed as avatar options", () => {
         // Add 5 files (text/pdf/png/gif/jpeg).
         const files = [
@@ -76,6 +78,7 @@ context("File Manager View - CRUD", () => {
         cy.findAllByTestId("fm-list-wrapper-file").should("have.length", 3);
     });
 
+    // TODO - fix this test
     it.skip("should edit and save file using the flip feature", () => {
         const fileName = "sample_2.jpeg";
 
@@ -157,7 +160,7 @@ context("File Manager View - CRUD", () => {
             cy.contains(fileDetail.expectedUploadMessage).should("exist");
         });
     });
-
+    // TODO - fix this test
     it.skip("should test adding duplicate tag", () => {
         const fileName = "sample_2.jpeg";
 
@@ -186,6 +189,7 @@ context("File Manager View - CRUD", () => {
         cy.get("ul > li > span").contains("No results.").should("be.visible");
     });
 
+    // TODO - fix this test
     it.skip("should test adding 5 tags per file", () => {
         const fileDetails = [
             {
@@ -271,6 +275,7 @@ context("File Manager View - CRUD", () => {
         });
     });
 
+    // TODO - fix this test
     it.skip("should test drag and drop bulk files", () => {
         const fileNames = ["sample.jpeg", "sample_2.jpeg", "pngPicture.PNG"];
 
