@@ -24,6 +24,7 @@ export const useRecords = (folderId?: string) => {
         moveRecord,
         deleteRecord,
         addRecordToCache,
+        updateRecordInCache,
         removeRecordFromCache
     } = context;
 
@@ -76,7 +77,8 @@ export const useRecords = (folderId?: string) => {
                 return deleteRecord(record);
             },
             addRecordToCache,
-            removeRecordFromCache
+            removeRecordFromCache,
+            updateRecordInCache
         }),
         [records, loading, meta]
     );

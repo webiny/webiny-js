@@ -14,6 +14,7 @@ import {
 import { useApolloClient, useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
+import { useRecords } from "@webiny/app-aco";
 
 interface CreateRevisionHandler {
     (id?: string): Promise<void>;
@@ -54,6 +55,8 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { modelId } = contentModel;
+
+    const { updateRecordInCache } = useRecords();
 
     const { CREATE_REVISION, UNPUBLISH_REVISION } = useMemo(() => {
         return {
@@ -143,18 +146,20 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
                         const response = await publishEntryRevision({
                             model: contentModel,
-                            entry: entry,
+                            entry,
                             id: id || entry.id,
                             listQueryVariables
                         });
 
                         setLoading(false);
 
-                        const { error } = response;
+                        const { error, entry: entryResult } = response;
                         if (error) {
                             showSnackbar(error.message);
                             return;
                         }
+
+                        updateRecordInCache(entryResult);
 
                         showSnackbar(
                             <span>

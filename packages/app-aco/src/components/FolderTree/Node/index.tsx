@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ReactComponent as ArrowRight } from "@material-symbols/svg-400/rounded/arrow_right.svg";
 import { ReactComponent as Folder } from "@material-symbols/svg-400/rounded/folder-fill.svg";
 import { ReactComponent as FolderOpen } from "@material-symbols/svg-400/rounded/folder_open-fill.svg";
@@ -7,6 +7,7 @@ import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 import { MenuActions } from "../MenuActions";
 import { Container, ArrowIcon, FolderIcon, Text, Content } from "./styled";
 import { DndFolderItem, FolderItem } from "~/types";
+import { parseIdentifier } from "@webiny/utils";
 
 type NodeProps = {
     node: NodeModel<DndFolderItem>;
@@ -69,6 +70,11 @@ export const Node: React.VFC<NodeProps> = ({
         }
     };
 
+    const id = useMemo(() => {
+        const { id } = parseIdentifier(String(node.id));
+        return id;
+    }, [node.id]);
+
     return (
         <Container
             isFocused={!!node.data?.isFocused}
@@ -80,7 +86,7 @@ export const Node: React.VFC<NodeProps> = ({
                     <ArrowRight />
                 </ArrowIcon>
             )}
-            <Content onClick={handleClick}>
+            <Content onClick={handleClick} className={`aco-folder-${id}`}>
                 <FolderNode
                     isRoot={isRoot}
                     text={node.text}

@@ -49,12 +49,6 @@ const OnEntryPublish: React.FC = () => {
             mutation,
             variables: {
                 revision: id
-            },
-            update: (cache, result) => {
-                const content = result.data?.content;
-                if (!content || !content.data || content.error) {
-                    return;
-                }
             }
         });
 

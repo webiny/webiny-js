@@ -95,7 +95,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const [loading, setLoading] = useState(false);
     const entry = useEntry(params.entry);
 
-    const { addRecordToCache } = useRecords();
+    const { addRecordToCache, updateRecordInCache } = useRecords();
 
     const renderPlugins = useMemo(
         () => plugins.byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
@@ -229,6 +229,9 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             resetInvalidFieldValues();
             showSnackbar("Content saved successfully.");
             const { data: entry } = response.data.content;
+
+            updateRecordInCache(entry);
+
             return entry;
         },
         [model.modelId]

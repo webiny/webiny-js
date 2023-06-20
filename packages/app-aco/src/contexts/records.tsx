@@ -60,6 +60,7 @@ interface SearchRecordsContext {
     deleteRecord(record: DeletableSearchRecordItem): Promise<true>;
     listTags: (params: ListTagsParams) => Promise<TagItem[]>;
     addRecordToCache: (record: any) => void;
+    updateRecordInCache: (record: any) => void;
     removeRecordFromCache: (id: string) => void;
 }
 
@@ -170,6 +171,33 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             tags,
             loading,
             meta,
+            addRecordToCache: (record: any) => {
+                setRecords(prev => {
+                    return [record, ...prev];
+                });
+            },
+            updateRecordInCache: (record: any) => {
+                const index = records.findIndex(item => item.id === record.id);
+                if (index === -1) {
+                    return;
+                }
+                setRecords(prev => {
+                    const next = [...prev];
+
+                    next[index] = {
+                        ...prev[index],
+                        ...record
+                    };
+
+                    return next;
+                });
+            },
+            removeRecordFromCache: (id: string) => {
+                setRecords(prev => {
+                    return prev.filter(record => record.id !== id);
+                });
+            },
+
             async listRecords(params) {
                 const { after, limit, sort: sorting, search, where } = params;
 
@@ -506,22 +534,13 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 setTags(data);
 
                 return data;
-            },
-            removeRecordFromCache: (id: string) => {
-                setRecords(prev => {
-                    return prev.filter(record => record.id !== id);
-                });
-            },
-            addRecordToCache: (record: any) => {
-                setRecords(prev => {
-                    return [record, ...prev];
-                });
             }
         };
     }, [
         app.id,
         model.modelId,
         records,
+        setRecords,
         tags,
         meta,
         loading,
