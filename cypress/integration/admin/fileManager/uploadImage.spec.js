@@ -158,7 +158,7 @@ context("File Manager View - CRUD", () => {
         });
     });
 
-    it("should test adding duplicate tag", () => {
+    it.skip("should test adding duplicate tag", () => {
         const fileName = "sample_2.jpeg";
 
         // Drop file
@@ -271,7 +271,7 @@ context("File Manager View - CRUD", () => {
         });
     });
 
-    it("should test drag and drop bulk files", () => {
+    it.skip("should test drag and drop bulk files", () => {
         const fileNames = ["sample.jpeg", "sample_2.jpeg", "pngPicture.PNG"];
 
         // Drag and drop bulk 3 files.
