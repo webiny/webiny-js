@@ -13,17 +13,20 @@ import {
     BulletListAction,
     ImageAction,
     LinkAction,
-    QuoteAction
-} from "@webiny/lexical-editor";
-import { TypographyDropDown } from "~/admin/components/LexicalCmsEditor/TypographyDropDown";
-import { CompositionScope } from "@webiny/react-composition";
-import { WebinyListPlugin } from "@webiny/lexical-editor/plugins/WebinyListPLugin/WebinyListPlugin";
-import {
+    QuoteAction,
+    ImagesPlugin,
+    QuotePlugin,
     ClickableLinkPlugin,
     CodeHighlightPlugin,
     FloatingLinkEditorPlugin,
-    LinkPlugin
+    LinkPlugin,
+    WebinyListPlugin,
+    TypographyPlugin,
+    FontColorPlugin
 } from "@webiny/lexical-editor";
+import { TypographyDropDown } from "~/admin/components/LexicalCmsEditor/TypographyDropDown";
+import { CompositionScope } from "@webiny/react-composition";
+import {} from "@webiny/lexical-editor";
 
 const { ToolbarElement, Plugin } = LexicalEditorConfig;
 
@@ -47,14 +50,19 @@ export const LexicalEditorCmsPlugin: FC = () => {
                 <ToolbarElement name="divider3" element={<Divider />} />
                 <ToolbarElement name="link" element={<LinkAction />} />
                 <ToolbarElement name="quote" element={<QuoteAction />} />
+                {/* Plugins */}
+                <Plugin name={"fontColor"} element={<FontColorPlugin />} />
                 <Plugin name={"webinyList"} element={<WebinyListPlugin />} />
                 <Plugin name={"codeHighlight"} element={<CodeHighlightPlugin />} />
+                <Plugin name={"typography"} element={<TypographyPlugin />} />
                 <Plugin name={"link"} element={<LinkPlugin />} />
                 <Plugin name={"clickableLink"} element={<ClickableLinkPlugin />} />
                 <Plugin
                     name={"floatingLinkEditor"}
                     element={<FloatingLinkEditorPlugin anchorElem={document.body} />}
                 />
+                <Plugin name={"images"} element={<ImagesPlugin />} />
+                <Plugin name={"quote"} element={<QuotePlugin />} />
                 <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
             </LexicalEditorConfig>
         </CompositionScope>

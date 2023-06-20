@@ -178,7 +178,10 @@ const useToolbar: FC<useToolbarProps> = ({
                 const selectionState = getLexicalTextSelectionState(toolbarActiveEditor, selection);
                 if (selectionState) {
                     setTextBlockSelection(selectionState);
-                    if (selectionState.selectedText !== "") {
+                    if (
+                        selectionState.selectedText !== "" &&
+                        !selectionState.state?.link.isSelected
+                    ) {
                         setNodeIsText(true);
                     } else {
                         setNodeIsText(false);

@@ -26,9 +26,6 @@ export { ImageAction } from "~/components/ToolbarActions/ImageAction";
 // toolbars
 export { Toolbar } from "~/components/Toolbar/Toolbar";
 export { StaticToolbar } from "~/components/Toolbar/StaticToolbar";
-// presets
-export { ParagraphToolbarPreset } from "~/components/ToolbarPresets/ParagraphToolbarPreset";
-export { HeadingToolbarPreset } from "./components/ToolbarPresets/HeadingToolbarPreset";
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
@@ -40,6 +37,11 @@ export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlight
 export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/LexicalUpdateStatePlugin";
+export { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
+export { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
+export { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
+export { WebinyListPlugin } from "~/plugins/WebinyListPLugin/WebinyListPlugin";
+export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";

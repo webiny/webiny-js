@@ -16,17 +16,13 @@ import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-import { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
-import { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
-import { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { ClassNames } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
-import { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 import {
     LexicalEditorWithConfig,
     useLexicalEditorConfig
@@ -146,10 +142,6 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     <OnChangePlugin onChange={handleOnChange} />
                     {value && <LexicalUpdateStatePlugin value={value} />}
                     <ClearEditorPlugin />
-                    <FontColorPlugin />
-                    <TypographyPlugin />
-                    <QuotePlugin />
-                    <ImagesPlugin />
                     <HistoryPlugin externalHistoryState={historyState} />
                     {/* Events */}
                     {onBlur && <BlurEventPlugin onBlur={onBlur} />}

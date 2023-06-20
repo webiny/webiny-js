@@ -1,9 +1,5 @@
 import React from "react";
-import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-import { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
-import { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 import { RichTextEditor, RichTextEditorProps } from "~/components/Editor/RichTextEditor";
-import { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
 
 interface HeadingEditorProps extends RichTextEditorProps {
@@ -19,10 +15,6 @@ export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, 
             {...rest}
             styles={{ padding: 5 }}
         >
-            <LinkPlugin />
-            <QuotePlugin />
-            <ClickableLinkPlugin />
-            <FloatingLinkEditorPlugin anchorElem={document.body} />
             {rest?.children}
         </RichTextEditor>
     );
