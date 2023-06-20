@@ -157,7 +157,7 @@ describe("Headless CMS - Content Entries", () => {
                     cy.findByText(newEntryTitle).should("exist");
                 })
                 .click({ force: true });
-            cy.get(".mdc-text-field__input").should("exist");
+            cy.get(".mdc-text-field__input").should("exist").wait(100);
 
             // Edit an entry
             cy.findByTestId("fr.input.text.Title").clear().type(newEntryTitle2);
@@ -217,7 +217,7 @@ describe("Headless CMS - Content Entries", () => {
                     .first()
                     .within(() => {
                         cy.get("tr").within(() => {
-                            cy.findByText(newEntryTitle).should("exist");
+                            cy.findByText(newEntryTitle2).should("exist");
                             cy.findByText(/Published \(v2\)/i).should("exist");
                             //cy.findByText(/\(v2\)/i).should("exist");
                         });

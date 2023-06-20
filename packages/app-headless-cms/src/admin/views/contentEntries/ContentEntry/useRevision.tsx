@@ -101,6 +101,8 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             return;
                         }
 
+                        updateRecordInCache(data);
+
                         history.push(
                             `/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`
                         );

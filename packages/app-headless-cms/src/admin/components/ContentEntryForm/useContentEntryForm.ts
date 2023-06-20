@@ -260,6 +260,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             }
             resetInvalidFieldValues();
 
+            updateRecordInCache(newRevision);
+
             showSnackbar("A new revision was created!");
             goToRevision(newRevision.id);
 

@@ -40,6 +40,7 @@ import {
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks";
+import { parseIdentifier } from "@webiny/utils";
 
 interface ListTagsParams {
     where?: ListTagsWhereQueryVariables;
@@ -177,7 +178,11 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 });
             },
             updateRecordInCache: (record: any) => {
-                const index = records.findIndex(item => item.id === record.id);
+                const { id: recordId } = parseIdentifier(record.id);
+                const index = records.findIndex(item => {
+                    const { id: itemId } = parseIdentifier(item.id);
+                    return itemId === recordId;
+                });
                 if (index === -1) {
                     return;
                 }
