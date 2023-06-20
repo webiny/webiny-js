@@ -66,6 +66,9 @@ export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams):
             await storageOperations.deleteFolder({ id });
             await onFolderAfterDelete.publish({ folder });
             return true;
+        },
+        async getHierarchyById(id: string) {
+            return storageOperations.getFolderHierarchyById({ id });
         }
     };
 };

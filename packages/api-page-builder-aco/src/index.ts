@@ -1,5 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 
+import { getFolderHierarchyByPageId } from "~/page/crud";
 import { createImportExportPageHooks, createPageHooks } from "~/page/hooks";
 import { createPageProcessors } from "~/page/processors";
 import { getSearchablePageContent } from "~/utils/getSearchableContent";
@@ -17,6 +18,9 @@ const setupContext = (context: PbAcoContext) => {
         },
         async getSearchablePageContent(page) {
             return getSearchablePageContent(context, page, pageSearchProcessors);
+        },
+        async getFolderHierarchyByPageId(pageId: string) {
+            return getFolderHierarchyByPageId(context, pageId);
         }
     };
 };

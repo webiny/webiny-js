@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 
 import { FOLDER_MODEL_ID } from "./folder.model";
 import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { createFolderHierarchy } from "~/utils/createFolderHierarchy";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { getFolderFieldValues } from "~/utils/getFieldValues";
@@ -144,6 +145,22 @@ export const createFolderOperations = (
             return withModel(async model => {
                 await cms.deleteEntry(model, id);
                 return true;
+            });
+        },
+        getFolderHierarchyById({ id }) {
+            return withModel(async model => {
+                const folder = await getFolder({ id });
+
+                const [entries] = await cms.listLatestEntries(model, {
+                    where: {
+                        type: folder.type
+                    },
+                    limit: 10000
+                });
+
+                const folders = entries.map(entry => getFolderFieldValues(entry, baseFields));
+
+                return createFolderHierarchy({ id, folders });
             });
         }
     };
