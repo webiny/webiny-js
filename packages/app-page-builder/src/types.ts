@@ -334,6 +334,8 @@ export interface PbPageDataSettings {
     social?: PbPageDataSettingsSocial;
 }
 
+export type PbPageDataStatus = string | "draft" | "published" | "unpublished";
+
 export interface PbPageData {
     id: string;
     pid: string;
@@ -345,7 +347,7 @@ export interface PbPageData {
     locked: boolean;
     version?: number;
     category: PbCategory;
-    status: string | "draft" | "published" | "unpublished";
+    status: PbPageDataStatus;
     settings: PbPageDataSettings;
     createdOn: string;
     savedOn: string;

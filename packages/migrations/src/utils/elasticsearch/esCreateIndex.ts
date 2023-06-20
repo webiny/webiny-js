@@ -11,7 +11,7 @@ export interface EsCreateIndexParams {
     isHeadlessCmsModel: boolean;
 }
 
-export const esCreateIndex = async (params: EsCreateIndexParams) => {
+export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string> => {
     const { elasticsearchClient, tenant, locale, type, isHeadlessCmsModel } = params;
 
     try {
@@ -19,7 +19,7 @@ export const esCreateIndex = async (params: EsCreateIndexParams) => {
         const exist = await esGetIndexExist(params);
 
         if (exist) {
-            return;
+            return index;
         }
 
         // Get registered plugins
@@ -37,6 +37,7 @@ export const esCreateIndex = async (params: EsCreateIndexParams) => {
             index,
             ...(plugin && { body: plugin.body })
         });
+        return index;
     } catch (ex) {
         throw new WebinyError(
             ex.message || "Could not create Elasticsearch index.",

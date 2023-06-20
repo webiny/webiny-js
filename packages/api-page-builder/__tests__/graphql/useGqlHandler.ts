@@ -72,6 +72,8 @@ import { createTenancyAndSecurity } from "../tenancySecurity";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { PageBuilderStorageOperations } from "~/types";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 
 interface Params {
     permissions?: any;
@@ -84,18 +86,21 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
     const i18nStorage = getStorageOps("i18n");
     const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const handler = createHandler({
         plugins: [
+            ...cmsStorage.plugins,
             ...pageBuilderStorage.plugins,
             createWcpContext(),
             createWcpGraphQL(),
-            createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
             graphqlHandler(),
             ...createTenancyAndSecurity({ permissions, identity }),
             i18nContext(),
             i18nStorage.storageOperations as any,
             mockLocalesPlugins(),
+            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createFileManagerContext({ storageOperations: fileManagerStorage.storageOperations }),
             createPageBuilderGraphQL(),
             createPageBuilderContext({ storageOperations: pageBuilderStorage.storageOperations }),
             prerenderingHookPlugins(),
@@ -108,6 +113,13 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
                         process: "process"
                     }
                 }
+            }),
+            new CmsParametersPlugin(async context => {
+                const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+                return {
+                    type: "manage",
+                    locale
+                };
             }),
             {
                 type: "api-file-manager-storage",

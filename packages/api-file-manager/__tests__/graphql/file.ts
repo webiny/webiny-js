@@ -23,7 +23,7 @@ const ERROR_FIELD = /* GraphQL */ `
 
 export const CREATE_FILE = (fields: string[] = []) => {
     return /* GraphQL */ `
-        mutation CreateFile($data: CreateFileInput!) {
+        mutation CreateFile($data: FmFileCreateInput!) {
             fileManager {
                 createFile(data: $data) {
                     data ${DATA_FIELD_WITH_ID(fields)}
@@ -36,7 +36,7 @@ export const CREATE_FILE = (fields: string[] = []) => {
 
 export const CREATE_FILES = (fields: string[] = []) => {
     return /* GraphQL */ `
-        mutation CreateFiles($data: [CreateFileInput]!) {
+        mutation CreateFiles($data: [FmFileCreateInput!]!) {
             fileManager {
                 createFiles(data: $data) {
                     data ${DATA_FIELD_WITH_ID(fields)}
@@ -49,7 +49,7 @@ export const CREATE_FILES = (fields: string[] = []) => {
 
 export const UPDATE_FILE = (fields: string[] = []) => {
     return /* GraphQL */ `
-        mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
+        mutation UpdateFile($id: ID!, $data: FmFileUpdateInput!) {
             fileManager {
                 updateFile(id: $id, data: $data) {
                     data ${DATA_FIELD_WITH_ID(fields)}
@@ -73,9 +73,9 @@ export const DELETE_FILE = /* GraphQL */ `
 
 export const GET_FILE = (fields: string[] = []) => {
     return /* GraphQL */ `
-        query GetFile($id: ID!, $where: JSON, $sort: String) {
+        query GetFile($id: ID!) {
             fileManager {
-                getFile(id: $id, where: $where, sort: $sort) {
+                getFile(id: $id) {
                     data ${DATA_FIELD_WITH_ID(fields)}
                     error ${ERROR_FIELD}
                 }
@@ -87,22 +87,16 @@ export const GET_FILE = (fields: string[] = []) => {
 export const LIST_FILES = (fields: string[]) => {
     return /* GraphQL */ `
         query ListFiles(
+            $search: String,
             $limit: Int,
             $after: String,
-            $types: [String],
-            $tags: [String],
-            $ids: [ID],
-            $search: String,
-            $where: FileWhereInput
+            $where: FmFileListWhereInput
         ) {
             fileManager {
                 listFiles(
+                    search: $search,
                     limit: $limit,
                     after: $after,
-                    types: $types,
-                    tags: $tags,
-                    ids: $ids,
-                    search: $search,
                     where: $where
                 ) {
                     data ${DATA_FIELD_WITH_ID(fields)}
@@ -119,7 +113,7 @@ export const LIST_FILES = (fields: string[]) => {
 };
 
 export const LIST_TAGS = /* GraphQL */ `
-    query ListTags($where: TagWhereInput) {
+    query ListTags($where: FmTagsListWhereInput) {
         fileManager {
             listTags(where: $where) {
                 data {

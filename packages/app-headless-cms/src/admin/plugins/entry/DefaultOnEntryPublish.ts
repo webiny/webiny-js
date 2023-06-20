@@ -4,11 +4,10 @@ import {
     CmsEntryPublishMutationResponse,
     CmsEntryPublishMutationVariables,
     createPublishMutation
-} from "~/admin/graphql/contentEntries";
+} from "@webiny/app-headless-cms-common";
 import { CmsErrorResponse, CmsModel } from "~/types";
 import { useCms } from "~/admin/hooks";
 import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
-import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 
 interface Mutations {
     [key: string]: DocumentNode;
@@ -50,13 +49,6 @@ const OnEntryPublish: React.FC = () => {
             mutation,
             variables: {
                 revision: id
-            },
-            update: (cache, result) => {
-                const content = result.data?.content;
-                if (!content || !content.data || content.error) {
-                    return;
-                }
-                GQLCache.unpublishPreviouslyPublishedRevision(model, cache, id);
             }
         });
 

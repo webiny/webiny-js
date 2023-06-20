@@ -54,6 +54,7 @@
     "@types/extract-zip": "^1.6.2",
     "@types/node-fetch": "^2.6.1",
     "@types/rimraf": "^3.0.2",
+    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",

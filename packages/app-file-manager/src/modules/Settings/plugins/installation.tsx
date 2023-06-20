@@ -87,7 +87,11 @@ const plugin: AdminInstallationPlugin = {
     name: "admin-installation-fm",
     type: "admin-installation",
     title: t`File Manager`,
-    dependencies: ["admin-installation-security", "admin-installation-i18n"],
+    dependencies: [
+        "admin-installation-security",
+        "admin-installation-i18n",
+        "admin-installation-cms"
+    ],
     secure: true,
     async getInstalledVersion({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

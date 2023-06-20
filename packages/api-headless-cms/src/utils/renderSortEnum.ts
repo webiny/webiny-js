@@ -6,7 +6,7 @@ interface RenderSortEnumParams {
     model: CmsModel;
     fields: CmsModelField[];
     fieldTypePlugins: CmsFieldTypePlugins;
-    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
+    sorterPlugins?: CmsGraphQLSchemaSorterPlugin[];
 }
 interface RenderSortEnum {
     (params: RenderSortEnumParams): string;
@@ -47,6 +47,9 @@ export const renderSortEnum: RenderSortEnum = ({
         }
         sorters.push(`${field.fieldId}_ASC`);
         sorters.push(`${field.fieldId}_DESC`);
+    }
+    if (!sorterPlugins) {
+        return sorters.join("\n");
     }
 
     return sorterPlugins

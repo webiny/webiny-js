@@ -25,7 +25,7 @@ export const TableActions = ({ selected, onImportPage }: TableActionsProps): Rea
     const renderExportPagesTooltip = (selected: string[]) => {
         const count = selected.length;
         if (count > 0) {
-            return t`Export {count|count:1:page:default:pages}.`({
+            return t`Export {count|count:1:page:default:pages}`({
                 count
             });
         }

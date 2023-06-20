@@ -1,6 +1,5 @@
 import React from "react";
 import { css } from "emotion";
-import { useRouter } from "@webiny/react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
@@ -10,6 +9,7 @@ import { useRevisions } from "~/pageEditor/hooks/useRevisions";
 import { RevisionItemAtomType } from "~/pageEditor/state";
 import { createComponentPlugin } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -42,13 +42,13 @@ const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
 
 const Revisions: React.FC = () => {
     const [revisions] = useRevisions();
-    const { history } = useRouter();
+    const { navigateToPageEditor } = useNavigatePage();
 
     return (
         <Menu
             className={menuList}
             onSelect={evt => {
-                history.push(`/page-builder/editor/${revisions[evt.detail.index].id}`);
+                navigateToPageEditor(revisions[evt.detail.index].id);
             }}
             handle={
                 <ButtonDefault className={buttonStyle}>

@@ -9,6 +9,7 @@ import {
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { sanitizeFormSubmissionData, flattenSubmissionMeta } from "~/plugins/crud/utils";
 import { FormBuilderContext, FbFormField } from "~/types";
+import { mdbid } from "@webiny/utils";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
     type: "graphql-schema",
@@ -619,15 +620,22 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         const csv = await parseAsync(rows, {
                             fields: ["Date submitted (UTC)", ...Object.values(fields)]
                         });
+
                         const buffer = Buffer.from(csv);
-                        const { key } = await fileManager.storage.upload({
+                        const id = mdbid();
+
+                        const fileData = {
                             buffer,
+                            id,
                             size: buffer.length,
                             name: "form_submissions_export.csv",
+                            key: `${id}/form_submissions_export.csv`,
                             type: "text/csv",
                             keyPrefix: "form-submissions",
                             hideInFileManager: true
-                        });
+                        };
+
+                        const { key } = await fileManager.storage.upload(fileData);
 
                         const settings = await fileManager.getSettings();
 

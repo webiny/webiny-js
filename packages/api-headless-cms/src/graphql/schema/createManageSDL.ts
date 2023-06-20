@@ -60,6 +60,10 @@ export const createManageSDL: CreateManageSDL = ({
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
+    const inputGraphQLFields = inputFields.map(f => f.fields).join("\n");
+    /**
+     * TODO check for 5.38.0
+     */
     return /* GraphQL */ `
         """${model.description || singularName}"""
         type ${singularName} {
@@ -72,6 +76,8 @@ export const createManageSDL: CreateManageSDL = ({
             modifiedBy: CmsIdentity
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
+            # Advanced Content Organization - make required in 5.38.0
+            wbyAco_location: WbyAcoLocation
         }
 
         type ${singularName}Meta {
@@ -97,11 +103,11 @@ export const createManageSDL: CreateManageSDL = ({
         ${fields.map(f => f.typeDefs).join("\n")}
 
         ${inputFields.map(f => f.typeDefs).join("\n")}
-
-
+        
         input ${singularName}Input {
             id: ID
-            ${inputFields.map(f => f.fields).join("\n")}
+            wbyAco_location: WbyAcoLocationInput
+            ${inputGraphQLFields}
         }
 
         input ${singularName}GetWhereInput {
@@ -109,6 +115,7 @@ export const createManageSDL: CreateManageSDL = ({
         }
 
         input ${singularName}ListWhereInput {
+            wbyAco_location: WbyAcoLocationWhereInput
             ${listFilterFieldsRender}
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]

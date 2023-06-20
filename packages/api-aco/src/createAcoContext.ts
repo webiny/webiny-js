@@ -1,21 +1,19 @@
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
-import WebinyError from "@webiny/error";
-
-import { createAcoCrud } from "~/createAcoCrud";
 import { createAcoHooks } from "~/createAcoHooks";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations";
 import { isInstallationPending } from "~/utils/isInstallationPending";
+import { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types";
+import { createFolderCrudMethods } from "~/folder/folder.crud";
+import { createSearchRecordCrudMethods } from "~/record/record.crud";
+import { AcoApps } from "./apps";
+import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model";
+import { AcoAppRegisterPlugin } from "~/plugins";
 
-import { AcoContext } from "~/types";
-
-const setupAcoContext = (context: AcoContext) => {
+const setupAcoContext = async (context: AcoContext): Promise<void> => {
     const { tenancy, security, i18n } = context;
-
-    if (isInstallationPending({ tenancy, i18n })) {
-        return;
-    }
 
     const getLocale = (): I18NLocale => {
         const locale = i18n.getContentLocale();
@@ -35,7 +33,7 @@ const setupAcoContext = (context: AcoContext) => {
 
     const getIdentity = () => security.getIdentity();
 
-    context.aco = createAcoCrud({
+    const params: CreateAcoParams = {
         getLocale,
         getIdentity,
         getTenant,
@@ -50,16 +48,60 @@ const setupAcoContext = (context: AcoContext) => {
             getCmsContext: () => context,
             security
         })
+    };
+
+    const defaultRecordModel = await context.security.withoutAuthorization(async () => {
+        return context.cms.getModel(SEARCH_RECORD_MODEL_ID);
     });
+    if (!defaultRecordModel) {
+        throw new WebinyError(`There is no default record model in ${SEARCH_RECORD_MODEL_ID}`);
+    }
+
+    /**
+     * First we need to create all the apps.
+     */
+    const apps = new AcoApps(context, params);
+    const plugins = context.plugins.byType<AcoAppRegisterPlugin>(AcoAppRegisterPlugin.type);
+    for (const plugin of plugins) {
+        await apps.register({
+            model: defaultRecordModel,
+            ...plugin.app
+        });
+    }
+
+    context.aco = {
+        folder: createFolderCrudMethods(params),
+        search: createSearchRecordCrudMethods(params),
+        apps,
+        getApp: (name: string) => apps.get(name),
+        listApps: () => apps.list(),
+        registerApp: async (params: IAcoAppRegisterParams) => {
+            return apps.register({
+                model: defaultRecordModel,
+                ...params
+            });
+        }
+    };
 };
 
 export const createAcoContext = () => {
-    return new ContextPlugin<AcoContext>(async context => {
+    const plugin = new ContextPlugin<AcoContext>(async context => {
+        /**
+         * We can skip the ACO initialization if the installation is pending.
+         */
         if (isInstallationPending(context)) {
             return;
         }
+        await context.benchmark.measure("aco.context.setup", async () => {
+            await setupAcoContext(context);
+        });
 
-        await setupAcoContext(context);
-        await createAcoHooks(context);
+        await context.benchmark.measure("aco.context.hooks", async () => {
+            await createAcoHooks(context);
+        });
     });
+
+    plugin.name = "aco.createContext";
+
+    return plugin;
 };

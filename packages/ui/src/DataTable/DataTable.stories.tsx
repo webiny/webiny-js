@@ -7,6 +7,7 @@ import { Columns, DataTable } from "./DataTable";
 const story = storiesOf("Components/DataTable", module);
 
 interface Entry {
+    id: string;
     name: string;
     createdBy: string;
     lastModified: string;
@@ -18,18 +19,21 @@ story.add(
     () => {
         const data: Entry[] = [
             {
+                id: "1",
                 name: "Page 1",
                 createdBy: "John Doe",
                 lastModified: "3 days ago",
                 status: "Draft"
             },
             {
+                id: "2",
                 name: "Page 2",
                 createdBy: "John Doe",
                 lastModified: "1 day ago",
                 status: "Published"
             },
             {
+                id: "3",
                 name: "Page 3",
                 createdBy: "John Doe",
                 lastModified: "1 hour ago",

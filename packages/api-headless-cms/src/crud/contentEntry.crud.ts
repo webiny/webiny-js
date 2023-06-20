@@ -650,7 +650,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             version,
             locked: false,
             status: STATUS_DRAFT,
-            values: input
+            values: input,
+            location: {
+                folderId: inputData.wbyAco_location?.folderId || "ROOT"
+            }
         };
 
         let storageEntry: CmsStorageEntry | null = null;
@@ -893,6 +896,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             meta,
             status: transformEntryStatus(originalEntry.status)
         };
+        const folderId = inputData.wbyAco_location?.folderId;
+        if (folderId) {
+            entry.location = {
+                folderId
+            };
+        }
 
         let storageEntry: CmsStorageEntry | null = null;
 

@@ -1,5 +1,5 @@
 import path from "path";
-import fs from "fs";
+import fs from "fs-extra";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
@@ -41,6 +41,8 @@ import { createTenancyAndSecurity, defaultIdentity } from "./tenancySecurity";
 import { PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { FormBuilderStorageOperations } from "~/types";
 
 export interface UseGqlHandlerParams {
@@ -63,10 +65,12 @@ export default (params: UseGqlHandlerParams = {}) => {
     const i18nStorage = getStorageOps("i18n");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const formBuilderStorage = getStorageOps<FormBuilderStorageOperations>("formBuilder");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const handler = createHandler({
         plugins: [
             ...plugins,
+            ...cmsStorage.plugins,
             ...formBuilderStorage.plugins,
             createWcpContext(),
             createWcpGraphQL(),
@@ -75,6 +79,13 @@ export default (params: UseGqlHandlerParams = {}) => {
             i18nContext(),
             i18nStorage.storageOperations as any,
             mockLocalesPlugins(),
+            new CmsParametersPlugin(async () => {
+                return {
+                    locale: "en-US",
+                    type: "manage"
+                };
+            }),
+            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createFileManagerContext({
                 storageOperations: fileManagerStorage.storageOperations
             }),
@@ -86,14 +97,17 @@ export default (params: UseGqlHandlerParams = {}) => {
                 type: "api-file-manager-storage",
                 name: "api-file-manager-storage",
                 async upload(args: any) {
-                    // TODO: use tmp OS directory
-                    const key = path.join(__dirname, args.name);
+                    const keyParts = [args.keyPrefix, args.key];
+                    const key = keyParts.filter(Boolean).join("/");
+                    const filePath = path.join(__dirname, key);
 
-                    fs.writeFileSync(key, args.buffer);
+                    fs.ensureDirSync(path.dirname(filePath));
+                    fs.writeFileSync(filePath, args.buffer);
 
                     return {
                         file: {
-                            key: args.name,
+                            id: args.id,
+                            key,
                             name: args.name,
                             type: args.type,
                             size: args.size

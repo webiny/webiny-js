@@ -1,6 +1,5 @@
 import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
 import { CmsContext } from "~/types";
-import { ContextPlugin } from "@webiny/api";
 
 const emptyResolver = () => ({});
 
@@ -68,14 +67,7 @@ const plugin = new GraphQLSchemaPlugin({
     }
 });
 plugin.name = "cms.graphql.schema.system";
-/**
- * We only register system schema plugin if the endpoint is not manage/preview/read.
- */
-export const createSystemSchemaPlugin = (): ContextPlugin<CmsContext> => {
-    return new ContextPlugin<CmsContext>(async context => {
-        if (context.cms?.type) {
-            return;
-        }
-        context.plugins.register(plugin);
-    });
+
+export const createSystemSchemaPlugin = () => {
+    return plugin;
 };
