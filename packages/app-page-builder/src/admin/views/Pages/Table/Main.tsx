@@ -15,7 +15,7 @@ import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
-import { Table } from "~/admin/components/Table/Table";
+import { Table, TableProps } from "~/admin/components/Table/Table";
 import { MainContainer, Wrapper } from "./styled";
 import { ListMeta, ListSearchRecordsSort, ListSearchRecordsSortItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
@@ -26,7 +26,6 @@ const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
 
 interface Props {
     folderId?: string;
-    defaultFolderName: string;
 }
 
 const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
@@ -43,21 +42,14 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
     }, []);
 };
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolderName }) => {
+export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const location = useLocation();
     const history = useHistory();
 
     const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
 
-    const {
-        records,
-        folders,
-        listTitle = defaultFolderName,
-        meta,
-        isListLoading,
-        isListLoadingMore,
-        listItems
-    } = useAcoList<PbPageDataItem>({ folderId });
+    const { records, folders, listTitle, meta, isListLoading, isListLoadingMore, listItems } =
+        useAcoList<PbPageDataItem>({ folderId });
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -150,6 +142,13 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
         }
     }, [showPreviewDrawer]);
 
+    const onSelectRow: TableProps["onSelectRow"] = rows => {
+        // `row.id` is internally mapped to `page.pid`.
+        const ids = rows.filter(row => row.$type === "RECORD").map(row => row.id);
+
+        setSelected(ids);
+    };
+
     return (
         <>
             <MainContainer>
@@ -186,11 +185,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId, defaultFolde
                                     records={records}
                                     loading={isListLoading}
                                     openPreviewDrawer={openPreviewDrawer}
-                                    onSelectRow={rows => {
-                                        //@ts-ignore
-                                        const ids = rows.map(row => row.original.pid);
-                                        setSelected(ids);
-                                    }}
+                                    onSelectRow={onSelectRow}
+                                    selectedRows={selected}
                                     sorting={tableSorting}
                                     onSortingChange={setTableSorting}
                                 />

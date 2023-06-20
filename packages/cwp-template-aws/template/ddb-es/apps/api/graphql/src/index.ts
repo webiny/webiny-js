@@ -21,7 +21,7 @@ import elasticsearchClientContext, {
     createElasticsearchClient
 } from "@webiny/api-elasticsearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
@@ -30,7 +30,6 @@ import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerContext } from "@webiny/api-file-manager-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 /**
@@ -69,10 +68,17 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient,
+                plugins: []
+            })
+        }),
+        createHeadlessCmsGraphQL(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
-                documentClient,
-                elasticsearchClient
+                documentClient
             })
         }),
         createFileManagerGraphQL(),
@@ -98,14 +104,6 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient,
-                plugins: []
-            })
-        }),
-        createHeadlessCmsGraphQL(),
         createGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({
@@ -113,7 +111,6 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createAcoFileManagerContext(),
         scaffoldsPlugins()
     ],
     http: { debug }

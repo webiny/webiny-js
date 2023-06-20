@@ -16,7 +16,11 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/cli
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import {
+    createFileManagerContext,
+    createFileManagerGraphQL,
+    createFileModelModifier
+} from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
@@ -30,7 +34,6 @@ import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerContext } from "@webiny/api-file-manager-aco";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -59,6 +62,12 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
+        createHeadlessCmsGraphQL(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
                 documentClient
@@ -84,20 +93,34 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient
-            })
-        }),
-        createHeadlessCmsGraphQL(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createAcoFileManagerContext(),
-        scaffoldsPlugins()
+        scaffoldsPlugins(),
+        createFileModelModifier(({ modifier }) => {
+            modifier.addField({
+                id: "carMake",
+                fieldId: "carMake",
+                label: "Car Make",
+                type: "text",
+                renderer: {
+                    name: "text-input"
+                }
+            });
+
+            modifier.addField({
+                id: "year",
+                fieldId: "year",
+                label: "Year of manufacturing",
+                type: "number",
+                renderer: {
+                    name: "number-input"
+                }
+            });
+        })
     ],
     http: { debug }
 });

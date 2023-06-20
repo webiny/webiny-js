@@ -4,11 +4,9 @@ import { ReactComponent as Copy } from "@material-design-icons/svg/outlined/cont
 import { i18n } from "@webiny/app/i18n";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
-
 import { useCopyFile } from "~/hooks/useCopyFile";
-
 import { SearchRecordItem } from "@webiny/app-aco/types";
-import { FileItem } from "@webiny/app/types";
+import { FileItem } from "@webiny/app-admin/types";
 
 import { ListItemGraphic } from "./styled";
 

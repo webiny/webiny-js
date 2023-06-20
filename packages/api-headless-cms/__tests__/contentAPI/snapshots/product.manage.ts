@@ -52,6 +52,7 @@ export default /* GraphQL */ `
         categories: [RefField!]
         longText: [String]
     }
+    
     input ProductApiSingular_Variant_OptionsWhereInput {
         name: String
         name_not: String
@@ -91,6 +92,7 @@ export default /* GraphQL */ `
         category: RefField
         options: [ProductApiSingular_Variant_Options!]
     }
+        
     input ProductApiSingular_VariantWhereInput {
         name: String
         name_not: String
@@ -122,6 +124,7 @@ export default /* GraphQL */ `
     type ProductApiSingular_FieldsObject {
         text: String
     }
+    
     input ProductApiSingular_FieldsObjectWhereInput {
         text: String
         text_not: String

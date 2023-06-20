@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
-import { i18n } from "@webiny/app/i18n";
 import { Sidebar } from "./Sidebar";
 import { Main } from "./Main";
 import {
@@ -11,19 +10,16 @@ import {
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
 import { useApolloClient } from "@apollo/react-hooks";
 
-const t = i18n.ns("app-page-builder/admin/views/pages/table");
-
 const View: React.VFC = () => {
     const { currentFolderId } = useNavigateFolder();
 
-    const defaultFolderName = t`All pages`;
     return (
         <SplitView>
             <LeftPanel span={2}>
-                <Sidebar folderId={currentFolderId} defaultFolderName={defaultFolderName} />
+                <Sidebar folderId={currentFolderId} />
             </LeftPanel>
             <RightPanel span={10}>
-                <Main folderId={currentFolderId} defaultFolderName={defaultFolderName} />
+                <Main folderId={currentFolderId} />
             </RightPanel>
         </SplitView>
     );

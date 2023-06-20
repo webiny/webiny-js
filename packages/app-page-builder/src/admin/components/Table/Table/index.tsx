@@ -22,61 +22,88 @@ import { statuses as statusLabels } from "~/admin/constants";
 import { PbPageDataItem } from "~/types";
 import { actionsColumnStyles, menuStyles } from "./styled";
 
-interface Props {
+export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
     folders: FolderItem[];
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: Entry[] | []) => void;
+    selectedRows: string[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
 
-interface Entry {
+interface PageEntry {
+    $type: "RECORD";
+    $selectable: boolean;
     id: string;
-    type: "RECORD" | "FOLDER";
     title: string;
     createdBy: string;
     savedOn: string;
     status?: string;
     version?: number;
-    original: PbPageDataItem | FolderItem;
-    selectable: boolean;
+    original: PbPageDataItem;
 }
 
-const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): Entry[] => {
+interface FolderEntry {
+    $type: "FOLDER";
+    $selectable: boolean;
+    id: string;
+    title: string;
+    createdBy: string;
+    savedOn: string;
+    status?: string;
+    version?: number;
+    original: FolderItem;
+}
+
+type Entry = PageEntry | FolderEntry;
+
+const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry[] => {
     return items.map(({ data }) => {
         return {
-            id: data.id,
-            type: "RECORD",
+            $type: "RECORD",
+            $selectable: true,
+            id: data.pid,
             title: data.title,
             createdBy: data.createdBy?.displayName || "-",
             savedOn: data.savedOn,
             status: data.status,
             version: data.version,
-            original: data || {},
-            selectable: true
+            original: data || {}
         };
     });
 };
 
-const createFoldersData = (items: FolderItem[]): Entry[] => {
+const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
     return items.map(item => {
         return {
+            $type: "FOLDER",
+            $selectable: false,
             id: item.id,
-            type: "FOLDER",
             title: item.title,
             createdBy: item.createdBy?.displayName || "-",
             savedOn: item.createdOn,
-            original: item,
-            selectable: false
+            original: item
         };
     });
 };
 
-export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, records, loading, openPreviewDrawer, onSelectRow, sorting, onSortingChange } =
-        props;
+function isPageEntry(entry: Entry): entry is PageEntry {
+    return entry.$type === "RECORD";
+}
+
+export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
+    const {
+        folders,
+        records,
+        loading,
+        openPreviewDrawer,
+        onSelectRow,
+        sorting,
+        onSortingChange,
+        selectedRows
+    } = props;
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -85,23 +112,25 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
-        return createFoldersData(folders).concat(createRecordsData(records));
+        return [...createFoldersData(folders), ...createRecordsData(records)];
     }, [folders, records]);
 
     const columns: Columns<Entry> = {
         title: {
             header: "Name",
-            cell: ({ id, title, type }) => {
-                if (type === "RECORD") {
-                    return <PageName name={title} id={id} onClick={openPreviewDrawer} />;
+            cell: (entry: Entry) => {
+                if (isPageEntry(entry)) {
+                    return (
+                        <PageName name={entry.title} id={entry.id} onClick={openPreviewDrawer} />
+                    );
                 }
-                return <FolderName name={title} id={id} />;
+                return <FolderName name={entry.title} id={entry.id} />;
             },
             enableSorting: true
         },
         savedOn: {
             header: "Last modified",
-            cell: ({ savedOn }) => <TimeAgo datetime={savedOn} />,
+            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
             enableSorting: true
         },
         createdBy: {
@@ -109,7 +138,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         },
         status: {
             header: "Status",
-            cell: ({ status, version }) => {
+            cell: ({ status, version }: Entry) => {
                 if (status && version) {
                     return `${statusLabels[status]} (v${version})`;
                 }
@@ -122,41 +151,40 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 alignEnd: true
             },
             className: actionsColumnStyles,
-            cell: ({ type, original }) => {
-                if (!original) {
-                    return <></>;
-                } else if (type === "RECORD") {
+            cell: (entry: Entry) => {
+                if (isPageEntry(entry)) {
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
-                            <RecordActionEdit record={original as PbPageDataItem} />
-                            <RecordActionPreview record={original as PbPageDataItem} />
-                            <RecordActionPublish record={original as PbPageDataItem} />
+                            <RecordActionEdit record={entry.original} />
+                            <RecordActionPreview record={entry.original} />
+                            <RecordActionPublish record={entry.original} />
                             <RecordActionMove
                                 onClick={() => {
                                     setMoveSearchRecordDialogOpen(true);
                                     setSelectedSearchRecord(() =>
                                         records.find(
-                                            record => record.id === (original as PbPageDataItem).pid
+                                            record => record.data.pid === entry.original.pid
                                         )
                                     );
                                 }}
                             />
-                            <RecordActionDelete record={original as PbPageDataItem} />
+                            <RecordActionDelete record={entry.original} />
                         </Menu>
                     );
                 }
+
                 return (
                     <Menu handle={<IconButton icon={<More />} />}>
                         <FolderActionEdit
                             onClick={() => {
                                 setUpdateDialogOpen(true);
-                                setSelectedFolder(original as FolderItem);
+                                setSelectedFolder(entry.original);
                             }}
                         />
                         <FolderActionDelete
                             onClick={() => {
                                 setDeleteDialogOpen(true);
-                                setSelectedFolder(original as FolderItem);
+                                setSelectedFolder(entry.original);
                             }}
                         />
                     </Menu>
@@ -167,13 +195,15 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
     return (
         <div ref={ref}>
-            <DataTable
+            <DataTable<Entry>
                 columns={columns}
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
                 sorting={sorting}
+                selectedRows={data.filter(record => selectedRows.includes(record.id))}
+                isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}
             />
             {selectedFolder && (

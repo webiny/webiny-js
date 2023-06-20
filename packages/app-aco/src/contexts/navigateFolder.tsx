@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import store from "store";
-import { useRouter } from "@webiny/react-router";
 
-interface NavigateFolderContext {
+export interface NavigateFolderContext {
     currentFolderId?: string;
     setFolderToStorage: (folderId?: string) => void;
     navigateToListHome: () => void;
@@ -15,27 +14,20 @@ export const NavigateFolderContext = React.createContext<NavigateFolderContext |
 );
 
 export interface NavigateFolderProviderProps {
+    folderId: string | undefined;
     children: React.ReactNode;
-    folderIdQueryString?: string;
+    navigateToListHome: () => void;
+    navigateToFolder: (folderId: string) => void;
+    navigateToLatestFolder: (folderId: string) => void;
     createStorageKey: () => string;
-    createListLink?: () => string;
 }
 
 export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
+    folderId,
     children,
-    folderIdQueryString = "folderId",
     createStorageKey,
-    createListLink: initialCreateListLink
+    ...props
 }) => {
-    const { history, search, location } = useRouter();
-    const [query] = search;
-    const folderId = query.get(folderIdQueryString) || undefined;
-    const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderId);
-
-    useEffect(() => {
-        setCurrentFolderId(folderId);
-    }, [folderId]);
-
     /**
      * Helper function to set the current folderId to local storage:
      * we export this function to call it programmatically when we need it and
@@ -48,69 +40,36 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
         [createStorageKey]
     );
 
-    const createListLink = useCallback(() => {
-        if (!initialCreateListLink) {
-            return undefined;
-        }
-        return initialCreateListLink();
-    }, [initialCreateListLink]);
-
     useEffect(() => {
-        setFolderToStorage(currentFolderId);
-    }, [currentFolderId]);
+        setTimeout(() => {
+            // Defer navigation to next tick.
+            navigateToLatestFolder();
+        });
+    }, []);
 
     /**
-     * Navigate to page-builder home list.
-     */
-    const navigateToListHome = useCallback(() => {
-        const url = createListLink();
-        if (url) {
-            return history.push(url);
-        }
-
-        return navigateToFolder(undefined);
-    }, [createListLink, folderId]);
-
-    /**
-     * Navigate to a specific folder.
-     */
-    const navigateToFolder = useCallback(
-        (newFolderId?: string): void => {
-            const query = new URLSearchParams(location.search);
-            query.delete("new");
-            query.delete("id");
-            query.delete("entryId");
-            query.set(folderIdQueryString, newFolderId || "");
-            return history.push({
-                search: query.toString()
-            });
-        },
-        [location, folderIdQueryString, folderId]
-    );
-
-    /**
-     * Navigate back to page-builder list, considering the latest visited folder.
+     * Navigate to the latest folder, considering the latest visited folder.
      */
     const navigateToLatestFolder = useCallback(() => {
         const folderId = store.get(createStorageKey());
-        if (folderId) {
-            const search = new URLSearchParams({
-                [folderIdQueryString]: folderId
-            });
-            return history.push({
-                pathname: createListLink(),
-                search: search.toString()
-            });
-        }
+        props.navigateToLatestFolder(folderId || "ROOT");
+    }, [createStorageKey, folderId]);
 
-        return history.push({
-            pathname: createListLink(),
-            search: new URLSearchParams({}).toString()
-        });
-    }, [createListLink, createStorageKey, folderIdQueryString, folderId]);
+    const navigateToFolder = useCallback(
+        (folderId?: string) => {
+            setFolderToStorage(folderId);
+            props.navigateToFolder(folderId || "ROOT");
+        },
+        [folderId]
+    );
+
+    const navigateToListHome = () => {
+        store.remove(createStorageKey());
+        props.navigateToListHome();
+    };
 
     const context: NavigateFolderContext = {
-        currentFolderId,
+        currentFolderId: folderId || store.get(createStorageKey()),
         setFolderToStorage,
         navigateToListHome,
         navigateToFolder,
