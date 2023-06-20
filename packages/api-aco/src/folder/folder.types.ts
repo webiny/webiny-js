@@ -52,10 +52,6 @@ export interface StorageOperationsUpdateFolderParams {
 
 export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
 
-export interface StorageOperationsGetFolderHierarchyByIdParams {
-    id: string;
-}
-
 export interface OnFolderBeforeCreateTopicParams {
     input: CreateFolderParams;
 }
@@ -104,7 +100,4 @@ export interface AcoFolderStorageOperations {
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<boolean>;
-    getFolderHierarchyById(
-        params: StorageOperationsGetFolderHierarchyByIdParams
-    ): Promise<Folder[]>;
 }
