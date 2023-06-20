@@ -33,7 +33,6 @@ export const HeadingEditorPreset = () => {
             <ToolbarElement name="underline" element={<UnderlineAction />} />
             <ToolbarElement name="codeHighlight" element={<CodeHighlightAction />} />
             <ToolbarElement name="divider2" element={<Divider />} />
-            <ToolbarElement name="divider3" element={<Divider />} />
             <ToolbarElement name="link" element={<LinkAction />} />
             <Plugin name={"fontColor"} element={<FontColorPlugin />} />
             <Plugin name={"typography"} element={<TypographyPlugin />} />
