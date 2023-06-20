@@ -12940,6 +12940,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
+    "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
