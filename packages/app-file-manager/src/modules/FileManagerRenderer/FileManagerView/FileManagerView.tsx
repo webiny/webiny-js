@@ -41,7 +41,7 @@ const t = i18n.ns("app-admin/file-manager/file-manager-view");
 const FileListWrapper = styled("div")({
     float: "right",
     display: "inline-block",
-    width: "calc(100vw - 270px)",
+    width: "calc(100vw - 286px)",
     height: "calc(100vh - 94px)",
     position: "relative",
     ".mdc-data-table": {
