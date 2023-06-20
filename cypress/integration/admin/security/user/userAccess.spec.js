@@ -56,6 +56,7 @@ context("Security Users", () => {
         });
     });
 
+    // TODO - fix this test (FM issue?)
     it('should verify user access for a "anonymous" user', () => {
         let password = "12345678";
         // Create a user with `full-access` group
