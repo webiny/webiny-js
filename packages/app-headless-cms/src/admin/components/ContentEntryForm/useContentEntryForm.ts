@@ -21,6 +21,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { ROOT_ID } from "@webiny/app-aco/components/FolderTree/List/constants";
+import { useRecords } from "@webiny/app-aco";
 
 /**
  * Used for some fields to convert their values.
@@ -93,6 +94,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const entry = useEntry(params.entry);
+
+    const { addRecordToCache, updateRecordInCache } = useRecords();
 
     const renderPlugins = useMemo(
         () => plugins.byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
@@ -188,6 +191,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             }
             resetInvalidFieldValues();
 
+            if (params.addEntryToListCache) {
+                addRecordToCache(entry);
+            }
+
             showSnackbar(`${model.name} entry created successfully!`);
             if (typeof params.onSubmit === "function") {
                 params.onSubmit(entry, form);
@@ -222,6 +229,9 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             resetInvalidFieldValues();
             showSnackbar("Content saved successfully.");
             const { data: entry } = response.data.content;
+
+            updateRecordInCache(entry);
+
             return entry;
         },
         [model.modelId]
@@ -249,6 +259,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 return;
             }
             resetInvalidFieldValues();
+
+            updateRecordInCache(newRevision);
 
             showSnackbar("A new revision was created!");
             goToRevision(newRevision.id);

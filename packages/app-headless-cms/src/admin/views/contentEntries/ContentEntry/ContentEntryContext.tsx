@@ -1,12 +1,13 @@
 import React, {
-    useRef,
-    useState,
-    useCallback,
-    useMemo,
     Dispatch,
-    SetStateAction,
     MutableRefObject,
-    RefObject
+    RefObject,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState
 } from "react";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
@@ -15,7 +16,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
-import { CmsContentEntryRevision, CmsContentEntry } from "~/types";
+import { CmsContentEntry, CmsContentEntryRevision } from "~/types";
 import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
 import {
@@ -183,6 +184,15 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
         },
         skip: !entryId
     });
+
+    useEffect(() => {
+        if (getRevisions.loading || !entryId) {
+            return;
+        }
+        getRevisions.refetch({
+            id: entryId
+        });
+    }, [revisionId, getRevisions]);
 
     const loading = isLoading || getEntry.loading || getRevisions.loading;
     const entry = (get(getEntry, "data.content.data") as unknown as CmsContentEntry) || {};

@@ -8,6 +8,7 @@ import { useCms, useModel, usePermission } from "~/admin/hooks";
 import { useConfirmationDialog, useDialog, useSnackbar } from "@webiny/app-admin";
 import { parseIdentifier } from "@webiny/utils";
 import { RecordEntry } from "../../types";
+import { useNavigateFolder, useRecords } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/table");
 
@@ -34,6 +35,8 @@ export const RecordActionDelete: React.VFC<Props> = ({ record }) => {
         ),
         dataTestId: "cms.content-form.header.delete-dialog"
     });
+    const { navigateToLatestFolder } = useNavigateFolder();
+    const { removeRecordFromCache } = useRecords();
 
     const onClick = useCallback((): void => {
         showConfirmation(async (): Promise<void> => {
@@ -55,7 +58,8 @@ export const RecordActionDelete: React.VFC<Props> = ({ record }) => {
             showSnackbar(
                 t`{title} was deleted successfully!`({ title: <strong>{record.title}</strong> })
             );
-            history.back();
+            removeRecordFromCache(record.id);
+            navigateToLatestFolder();
         });
     }, [record.id]);
 

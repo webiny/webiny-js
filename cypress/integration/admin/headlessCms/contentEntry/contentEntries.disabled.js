@@ -77,7 +77,13 @@ describe("Headless CMS - Content Entries", () => {
             const newEntryTitle2 = newEntryTitle + " - 2nd";
 
             // a) Click on "New Entry" button
-            cy.findAllByTestId("new-record-button").first().click();
+            cy.findByTestId("new-entry-button").should("exist");
+            cy.findByTestId("new-entry-button").click();
+            //cy.findAllByTestId("new-entry-button").first().click({ force: true });
+
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
+
             // b) Fill entry details
             cy.findByTestId("cms-content-form").within(() => {
                 cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
@@ -89,20 +95,34 @@ describe("Headless CMS - Content Entries", () => {
             cy.get(".react-spinner-material").should("not.exist");
             // d) Verify success message
             cy.findByText(`${newModel} entry created successfully!`).should("exist");
+            /**
+             * As ACO was introduced, there is a new step - navigate to root folder
+             */
+            cy.acoNavigateToRootFolder();
 
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("li")
+                cy.get("tbody")
                     .first()
                     .within(() => {
-                        cy.findByText(newEntryTitle).should("exist");
-                        cy.findByText(/Draft/i).should("exist");
-                        cy.findByText(/\(v1\)/i).should("exist");
+                        cy.get("tr").within(() => {
+                            cy.findByText(newEntryTitle).should("exist");
+                            cy.findByText(/Draft \(v1\)/i).should("exist");
+                            //cy.findByText(/\(v1\)/i).should("exist");
+                        });
                     });
             });
 
             // Loading should not be visible
             cy.get(".react-spinner-material").should("not.exist");
+            // We should navigate to the new entry
+            cy.get("div.cms-data-list-record-title")
+                .first()
+                .within(() => {
+                    cy.findByText(newEntryTitle).should("exist");
+                })
+                .click({ force: true });
+            cy.get(".mdc-text-field__input").should("exist");
 
             // Publish entry
             cy.findByTestId("cms-content-save-publish-content-button").click();
@@ -111,16 +131,34 @@ describe("Headless CMS - Content Entries", () => {
             });
             cy.get(".react-spinner-material").should("not.exist");
             cy.findByText(/Successfully published revision/i).should("exist");
+
+            /**
+             * As ACO was introduced, there is a new step - navigate to root folder
+             */
+            cy.acoNavigateToRootFolder();
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
+
             // Check publish status
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("li")
+                cy.get("tbody")
                     .first()
                     .within(() => {
-                        cy.findByText(newEntryTitle).should("exist");
-                        cy.findByText(/Published/i).should("exist");
-                        cy.findByText(/\(v1\)/i).should("exist");
+                        cy.get("tr").within(() => {
+                            cy.findByText(newEntryTitle).should("exist");
+                            cy.findByText(/Published \(v1\)/i).should("exist");
+                            //cy.findByText(/\(v1\)/i).should("exist");
+                        });
                     });
             });
+            // Navigate to published entry
+            cy.get("div.cms-data-list-record-title")
+                .first()
+                .within(() => {
+                    cy.findByText(newEntryTitle).should("exist");
+                })
+                .click({ force: true });
+            cy.get(".mdc-text-field__input").should("exist").wait(100);
 
             // Edit an entry
             cy.findByTestId("fr.input.text.Title").clear().type(newEntryTitle2);
@@ -128,19 +166,36 @@ describe("Headless CMS - Content Entries", () => {
 
             // Loading should not be visible
             cy.get(".react-spinner-material").should("not.exist");
-            // Check the new entry in list
+            /**
+             * As ACO was introduced, there is a new step - navigate to root folder
+             */
+            cy.acoNavigateToRootFolder();
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
+
+            cy.findByTestId("default-data-list").should("exist");
+
+            // Check the update entry in list
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("li")
+                cy.get("tbody")
                     .first()
                     .within(() => {
-                        cy.findByText(newEntryTitle2).should("exist");
-                        cy.findByText(/Draft/i).should("exist");
-                        cy.findByText(/\(v2\)/i).should("exist");
+                        cy.get("tr").within(() => {
+                            cy.findByText(newEntryTitle2).should("exist");
+                            cy.findByText(/Draft \(v2\)/i).should("exist");
+                            //cy.findByText(/\(v2\)/i).should("exist");
+                        });
                     });
             });
 
-            // Loading should not be visible
-            cy.get(".react-spinner-material").should("not.exist");
+            // Navigate to updated entry
+            cy.get("div.cms-data-list-record-title")
+                .first()
+                .within(() => {
+                    cy.findByText(newEntryTitle2).should("exist");
+                })
+                .click({ force: true });
+            cy.get(".mdc-text-field__input").should("exist");
 
             // Publish entry
             cy.findByTestId("cms-content-save-publish-content-button").click();
@@ -148,18 +203,36 @@ describe("Headless CMS - Content Entries", () => {
             cy.findByTestId("cms-confirm-save-and-publish").within(() => {
                 cy.findByRole("button", { name: "Confirm" }).click();
             });
-            cy.get(".react-spinner-material").should("not.exist");
             cy.findByText(/Successfully published revision/i).should("exist");
+
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
+
+            cy.acoNavigateToRootFolder();
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
+
             // Check publish status
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("li")
+                cy.get("tbody")
                     .first()
                     .within(() => {
-                        cy.findByText(newEntryTitle2).should("exist");
-                        cy.findByText(/Published/i).should("exist");
-                        cy.findByText(/\(v2\)/i).should("exist");
+                        cy.get("tr").within(() => {
+                            cy.findByText(newEntryTitle2).should("exist");
+                            cy.findByText(/Published \(v2\)/i).should("exist");
+                            //cy.findByText(/\(v2\)/i).should("exist");
+                        });
                     });
             });
+
+            // Navigate to published updated entry
+            cy.get("div.cms-data-list-record-title")
+                .first()
+                .within(() => {
+                    cy.findByText(newEntryTitle2).should("exist");
+                })
+                .click({ force: true });
+            cy.get(".mdc-text-field__input").should("exist");
 
             // Check revisions tab
             cy.findByTestId("cms.content-form.tabs.revisions").click();

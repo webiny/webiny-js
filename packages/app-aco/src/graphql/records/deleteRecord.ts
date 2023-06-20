@@ -4,9 +4,6 @@ import { ERROR_FIELD } from "./common";
 
 export const createDeleteRecord = (model: AcoModel, mode: AcoAppMode) => {
     if (mode === "cms") {
-        console.info(
-            "User should not be allowed to delete a search record for the CMS base ACO App."
-        );
         return null;
     }
     const { singularApiName } = model;

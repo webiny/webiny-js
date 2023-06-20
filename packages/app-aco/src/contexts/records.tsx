@@ -40,6 +40,7 @@ import {
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks";
+import { parseIdentifier } from "@webiny/utils";
 
 interface ListTagsParams {
     where?: ListTagsWhereQueryVariables;
@@ -59,6 +60,9 @@ interface SearchRecordsContext {
     moveRecord: (record: MovableSearchRecordItem) => Promise<void>;
     deleteRecord(record: DeletableSearchRecordItem): Promise<true>;
     listTags: (params: ListTagsParams) => Promise<TagItem[]>;
+    addRecordToCache: (record: any) => void;
+    updateRecordInCache: (record: any) => void;
+    removeRecordFromCache: (id: string) => void;
 }
 
 export const SearchRecordsContext = React.createContext<SearchRecordsContext | undefined>(
@@ -168,6 +172,37 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             tags,
             loading,
             meta,
+            addRecordToCache: (record: any) => {
+                setRecords(prev => {
+                    return [record, ...prev];
+                });
+            },
+            updateRecordInCache: (record: any) => {
+                const { id: recordId } = parseIdentifier(record.id);
+                const index = records.findIndex(item => {
+                    const { id: itemId } = parseIdentifier(item.id);
+                    return itemId === recordId;
+                });
+                if (index === -1) {
+                    return;
+                }
+                setRecords(prev => {
+                    const next = [...prev];
+
+                    next[index] = {
+                        ...prev[index],
+                        ...record
+                    };
+
+                    return next;
+                });
+            },
+            removeRecordFromCache: (id: string) => {
+                setRecords(prev => {
+                    return prev.filter(record => record.id !== id);
+                });
+            },
+
             async listRecords(params) {
                 const { after, limit, sort: sorting, search, where } = params;
 
@@ -193,18 +228,23 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 const { data: response } = await apolloFetchingHandler<ListSearchRecordsResponse>(
                     loadingHandler(action, setLoading),
-                    () =>
-                        client.query<ListSearchRecordsResponse, ListSearchRecordsQueryVariables>({
+                    () => {
+                        const variables: ListSearchRecordsQueryVariables = {
+                            where,
+                            search,
+                            limit,
+                            after,
+                            sort
+                        };
+                        return client.query<
+                            ListSearchRecordsResponse,
+                            ListSearchRecordsQueryVariables
+                        >({
                             query: LIST_RECORDS,
-                            variables: {
-                                where,
-                                search,
-                                limit,
-                                after,
-                                sort
-                            },
+                            variables,
                             fetchPolicy: "network-only"
-                        })
+                        });
+                    }
                 );
 
                 if (!response) {
@@ -238,7 +278,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 return data;
             },
-
             async getRecord(id) {
                 if (!id) {
                     throw new Error("Record `id` is mandatory");
@@ -293,7 +332,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 return data;
             },
-
             async createRecord(record) {
                 if (!CREATE_RECORD) {
                     throw new Error("Missing CREATE_RECORD operation.");
@@ -344,7 +382,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 return data;
             },
-
             async updateRecord(record, contextFolderId) {
                 if (!contextFolderId) {
                     throw new Error("`folderId` is mandatory");
@@ -397,7 +434,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 return result;
             },
-
             moveRecord: async (record: MovableSearchRecordItem) => {
                 const { id, location } = record;
                 const { folderId } = location;
@@ -434,7 +470,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     }
                 }));
             },
-
             async deleteRecord(record) {
                 if (!DELETE_RECORD) {
                     throw new Error("Missing DELETE_RECORD operation.");
@@ -475,7 +510,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 return true;
             },
-
             async listTags(params) {
                 if (!LIST_TAGS) {
                     throw new Error("Missing LIST_TAGS operation.");
@@ -511,6 +545,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
         app.id,
         model.modelId,
         records,
+        setRecords,
         tags,
         meta,
         loading,
