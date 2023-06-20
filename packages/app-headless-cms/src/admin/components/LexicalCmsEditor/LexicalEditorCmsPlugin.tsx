@@ -20,13 +20,12 @@ import {
     CodeHighlightPlugin,
     FloatingLinkEditorPlugin,
     LinkPlugin,
-    WebinyListPlugin,
+    ListPlugin,
     TypographyPlugin,
     FontColorPlugin
 } from "@webiny/lexical-editor";
 import { TypographyDropDown } from "~/admin/components/LexicalCmsEditor/TypographyDropDown";
 import { CompositionScope } from "@webiny/react-composition";
-import {} from "@webiny/lexical-editor";
 
 const { ToolbarElement, Plugin } = LexicalEditorConfig;
 
@@ -50,9 +49,8 @@ export const LexicalEditorCmsPlugin: FC = () => {
                 <ToolbarElement name="divider3" element={<Divider />} />
                 <ToolbarElement name="link" element={<LinkAction />} />
                 <ToolbarElement name="quote" element={<QuoteAction />} />
-                {/* Plugins */}
                 <Plugin name={"fontColor"} element={<FontColorPlugin />} />
-                <Plugin name={"webinyList"} element={<WebinyListPlugin />} />
+                <Plugin name={"list"} element={<ListPlugin />} />
                 <Plugin name={"codeHighlight"} element={<CodeHighlightPlugin />} />
                 <Plugin name={"typography"} element={<TypographyPlugin />} />
                 <Plugin name={"link"} element={<LinkPlugin />} />

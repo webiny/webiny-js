@@ -40,7 +40,7 @@ export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/Lex
 export { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 export { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
 export { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
-export { WebinyListPlugin } from "~/plugins/WebinyListPLugin/WebinyListPlugin";
+export { ListPlugin } from "~/plugins/ListPLugin/ListPlugin";
 export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";

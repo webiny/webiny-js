@@ -19,15 +19,15 @@ import {
     TypographyAction,
     TypographyPlugin,
     UnderlineAction,
-    WebinyListPlugin,
+    ListPlugin,
     LexicalEditorConfig,
     LinkPlugin
 } from "@webiny/lexical-editor";
 
 const { ToolbarElement, Plugin } = LexicalEditorConfig;
-const ParagraphToolbarPreset = () => {
+export const ParagraphEditorPreset = () => {
     return (
-        <>
+        <LexicalEditorConfig>
             <ToolbarElement name="fontSize" element={<FontSizeAction />} />
             <ToolbarElement name="fontColor" element={<FontColorAction />} />
             <ToolbarElement name="typography" element={<TypographyAction />} />
@@ -43,17 +43,10 @@ const ParagraphToolbarPreset = () => {
             <ToolbarElement name="divider3" element={<Divider />} />
             <ToolbarElement name="link" element={<LinkAction />} />
             <ToolbarElement name="quote" element={<QuoteAction />} />
-        </>
-    );
-};
-
-const ParagraphPluginsPreset = () => {
-    return (
-        <>
             <Plugin name={"fontColor"} element={<FontColorPlugin />} />
             <Plugin name={"typography"} element={<TypographyPlugin />} />
             <Plugin name={"quote"} element={<QuotePlugin />} />
-            <Plugin name={"webinyList"} element={<WebinyListPlugin />} />
+            <Plugin name={"list"} element={<ListPlugin />} />
             <Plugin name={"codeHighlight"} element={<CodeHighlightPlugin />} />
             <Plugin name={"link"} element={<LinkPlugin />} />
             <Plugin name={"clickableLink"} element={<ClickableLinkPlugin />} />
@@ -62,15 +55,6 @@ const ParagraphPluginsPreset = () => {
                 element={<FloatingLinkEditorPlugin anchorElem={document.body} />}
             />
             <Plugin name={"typography"} element={<TypographyPlugin />} />
-        </>
-    );
-};
-
-export const ParagraphEditorPreset = () => {
-    return (
-        <LexicalEditorConfig>
-            <ParagraphToolbarPreset />
-            <ParagraphPluginsPreset />
         </LexicalEditorConfig>
     );
 };

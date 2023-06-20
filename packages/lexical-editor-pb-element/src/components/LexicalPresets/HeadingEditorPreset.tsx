@@ -20,9 +20,10 @@ import {
 } from "@webiny/lexical-editor";
 
 const { ToolbarElement, Plugin } = LexicalEditorConfig;
-const HeadingToolbarPreset = () => {
+
+export const HeadingEditorPreset = () => {
     return (
-        <>
+        <LexicalEditorConfig>
             <ToolbarElement name="fontSize" element={<FontSizeAction />} />
             <ToolbarElement name="fontColor" element={<FontColorAction />} />
             <ToolbarElement name="typography" element={<TypographyAction />} />
@@ -35,13 +36,6 @@ const HeadingToolbarPreset = () => {
             <ToolbarElement name="divider2" element={<Divider />} />
             <ToolbarElement name="divider3" element={<Divider />} />
             <ToolbarElement name="link" element={<LinkAction />} />
-        </>
-    );
-};
-
-const HeadingPluginsPreset = () => {
-    return (
-        <>
             <Plugin name={"fontColor"} element={<FontColorPlugin />} />
             <Plugin name={"typography"} element={<TypographyPlugin />} />
             <Plugin name={"codeHighlight"} element={<CodeHighlightPlugin />} />
@@ -52,15 +46,6 @@ const HeadingPluginsPreset = () => {
                 element={<FloatingLinkEditorPlugin anchorElem={document.body} />}
             />
             <Plugin name={"typography"} element={<TypographyPlugin />} />
-        </>
-    );
-};
-
-export const HeadingEditorPreset = () => {
-    return (
-        <LexicalEditorConfig>
-            <HeadingToolbarPreset />
-            <HeadingPluginsPreset />
         </LexicalEditorConfig>
     );
 };
