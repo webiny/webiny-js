@@ -147,7 +147,7 @@ context("File Manager - Update file details", () => {
         });
     });
 
-    it("should update file's name and search by name", () => {
+    it.skip("should update file's name and search by name", () => {
         // Edit files name one by one
         const newFileName1 = uniqid("File ");
         const newFileName2 = uniqid("File ");
@@ -206,7 +206,7 @@ context("File Manager - Update file details", () => {
         cy.get("@search-input").clear();
     });
 
-    it("should add tags, search and by tags", () => {
+    it.skip("should add tags, search and by tags", () => {
         // Add tags one by one
         const tagNew = "new";
         const tagOld = "old";

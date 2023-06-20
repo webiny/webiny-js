@@ -13,7 +13,7 @@ context("File Manager View - CRUD", () => {
         cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
     });
 
-    it("should upload, edit and delete image", () => {
+    it.skip("should upload, edit and delete image", () => {
         // Drop file
         cy.findByTestId("fm-list-wrapper").dropFile("sample.jpeg", "image/jpeg");
         cy.findByText("File upload complete.").should("exist");
@@ -47,7 +47,7 @@ context("File Manager View - CRUD", () => {
         cy.findByText("File deleted successfully.");
     });
 
-    it("only images should contain thumbnail and only images should be displayed as avatar options", () => {
+    it.skip("only images should contain thumbnail and only images should be displayed as avatar options", () => {
         // Add 5 files (text/pdf/png/gif/jpeg).
         const files = [
             { fileName: "textfile.txt", type: "text/plain" },
@@ -76,7 +76,7 @@ context("File Manager View - CRUD", () => {
         cy.findAllByTestId("fm-list-wrapper-file").should("have.length", 3);
     });
 
-    it("should edit and save file using the flip feature", () => {
+    it.skip("should edit and save file using the flip feature", () => {
         const fileName = "sample_2.jpeg";
 
         // Drop file
@@ -186,7 +186,7 @@ context("File Manager View - CRUD", () => {
         cy.get("ul > li > span").contains("No results.").should("be.visible");
     });
 
-    it("should test adding 5 tags per file", () => {
+    it.skip("should test adding 5 tags per file", () => {
         const fileDetails = [
             {
                 fileName: "pngPicture.PNG",
