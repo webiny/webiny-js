@@ -5,9 +5,15 @@ import { PbAcoContext } from "~/types";
 
 export const getFolderHierarchyByPageId = async (context: PbAcoContext, pageId: string) => {
     try {
-        const { aco } = context;
+        const { aco, pageBuilder } = context;
 
-        const record = await aco.search.get(pageId);
+        const page = await pageBuilder.getPage(pageId);
+
+        if (!page) {
+            return [];
+        }
+
+        const record = await aco.search.get(page.pid);
         const folderId = get(record, "location.folderId");
 
         if (!folderId) {
