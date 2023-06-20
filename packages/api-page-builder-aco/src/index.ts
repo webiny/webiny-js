@@ -19,8 +19,8 @@ const setupContext = (context: PbAcoContext) => {
         async getSearchablePageContent(page) {
             return getSearchablePageContent(context, page, pageSearchProcessors);
         },
-        async getFolderHierarchyByPageId(pageId: string) {
-            return getFolderHierarchyByPageId(context, pageId);
+        async getFolderHierarchyByPageId(page) {
+            return getFolderHierarchyByPageId(context, page);
         }
     };
 };

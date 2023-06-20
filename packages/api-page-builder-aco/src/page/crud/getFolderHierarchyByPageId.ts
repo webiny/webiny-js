@@ -2,16 +2,11 @@ import get from "lodash/get";
 import WebinyError from "@webiny/error";
 
 import { PbAcoContext } from "~/types";
+import { Page } from "@webiny/api-page-builder/types";
 
-export const getFolderHierarchyByPageId = async (context: PbAcoContext, pageId: string) => {
+export const getFolderHierarchyByPageId = async (context: PbAcoContext, page: Page) => {
     try {
-        const { aco, pageBuilder } = context;
-
-        const page = await pageBuilder.getPage(pageId);
-
-        if (!page) {
-            return [];
-        }
+        const { aco } = context;
 
         const record = await aco.search.get(page.pid);
         const folderId = get(record, "location.folderId");
