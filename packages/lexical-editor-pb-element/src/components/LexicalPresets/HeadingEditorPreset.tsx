@@ -1,7 +1,6 @@
 import React from "react";
 import {
     BoldAction,
-    ClickableLinkPlugin,
     CodeHighlightAction,
     CodeHighlightPlugin,
     Divider,
@@ -40,7 +39,6 @@ export const HeadingEditorPreset = () => {
             <Plugin name={"typography"} element={<TypographyPlugin />} />
             <Plugin name={"codeHighlight"} element={<CodeHighlightPlugin />} />
             <Plugin name={"link"} element={<LinkPlugin />} />
-            <Plugin name={"clickableLink"} element={<ClickableLinkPlugin />} />
             <Plugin
                 name={"floatingLinkEditor"}
                 element={<FloatingLinkEditorPlugin anchorElem={document.body} />}

@@ -2,7 +2,6 @@ import React from "react";
 import {
     BoldAction,
     BulletListAction,
-    ClickableLinkPlugin,
     CodeHighlightAction,
     CodeHighlightPlugin,
     Divider,
@@ -49,7 +48,6 @@ export const ParagraphEditorPreset = () => {
             <Plugin name={"list"} element={<ListPlugin />} />
             <Plugin name={"codeHighlight"} element={<CodeHighlightPlugin />} />
             <Plugin name={"link"} element={<LinkPlugin />} />
-            <Plugin name={"clickableLink"} element={<ClickableLinkPlugin />} />
             <Plugin
                 name={"floatingLinkEditor"}
                 element={<FloatingLinkEditorPlugin anchorElem={document.body} />}
