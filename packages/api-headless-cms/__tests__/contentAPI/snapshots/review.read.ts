@@ -61,6 +61,8 @@ export default /* GraphQL */ `
         text_not_in: [String]
         text_contains: String
         text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
 
         product: RefFieldWhereInput
 

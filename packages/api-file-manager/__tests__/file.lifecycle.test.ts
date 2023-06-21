@@ -79,14 +79,22 @@ describe("File lifecycle events", () => {
         expect(beforeCreate && beforeCreate.params[0]).toEqual({
             file: {
                 ...fileData,
-                ...hookParamsExpected
+                ...hookParamsExpected,
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             }
         });
         const afterCreate = tracker.getLast("file:beforeCreate");
         expect(afterCreate && afterCreate.params[0]).toEqual({
             file: {
                 ...fileData,
-                ...hookParamsExpected
+                ...hookParamsExpected,
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             }
         });
     });
@@ -134,12 +142,20 @@ describe("File lifecycle events", () => {
             original: {
                 ...fileData,
                 ...hookParamsExpected,
-                id: expect.any(String)
+                id: expect.any(String),
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             },
             file: {
                 ...fileData,
                 ...hookParamsExpected,
-                tags: [...fileData.tags, TAG]
+                tags: [...fileData.tags, TAG],
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             }
         });
         const afterUpdate = tracker.getLast("file:afterUpdate");
@@ -148,12 +164,20 @@ describe("File lifecycle events", () => {
             original: {
                 ...fileData,
                 ...hookParamsExpected,
-                id: expect.any(String)
+                id: expect.any(String),
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             },
             file: {
                 ...fileData,
                 ...hookParamsExpected,
-                tags: [...fileData.tags, TAG]
+                tags: [...fileData.tags, TAG],
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             }
         });
     });
@@ -193,14 +217,22 @@ describe("File lifecycle events", () => {
         expect(beforeDelete && beforeDelete.params[0]).toEqual({
             file: {
                 ...fileData,
-                ...hookParamsExpected
+                ...hookParamsExpected,
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             }
         });
         const afterDelete = tracker.getLast("file:afterDelete");
         expect(afterDelete && afterDelete.params[0]).toEqual({
             file: {
                 ...fileData,
-                ...hookParamsExpected
+                ...hookParamsExpected,
+                location: {
+                    folderId: "ROOT"
+                },
+                savedOn: expect.any(String)
             }
         });
     });
@@ -243,7 +275,11 @@ describe("File lifecycle events", () => {
             files: [
                 {
                     ...fileData,
-                    ...hookParamsExpected
+                    ...hookParamsExpected,
+                    location: {
+                        folderId: "ROOT"
+                    },
+                    savedOn: expect.any(String)
                 }
             ]
         });
@@ -252,7 +288,11 @@ describe("File lifecycle events", () => {
             files: [
                 {
                     ...fileData,
-                    ...hookParamsExpected
+                    ...hookParamsExpected,
+                    location: {
+                        folderId: "ROOT"
+                    },
+                    savedOn: expect.any(String)
                 }
             ]
         });

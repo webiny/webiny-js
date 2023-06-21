@@ -8,7 +8,7 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import elasticsearchClientContextPlugin, {

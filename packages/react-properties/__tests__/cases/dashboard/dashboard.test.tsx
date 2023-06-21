@@ -3,12 +3,11 @@
  */
 import React from "react";
 import { render } from "@testing-library/react";
-import { Compose, HigherOrderComponent } from "@webiny/react-composition";
-import { Property, toObject, useProperties } from "~/index";
-import { App, DashboardConfig } from "./App";
+import { Property, toObject } from "~/index";
+import { App, DashboardConfig, useDashboardConfig } from "./App";
 import { getLastCall } from "~tests/utils";
 
-const { AddWidget, DashboardRenderer } = DashboardConfig;
+const { AddWidget } = DashboardConfig;
 
 describe("Dashboard", () => {
     it("should contain 2 widgets (the built-in one, and the custom one)", async () => {
@@ -84,26 +83,25 @@ describe("Dashboard", () => {
         });
     });
 
-    it("should contain new custom properties", async () => {
-        /**
-         * Let's create a custom Dashboard renderer to render links (which are our custom property).
-         */
-        const CustomDashboard: HigherOrderComponent = () => {
-            return function CustomDashboard() {
-                const { getObject } = useProperties();
-                const { link } = getObject<{ link: { title: string; url: string }[] }>();
+    interface Link {
+        url: string;
+        title: string;
+    }
 
-                return (
-                    <ul>
-                        {link.map(item => (
-                            <li key={item.title}>
-                                {item.title}: {item.url}
-                            </li>
-                        ))}
-                    </ul>
-                );
-            };
-        };
+    it("should contain new custom properties", async () => {
+        function CustomDashboard() {
+            const { link = [] } = useDashboardConfig<{ link: Link[] }>();
+
+            return (
+                <ul>
+                    {link.map(item => (
+                        <li key={item.title}>
+                            {item.title}: {item.url}
+                        </li>
+                    ))}
+                </ul>
+            );
+        }
 
         /**
          * This custom component will allow us to expose a user-friendly API to developers, hook into the existing
@@ -116,7 +114,7 @@ describe("Dashboard", () => {
 
         const Link: React.FC<LinkProps> = ({ url, title }) => {
             return (
-                <Property name={"link"} array>
+                <Property id={title} name={"link"} array>
                     <Property name={"url"} value={url} />
                     <Property name={"title"} value={title} />
                 </Property>
@@ -124,15 +122,15 @@ describe("Dashboard", () => {
         };
 
         const onChange = jest.fn();
+
         const view = (
             <App onProperties={onChange}>
                 <DashboardConfig>
-                    {/* Compose the renderer, to intercept the rendering process and render custom Links. */}
-                    <Compose component={DashboardRenderer} with={CustomDashboard} />
                     {/* Register new properties. */}
                     <Link title={"Webiny"} url={"www.webiny.com"} />
                     <Link title={"Google"} url={"www.google.com"} />
                 </DashboardConfig>
+                <CustomDashboard />
             </App>
         );
 

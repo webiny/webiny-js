@@ -1,12 +1,6 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
-import {
-    Compose,
-    HigherOrderComponent,
-    makeComposable,
-    CompositionProvider
-} from "@webiny/react-composition";
-import { Property, Properties } from "~/index";
+import { CompositionProvider } from "@webiny/react-composition";
+import { Property, createConfigurableComponent } from "~/index";
 
 interface AddWidgetProps {
     name: string;
@@ -29,77 +23,24 @@ export interface CardWidget extends Record<string, unknown> {
     button: React.ReactElement;
 }
 
-const createHOC =
-    (newChildren: React.ReactNode): HigherOrderComponent =>
-    BaseComponent => {
-        return function ConfigHOC({ children }) {
-            return (
-                <BaseComponent>
-                    {newChildren}
-                    {children}
-                </BaseComponent>
-            );
-        };
-    };
-
-const DashboardConfigApply = makeComposable("DashboardConfigApply", ({ children }) => {
-    return <>{children}</>;
-});
-
-interface DashboardConfig extends React.FC<unknown> {
-    AddWidget: typeof AddWidget;
-    DashboardRenderer: typeof DashboardRenderer;
-}
-
-export const DashboardConfig: DashboardConfig = ({ children }) => {
-    return <Compose component={DashboardConfigApply} with={createHOC(children)} />;
-};
-
-const DashboardRenderer = makeComposable("DashboardRenderer", () => {
-    return <div>Renderer not implemented!</div>;
-});
-
-DashboardConfig.AddWidget = AddWidget;
-DashboardConfig.DashboardRenderer = DashboardRenderer;
-
-interface ViewContext {
-    properties: Property[];
-}
-
-const defaultContext = { properties: [] };
-
-const ViewContext = React.createContext<ViewContext>(defaultContext);
-
 interface DashboardViewProps {
     onProperties(properties: Property[]): void;
 }
 
-const DashboardView: React.FC<DashboardViewProps> = ({ onProperties }) => {
-    const [properties, setProperties] = useState<Property[]>([]);
-    const context = { properties };
+interface DashboardConfigData {
+    widget: [];
+}
 
-    useEffect(() => {
-        onProperties(properties);
-    }, [properties]);
+const { Config, WithConfig, useConfig } =
+    createConfigurableComponent<DashboardConfigData>("Dashboard");
 
-    const stateUpdater = (properties: Property[]) => {
-        setProperties(properties);
-    };
+export const DashboardConfig = Object.assign(Config, { AddWidget });
 
-    return (
-        <ViewContext.Provider value={context}>
-            <Properties onChange={stateUpdater}>
-                <DashboardConfigApply />
-                <DashboardRenderer />
-            </Properties>
-        </ViewContext.Provider>
-    );
-};
+export const useDashboardConfig = useConfig;
 
 export const App: React.FC<DashboardViewProps> = ({ onProperties, children }) => {
     return (
         <CompositionProvider>
-            <DashboardView onProperties={onProperties} />
             <DashboardConfig>
                 <AddWidget<CardWidget>
                     name="my-widget"
@@ -109,7 +50,7 @@ export const App: React.FC<DashboardViewProps> = ({ onProperties, children }) =>
                     button={<button>Show Weather</button>}
                 />
             </DashboardConfig>
-            {children}
+            <WithConfig onProperties={onProperties}>{children}</WithConfig>
         </CompositionProvider>
     );
 };

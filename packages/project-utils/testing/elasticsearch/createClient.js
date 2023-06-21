@@ -1,5 +1,5 @@
 const { logger } = require("@webiny/project-utils/testing/logger");
-const { createElasticsearchClient } = require("../../../api-elasticsearch/dist");
+const { createElasticsearchClient } = require("@webiny/api-elasticsearch");
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
 
@@ -56,13 +56,13 @@ const createDeleteIndexCallable = client => {
             try {
                 const { body: exists } = await client.indices.exists({
                     index,
-                    ignore_unavailable: false
+                    ignore_unavailable: true
                 });
                 if (!exists) {
                     return;
                 }
             } catch (ex) {
-                logger.warning(`Could not determine that index "${index}" exists: ${ex.message}`);
+                logger.warn(`Could not determine that index "${index}" exists: ${ex.message}`);
                 return;
             }
             /**
@@ -75,7 +75,7 @@ const createDeleteIndexCallable = client => {
                 });
                 return;
             } catch (ex) {
-                logger.warning(`Could not delete index "${index}": ${ex.message}`);
+                logger.warn(`Could not delete index "${index}": ${ex.message}`);
                 /**
                  * In case of snapshot error - we will retry.
                  */
@@ -100,6 +100,9 @@ const attachCustomEvents = client => {
     const originalExists = client.indices.exists;
 
     const registerIndex = input => {
+        if (!input) {
+            return;
+        }
         const names = Array.isArray(input) ? input : [input];
         for (const name of names) {
             registeredIndexes.add(name);
@@ -119,7 +122,13 @@ const attachCustomEvents = client => {
          */
         await deleteIndexCallable(params.index);
 
-        const response = await originalCreate.apply(client.indices, [params, options]);
+        let response;
+        try {
+            response = await originalCreate.apply(client.indices, [params, options]);
+        } catch (ex) {
+            logger.error(`Failed to create index "${params.index}": ${ex.message}`);
+            throw ex;
+        }
 
         registeredIndexes.add(params.index);
 
@@ -141,11 +150,33 @@ const attachCustomEvents = client => {
             try {
                 await deleteIndexCallable(index);
             } catch (ex) {
-                logger.warning(`Could not delete index "${index}".`);
+                logger.warn(`Could not delete index "${index}".`);
             }
         }
         logger.debug(`Finished "client.indices.deleteAll".\n`);
     };
+
+    client.indices.refreshAll = async () => {
+        logger.debug(`Running "client.indices.refreshAll".`);
+        const indexes = Array.from(registeredIndexes.values());
+        if (indexes.length === 0) {
+            return;
+        }
+        logger.debug(indexes, "Refreshing all indexes.");
+        for (const index of indexes) {
+            try {
+                await client.indices.refresh({
+                    index,
+                    ignore_unavailable: true
+                });
+            } catch (ex) {
+                logger.error(`Could not refresh index "${index}": ${ex.message}`);
+                throw ex;
+            }
+        }
+        logger.debug(`Finished "client.indices.refreshAll".\n`);
+    };
+
     client.indices.registerIndex = registerIndex;
 
     return client;

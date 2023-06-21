@@ -6,7 +6,7 @@ module.exports = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-es-service-role",
     async hook({ projectApplication }, context) {
-        if (projectApplication.name !== "api") {
+        if (projectApplication.id !== "api") {
             return;
         }
 

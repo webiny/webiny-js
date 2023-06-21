@@ -9,10 +9,10 @@ import {
     createListQuery,
     CmsEntriesListQueryVariables,
     CmsEntriesListQueryResponse
-} from "~/admin/graphql/contentEntries";
+} from "@webiny/app-headless-cms-common";
 import { useQuery } from "~/admin/hooks";
 import { useContentEntries } from "./useContentEntries";
-import { CmsEditorContentEntry, CmsMetaResponse } from "~/types";
+import { CmsContentEntry, CmsMetaResponse } from "~/types";
 
 interface UpdateSearchCallableParams {
     filter: string;
@@ -85,7 +85,7 @@ export function useContentEntriesList() {
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
     }, [contentModel]);
 
-    const filterByStatus = useCallback((entries: CmsEditorContentEntry[], status?: string) => {
+    const filterByStatus = useCallback((entries: CmsContentEntry[], status?: string) => {
         if (!status || status === "all") {
             return entries;
         }
@@ -118,7 +118,7 @@ export function useContentEntriesList() {
     }, [data]);
 
     const editEntry = useCallback(
-        (entry: CmsEditorContentEntry) => () => {
+        (entry: CmsContentEntry) => () => {
             history.push(
                 `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(entry.id)}`
             );

@@ -22,6 +22,27 @@ describe("where", () => {
                 field: "id",
                 operator: "not_in"
             }
+        ],
+        [
+            "wbyAco_location",
+            {
+                field: "wbyAco_location",
+                operator: "eq"
+            }
+        ],
+        [
+            "wbyAco_location_in",
+            {
+                field: "wbyAco_location",
+                operator: "in"
+            }
+        ],
+        [
+            "wbyAco_location_not_in",
+            {
+                field: "wbyAco_location",
+                operator: "not_in"
+            }
         ]
     ];
 

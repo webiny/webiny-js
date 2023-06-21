@@ -47,7 +47,7 @@ const createPageBuilder = () => {
 
 const setup = (params: CreateCrudParams) => {
     const { storageOperations } = params;
-    return new ContextPlugin<PbContext>(async context => {
+    const plugin = new ContextPlugin<PbContext>(async context => {
         if (context.pageBuilder) {
             throw new WebinyError("PbContext setup must be first loaded.", "CONTEXT_SETUP_ERROR");
         }
@@ -168,6 +168,10 @@ const setup = (params: CreateCrudParams) => {
             );
         }
     });
+
+    plugin.name = "page-builder.createContext";
+
+    return plugin;
 };
 
 export const createCrud = (params: CreateCrudParams) => {

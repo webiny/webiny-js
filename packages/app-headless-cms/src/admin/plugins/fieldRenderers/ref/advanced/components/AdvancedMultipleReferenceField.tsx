@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import * as GQL from "~/admin/viewsGraphql";
 import {
     BindComponentRenderProp,
-    CmsEditorContentEntry,
+    CmsContentEntry,
     CmsModelFieldRendererProps,
     CmsModel
 } from "~/types";
@@ -201,7 +201,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     );
 
     const onNewEntryCreate = useCallback(
-        (data: Partial<CmsEditorContentEntry> | null) => {
+        (data: Partial<CmsContentEntry> | null) => {
             if (!data) {
                 console.log(
                     `Could not store new entry to the reference field. Missing whole entry.`

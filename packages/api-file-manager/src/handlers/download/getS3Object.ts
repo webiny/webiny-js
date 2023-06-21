@@ -23,31 +23,35 @@ export const getS3Object = async (
     const objectHead = await s3.headObject(params).promise();
     const contentLength = objectHead.ContentLength ? objectHead.ContentLength : 0;
 
-    for (const loader of loaders) {
-        const canProcess = loader.canProcess({
-            context,
-            s3,
-            options,
-            file: {
-                name: filename,
-                extension,
-                contentLength
-            }
-        });
+    const applyLoaders = options.original === undefined;
 
-        if (!canProcess) {
-            continue;
-        }
-        return loader.process({
-            context,
-            s3,
-            options,
-            file: {
-                name: filename,
-                extension,
-                contentLength
+    if (applyLoaders) {
+        for (const loader of loaders) {
+            const canProcess = loader.canProcess({
+                context,
+                s3,
+                options,
+                file: {
+                    name: filename,
+                    extension,
+                    contentLength
+                }
+            });
+
+            if (!canProcess) {
+                continue;
             }
-        });
+            return loader.process({
+                context,
+                s3,
+                options,
+                file: {
+                    name: filename,
+                    extension,
+                    contentLength
+                }
+            });
+        }
     }
 
     // If no processors handled the file request, just return the S3 object taking its size into consideration.
