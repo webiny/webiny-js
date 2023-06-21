@@ -31,13 +31,15 @@ export const AccessManagementExtension = () => {
                     </Layout>
                 </AddRoute>
             </HasPermission>{" "}
-            <HasPermission name={Permission.Teams}>
-                <AddRoute exact path={"/access-management/teams"}>
-                    <Layout title={"Access Management - Teams"}>
-                        <Teams />
-                    </Layout>
-                </AddRoute>
-            </HasPermission>
+            {canUseTeams && (
+                <HasPermission name={Permission.Teams}>
+                    <AddRoute exact path={"/access-management/teams"}>
+                        <Layout title={"Access Management - Teams"}>
+                            <Teams />
+                        </Layout>
+                    </AddRoute>
+                </HasPermission>
+            )}
             <HasPermission name={Permission.ApiKeys}>
                 <AddRoute exact path={"/access-management/api-keys"}>
                     <Layout title={"Access Management - API Keys"}>

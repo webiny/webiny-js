@@ -16,7 +16,6 @@ import {
     CmsEntryListSort,
     CmsEntryListWhere,
     CmsEntryMeta,
-    CmsEntryPermission,
     CmsEntryStatus,
     CmsEntryValues,
     CmsModel,

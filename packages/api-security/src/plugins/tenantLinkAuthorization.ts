@@ -2,7 +2,6 @@ import { PermissionsTenantLink, SecurityContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { getPermissionsFromSecurityGroupsForLocale } from "~/plugins/tenantLinkAuthorization/getPermissionsFromSecurityGroupsForLocale";
-import { featureFlags } from "@webiny/feature-flags";
 
 type Context = SecurityContext & TenancyContext;
 

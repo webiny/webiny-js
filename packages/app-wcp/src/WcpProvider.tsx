@@ -23,6 +23,7 @@ export const GET_WCP_PROJECT = gql`
                             }
                             advancedAccessControlLayer {
                                 enabled
+                                options
                             }
                         }
                     }

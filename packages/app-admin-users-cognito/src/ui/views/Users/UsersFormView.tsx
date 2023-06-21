@@ -18,7 +18,6 @@ import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
 import { config as appConfig } from "@webiny/app/config";
-import { useWcp } from "@webiny/app-admin/";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -28,13 +27,20 @@ const AvatarWrapper = styled("div")({
     margin: "24px 100px 32px"
 });
 
+interface UsersFormViewParams {
+    teams?: boolean;
+}
+
 export class UsersFormView extends UIView {
-    public constructor() {
+    teams: boolean;
+
+    public constructor(params: UsersFormViewParams) {
         super("UsersFormView");
+
+        this.teams = params.teams || false;
 
         this.useGrid(false);
         this.addHookDefinition("userForm", useUserForm);
-        this.addHookDefinition("wcp", useWcp);
 
         // Setup default view
         this.addElements();
@@ -110,12 +116,7 @@ export class UsersFormView extends UIView {
             }
         ];
 
-        const { getProject } = this.getHook("wcp");
-
-        const canUseTeams =
-            getProject()?.package?.features?.advancedAccessControlLayer?.options.teams;
-
-        if (canUseTeams) {
+        if (this.teams) {
             items.push({
                 id: "teams",
                 title: "Teams",
@@ -175,7 +176,7 @@ export class UsersFormView extends UIView {
                     label: "Group",
                     validators: () => {
                         const validators = [];
-                        if (!canUseTeams) {
+                        if (!this.teams) {
                             validators.push(validation.create("required"));
                         }
                         return validators;
