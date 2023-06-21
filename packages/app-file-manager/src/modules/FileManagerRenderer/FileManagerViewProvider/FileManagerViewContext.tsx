@@ -11,6 +11,7 @@ import { useFolders, useNavigateFolder } from "@webiny/app-aco";
 import { ListFilesQueryVariables } from "~/modules/FileManagerApiProvider/graphql";
 import { useListFiles } from "./useListFiles";
 import { useTags } from "./useTags";
+import { ROOT_FOLDER } from "~/constants";
 
 type PublicState = Omit<State, "activeTags">;
 
@@ -70,9 +71,9 @@ const getCurrentFolderList = (
     if (!folders) {
         return [];
     }
-    if (!currentFolderId || currentFolderId.toLowerCase() === "root") {
+    if (!currentFolderId || currentFolderId.toLowerCase() === ROOT_FOLDER) {
         return folders.filter(
-            folder => !folder.parentId || folder.parentId.toLowerCase() === "root"
+            folder => !folder.parentId || folder.parentId.toLowerCase() === ROOT_FOLDER
         );
     }
     return folders.filter(folder => folder.parentId === currentFolderId);
@@ -105,7 +106,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
     const modifiers = { scope: props.scope, own: props.own, accept: props.accept };
     const fileManager = useFileManagerApi();
     const { folders: originalFolders, loading: foldersLoading } = useFolders();
-    const { currentFolderId = "ROOT", navigateToFolder } = useNavigateFolder();
+    const { currentFolderId = ROOT_FOLDER, navigateToFolder } = useNavigateFolder();
     const tags = useTags(modifiers);
     const [state, setState] = useState(initializeState());
 
@@ -149,7 +150,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
     const resetSearchParameters = (folderId: string) => {
         const folder = (originalFolders || []).find(folder => folder.id === folderId);
-        const isRoot = folder ? folder.id === "ROOT" : false;
+        const isRoot = folder ? folder.id === ROOT_FOLDER : false;
 
         setState(state => ({
             ...state,
@@ -241,7 +242,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
         const meta = {
             location: {
-                folderId: currentFolderId || "ROOT"
+                folderId: currentFolderId || ROOT_FOLDER
             }
         };
 
@@ -317,7 +318,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         const tags = props.scope ? [props.scope] : [];
         const meta = {
             location: {
-                folderId: currentFolderId || "ROOT"
+                folderId: currentFolderId || ROOT_FOLDER
             }
         };
 
