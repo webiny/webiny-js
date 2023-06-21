@@ -20,8 +20,8 @@ import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { ROOT_ID } from "@webiny/app-aco/components/FolderTree/List/constants";
 import { useRecords } from "@webiny/app-aco";
+import { ROOT_FOLDER } from "@webiny/app-aco/constants";
 
 /**
  * Used for some fields to convert their values.
@@ -164,7 +164,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                          * TODO: introduce hook like onEntryPublish, or similar.
                          */
                         wbyAco_location: {
-                            folderId: query.get("folderId") || ROOT_ID
+                            folderId: query.get("folderId") || ROOT_FOLDER
                         }
                     }
                 },
