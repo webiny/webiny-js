@@ -38,13 +38,6 @@ import { assignModelAfterCreateFrom } from "./contentModel/afterCreateFrom";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { filterAsync } from "~/utils/filterAsync";
 import {
-    checkPermissions,
-    checkOwnership,
-    validateOwnership,
-    checkModelAccess,
-    validateModelAccess
-} from "~/utils/permissions";
-import {
     createModelCreateFromValidation,
     createModelCreateValidation,
     createModelUpdateValidation
@@ -56,6 +49,7 @@ import {
     ensurePluralApiName,
     ensureSingularApiName
 } from "./contentModel/compatibility/modelApiName";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 
 /**
  * Given a model, return an array of tags ensuring the `type` tag is set.
@@ -75,12 +69,14 @@ export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
+    modelsPermissions: ModelsPermissions;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
-    const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
+    const { getTenant, getIdentity, getLocale, storageOperations, modelsPermissions, context } =
+        params;
 
     const loaders = {
         listModels: new DataLoader(async () => {
@@ -125,8 +121,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return manager;
     };
 
-    const checkModelPermissions = (check: string) => {
-        return checkPermissions(context, "cms.contentModel", { rwd: check });
+    const checkModelPermissions = (rwd: string) => {
+        return modelsPermissions.ensure({ rwd });
     };
 
     const getModelsAsPlugins = (): CmsModel[] => {
@@ -196,25 +192,30 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     const listModels = async () => {
         return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
-            const permissions = await checkModelPermissions("r");
             const models = await modelsList();
             return filterAsync(models, async model => {
-                if (!validateOwnership(context, permissions, model)) {
+                const ownsModel = await modelsPermissions.ensure(
+                    { owns: model.createdBy },
+                    { throw: false }
+                );
+
+                if (!ownsModel) {
                     return false;
                 }
-                return validateModelAccess(context, model);
+
+                return modelsPermissions.canAccessModel({ model, locale: getLocale().code });
             });
         });
     };
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
         return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
-            const permissions = await checkModelPermissions("r");
+            await checkModelPermissions("r");
 
             const model = await modelsGet(modelId);
 
-            checkOwnership(context, permissions, model);
-            await checkModelAccess(context, model);
+            await modelsPermissions.ensure({ owns: model.createdBy });
+            await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
 
             return model;
         });

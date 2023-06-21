@@ -1,30 +1,22 @@
-import {
-    CmsContext,
-    CmsSettings,
-    CmsSettingsContext,
-    CmsSettingsPermission,
-    HeadlessCmsStorageOperations
-} from "~/types";
+import { CmsContext, CmsSettings, CmsSettingsContext, HeadlessCmsStorageOperations } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { checkPermissions as baseCheckPermissions } from "~/utils/permissions";
+import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
 
 export interface CreateSettingsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
+    settingsPermissions: SettingsPermissions;
     context: CmsContext;
 }
-export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSettingsContext => {
-    const { storageOperations, context, getTenant, getLocale } = params;
 
-    const checkPermissions = (): Promise<CmsSettingsPermission[]> => {
-        return baseCheckPermissions(context, "cms.settings");
-    };
+export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSettingsContext => {
+    const { storageOperations, settingsPermissions, getTenant, getLocale } = params;
 
     return {
         getSettings: async () => {
-            await checkPermissions();
+            await settingsPermissions.ensure();
             return await storageOperations.settings.get({
                 tenant: getTenant().id,
                 locale: getLocale().code

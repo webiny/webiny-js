@@ -26,27 +26,31 @@ import { assignBeforeGroupUpdate } from "./contentModelGroup/beforeUpdate";
 import { assignBeforeGroupCreate } from "./contentModelGroup/beforeCreate";
 import { assignBeforeGroupDelete } from "./contentModelGroup/beforeDelete";
 import {
-    checkPermissions as baseCheckPermissions,
-    checkOwnership,
-    validateOwnership,
-    validateGroupAccess
-} from "~/utils/permissions";
-import {
     createGroupCreateValidation,
     createGroupUpdateValidation
 } from "~/crud/contentModelGroup/validation";
 import { createZodError, mdbid } from "@webiny/utils";
+import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
+import { filterAsync } from "~/utils/filterAsync";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
+    modelGroupsPermissions: ModelGroupsPermissions;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
-    const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
+    const {
+        getTenant,
+        getIdentity,
+        getLocale,
+        storageOperations,
+        modelGroupsPermissions,
+        context
+    } = params;
 
     const dataLoaders = {
         listGroups: new DataLoader(async () => {
@@ -107,10 +111,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                     };
                 })
         );
-    };
-
-    const checkPermissions = (check: string) => {
-        return baseCheckPermissions(context, "cms.contentModelGroup", { rwd: check });
     };
 
     const getGroupViaDataLoader = async (id: string) => {
@@ -180,11 +180,12 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
      * CRUD Methods
      */
     const getGroup: CmsGroupContext["getGroup"] = async id => {
-        const permissions = await checkPermissions("r");
+        await modelGroupsPermissions.ensure({ rwd: "r" });
 
         const group = await getGroupViaDataLoader(id);
-        checkOwnership(context, permissions, group);
-        validateGroupAccess(context, permissions, group);
+
+        await modelGroupsPermissions.ensure({ owns: group.createdBy });
+        await modelGroupsPermissions.ensureCanAccessGroup({ group, locale: getLocale().code });
 
         return group;
     };
@@ -192,7 +193,8 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         const { where } = params || {};
 
         const { tenant, locale } = where || {};
-        const permission = await checkPermissions("r");
+
+        await modelGroupsPermissions.ensure({ rwd: "r" });
 
         const response = await listGroupsViaDataLoader({
             ...(params || {}),
@@ -203,15 +205,23 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             }
         });
 
-        return response.filter(group => {
-            if (!validateOwnership(context, permission, group)) {
+        return filterAsync(response, async group => {
+            const ownsGroup = await modelGroupsPermissions.ensure({
+                owns: group.createdBy
+            });
+
+            if (!ownsGroup) {
                 return false;
             }
-            return validateGroupAccess(context, permission, group);
+
+            return await modelGroupsPermissions.canAccessGroup({
+                group,
+                locale: getLocale().code
+            });
         });
     };
     const createGroup: CmsGroupContext["createGroup"] = async input => {
-        await checkPermissions("w");
+        await modelGroupsPermissions.ensure({ rwd: "w" });
 
         const result = await createGroupCreateValidation().safeParseAsync(input);
 
@@ -271,11 +281,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
     const updateGroup: CmsGroupContext["updateGroup"] = async (id, input) => {
-        const permission = await checkPermissions("w");
+        await modelGroupsPermissions.ensure({ rwd: "w" });
 
         const original = await getGroupViaDataLoader(id);
 
-        checkOwnership(context, permission, original);
+        await modelGroupsPermissions.ensure({ owns: original.createdBy });
 
         const result = await createGroupUpdateValidation().safeParseAsync(input);
 
@@ -332,11 +342,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
     const deleteGroup: CmsGroupContext["deleteGroup"] = async id => {
-        const permission = await checkPermissions("d");
+        await modelGroupsPermissions.ensure({ rwd: "d" });
 
         const group = await getGroupViaDataLoader(id);
 
-        checkOwnership(context, permission, group);
+        await modelGroupsPermissions.ensure({ owns: group.createdBy });
 
         try {
             await onGroupBeforeDelete.publish({

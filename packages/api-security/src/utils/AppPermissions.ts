@@ -3,19 +3,21 @@ import NotAuthorizedError from "~/NotAuthorizedError";
 
 const FULL_ACCESS_PERMISSION_NAME = "*";
 
-type Check = Partial<{
+export interface AppPermissionsParams<TPermission extends SecurityPermission = SecurityPermission> {
+    getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
+    getPermissions: () => TPermission[] | Promise<TPermission[]>;
+    fullAccessPermissionName?: string;
+}
+
+type EnsureParams = Partial<{
     rwd: string;
     pw: string;
     owns: CreatedBy;
 }>;
 
-export interface PermissionsCheckerParams<
-    TPermission extends SecurityPermission = SecurityPermission
-> {
-    getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
-    getPermissions: () => TPermission[] | Promise<TPermission[]>;
-    fullAccessPermissionName?: string;
-}
+type Options = Partial<{
+    throw: boolean;
+}>;
 
 export class AppPermissions<TPermission extends SecurityPermission = SecurityPermission> {
     getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
@@ -26,7 +28,7 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         getIdentity,
         getPermissions,
         fullAccessPermissionName
-    }: PermissionsCheckerParams<TPermission>) {
+    }: AppPermissionsParams<TPermission>) {
         this.getIdentity = getIdentity;
         this.getPermissions = getPermissions;
         this.fullAccessPermissions = [
@@ -35,42 +37,52 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         ].filter(Boolean);
     }
 
-    async ensure(check: Check = {}) {
+    async ensure(params: EnsureParams = {}, options: Options = {}): Promise<boolean> {
         if (await this.hasFullAccess()) {
-            return;
+            return true;
         }
 
-        if (check.owns) {
+        if (params.owns) {
             if (await this.canAccessNonOwnedRecords()) {
-                return;
+                return true;
             }
 
             // If we got here, that means we didn't encounter a permission object
             // that gives us the ability to access non-owned records.
             const identity = await this.getIdentity();
-            if (identity.id === check.owns.id) {
-                return;
+            if (identity.id === params.owns.id) {
+                return true;
             }
 
-            throw new NotAuthorizedError();
+            if (options.throw !== false) {
+                throw new NotAuthorizedError();
+            }
+
+            return false;
         }
 
         const permissions = await this.getPermissions();
         const hasPermission = permissions.some(current => {
-            if (check.rwd && !this.hasRwd(current, check.rwd)) {
+            if (params.rwd && !this.hasRwd(current, params.rwd)) {
                 return false;
             }
 
-            if (check.pw && !this.hasPw(current, check.pw)) {
+            if (params.pw && !this.hasPw(current, params.pw)) {
                 return false;
             }
 
             return true;
         });
 
-        if (!hasPermission) {
-            throw new NotAuthorizedError();
+        if (hasPermission) {
+            return true;
         }
+
+        if (options.throw === false) {
+            return false;
+        }
+
+        throw new NotAuthorizedError();
     }
 
     async hasFullAccess() {
