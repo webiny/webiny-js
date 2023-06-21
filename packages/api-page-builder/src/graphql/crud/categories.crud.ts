@@ -11,7 +11,7 @@ import {
     OnCategoryBeforeUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    PbContext,
+    PbContext
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
@@ -125,7 +125,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 return null;
             }
 
-            await categoriesPermissions.ensure({owns: category.createdBy})
+            await categoriesPermissions.ensure({ owns: category.createdBy });
 
             return category;
         },
@@ -230,8 +230,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
 
-            await categoriesPermissions.ensure({owns: original.createdBy})
-
+            await categoriesPermissions.ensure({ owns: original.createdBy });
 
             const validationResult = await createCategoryUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -279,7 +278,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
 
-            await categoriesPermissions.ensure({owns: category.createdBy})
+            await categoriesPermissions.ensure({ owns: category.createdBy });
 
             // Before deleting, let's check if there is a page that's in this category.
             // If so, let's prevent this.

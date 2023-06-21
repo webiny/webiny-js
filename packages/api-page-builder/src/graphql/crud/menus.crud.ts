@@ -13,7 +13,7 @@ import {
     OnMenuAfterDeleteTopicParams,
     MenusCrud,
     PageBuilderContextObject,
-    PageBuilderStorageOperations,
+    PageBuilderStorageOperations
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";

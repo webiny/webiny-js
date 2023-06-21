@@ -23,7 +23,7 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import { sanitizeFormSubmissionData } from "~/plugins/crud/utils/sanitizeFormSubmissionData";
 import { mdbid } from "@webiny/utils";
-import {FormsPermissions} from "~/plugins/crud/permissions/FormsPermissions";
+import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
 
 interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
@@ -103,7 +103,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             }
         },
         async listFormSubmissions(this: FormBuilder, formId, options = {}) {
-            await formsPermissions.ensure()
+            await formsPermissions.ensure();
 
             const permissions = await formsPermissions.getPermissions();
 

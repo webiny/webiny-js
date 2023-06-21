@@ -439,7 +439,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async deleteForm(this: FormBuilder, id) {
-            await formsPermissions.ensure({ rwd: "d" })
+            await formsPermissions.ensure({ rwd: "d" });
 
             const form = await this.storageOperations.getForm({
                 where: {
@@ -453,7 +453,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 throw new NotFoundError(`Form ${id} was not found!`);
             }
 
-            await formsPermissions.ensure({ owns: form.ownedBy })
+            await formsPermissions.ensure({ owns: form.ownedBy });
 
             try {
                 await onFormBeforeDelete.publish({
@@ -581,7 +581,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async unpublishForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "r", pw: "u" });
-
 
             const original = await this.getForm(id, {
                 auth: false

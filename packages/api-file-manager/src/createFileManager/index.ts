@@ -8,7 +8,7 @@ import { FilesPermissions } from "~/createFileManager/permissions/FilesPermissio
 
 export interface FileManagerConfig {
     storageOperations: FileManagerStorageOperations;
-    filesPermissions: FilesPermissions
+    filesPermissions: FilesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
     getIdentity: () => SecurityIdentity;

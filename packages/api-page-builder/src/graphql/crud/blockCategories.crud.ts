@@ -11,10 +11,8 @@ import {
     OnBeforeBlockCategoryUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    PbContext,
-    PbSecurityPermission
+    PbContext
 } from "~/types";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
@@ -38,8 +36,6 @@ export const createBlockCategoriesCrud = (
 ): BlockCategoriesCrud => {
     const { context, storageOperations, blockCategoriesPermissions, getLocaleCode, getTenantId } =
         params;
-
-    const getPermissions = (name: string) => context.security.getPermissions(name);
 
     const onBeforeBlockCategoryCreate = createTopic<OnBeforeBlockCategoryCreateTopicParams>();
     const onAfterBlockCategoryCreate = createTopic<OnAfterBlockCategoryCreateTopicParams>();
@@ -194,7 +190,7 @@ export const createBlockCategoriesCrud = (
             }
         },
         async updateBlockCategory(this: PageBuilderContextObject, slug, input) {
-            await blockCategoriesPermissions.ensure({rwd: "w"});
+            await blockCategoriesPermissions.ensure({ rwd: "w" });
 
             const original = await this.getBlockCategory(slug);
             if (!original) {

@@ -9,7 +9,6 @@ import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import PageTemplatesDialog from "~/admin/views/Pages/PageTemplatesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
-import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";

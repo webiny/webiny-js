@@ -11,8 +11,6 @@ import { string, withFields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import { ContextPlugin } from "@webiny/api";
-import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
-import checkOwnPermissions from "@webiny/api-page-builder/graphql/crud/utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
     ImportExportPluginsParams,
@@ -23,7 +21,7 @@ import {
 import { PbImportExportContext } from "~/graphql/types";
 import WebinyError from "@webiny/error";
 import { PageElementStorageOperationsListParams } from "@webiny/api-page-builder/types";
-import canAccessAllRecords from "@webiny/api-page-builder/graphql/crud/utils/canAccessAllRecords";
+import { PagesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PagesPermissions";
 
 const validStatus = `${ImportExportTaskStatus.PENDING}:${ImportExportTaskStatus.PROCESSING}:${ImportExportTaskStatus.COMPLETED}:${ImportExportTaskStatus.FAILED}`;
 
@@ -47,8 +45,6 @@ const UpdateDataModel = withFields({
     error: object()
 })();
 
-const PERMISSION_NAME = "pb.page";
-
 export default ({ storageOperations }: ImportExportPluginsParams) =>
     new ContextPlugin<PbImportExportContext>(async context => {
         /**
@@ -58,6 +54,12 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             console.log("Missing pageBuilder on context. Skipping  ImportExportTasks crud.");
             return;
         }
+
+        const pagesPermissions = new PagesPermissions({
+            getPermissions: () => context.security.getPermissions("pb.page"),
+            getIdentity: context.security.getIdentity,
+            fullAccessPermissionName: "pb.*"
+        });
 
         const getLocale = () => {
             const locale = context.i18n.getContentLocale();
@@ -74,9 +76,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
         context.pageBuilder.importExportTask = {
             storageOperations,
             async getTask(id) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "r"
-                });
+                await pagesPermissions.ensure({ rwd: "r" });
 
                 const tenant = context.tenancy.getCurrentTenant();
                 const locale = getLocale();
@@ -107,16 +107,14 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                         }
                     );
                 }
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, importExportTask);
+
+                await pagesPermissions.ensure({ owns: importExportTask.createdBy });
 
                 return importExportTask;
             },
 
             async listTasks(params) {
-                const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "r"
-                });
+                await pagesPermissions.ensure({ rwd: "r" });
 
                 const tenant = context.tenancy.getCurrentTenant();
                 const locale = getLocale();
@@ -133,7 +131,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                 };
 
                 // If user can only manage own records, let's add that to the listing.
-                if (!canAccessAllRecords(permissions)) {
+                if (await pagesPermissions.canAccessOnlyOwnRecords) {
                     const identity = context.security.getIdentity();
                     listParams.where.createdBy = identity.id;
                 }
@@ -153,7 +151,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async createTask(input) {
-                await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+                await pagesPermissions.ensure({ rwd: "w" });
 
                 const createDataModel = new CreateDataModel().populate(input);
                 await createDataModel.validate();
@@ -194,16 +192,14 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async updateTask(id, input) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "w"
-                });
+                await pagesPermissions.ensure({ rwd: "w" });
+
                 const original = await context.pageBuilder.importExportTask.getTask(id);
                 if (!original) {
                     throw new NotFoundError(`ImportExportTask "${id}" not found.`);
                 }
 
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, original);
+                await pagesPermissions.ensure({ owns: original.createdBy });
 
                 const updateDataModel = new UpdateDataModel().populate(input);
                 await updateDataModel.validate();
@@ -235,17 +231,14 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async deleteTask(id) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "d"
-                });
+                await pagesPermissions.ensure({ rwd: "d" });
 
                 const importExportTask = await context.pageBuilder.importExportTask.getTask(id);
                 if (!importExportTask) {
                     throw new NotFoundError(`ImportExportTask "${id}" not found.`);
                 }
 
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, importExportTask);
+                await pagesPermissions.ensure({ owns: importExportTask.createdBy });
 
                 try {
                     return await storageOperations.deleteTask({
@@ -264,16 +257,14 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async updateStats(id, input) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "w"
-                });
+                await pagesPermissions.ensure({ rwd: "w" });
+
                 const original = await context.pageBuilder.importExportTask.getTask(id);
                 if (!original) {
                     throw new NotFoundError(`ImportExportTask "${id}" not found.`);
                 }
 
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, original);
+                await pagesPermissions.ensure({ owns: original.createdBy });
 
                 try {
                     return await storageOperations.updateTaskStats({
@@ -293,7 +284,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async createSubTask(parent, id, input) {
-                await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+                await pagesPermissions.ensure({ rwd: "w" });
 
                 const createDataModel = new CreateDataModel().populate(input);
                 await createDataModel.validate();
@@ -334,9 +325,8 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async updateSubTask(parent, subTaskId, input) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "w"
-                });
+                await pagesPermissions.ensure({ rwd: "w" });
+
                 const original = await context.pageBuilder.importExportTask.getSubTask(
                     parent,
                     subTaskId
@@ -347,8 +337,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                     );
                 }
 
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, original);
+                await pagesPermissions.ensure({ owns: original.createdBy });
 
                 const updateDataModel = new UpdateDataModel().populate(input);
                 await updateDataModel.validate();
@@ -380,9 +369,8 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
             },
 
             async getSubTask(parent, subTaskId) {
-                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "r"
-                });
+                await pagesPermissions.ensure({ rwd: "r" });
+
                 const tenant = context.tenancy.getCurrentTenant();
                 const locale = getLocale();
 
@@ -413,16 +401,13 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                     );
                 }
 
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permission, importExportSubTask);
+                await pagesPermissions.ensure({ owns: importExportSubTask.createdBy });
 
                 return importExportSubTask;
             },
 
             async listSubTasks(parent, status, limit) {
-                const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "r"
-                });
+                await pagesPermissions.ensure({ rwd: "r" });
 
                 const tenant = context.tenancy.getCurrentTenant();
                 const locale = getLocale();
@@ -438,7 +423,7 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                 };
 
                 // If user can only manage own records, let's add that to the listing.
-                if (!canAccessAllRecords(permissions)) {
+                if (await pagesPermissions.canAccessOnlyOwnRecords()) {
                     const identity = context.security.getIdentity();
                     listParams.where.createdBy = identity.id;
                 }

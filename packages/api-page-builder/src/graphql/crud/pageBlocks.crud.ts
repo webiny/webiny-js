@@ -32,7 +32,8 @@ export interface CreatePageBlocksCrudParams {
 }
 
 export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBlocksCrud => {
-    const { context, storageOperations, pageBlocksPermissions, getLocaleCode, getTenantId } = params;
+    const { context, storageOperations, pageBlocksPermissions, getLocaleCode, getTenantId } =
+        params;
 
     const onPageBlockBeforeCreate = createTopic<OnPageBlockBeforeCreateTopicParams>();
     const onPageBlockAfterCreate = createTopic<OnPageBlockAfterCreateTopicParams>();
@@ -53,7 +54,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         onPageBlockAfterDelete,
 
         async getPageBlock(id) {
-            await pageBlocksPermissions.ensure({rwd: "r"});
+            await pageBlocksPermissions.ensure({ rwd: "r" });
 
             if (id === "") {
                 throw new WebinyError(
@@ -87,13 +88,13 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                 );
             }
 
-            await pageBlocksPermissions.ensure({owns: pageBlock.createdBy});
+            await pageBlocksPermissions.ensure({ owns: pageBlock.createdBy });
 
             return pageBlock;
         },
 
         async listPageBlocks(this: PageBuilderContextObject, params) {
-            await pageBlocksPermissions.ensure({rwd: "r"});
+            await pageBlocksPermissions.ensure({ rwd: "r" });
 
             const { sort, where } = params || {};
 
@@ -135,7 +136,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         },
 
         async createPageBlock(this: PageBuilderContextObject, input) {
-            await pageBlocksPermissions.ensure({rwd: "w"});
+            await pageBlocksPermissions.ensure({ rwd: "w" });
 
             const validationResult = await createPageBlocksCreateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -190,14 +191,14 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         },
 
         async updatePageBlock(this: PageBuilderContextObject, id, input) {
-            await pageBlocksPermissions.ensure({rwd: "w"});
+            await pageBlocksPermissions.ensure({ rwd: "w" });
 
             const original = await this.getPageBlock(id);
             if (!original) {
                 throw new NotFoundError(`Page block "${id}" not found.`);
             }
 
-            await pageBlocksPermissions.ensure({owns: original.createdBy});
+            await pageBlocksPermissions.ensure({ owns: original.createdBy });
 
             const validationResult = await createPageBlocksUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -247,14 +248,14 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         },
 
         async deletePageBlock(this: PageBuilderContextObject, slug) {
-            await pageBlocksPermissions.ensure({rwd: "d"});
+            await pageBlocksPermissions.ensure({ rwd: "d" });
 
             const pageBlock = await this.getPageBlock(slug);
             if (!pageBlock) {
                 throw new NotFoundError(`Page block "${slug}" not found.`);
             }
 
-            await pageBlocksPermissions.ensure({owns: pageBlock.createdBy});
+            await pageBlocksPermissions.ensure({ owns: pageBlock.createdBy });
 
             try {
                 await onPageBlockBeforeDelete.publish({

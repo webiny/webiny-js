@@ -26,7 +26,7 @@ export interface CreateSettingsCrudParams {
 }
 
 export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCRUD => {
-    const { getTenant, getLocale, settingsPermissions, context } = params;
+    const { getTenant, getLocale, settingsPermissions } = params;
 
     // create
     const onSettingsBeforeCreate = createTopic<OnSettingsBeforeCreate>(
