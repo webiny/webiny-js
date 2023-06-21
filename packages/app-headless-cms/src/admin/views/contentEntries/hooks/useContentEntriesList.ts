@@ -6,7 +6,7 @@ import { CmsContentEntry } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { useAcoList, useFolders } from "@webiny/app-aco";
 import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
-import { ListMeta } from "@webiny/api-aco/types";
+import { ListMeta } from "@webiny/app-aco/types";
 import {
     transformCmsContentEntriesToRecordEntries,
     transformFolderItemsToFolderEntries
