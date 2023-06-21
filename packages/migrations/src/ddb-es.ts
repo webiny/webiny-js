@@ -9,6 +9,7 @@ import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb-es";
 import { AcoRecords_5_36_0_001 } from "~/migrations/5.36.0/001/ddb-es";
 // 5.37.0
 import { AcoRecords_5_37_0_001 } from "~/migrations/5.37.0/001/ddb-es";
+import { AcoFolders_5_37_0_002 } from "~/migrations/5.37.0/002/ddb-es";
 
 export const migrations = () => {
     return [
@@ -19,6 +20,7 @@ export const migrations = () => {
         CmsModels_5_35_0_005,
         AcoRecords_5_35_0_006,
         AcoRecords_5_36_0_001,
-        AcoRecords_5_37_0_001
+        AcoRecords_5_37_0_001,
+        AcoFolders_5_37_0_002
     ];
 };
