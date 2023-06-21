@@ -10,7 +10,6 @@ import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCus
 import { createTopic } from "@webiny/pubsub";
 import { AACL_RELEASE_DATE } from "@webiny/api-wcp";
 import { AaclPermission } from "@webiny/api-wcp/types";
-import { featureFlags } from "@webiny/feature-flags";
 
 export interface GetTenant {
     (): string | undefined;
@@ -150,7 +149,12 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             // Now we start checking whether we want to return all permissions, or we
             // need to omit the custom ones because of the one of the following reasons.
 
-            let aaclEnabled: boolean | "legacy" = config.advancedAccessControlLayer === true;
+            let aaclEnabled: boolean | "legacy" =
+                config.advancedAccessControlLayer?.enabled === true;
+            let teamsEnabled = false;
+            if (aaclEnabled) {
+                teamsEnabled = config.advancedAccessControlLayer?.options?.teams === true;
+            }
 
             if (!aaclEnabled) {
                 // Are we dealing with an old Webiny project?
@@ -175,14 +179,14 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                 permissions.push({
                     name: "aacl",
                     legacy: aaclEnabled === "legacy",
-                    teams: featureFlags?.aacl?.teams || false
+                    teams: teamsEnabled
                 } as AaclPermission);
 
                 return permissions;
             }
 
             // If Advanced Access Control Layer (AACL) cannot be used,
-            // we omit all of the Webiny apps-related custom permissions.
+            // we omit all the Webiny apps-related custom permissions.
             return filterOutCustomWbyAppsPermissions(permissions);
         },
 

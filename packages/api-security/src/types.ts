@@ -3,6 +3,7 @@ import { Context } from "@webiny/handler/types";
 import { Authentication, Identity } from "@webiny/api-authentication/types";
 import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
+import { ProjectPackageFeatures } from "@webiny/wcp/types";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
@@ -29,7 +30,7 @@ export interface Authorizer {
 }
 
 export interface SecurityConfig {
-    advancedAccessControlLayer: boolean;
+    advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
 }

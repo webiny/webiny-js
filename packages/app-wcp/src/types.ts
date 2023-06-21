@@ -16,6 +16,9 @@ export type WcpProjectPackage = {
         };
         advancedAccessControlLayer: {
             enabled: boolean;
+            options: {
+                teams: boolean;
+            };
         };
     };
 };

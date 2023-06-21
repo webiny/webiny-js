@@ -1,13 +1,12 @@
 import React, { memo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Layout, Plugins, AddMenu, AddRoute } from "@webiny/app-admin";
+import { Layout, Plugins, AddMenu, AddRoute, useWcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
 import { Groups } from "~/ui/views/Groups";
 import { Teams } from "~/ui/views/Teams";
 import { ApiKeys } from "~/ui/views/ApiKeys";
 import accessManagementPlugins from "./plugins";
-import { featureFlags } from "@webiny/feature-flags";
 
 /**
  * TODO @ts-refactor
@@ -18,6 +17,10 @@ export default () => [];
 
 export const AccessManagementExtension = () => {
     plugins.register(accessManagementPlugins());
+
+    const { getProject } = useWcp();
+
+    const canUseTeams = getProject()?.package?.features?.advancedAccessControlLayer?.options.teams;
 
     return (
         <Plugins>
@@ -52,7 +55,7 @@ export const AccessManagementExtension = () => {
                                 path={"/access-management/roles"}
                             />
                         </HasPermission>
-                        {featureFlags?.aacl?.teams && (
+                        {canUseTeams && (
                             <HasPermission name={Permission.Teams}>
                                 <AddMenu
                                     name={"settings.accessManagement.teams"}

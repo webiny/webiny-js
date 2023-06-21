@@ -18,7 +18,7 @@ import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
 import { config as appConfig } from "@webiny/app/config";
-import { featureFlags } from "@webiny/feature-flags";
+import { useWcp } from "@webiny/app-admin/";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -34,6 +34,7 @@ export class UsersFormView extends UIView {
 
         this.useGrid(false);
         this.addHookDefinition("userForm", useUserForm);
+        this.addHookDefinition("wcp", useWcp);
 
         // Setup default view
         this.addElements();
@@ -109,7 +110,12 @@ export class UsersFormView extends UIView {
             }
         ];
 
-        if (featureFlags?.aacl?.teams) {
+        const { getProject } = this.getHook("wcp");
+
+        const canUseTeams =
+            getProject()?.package?.features?.advancedAccessControlLayer?.options.teams;
+
+        if (canUseTeams) {
             items.push({
                 id: "teams",
                 title: "Teams",
@@ -169,7 +175,7 @@ export class UsersFormView extends UIView {
                     label: "Group",
                     validators: () => {
                         const validators = [];
-                        if (!featureFlags?.aacl?.teams) {
+                        if (!canUseTeams) {
                             validators.push(validation.create("required"));
                         }
                         return validators;

@@ -33,10 +33,10 @@ export const createSecurityContext = ({ storageOperations, ...config }: Security
     return new ContextPlugin<Context>(async context => {
         context.plugins.register(gqlInterfaces);
 
-        const advancedAccessControlLayer = context.wcp.canUseFeature("advancedAccessControlLayer");
+        const license = context.wcp.getProjectLicense();
 
         context.security = await createSecurity({
-            advancedAccessControlLayer,
+            advancedAccessControlLayer: license?.package?.features?.advancedAccessControlLayer,
             getTenant: () => {
                 const tenant = context.tenancy.getCurrentTenant();
                 return tenant ? tenant.id : undefined;
@@ -73,7 +73,12 @@ export const createSecurityContext = ({ storageOperations, ...config }: Security
 
 export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) => {
     return new ContextPlugin<Context>(context => {
-        context.plugins.register(graphqlPlugins);
+        const license = context.wcp.getProjectLicense();
+        context.plugins.register(
+            graphqlPlugins({
+                teams: license?.package?.features?.advancedAccessControlLayer?.options?.teams
+            })
+        );
 
         if (context.tenancy.isMultiTenant()) {
             applyMultiTenancyGraphQLPlugins(config, context);
