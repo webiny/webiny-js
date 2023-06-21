@@ -90,6 +90,7 @@ export interface AcoFolderCrud {
     create(data: CreateFolderParams): Promise<Folder>;
     update(id: string, data: UpdateFolderParams): Promise<Folder>;
     delete(id: string): Promise<Boolean>;
+    getHierarchyById(id: string): Promise<Folder[]>;
     onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
     onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
     onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;
