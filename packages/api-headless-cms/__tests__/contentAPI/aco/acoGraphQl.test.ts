@@ -1,4 +1,5 @@
 import { useGraphQLHandler } from "./setup/useGraphQLHandler";
+import { ROOT_FOLDER } from "~/constants";
 
 jest.retryTimes(0);
 
@@ -41,7 +42,7 @@ describe("extending the GraphQL", () => {
                 id: entryId,
                 title: "Test entry",
                 wbyAco_location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 }
             }
         });
@@ -53,7 +54,7 @@ describe("extending the GraphQL", () => {
                         entryId,
                         title: "Test entry",
                         wbyAco_location: {
-                            folderId: "ROOT"
+                            folderId: ROOT_FOLDER
                         }
                     },
                     error: null
@@ -170,7 +171,7 @@ describe("extending the GraphQL", () => {
         const [listRootNonExistingResponse] = await listEntries({
             where: {
                 wbyAco_location: {
-                    folderId: "root"
+                    folderId: ROOT_FOLDER
                 }
             }
         });

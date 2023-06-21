@@ -72,6 +72,7 @@ import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entr
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { filterAsync } from "~/utils/filterAsync";
+import { ROOT_FOLDER } from "~/constants";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
 export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
@@ -652,7 +653,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             status: STATUS_DRAFT,
             values: input,
             location: {
-                folderId: inputData.wbyAco_location?.folderId || "ROOT"
+                folderId: inputData.wbyAco_location?.folderId || ROOT_FOLDER
             }
         };
 
