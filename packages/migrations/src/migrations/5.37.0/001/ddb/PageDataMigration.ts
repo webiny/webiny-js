@@ -20,7 +20,7 @@ import {
     queryAll,
     queryOne
 } from "~/utils";
-import { PB_ACO_SEARCH_MODEL_ID, ROOT_FOLDER } from "../constants";
+import { PB_ACO_SEARCH_MODEL_ID, ROOT_FOLDER, UPPERCASE_ROOT_FOLDER } from "../constants";
 import { PB_PAGE_TYPE } from "~/migrations/5.35.0/006/constants";
 import { Page } from "~/migrations/5.35.0/006/types";
 import { get } from "@webiny/db-dynamodb";
@@ -263,7 +263,10 @@ export class AcoRecords_5_37_0_001_PageData implements DataMigration<PageDataMig
             ["object@location"]: location
         } = values;
         const { id, createdBy, createdOn, locked, path, pid, version, status, savedOn } = data;
-        const folderId = location?.["text@folderId"] || ROOT_FOLDER;
+        let folderId = location?.["text@folderId"] || ROOT_FOLDER;
+        if (folderId === UPPERCASE_ROOT_FOLDER) {
+            folderId = ROOT_FOLDER;
+        }
         return {
             ...entry,
             modelId: PB_ACO_SEARCH_MODEL_ID,
