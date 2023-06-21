@@ -73,7 +73,7 @@ export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams):
             const { type } = await storageOperations.getFolder({ id });
             const [folders] = await storageOperations.listFolders({
                 where: {
-                    type: type
+                    type
                 },
                 limit: 10000
             });
