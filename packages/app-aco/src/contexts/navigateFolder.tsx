@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import store from "store";
+import { ROOT_FOLDER } from "~/constants";
 
 export interface NavigateFolderContext {
     currentFolderId?: string;
@@ -52,13 +53,13 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
      */
     const navigateToLatestFolder = useCallback(() => {
         const folderId = store.get(createStorageKey());
-        props.navigateToLatestFolder(folderId || "ROOT");
+        props.navigateToLatestFolder(folderId || ROOT_FOLDER);
     }, [createStorageKey, folderId]);
 
     const navigateToFolder = useCallback(
         (folderId?: string) => {
             setFolderToStorage(folderId);
-            props.navigateToFolder(folderId || "ROOT");
+            props.navigateToFolder(folderId || ROOT_FOLDER);
         },
         [folderId]
     );
