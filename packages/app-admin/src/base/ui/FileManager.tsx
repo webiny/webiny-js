@@ -70,6 +70,7 @@ export type FileManagerProps = {
     own?: boolean;
     scope?: string;
     tags?: Array<string>;
+    show?: boolean;
     /**
      * @deprecated This prop is no longer used. Use the `render` prop to get better TS autocomplete.
      */
@@ -100,7 +101,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
     ...rest
 }) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
-    const [show, setShow] = useState(false);
+    const [show, setShow] = useState(rest.show ?? false);
     const onChangeRef = useRef(onChange);
 
     useEffect(() => {

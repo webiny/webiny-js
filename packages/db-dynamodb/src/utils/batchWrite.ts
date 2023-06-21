@@ -2,12 +2,13 @@ import { Table } from "dynamodb-toolbox";
 import lodashChunk from "lodash/chunk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-interface Item {
+export interface BatchWriteItem {
     [key: string]: DocumentClient.WriteRequest;
 }
-interface Params {
+
+export interface BatchWriteParams {
     table: Table;
-    items: Item[];
+    items: BatchWriteItem[];
 }
 
 /**
@@ -16,11 +17,11 @@ interface Params {
  * It can either delete or put items
  * The method does not check items before actually sending them into the underlying library.
  */
-export const batchWriteAll = async (params: Params, maxChunk = 25): Promise<void> => {
+export const batchWriteAll = async (params: BatchWriteParams, maxChunk = 25): Promise<void> => {
     if (params.items.length === 0) {
         return;
     }
-    const chunkedItems: Item[][] = lodashChunk(params.items, maxChunk);
+    const chunkedItems: BatchWriteItem[][] = lodashChunk(params.items, maxChunk);
     for (const items of chunkedItems) {
         await params.table.batchWrite(items);
     }

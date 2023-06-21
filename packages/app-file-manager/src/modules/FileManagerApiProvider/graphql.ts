@@ -1,26 +1,13 @@
-import { FileItem } from "@webiny/app-admin/types";
 import gql from "graphql-tag";
+import { FileItem } from "@webiny/app-admin/types";
 import { Settings } from "~/types";
 import { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext";
-import { ListDbSort } from "@webiny/app-aco/types";
 
-const FILE_FIELDS = /* GraphQL */ `
-    {
-        __typename
-        id
-        name
-        key
-        src
-        size
-        type
-        tags
-        aliases
-        createdOn
-        createdBy {
-            id
-        }
-    }
-`;
+export interface FmError {
+    code: string;
+    message: string;
+    data?: Record<string, any> | null;
+}
 
 const ERROR_FIELDS = /* GraphQL */ `
     {
@@ -34,17 +21,17 @@ export interface GetFileManagerSettingsQueryResponse {
     fileManager: {
         getSettings: {
             data: Settings;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }
 
 export interface ListFilesListFilesResponse {
     data: FileItem[];
-    error?: Error | null;
+    error: FmError | null;
     meta: {
         hasMoreItems: boolean;
-        totalItem: number;
+        totalCount: number;
         cursor: string | null;
     };
 }
@@ -55,46 +42,63 @@ export interface ListFilesQueryResponse {
     };
 }
 
+export type ListFilesWhereLocation = { folderId: string } | { folderId_in: string[] };
+
+export type ListFilesSort = ListFilesSortItem[];
+export type ListFilesSortItem = `${string}_ASC` | `${string}_DESC`;
+
+export interface ListFilesWhereQueryVariables {
+    location?: ListFilesWhereLocation;
+    tags?: string;
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+    type_in?: string[];
+    createdBy?: string;
+    AND?: ListFilesWhereQueryVariables[];
+}
+
 export interface ListFilesQueryVariables {
     limit?: number;
     after?: string | null;
-    sort?: ListDbSort;
-    where?: {
-        search?: string;
-        type?: string;
-        type_in?: string[];
-        tag?: string;
-        tag_in?: string[];
-        tag_and_in?: string[];
-        tag_startsWith?: string;
-        tag_not_startsWith?: string;
-        createdBy?: string;
-    };
+    sort?: ListFilesSort;
+    search?: string;
+    where?: ListFilesWhereQueryVariables;
 }
 
-export const LIST_FILES = gql`
+export const LIST_FILES = (FILE_FIELDS: string) => gql`
     query ListFiles(
+        $search: String,
         $limit: Int,
         $after: String,
-        $where: FileWhereInput
+        $sort: [FmFileListSorter!],
+        $where: FmFileListWhereInput
     ) {
         fileManager {
             listFiles(
+                search: $search,
                 limit: $limit,
                 after: $after,
-                where: $where
+                where: $where,
+                sort: $sort
             ) {
                 data ${FILE_FIELDS}
                 meta {
                     cursor
                     totalCount
+                    hasMoreItems
+                }
+                error {
+                    code
+                    data
+                    message
                 }
             }
         }
     }
 `;
 
-export const GET_FILE = gql`
+export const GET_FILE = (FILE_FIELDS: string) => gql`
     query GetFile($id: ID!) {
         fileManager {
             getFile(id: $id) {
@@ -109,20 +113,25 @@ export interface ListFileTagsQueryResponse {
     fileManager: {
         listTags: {
             data: ListTagsResponseItem[];
-            error: Error | null;
+            error: FmError | null;
         };
     };
 }
 
+interface ListFileTagsWhereQueryVariables {
+    tags_in?: string[];
+    tags_startsWith?: string;
+    tags_not_startsWith?: string;
+    AND?: ListFileTagsWhereQueryVariables[];
+    OR?: ListFileTagsWhereQueryVariables[];
+}
+
 export interface ListFileTagsQueryVariables {
-    where?: {
-        tag_startsWith?: String;
-        tag_not_startsWith?: String;
-    };
+    where?: ListFileTagsWhereQueryVariables;
 }
 
 export const LIST_TAGS = gql`
-    query ListTags($where: TagWhereInput) {
+    query ListTags($where: FmTagsListWhereInput) {
         fileManager {
             listTags(where: $where) {
                 data {
@@ -139,7 +148,7 @@ export interface CreateFileMutationResponse {
     fileManager: {
         createFile: {
             data: FileItem;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }
@@ -159,10 +168,10 @@ export interface CreateFileMutationVariables {
     meta?: Record<string, any>;
 }
 
-export const CREATE_FILE = gql`
-    mutation CreateFile($data: CreateFileInput!, $meta: JSON) {
+export const CREATE_FILE = (FILE_FIELDS: string) => gql`
+    mutation CreateFile($data: FmFileCreateInput!) {
         fileManager {
-            createFile(data: $data, meta: $meta) {
+            createFile(data: $data) {
                 error ${ERROR_FIELDS}
                 data ${FILE_FIELDS}
             }
@@ -174,7 +183,7 @@ export interface UpdateFileMutationResponse {
     fileManager: {
         updateFile: {
             data: FileItem;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }
@@ -184,8 +193,8 @@ export interface UpdateFileMutationVariables {
     data: Partial<FileInput>;
 }
 
-export const UPDATE_FILE = gql`
-    mutation UpdateFile($id: ID!, $data: UpdateFileInput!) {
+export const UPDATE_FILE = (FILE_FIELDS: string) => gql`
+    mutation UpdateFile($id: ID!, $data: FmFileUpdateInput!) {
         fileManager {
             updateFile(id: $id, data: $data) {
                 data ${FILE_FIELDS}
@@ -199,7 +208,7 @@ export interface DeleteFileMutationResponse {
     fileManager: {
         updateFile: {
             data: boolean;
-            error?: Error | null;
+            error?: FmError | null;
         };
     };
 }
@@ -228,6 +237,17 @@ export const GET_FILE_SETTINGS = gql`
                     uploadMinFileSize
                     uploadMaxFileSize
                 }
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const GET_FILE_MODEL = gql`
+    query GetFileModel {
+        fileManager {
+            getFileModel {
+                data
                 error ${ERROR_FIELDS}
             }
         }

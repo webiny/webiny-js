@@ -1,13 +1,13 @@
 import React, { memo } from "react";
-import { Plugins } from "@webiny/app";
-import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
+import { ReactComponent as FileIcon } from "@material-design-icons/svg/filled/insert_drive_file.svg";
+import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
+import { Plugin } from "@webiny/app";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
+import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
 import { ReactComponent as SlackIcon } from "~/assets/icons/slack-logo.svg";
 import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
-import { ReactComponent as FileIcon } from "@material-design-icons/svg/filled/insert_drive_file.svg";
-import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
 import { FileManager } from "~/base/ui/FileManager";
 import { globalSearchHotkey } from "~/plugins/globalSearch";
 import { uiLayoutPlugin } from "~/plugins/uiLayoutRenderer";
@@ -16,7 +16,7 @@ const BaseExtension: React.FC = () => {
     plugins.register([globalSearchHotkey, uiLayoutPlugin]);
 
     return (
-        <Plugins>
+        <Plugin>
             <AddMenu name={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
             <HasPermission name={"fm.file"}>
                 <FileManager>
@@ -69,7 +69,7 @@ const BaseExtension: React.FC = () => {
                     <NotFound />
                 </Layout>
             </AddRoute>
-        </Plugins>
+        </Plugin>
     );
 };
 

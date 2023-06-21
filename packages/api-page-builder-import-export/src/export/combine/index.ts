@@ -23,20 +23,22 @@ export interface Response {
 export default () => {
     return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
-            switch (payload.type) {
-                case "block": {
-                    return await blocksHandler(payload, context);
+            return context.security.withoutAuthorization(() => {
+                switch (payload.type) {
+                    case "block": {
+                        return blocksHandler(payload, context);
+                    }
+                    case "form": {
+                        return formsHandler(payload, context);
+                    }
+                    case "template": {
+                        return templatesHandler(payload, context);
+                    }
+                    default: {
+                        return pagesHandler(payload, context);
+                    }
                 }
-                case "form": {
-                    return await formsHandler(payload, context);
-                }
-                case "template": {
-                    return await templatesHandler(payload, context);
-                }
-                default: {
-                    return await pagesHandler(payload, context);
-                }
-            }
+            });
         }
     );
 };

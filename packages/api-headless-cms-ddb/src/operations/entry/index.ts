@@ -3,6 +3,7 @@ import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
     CmsEntryListWhere,
+    CmsEntryUniqueValue,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -1083,26 +1084,27 @@ export const createEntriesStorageOperations = (
             limit: MAX_LIST_LIMIT
         });
 
-        const valueMap = items.reduce<{ [key: string]: number }>((acc, item) => {
-            const value = item.values[field.fieldId];
-
-            const values = Array.isArray(value) ? value : [value];
-
-            for (const v of values) {
-                if (v in acc) {
-                    acc[v]++;
-                } else {
-                    acc[v] = 1;
-                }
+        const result: Record<string, CmsEntryUniqueValue> = {};
+        for (const item of items) {
+            const fieldValue = item.values[field.fieldId] as string[] | string | undefined;
+            if (!fieldValue) {
+                continue;
             }
+            const values = Array.isArray(fieldValue) ? fieldValue : [fieldValue];
+            if (values.length === 0) {
+                continue;
+            }
+            for (const value of values) {
+                result[value] = {
+                    value,
+                    count: (result[value]?.count || 0) + 1
+                };
+            }
+        }
 
-            return acc;
-        }, {});
-
-        return Object.keys(valueMap).reduce<Array<{ value: string; count: number }>>(
-            (acc, item) => [...acc, { value: item, count: valueMap[item] }],
-            []
-        );
+        return Object.values(result)
+            .sort((a, b) => (a.value > b.value ? 1 : b.value > a.value ? -1 : 0))
+            .sort((a, b) => b.count - a.count);
     };
 
     return {

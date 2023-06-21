@@ -8,7 +8,6 @@ import { EditorPluginsLoader } from "../components/EditorPluginsLoader";
 
 import Categories from "../views/Categories/Categories";
 import Menus from "../views/Menus/Menus";
-import PagesOld from "../views/Pages/Pages";
 import Pages from "~/admin/views/Pages/Table";
 import BlockCategories from "../views/BlockCategories/BlockCategories";
 import PageBlocks from "../views/PageBlocks/PageBlocks";
@@ -56,30 +55,6 @@ const plugins: RoutePlugin[] = [
                             <Helmet title={"Page Builder - Menus"} />
                             <Menus />
                         </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    /**
-     * @deprecated since version 5.35
-     * The old Page Datalist view will be removed completely within version 5.36
-     */
-    {
-        name: "route-pb-pages-old",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path="/page-builder/pages-old"
-                render={({ location }) => (
-                    <SecureRoute permission={ROLE_PB_PAGES}>
-                        <EditorPluginsLoader location={location}>
-                            <AdminLayout>
-                                <Helmet title={"Page Builder - Pages Old"} />
-                                <PagesOld />
-                            </AdminLayout>
-                        </EditorPluginsLoader>
                     </SecureRoute>
                 )}
             />

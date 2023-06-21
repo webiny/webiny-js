@@ -8,11 +8,11 @@ import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { usePage } from "~/pageEditor/hooks/usePage";
-import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 export const SetAsHomepageButton: React.FC = React.memo(() => {
     const [page] = usePage();
-    const { navigateToLatestFolder } = usePageViewNavigation();
+    const { navigateToLatestFolder } = useNavigatePage();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
 

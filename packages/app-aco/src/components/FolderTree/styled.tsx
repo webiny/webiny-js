@@ -6,7 +6,6 @@ export const Container = styled("div")`
 
     & .treeRoot {
         box-sizing: border-box;
-        padding: 36px 0 0;
         min-width: 200px;
     }
 

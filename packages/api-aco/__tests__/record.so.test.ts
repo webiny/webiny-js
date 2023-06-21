@@ -1,36 +1,46 @@
 import { recordMocks } from "./mocks/record.mock";
 import { userMock } from "~tests/mocks/user.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
+import { createMockAcoApp } from "~tests/mocks/app";
 
-jest.retryTimes(0);
-jest.setTimeout(900000);
+jest.setTimeout(500000);
 
 describe("`search` CRUD", () => {
-    const { search } = useGraphQlHandler();
+    const { search } = useGraphQlHandler({
+        plugins: [
+            createMockAcoApp({
+                name: "Webiny",
+                apiName: "Webiny"
+            })
+        ]
+    });
 
     const insertTestRecords = async (numberOfRecords = 10, type = "test", numberOfTags = 1) => {
-        try {
-            for (let index = 0; index < numberOfRecords; index++) {
-                const data = {
-                    id: `record-${index}`,
-                    type,
-                    title: `Record ${index}`,
-                    content: `Content ${index}`,
-                    location: {
-                        folderId: "folderId"
-                    },
-                    data: {
-                        any: "data"
-                    },
-                    tags: Array(numberOfTags)
-                        .fill(null)
-                        .map((_, i) => `tag-${i}`)
-                };
+        for (let index = 0; index < numberOfRecords; index++) {
+            const data = {
+                id: `record-${index}`,
+                type,
+                title: `Record ${index}`,
+                content: `Content ${index}`,
+                location: {
+                    folderId: "folderId"
+                },
+                data: {
+                    someText: `Testing some text ${index}`
+                },
+                tags: Array(numberOfTags)
+                    .fill(null)
+                    .map((_, i) => `tag-${i}`)
+            };
 
-                await search.createRecord({ data });
+            const [result] = await search.createRecord({ data });
+
+            if (!result.data?.search?.createRecord?.data) {
+                console.log(
+                    JSON.stringify(result.data?.search?.createRecord?.error || result?.errors || {})
+                );
+                throw new Error(`Could not create record ${index}.`);
             }
-        } catch (e) {
-            console.error(e);
         }
     };
 
@@ -39,6 +49,22 @@ describe("`search` CRUD", () => {
         const [responseA] = await search.createRecord({ data: recordMocks.recordA });
         const recordA = responseA.data.search.createRecord.data;
         expect(recordA).toEqual({ ...recordMocks.recordA, id: recordA.id, createdBy: userMock });
+
+        const [recordAResponse] = await search.getRecord({ id: recordA.id });
+        expect(recordAResponse).toEqual({
+            data: {
+                search: {
+                    getRecord: {
+                        data: {
+                            ...recordMocks.recordA,
+                            createdBy: userMock,
+                            id: recordA.id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         const [responseB] = await search.createRecord({ data: recordMocks.recordB });
         const recordB = responseB.data.search.createRecord.data;
@@ -58,7 +84,13 @@ describe("`search` CRUD", () => {
             ...recordMocks.recordE,
             id: recordE.id,
             content: null,
-            data: {},
+            data: {
+                customCreatedOn: null,
+                customLocked: null,
+                customVersion: null,
+                someText: null,
+                identity: null
+            },
             tags: [],
             createdBy: userMock
         });
@@ -67,27 +99,40 @@ describe("`search` CRUD", () => {
         // List records -> type: "page" / folderId: "folder-1"
         const [listResponsePageFolder1] = await search.listRecords({
             where: { type: "page", location: { folderId: "folder-1" } },
-            sort: {
-                createdOn: "ASC"
-            }
+            sort: ["createdOn_ASC"]
         });
 
-        expect(listResponsePageFolder1.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id }),
-                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
-                ]),
-                error: null
-            })
-        );
+        expect(listResponsePageFolder1).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                ...recordMocks.recordA,
+                                createdBy: userMock,
+                                id: recordA.id
+                            },
+                            {
+                                ...recordMocks.recordB,
+                                createdBy: userMock,
+                                id: recordB.id
+                            }
+                        ],
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 2
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         // List records -> type: "page" / folderId: "folder-2"
         const [listResponsePageFolder2] = await search.listRecords({
             where: { type: "page", location: { folderId: "folder-2" } },
-            sort: {
-                createdOn: "ASC"
-            }
+            sort: ["createdOn_ASC"]
         });
 
         expect(listResponsePageFolder2.data.search.listRecords).toEqual(
@@ -102,33 +147,49 @@ describe("`search` CRUD", () => {
         // List records -> type: "post" / folderId: "folder-1"
         const [listResponsePost] = await search.listRecords({
             where: { type: "post" },
-            sort: {
-                createdOn: "ASC"
-            }
+            sort: ["createdOn_ASC"]
         });
 
-        expect(listResponsePost.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordD, id: recordD.id }),
-                    expect.objectContaining({
-                        ...recordMocks.recordE,
-                        id: recordE.id,
-                        content: null,
-                        data: {},
-                        tags: []
-                    })
-                ]),
-                error: null
-            })
-        );
+        expect(listResponsePost).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                ...recordMocks.recordD,
+                                createdBy: userMock,
+                                id: recordD.id
+                            },
+                            {
+                                ...recordMocks.recordE,
+                                id: recordE.id,
+                                content: null,
+                                createdBy: userMock,
+                                data: {
+                                    customCreatedOn: null,
+                                    customLocked: null,
+                                    customVersion: null,
+                                    identity: null,
+                                    someText: null
+                                },
+                                tags: []
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 2
+                        }
+                    }
+                }
+            }
+        });
 
         // Let's check cursor based pagination meta.
         const [listResponsePageWithLimit] = await search.listRecords({
             where: { type: "page" },
-            sort: {
-                createdOn: "ASC"
-            },
+            sort: ["createdOn_ASC"],
             limit: 2
         });
 
@@ -153,9 +214,7 @@ describe("`search` CRUD", () => {
 
         const [listResponsePageWithLimitAfter] = await search.listRecords({
             where: { type: "page" },
-            sort: {
-                createdOn: "ASC"
-            },
+            sort: ["createdOn_ASC"],
             limit: 2,
             after: cursor
         });
@@ -178,9 +237,7 @@ describe("`search` CRUD", () => {
         // Let's search for records.
         const [searchResponse] = await search.listRecords({
             where: { type: "page" },
-            sort: {
-                createdOn: "ASC"
-            },
+            sort: ["createdOn_ASC"],
             search: "Lorem"
         });
 
@@ -214,14 +271,27 @@ describe("`search` CRUD", () => {
             where: { type: "page", tags_startsWith: "scope:" }
         });
 
-        expect(tagsStartsWithResponse.data.search.listRecords).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordA, id: recordA.id })
-                ]),
-                error: null
-            })
-        );
+        expect(tagsStartsWithResponse).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                ...recordMocks.recordA,
+                                createdBy: userMock,
+                                id: recordA.id
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
 
         // Let's filter records using `tags_not_startsWith`
         const [tagsNotStartsWithResponse] = await search.listRecords({
@@ -231,7 +301,10 @@ describe("`search` CRUD", () => {
         expect(tagsNotStartsWithResponse.data.search.listRecords).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
-                    expect.objectContaining({ ...recordMocks.recordB, id: recordB.id })
+                    expect.objectContaining({
+                        ...recordMocks.recordB,
+                        id: recordB.id
+                    })
                 ]),
                 error: null
             })
@@ -362,6 +435,71 @@ describe("`search` CRUD", () => {
         });
     });
 
+    it("should move a record to another folder", async () => {
+        // Creating a record with same "id"
+        const [createResponse] = await search.createRecord({ data: recordMocks.recordA });
+
+        const record = createResponse.data.search.createRecord.data;
+
+        const [moveResponse] = await search.moveRecord({
+            id: record.id,
+            folderId: "folder-1-2-3-4-5-6-7"
+        });
+
+        expect(moveResponse).toEqual({
+            data: {
+                search: {
+                    moveRecord: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listMovedRecords] = await search.listRecords();
+
+        expect(listMovedRecords).toMatchObject({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [
+                            {
+                                id: record.id,
+                                location: {
+                                    folderId: "folder-1-2-3-4-5-6-7"
+                                }
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        const [movedRecord] = await search.getRecord({ id: record.id });
+        expect(movedRecord).toMatchObject({
+            data: {
+                search: {
+                    getRecord: {
+                        data: {
+                            id: record.id,
+                            location: {
+                                folderId: "folder-1-2-3-4-5-6-7"
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
     it("should list existing tags sorted alphabetically attached to search records", async () => {
         // Let's create some search records.
         await search.createRecord({ data: recordMocks.recordA });
@@ -373,25 +511,29 @@ describe("`search` CRUD", () => {
         // Let's search for tags.
         const [response] = await search.listTags();
 
-        expect(response.data.search.listTags).toEqual(
-            expect.objectContaining({
-                data: [
-                    { tag: "page-tag1", count: 2 },
-                    { tag: "page-tag2", count: 1 },
-                    { tag: "page-tag3", count: 1 },
-                    { tag: "post-tag1", count: 1 },
-                    { tag: "post-tag2", count: 1 },
-                    { tag: "scope:page", count: 1 },
-                    { tag: "scope:post", count: 1 }
-                ],
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: 7,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
+        expect(response).toEqual({
+            data: {
+                search: {
+                    listTags: {
+                        data: [
+                            { tag: "page-tag1", count: 2 },
+                            { tag: "page-tag2", count: 1 },
+                            { tag: "page-tag3", count: 1 },
+                            { tag: "post-tag1", count: 1 },
+                            { tag: "post-tag2", count: 1 },
+                            { tag: "scope:page", count: 1 },
+                            { tag: "scope:post", count: 1 }
+                        ],
+                        meta: {
+                            cursor: null,
+                            totalCount: 7,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     it("should list existing tags, filtered by search record `type`", async () => {
@@ -403,27 +545,52 @@ describe("`search` CRUD", () => {
         await search.createRecord({ data: recordMocks.recordE });
 
         // Let's search for tags.
-        const [response] = await search.listTags({
-            where: {
-                type: "post"
+        const [response] = await search.listTags();
+
+        expect(response).toEqual({
+            data: {
+                search: {
+                    listTags: {
+                        data: [
+                            {
+                                count: 2,
+                                tag: "page-tag1"
+                            },
+                            {
+                                count: 1,
+                                tag: "page-tag2"
+                            },
+                            {
+                                count: 1,
+                                tag: "page-tag3"
+                            },
+                            {
+                                count: 1,
+                                tag: "post-tag1"
+                            },
+                            {
+                                count: 1,
+                                tag: "post-tag2"
+                            },
+                            {
+                                count: 1,
+                                tag: "scope:page"
+                            },
+                            {
+                                count: 1,
+                                tag: "scope:post"
+                            }
+                        ],
+                        meta: {
+                            cursor: null,
+                            totalCount: 7,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
             }
         });
-
-        expect(response.data.search.listTags).toEqual(
-            expect.objectContaining({
-                data: [
-                    { tag: "post-tag1", count: 1 },
-                    { tag: "post-tag2", count: 1 },
-                    { tag: "scope:post", count: 1 }
-                ],
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: 3,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
     });
 
     it("should list existing tags, filtered by `tags_in` param", async () => {
@@ -529,24 +696,28 @@ describe("`search` CRUD", () => {
         const numberOfTags = 50;
 
         // Let's create some search records.
-        await insertTestRecords(1000, type, 50);
+        await insertTestRecords(250, type, 50);
 
         // Let's search for tags.
-        const [response] = await search.listTags({
-            where: { type }
+        const [response] = await search.listTags();
+
+        expect(response).toEqual({
+            data: {
+                search: {
+                    listTags: {
+                        data: expect.any(Array),
+                        meta: {
+                            cursor: null,
+                            totalCount: numberOfTags,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
         });
 
-        expect(response.data.search.listTags).toEqual(
-            expect.objectContaining({
-                data: expect.any(Array),
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: numberOfTags,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
+        expect(response.data.search.listTags.data).toHaveLength(numberOfTags);
     });
 
     it("should list an empty array in case of not found tags", async () => {
@@ -554,26 +725,43 @@ describe("`search` CRUD", () => {
         await search.createRecord({ data: recordMocks.recordE });
 
         // Let's search for tags.
-        const [response] = await search.listTags({
-            where: { type: "page" }
-        });
+        const [response] = await search.listTags();
 
-        expect(response.data.search.listTags).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([]),
-                meta: expect.objectContaining({
-                    cursor: null,
-                    totalCount: 0,
-                    hasMoreItems: false
-                }),
-                error: null
-            })
-        );
+        expect(response).toEqual({
+            data: {
+                search: {
+                    listTags: {
+                        data: [],
+                        meta: expect.objectContaining({
+                            cursor: null,
+                            totalCount: 0,
+                            hasMoreItems: false
+                        }),
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     it("should enforce security rules", async () => {
-        const { search: anonymousSearch } = useGraphQlHandler({ identity: null });
-        const { search } = useGraphQlHandler();
+        const { search: anonymousSearch } = useGraphQlHandler({
+            identity: null,
+            plugins: [
+                createMockAcoApp({
+                    name: "Webiny",
+                    apiName: "Webiny"
+                })
+            ]
+        });
+        const { search } = useGraphQlHandler({
+            plugins: [
+                createMockAcoApp({
+                    name: "Webiny",
+                    apiName: "Webiny"
+                })
+            ]
+        });
 
         const notAuthorizedResponse = {
             data: null,

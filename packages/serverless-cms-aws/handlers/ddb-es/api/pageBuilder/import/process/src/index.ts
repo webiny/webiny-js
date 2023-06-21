@@ -20,13 +20,12 @@ import elasticSearch, {
     createGzipCompression
 } from "@webiny/api-elasticsearch";
 import { createFileManagerContext } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerImportExportContext } from "@webiny/api-file-manager-aco";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 
@@ -56,10 +55,22 @@ export const handler = createHandler({
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
-                documentClient,
-                elasticsearchClient
+                documentClient
             })
         }),
         // Add File storage S3 plugin for API file manager.
@@ -83,22 +94,8 @@ export const handler = createHandler({
         importProcessPlugins({
             handlers: { process: process.env.AWS_LAMBDA_FUNCTION_NAME }
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient
-            })
-        }),
-        new CmsParametersPlugin(async context => {
-            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
-            return {
-                type: "manage",
-                locale
-            };
-        }),
         createAco(),
-        createAcoPageBuilderImportExportContext(),
-        createAcoFileManagerImportExportContext()
+        createAcoPageBuilderImportExportContext()
     ],
     http: { debug }
 });

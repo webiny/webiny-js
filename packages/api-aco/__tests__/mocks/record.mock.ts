@@ -8,7 +8,15 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            any: "data"
+            customCreatedOn: "2023-05-15T00:00:00.000Z",
+            customLocked: true,
+            customVersion: 12,
+            someText: "A text which is searchable",
+            identity: {
+                id: "user-1",
+                displayName: "John Doe",
+                type: "user"
+            }
         },
         tags: ["page-tag1", "page-tag2", "scope:page"]
     },
@@ -21,7 +29,15 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            any: 1
+            customCreatedOn: "2023-04-15T00:00:00.000Z",
+            customLocked: false,
+            customVersion: 5,
+            someText: "A text which is searchable as well",
+            identity: {
+                id: "user-2",
+                displayName: "Jane Doe",
+                type: "admin"
+            }
         },
         tags: ["page-tag1"]
     },
@@ -34,7 +50,15 @@ export const recordMocks = {
             folderId: "folder-2"
         },
         data: {
-            any: "data"
+            customCreatedOn: "2023-03-15T00:00:00.000Z",
+            customLocked: false,
+            customVersion: 2,
+            someText: "A text which is searchable as well",
+            identity: {
+                id: "user-3",
+                displayName: "Janine Doe",
+                type: "admin"
+            }
         },
         tags: ["page-tag3"]
     },
@@ -47,7 +71,15 @@ export const recordMocks = {
             folderId: "folder-1"
         },
         data: {
-            any: "data"
+            customLocked: null,
+            customCreatedOn: "2023-02-15T00:00:00.000Z",
+            customVersion: 1,
+            someText: "A text which is searchable as well",
+            identity: {
+                id: "user-4",
+                displayName: "James Doe",
+                type: "admin"
+            }
         },
         tags: ["post-tag1", "post-tag2", "scope:post"]
     },
@@ -57,7 +89,8 @@ export const recordMocks = {
         title: "Post e",
         location: {
             folderId: "folder-1"
-        }
+        },
+        data: {}
     },
     recordF: {
         id: "post-f",

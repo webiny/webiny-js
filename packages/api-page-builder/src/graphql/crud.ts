@@ -18,8 +18,8 @@ import { PagesPermissions } from "~/graphql/crud/permissions/PagesPermissions";
 import { MenusPermissions } from "~/graphql/crud/permissions/MenusPermissions";
 import { CategoriesPermissions } from "./crud/permissions/CategoriesPermissions";
 import { BlockCategoriesPermissions } from "./crud/permissions/BlockCategoriesPermissions";
-import {PageTemplatesPermissions} from "~/graphql/crud/permissions/PageTemplatesPermissions";
-import {PageBlocksPermissions} from "~/graphql/crud/permissions/PageBlocksPermissions";
+import { PageTemplatesPermissions } from "~/graphql/crud/permissions/PageTemplatesPermissions";
+import { PageBlocksPermissions } from "~/graphql/crud/permissions/PageBlocksPermissions";
 
 export interface CreateCrudParams {
     storageOperations: PageBuilderStorageOperations;
@@ -53,7 +53,7 @@ const createPageBuilder = () => {
 
 const setup = (params: CreateCrudParams) => {
     const { storageOperations } = params;
-    return new ContextPlugin<PbContext>(async context => {
+    const plugin = new ContextPlugin<PbContext>(async context => {
         if (context.pageBuilder) {
             throw new WebinyError("PbContext setup must be first loaded.", "CONTEXT_SETUP_ERROR");
         }
@@ -218,6 +218,10 @@ const setup = (params: CreateCrudParams) => {
             );
         }
     });
+
+    plugin.name = "page-builder.createContext";
+
+    return plugin;
 };
 
 export const createCrud = (params: CreateCrudParams) => {

@@ -8,14 +8,14 @@ import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { usePage } from "~/pageEditor/hooks/usePage";
-import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const DefaultPublishPageButton: React.FC = () => {
     const [page] = usePage();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
     const { canPublish } = usePagesPermissions();
-    const { navigateToLatestFolder } = usePageViewNavigation();
+    const { navigateToLatestFolder } = useNavigatePage();
 
     if (!canPublish()) {
         return null;

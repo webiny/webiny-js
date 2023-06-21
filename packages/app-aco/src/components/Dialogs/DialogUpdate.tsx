@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 import { Form, FormOnSubmit } from "@webiny/form";
@@ -16,19 +15,16 @@ import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-
 import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
-
 import { DialogContainer, DialogFoldersContainer } from "./styled";
-
 import { FolderItem } from "~/types";
 
-type FolderDialogUpdateProps = {
+interface FolderDialogUpdateProps {
     folder: FolderItem;
     open: boolean;
     onClose: DialogOnClose;
-};
+}
 
 type SubmitData = Pick<FolderItem, "title" | "slug">;
 
@@ -39,7 +35,7 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
     onClose,
     open
 }) => {
-    const { loading, updateFolder } = useFolders(folder.type);
+    const { loading, updateFolder } = useFolders();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [parentId, setParentId] = useState<string | null>();
     const { showSnackbar } = useSnackbar();
@@ -109,14 +105,13 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                             <Typography use="body1">{t`Parent folder`}</Typography>
                                             <DialogFoldersContainer>
                                                 <FolderTree
-                                                    title={t`Root folder`}
-                                                    type={folder.type}
                                                     focusedFolderId={parentId || undefined}
                                                     hiddenFolderIds={[folder.id]}
                                                     onFolderClick={data =>
-                                                        setParentId(data?.id || null)
+                                                        setParentId(
+                                                            data.id === "ROOT" ? null : data.id
+                                                        )
                                                     }
-                                                    onTitleClick={() => setParentId(null)}
                                                 />
                                             </DialogFoldersContainer>
                                         </Cell>

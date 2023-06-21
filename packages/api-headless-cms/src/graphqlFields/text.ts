@@ -12,6 +12,8 @@ const createListFilters = ({ field }: CreateListFiltersParams) => {
         ${field.fieldId}_not_in: [String]
         ${field.fieldId}_contains: String
         ${field.fieldId}_not_contains: String
+        ${field.fieldId}_startsWith: String
+        ${field.fieldId}_not_startsWith: String
     `;
 };
 

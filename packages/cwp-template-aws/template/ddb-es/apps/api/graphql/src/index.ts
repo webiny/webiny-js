@@ -17,26 +17,25 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import elasticsearchClientContext, {
-    createGzipCompression,
-    createElasticsearchClient
+    createElasticsearchClient,
+    createGzipCompression
 } from "@webiny/api-elasticsearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
-import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerContext } from "@webiny/api-file-manager-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 /**
  * APW
  */
-import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
+import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
@@ -69,10 +68,17 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient,
+                plugins: []
+            })
+        }),
+        createHeadlessCmsGraphQL(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
-                documentClient,
-                elasticsearchClient
+                documentClient
             })
         }),
         createFileManagerGraphQL(),
@@ -98,14 +104,6 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient,
-                plugins: []
-            })
-        }),
-        createHeadlessCmsGraphQL(),
         createGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({
@@ -113,7 +111,6 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createAcoFileManagerContext(),
         scaffoldsPlugins()
     ],
     http: { debug }

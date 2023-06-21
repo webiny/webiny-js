@@ -30,6 +30,9 @@ export interface CmsReferenceContentEntry {
         entryId: string;
         title: string;
     };
+    wbyAco_location?: {
+        folderId?: string;
+    };
     createdOn: Date;
     savedOn: Date;
 }

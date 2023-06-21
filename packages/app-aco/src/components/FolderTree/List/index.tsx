@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-
 import {
     DropOptions,
     getBackendOptions,
@@ -10,78 +9,61 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
-import useDeepCompareEffect from "use-deep-compare-effect";
-
 import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
 import { Node } from "../Node";
 import { NodePreview } from "../NodePreview";
 import { Placeholder } from "../Placeholder";
-
-import { createTreeData, createInitialOpenList } from "./utils";
-
+import { createInitialOpenList, createTreeData } from "./utils";
 import { useFolders } from "~/hooks";
-
 import { ROOT_ID } from "./constants";
+import { DndFolderItem, FolderItem } from "~/types";
 
-import { DndItemData, FolderItem } from "~/types";
-
-type ListProps = {
-    type: string;
+interface ListProps {
     folders: FolderItem[];
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
     enableActions?: boolean;
-    onFolderClick: (data: NodeModel<DndItemData>["data"]) => void;
-    onDragStart: () => void;
-    onDragEnd: () => void;
-};
+    onFolderClick: (data: FolderItem) => void;
+}
 
 export const List: React.VFC<ListProps> = ({
-    type,
     folders,
     onFolderClick,
     focusedFolderId,
     hiddenFolderIds,
-    enableActions,
-    onDragStart,
-    onDragEnd
+    enableActions
 }) => {
-    const { updateFolder } = useFolders(type);
+    const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
-    const [treeData, setTreeData] = useState<NodeModel<DndItemData>[]>([]);
-    const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>(undefined);
-    const [openFolderIds, setOpenFolderIds] = useState<NodeModel<DndItemData>["id"][]>([]);
+    const [treeData, setTreeData] = useState<NodeModel<DndFolderItem>[]>([]);
+    const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
+    const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_ID]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
 
-    useDeepCompareEffect(() => {
+    useEffect(() => {
         if (folders) {
             setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
         }
-
-        /**
-         *  We are spreading the `folders`:
-         *  in case of folder value update (e.g. name) from any component within the UI does not trigger the tree data update.
-         *  TODO: need investigation.
-         */
-    }, [{ ...folders }, focusedFolderId]);
+    }, [folders, focusedFolderId]);
 
     useEffect(() => {
-        if (folders) {
-            setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
+        if (!folders) {
+            return;
         }
+        setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
     }, []);
 
     const handleDrop = async (
-        newTree: NodeModel<DndItemData>[],
+        newTree: NodeModel<DndFolderItem>[],
         { dragSourceId, dropTargetId }: DropOptions
     ) => {
         try {
             const item = folders.find(folder => folder.id === dragSourceId);
 
             if (!item) {
-                throw new Error("Folder not found");
+                throw new Error("Folder not found!");
             }
 
             setTreeData(newTree);
@@ -95,14 +77,17 @@ export const List: React.VFC<ListProps> = ({
     };
 
     const sort = useMemo(
-        () => (a: NodeModel<DndItemData>, b: NodeModel<DndItemData>) => {
+        () => (a: NodeModel<DndFolderItem>, b: NodeModel<DndFolderItem>) => {
+            if (a.data!.id === ROOT_ID || b.data!.id === ROOT_ID) {
+                return 1;
+            }
             return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
         },
         []
     );
 
-    const handleChangeOpen = (folderIds: NodeModel["id"][]) => {
-        setOpenFolderIds(folderIds);
+    const handleChangeOpen = (folderIds: string[]) => {
+        setOpenFolderIds([ROOT_ID, ...folderIds]);
     };
 
     return (
@@ -110,12 +95,11 @@ export const List: React.VFC<ListProps> = ({
             <DndProvider backend={MultiBackend} options={getBackendOptions()} context={window}>
                 <Tree
                     tree={treeData}
-                    rootId={ROOT_ID}
+                    rootId={"0"}
                     onDrop={handleDrop}
-                    onChangeOpen={handleChangeOpen}
-                    onDragStart={onDragStart}
-                    onDragEnd={onDragEnd}
+                    onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
+                    canDrag={item => item!.id !== ROOT_ID}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
                             node={node}
@@ -136,7 +120,6 @@ export const List: React.VFC<ListProps> = ({
                     )}
                     dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
                     classes={{
-                        root: "treeRoot",
                         dropTarget: "dropTarget",
                         draggingSource: "draggingSource",
                         placeholder: "placeholderContainer"

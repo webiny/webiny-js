@@ -7,6 +7,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { PbPageData, PbPageRevision } from "~/types";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 interface UseRevisionHandlersProps {
     page: PbPageData;
@@ -19,6 +20,7 @@ export function useRevisionHandlers(props: UseRevisionHandlersProps) {
     const { page, revision } = props;
     const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
     const pageBuilder = useAdminPageBuilder();
+    const { navigateToPageEditor } = useNavigatePage();
 
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
@@ -38,12 +40,12 @@ export function useRevisionHandlers(props: UseRevisionHandlersProps) {
             return showSnackbar(error.message);
         }
 
-        history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
-    }, [revision]);
+        navigateToPageEditor(data.id);
+    }, [revision, navigateToPageEditor]);
 
     const editRevision = useCallback((): void => {
-        history.push(`/page-builder/editor/${encodeURIComponent(revision.id)}`);
-    }, [revision]);
+        navigateToPageEditor(revision.id);
+    }, [revision, navigateToPageEditor]);
 
     const deleteRevision = useCallback(async () => {
         const response = await pageBuilder.deletePage(revision, {

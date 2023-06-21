@@ -12,7 +12,6 @@
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-file-manager-aco": "0.0.0",
     "@webiny/api-file-manager-ddb": "0.0.0",
     "@webiny/api-file-manager-s3": "0.0.0",
     "@webiny/api-form-builder": "0.0.0",

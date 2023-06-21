@@ -2,7 +2,35 @@ import { useContext, useEffect, useMemo } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { FolderItem } from "~/types";
 
-export const useFolders = (type: string) => {
+const getDescendantFolders = (folders: FolderItem[], folderId?: string) => {
+    if (!folderId || folderId === "ROOT" || !folders.length) {
+        return [];
+    }
+
+    const folderMap = new Map(folders.map(folder => [folder.id, folder]));
+    const result = [] as string[];
+
+    const findChildren = (folderId: string) => {
+        const folder = folderMap.get(folderId);
+        if (!folder) {
+            return;
+        }
+
+        result.push(folder.id);
+
+        folders.forEach(child => {
+            if (child.parentId === folder.id) {
+                findChildren(child.id);
+            }
+        });
+    };
+
+    findChildren(folderId);
+
+    return result;
+};
+
+export const useFolders = () => {
     const context = useContext(FoldersContext);
     if (!context) {
         throw new Error("useFolders must be used within a FoldersProvider");
@@ -16,14 +44,15 @@ export const useFolders = (type: string) => {
          * On first mount, call `listFolders`, which will either issue a network request, or load folders from cache.
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          *
-         * IMPORTANT: we check if the folders[type] array exists: the hook can be used from multiple components and
+         * IMPORTANT: we check if the folders array exists: the hook can be used from multiple components and
          * fetch the outdated list from Apollo Cache. Since the state is managed locally, we fetch the folders only
          * at the first mount.
          */
-        if (!folders[type]) {
-            listFolders(type);
+        if (folders) {
+            return;
         }
-    }, [type]);
+        listFolders();
+    }, []);
 
     return useMemo(
         () => ({
@@ -33,20 +62,23 @@ export const useFolders = (type: string) => {
              * fetching of `folders`, which is managed by the FoldersContext.
              */
             loading,
-            folders: folders[type],
+            folders,
             getFolder(id: string) {
                 return getFolder(id);
             },
-            createFolder(folder: Omit<FolderItem, "id">) {
+            createFolder(folder: Omit<FolderItem, "id" | "type">) {
                 return createFolder(folder);
             },
-            updateFolder(folder: FolderItem) {
+            updateFolder(folder: Omit<FolderItem, "type">) {
                 return updateFolder(folder);
             },
-            deleteFolder(folder: FolderItem) {
+            deleteFolder(folder: Pick<FolderItem, "id">) {
                 return deleteFolder(folder);
+            },
+            getDescendantFolders(from?: string) {
+                return getDescendantFolders(folders || [], from);
             }
         }),
-        [folders[type], loading]
+        [folders, loading]
     );
 };
