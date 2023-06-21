@@ -9,8 +9,6 @@ import { IconButton } from "@webiny/ui/Button";
 import useExportPageRevisionSelectorDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageRevisionSelectorDialog";
 import useExportPageDialog from "~/editor/plugins/defaultBar/components/ExportPageButton/useExportPageDialog";
 
-import { Container } from "./styled";
-
 const t = i18n.ns("app-page-builder/admin/views/pages/table/header/buttons/table-actions");
 
 export interface TableActionsProps {
@@ -34,7 +32,7 @@ export const TableActions = ({ selected, onImportPage }: TableActionsProps): Rea
     };
 
     return (
-        <Container>
+        <>
             <Tooltip content={t`Import page`} placement={"bottom"}>
                 <IconButton icon={<ImportIcon />} onClick={onImportPage} />
             </Tooltip>
@@ -52,6 +50,6 @@ export const TableActions = ({ selected, onImportPage }: TableActionsProps): Rea
                     }}
                 />
             </Tooltip>
-        </Container>
+        </>
     );
 };

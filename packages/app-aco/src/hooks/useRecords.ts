@@ -50,7 +50,7 @@ export const useRecords = (folderId?: string) => {
              * Since this method lists records with pagination, you might need to call it multiple times passing the `after` param.
              */
             loading,
-            meta: meta[folderId!] || {},
+            meta,
             records: records.filter(
                 record => dotPropImmutable.get(record, folderIdPath) === folderId
             ),

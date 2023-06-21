@@ -155,6 +155,7 @@ export const createManageSDL: CreateManageSDL = ({
                 sort: [${singularName}ListSorter]
                 limit: Int
                 after: String
+                search: String
             ): ${singularName}ListResponse
         }
 

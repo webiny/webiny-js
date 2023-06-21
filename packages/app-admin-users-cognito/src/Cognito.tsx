@@ -19,7 +19,6 @@ import { UserInfo } from "./plugins/userMenu/userInfo";
 import { AccountDetails } from "./plugins/userMenu/accountDetails";
 import { SignOut } from "./plugins/userMenu/signOut";
 
-import { globalSearchUsers } from "./plugins/globalSearch";
 import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
@@ -36,7 +35,7 @@ const CognitoLoginScreen: HigherOrderComponent = () => LoginScreen;
  * Compose.component
  */
 const CognitoIdP: React.FC = () => {
-    plugins.register([globalSearchUsers, installation, permissionRenderer, cognito()]);
+    plugins.register([installation, permissionRenderer, cognito()]);
 
     return (
         <Fragment>

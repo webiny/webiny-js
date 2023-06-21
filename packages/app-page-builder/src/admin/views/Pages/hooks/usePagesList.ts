@@ -1,70 +1,65 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import debounce from "lodash/debounce";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
-import { useContentEntries } from "./useContentEntries";
-import { CmsContentEntry } from "~/types";
-import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
+import debounce from "lodash/debounce";
+import { PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
 import { useAcoList, useFolders } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
-import { ListMeta } from "@webiny/api-aco/types";
-import {
-    transformCmsContentEntriesToRecordEntries,
-    transformFolderItemsToFolderEntries
-} from "~/utils/acoRecordTransform";
-import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
+import { PbPageDataItem } from "~/types";
+import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
+import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
+
+interface UsePageListParams {
+    folderId?: string;
+}
+
+interface UsePageList {
+    folders: FolderItem[];
+    isListLoading: boolean;
+    isListLoadingMore: boolean;
+    isSearch: boolean;
+    listMoreRecords: () => void;
+    listTitle?: string;
+    meta: ListMeta;
+    records: SearchRecordItem<PbPageDataItem>[];
+    search: string;
+    selected: string[];
+    setSearch: (value: string) => void;
+    setSelected: (items: string[]) => void;
+    setSorting: OnSortingChange;
+    sorting: Sorting;
+}
 
 interface UpdateSearchCallableParams {
     search: string;
     query: URLSearchParams;
 }
+
 interface UpdateSearchCallable {
     (params: UpdateSearchCallableParams): void;
 }
 
-interface UseContentEntriesListParams {
-    folderId?: string;
-}
-
-interface UseContentEntries {
-    folders: FolderEntry[];
-    isListLoading: boolean;
-    isListLoadingMore: boolean;
-    isSearch: boolean;
-    listTitle?: string;
-    listMoreRecords: () => void;
-    meta: ListMeta;
-    records: RecordEntry[];
-    search: string;
-    setSearch: (value: string) => void;
-    setSorting: OnSortingChange;
-    sorting: Sorting;
-}
-
-export const useContentEntriesList = ({
-    folderId
-}: UseContentEntriesListParams): UseContentEntries => {
+export const usePagesList = ({ folderId }: UsePageListParams): UsePageList => {
     const { history } = useRouter();
-    const { contentModel } = useContentEntries();
-    const { getDescendantFolders } = useFolders();
+
     const {
-        folders: initialFolders,
+        folders,
         isListLoading,
         isListLoadingMore,
         isSearch,
         listMoreRecords,
         listTitle,
         meta,
-        records: initialRecords,
+        records,
         setListParams,
         sorting,
         setSorting
-    } = useAcoList({ folderId });
+    } = useAcoList<PbPageDataItem>({ folderId });
+    const { getDescendantFolders } = useFolders();
 
     const [search, setSearch] = useState<string>("");
+    const [selected, setSelected] = useState<string[]>([]);
 
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
-    const baseUrl = `${CMS_ENTRY_LIST_LINK}/${contentModel.modelId}`;
 
     // Search-related logics: update `listParams` and update querystring
     const updateSearch = useCallback(
@@ -75,7 +70,7 @@ export const useContentEntriesList = ({
                 return;
             }
 
-            let wbyAco_location;
+            let location;
             if (search) {
                 /**
                  * In case of search:
@@ -84,13 +79,13 @@ export const useContentEntriesList = ({
                  */
                 const folderIds = getDescendantFolders(folderId).map(folder => folder.id);
                 if (folderIds?.length) {
-                    wbyAco_location = { folderId_in: folderIds };
+                    location = { folderId_in: folderIds };
                 }
             } else {
-                wbyAco_location = { folderId };
+                location = { folderId };
             }
 
-            setListParams({ search, where: { wbyAco_location } });
+            setListParams({ search, where: { location } });
 
             if (searchQuery !== search) {
                 if (!search) {
@@ -100,31 +95,21 @@ export const useContentEntriesList = ({
                     // Otherwise, add it to `querystring`
                     query.set("search", search);
                 }
-                history.push(`${baseUrl}?${query.toString()}`);
+                history.push(`${PAGE_BUILDER_LIST_LINK}?${query.toString()}`);
             }
         }, 500),
-        [baseUrl, folderId]
+        [folderId]
     );
 
     // Set "search" from search "query" on page load.
     useEffect(() => {
         setSearch(searchQuery);
-    }, [baseUrl, folderId]);
+    }, [folderId, searchQuery]);
 
     // When "search" changes, trigger search-related logics
     useEffect(() => {
         updateSearch({ search, query });
     }, [search]);
-
-    const records = useMemo(() => {
-        return transformCmsContentEntriesToRecordEntries(
-            initialRecords as unknown as CmsContentEntry[]
-        );
-    }, [initialRecords]);
-
-    const folders = useMemo(() => {
-        return transformFolderItemsToFolderEntries(initialFolders);
-    }, [initialFolders]);
 
     return {
         folders,
@@ -136,7 +121,9 @@ export const useContentEntriesList = ({
         meta,
         records,
         search,
+        selected,
         setSearch,
+        setSelected,
         sorting,
         setSorting
     };

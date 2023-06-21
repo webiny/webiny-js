@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import { FolderDialogCreate, useAcoList } from "@webiny/app-aco";
+import { FolderDialogCreate } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
 import { Header } from "~/admin/components/ContentEntries/Header";
@@ -8,59 +8,32 @@ import { LoadingMore } from "~/admin/components/ContentEntries/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/ContentEntries/LoadMoreButton";
 import { Table } from "~/admin/components/ContentEntries/Table";
 import { MainContainer, Wrapper } from "./styled";
-import {
-    ListMeta,
-    ListSearchRecordsSort,
-    ListSearchRecordsSortItem,
-    ListSearchRecordsWhereQueryVariables
-} from "@webiny/app-aco/types";
-import { Sorting } from "@webiny/ui/DataTable";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks";
+import { useContentEntriesList, useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { useRouter } from "@webiny/react-router";
-import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
-import {
-    transformCmsContentEntriesToRecordEntries,
-    transformFolderItemsToFolderEntries
-} from "~/utils/acoRecordTransform";
+
 import { FOLDER_ID_DEFAULT } from "~/admin/constants";
 
 interface Props {
     folderId?: string;
 }
 
-const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
-    if (!sorting?.length) {
-        return undefined;
-    }
-    return sorting.reduce<ListSearchRecordsSort>((items, item) => {
-        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSearchRecordsSortItem;
-        if (items.includes(sort)) {
-            return items;
-        }
-        items.push(sort);
-        return items;
-    }, []);
-};
-
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
     const {
-        /**
-         * TODO refactor useAcoList to accept exact generic type
-         * We know that records are CmsContentEntry[] so we can safely cast afterwards
-         */
-        records: initialRecords,
-        folders: initialFolders,
+        records,
+        folders,
         listTitle,
         meta,
         isListLoading,
         isListLoadingMore,
-        listItems,
-        limit
-    } = useAcoList({
-        folderId: initialFolderId || FOLDER_ID_DEFAULT
-    });
+        isSearch,
+        search,
+        setSearch,
+        listMoreRecords,
+        sorting,
+        setSorting
+    } = useContentEntriesList({ folderId });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
@@ -77,12 +50,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
     const tableRef = useRef<HTMLDivElement>(null);
-    const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [where] = useState<ListSearchRecordsWhereQueryVariables>({});
-
-    const sort = useMemo(() => {
-        return createSort(tableSorting);
-    }, [tableSorting]);
 
     useEffect(() => {
         setTableHeight(tableRef?.current?.clientHeight || 0);
@@ -92,47 +59,13 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         };
     });
 
-    useEffect(() => {
-        const listSortedRecords = async () => {
-            await listItems({ sort, where, limit });
-        };
-        listSortedRecords();
-    }, [sort, where]);
-
-    const loadMoreRecords = useCallback(
-        async ({ hasMoreItems, cursor }: ListMeta) => {
-            if (!hasMoreItems || !cursor) {
-                return;
-            }
-
-            await listItems({ after: cursor, sort, where, limit });
-        },
-        [listItems, sort]
-    );
-
-    const loadMoreOnScroll = useCallback(
-        debounce(async ({ scrollFrame }) => {
-            if (scrollFrame.top > 0.8) {
-                await loadMoreRecords(meta);
-            }
-        }, 200),
-        [meta]
-    );
-
-    const loadMoreOnClick = useCallback(async () => {
-        await loadMoreRecords(meta);
-    }, [meta]);
+    const loadMoreOnScroll = debounce(async ({ scrollFrame }) => {
+        if (scrollFrame.top > 0.8) {
+            await listMoreRecords();
+        }
+    }, 200);
 
     const { showEmptyView } = useContentEntry();
-
-    const records = useMemo(() => {
-        return transformCmsContentEntriesToRecordEntries(
-            initialRecords as unknown as CmsContentEntry[]
-        );
-    }, [initialRecords]);
-    const folders = useMemo(() => {
-        return transformFolderItemsToFolderEntries(initialFolders);
-    }, [initialFolders]);
 
     if (!showEmptyView) {
         return <ContentEntry />;
@@ -146,10 +79,13 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     canCreate={canCreate}
                     onCreateEntry={createEntry}
                     onCreateFolder={openFoldersDialog}
+                    searchValue={search}
+                    onSearchChange={setSearch}
                 />
                 <Wrapper>
                     {records.length === 0 && folders.length === 0 && !isListLoading ? (
                         <Empty
+                            isSearch={isSearch}
                             canCreate={canCreate}
                             onCreateEntry={createEntry}
                             onCreateFolder={openFoldersDialog}
@@ -165,15 +101,15 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     folders={folders}
                                     records={records}
                                     loading={isListLoading}
-                                    sorting={tableSorting}
-                                    onSortingChange={setTableSorting}
+                                    sorting={sorting}
+                                    onSortingChange={setSorting}
                                 />
                                 <LoadMoreButton
                                     show={!isListLoading && meta.hasMoreItems}
                                     disabled={isListLoadingMore}
                                     windowHeight={windowHeight}
                                     tableHeight={tableHeight}
-                                    onClick={loadMoreOnClick}
+                                    onClick={listMoreRecords}
                                 />
                             </Scrollbar>
                             {isListLoadingMore && <LoadingMore />}

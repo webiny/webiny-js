@@ -1,11 +1,12 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
 import { ButtonsCreate } from "~/admin/components/Table/Header/ButtonsCreate";
 import { TableActions } from "~/admin/components/Table/Header/TableActions";
 import { Title } from "~/admin/components/Table/Header/Title";
+import { Search } from "~/admin/components/Table/Header/Search";
 
-import { Container, WrapperActions } from "./styled";
+import { Container, Divider, WrapperActions } from "./styled";
 
 export interface HeaderProps {
     title?: string;
@@ -14,16 +15,20 @@ export interface HeaderProps {
     onImportPage: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
     selected: string[];
+    searchValue: string;
+    onSearchChange: (value: string) => void;
 }
 
-export const Header = ({
+export const Header: React.VFC<HeaderProps> = ({
     canCreate,
     onCreatePage,
     onImportPage,
     onCreateFolder,
     title,
-    selected
-}: HeaderProps): ReactElement => {
+    selected,
+    searchValue,
+    onSearchChange
+}) => {
     return (
         <Container>
             <Grid align={"right"} style={{ padding: 0 }}>
@@ -32,12 +37,17 @@ export const Header = ({
                 </Cell>
                 <Cell span={8}>
                     <WrapperActions>
+                        <Search value={searchValue} onChange={onSearchChange} />
+                        <Divider />
                         <TableActions selected={selected} onImportPage={onImportPage} />
                         {canCreate && (
-                            <ButtonsCreate
-                                onCreateFolder={onCreateFolder}
-                                onCreatePage={onCreatePage}
-                            />
+                            <>
+                                <Divider />
+                                <ButtonsCreate
+                                    onCreateFolder={onCreateFolder}
+                                    onCreatePage={onCreatePage}
+                                />
+                            </>
                         )}
                     </WrapperActions>
                 </Cell>
