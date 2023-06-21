@@ -89,7 +89,7 @@ export const usePagesList = ({ folderId }: UsePageListParams): UsePageList => {
 
             if (searchQuery !== search) {
                 if (!search) {
-                    // In case of empty `search` - remove it from querystring
+                    // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
                 } else {
                     // Otherwise, add it to `querystring`
