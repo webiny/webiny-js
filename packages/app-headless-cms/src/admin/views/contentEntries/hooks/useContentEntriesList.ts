@@ -94,7 +94,7 @@ export const useContentEntriesList = ({
 
             if (searchQuery !== search) {
                 if (!search) {
-                    // In case of empty `search` - remove it from querystring
+                    // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
                 } else {
                     // Otherwise, add it to `querystring`
@@ -109,7 +109,7 @@ export const useContentEntriesList = ({
     // Set "search" from search "query" on page load.
     useEffect(() => {
         setSearch(searchQuery);
-    }, [baseUrl, folderId]);
+    }, [baseUrl, folderId, searchQuery]);
 
     // When "search" changes, trigger search-related logics
     useEffect(() => {
