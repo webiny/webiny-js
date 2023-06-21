@@ -5,6 +5,7 @@ import { FileManagerConfig, createFileManager } from "~/createFileManager";
 import { FileManagerContext } from "~/types";
 import { createGraphQLSchemaPlugin } from "./graphql";
 import { FileStorage } from "~/storage/FileStorage";
+import {FilesPermissions} from "~/createFileManager/permissions/FilesPermissions";
 
 export * from "./plugins";
 
@@ -39,8 +40,15 @@ export const createFileManagerContext = (config: Pick<FileManagerConfig, "storag
             await config.storageOperations.beforeInit(context);
         }
 
+        const filesPermissions = new FilesPermissions({
+            getIdentity,
+            getPermissions: () => getPermissions("fm.file"),
+            fullAccessPermissionName: "fm.*"
+        });
+
         context.fileManager = createFileManager({
             storageOperations: config.storageOperations,
+            filesPermissions,
             getTenantId,
             getLocaleCode,
             getIdentity,

@@ -15,10 +15,7 @@ import {
     PbSecurityPermission
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import hasRwd from "./utils/hasRwd";
 import { NotFoundError } from "@webiny/handler-graphql";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 import {
@@ -26,13 +23,12 @@ import {
     createBlockCategoryUpdateValidation
 } from "~/graphql/crud/blockCategories/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
-import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
-
-const PERMISSION_NAME = "pb.blockCategory";
+import { BlockCategoriesPermissions } from "~/graphql/crud/permissions/BlockCategoriesPermissions";
 
 export interface CreateBlockCategoriesCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    blockCategoriesPermissions: BlockCategoriesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
@@ -40,7 +36,8 @@ export interface CreateBlockCategoriesCrudParams {
 export const createBlockCategoriesCrud = (
     params: CreateBlockCategoriesCrudParams
 ): BlockCategoriesCrud => {
-    const { context, storageOperations, getLocaleCode, getTenantId } = params;
+    const { context, storageOperations, blockCategoriesPermissions, getLocaleCode, getTenantId } =
+        params;
 
     const getPermissions = (name: string) => context.security.getPermissions(name);
 
@@ -85,17 +82,7 @@ export const createBlockCategoriesCrud = (
                 return await storageOperations.blockCategories.get(params);
             }
 
-            // await context.i18n.checkI18NContentPermission();
-
-            let permissions: PbSecurityPermission[] = [];
-            const blocksPermissions = await getPermissions(PERMISSION_NAME);
-            if (blocksPermissions.length && hasRwd(blocksPermissions, "r")) {
-                permissions = blocksPermissions;
-            }
-
-            if (!permissions.length) {
-                throw new NotAuthorizedError();
-            }
+            await blockCategoriesPermissions.ensure({ rwd: "r" });
 
             let blockCategory: BlockCategory | null = null;
             try {
@@ -114,24 +101,13 @@ export const createBlockCategoriesCrud = (
                 return null;
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, blockCategory);
+            await blockCategoriesPermissions.ensure({ owns: blockCategory.createdBy });
 
             return blockCategory;
         },
 
         async listBlockCategories() {
-            await context.i18n.checkI18NContentPermission();
-
-            let permissions: PbSecurityPermission[] = [];
-            const blocksPermissions = await getPermissions(PERMISSION_NAME);
-            if (blocksPermissions.length && hasRwd(blocksPermissions, "r")) {
-                permissions = blocksPermissions;
-            }
-
-            if (!permissions.length) {
-                throw new NotAuthorizedError();
-            }
+            await blockCategoriesPermissions.ensure({ rwd: "r" });
 
             const params: BlockCategoryStorageOperationsListParams = {
                 where: {
@@ -142,9 +118,8 @@ export const createBlockCategoriesCrud = (
             };
 
             // If user can only manage own records, add the createdBy to where values.
-            if (!canAccessAllRecords(permissions)) {
+            if (await blockCategoriesPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
-
                 params.where.createdBy = identity.id;
             }
 
@@ -163,7 +138,7 @@ export const createBlockCategoriesCrud = (
             }
         },
         async createBlockCategory(this: PageBuilderContextObject, input) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+            await blockCategoriesPermissions.ensure({ rwd: "w" });
 
             const validationResult = await createBlockCategoryCreateValidation().safeParseAsync(
                 input
@@ -219,17 +194,14 @@ export const createBlockCategoriesCrud = (
             }
         },
         async updateBlockCategory(this: PageBuilderContextObject, slug, input) {
-            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await blockCategoriesPermissions.ensure({rwd: "w"});
 
             const original = await this.getBlockCategory(slug);
             if (!original) {
                 throw new NotFoundError(`Block Category "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, original);
+            await blockCategoriesPermissions.ensure({ owns: original.createdBy });
 
             const validationResult = await createBlockCategoryUpdateValidation().safeParseAsync(
                 input
@@ -272,17 +244,14 @@ export const createBlockCategoriesCrud = (
             }
         },
         async deleteBlockCategory(this: PageBuilderContextObject, slug) {
-            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
+            await blockCategoriesPermissions.ensure({ rwd: "d" });
 
             const blockCategory = await this.getBlockCategory(slug);
             if (!blockCategory) {
                 throw new NotFoundError(`Block Category "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, blockCategory);
+            await blockCategoriesPermissions.ensure({ owns: blockCategory.createdBy });
 
             // Before deleting, we need to check if there are any page blocks in this block category.
             // If so, prevent delete operation.

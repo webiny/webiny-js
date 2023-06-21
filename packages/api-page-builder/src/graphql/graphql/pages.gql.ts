@@ -11,7 +11,6 @@ import resolve from "./utils/resolve";
 import { createPageSettingsGraphQL } from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
 import lodashGet from "lodash/get";
-import checkBasePermissions from "~/graphql/crud/utils/checkBasePermissions";
 
 function hasTemplate(content: Page["content"]): content is PageContentWithTemplate {
     return content?.data?.template;

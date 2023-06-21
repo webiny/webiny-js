@@ -3,7 +3,6 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import * as models from "./forms.models";
 import {
     FbForm,
-    FbFormPermission,
     FbFormStats,
     FormBuilder,
     FormBuilderContext,
@@ -29,21 +28,18 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { createIdentifier, mdbid } from "@webiny/utils";
 import { createTopic } from "@webiny/pubsub";
-import {
-    canAccessOnlyOwnRecords,
-    checkOwnPermissions,
-    checkBaseFormPermissions,
-    getStatus
-} from "./utils";
+import { getStatus } from "./utils";
+import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
 
 export interface CreateFormsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
+    formsPermissions: FormsPermissions;
     context: FormBuilderContext;
 }
 
 export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
-    const { context, getTenant, getLocale } = params;
+    const { context, getTenant, getLocale, formsPermissions } = params;
 
     // create
     const onFormBeforeCreate = createTopic<OnFormBeforeCreateTopicParams>(
@@ -112,9 +108,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         onFormAfterUnpublish,
 
         async getForm(this: FormBuilder, id, options) {
-            let permissions: FbFormPermission[] = [];
-            if (!options || options.auth !== false) {
-                permissions = await checkBaseFormPermissions(context, { rwd: "r" });
+            if (options?.auth !== false) {
+                await formsPermissions.ensure({ rwd: "r" });
             }
 
             let form: FbForm | null = null;
@@ -138,9 +133,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             if (!form) {
                 throw new NotFoundError("Form not found.");
-            } else if (permissions.length > 0) {
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permissions, form, "ownedBy");
+            }
+
+            if (options?.auth !== false) {
+                await formsPermissions.ensure({ owns: form.ownedBy });
             }
 
             return form;
@@ -180,7 +176,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
         },
         async listForms(this: FormBuilder) {
-            const permissions = await checkBaseFormPermissions(context, { rwd: "r" });
+            await formsPermissions.ensure({ rwd: "r" });
 
             const listFormParams: FormBuilderStorageOperationsListFormsParams = {
                 where: {
@@ -192,7 +188,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 after: null
             };
 
-            if (canAccessOnlyOwnRecords(permissions)) {
+            if (await formsPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
                 listFormParams.where.ownedBy = identity.id;
             }
@@ -213,13 +209,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async getFormRevisions(this: FormBuilder, id, options) {
-            let permissions: FbFormPermission[] = [];
-            if (!options || options.auth !== false) {
-                permissions = await checkBaseFormPermissions(context, { rwd: "r" });
-            }
+            // Just get the form first, to check if it exists and if user has access to it.
+            await this.getForm(id, options);
 
             try {
-                const forms = await this.storageOperations.listFormRevisions({
+                return await this.storageOperations.listFormRevisions({
                     where: {
                         id,
                         tenant: getTenant().id,
@@ -227,14 +221,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     },
                     sort: ["version_ASC"]
                 });
-                if (forms.length === 0 || !permissions.length) {
-                    return forms;
-                }
-
-                const identity = context.security.getIdentity();
-                checkOwnPermissions(identity, permissions, forms[0], "ownedBy");
-
-                return forms;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list form revisions.",
@@ -309,7 +295,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             return form;
         },
         async createForm(this: FormBuilder, input) {
-            await checkBaseFormPermissions(context, { rwd: "w" });
+            await formsPermissions.ensure({ rwd: "w" });
 
             const identity = context.security.getIdentity();
             const dataModel = new models.FormCreateDataModel().populate(input);
@@ -393,7 +379,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async updateForm(this: FormBuilder, id, input) {
-            const permissions = await checkBaseFormPermissions(context, { rwd: "w" });
+            await formsPermissions.ensure({ rwd: "w" });
+
             const updateData = new models.FormUpdateDataModel().populate(input);
             await updateData.validate();
             const data = await updateData.toJSON({ onlyDirty: true });
@@ -414,8 +401,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 });
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, original, "ownedBy");
+            await formsPermissions.ensure({ owns: original.ownedBy });
 
             const form: FbForm = {
                 ...original,
@@ -453,7 +439,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async deleteForm(this: FormBuilder, id) {
-            const permissions = await checkBaseFormPermissions(context, { rwd: "d" });
+            await formsPermissions.ensure({ rwd: "d" })
 
             const form = await this.storageOperations.getForm({
                 where: {
@@ -467,8 +453,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 throw new NotFoundError(`Form ${id} was not found!`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, form, "ownedBy");
+            await formsPermissions.ensure({ owns: form.ownedBy })
 
             try {
                 await onFormBeforeDelete.publish({
@@ -492,14 +477,13 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async deleteFormRevision(this: FormBuilder, id) {
-            const permissions = await checkBaseFormPermissions(context, { rwd: "d" });
+            await formsPermissions.ensure({ rwd: "d" });
 
             const form = await this.getForm(id, {
                 auth: false
             });
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, form, "ownedBy");
+            await formsPermissions.ensure({ owns: form.ownedBy });
 
             const formFormId = form.formId || form.id.split("#").pop();
 
@@ -549,10 +533,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async publishForm(this: FormBuilder, id) {
-            const permissions = await checkBaseFormPermissions(context, {
-                rwd: "r",
-                pw: "p"
-            });
+            await formsPermissions.ensure({ rwd: "r", pw: "p" });
+
             /**
              * getForm checks for existence of the form.
              */
@@ -560,8 +542,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, original, "ownedBy");
+            await formsPermissions.ensure({ owns: original.ownedBy });
 
             const form: FbForm = {
                 ...original,
@@ -599,17 +580,14 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async unpublishForm(this: FormBuilder, id) {
-            const permissions = await checkBaseFormPermissions(context, {
-                rwd: "r",
-                pw: "u"
-            });
+            await formsPermissions.ensure({ rwd: "r", pw: "u" });
+
 
             const original = await this.getForm(id, {
                 auth: false
             });
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, original, "ownedBy");
+            await formsPermissions.ensure({ owns: original.ownedBy });
 
             const form: FbForm = {
                 ...original,
@@ -645,7 +623,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
         },
         async createFormRevision(this: FormBuilder, id) {
-            await checkBaseFormPermissions(context, { rwd: "w" });
+            await formsPermissions.ensure({ rwd: "w" });
 
             const original = await this.getForm(id, {
                 auth: false

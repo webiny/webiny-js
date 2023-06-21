@@ -14,6 +14,12 @@ import { JsonpackContentCompressionPlugin } from "~/plugins/JsonpackContentCompr
 import { createTopic } from "@webiny/pubsub";
 import { PageBuilderStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
+import { PagesPermissions } from "~/graphql/crud/permissions/PagesPermissions";
+import { MenusPermissions } from "~/graphql/crud/permissions/MenusPermissions";
+import { CategoriesPermissions } from "./crud/permissions/CategoriesPermissions";
+import { BlockCategoriesPermissions } from "./crud/permissions/BlockCategoriesPermissions";
+import {PageTemplatesPermissions} from "~/graphql/crud/permissions/PageTemplatesPermissions";
+import {PageBlocksPermissions} from "~/graphql/crud/permissions/PageBlocksPermissions";
 
 export interface CreateCrudParams {
     storageOperations: PageBuilderStorageOperations;
@@ -78,6 +84,42 @@ const setup = (params: CreateCrudParams) => {
             }
         }
 
+        const menusPermissions = new MenusPermissions({
+            getIdentity: context.security.getIdentity,
+            getPermissions: () => context.security.getPermissions("pb.menu"),
+            fullAccessPermissionName: "pb.*"
+        });
+
+        const pagesPermissions = new PagesPermissions({
+            getIdentity: context.security.getIdentity,
+            getPermissions: () => context.security.getPermissions("pb.page"),
+            fullAccessPermissionName: "pb.*"
+        });
+
+        const categoriesPermissions = new CategoriesPermissions({
+            getIdentity: context.security.getIdentity,
+            getPermissions: () => context.security.getPermissions("pb.category"),
+            fullAccessPermissionName: "pb.*"
+        });
+
+        const blockCategoriesPermissions = new BlockCategoriesPermissions({
+            getIdentity: context.security.getIdentity,
+            getPermissions: () => context.security.getPermissions("pb.blockCategory"),
+            fullAccessPermissionName: "pb.*"
+        });
+
+        const pageBlocksPermissions = new PageBlocksPermissions({
+            getIdentity: context.security.getIdentity,
+            getPermissions: () => context.security.getPermissions("pb.block"),
+            fullAccessPermissionName: "pb.*"
+        });
+
+        const pageTemplatesPermissions = new PageTemplatesPermissions({
+            getIdentity: context.security.getIdentity,
+            getPermissions: () => context.security.getPermissions("pb.template"),
+            fullAccessPermissionName: "pb.*"
+        });
+
         const system = await createSystemCrud({
             context,
             storageOperations,
@@ -94,6 +136,7 @@ const setup = (params: CreateCrudParams) => {
         const menus = createMenuCrud({
             context,
             storageOperations,
+            menusPermissions,
             getTenantId,
             getLocaleCode
         });
@@ -101,6 +144,8 @@ const setup = (params: CreateCrudParams) => {
         const categories = createCategoriesCrud({
             context,
             storageOperations,
+            categoriesPermissions,
+            pagesPermissions,
             getTenantId,
             getLocaleCode
         });
@@ -108,6 +153,7 @@ const setup = (params: CreateCrudParams) => {
         const blockCategories = createBlockCategoriesCrud({
             context,
             storageOperations,
+            blockCategoriesPermissions,
             getTenantId,
             getLocaleCode
         });
@@ -115,6 +161,7 @@ const setup = (params: CreateCrudParams) => {
         const pageBlocks = createPageBlocksCrud({
             context,
             storageOperations,
+            pageBlocksPermissions,
             getTenantId,
             getLocaleCode
         });
@@ -122,6 +169,7 @@ const setup = (params: CreateCrudParams) => {
         const pageElements = createPageElementsCrud({
             context,
             storageOperations,
+            pagesPermissions,
             getTenantId,
             getLocaleCode
         });
@@ -129,6 +177,7 @@ const setup = (params: CreateCrudParams) => {
         const pages = createPageCrud({
             context,
             storageOperations,
+            pagesPermissions,
             getTenantId,
             getLocaleCode
         });
@@ -136,6 +185,7 @@ const setup = (params: CreateCrudParams) => {
         const pageTemplates = createPageTemplatesCrud({
             context,
             storageOperations,
+            pageTemplatesPermissions,
             getTenantId,
             getLocaleCode
         });

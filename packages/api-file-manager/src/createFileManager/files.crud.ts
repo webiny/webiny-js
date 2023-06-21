@@ -9,16 +9,15 @@ import {
     FilesCRUD,
     FilesListOpts
 } from "~/types";
-import { canAccessOnlyOwnRecords, checkBasePermissions, checkOwnPermissions } from "./utils";
 import { FileManagerConfig } from "~/createFileManager/index";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
         storageOperations,
+        filesPermissions,
         getLocaleCode,
         getTenantId,
         getIdentity,
-        getPermissions,
         WEBINY_VERSION
     } = config;
 
@@ -32,7 +31,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         onFileBeforeDelete: createTopic("fileManager.onFileBeforeDelete"),
         onFileAfterDelete: createTopic("fileManager.onFileAfterDelete"),
         async getFile(id: string) {
-            const permissions = await checkBasePermissions(getPermissions, { rwd: "r" });
+            await filesPermissions.ensure({ rwd: "r" });
 
             const file = await storageOperations.files.get({
                 where: {
@@ -46,12 +45,13 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnPermissions(getIdentity(), permissions, file);
+            await filesPermissions.ensure({ owns: file.createdBy });
 
             return file;
         },
         async createFile(input, meta) {
-            await checkBasePermissions(getPermissions, { rwd: "w" });
+            await filesPermissions.ensure({ rwd: "w" });
+
             const identity = getIdentity();
 
             // Extract ID from file key
@@ -96,7 +96,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async updateFile(id, input) {
-            const permissions = await checkBasePermissions(getPermissions, { rwd: "w" });
+            await filesPermissions.ensure({ rwd: "w" });
 
             const original = await storageOperations.files.get({
                 where: {
@@ -110,7 +110,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnPermissions(getIdentity(), permissions, original);
+            await filesPermissions.ensure({ owns: original.createdBy });
 
             const file: File = {
                 ...original,
@@ -160,7 +160,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async deleteFile(id) {
-            const permissions = await checkBasePermissions(getPermissions, { rwd: "d" });
+            await filesPermissions.ensure({ rwd: "d" });
 
             const file = await storageOperations.files.get({
                 where: {
@@ -174,7 +174,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnPermissions(getIdentity(), permissions, file);
+            await filesPermissions.ensure({ owns: file.createdBy });
 
             try {
                 await this.onFileBeforeDelete.publish({ file });
@@ -199,7 +199,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             return true;
         },
         async createFilesInBatch(inputs, meta) {
-            await checkBasePermissions(getPermissions, { rwd: "w" });
+            await filesPermissions.ensure({ rwd: "w" });
 
             const identity = getIdentity();
             const tenant = getTenantId();
@@ -247,7 +247,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async listFiles(params: FilesListOpts = {}) {
-            const permissions = await checkBasePermissions(getPermissions, { rwd: "r" });
+            await filesPermissions.ensure({ rwd: "r" });
 
             const {
                 limit = 40,
@@ -270,7 +270,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             /**
              * Always override the createdBy received from the user, if any.
              */
-            if (canAccessOnlyOwnRecords(permissions)) {
+            if (await filesPermissions.canAccessOnlyOwnRecords()) {
                 const identity = getIdentity();
                 where.createdBy = identity.id;
             }
@@ -329,7 +329,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async listTags({ where: initialWhere, after, limit }) {
-            await checkBasePermissions(getPermissions);
+            await filesPermissions.ensure();
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 ...initialWhere,

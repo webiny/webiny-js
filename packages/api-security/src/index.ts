@@ -25,6 +25,8 @@ export interface SecurityConfig extends MultiTenancyAppConfig {
     storageOperations: SecurityStorageOperations;
 }
 
+export * from "./utils/AppPermissions";
+
 type Context = SecurityContext & TenancyContext & WcpContext;
 
 export const createSecurityContext = ({ storageOperations, ...config }: SecurityConfig) => {

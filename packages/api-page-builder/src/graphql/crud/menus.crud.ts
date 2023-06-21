@@ -1,5 +1,3 @@
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import prepareMenuItems from "./menus/prepareMenuItems";
 import WebinyError from "@webiny/error";
 import {
@@ -16,7 +14,6 @@ import {
     MenusCrud,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    PbSecurityPermission
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
@@ -25,19 +22,18 @@ import {
     createMenuUpdateValidation
 } from "~/graphql/crud/menus/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
-import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
-
-const PERMISSION_NAME = "pb.menu";
+import { MenusPermissions } from "~/graphql/crud/permissions/MenusPermissions";
 
 export interface CreateMenuCrudParams {
     context: PbContext;
+    menusPermissions: MenusPermissions;
     storageOperations: PageBuilderStorageOperations;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
 
 export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
-    const { context, storageOperations, getLocaleCode, getTenantId } = params;
+    const { context, storageOperations, getLocaleCode, getTenantId, menusPermissions } = params;
 
     // create
     const onMenuBeforeCreate = createTopic<OnMenuBeforeCreateTopicParams>(
@@ -81,12 +77,9 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         onMenuBeforeDelete,
         onMenuAfterDelete,
         async getMenu(slug, options) {
-            let permissions: PbSecurityPermission[] = [];
             const { auth = true } = options || {};
             if (auth !== false) {
-                permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "r"
-                });
+                await menusPermissions.ensure({ rwd: "r" });
             }
 
             const params: MenuStorageOperationsGetParams = {
@@ -115,11 +108,9 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
                 );
             }
 
-            if (!permissions.length) {
-                return menu;
+            if (auth !== false) {
+                await menusPermissions.ensure({ owns: menu.createdBy });
             }
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, menu);
 
             return menu;
         },
@@ -142,9 +133,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         },
 
         async listMenus(params) {
-            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+            await menusPermissions.ensure({ rwd: "r" });
 
             const { sort } = params || {};
 
@@ -157,7 +146,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             };
 
             // If user can only manage own records, let's add that to the listing.
-            if (!canAccessAllRecords(permissions)) {
+            if (await menusPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
                 listParams.where.createdBy = identity.id;
             }
@@ -177,7 +166,7 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         },
 
         async createMenu(input) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+            await menusPermissions.ensure({ rwd: "w" });
 
             const validationResult = await createMenuCreateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -240,17 +229,14 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
         },
 
         async updateMenu(this: PageBuilderContextObject, slug, input) {
-            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await menusPermissions.ensure({ rwd: "w" });
 
             const original = await this.getMenu(slug);
             if (!original) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, original);
+            await menusPermissions.ensure({ owns: original.createdBy });
 
             const validationResult = await createMenuUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -295,17 +281,14 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
             }
         },
         async deleteMenu(this: PageBuilderContextObject, slug) {
-            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
+            await menusPermissions.ensure({ rwd: "d" });
 
             const menu = await this.getMenu(slug);
             if (!menu) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, menu);
+            await menusPermissions.ensure({ owns: menu.createdBy });
 
             try {
                 await onMenuBeforeDelete.publish({

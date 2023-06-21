@@ -404,7 +404,6 @@ describe("Forms Security Test", () => {
             const { createForm } = defaultHandler;
             const mock = new Mock("publishRevision-form-");
 
-            console.log("");
             const [createFormResponse] = await createForm({ data: mock });
             const formId = createFormResponse.data.formBuilder.createForm.data.id;
 

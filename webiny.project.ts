@@ -48,11 +48,9 @@ export default {
         admin: "apps/admin",
         website: "apps/website"
     },
+
     featureFlags: {
         copyPermissionsButton: true,
-        experimentalAdminOmniSearch: true,
-        aacl: {
-            teams: true
-        }
+        experimentalAdminOmniSearch: true
     }
 };

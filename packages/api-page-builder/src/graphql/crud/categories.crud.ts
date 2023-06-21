@@ -12,13 +12,8 @@ import {
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PbContext,
-    PbSecurityPermission
 } from "~/types";
-import { NotAuthorizedError } from "@webiny/api-security";
-import hasRwd from "./utils/hasRwd";
 import { NotFoundError } from "@webiny/handler-graphql";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 import {
@@ -26,21 +21,27 @@ import {
     createCategoryUpdateValidation
 } from "~/graphql/crud/categories/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
-import canAccessAllRecords from "~/graphql/crud/utils/canAccessAllRecords";
-
-const PERMISSION_NAME = "pb.category";
+import { CategoriesPermissions } from "~/graphql/crud/permissions/CategoriesPermissions";
+import { PagesPermissions } from "~/graphql/crud/permissions/PagesPermissions";
 
 export interface CreateCategoriesCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    categoriesPermissions: CategoriesPermissions;
+    pagesPermissions: PagesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
 
 export const createCategoriesCrud = (params: CreateCategoriesCrudParams): CategoriesCrud => {
-    const { context, storageOperations, getLocaleCode, getTenantId } = params;
-
-    const getPermissions = (name: string) => context.security.getPermissions(name);
+    const {
+        context,
+        storageOperations,
+        categoriesPermissions,
+        pagesPermissions,
+        getLocaleCode,
+        getTenantId
+    } = params;
 
     const onCategoryBeforeCreate = createTopic<OnCategoryBeforeCreateTopicParams>(
         "pageBuilder.onCategoryBeforeCreate"
@@ -98,24 +99,13 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 return await storageOperations.categories.get(params);
             }
 
-            await context.i18n.checkI18NContentPermission();
-
-            let permissions: PbSecurityPermission[] = [];
-            const categoryPermissions = await getPermissions("pb.category");
-            if (categoryPermissions.length && hasRwd(categoryPermissions, "r")) {
-                permissions = categoryPermissions;
-            } else {
+            try {
+                await categoriesPermissions.ensure({ rwd: "r" });
+            } catch {
                 // If we don't have the necessary `categoryPermission` permission, let's still check if the
                 // user has the permission to write pages. If so, we still want to allow listing categories,
                 // because this is needed in order to create a page.
-                const pagePermissions = await getPermissions("pb.page");
-                if (pagePermissions.length && hasRwd(pagePermissions, "w")) {
-                    permissions = pagePermissions;
-                }
-            }
-
-            if (!permissions.length) {
-                throw new NotAuthorizedError();
+                await pagesPermissions.ensure({ rwd: "w" });
             }
 
             let category: Category | null = null;
@@ -135,31 +125,19 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 return null;
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, category);
+            await categoriesPermissions.ensure({owns: category.createdBy})
 
             return category;
         },
 
         async listCategories() {
-            await context.i18n.checkI18NContentPermission();
-
-            let permissions: PbSecurityPermission[] = [];
-            const categoryPermissions = await getPermissions("pb.category");
-            if (categoryPermissions.length && hasRwd(categoryPermissions, "r")) {
-                permissions = categoryPermissions;
-            } else {
+            try {
+                await categoriesPermissions.ensure({ rwd: "r" });
+            } catch {
                 // If we don't have the necessary `categoryPermission` permission, let's still check if the
                 // user has the permission to write pages. If so, we still want to allow listing categories,
                 // because this is needed in order to create a page.
-                const pagePermissions = await getPermissions("pb.page");
-                if (pagePermissions.length && hasRwd(pagePermissions, "w")) {
-                    permissions = pagePermissions;
-                }
-            }
-
-            if (!permissions.length) {
-                throw new NotAuthorizedError();
+                await pagesPermissions.ensure({ rwd: "w" });
             }
 
             const params: CategoryStorageOperationsListParams = {
@@ -170,7 +148,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 sort: ["createdOn_ASC"]
             };
             // If user can only manage own records, add the createdBy to where values.
-            if (!canAccessAllRecords(permissions)) {
+            if (await categoriesPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
 
                 params.where.createdBy = identity.id;
@@ -191,7 +169,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
         },
         async createCategory(this: PageBuilderContextObject, input) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+            await categoriesPermissions.ensure({ rwd: "w" });
 
             const validationResult = await createCategoryCreateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -245,17 +223,15 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
         },
         async updateCategory(this: PageBuilderContextObject, slug, input) {
-            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await categoriesPermissions.ensure({ rwd: "w" });
 
             const original = await this.getCategory(slug);
             if (!original) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, original);
+            await categoriesPermissions.ensure({owns: original.createdBy})
+
 
             const validationResult = await createCategoryUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
@@ -296,17 +272,14 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
             }
         },
         async deleteCategory(this: PageBuilderContextObject, slug) {
-            const permissions = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
+            await categoriesPermissions.ensure({ rwd: "d" });
 
             const category = await this.getCategory(slug);
             if (!category) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permissions, category);
+            await categoriesPermissions.ensure({owns: category.createdBy})
 
             // Before deleting, let's check if there is a page that's in this category.
             // If so, let's prevent this.

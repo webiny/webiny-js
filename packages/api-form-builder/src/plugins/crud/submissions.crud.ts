@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import pick from "lodash/pick";
 import WebinyError from "@webiny/error";
-import { checkBaseFormPermissions } from "~/plugins/crud/utils";
 import * as models from "~/plugins/crud/forms.models";
 import {
     FbForm,
@@ -24,13 +23,15 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import { sanitizeFormSubmissionData } from "~/plugins/crud/utils/sanitizeFormSubmissionData";
 import { mdbid } from "@webiny/utils";
+import {FormsPermissions} from "~/plugins/crud/permissions/FormsPermissions";
 
 interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
+    formsPermissions: FormsPermissions;
 }
 
 export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): SubmissionsCRUD => {
-    const { context } = params;
+    const { context, formsPermissions } = params;
 
     // create
     const onFormSubmissionBeforeCreate = createTopic<OnFormSubmissionBeforeCreate>(
@@ -102,7 +103,9 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             }
         },
         async listFormSubmissions(this: FormBuilder, formId, options = {}) {
-            const permissions = await checkBaseFormPermissions(context);
+            await formsPermissions.ensure()
+
+            const permissions = await formsPermissions.getPermissions();
 
             let hasAccessToSubmissions = false;
             for (let i = 0; i < permissions.length; i++) {

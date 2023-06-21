@@ -11,21 +11,22 @@ import {
     OnSettingsBeforeDelete,
     OnSettingsAfterDelete
 } from "~/types";
-import { checkBaseSettingsPermissions } from "./utils";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
+import { SettingsPermissions } from "./permissions/SettingsPermissions";
 
 export interface CreateSettingsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
+    settingsPermissions: SettingsPermissions;
     context: FormBuilderContext;
 }
 
 export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCRUD => {
-    const { getTenant, getLocale, context } = params;
+    const { getTenant, getLocale, settingsPermissions, context } = params;
 
     // create
     const onSettingsBeforeCreate = createTopic<OnSettingsBeforeCreate>(
@@ -62,7 +63,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             const { auth, throwOnNotFound } = params || {};
 
             if (auth !== false) {
-                await checkBaseSettingsPermissions(context);
+                await settingsPermissions.ensure();
             }
 
             let settings: Settings | null = null;
@@ -130,7 +131,8 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             }
         },
         async updateSettings(this: FormBuilder, data) {
-            await checkBaseSettingsPermissions(context);
+            await settingsPermissions.ensure();
+
             const updatedData = new models.UpdateDataModel().populate(data);
             await updatedData.validate();
 
@@ -185,7 +187,8 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             }
         },
         async deleteSettings(this: FormBuilder) {
-            await checkBaseSettingsPermissions(context);
+            await settingsPermissions.ensure();
+
             const settings = await this.getSettings();
             if (!settings) {
                 return;
