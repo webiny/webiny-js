@@ -13,7 +13,11 @@ const plugin = new ValueFilterPlugin({
         if (typeof value !== "string") {
             return false;
         }
-        const f = new Fuse([value], {});
+        const f = new Fuse([value], {
+            includeScore: true,
+            minMatchCharLength: 3,
+            threshold: 0.5
+        });
         const result = f.search(compareValue);
 
         return result.length > 0;
