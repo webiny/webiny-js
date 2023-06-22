@@ -1,3 +1,4 @@
+import formsGoogleAnalyticsEventTrigger from "@webiny/app-form-builder/render/plugins/triggers/googleAnalyticsEvent";
 import formsRedirectTrigger from "@webiny/app-form-builder/render/plugins/triggers/redirect";
 import formValidatorGte from "@webiny/app-form-builder/render/plugins/validators/gte";
 import formValidatorIn from "@webiny/app-form-builder/render/plugins/validators/in";
@@ -13,6 +14,7 @@ import formValidatorUrl from "@webiny/app-form-builder/render/plugins/validators
 import formElement from "@webiny/app-form-builder/page-builder/render/plugins/formElement";
 
 export default [
+    formsGoogleAnalyticsEventTrigger,
     formsRedirectTrigger,
     formValidatorGte,
     formValidatorIn,

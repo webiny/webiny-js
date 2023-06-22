@@ -1,5 +1,11 @@
 import lodashMerge from "lodash/merge";
-import { mdbid } from "@webiny/utils";
+import {
+    createIdentifier,
+    mdbid,
+    parseIdentifier,
+    removeNullValues,
+    removeUndefinedValues
+} from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
@@ -7,6 +13,7 @@ import {
     CmsEntry,
     CmsEntryContext,
     CmsEntryListParams,
+    CmsEntryListSort,
     CmsEntryListWhere,
     CmsEntryMeta,
     CmsEntryPermission,
@@ -55,12 +62,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
-import {
-    createIdentifier,
-    parseIdentifier,
-    removeNullValues,
-    removeUndefinedValues
-} from "@webiny/utils";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -229,6 +230,15 @@ const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
 
 const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus => {
     return allowedEntryStatus.includes(status) ? (status as CmsEntryStatus) : "draft";
+};
+
+const createSort = (sort?: CmsEntryListSort): CmsEntryListSort => {
+    if (!Array.isArray(sort)) {
+        return ["createdOn_DESC"];
+    } else if (sort.filter(s => !!s).length === 0) {
+        return ["createdOn_DESC"];
+    }
+    return sort;
 };
 
 interface CreateContentEntryCrudParams {
@@ -560,6 +570,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const { hasMoreItems, totalCount, cursor, items } =
                 await storageOperations.entries.list(model, {
                     ...params,
+                    sort: createSort(params.sort),
                     limit,
                     where,
                     fields
@@ -639,7 +650,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             version,
             locked: false,
             status: STATUS_DRAFT,
-            values: input
+            values: input,
+            location: {
+                folderId: inputData.wbyAco_location?.folderId || "ROOT"
+            }
         };
 
         let storageEntry: CmsStorageEntry | null = null;
@@ -882,6 +896,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             meta,
             status: transformEntryStatus(originalEntry.status)
         };
+        const folderId = inputData.wbyAco_location?.folderId;
+        if (folderId) {
+            entry.location = {
+                folderId
+            };
+        }
 
         let storageEntry: CmsStorageEntry | null = null;
 
@@ -1646,9 +1666,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async deleteEntry(model, entryId) {
+        async deleteEntry(model, entryId, options) {
             return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
-                return deleteEntry(model, entryId);
+                return deleteEntry(model, entryId, options);
             });
         },
         async deleteMultipleEntries(model, ids) {

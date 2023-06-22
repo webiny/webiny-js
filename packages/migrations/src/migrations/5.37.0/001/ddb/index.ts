@@ -1,0 +1,48 @@
+import { Table } from "dynamodb-toolbox";
+import { inject, makeInjectable } from "@webiny/ioc";
+import {
+    DataMigration,
+    DataMigrationContext,
+    getChildLogger,
+    PrimaryDynamoTableSymbol
+} from "@webiny/data-migration";
+import { AcoRecords_5_37_0_001_PageData } from "./PageDataMigration";
+
+export class AcoRecords_5_37_0_001 implements DataMigration {
+    private readonly migrations: DataMigration[];
+
+    public constructor(table: Table) {
+        this.migrations = [new AcoRecords_5_37_0_001_PageData(table)];
+    }
+
+    public getId() {
+        return "5.37.0-001";
+    }
+
+    public getDescription() {
+        return "Page Builder Pages search record migration";
+    }
+
+    async shouldExecute(context: DataMigrationContext): Promise<boolean> {
+        for (const migration of this.migrations) {
+            const childLogger = getChildLogger(context.logger, migration);
+            const childContext = { ...context, logger: childLogger };
+            if (await migration.shouldExecute(childContext)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    async execute(context: DataMigrationContext): Promise<void> {
+        for (const migration of this.migrations) {
+            const childLogger = getChildLogger(context.logger, migration);
+            const childContext = { ...context, logger: childLogger };
+            if (await migration.shouldExecute(childContext)) {
+                await migration.execute(childContext);
+            }
+        }
+    }
+}
+
+makeInjectable(AcoRecords_5_37_0_001, [inject(PrimaryDynamoTableSymbol)]);

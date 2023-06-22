@@ -1,13 +1,11 @@
 import React from "react";
-
 import { Skeleton } from "@webiny/ui/Skeleton";
-
 import { Container, SkeletonWrapper } from "./styled";
 
-export const Loader: React.VFC = () => {
+export const Loader = ({ count }: { count?: number }) => {
     return (
         <Container>
-            <Skeleton count={4} inline={true} height={"100%"} wrapper={SkeletonWrapper} />
+            <Skeleton count={count ?? 4} inline={true} height={"100%"} wrapper={SkeletonWrapper} />
         </Container>
     );
 };

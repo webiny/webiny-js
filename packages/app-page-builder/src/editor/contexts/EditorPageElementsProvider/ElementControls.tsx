@@ -7,17 +7,15 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
-
-// Lists elements that, when empty, can receive other elements as children using
-// drag and drop. For now, the element types that are hardcoded. Down the road,
-// we might want to expose this, enabling users to create more complex elements.
-const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell"];
+import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { useSnackbar } from "@webiny/app-admin";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
 // - drag and drop functionality
 export const ElementControls = () => {
     const { getElement, meta } = useRenderer();
+    const { showSnackbar } = useSnackbar();
 
     const element = getElement();
 
@@ -52,6 +50,18 @@ export const ElementControls = () => {
     const { isDragging } = useRecoilValue(uiAtom);
 
     const dropElementAction = (source: DragObjectWithTypeWithTarget) => {
+        const { target } = source;
+
+        // If the `target` property of the dragged element's plugin is an array, we want to
+        // check if the dragged element can be dropped into the target element (the element
+        // for which this drop zone is rendered).
+        if (Array.isArray(target) && target.length > 0) {
+            if (!target.includes(element.type)) {
+                showSnackbar("The currently active page element cannot receive child elements.");
+                return;
+            }
+        }
+
         handler.trigger(
             new DropElementActionEvent({
                 source,
@@ -64,25 +74,29 @@ export const ElementControls = () => {
         );
     };
 
-    const isEmpty = element.elements.length === 0;
-    const isDroppable = EMPTY_DROPPABLE_ELEMENTS.includes(element.type);
-    if (isEmpty && isDroppable && isDragging) {
-        // Here we don't need to render `ElementControlHorizontalDropZones` as it's simply
-        // not needed. It's only needed when at least one element has been dropped.
-        return (
-            <Droppable
-                onDrop={source => dropElementAction(source)}
-                type={element.type}
-                isVisible={() => true}
-            >
-                {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
-            </Droppable>
-        );
+    const elementPlugin = useElementPlugin(element);
+
+    // When dragging, if the element is droppable, we want to render the drop zones.
+    if (isDragging) {
+        let render = <ElementControlHorizontalDropZones />;
+
+        if (elementPlugin?.canReceiveChildren) {
+            render = (
+                <>
+                    <Droppable
+                        onDrop={source => dropElementAction(source)}
+                        type={element.type}
+                        isVisible={() => true}
+                    >
+                        {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
+                    </Droppable>
+                    {render}
+                </>
+            );
+        }
+
+        return render;
     }
 
-    return (
-        <ElementControlsOverlay>
-            <ElementControlHorizontalDropZones />
-        </ElementControlsOverlay>
-    );
+    return <ElementControlsOverlay />;
 };

@@ -36,6 +36,9 @@ const fields = `
         published {
             id
         }
+        wbyAco_location {
+            folderId
+        }
     }
     error {
         message
@@ -76,6 +79,9 @@ export interface SearchQueryResponseEntry {
         description?: string;
         image?: string;
         status: CmsContentEntryStatusType;
+    };
+    wbyAco_location?: {
+        folderId?: string;
     };
 }
 
@@ -130,6 +136,9 @@ export const createSearchQuery = (model: CmsModel) => {
                     description
                     image
                     status
+                }
+                wbyAco_location {
+                    folderId
                 }
             }
             meta {

@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import { get, set } from "lodash";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
-import { useRouter } from "@webiny/react-router";
 /**
  * Package @webiny/telemetry is missing types.
  */
@@ -17,6 +16,7 @@ import {
     UpdateSettingsMutationVariables
 } from "./graphql";
 import { PbErrorResponse } from "~/types";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 interface PageBuilderWebsiteSettings {
     websiteUrl?: string;
@@ -24,7 +24,7 @@ interface PageBuilderWebsiteSettings {
 
 export function usePbWebsiteSettings() {
     const { showSnackbar } = useSnackbar();
-    const { history } = useRouter();
+    const { navigateToPageEditor } = useNavigatePage();
 
     const [error, setError] = useState<PbErrorResponse | null>(null);
 
@@ -62,10 +62,6 @@ export function usePbWebsiteSettings() {
             }
         }
     });
-
-    const editPage = useCallback(id => {
-        history.push(`/page-builder/editor/${id}`);
-    }, []);
 
     const onSubmit = useCallback(
         /**
@@ -111,7 +107,7 @@ export function usePbWebsiteSettings() {
         fetching: queryInProgress,
         saving: mutationInProgress,
         saveSettings: onSubmit,
-        editPage,
+        editPage: navigateToPageEditor,
         settings,
         defaultSettings,
         error

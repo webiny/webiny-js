@@ -1,3 +1,11 @@
+import {
+    CmsModel,
+    CmsModelField,
+    CmsModelFieldSettings
+} from "@webiny/app-headless-cms-common/types";
+
+export * from "~/graphql/records/types";
+
 export interface FolderItem {
     id: string;
     title: string;
@@ -30,38 +38,36 @@ export interface SearchRecordItem<TData extends GenericSearchData = GenericSearc
     tags: string[];
 }
 
-export type TagItem = {
+export type MovableSearchRecordItem = Pick<SearchRecordItem, "id" | "location">;
+
+export type DeletableSearchRecordItem = Pick<SearchRecordItem, "id" | "location">;
+
+export interface TagItem {
     tag: string;
-};
+}
 
 export type Loading<T extends string> = { [P in T]?: boolean };
 
-export type LoadingActions = "INIT" | "LIST" | "LIST_MORE" | "GET" | "CREATE" | "UPDATE" | "DELETE";
+export type LoadingActions =
+    | "INIT"
+    | "LIST"
+    | "LIST_MORE"
+    | "GET"
+    | "CREATE"
+    | "UPDATE"
+    | "DELETE"
+    | "MOVE";
 
-export interface Error {
+export interface AcoError {
     code: string;
     message: string;
-    data: any;
+    data?: Record<string, any> | null;
 }
 
 export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
 
-export enum ListDbSortDirection {
-    ASC = "ASC",
-    DESC = "DESC"
-}
-
-export enum ListTableSortDirection {
-    asc = "asc",
-    desc = "desc"
-}
-
-export type ListDbSort = Record<string, ListDbSortDirection>;
-
-export interface ListTableSort {
-    fields: string[];
-    orders: ListTableSortDirection[];
-}
+export type ListSearchRecordsSortItem = `${string}_ASC` | `${string}_DESC`;
+export type ListSearchRecordsSort = ListSearchRecordsSortItem[];
 
 export interface ListMeta {
     cursor: string | null;
@@ -73,20 +79,23 @@ export interface ListFoldersResponse {
     aco: {
         listFolders: {
             data: FolderItem[] | null;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
 
 export interface ListFoldersQueryVariables {
     type: string;
+    limit: number;
+    sort?: Record<string, any>;
+    after?: string | null;
 }
 
 export interface GetFolderResponse {
     aco: {
         getFolder: {
             data: FolderItem | null;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -99,7 +108,7 @@ export interface UpdateFolderResponse {
     aco: {
         updateFolder: {
             data: FolderItem;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -113,7 +122,7 @@ export interface CreateFolderResponse {
     aco: {
         createFolder: {
             data: FolderItem;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
@@ -130,117 +139,43 @@ export interface DeleteFolderResponse {
     aco: {
         deleteFolder: {
             data: boolean;
-            error: Error | null;
+            error: AcoError | null;
         };
     };
 }
 
-export interface ListSearchRecordsResponse {
-    search: {
-        listRecords: {
-            data: SearchRecordItem[] | null;
-            meta: ListMeta | null;
-            error: Error | null;
-        };
-    };
-}
-
-export interface ListSearchRecordsWhereQueryVariables {
-    tags_in?: string[];
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
-}
-
-export interface ListSearchRecordsQueryVariables {
-    where: ListSearchRecordsWhereQueryVariables & {
-        type: string;
-        location?: Location;
-        createdBy?: string;
-        AND?: ListSearchRecordsWhereQueryVariables[];
-        OR?: ListSearchRecordsWhereQueryVariables[];
-    };
-    search?: string;
-    limit?: number;
-    after?: string | null;
-    sort?: ListDbSort;
-}
-
-export interface ListTagsResponse {
-    search: {
-        listTags: {
-            data: string[] | null;
-            error: Error | null;
-        };
-    };
-}
-
-export interface ListTagsWhereQueryVariables {
-    tags_in?: string[];
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
-}
-
-export interface ListTagsQueryVariables {
-    where: ListTagsWhereQueryVariables & {
-        type: string;
-        AND?: [ListTagsWhereQueryVariables];
-        OR?: [ListTagsWhereQueryVariables];
-    };
-}
-
-export interface GetSearchRecordResponse {
-    search: {
-        getRecord: {
-            data: SearchRecordItem | null;
-            error: Error | null;
-        };
-    };
-}
-
-export interface GetSearchRecordQueryVariables {
-    id: string;
-}
-
-export interface CreateSearchRecordResponse {
-    search: {
-        createRecord: {
-            data: SearchRecordItem;
-            error: Error | null;
-        };
-    };
-}
-
-export interface CreateSearchRecordVariables {
-    data: Omit<SearchRecordItem, "id" | "createdOn" | "createdBy" | "savedOn">;
-}
-
-export interface UpdateSearchRecordResponse {
-    search: {
-        updateRecord: {
-            data: SearchRecordItem;
-            error: Error | null;
-        };
-    };
-}
-
-export interface UpdateSearchRecordVariables {
-    id: string;
-    data: Pick<SearchRecordItem, "location" | "title" | "content" | "data">;
-}
-
-export interface DeleteSearchRecordVariables {
-    id: string;
-}
-
-export interface DeleteSearchRecordResponse {
-    search: {
-        deleteRecord: {
-            data: boolean;
-            error: Error | null;
-        };
-    };
-}
-
-export interface DndItemData extends FolderItem {
+export interface DndFolderItem extends FolderItem {
     isFocused?: boolean;
+}
+
+/**
+ * This type will be removed when all apps migrate to the CMS.
+ * @deprecated
+ */
+export type AcoAppMode = "aco" | "cms";
+
+/**
+ * Apps.
+ */
+export interface AcoModel extends CmsModel {
+    fields: AcoModelField[];
+}
+
+export interface AcoModelFieldSettingsAco {
+    enabled?: boolean;
+    header?: boolean;
+}
+
+export interface AcoModelFieldSettings {
+    aco?: AcoModelFieldSettingsAco;
+}
+
+export interface AcoModelField extends CmsModelField {
+    settings?: CmsModelFieldSettings & AcoModelFieldSettings;
+}
+
+export interface AcoApp {
+    id: string;
+    model: AcoModel;
+    getFields: () => AcoModelField[];
 }

@@ -28,20 +28,22 @@ export interface Response {
 export default (configuration: Configuration) => {
     return createRawEventHandler<Payload, PbImportExportContext, Response>(
         async ({ payload, context }) => {
-            switch (payload.type) {
-                case "block": {
-                    return await blocksHandler(configuration, payload, context);
+            return context.security.withoutAuthorization(() => {
+                switch (payload.type) {
+                    case "block": {
+                        return blocksHandler(configuration, payload, context);
+                    }
+                    case "form": {
+                        return formsHandler(configuration, payload, context);
+                    }
+                    case "template": {
+                        return templatesHandler(configuration, payload, context);
+                    }
+                    default: {
+                        return pagesHandler(configuration, payload, context);
+                    }
                 }
-                case "form": {
-                    return await formsHandler(configuration, payload, context);
-                }
-                case "template": {
-                    return await templatesHandler(configuration, payload, context);
-                }
-                default: {
-                    return await pagesHandler(configuration, payload, context);
-                }
-            }
+            });
         }
     );
 };

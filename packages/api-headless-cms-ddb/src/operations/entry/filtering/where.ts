@@ -1,5 +1,6 @@
 export const extractWhereParams = (key: string) => {
-    const result = key.split("_");
+    const isWbyAco = key.match("wbyAco_") !== null;
+    const result = key.replace("wbyAco_", "").split("_");
     const fieldId = result.shift();
     if (!fieldId) {
         return null;
@@ -18,7 +19,7 @@ export const extractWhereParams = (key: string) => {
     const negate = rawOp.match("not_") !== null;
     const operation = rawOp.replace("not_", "");
     return {
-        fieldId,
+        fieldId: isWbyAco ? `wbyAco_${fieldId}` : fieldId,
         operation,
         negate
     };

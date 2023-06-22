@@ -184,7 +184,7 @@ export class AcoRecords_5_36_0_001_FileData implements DataMigration<FileDataMig
                             }
                         });
 
-                        const cursor = files[files.length - 1].data.id;
+                        const cursor = files[files.length - 1]?.data.id;
 
                         // Update checkpoint after every batch
                         migrationStatus[groupId] = cursor;

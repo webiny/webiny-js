@@ -7,7 +7,7 @@ import { extractWhereParams } from "~/operations/entry/filtering/where";
 import { transformValue } from "~/operations/entry/filtering/transform";
 
 export const createRefFilterCreate = () => {
-    return new CmsEntryFieldFilterPlugin({
+    const plugin = new CmsEntryFieldFilterPlugin({
         fieldType: "ref",
         create: params => {
             const { value, valueFilterPlugins, transformValuePlugins, field } = params;
@@ -69,4 +69,8 @@ export const createRefFilterCreate = () => {
             return filters;
         }
     });
+
+    plugin.name = `headless-cms.ddb.filter.ref`;
+
+    return plugin;
 };

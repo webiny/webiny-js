@@ -1,5 +1,5 @@
 import { InitialOpen, NodeModel } from "@minoru/react-dnd-treeview";
-import { DndItemData, FolderItem } from "~/types";
+import { DndFolderItem, FolderItem } from "~/types";
 import { ROOT_ID } from "./constants";
 
 /**
@@ -14,25 +14,19 @@ export const createTreeData = (
     folders: FolderItem[] = [],
     focusedNodeId?: string,
     hiddenFolderIds: string[] = []
-): NodeModel<DndItemData>[] => {
+): NodeModel<DndFolderItem>[] => {
     return folders
         .map(item => {
-            const { id, parentId, title, slug, type, createdOn, createdBy, savedOn } = item;
+            const { id, parentId, title } = item;
 
             return {
                 id,
-                parent: parentId || ROOT_ID,
+                // toLowerCase() fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
+                parent: parentId?.toLowerCase() || ROOT_ID,
                 text: title,
                 droppable: true,
                 data: {
-                    id,
-                    title,
-                    slug,
-                    parentId,
-                    type,
-                    createdOn,
-                    createdBy,
-                    savedOn,
+                    ...item,
                     isFocused: focusedNodeId === id
                 }
             };
@@ -51,37 +45,36 @@ export const createTreeData = (
  */
 export const createInitialOpenList = (
     folders: FolderItem[] = [],
-    openIds: NodeModel<DndItemData>["id"][] = [],
+    openIds: string[] = [],
     focusedId?: string
 ): InitialOpen | undefined => {
-    const focusedFolder = folders.find(folder => {
-        return folder.id === focusedId;
-    });
-
-    if (!focusedId || !focusedFolder?.parentId) {
+    // In case of no focused folder, return the current open folders
+    if (!focusedId) {
         return openIds;
     }
 
-    const findParents = (
-        acc: string[],
-        folder: FolderItem,
-        index: number,
-        folders: FolderItem[]
-    ): string[] => {
-        if (folder.parentId && acc.some(el => el === folder.id)) {
-            acc.push(folder.parentId);
+    // Create a Map with folders, using folderId as key
+    const folderMap = new Map<string, FolderItem>();
+    folders.forEach(folder => folderMap.set(folder.id, folder));
 
-            const newArr = folders.filter((_, i) => {
-                return i !== index;
-            });
-
-            return newArr.reduce(findParents, acc);
+    // Recursive function that drill up the folderMap and includes the folderId above a given folder (identified by folderId)
+    const findParents = (acc: string[], folderId: string): string[] => {
+        const folder = folderMap.get(folderId);
+        if (!folder || !folder.parentId || acc.includes(folder.parentId)) {
+            return acc;
         }
 
-        return acc;
+        acc.push(folder.parentId);
+        return findParents(acc, folder.parentId);
     };
 
-    const result = folders.reduce(findParents, [focusedId]);
+    // In case there is not focused folder or has no parent, return the current open folders
+    const focusedFolder = folderMap.get(focusedId);
+    if (!focusedFolder || !focusedFolder.parentId) {
+        return openIds;
+    }
 
+    // Remove duplicates and return
+    const result = findParents([focusedId], focusedId);
     return [...new Set([...result, ...openIds])];
 };

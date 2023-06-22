@@ -1,4 +1,4 @@
-import { green } from "chalk";
+import { green, red } from "chalk";
 import yargs from "yargs";
 import writeJson from "write-json-file";
 import { Listr, ListrTask } from "listr2";
@@ -9,6 +9,16 @@ import { getBuildMeta } from "./getBuildMeta";
 import { buildPackageInNewProcess, buildPackageInSameProcess } from "./buildSinglePackage";
 import { MetaJSON, Package } from "./types";
 import { getHardwareInfo } from "./getHardwareInfo";
+
+class BuildError extends Error {
+    private workspace: string;
+
+    constructor(workspace: string, message: string) {
+        super("BuildError");
+        this.workspace = workspace;
+        this.message = message;
+    }
+}
 
 interface BuildOptions {
     p?: string | string[];
@@ -92,7 +102,13 @@ export const buildPackages = async () => {
 
     const start = Date.now();
     const ctx = {};
-    await tasks.run(ctx);
+    try {
+        await tasks.run(ctx);
+    } catch (err) {
+        console.log(`\nError building ${red(err.workspace)}:\n`);
+        console.log(red(err.message));
+        process.exit(1);
+    }
     const duration = (Date.now() - start) / 1000;
 
     console.log(`\nBuild finished in ${green(duration)} seconds.`);
@@ -115,10 +131,20 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
 
                 await writeJson(META_FILE_PATH, metaJson);
             } catch (err) {
-                throw new Error(`[${pkg.packageJson.name}] ${err.message}`);
+                throw new BuildError(pkg.packageJson.name, getCleanError(err.message));
             }
         }
     };
+};
+
+const getCleanError = (log: string) => {
+    const lines = log.split("\n");
+    const index = lines.findIndex(line => line.startsWith("webiny error"));
+    if (index > -1) {
+        lines[index] = lines[index].replace("webiny error: ", "");
+        return lines.slice(index).join("\n");
+    }
+    return log;
 };
 
 const toMB = (bytes: number) => {

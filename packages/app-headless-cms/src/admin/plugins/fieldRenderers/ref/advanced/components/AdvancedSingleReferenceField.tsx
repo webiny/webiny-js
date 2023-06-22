@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     BindComponentRenderProp,
-    CmsEditorContentEntry,
+    CmsContentEntry,
     CmsModelFieldRendererProps,
     CmsModel
 } from "~/types";
@@ -124,7 +124,7 @@ export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
     );
 
     const onNewEntryCreate = useCallback(
-        (data: CmsEditorContentEntry | null) => {
+        (data: CmsContentEntry | null) => {
             if (!data) {
                 console.log(
                     `Could not store new entry to the reference field. Missing whole entry.`

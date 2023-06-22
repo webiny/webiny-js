@@ -28,14 +28,20 @@ describe("5.36.0-001", () => {
 
     logTestNameBeforeEachTest();
 
-    const insertTestFiles = async (numberOfFiles = NUMBER_OF_FILES, privateFile = false) => {
+    const insertTestFiles = async (
+        numberOfFiles = NUMBER_OF_FILES,
+        privateFile = false,
+        skipLocales = 0
+    ) => {
         ddbFiles.length = 0;
+        numberOfGeneratedFiles = 0;
 
         const tenants = createTenantsData().map(tenant => tenant.data.id);
         const testLocales = createLocalesData();
 
         for (const tenant of tenants) {
             const locales = testLocales
+                .slice(0, testLocales.length - skipLocales) // In case we don't want to insert files into one or more locales
                 .filter(item => item.PK === `T#${tenant}#I18N#L`)
                 .map(locale => locale.code) as string[];
 
@@ -252,6 +258,32 @@ describe("5.36.0-001", () => {
         });
 
         expect(searchRecords.length).toBe(0);
+    });
+
+    it("should run migration successfully even in case of locale without file entries", async () => {
+        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestFiles(5, false, 1);
+
+        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_36_0_001] });
+        const { data, error } = await handler();
+
+        assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
+        expect(grouped.notApplicable.length).toBe(0);
+
+        const searchRecords = await scanTable(table, {
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "acoSearchRecord"
+                }
+            ]
+        });
+
+        expect(searchRecords.length).toBe(numberOfGeneratedFiles * 2);
     });
 
     it("should not run migration if data is already in the expected shape", async () => {

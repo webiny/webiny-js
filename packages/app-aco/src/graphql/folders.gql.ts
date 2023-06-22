@@ -36,9 +36,9 @@ export const CREATE_FOLDER = gql`
 `;
 
 export const LIST_FOLDERS = gql`
-    query ListFolders ($type: String!) {
+    query ListFolders ($type: String!, $limit: Int, $after: String, $sort: AcoSort) {
         aco {
-            listFolders(where: { type: $type }) {
+            listFolders(where: { type: $type }, limit: $limit, after: $after, sort: $sort) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
