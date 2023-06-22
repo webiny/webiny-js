@@ -1,6 +1,9 @@
 import { PbPageData } from "~/types";
 
-export type UpdatedPage = Pick<PbPageData, "id" | "content" | "title" | "path" | "status" | "savedOn">;
+export type UpdatedPage = Pick<
+    PbPageData,
+    "id" | "content" | "title" | "path" | "status" | "savedOn"
+>;
 
 export interface SaveRevisionActionArgsType {
     debounce?: boolean;
