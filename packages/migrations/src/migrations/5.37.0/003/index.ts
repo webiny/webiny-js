@@ -6,17 +6,17 @@ import {
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { TenantLinkRecords_5_37_0_666_FileData } from "./TenantLinkDataMigration";
+import { TenantLinkRecords_5_37_0_003_FileData } from "./TenantLinkDataMigration";
 
-export class TenantLinkRecords_5_37_0_666 implements DataMigration {
+export class TenantLinkRecords_5_37_0_003 implements DataMigration {
     private migrations: DataMigration[];
 
     public constructor(table: Table) {
-        this.migrations = [new TenantLinkRecords_5_37_0_666_FileData(table)];
+        this.migrations = [new TenantLinkRecords_5_37_0_003_FileData(table)];
     }
 
     public getId() {
-        return "5.37.0-666";
+        return "5.37.0-003";
     }
 
     public getDescription() {
@@ -45,4 +45,4 @@ export class TenantLinkRecords_5_37_0_666 implements DataMigration {
     }
 }
 
-makeInjectable(TenantLinkRecords_5_37_0_666, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(TenantLinkRecords_5_37_0_003, [inject(PrimaryDynamoTableSymbol)]);
