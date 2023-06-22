@@ -227,11 +227,11 @@ module.exports = async (inputs, context) => {
                 });
             }
         }
-    } else {
+    } else if (inputs.deploy) {
         [
             `webiny ${chalk.blueBright(
                 "info"
-            )}: To enable log forwarding, restart the command with the ${chalk.blueBright(
+            )}: To enable log forwarding, rerun the command with the ${chalk.blueBright(
                 "-r"
             )} flag. Learn more: https://webiny.link/enable-logs-forwarding.`
         ].forEach(message => output.log({ type: "logs", message }));

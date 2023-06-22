@@ -105,7 +105,7 @@ export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
                     return showSnackbar(error.message);
                 }
 
-                showSnackbar(t`Group "{slug}" deleted.`({ slug: item.slug }));
+                showSnackbar(t`Role "{slug}" deleted.`({ slug: item.slug }));
 
                 if (id === item.id) {
                     history.push(`/access-management/roles`);
