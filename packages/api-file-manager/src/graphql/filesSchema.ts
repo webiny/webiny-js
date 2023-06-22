@@ -34,7 +34,6 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
 
                     return resolve(() =>
                         context.security.withoutAuthorization(() => {
-                            console.log("idemooo123!");
                             return context.cms.getModel("fmFile");
                         })
                     );
