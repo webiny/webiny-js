@@ -55,7 +55,7 @@ export class TenantLinkRecords_5_37_0_003_FileData
         return false;
     }
 
-    async execute({ logger, ...context }: DataMigrationContext): Promise<void> {
+    async execute({ logger }: DataMigrationContext): Promise<void> {
         const tenants = await this.listTenants();
 
         for (const tenant of tenants) {
@@ -107,17 +107,6 @@ export class TenantLinkRecords_5_37_0_003_FileData
             options: {
                 index: "GSI1",
                 beginsWith: "TYPE#group#"
-            }
-        });
-    }
-
-    private async listTenantLinks({ tenant }: { tenant: Tenant }): Promise<TenantLink[]> {
-        return await queryAll<TenantLink>({
-            entity: this.tenantLinkEntity,
-            partitionKey: `T#${tenant.data.id}`,
-            options: {
-                index: "GSI1",
-                beginsWith: "TYPE#permissions#"
             }
         });
     }
