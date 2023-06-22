@@ -299,10 +299,12 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                         const keyCode: string = keycode(ev as unknown as Event);
 
                                         if (keyCode === "backspace") {
-                                            if (onChange) {
-                                                onChange(null);
-                                            }
-                                            setTimeout(() => openMenu(), 50);
+                                            setTimeout(() => {
+                                                if (onChange) {
+                                                    onChange(null);
+                                                    openMenu();
+                                                }
+                                            }, 50);
                                         }
                                     },
                                     onKeyUp: (ev: React.KeyboardEvent<HTMLInputElement>) => {
