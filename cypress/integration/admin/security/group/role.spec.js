@@ -9,7 +9,7 @@ const selectPermission = (name, accessLevel) => {
         });
 };
 
-const deleteGroup = slug => {
+const deleteRole = slug => {
     cy.findByTestId("default-data-list").within(() => {
         cy.get(".mdc-list-item")
             .first()
@@ -21,27 +21,27 @@ const deleteGroup = slug => {
     cy.findByTestId("default-data-list.delete-dialog").within(() => {
         cy.findAllByTestId("dialog-accept").next().click();
     });
-    cy.findByText(`Group "${slug}" deleted.`).should("exist");
+    cy.findByText(`Role "${slug}" deleted.`).should("exist");
 };
 
-context("Security -> Group", () => {
+context("Security -> Role", () => {
     beforeEach(() => {
         cy.login();
     });
 
-    it("should create, update and delete group", () => {
-        cy.visit(`/access-management/groups`);
+    it("should create, update and delete role", () => {
+        cy.visit(`/access-management/roles`);
 
-        // Create a group
+        // Create a role
         const [name, slug, description] = [
             uniqid("name-"),
             uniqid("slug-"),
             uniqid("description-")
         ];
 
-        // Open group details form
+        // Open role details form
         cy.findAllByTestId("new-record-button").first().click();
-        // Add group's detail
+        // Add role's detail
         cy.findByTestId("admin.am.group.new.name").type(name);
         cy.findByTestId("admin.am.group.new.slug").type(slug);
         cy.findByTestId("admin.am.group.new.description").type(description);
@@ -53,14 +53,14 @@ context("Security -> Group", () => {
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
-        cy.findByText("Group saved successfully!").should("exist");
+        cy.findByText("Role saved successfully!").should("exist");
 
-        // Update group
+        // Update role
 
         const [newName, newDescription] = [uniqid("new-name-"), uniqid("new-description-")];
 
         cy.findByTestId("admin.am.group.new.name").should("have.value", name);
-        // Add group's detail
+        // Add role's detail
         cy.findByTestId("admin.am.group.new.name").clear().type(newName);
         cy.findByTestId("admin.am.group.new.description").clear().type(newDescription);
         // Update permissions
@@ -77,29 +77,29 @@ context("Security -> Group", () => {
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
-        cy.findByText("Group saved successfully!").should("exist");
-        // Updated group should be in list
+        cy.findByText("Role saved successfully!").should("exist");
+        // Updated role should be in list
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(newName).should("exist");
         });
 
-        // Delete fist group from the list
-        deleteGroup(slug);
+        // Delete fist role from the list
+        deleteRole(slug);
     });
 
-    it("should create group with all permissions, verify and delete it", () => {
-        cy.visit(`/access-management/groups`);
+    it("should create role with all permissions, verify and delete it", () => {
+        cy.visit(`/access-management/roles`);
 
-        // Create a group
+        // Create a role
         const [name, slug, description] = [
             uniqid("name-"),
             uniqid("slug-"),
             uniqid("description-")
         ];
 
-        // Open group details form
+        // Open role details form
         cy.findAllByTestId("new-record-button").first().click();
-        // Add group's detail
+        // Add role's detail
         cy.findByTestId("admin.am.group.new.name").type(name);
         cy.findByTestId("admin.am.group.new.slug").type(slug);
         cy.findByTestId("admin.am.group.new.description").type(description);
@@ -118,11 +118,11 @@ context("Security -> Group", () => {
         // Wait for loading to finish
         cy.get(".react-spinner-material").should("not.exist");
         // Verify success message
-        cy.findByText("Group saved successfully!").should("exist");
+        cy.findByText("Role saved successfully!").should("exist");
 
-        // Verify group permissions
+        // Verify role permissions
         // eslint-disable-next-line jest/valid-expect-in-promise
-        cy.securityReadGroup({ slug }).then(group => {
+        cy.securityReadRole({ slug }).then(group => {
             // eslint-disable-next-line jest/valid-expect
             expect(group.permissions).to.deep.eq([
                 {
@@ -154,6 +154,6 @@ context("Security -> Group", () => {
         });
 
         // Delete first group from the list
-        deleteGroup(slug);
+        deleteRole(slug);
     });
 });

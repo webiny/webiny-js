@@ -7,13 +7,13 @@ const sort = {
     NAME_Z_TO_A: "name_DESC"
 };
 
-context("Search and Sort Security Groups", () => {
+context("Search and Sort Security Roles", () => {
     const total = 3;
     const groups = [];
 
     before(() => {
         for (let i = 0; i < total; i++) {
-            cy.securityCreateGroup({
+            cy.securityCreateRole({
                 data: {
                     name: uniqid(`${i}-`, "-group"),
                     description: uniqid("description-"),
@@ -33,24 +33,24 @@ context("Search and Sort Security Groups", () => {
     after(() => {
         for (let i = 0; i < groups.length; i++) {
             const group = groups[i];
-            cy.securityDeleteGroup({ id: group.id });
+            cy.securityDeleteRole({ id: group.id });
         }
     });
 
-    it("should be able to search group", () => {
-        cy.visit(`/access-management/groups`);
+    it("should be able to search role", () => {
+        cy.visit(`/access-management/roles`);
 
         // Searching for a non existing user should result in "no records found"
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/Search groups/i).type("NON_EXISTING_USER");
+            cy.findByPlaceholderText(/Search roles/i).type("NON_EXISTING_USER");
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(/no records found./i).should("exist");
         });
 
-        // Searching for a particular group by "slug"
+        // Searching for a particular role by "slug"
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/Search groups/i)
+            cy.findByPlaceholderText(/Search roles/i)
                 .clear()
                 .type(groups[0].slug);
         });
@@ -58,9 +58,9 @@ context("Search and Sort Security Groups", () => {
             cy.findByText(groups[0].name).should("exist");
         });
 
-        // Searching for a particular group by "name"
+        // Searching for a particular role by "name"
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/Search groups/i)
+            cy.findByPlaceholderText(/Search roles/i)
                 .clear()
                 .type(groups[0].name);
         });
@@ -68,9 +68,9 @@ context("Search and Sort Security Groups", () => {
             cy.findByText(groups[0].name).should("exist");
         });
 
-        // Searching for a particular group by "description"
+        // Searching for a particular role by "description"
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/Search groups/i)
+            cy.findByPlaceholderText(/Search roles/i)
                 .clear()
                 .type(groups[0].description);
         });
@@ -79,10 +79,10 @@ context("Search and Sort Security Groups", () => {
         });
     });
 
-    it("should be able to sort groups", () => {
-        cy.visit(`/access-management/groups`);
+    it("should be able to sort roles", () => {
+        cy.visit(`/access-management/roles`);
 
-        // Sort groups from "login A -> Z"
+        // Sort roles from "login A -> Z"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.NAME_A_TO_Z);
@@ -97,13 +97,13 @@ context("Search and Sort Security Groups", () => {
                 });
         });
 
-        // Sort groups from "name Z -> A"
+        // Sort roles from "name Z -> A"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.NAME_Z_TO_A);
             cy.findByTestId("default-data-list.filter").click();
         });
-        // We're testing it against the third item because the first two will be system groups
+        // We're testing it against the third item because the first two will be system roles
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
                 .first()
@@ -114,13 +114,13 @@ context("Search and Sort Security Groups", () => {
                 });
         });
 
-        // Sort groups from "Oldest to Newest"
+        // Sort roles from "Oldest to Newest"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.OLDEST_TO_NEWEST);
             cy.findByTestId("default-data-list.filter").click();
         });
-        // We're testing it against the third item because the first two will be system groups
+        // We're testing it against the third item because the first two will be system roles
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
                 .first()
@@ -131,7 +131,7 @@ context("Search and Sort Security Groups", () => {
                 });
         });
 
-        // Sort groups from "Newest to Oldest"
+        // Sort roles from "Newest to Oldest"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.NEWEST_TO_OLDEST);
