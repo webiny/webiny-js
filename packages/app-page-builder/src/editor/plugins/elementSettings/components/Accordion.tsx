@@ -94,7 +94,7 @@ const classes = {
         },
 
         "&.open": {
-            animation: "delay-overflow 10ms 400ms forwards",
+            animation: "delay-overflow 10ms 400ms forwards"
         },
 
         "& .accordion-content": {
