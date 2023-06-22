@@ -80,7 +80,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                     </Styled.EditBlock>
                 )}
             </Styled.Overlay>
-            <Styled.BlockPreview>{plugin?.preview()}</Styled.BlockPreview>
+            <Styled.BlockPreview>{plugin.preview()}</Styled.BlockPreview>
             <Styled.Title>
                 <Typography use={"overline"}>{plugin.title}</Typography>
             </Styled.Title>

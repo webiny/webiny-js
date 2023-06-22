@@ -622,7 +622,7 @@ export type PbEditorBlockPlugin = Plugin & {
     tags: string[];
     create(): PbEditorElement;
     image?: Partial<File>;
-    preview?(): ReactElement;
+    preview(): ReactElement;
 };
 
 export type PbEditorBlockCategoryPlugin = Plugin & {
