@@ -1,11 +1,14 @@
 import { Folder } from "~/folder/folder.types";
 
-interface CreateFolderHierarchyParams {
+interface GetFolderAndItsAncestorsParams {
     id: string;
     folders: Folder[];
 }
 
-export const createFolderHierarchy = ({ id, folders }: CreateFolderHierarchyParams): Folder[] => {
+export const getFolderAndItsAncestors = ({
+    id,
+    folders
+}: GetFolderAndItsAncestorsParams): Folder[] => {
     // Create a Map with folders, using folder.id as key
     const folderMap = new Map<string, Folder>();
     folders.forEach(folder => folderMap.set(folder.id, folder));
