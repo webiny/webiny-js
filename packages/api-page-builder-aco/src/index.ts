@@ -1,5 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
-import { getAncestorFoldersByPage } from "~/page/getFolderAncestorsByPage";
+import { getAncestorFoldersByPage } from "~/page/getAncestorFoldersByPage";
 import { createImportExportPageHooks, createPageHooks } from "~/page/hooks";
 import { createPageProcessors } from "~/page/processors";
 import { getSearchablePageContent } from "~/utils/getSearchableContent";
