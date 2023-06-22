@@ -686,10 +686,10 @@ export const createPageStorageOperations = (
         }
         if (search) {
             /**
-             * We need to pass fuzzy into where so we need to cast it as where because it does not exist on the original type
+             * We need to pass fuzzy into where, so we need to cast it as where because it does not exist on the original type
              */
             where.fuzzy = {
-                fields: ["title", "snippet"],
+                fields: ["title", "snippet", "path"],
                 value: search
             };
         }
