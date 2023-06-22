@@ -67,9 +67,10 @@ module.exports = () => {
                         });
                         await refreshIndex(model);
                     } catch (ex) {
-                        process.stdout.write(
-                            `\nCould not create index on before entry create: ${ex.message}\n`
-                        );
+                        // This is commented out to prevent noise in the console.
+                        // process.stdout.write(
+                        //     `\nCould not create index "${index}" on before entry create: ${ex.message}\n`
+                        // );
                     }
                 });
                 context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {

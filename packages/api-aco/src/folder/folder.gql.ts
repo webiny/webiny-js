@@ -74,7 +74,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             },
             listFolders: async (_, args: any, context) => {
                 try {
-                    await checkPermissions(context);
+                    checkPermissions(context);
                     const [entries, meta] = await context.aco.folder.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {

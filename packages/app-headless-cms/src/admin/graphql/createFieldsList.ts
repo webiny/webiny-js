@@ -11,7 +11,6 @@ export function createFieldsList({ model, fields }: CreateFieldsListParams): str
         .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
         .reduce((acc, item) => ({ ...acc, [item.field.type]: item.field }), {});
 
-    // console.log(fields, model);
     return fields
         .map(field => {
             if (!fieldPlugins[field.type]) {

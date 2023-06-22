@@ -1,4 +1,4 @@
-import { CmsFieldTypePlugins, CmsContext, CmsEntry, CmsModel } from "~/types";
+import { CmsContext, CmsEntry, CmsFieldTypePlugins, CmsModel } from "~/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
@@ -55,6 +55,12 @@ export const createManageResolvers: CreateManageResolvers = ({
         // These are extra fields we want to apply to field resolvers of "gqlType"
         extraResolvers: {
             ...commonFieldResolvers(),
+            /**
+             * Advanced Content Entry
+             */
+            wbyAco_location: async (entry: CmsEntry) => {
+                return entry.location || null;
+            },
             meta(entry) {
                 return entry;
             }

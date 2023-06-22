@@ -1,27 +1,19 @@
-import React, { ReactElement } from "react";
-import { FolderTree } from "@webiny/app-aco";
-
-import { FOLDER_TYPE } from "~/admin/constants/folders";
-import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
-
+import React from "react";
+import { FolderTree, useNavigateFolder } from "@webiny/app-aco";
 import { SidebarContainer } from "./styled";
 
 interface Props {
     folderId?: string;
-    defaultFolderName: string;
 }
 
-export const Sidebar = ({ folderId, defaultFolderName }: Props): ReactElement => {
-    const { navigateToPageHome, navigateToFolder } = usePageViewNavigation();
+export const Sidebar: React.VFC<Props> = ({ folderId }) => {
+    const { navigateToFolder } = useNavigateFolder();
 
     return (
         <SidebarContainer>
             <FolderTree
-                type={FOLDER_TYPE}
-                title={defaultFolderName}
                 focusedFolderId={folderId}
-                onTitleClick={() => navigateToPageHome()}
-                onFolderClick={data => data?.id && navigateToFolder(data?.id)}
+                onFolderClick={data => navigateToFolder(data.id)}
                 enableActions={true}
                 enableCreate={true}
             />

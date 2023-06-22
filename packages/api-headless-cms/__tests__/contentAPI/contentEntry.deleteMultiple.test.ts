@@ -6,7 +6,6 @@ import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandle
 import { parseIdentifier } from "@webiny/utils";
 
 jest.setTimeout(100000);
-jest.retryTimes(0);
 
 interface CreateCategoryParams {
     amount?: number;

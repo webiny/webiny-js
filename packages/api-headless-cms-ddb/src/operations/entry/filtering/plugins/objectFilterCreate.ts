@@ -5,7 +5,7 @@ import { CmsFieldFilterValueTransformPlugin } from "~/types";
 import { transformValue } from "~/operations/entry/filtering/transform";
 
 export const objectFilterCreate = () => {
-    return new CmsEntryFieldFilterPlugin({
+    const plugin = new CmsEntryFieldFilterPlugin({
         fieldType: "object",
         create: params => {
             const {
@@ -90,4 +90,8 @@ export const objectFilterCreate = () => {
             return filters;
         }
     });
+
+    plugin.name = `headless-cms.ddb.filter.object`;
+
+    return plugin;
 };

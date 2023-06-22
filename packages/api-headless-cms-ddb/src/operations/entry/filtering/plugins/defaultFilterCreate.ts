@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin";
 
 export const createDefaultFilterCreate = () => {
-    return new CmsEntryFieldFilterPlugin({
+    const plugin = new CmsEntryFieldFilterPlugin({
         fieldType: CmsEntryFieldFilterPlugin.ALL,
         create: params => {
             const { negate, transformValue, field, compareValue, valueFilterPlugins } = params;
@@ -29,4 +29,8 @@ export const createDefaultFilterCreate = () => {
             };
         }
     });
+
+    plugin.name = `headless-cms.ddb.filter.default`;
+
+    return plugin;
 };

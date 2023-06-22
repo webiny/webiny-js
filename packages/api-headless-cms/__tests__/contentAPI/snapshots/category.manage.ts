@@ -15,6 +15,8 @@ export default /* GraphQL */ `
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         title: String
         slug: String
+        # Advanced Content Organization - make required in 5.38.0
+        wbyAco_location: WbyAcoLocation
     }
 
     type CategoryApiNameWhichIsABitDifferentThanModelIdMeta {
@@ -34,6 +36,7 @@ export default /* GraphQL */ `
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdInput {
         id: ID
+        wbyAco_location: WbyAcoLocationInput
         title: String!
         slug: String!
     }
@@ -46,6 +49,7 @@ export default /* GraphQL */ `
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
+        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -87,6 +91,8 @@ export default /* GraphQL */ `
         title_not_in: [String]
         title_contains: String
         title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
 
         slug: String
         slug_not: String
@@ -94,6 +100,8 @@ export default /* GraphQL */ `
         slug_not_in: [String]
         slug_contains: String
         slug_not_contains: String
+        slug_startsWith: String
+        slug_not_startsWith: String
     
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
         OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]

@@ -32,7 +32,7 @@ export async function exportPage(
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ where: { id_in: fileIds } });
         imageFilesData.push(...filesData);
     }
 
@@ -78,7 +78,7 @@ export async function exportBlock(
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ where: { id_in: fileIds } });
         imageFilesData.push(...filesData);
     }
     // Add block preview image file data
@@ -128,7 +128,7 @@ export async function exportTemplate(
     // Get file data for all images
     const imageFilesData = [];
     if (fileIds.length > 0) {
-        const [filesData] = await fileManager.listFiles({ ids: fileIds });
+        const [filesData] = await fileManager.listFiles({ where: { id_in: fileIds } });
         imageFilesData.push(...filesData);
     }
 

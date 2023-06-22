@@ -35,6 +35,8 @@ import accordion from "@webiny/app-page-builder/render/plugins/elements/accordio
 import accordionItem from "@webiny/app-page-builder/render/plugins/elements/accordionItem";
 import tabs from "@webiny/app-page-builder/render/plugins/elements/tabs";
 import tab from "@webiny/app-page-builder/render/plugins/elements/tab";
+import carousel from "@webiny/app-page-builder/render/plugins/elements/carousel";
+import carouselElement from "@webiny/app-page-builder/render/plugins/elements/carouselElement";
 
 /**
  * Page settings plugins (seo, social, etc.).
@@ -58,6 +60,9 @@ import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings
 import property from "@webiny/app-page-builder/render/plugins/elementSettings/property";
 import accordionSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordion";
 import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordionItem";
+import carouselSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carousel";
+import carouselElementSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselElement";
+import carouselStylesSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselStyles";
 
 /**
  * Responsive display mode plugins.
@@ -89,10 +94,14 @@ export default [
     iframe(),
     pagesList(),
     imagesList(),
+    carousel(),
+    carouselElement(),
     accordion(),
     accordionItem(),
     tabs(),
     tab(),
+    carousel(),
+    carouselElement(),
 
     // Page settings
     pageSettings(),
@@ -112,5 +121,8 @@ export default [
     property,
     accordionSettings,
     accordionItemSettings,
+    carouselSettings,
+    carouselElementSettings,
+    carouselStylesSettings,
     responsiveMode()
 ];

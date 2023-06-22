@@ -75,6 +75,50 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Meta"
     },
+    wbyAco_location: {
+        id: "wbyAco_location",
+        parents: [],
+        type: "object",
+        storageId: "location",
+        label: "Location",
+        fieldId: "wbyAco_location",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        settings: {
+            fields: [
+                {
+                    fieldId: "folderId",
+                    id: "folderId",
+                    label: "Folder ID",
+                    settings: {
+                        path: "location.folderId"
+                    },
+                    storageId: "folderId",
+                    type: "text"
+                }
+            ]
+        }
+    },
+    "wbyAco_location.folderId": {
+        id: "folderId",
+        parents: [
+            {
+                fieldId: "wbyAco_location",
+                multipleValues: undefined
+            }
+        ],
+        type: "text",
+        label: "Folder ID",
+        storageId: "folderId",
+        fieldId: "folderId",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        settings: {
+            path: "location.folderId"
+        }
+    },
     ownedBy: {
         id: "ownedBy",
         parents: [],

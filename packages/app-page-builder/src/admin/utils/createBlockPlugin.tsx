@@ -1,8 +1,8 @@
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { plugins } from "@webiny/plugins";
-import { Image } from "@webiny/ui/Image";
 import { PbEditorBlockPlugin, PbPageBlock } from "~/types";
+import { PreviewBlock } from "~/admin/components/PreviewBlock";
 
 export default (element: PbPageBlock): void => {
     const plugin: PbEditorBlockPlugin = {
@@ -17,13 +17,7 @@ export default (element: PbPageBlock): void => {
             return cloneDeep({ ...element.content, source: element.id });
         },
         preview() {
-            return (
-                <Image
-                    src={element.preview.src}
-                    alt={element.name}
-                    style={{ width: "100%", height: "auto" }}
-                />
-            );
+            return <PreviewBlock element={element} />;
         }
     };
     plugins.register(plugin);

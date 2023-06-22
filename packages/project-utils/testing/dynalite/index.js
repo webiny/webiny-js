@@ -1,5 +1,5 @@
-const { logger } = require("@webiny/project-utils/testing/logger");
-const { clearStorageOps } = require("@webiny/project-utils/testing/environment");
+const { logger } = require("../logger");
+const { clearStorageOps } = require("../environment");
 let setupInitiated = false;
 
 module.exports.setupDynalite = packageRoot => {

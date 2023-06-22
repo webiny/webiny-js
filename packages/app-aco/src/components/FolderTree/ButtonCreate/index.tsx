@@ -17,7 +17,7 @@ export const CreateButton: React.VFC<CreateButtonProps> = ({ onClick }) => {
             <IconContainer>
                 <Icon />
             </IconContainer>
-            <Typography use={"subtitle2"}>{t`Create new folder`}</Typography>
+            <Typography use={"subtitle2"}>{t`Create a new folder`}</Typography>
         </Button>
     );
 };

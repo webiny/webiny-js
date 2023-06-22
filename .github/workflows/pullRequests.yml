@@ -132,7 +132,7 @@ jobs:
 
   jest-tests:
     needs: init
-    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
       matrix:
@@ -146,7 +146,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
 
     steps:
       - uses: actions/setup-node@v3
@@ -172,7 +172,7 @@ jobs:
         run: yarn build:quick
 
       - name: Run tests
-        run: yarn test ${{ matrix.package }}
+        run: yarn test ${{ matrix.package.cmd }}
 
   verdaccio-publish:
     if: needs.init.outputs.is-fork-pr != 'true' # Do not run this job if a PR has been submitted from a fork.

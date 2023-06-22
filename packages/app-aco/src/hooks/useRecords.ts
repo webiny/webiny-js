@@ -1,13 +1,17 @@
+import dotPropImmutable from "dot-prop-immutable";
 import { useContext, useEffect, useMemo } from "react";
-import { SearchRecordsContext } from "~/contexts/records";
-import { ListDbSort, SearchRecordItem } from "~/types";
+import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
+import { DeletableSearchRecordItem, MovableSearchRecordItem, SearchRecordItem } from "~/types";
+import { useAcoApp } from "~/hooks/useAcoApp";
 
-export const useRecords = (type?: string, folderId?: string) => {
+export const useRecords = (folderId?: string) => {
     const context = useContext(SearchRecordsContext);
 
     if (!context) {
         throw new Error("useSearchRecords must be used within a SearchRecordsContext");
     }
+
+    const { folderIdPath } = useAcoApp();
 
     const {
         records,
@@ -17,7 +21,11 @@ export const useRecords = (type?: string, folderId?: string) => {
         getRecord,
         createRecord,
         updateRecord,
-        deleteRecord
+        moveRecord,
+        deleteRecord,
+        addRecordToCache,
+        updateRecordInCache,
+        removeRecordFromCache
     } = context;
 
     useEffect(() => {
@@ -25,10 +33,14 @@ export const useRecords = (type?: string, folderId?: string) => {
          * On first mount, call `listRecords`, which will either issue a network request, or load links from cache.
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          */
-        if (type && folderId) {
-            listRecords({ type, folderId });
+        if (!folderId) {
+            return;
         }
-    }, [type, folderId]);
+        const where = dotPropImmutable.set({}, folderIdPath, folderId);
+        listRecords({
+            where
+        });
+    }, [folderId]);
 
     return useMemo(
         () => ({
@@ -39,16 +51,15 @@ export const useRecords = (type?: string, folderId?: string) => {
              */
             loading,
             meta: meta[folderId!] || {},
-            records,
-            listRecords(params: {
-                after?: string;
-                limit?: number;
-                sort?: ListDbSort;
-                tags_in?: string[];
-                tags_startsWith?: string;
-                tags_not_startsWith?: string;
-            }) {
-                return listRecords({ type, folderId, ...params });
+            records: records.filter(
+                record => dotPropImmutable.get(record, folderIdPath) === folderId
+            ),
+            listRecords(params: ListRecordsParams) {
+                const where = dotPropImmutable.set(params.where || {}, folderIdPath, folderId);
+                return listRecords({
+                    ...params,
+                    where
+                });
             },
             getRecord(id: string) {
                 return getRecord(id);
@@ -59,10 +70,16 @@ export const useRecords = (type?: string, folderId?: string) => {
             updateRecord(record: SearchRecordItem) {
                 return updateRecord(record, folderId);
             },
-            deleteRecord(record: SearchRecordItem) {
+            moveRecord(params: MovableSearchRecordItem) {
+                return moveRecord(params);
+            },
+            deleteRecord(record: DeletableSearchRecordItem) {
                 return deleteRecord(record);
-            }
+            },
+            addRecordToCache,
+            removeRecordFromCache,
+            updateRecordInCache
         }),
-        [records, loading, meta, type]
+        [records, loading, meta]
     );
 };

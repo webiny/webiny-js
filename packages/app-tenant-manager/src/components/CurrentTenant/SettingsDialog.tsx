@@ -1,17 +1,11 @@
 import React from "react";
 import { css } from "emotion";
 import { Form } from "@webiny/form";
-import {
-    Dialog,
-    DialogButton,
-    DialogActions,
-    DialogCancel,
-    DialogContent,
-    DialogTitle
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogActions, DialogCancel, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { useTenant } from "./useTenant";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Domains } from "../Domains";
+import { ButtonPrimary } from "@webiny/ui/Button";
 
 interface Props {
     open: boolean;
@@ -41,7 +35,7 @@ export const SettingsDialog: React.FC<Props> = ({ open, onClose }) => {
                         </DialogContent>
                         <DialogActions>
                             <DialogCancel>Cancel</DialogCancel>
-                            <DialogButton onClick={submit}>Save</DialogButton>
+                            <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
                         </DialogActions>
                     </React.Fragment>
                 )}

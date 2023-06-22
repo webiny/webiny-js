@@ -2,13 +2,13 @@ import { Table } from "dynamodb-toolbox";
 import lodashChunk from "lodash/chunk";
 import WebinyError from "@webiny/error";
 
-interface Item {
+export interface BatchReadItem {
     Table: Table;
     Key: any;
 }
-interface Params {
+export interface BatchReadParams {
     table: Table;
-    items: Item[];
+    items: BatchReadItem[];
 }
 
 const MAX_BATCH_ITEMS = 100;
@@ -24,7 +24,7 @@ const flatten = (responses: Record<string, any[]>): any[] => {
 
 interface BatchReadAllChunkParams {
     table: Table;
-    items: Item[];
+    items: BatchReadItem[];
 }
 const batchReadAllChunk = async <T = any>(params: BatchReadAllChunkParams): Promise<T[]> => {
     const { table, items } = params;
@@ -54,7 +54,7 @@ const batchReadAllChunk = async <T = any>(params: BatchReadAllChunkParams): Prom
  * It will fetch all results, as there is a next() method call built in.
  */
 export const batchReadAll = async <T = any>(
-    params: Params,
+    params: BatchReadParams,
     maxChunk = MAX_BATCH_ITEMS
 ): Promise<T[]> => {
     if (params.items.length === 0) {
@@ -71,7 +71,7 @@ export const batchReadAll = async <T = any>(
 
     const records: T[] = [];
 
-    const chunkItemsList: Item[][] = lodashChunk(params.items, maxChunk);
+    const chunkItemsList: BatchReadItem[][] = lodashChunk(params.items, maxChunk);
 
     for (const chunkItems of chunkItemsList) {
         const results = await batchReadAllChunk<T>({

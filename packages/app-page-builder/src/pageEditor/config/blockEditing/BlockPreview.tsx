@@ -12,7 +12,6 @@ import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
 import { PbEditorBlockPlugin } from "~/types";
 import { useCallback } from "react";
-import previewFallback from "~/admin/views/PageBlocks/assets/preview.png";
 
 interface BlockPreviewProps {
     plugin: PbEditorBlockPlugin;
@@ -26,15 +25,6 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
     const onClickToAddHandler = useCallback(() => {
         addBlockToContent(plugin);
     }, [plugin]);
-
-    let blockPreview = <img src={previewFallback} alt={plugin.title} />;
-
-    const blockPreviewImageSrc = plugin?.image?.src;
-    if (blockPreviewImageSrc) {
-        blockPreview = <img src={blockPreviewImageSrc} alt={plugin.title} />;
-    } else if (typeof plugin.preview === "function") {
-        blockPreview = plugin.preview();
-    }
 
     return (
         <Elevation
@@ -55,6 +45,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                 {onDelete && (
                     <Styled.DeleteBlock>
                         <ConfirmationDialog
+                            style={{ zIndex: 99 }}
                             title="Delete block"
                             message="Are you sure you want to delete this block?"
                             loading={<CircularProgress label={"Deleting block..."} />}
@@ -89,7 +80,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                     </Styled.EditBlock>
                 )}
             </Styled.Overlay>
-            <Styled.BlockPreview>{blockPreview}</Styled.BlockPreview>
+            <Styled.BlockPreview>{plugin?.preview()}</Styled.BlockPreview>
             <Styled.Title>
                 <Typography use={"overline"}>{plugin.title}</Typography>
             </Styled.Title>

@@ -1,6 +1,9 @@
 import { createTopic } from "@webiny/pubsub";
-
-import { CreateAcoParams } from "~/types";
+import {
+    CreateAcoParams,
+    OnSearchRecordAfterMoveTopicParams,
+    OnSearchRecordBeforeMoveTopicParams
+} from "~/types";
 import {
     AcoSearchRecordCrud,
     OnSearchRecordAfterCreateTopicParams,
@@ -28,6 +31,13 @@ export const createSearchRecordCrudMethods = ({
     const onSearchRecordAfterUpdate = createTopic<OnSearchRecordAfterUpdateTopicParams>(
         "aco.onSearchRecordAfterUpdate"
     );
+    // move
+    const onSearchRecordBeforeMove = createTopic<OnSearchRecordBeforeMoveTopicParams>(
+        "aco.onSearchRecordBeforeMove"
+    );
+    const onSearchRecordAfterMove = createTopic<OnSearchRecordAfterMoveTopicParams>(
+        "aco.onSearchRecordAfterMove"
+    );
     // delete
     const onSearchRecordBeforeDelete = createTopic<OnSearchRecordBeforeDeleteTopicParams>(
         "aco.onSearchRecordBeforeDelete"
@@ -44,36 +54,57 @@ export const createSearchRecordCrudMethods = ({
         onSearchRecordAfterCreate,
         onSearchRecordBeforeUpdate,
         onSearchRecordAfterUpdate,
+        onSearchRecordBeforeMove,
+        onSearchRecordAfterMove,
         onSearchRecordBeforeDelete,
         onSearchRecordAfterDelete,
-        async get(id) {
-            return storageOperations.getRecord({ id });
+        async get(model, id) {
+            return storageOperations.getRecord(model, { id });
         },
-        async list(params) {
-            return storageOperations.listRecords(params);
+        async list(model, params) {
+            return storageOperations.listRecords(model, params);
         },
-        async create(data) {
-            await onSearchRecordBeforeCreate.publish({ input: data });
-            const record = await storageOperations.createRecord({ data });
-            await onSearchRecordAfterCreate.publish({ record });
+        async create(model, data) {
+            await onSearchRecordBeforeCreate.publish({ model, input: data });
+            const record = await storageOperations.createRecord(model, { data });
+            await onSearchRecordAfterCreate.publish({ model, record });
             return record;
         },
-        async update(id, data) {
-            const original = await storageOperations.getRecord({ id });
-            await onSearchRecordBeforeUpdate.publish({ original, input: { id, data } });
-            const record = await storageOperations.updateRecord({ id, data });
-            await onSearchRecordAfterUpdate.publish({ original, input: { id, data }, record });
+        async update(model, id, data) {
+            const original = await storageOperations.getRecord(model, { id });
+            await onSearchRecordBeforeUpdate.publish({ model, original, input: { id, data } });
+            const record = await storageOperations.updateRecord(model, { id, data });
+            await onSearchRecordAfterUpdate.publish({
+                model,
+                original,
+                input: { id, data },
+                record
+            });
             return record;
         },
-        async delete(id: string) {
-            const record = await storageOperations.getRecord({ id });
-            await onSearchRecordBeforeDelete.publish({ record });
-            await storageOperations.deleteRecord({ id });
-            await onSearchRecordAfterDelete.publish({ record });
+        async move(model, id, folderId) {
+            const original = await storageOperations.getRecord(model, { id });
+            await onSearchRecordBeforeMove.publish({ model, original, folderId });
+            const result = await storageOperations.moveRecord(model, {
+                id,
+                folderId
+            });
+            await onSearchRecordAfterMove.publish({
+                model,
+                original,
+                folderId
+            });
+            return result;
+        },
+        async delete(model, id: string) {
+            const record = await storageOperations.getRecord(model, { id });
+            await onSearchRecordBeforeDelete.publish({ model, record });
+            await storageOperations.deleteRecord(model, { id });
+            await onSearchRecordAfterDelete.publish({ model, record });
             return true;
         },
-        async listTags(params) {
-            return storageOperations.listTags(params);
+        async listTags(model, params) {
+            return storageOperations.listTags(model, params);
         }
     };
 };

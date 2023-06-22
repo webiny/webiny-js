@@ -60,7 +60,7 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
     }));
 
     return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+        <Dialog open={open} onClose={onClose} className={narrowDialog} style={{ zIndex: 99 }}>
             {loading && <CircularProgress label={"Saving block..."} />}
             {plugin && (
                 <Form onSubmit={onSubmit} data={plugin}>

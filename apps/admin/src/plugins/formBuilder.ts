@@ -46,6 +46,7 @@ import editorTriggerEmailNotification from "@webiny/app-form-builder/admin/plugi
 import editorTriggerEmailThanks from "@webiny/app-form-builder/admin/plugins/editor/triggers/emailThanks";
 import editorTriggerRedirect from "@webiny/app-form-builder/admin/plugins/editor/triggers/redirect";
 import editorTriggerWebhook from "@webiny/app-form-builder/admin/plugins/editor/triggers/webhook";
+import editorTriggerGoogleAnalyticsEvent from "@webiny/app-form-builder/admin/plugins/editor/triggers/googleAnalyticsEvent";
 
 /* Page Builder element plugin to insert Forms into your pages */
 import pageBuilderPlugins from "@webiny/app-form-builder/page-builder/admin/plugins";
@@ -105,6 +106,7 @@ export default [
     editorTriggerEmailThanks,
     editorTriggerRedirect,
     editorTriggerWebhook,
+    editorTriggerGoogleAnalyticsEvent,
     fieldValidatorGte,
     fieldValidatorInValidator,
     fieldValidatorLte,
