@@ -16,7 +16,7 @@ import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
-import { Table, TableProps } from "~/admin/components/Table/Table";
+import { Table } from "~/admin/components/Table/Table";
 import { MainContainer, Wrapper } from "./styled";
 import { FOLDER_ID_DEFAULT } from "~/admin/constants";
 
@@ -43,7 +43,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         search,
         setSearch,
         selected,
-        setSelected,
+        onSelectRow,
         sorting,
         setSorting,
         listMoreRecords
@@ -109,13 +109,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             });
         }
     }, [showPreviewDrawer]);
-
-    const onSelectRow: TableProps["onSelectRow"] = rows => {
-        // `row.id` is internally mapped to `page.pid`.
-        const ids = rows.filter(row => row.$type === "RECORD").map(row => row.id);
-
-        setSelected(ids);
-    };
 
     return (
         <>
