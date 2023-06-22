@@ -52,13 +52,15 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
             "pb-page-element-action-type"
         );
 
-        return actionTypePlugins.map(plugin => plugin.actionType);
+        return actionTypePlugins
+            .map(plugin => plugin.actionType)
+            .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
     }, []);
 
     const activeActionType = actionTypes.find(type => type.name === actionType);
 
     // For backwards compatibility, use `data.link` first, then apply the current values.
-    const formData = { ...element.data?.link, ...element.data?.action };
+    const formData = { actionType, ...element.data?.link, ...element.data?.action };
 
     return (
         <Accordion title={"Action"} defaultValue={defaultAccordionValue}>
@@ -66,7 +68,7 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                 {({ Bind }) => {
                     return (
                         <>
-                            <Bind name="actionType" defaultValue={actionTypes[0].name}>
+                            <Bind name="actionType">
                                 {({ value, onChange }) => (
                                     <Wrapper
                                         label={"Action Type"}
