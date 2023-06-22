@@ -357,6 +357,7 @@ export default /* GraphQL */ `
             sort: [PageModelApiNameListSorter]
             limit: Int
             after: String
+            search: String
         ): PageModelApiNameListResponse
     }
 

@@ -148,6 +148,7 @@ export default /* GraphQL */ `
             sort: [CategoryApiNameWhichIsABitDifferentThanModelIdListSorter]
             limit: Int
             after: String
+            search: String
         ): CategoryApiNameWhichIsABitDifferentThanModelIdListResponse
     }
 
