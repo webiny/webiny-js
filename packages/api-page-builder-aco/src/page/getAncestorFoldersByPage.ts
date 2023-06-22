@@ -17,7 +17,7 @@ export const getAncestorFoldersByPage = async (context: PbAcoContext, page: Page
             return [];
         }
 
-        return aco.folder.getAncestorFolders(folderId);
+        return aco.folder.getFolderWithAncestors(folderId);
     } catch (error) {
         throw WebinyError.from(error, {
             message: "Error while executing getAncestorFoldersByPage",
