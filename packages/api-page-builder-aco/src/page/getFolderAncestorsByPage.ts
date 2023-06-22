@@ -5,7 +5,7 @@ import { PbAcoContext, PbPageRecordData } from "~/types";
 import { Page } from "@webiny/api-page-builder/types";
 import { PB_PAGE_TYPE } from "~/contants";
 
-export const getFolderHierarchyByPageId = async (context: PbAcoContext, page: Page) => {
+export const getAncestorFoldersByPage = async (context: PbAcoContext, page: Page) => {
     try {
         const { aco } = context;
         const app = aco.getApp(PB_PAGE_TYPE);
@@ -17,11 +17,11 @@ export const getFolderHierarchyByPageId = async (context: PbAcoContext, page: Pa
             return [];
         }
 
-        return aco.folder.getHierarchyById(folderId);
+        return aco.folder.getAncestorFolders(folderId);
     } catch (error) {
         throw WebinyError.from(error, {
-            message: "Error while executing getFolderHierarchyByPageId",
-            code: "ACO_GET_FOLDER_HIERARCHY_BY_PAGE_ID"
+            message: "Error while executing getAncestorFoldersByPage",
+            code: "ACO_GET_ANCESTOR_FOLDERS_BY_PAGE"
         });
     }
 };

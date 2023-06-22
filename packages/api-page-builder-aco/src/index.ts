@@ -1,5 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
-import { getFolderHierarchyByPageId } from "~/page/crud";
+import { getAncestorFoldersByPage } from "~/page/getFolderAncestorsByPage";
 import { createImportExportPageHooks, createPageHooks } from "~/page/hooks";
 import { createPageProcessors } from "~/page/processors";
 import { getSearchablePageContent } from "~/utils/getSearchableContent";
@@ -22,8 +22,8 @@ const setupContext = async (context: PbAcoContext): Promise<void> => {
         async getSearchablePageContent(page) {
             return getSearchablePageContent(context, page, pageSearchProcessors);
         },
-        async getFolderHierarchyByPageId(page) {
-            return getFolderHierarchyByPageId(context, page);
+        async getAncestorFoldersByPage(page) {
+            return getAncestorFoldersByPage(context, page);
         }
     };
 };
