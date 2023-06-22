@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import { ImportExportTaskStatus, BlocksImportExportCrud, PbImportExportContext } from "~/types";
@@ -16,22 +15,15 @@ const IMPORT_BLOCKS_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string
 
 export default new ContextPlugin<PbImportExportContext>(context => {
     const importExportCrud: BlocksImportExportCrud = {
-        async importBlocks({ category: categorySlug, zipFileUrl }) {
+        async importBlocks({ zipFileUrl }) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-
-            // Bail out early if category not found
-            const category = await context.pageBuilder.getBlockCategory(categorySlug);
-            if (!category) {
-                throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
-            }
 
             // Create a task for import block
             const task = await context.pageBuilder.importExportTask.createTask({
                 status: ImportExportTaskStatus.PENDING,
                 input: {
-                    category: categorySlug,
                     zipFileUrl
                 }
             });
@@ -44,7 +36,6 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 context,
                 name: IMPORT_BLOCKS_CREATE_HANDLER,
                 payload: {
-                    category: categorySlug,
                     zipFileUrl,
                     task,
                     type: "block",

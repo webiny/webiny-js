@@ -41,7 +41,6 @@ export interface ExportBlocksParams {
 }
 
 export interface ImportBlocksParams {
-    category: string;
     zipFileUrl: string;
 }
 
