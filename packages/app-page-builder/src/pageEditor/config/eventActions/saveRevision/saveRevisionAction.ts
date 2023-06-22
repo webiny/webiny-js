@@ -1,7 +1,8 @@
 import gql from "graphql-tag";
 import lodashIsEqual from "lodash/isEqual";
+import lodashGet from "lodash/get";
 import lodashDebounce from "lodash/debounce";
-import { SaveRevisionActionArgsType } from "./types";
+import { SaveRevisionActionArgsType, UpdatedPage } from "./types";
 import { ToggleSaveRevisionStateActionEvent } from "./event";
 import { PageAtomType } from "~/pageEditor/state";
 import { PageEventActionCallable } from "~/pageEditor/types";
@@ -18,11 +19,11 @@ const isDataEqualToLastSavedData = (data: PageRevisionType) => {
     return lodashIsEqual(data, lastSavedRevisionData);
 };
 
-const triggerOnFinish = (args?: SaveRevisionActionArgsType): void => {
+const triggerOnFinish = (args?: SaveRevisionActionArgsType, page?: UpdatedPage): void => {
     if (!args || !args.onFinish || typeof args.onFinish !== "function") {
         return;
     }
-    args.onFinish();
+    args.onFinish(page);
 };
 
 let debouncedSave: ReturnType<typeof lodashDebounce> | null = null;
@@ -111,6 +112,7 @@ export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsT
                         id
                         content
                         title
+                        path
                         status
                         savedOn
                     }
@@ -131,7 +133,7 @@ export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsT
     const runSave = async () => {
         meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: true }));
 
-        await meta.client.mutate({
+        const updateResponse = await meta.client.mutate({
             mutation: updatePage,
             variables: {
                 id: state.page.id,
@@ -139,8 +141,10 @@ export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsT
             }
         });
 
+        const pageFromApi = lodashGet(updateResponse, "data.pageBuilder.updatePage.data", {});
+
         meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: false }));
-        triggerOnFinish(args);
+        triggerOnFinish(args, pageFromApi);
     };
 
     if (args && args.debounce === false) {
