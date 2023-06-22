@@ -16,7 +16,7 @@ const plugin = new ValueFilterPlugin({
         const f = new Fuse([value], {
             includeScore: true,
             minMatchCharLength: 3,
-            threshold: 0.5
+            threshold: 0.6
         });
         const result = f.search(compareValue);
 
