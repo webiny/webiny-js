@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
-import { CREATE_GROUP } from "./graphql";
+import { DELETE_GROUP } from "./graphql";
 
-Cypress.Commands.add("securityCreateGroup", variables => {
+Cypress.Commands.add("securityDeleteRole", variables => {
     cy.login().then(user => {
         const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
             headers: {
@@ -10,7 +10,7 @@ Cypress.Commands.add("securityCreateGroup", variables => {
         });
 
         return client
-            .request(CREATE_GROUP, variables)
+            .request(DELETE_GROUP, variables)
             .then(response => response.security.group.data);
     });
 });

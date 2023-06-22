@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 import { READ_GROUP } from "./graphql";
 
-Cypress.Commands.add("securityReadGroup", (variables, token) => {
+Cypress.Commands.add("securityReadRole", (variables, token) => {
     const makeRequest = token => {
         const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
             headers: {
