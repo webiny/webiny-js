@@ -2,7 +2,9 @@ import React from "react";
 import { LexicalEditorConfig as BaseConfig } from "@webiny/lexical-editor";
 import { CompositionScope } from "@webiny/react-composition";
 
-const ParagraphToolbarAction = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
+const ParagraphFloatingToolbarAction = (
+    props: React.ComponentProps<typeof BaseConfig.ToolbarElement>
+) => {
     return (
         <CompositionScope name={"pb.paragraph"}>
             <BaseConfig>
@@ -12,7 +14,7 @@ const ParagraphToolbarAction = (props: React.ComponentProps<typeof BaseConfig.To
     );
 };
 
-const ParagraphToolbarPlugin = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
+const ParagraphToolbarPlugin = (props: React.ComponentProps<typeof BaseConfig.Plugin>) => {
     return (
         <CompositionScope name={"pb.paragraph"}>
             <BaseConfig>
@@ -22,7 +24,7 @@ const ParagraphToolbarPlugin = (props: React.ComponentProps<typeof BaseConfig.To
     );
 };
 
-const ParagraphToolbarNode = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
+const ParagraphToolbarNode = (props: React.ComponentProps<typeof BaseConfig.Node>) => {
     return (
         <CompositionScope name={"pb.paragraph"}>
             <BaseConfig>
@@ -33,7 +35,7 @@ const ParagraphToolbarNode = (props: React.ComponentProps<typeof BaseConfig.Tool
 };
 
 export const Paragraph = {
-    ToolbarAction: ParagraphToolbarAction,
+    FloatingToolbarAction: ParagraphFloatingToolbarAction,
     Plugin: ParagraphToolbarPlugin,
     Node: ParagraphToolbarNode
 };

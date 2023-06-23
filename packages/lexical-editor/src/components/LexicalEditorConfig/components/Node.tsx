@@ -9,7 +9,7 @@ export interface NodeConfig {
 
 export interface NodeProps {
     name: string;
-    node?: React.ReactElement<unknown>;
+    node?: Klass<LexicalNode>;
     remove?: boolean;
     before?: string;
     after?: string;

@@ -42,7 +42,7 @@ export const LexicalEditorCmsPlugin: FC = () => {
                 <ToolbarElement name="codeHighlight" element={<CodeHighlightAction />} />
                 <ToolbarElement name="divider2" element={<Divider />} />
                 <ToolbarElement name="numberedList" element={<NumberedListAction />} />
-                <ToolbarElement name="bullet" element={<BulletListAction />} />
+                <ToolbarElement name="bulletList" element={<BulletListAction />} />
                 <ToolbarElement name="divider" element={<Divider />} />
                 <ToolbarElement name="image" element={<ImageAction />} />
                 <ToolbarElement name="divider3" element={<Divider />} />

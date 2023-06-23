@@ -12,7 +12,7 @@ const HeadingToolbarAction = (props: React.ComponentProps<typeof BaseConfig.Tool
     );
 };
 
-const HeadingToolbarPlugin = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
+const HeadingToolbarPlugin = (props: React.ComponentProps<typeof BaseConfig.Plugin>) => {
     return (
         <CompositionScope name={"pb.heading"}>
             <BaseConfig>
@@ -22,7 +22,7 @@ const HeadingToolbarPlugin = (props: React.ComponentProps<typeof BaseConfig.Tool
     );
 };
 
-const HeadingToolbarNode = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
+const HeadingToolbarNode = (props: React.ComponentProps<typeof BaseConfig.Node>) => {
     return (
         <CompositionScope name={"pb.heading"}>
             <BaseConfig>

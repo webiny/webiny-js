@@ -12,7 +12,7 @@ const ToolbarAction = (props: React.ComponentProps<typeof BaseConfig.ToolbarElem
     );
 };
 
-const PluginConfig = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
+const PluginConfig = (props: React.ComponentProps<typeof BaseConfig.Plugin>) => {
     return (
         <CompositionScope name={"cms"}>
             <BaseConfig>
@@ -22,7 +22,7 @@ const PluginConfig = (props: React.ComponentProps<typeof BaseConfig.ToolbarEleme
     );
 };
 
-const NodeConfig = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
+const NodeConfig = (props: React.ComponentProps<typeof BaseConfig.Node>) => {
     return (
         <CompositionScope name={"cms"}>
             <BaseConfig>
