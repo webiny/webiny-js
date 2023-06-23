@@ -1,6 +1,6 @@
 const os = require("os");
 const logUpdate = require("log-update");
-const { green, yellow, gray } = require("chalk");
+const { green, yellow, gray, bold } = require("chalk");
 
 let logs = [];
 let deployment = gray("Automatic re-deployments enabled. Watching for code changes...");
@@ -8,7 +8,7 @@ let deployment = gray("Automatic re-deployments enabled. Watching for code chang
 let deployingInterval;
 
 const EOL = os.EOL;
-const HL = EOL + "—".repeat(62) + EOL;
+const HL = EOL + bold(gray("—")).repeat(62) + EOL;
 
 const log = () => {
     let update = "";
