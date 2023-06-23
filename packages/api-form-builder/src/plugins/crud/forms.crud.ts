@@ -210,7 +210,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async getFormRevisions(this: FormBuilder, id, options) {
             // Just get the form first, to check if it exists and if user has access to it.
-            await this.getForm(id + "#0001", options);
+            const [pid, revisionNumber = "0001"] = id.split("#");
+            await this.getForm(`${pid}#${revisionNumber}`, options);
 
             try {
                 return await this.storageOperations.listFormRevisions({

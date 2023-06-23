@@ -28,6 +28,7 @@ interface SecurityPermissionsProps {
     value: SecurityPermission[];
     onChange: (value: SecurityPermission[]) => void;
 }
+
 export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value, onChange }) => {
     const { getPermission } = useSecurity();
 
@@ -121,7 +122,7 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                             </Cell>
                             <Cell span={6}>
                                 <Bind name={"accessLevel"}>
-                                    <Select label={t`Access Level`} disabled={cannotUseAacl}>
+                                    <Select label={t`Access Level`}>
                                         <option value={NO_ACCESS}>{t`No access`}</option>
                                         <option value={FULL_ACCESS}>{t`Full access`}</option>
                                         <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
