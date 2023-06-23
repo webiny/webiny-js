@@ -13,7 +13,7 @@ context("Search and sort security users", () => {
 
     before(() => {
         return cy.securityDeleteAllUsers().then(() =>
-            cy.securityReadGroup({ slug: "full-access" }).then(group => {
+            cy.securityReadRole({ slug: "full-access" }).then(group => {
                 for (let i = 0; i < total; i++) {
                     cy.securityCreateUser({
                         data: {

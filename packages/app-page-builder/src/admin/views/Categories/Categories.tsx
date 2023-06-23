@@ -1,35 +1,19 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { useSecurity } from "@webiny/app-security";
 import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
-import { PageBuilderSecurityPermission } from "~/types";
+import { useCategoriesPermissions } from "~/hooks/permissions";
 
 const Categories: React.FC = () => {
-    const { identity, getPermission } = useSecurity();
-    const pbMenuPermissionRwd = useMemo((): string | null => {
-        const permission = getPermission<PageBuilderSecurityPermission>("pb.category");
-        if (!permission) {
-            return null;
-        }
-        return permission.rwd || null;
-    }, [identity]);
-
-    const canCreate = useMemo((): boolean => {
-        if (typeof pbMenuPermissionRwd === "string") {
-            return pbMenuPermissionRwd.includes("w");
-        }
-
-        return true;
-    }, []);
+    const { canCreate } = useCategoriesPermissions();
 
     return (
         <SplitView>
             <LeftPanel>
-                <CategoriesDataList canCreate={canCreate} />
+                <CategoriesDataList canCreate={canCreate()} />
             </LeftPanel>
             <RightPanel>
-                <CategoriesForm canCreate={canCreate} />
+                <CategoriesForm canCreate={canCreate()} />
             </RightPanel>
         </SplitView>
     );

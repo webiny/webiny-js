@@ -333,7 +333,9 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
-            ({ data }: any) => data.formBuilder.listFormSubmissions.data.length === 2,
+            ({ data }: any) => {
+                return data.formBuilder.listFormSubmissions.data.length === 2;
+            },
             {
                 name: "after create submission"
             }

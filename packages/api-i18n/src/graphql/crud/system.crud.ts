@@ -102,10 +102,14 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
             await onSystemBeforeInstall.publish({
                 code
             });
-            await i18n.locales.createLocale({
-                code,
-                default: true
+
+            await context.security.withoutAuthorization(async () => {
+                return i18n.locales.createLocale({
+                    code,
+                    default: true
+                });
             });
+
             await this.setSystemVersion(context.WEBINY_VERSION);
             await onSystemAfterInstall.publish({
                 code

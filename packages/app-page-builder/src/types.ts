@@ -840,6 +840,7 @@ export interface PbMenu {
     url: string;
     slug: string;
     description: string;
+    createdBy: PbIdentity;
 }
 
 export interface PbBlockCategory {

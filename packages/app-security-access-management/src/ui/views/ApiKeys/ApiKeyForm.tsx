@@ -6,7 +6,13 @@ import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
-import { ButtonDefault, ButtonIcon, ButtonPrimary, CopyButton } from "@webiny/ui/Button";
+import {
+    ButtonDefault,
+    ButtonIcon,
+    ButtonPrimary,
+    CopyButton,
+    IconButton
+} from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { Permissions } from "@webiny/app-admin/components/Permissions";
@@ -25,8 +31,11 @@ import { SnackbarAction } from "@webiny/ui/Snackbar";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
 import styled from "@emotion/styled";
 import { ApiKey } from "~/types";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { featureFlags } from "@webiny/feature-flags";
 
 const t = i18n.ns("app-security-admin-users/admin/api-keys/form");
 
@@ -34,10 +43,17 @@ const ButtonWrapper = styled("div")({
     display: "flex",
     justifyContent: "space-between"
 });
+
+const PermissionsTitleCell = styled(Cell)`
+    display: flex;
+    align-items: center;
+`;
+
 export interface ApiKeyFormProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
+
 export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -194,7 +210,28 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
                             </Grid>
                             <Grid>
                                 <Cell span={12}>
-                                    <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
+                                    <PermissionsTitleCell span={12}>
+                                        <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
+                                        {featureFlags.copyPermissionsButton && (
+                                            <Tooltip content="Copy as JSON" placement={"top"}>
+                                                <IconButton
+                                                    icon={<CopyIcon />}
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(
+                                                            JSON.stringify(
+                                                                data.permissions,
+                                                                null,
+                                                                2
+                                                            )
+                                                        );
+                                                        showSnackbar(
+                                                            "JSON data copied to clipboard."
+                                                        );
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        )}
+                                    </PermissionsTitleCell>
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind name={"permissions"} defaultValue={[]}>

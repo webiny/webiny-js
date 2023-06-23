@@ -1,18 +1,17 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { QueryResult } from "@apollo/react-common";
-import { useSecurity } from "@webiny/app-security";
 import { LIST_FORMS, ListFormsQueryResponse } from "../../graphql";
 import { NetworkStatus } from "apollo-client";
-import { FormBuilderSecurityPermission } from "~/types";
+import { usePermission } from "~/hooks/usePermission";
 
 export interface FormsContextValue {
-    canCreate: boolean;
+    canCreate: () => boolean;
     listQuery: QueryResult<ListFormsQueryResponse>;
 }
 
 export const FormsContext = React.createContext<FormsContextValue>({
-    canCreate: false,
+    canCreate: () => false,
     listQuery: {
         loading: false,
         variables: {},
@@ -52,25 +51,14 @@ export const FormsContext = React.createContext<FormsContextValue>({
 });
 
 export interface FormContextProvider {
-    canCreate: boolean;
+    canCreate: () => boolean;
     listQuery: QueryResult<ListFormsQueryResponse>;
 }
+
 export const FormsProvider: React.FC = ({ children }) => {
-    const { identity, getPermission } = useSecurity();
     const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
 
-    const canCreate = useMemo((): boolean => {
-        const permission = getPermission<FormBuilderSecurityPermission>("fb.form");
-        if (!permission) {
-            return false;
-        }
-
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
-
-        return permission.rwd.includes("w");
-    }, [identity]);
+    const { canCreate } = usePermission();
 
     const value: FormContextProvider = {
         canCreate,
