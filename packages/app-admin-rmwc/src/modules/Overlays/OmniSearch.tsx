@@ -135,7 +135,7 @@ export const OmniSearch = () => {
                     })
                     .flat()
             },
-            {
+            getTenantId() && {
                 id: "development",
                 title: "Development",
                 items: [
@@ -150,7 +150,7 @@ export const OmniSearch = () => {
                     }
                 ]
             }
-        ];
+        ].filter(Boolean) as ItemsSection[];
     }, [menuItems]);
 
     const filteredIndexedItemsList = useMemo(() => {
