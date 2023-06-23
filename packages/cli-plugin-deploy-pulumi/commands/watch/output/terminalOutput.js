@@ -11,6 +11,7 @@ module.exports = {
         output = createScreen(args);
     },
     log({ type, message }) {
+        console.log("type", type);
         if (typeof message !== "string") {
             return;
         }
@@ -25,7 +26,7 @@ module.exports = {
                 return lineWithoutAnsi.trim().length > 0;
             })
             .forEach(item => {
-                output.logs[type].log(item);
+                output.logs[type]?.log(item);
             });
     },
     exit() {
