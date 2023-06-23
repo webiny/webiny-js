@@ -34,6 +34,9 @@ const RevisionSelector: React.FC<RevisionSelectorProps> = ({
     revision,
     selectRevision
 }) => {
+    // Here we sort revisions so the latest revision version will appear on the top of the list.
+    const modifiedRevisions = revisions.sort((a, b) => b.version - a.version);
+
     return (
         <Menu
             data-testid={"fb.form-preview.header.revision-selector"}
@@ -45,7 +48,7 @@ const RevisionSelector: React.FC<RevisionSelectorProps> = ({
                 </ButtonDefault>
             }
         >
-            {(revisions || []).map(rev => (
+            {(modifiedRevisions || []).map(rev => (
                 <MenuItem
                     key={rev.id}
                     data-testid={`fb.form-preview.header.revision-v${rev.version}`}
