@@ -1,10 +1,10 @@
 import React from "react";
+import { Search } from "@webiny/app-aco";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
 import { ButtonsCreate } from "~/admin/components/Table/Header/ButtonsCreate";
 import { TableActions } from "~/admin/components/Table/Header/TableActions";
 import { Title } from "~/admin/components/Table/Header/Title";
-import { Search } from "~/admin/components/Table/Header/Search";
 
 import { Container, Divider, WrapperActions } from "./styled";
 

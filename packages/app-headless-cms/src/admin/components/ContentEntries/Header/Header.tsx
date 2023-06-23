@@ -1,8 +1,8 @@
 import React from "react";
+import { Search } from "@webiny/app-aco";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonsCreate } from "./ButtonsCreate";
 import { Title } from "./Title";
-import { Search } from "./Search";
 
 import { Container, WrapperActions } from "./styled";
 
