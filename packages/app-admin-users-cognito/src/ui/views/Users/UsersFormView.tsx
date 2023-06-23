@@ -10,6 +10,7 @@ import {
 } from "@webiny/app-admin/ui/elements/AccordionElement";
 import { InputElement } from "@webiny/app-admin/ui/elements/form/InputElement";
 import { ReactComponent as SecurityIcon } from "~/assets/icons/security-24px.svg";
+import { ReactComponent as SecurityTeamsIcon } from "~/assets/icons/security-teams-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
 import AvatarImage from "../../components/AvatarImage";
 import { GroupAutocompleteElement } from "~/ui/elements/GroupAutocompleteElement";
@@ -121,7 +122,7 @@ export class UsersFormView extends UIView {
                 id: "teams",
                 title: "Teams",
                 description: "Assign to team",
-                icon: <SecurityIcon />,
+                icon: <SecurityTeamsIcon />,
                 open: true
             });
         }
