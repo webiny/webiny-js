@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigation } from "@webiny/app-admin";
-import styled from "@emotion/styled";
 import { useHistory } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
 import { getTenantId } from "@webiny/app/utils";
@@ -10,6 +9,8 @@ import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outline
 import { useHotkeys } from "react-hotkeyz";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
+
+import { Dialog } from "./OmniSearch/Dialog";
 
 interface Item {
     id: string;
@@ -25,68 +26,60 @@ interface ItemsSection {
     items: Item[];
 }
 
-const Dialog = styled.div`
-    background-color: rgba(0, 0, 0, 0.32);
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    z-index: 2312321;
-    top: 0;
+interface IndexedItem extends Item {
+    index: number;
+}
 
-    .dialog {
-        position: fixed;
-        top: 350px;
-        left: 50%;
-        /* bring your own prefixes */
-        transform: translate(-50%, -50%);
-        background-color: white;
-        width: 700px;
-        height: 500px;
-        z-index: auto;
-        box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14),
-            0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+interface IndexedItemsSection extends Omit<ItemsSection, "items"> {
+    id: string;
+    title: string;
+    items: IndexedItem[];
+}
 
-        > ul {
-            overflow-y: scroll;
-            height: 444px;
-            margin-bottom: 10px;
+const getIndexedItemsList = (items: ItemsSection[]): IndexedItemsSection[] => {
+    let lastUsedItemIndex = 0;
+    return items.map(itemsSection => {
+        return {
+            ...itemsSection,
+            items: itemsSection.items.map(item => {
+                const index = lastUsedItemIndex++;
+                return {
+                    ...item,
+                    index
+                };
+            })
+        };
+    });
+};
 
-            > li {
-                .section-title {
-                    bottom-bottom: 1px solid var(--mdc-theme-on-background);
-                    padding: 10px 15px 5px 15px;
-                }
+const getItemFromIndexedItemsList = (
+    itemsSections: IndexedItemsSection[],
+    index: number
+): IndexedItem | null => {
+    if (index < 0) {
+        return null;
+    }
 
-                ul {
-                    li {
-                        padding: 10px 15px;
-                        cursor: pointer;
-
-                        :hover {
-                            background-color: var(--mdc-theme-background);
-                        }
-
-                        .section-item-title {
-                            margin-bottom: 3px;
-                            color: var(--mdc-theme-primary);
-                        }
-
-                        .section-item-description {
-                            color: var(--mdc-theme-text-primary-on-background);
-                        }
-                    }
-                }
+    for (let i = 0; i < itemsSections.length; i++) {
+        const itemsSection = itemsSections[i];
+        for (let j = 0; j < itemsSection.items.length; j++) {
+            const item = itemsSection.items[j];
+            if (item.index === index) {
+                return item;
             }
         }
     }
-`;
+
+    return null;
+};
 
 export const OmniSearch = () => {
-    const { menuItems } = useNavigation();
-    const [filter, setFilter] = useState("");
     const [omniSearchVisible, setShowOmniSearch] = useState(false);
-    const history = useHistory();
+    const [filter, setFilter] = useState("");
+    const [focusedItemIndex, focusItemAtIndex] = useState(0);
+    const { menuItems } = useNavigation();
     const { showSnackbar } = useSnackbar();
+    const history = useHistory();
 
     const showOmniSearch = useCallback(() => {
         setShowOmniSearch(true);
@@ -97,6 +90,22 @@ export const OmniSearch = () => {
         setFilter("");
     }, []);
 
+    const onFilter = useCallback(searchString => {
+        setFilter(searchString);
+        focusItemAtIndex(0);
+    }, []);
+
+    const selectItem = useCallback((item: Item) => {
+        if (item.link) {
+            history.push(item.link);
+        } else if (item.callback) {
+            item.callback();
+        }
+
+        hideOmniSearch();
+    }, []);
+
+    // TODO: should be pulled from registered plugins.
     const fullItemsList = useMemo<ItemsSection[]>(() => {
         return [
             {
@@ -144,12 +153,12 @@ export const OmniSearch = () => {
         ];
     }, [menuItems]);
 
-    const filteredItemsList = useMemo(() => {
+    const filteredIndexedItemsList = useMemo(() => {
         if (!filter) {
-            return fullItemsList;
+            return getIndexedItemsList(fullItemsList);
         }
 
-        const filteredItems = fullItemsList.map(itemsSection => {
+        const filteredItems1stPass = fullItemsList.map(itemsSection => {
             return {
                 ...itemsSection,
                 items: itemsSection.items.filter(item => {
@@ -158,47 +167,94 @@ export const OmniSearch = () => {
             };
         });
 
-        return filteredItems.filter(itemsSection => itemsSection.items.length > 0);
+        const filteredItems2ndPass = filteredItems1stPass.filter(
+            itemsSection => itemsSection.items.length > 0
+        );
+
+        return getIndexedItemsList(filteredItems2ndPass);
     }, [fullItemsList, filter]);
 
-    const selectItem = useCallback(item => {
-        if (item.link) {
-            history.push(item.link);
-        } else if (item.callback) {
-            item.callback();
+    const selectFocusedItem = useCallback(() => {
+        const focusedItem = getItemFromIndexedItemsList(filteredIndexedItemsList, focusedItemIndex);
+        if (focusedItem) {
+            selectItem(focusedItem);
         }
+    }, [filteredIndexedItemsList, focusedItemIndex]);
 
-        hideOmniSearch();
-    }, []);
-
-    const selectActiveItem = useCallback(() => {
-        if (filteredItemsList.length === 0) {
-            return;
+    const focusNextItem = useCallback(() => {
+        const nextIndex = focusedItemIndex + 1;
+        const itemToFocus = getItemFromIndexedItemsList(filteredIndexedItemsList, nextIndex);
+        if (itemToFocus) {
+            focusItemAtIndex(itemToFocus.index);
         }
+    }, [filteredIndexedItemsList, focusedItemIndex]);
 
-        selectItem(filteredItemsList[0].items[0]);
-    }, [filteredItemsList]);
-
-    const onClickItem = useCallback(selectItem, []);
+    const focusPrevItem = useCallback(() => {
+        const prevIndex = focusedItemIndex - 1;
+        const itemToFocus = getItemFromIndexedItemsList(filteredIndexedItemsList, prevIndex);
+        if (itemToFocus) {
+            focusItemAtIndex(itemToFocus.index);
+        }
+    }, [filteredIndexedItemsList, focusedItemIndex]);
 
     useHotkeys({
-        zIndex: 100,
+        zIndex: 1000,
         keys: {
-            "cmd+k": showOmniSearch,
+            "mod+k": showOmniSearch,
             esc: hideOmniSearch
         }
     });
 
     useHotkeys({
-        zIndex: 100,
+        zIndex: 1000,
         keys: {
-            enter: selectActiveItem
+            enter: selectFocusedItem,
+            arrowUp: focusPrevItem,
+            arrowDown: focusNextItem
         },
         disabled: !omniSearchVisible
     });
 
     if (!omniSearchVisible) {
         return null;
+    }
+
+    let renderedResults = <>Nothing to show.</>;
+    if (filteredIndexedItemsList.length > 0) {
+        renderedResults = (
+            <ul>
+                {filteredIndexedItemsList.map(itemsSection => (
+                    <li key={itemsSection.id}>
+                        <div className={"section-title"}>
+                            <Typography use={"overline"}>{itemsSection.title}</Typography>
+                        </div>
+                        <div className={"section-items"}>
+                            <ul>
+                                {itemsSection.items.map(item => {
+                                    const isFocused = item.index === focusedItemIndex;
+                                    return (
+                                        <li
+                                            className={isFocused ? "focused" : ""}
+                                            key={item.id}
+                                            onClick={() => selectFocusedItem()}
+                                            onMouseEnter={() => focusItemAtIndex(item.index)}
+                                        >
+                                            <div className={"section-item-title"}>{item.title}</div>
+                                            <Typography
+                                                use={"caption"}
+                                                className={"section-item-description"}
+                                            >
+                                                {item.description}
+                                            </Typography>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        );
     }
 
     return (
@@ -210,38 +266,10 @@ export const OmniSearch = () => {
                         placeholder={"Search..."}
                         autoFocus
                         value={filter}
-                        onChange={setFilter}
+                        onChange={onFilter}
                     />
                 </div>
-                {filteredItemsList.length === 0 && <>Nothing to show.</>}
-                {filteredItemsList.length > 0 && (
-                    <ul>
-                        {filteredItemsList.map(itemsSection => (
-                            <li key={itemsSection.id}>
-                                <div className={"section-title"}>
-                                    <Typography use={"overline"}>{itemsSection.title}</Typography>
-                                </div>
-                                <div className={"section-items"}>
-                                    <ul>
-                                        {itemsSection.items.map(item => (
-                                            <li key={item.id} onClick={() => onClickItem(item)}>
-                                                <div className={"section-item-title"}>
-                                                    {item.title}
-                                                </div>
-                                                <Typography
-                                                    use={"caption"}
-                                                    className={"section-item-description"}
-                                                >
-                                                    {item.description}
-                                                </Typography>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
+                {renderedResults}
             </div>
         </Dialog>
     );
