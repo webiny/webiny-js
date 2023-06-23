@@ -32,22 +32,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
 
     const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
 
-    const {
-        records,
-        folders,
-        listTitle,
-        meta,
-        isListLoading,
-        isListLoadingMore,
-        isSearch,
-        search,
-        setSearch,
-        selected,
-        onSelectRow,
-        sorting,
-        setSorting,
-        listMoreRecords
-    } = usePagesList({ folderId });
+    const list = usePagesList({ folderId });
 
     const canCreate = useCanCreatePage();
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
@@ -96,7 +81,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
 
     const loadMoreOnScroll = debounce(({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            listMoreRecords();
+            list.listMoreRecords();
         }
     }, 200);
 
@@ -114,19 +99,21 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         <>
             <MainContainer>
                 <Header
-                    title={!isListLoading ? listTitle : undefined}
+                    title={!list.isListLoading ? list.listTitle : undefined}
                     canCreate={canCreate}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
                     onCreateFolder={openFoldersDialog}
-                    selected={selected}
-                    searchValue={search}
-                    onSearchChange={setSearch}
+                    selected={list.selected}
+                    searchValue={list.search}
+                    onSearchChange={list.setSearch}
                 />
                 <Wrapper>
-                    {records.length === 0 && folders.length === 0 && !isListLoading ? (
+                    {list.records.length === 0 &&
+                    list.folders.length === 0 &&
+                    !list.isListLoading ? (
                         <Empty
-                            isSearch={isSearch}
+                            isSearch={list.isSearch}
                             canCreate={canCreate}
                             onCreatePage={openTemplatesDialog}
                             onCreateFolder={openFoldersDialog}
@@ -145,24 +132,24 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             >
                                 <Table
                                     ref={tableRef}
-                                    folders={folders}
-                                    records={records}
-                                    loading={isListLoading}
+                                    folders={list.folders}
+                                    records={list.records}
+                                    loading={list.isListLoading}
                                     openPreviewDrawer={openPreviewDrawer}
-                                    onSelectRow={onSelectRow}
-                                    selectedRows={selected}
-                                    sorting={sorting}
-                                    onSortingChange={setSorting}
+                                    onSelectRow={list.onSelectRow}
+                                    selectedRows={list.selected}
+                                    sorting={list.sorting}
+                                    onSortingChange={list.setSorting}
                                 />
                                 <LoadMoreButton
-                                    show={!isListLoading && meta.hasMoreItems}
-                                    disabled={isListLoadingMore}
+                                    show={!list.isListLoading && list.meta.hasMoreItems}
+                                    disabled={list.isListLoadingMore}
                                     windowHeight={windowHeight}
                                     tableHeight={tableHeight}
-                                    onClick={listMoreRecords}
+                                    onClick={list.listMoreRecords}
                                 />
                             </Scrollbar>
-                            {isListLoadingMore && <LoadingMore />}
+                            {list.isListLoadingMore && <LoadingMore />}
                         </>
                     )}
                 </Wrapper>

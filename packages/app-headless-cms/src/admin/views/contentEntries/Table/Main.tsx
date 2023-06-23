@@ -20,20 +20,7 @@ interface Props {
 
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
-    const {
-        records,
-        folders,
-        listTitle,
-        meta,
-        isListLoading,
-        isListLoadingMore,
-        isSearch,
-        search,
-        setSearch,
-        listMoreRecords,
-        sorting,
-        setSorting
-    } = useContentEntriesList({ folderId });
+    const list = useContentEntriesList({ folderId });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
@@ -61,7 +48,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
 
     const loadMoreOnScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            await listMoreRecords();
+            await list.listMoreRecords();
         }
     }, 200);
 
@@ -75,17 +62,19 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         <>
             <MainContainer>
                 <Header
-                    title={!isListLoading ? listTitle : undefined}
+                    title={!list.isListLoading ? list.listTitle : undefined}
                     canCreate={canCreate}
                     onCreateEntry={createEntry}
                     onCreateFolder={openFoldersDialog}
-                    searchValue={search}
-                    onSearchChange={setSearch}
+                    searchValue={list.search}
+                    onSearchChange={list.setSearch}
                 />
                 <Wrapper>
-                    {records.length === 0 && folders.length === 0 && !isListLoading ? (
+                    {list.records.length === 0 &&
+                    list.folders.length === 0 &&
+                    !list.isListLoading ? (
                         <Empty
-                            isSearch={isSearch}
+                            isSearch={list.isSearch}
                             canCreate={canCreate}
                             onCreateEntry={createEntry}
                             onCreateFolder={openFoldersDialog}
@@ -98,21 +87,21 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             >
                                 <Table
                                     ref={tableRef}
-                                    folders={folders}
-                                    records={records}
-                                    loading={isListLoading}
-                                    sorting={sorting}
-                                    onSortingChange={setSorting}
+                                    folders={list.folders}
+                                    records={list.records}
+                                    loading={list.isListLoading}
+                                    sorting={list.sorting}
+                                    onSortingChange={list.setSorting}
                                 />
                                 <LoadMoreButton
-                                    show={!isListLoading && meta.hasMoreItems}
-                                    disabled={isListLoadingMore}
+                                    show={!list.isListLoading && list.meta.hasMoreItems}
+                                    disabled={list.isListLoadingMore}
                                     windowHeight={windowHeight}
                                     tableHeight={tableHeight}
-                                    onClick={listMoreRecords}
+                                    onClick={list.listMoreRecords}
                                 />
                             </Scrollbar>
-                            {isListLoadingMore && <LoadingMore />}
+                            {list.isListLoadingMore && <LoadingMore />}
                         </>
                     )}
                 </Wrapper>
