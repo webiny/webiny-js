@@ -189,9 +189,9 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
 
     /**
      * Any time we receive a `folders` list update:
-     * - we return an empty array in case of search;
-     * - we return the list filtered by the current `type` and parent `folderId`, sorted according to the current `sort` value;
-     * - we return the current folder name.
+     * - we set an empty array in case of search;
+     * - we set the list filtered by the current `type` and parent `folderId`, sorted according to the current `sort` value;
+     * - we set the current folder name.
      */
     useEffect(() => {
         if (isSearch) {
@@ -210,8 +210,8 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
 
     /**
      * Any time we receive a `records` list or `folderId` update:
-     * - we return all `records` in case of search query;
-     * - we return the `records` list filtered by the current `folderId`.
+     * - we set all `records` in case of search query;
+     * - we set the `records` list filtered by the current `folderId`.
      */
     useEffect(() => {
         if (isSearch) {
