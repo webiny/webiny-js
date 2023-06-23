@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo } from "react";
 import { FoldersContext } from "~/contexts/folders";
-import { FolderItem } from "~/types";
 
 export const useFolders = () => {
     const context = useContext(FoldersContext);
@@ -8,16 +7,7 @@ export const useFolders = () => {
         throw new Error("useFolders must be used within a FoldersProvider");
     }
 
-    const {
-        folders,
-        loading,
-        listFolders,
-        getFolder,
-        createFolder,
-        updateFolder,
-        deleteFolder,
-        getDescendantFolders
-    } = context;
+    const { folders, loading, listFolders, ...other } = context;
 
     useEffect(() => {
         /**
@@ -43,21 +33,7 @@ export const useFolders = () => {
              */
             loading,
             folders,
-            getFolder(id: string) {
-                return getFolder(id);
-            },
-            createFolder(folder: Omit<FolderItem, "id" | "type">) {
-                return createFolder(folder);
-            },
-            updateFolder(folder: Omit<FolderItem, "type">) {
-                return updateFolder(folder);
-            },
-            deleteFolder(folder: Pick<FolderItem, "id">) {
-                return deleteFolder(folder);
-            },
-            getDescendantFolders(from?: string) {
-                return getDescendantFolders(from);
-            }
+            ...other
         }),
         [folders, loading]
     );
