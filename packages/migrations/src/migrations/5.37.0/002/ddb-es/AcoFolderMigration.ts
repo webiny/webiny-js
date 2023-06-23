@@ -19,7 +19,6 @@ import {
 import { CmsEntryAcoFolder, I18NLocale, ListLocalesParams, Tenant } from "../types";
 import { ACO_FOLDER_MODEL_ID, ROOT_FOLDER, UPPERCASE_ROOT_FOLDER } from "../constants";
 import { getCompressedData } from "../utils/getCompressedData";
-import { compress } from "@webiny/api-elasticsearch";
 import { DbItem } from "@webiny/db-dynamodb";
 
 const isGroupMigrationCompleted = (

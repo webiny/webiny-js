@@ -88,7 +88,7 @@ export class AcoRecords_5_37_0_002_AcoFolders
             const tenantId = tenant.data.id;
 
             for (const locale of locales) {
-                const groupId = `${tenant.data.id}:${locale.code}`;
+                const groupId = `${tenantId}:${locale.code}`;
                 const status = migrationStatus[groupId];
 
                 const localeCode = locale.code;
@@ -129,7 +129,7 @@ export class AcoRecords_5_37_0_002_AcoFolders
 
                                 const latestEntry = {
                                     ...current,
-                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${entryId}`,
+                                    PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${entryId}`,
                                     SK: "L",
                                     GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#${ACO_FOLDER_MODEL_ID}#L`,
                                     GSI1_SK: current.id,
@@ -139,7 +139,7 @@ export class AcoRecords_5_37_0_002_AcoFolders
 
                                 const revisionEntry = {
                                     ...current,
-                                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${entryId}`,
+                                    PK: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${entryId}`,
                                     SK: `REV#0001`,
                                     GSI1_PK: `T#${tenantId}#L#${localeCode}#CMS#CME#M#${ACO_FOLDER_MODEL_ID}#A`,
                                     GSI1_SK: current.id,
