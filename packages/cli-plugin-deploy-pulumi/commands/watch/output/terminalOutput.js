@@ -11,7 +11,6 @@ module.exports = {
         output = createScreen(args);
     },
     log({ type, message }) {
-        console.log("type", type);
         if (typeof message !== "string") {
             return;
         }
