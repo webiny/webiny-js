@@ -31,9 +31,7 @@ interface BuildContext {
     [key: string]: boolean;
 }
 
-const buildInParallel = Boolean(
-    !process.env.CI || process.env.RUNNER_NAME === "webiny-build-packages"
-);
+const buildInParallel = !process.env.CI || process.env.RUNNER_NAME === "webiny-build-packages";
 
 export const buildPackages = async () => {
     const options = yargs.argv as BuildOptions;
@@ -162,7 +160,9 @@ const toMB = (bytes: number) => {
 const printHardwareReport = () => {
     const { cpuCount, cpuName, freeMemory, totalMemory } = getHardwareInfo();
     console.log(
-        `Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
+        `Runner: ${green(process.env.RUNNER_NAME)}; Build packages: ${
+            buildInParallel ? green("in parallel") : green("in series")
+        }; Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
             toMB(totalMemory)
         )}; Free Memory: ${green(toMB(freeMemory))}.`
     );
