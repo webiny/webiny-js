@@ -123,10 +123,8 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
         task: async () => {
             try {
                 if (!buildInParallel) {
-                    console.log(`Building "${pkg.name}" in the same process.`);
                     await buildPackageInSameProcess(pkg, options.buildOverrides);
                 } else {
-                    console.log(`Building "${pkg.name}" in a child process.`);
                     await buildPackageInNewProcess(pkg, options.buildOverrides);
                 }
 
@@ -161,7 +159,7 @@ const toMB = (bytes: number) => {
 const printHardwareReport = () => {
     const { cpuCount, cpuName, freeMemory, totalMemory } = getHardwareInfo();
     console.log(
-        `Runner: ${green(process.env.RUNNER_NAME)}; Build packages: ${
+        `Runner: ${green(process.env.RUNNER_NAME || "N/A")}; Build packages: ${
             buildInParallel ? green("in parallel") : green("in series")
         }; Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
             toMB(totalMemory)
