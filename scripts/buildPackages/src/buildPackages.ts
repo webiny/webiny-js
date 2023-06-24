@@ -31,6 +31,10 @@ interface BuildContext {
     [key: string]: boolean;
 }
 
+const buildInParallel = Boolean(
+    !process.env.CI || process.env.RUNNER_NAME === "webiny-build-packages"
+);
+
 export const buildPackages = async () => {
     const options = yargs.argv as BuildOptions;
 
@@ -85,7 +89,7 @@ export const buildPackages = async () => {
                     const packages = allPackages.filter(pkg => packageNames.includes(pkg.name));
 
                     const batchTasks = task.newListr([], {
-                        concurrent: !process.env.CI,
+                        concurrent: buildInParallel,
                         exitOnError: true
                     });
 
@@ -119,9 +123,11 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
         title: `${pkg.name}`,
         task: async () => {
             try {
-                if (process.env.CI && process.env.RUNNER_NAME !== "webiny-build-packages") {
+                if (!buildInParallel) {
+                    console.log(`Building "${pkg.name}" in the same process.`);
                     await buildPackageInSameProcess(pkg, options.buildOverrides);
                 } else {
+                    console.log(`Building "${pkg.name}" in a child process.`);
                     await buildPackageInNewProcess(pkg, options.buildOverrides);
                 }
 
