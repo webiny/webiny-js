@@ -33,12 +33,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
 
     return {
         /**
-         * TODO remove
-         * Deprecated in 5.34.0 - will be removed in 5.36.0
-         */
-        onBeforeInstall: onSystemBeforeInstall,
-        onAfterInstall: onSystemAfterInstall,
-        /**
          * Released in 5.34.0
          */
         onSystemBeforeInstall,
