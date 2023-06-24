@@ -15,7 +15,7 @@ jobs:
 
   init:
     name: Init
-    runs-on: ubuntu-latest
+    runs-on: webiny-build-packages
     outputs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
@@ -111,7 +111,7 @@ jobs:
 
   code-analysis-typescript:
     name: Static code analysis (TypeScript)
-    runs-on: ubuntu-latest
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -178,7 +178,7 @@ jobs:
     if: needs.init.outputs.is-fork-pr != 'true' # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
-    runs-on: ubuntu-latest
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v3
         with:

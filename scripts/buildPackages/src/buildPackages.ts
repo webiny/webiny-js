@@ -119,7 +119,7 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
         title: `${pkg.name}`,
         task: async () => {
             try {
-                if (process.env.CI) {
+                if (process.env.CI && process.env.RUNNER_NAME !== "webiny-build-packages") {
                     await buildPackageInSameProcess(pkg, options.buildOverrides);
                 } else {
                     await buildPackageInNewProcess(pkg, options.buildOverrides);
