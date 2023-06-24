@@ -178,7 +178,7 @@ jobs:
     if: needs.init.outputs.is-fork-pr != 'true' # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v3
         with:
