@@ -31,7 +31,8 @@ interface BuildContext {
     [key: string]: boolean;
 }
 
-const buildInParallel = !process.env.CI || process.env.RUNNER_NAME === "webiny-build-packages";
+const buildInParallel =
+    !process.env.CI || process.env.RUNNER_NAME?.startsWith("webiny-build-packages");
 
 export const buildPackages = async () => {
     const options = yargs.argv as BuildOptions;
