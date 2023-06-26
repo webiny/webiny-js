@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import { EditorSidebarTab } from "~/editor";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-security";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import UnlinkBlockAction from "~/pageEditor/plugins/elementSettings/UnlinkBlockAction";
@@ -11,7 +10,6 @@ import { useElementSidebar } from "~/editor/hooks/useElementSidebar";
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { updateSidebarActiveTabIndexMutation } from "~/editor/recoil/modules";
 import { RootElement } from "~/editor/components/Editor/Sidebar/ElementSettingsTabContent";
-import { PageBuilderSecurityPermission } from "~/types";
 
 type UnlinkBlockWrapperProps = {
     permission: boolean;
@@ -77,16 +75,17 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
     return function ElementTab({ children, ...props }) {
         const [element] = useActiveElement();
         const [sidebar, setSidebar] = useElementSidebar();
-        const { identity, getPermission } = useSecurity();
         const [isTemplateMode] = useTemplateMode();
 
-        const unlinkPermission = useMemo((): boolean => {
-            const permission = getPermission<PageBuilderSecurityPermission>("pb.block.unlink");
-            if (permission?.name === "*" || permission?.name === "pb.*") {
-                return true;
-            }
-            return Boolean(permission);
-        }, [identity]);
+        const unlinkPermission = true;
+        // TODO: check if the above check even works.
+        // const unlinkPermission = useMemo((): boolean => {
+        //     const permission = getPermission<PageBuilderSecurityPermission>("pb.block.unlink");
+        //     if (permission?.name === "*" || permission?.name === "pb.*") {
+        //         return true;
+        //     }
+        //     return Boolean(permission);
+        // }, [identity]);
 
         const isReferenceBlock =
             element !== null && element.type === "block" && !!element.data?.blockId;

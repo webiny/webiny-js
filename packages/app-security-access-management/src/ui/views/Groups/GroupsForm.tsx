@@ -9,7 +9,7 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Alert } from "@webiny/ui/Alert";
-import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon, ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {
@@ -26,18 +26,27 @@ import { SnackbarAction } from "@webiny/ui/Snackbar";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
+import { featureFlags } from "@webiny/feature-flags";
 
-const t = i18n.ns("app-security/admin/groups/form");
+const t = i18n.ns("app-security/admin/roles/form");
 
-const ButtonWrapper = styled("div")({
-    display: "flex",
-    justifyContent: "space-between"
-});
+const ButtonWrapper = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+
+const PermissionsTitleCell = styled(Cell)`
+    display: flex;
+    align-items: center;
+`;
 
 export interface GroupsFormProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
+
 export const GroupsForm: React.FC<GroupsFormProps> = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -54,7 +63,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
 
             const { error } = data.security.group;
             if (error) {
-                history.push("/access-management/groups");
+                history.push("/access-management/roles");
                 showSnackbar(error.message);
             }
         }
@@ -108,8 +117,8 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/access-management/groups?id=${group.id}`);
-            showSnackbar(t`Group saved successfully!`);
+            !isUpdate && history.push(`/access-management/roles?id=${group.id}`);
+            showSnackbar(t`Role saved successfully!`);
         },
         [id]
     );
@@ -123,14 +132,14 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display group details or create a...`}
+                title={t`Click on the left side list to display role details or create a...`}
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
-                        onClick={() => history.push("/access-management/groups?new=true")}
+                        onClick={() => history.push("/access-management/roles?new=true")}
                     >
                         <ButtonIcon icon={<AddIcon />} />
-                        {t`New Group`}
+                        {t`New Role`}
                     </ButtonDefault>
                 }
             />
@@ -190,7 +199,7 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                 <Grid>
                                     <Cell span={12}>
                                         <Alert type={"info"} title={"Permissions are locked"}>
-                                            This is a protected system group and you can&apos;t
+                                            This is a protected system role and you can&apos;t
                                             modify its permissions.
                                         </Alert>
                                     </Cell>
@@ -198,9 +207,28 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                             )}
                             {!systemGroup && (
                                 <Grid>
-                                    <Cell span={12}>
+                                    <PermissionsTitleCell span={12}>
                                         <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
-                                    </Cell>
+                                        {featureFlags.copyPermissionsButton && (
+                                            <Tooltip content="Copy as JSON" placement={"top"}>
+                                                <IconButton
+                                                    icon={<CopyIcon />}
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(
+                                                            JSON.stringify(
+                                                                data.permissions,
+                                                                null,
+                                                                2
+                                                            )
+                                                        );
+                                                        showSnackbar(
+                                                            "JSON data copied to clipboard."
+                                                        );
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        )}
+                                    </PermissionsTitleCell>
                                     <Cell span={12}>
                                         <Bind name={"permissions"} defaultValue={[]}>
                                             {bind => (
@@ -215,14 +243,14 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                             <SimpleFormFooter>
                                 <ButtonWrapper>
                                     <ButtonDefault
-                                        onClick={() => history.push("/access-management/groups")}
+                                        onClick={() => history.push("/access-management/roles")}
                                     >{t`Cancel`}</ButtonDefault>
                                     <ButtonPrimary
                                         data-testid="admin.am.group.new.save"
                                         onClick={ev => {
                                             form.submit(ev);
                                         }}
-                                    >{t`Save group`}</ButtonPrimary>
+                                    >{t`Save role`}</ButtonPrimary>
                                 </ButtonWrapper>
                             </SimpleFormFooter>
                         )}

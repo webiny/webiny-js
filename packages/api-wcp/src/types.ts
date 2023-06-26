@@ -21,3 +21,9 @@ export interface CachedWcpProjectLicense {
     cacheKey: string | null;
     license: DecryptedWcpProjectLicense | null;
 }
+
+export type AaclPermission = {
+    name: "aacl";
+    legacy: boolean;
+    teams: boolean;
+};

@@ -31,6 +31,7 @@ export interface AdminUser extends BaseUserAttributes {
     id: string;
     tenant: string;
     group?: string;
+    team?: string;
     avatar?: Record<string, any>;
     createdOn: string;
     createdBy: CreatedBy | null | undefined;

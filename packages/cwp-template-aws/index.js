@@ -56,7 +56,7 @@ const runInquirer = async cwp => {
             type: "list",
             name: "storageOperations",
             default: "ddb",
-            message: `Please choose the database you wish to use with your Webiny project:`,
+            message: `Please choose the database setup you wish to use with your Webiny project (cannot be changed later):`,
             choices: Object.values(choices)
         }
     ]);

@@ -80,6 +80,7 @@ export const DELETE_GROUP = gql`
                 error {
                     code
                     message
+                    data
                 }
             }
         }

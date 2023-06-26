@@ -22,25 +22,20 @@ import {
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { useSecurity } from "@webiny/app-security";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { PageBuilderSecurityPermission, PbCategory } from "~/types";
+import { PbCategory } from "~/types";
+import { useCategoriesPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/categories/data-list");
-
-interface CreatableItem {
-    createdBy?: {
-        id?: string;
-    };
-}
 
 interface Sorter {
     label: string;
     sort: string;
 }
+
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
@@ -122,26 +117,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
         [slug]
     );
 
-    const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
-        return getPermission("pb.category");
-    }, [identity]);
-
-    const canDelete = useCallback((item: CreatableItem): boolean => {
-        if (!pbMenuPermission) {
-            return false;
-        }
-        if (pbMenuPermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return item.createdBy?.id === identityId;
-        }
-
-        if (typeof pbMenuPermission.rwd === "string") {
-            return pbMenuPermission.rwd.includes("d");
-        }
-
-        return true;
-    }, []);
+    const { canDelete } = useCategoriesPermissions();
 
     const loading = [listQuery, deleteMutation].find(item => item.loading);
 
@@ -217,7 +193,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                                 <ListItemTextSecondary>{item.url}</ListItemTextSecondary>
                             </ListItemText>
 
-                            {canDelete(item) && (
+                            {canDelete(item?.createdBy?.id) && (
                                 <ListItemMeta>
                                     <ListActions>
                                         <DeleteIcon onClick={() => deleteItem(item)} />

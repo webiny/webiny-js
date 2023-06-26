@@ -9,7 +9,6 @@ import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import PageTemplatesDialog from "~/admin/views/Pages/PageTemplatesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
-import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
 import { LoadingMore } from "~/admin/components/Table/LoadingMore";
@@ -20,6 +19,7 @@ import { MainContainer, Wrapper } from "./styled";
 import { ListMeta, ListSearchRecordsSort, ListSearchRecordsSortItem } from "@webiny/app-aco/types";
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { ROOT_FOLDER } from "~/admin/constants";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
@@ -67,7 +67,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
     const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
 
-    const canCreate = useCanCreatePage();
+    const { canCreate } = usePagesPermissions();
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
@@ -154,7 +154,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             <MainContainer>
                 <Header
                     title={!isListLoading ? listTitle : undefined}
-                    canCreate={canCreate}
+                    canCreate={canCreate()}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
                     onCreateFolder={openFoldersDialog}
@@ -163,7 +163,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                 <Wrapper>
                     {records.length === 0 && folders.length === 0 && !isListLoading ? (
                         <Empty
-                            canCreate={canCreate}
+                            canCreate={canCreate()}
                             onCreatePage={openTemplatesDialog}
                             onCreateFolder={openFoldersDialog}
                         />
@@ -172,7 +172,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             <Preview
                                 open={showPreviewDrawer}
                                 onClose={() => closePreviewDrawer()}
-                                canCreate={canCreate}
+                                canCreate={canCreate()}
                                 onCreatePage={openTemplatesDialog}
                             />
                             <Scrollbar
