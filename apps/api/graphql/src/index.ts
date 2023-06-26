@@ -40,7 +40,6 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 
 const debug = process.env.DEBUG === "true";
-
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
     region: process.env.AWS_REGION

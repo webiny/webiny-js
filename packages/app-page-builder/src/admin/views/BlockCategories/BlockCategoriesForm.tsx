@@ -30,14 +30,14 @@ import {
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
-import { PageBuilderSecurityPermission, PbBlockCategory } from "~/types";
-import { useSecurity } from "@webiny/app-security";
+import { PbBlockCategory } from "~/types";
 import pick from "lodash/pick";
 import get from "lodash/get";
 import set from "lodash/set";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { usePagesPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/block-categories/form");
 
@@ -49,6 +49,7 @@ const ButtonWrapper = styled("div")({
 interface CategoriesFormProps {
     canCreate: boolean;
 }
+
 const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -151,32 +152,12 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
         return getQuery.data?.pageBuilder?.getBlockCategory.data || ({} as PbBlockCategory);
     }, [loadedBlockCategory.slug]);
 
-    const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
-        return getPermission("pb.block");
-    }, [identity]);
+    const { canWrite } = usePagesPermissions();
 
-    const canSave = useMemo((): boolean => {
-        if (!pbMenuPermission) {
-            return false;
-        }
-        // User should be able to save the form
-        // if it's a new entry and user has the "own" permission set.
-        if (!loadedBlockCategory.slug && pbMenuPermission.own) {
-            return true;
-        }
-
-        if (pbMenuPermission.own) {
-            const identityId = identity ? identity.id || identity.login : null;
-            return loadedBlockCategory?.createdBy?.id === identityId;
-        }
-
-        if (typeof pbMenuPermission.rwd === "string") {
-            return pbMenuPermission.rwd.includes("w");
-        }
-
-        return true;
-    }, [loadedBlockCategory.slug]);
+    const canSave = useMemo(
+        () => canWrite(loadedBlockCategory.createdBy.id),
+        [loadedBlockCategory]
+    );
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content selected" view.

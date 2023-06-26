@@ -1,9 +1,8 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import { useSecurity } from "@webiny/app-security";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
 import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
 import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
@@ -26,15 +25,11 @@ import classNames from "classnames";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { plugins } from "@webiny/plugins";
-import {
-    PbPageData,
-    PbPageDetailsHeaderRightOptionsMenuItemPlugin,
-    PbPageTemplate,
-    PageBuilderSecurityPermission
-} from "~/types";
+import { PbPageData, PbPageDetailsHeaderRightOptionsMenuItemPlugin, PbPageTemplate } from "~/types";
 import { SecureView } from "@webiny/app-security";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { useRecords } from "@webiny/app-aco";
+import { usePagesPermissions, useTemplatesPermissions } from "~/hooks/permissions";
 
 const menuStyles = css({
     width: 250,
@@ -49,6 +44,7 @@ const menuStyles = css({
 interface PageOptionsMenuProps {
     page: PbPageData;
 }
+
 const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
     const { page } = props;
     const [isCreateTemplateDialogOpen, setIsCreateTemplateDialogOpen] = useState<boolean>(false);
@@ -140,33 +136,11 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
         [page]
     );
 
-    const { identity, getPermission } = useSecurity();
+    const { canWrite: pagesCanWrite } = usePagesPermissions();
+    const { canCreate: templatesCanCreate } = useTemplatesPermissions();
 
-    const canDuplicate = useMemo(() => {
-        const permission = getPermission<PageBuilderSecurityPermission>("pb.page");
-        if (!permission) {
-            return false;
-        }
-
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
-
-        return permission.rwd.includes("w");
-    }, [identity]);
-
-    const canCreateTemplate = useMemo(() => {
-        const permission = getPermission<PageBuilderSecurityPermission>("pb.template");
-        if (!permission) {
-            return false;
-        }
-
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
-
-        return permission.rwd.includes("w");
-    }, [identity]);
+    const canDuplicate = pagesCanWrite();
+    const canCreateTemplate = templatesCanCreate();
 
     const previewButtonLabel = page.status === "published" ? "View" : "Preview";
     const isTemplatePage = page.content?.data?.template;
