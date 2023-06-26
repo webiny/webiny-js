@@ -198,10 +198,8 @@ describe("5.37.0-001", () => {
          * For the AcoRecords_5_35_0_006 it is possible that it is a second iteration of the migration runs and at that point it is not executed.
          * Because of that, we are checking for skipped to be 1 or less and executed to be 1 or 2.
          */
-        expect(grouped.executed.length).toBeGreaterThanOrEqual(1);
-        expect(grouped.executed.length).toBeLessThanOrEqual(2);
-        expect(grouped.skipped.length).toBeGreaterThanOrEqual(0);
-        expect(grouped.skipped.length).toBeLessThanOrEqual(1);
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
         const searchRecords = await scanTable(ddbTable, {
