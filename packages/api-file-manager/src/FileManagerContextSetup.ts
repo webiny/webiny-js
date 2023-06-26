@@ -9,6 +9,7 @@ import { FILE_MODEL_ID } from "~/cmsFileStorage/file.model";
 import { CmsFilesStorage } from "~/cmsFileStorage/CmsFilesStorage";
 import { CmsModelModifierPlugin } from "~/modelModifier/CmsModelModifier";
 import { CmsModelPlugin } from "@webiny/api-headless-cms";
+import { FilesPermissions } from "~/createFileManager/permissions/FilesPermissions";
 
 export class FileManagerContextSetup {
     private readonly context: FileManagerContext;
@@ -30,12 +31,19 @@ export class FileManagerContextSetup {
             storageOperations.files = fileStorageOps;
         }
 
+        const filesPermissions = new FilesPermissions({
+            getIdentity: this.context.security.getIdentity,
+            getPermissions: () => this.context.security.getPermissions("fm.file"),
+            fullAccessPermissionName: "fm.*"
+        });
+
         return createFileManager({
             storageOperations,
+            filesPermissions,
             getTenantId: this.getTenantId.bind(this),
             getLocaleCode: this.getLocaleCode.bind(this),
             getIdentity: this.getIdentity.bind(this),
-            getPermission: this.getPermission.bind(this),
+            getPermissions: this.getPermissions.bind(this),
             storage: new FileStorage({
                 context: this.context
             }),
@@ -63,12 +71,10 @@ export class FileManagerContextSetup {
         return this.context.tenancy.getCurrentTenant().id;
     }
 
-    private async getPermission<T extends SecurityPermission = SecurityPermission>(
+    private async getPermissions<T extends SecurityPermission = SecurityPermission>(
         name: string
-    ): Promise<T | null> {
-        await this.context.i18n.checkI18NContentPermission();
-
-        return this.context.security.getPermission(name);
+    ): Promise<T[]> {
+        return this.context.security.getPermissions(name);
     }
 
     private async setupCmsStorageOperations(aliases: FileManagerAliasesStorageOperations) {

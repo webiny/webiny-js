@@ -58,9 +58,20 @@ export default ({ storageOperations }: Config) => {
             if (context.tenancy.isMultiTenant()) {
                 applyMultiTenancyPlugins(context);
             }
+
+            let teamsEnabled = false;
+            if (context.wcp.canUseFeature("advancedAccessControlLayer")) {
+                const license = context.wcp.getProjectLicense();
+                teamsEnabled = license!.package.features.advancedAccessControlLayer.options.teams;
+            }
+
+            context.plugins.register(
+                user({
+                    teams: teamsEnabled
+                })
+            );
         }),
         base,
-        install,
-        user
+        install
     ];
 };

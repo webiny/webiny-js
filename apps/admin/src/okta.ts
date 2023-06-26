@@ -17,7 +17,7 @@ export const oktaFactory: OktaFactory = ({ clientId }) => {
         baseUrl: oktaDomain,
         clientId,
         redirectUri,
-        logo: "https://raw.githubusercontent.com/webiny/webiny-js/next/static/webiny-logo.svg",
+        logo: "https://raw.githubusercontent.com/webiny/webiny-js/next/docs/static/webiny-logo.svg",
         authParams: {
             scopes
         }
