@@ -20,7 +20,11 @@ export const AccessManagementExtension = () => {
 
     const { getProject } = useWcp();
 
-    const canUseTeams = getProject()?.package?.features?.advancedAccessControlLayer?.options.teams;
+    const project = getProject();
+    let teams = false;
+    if (project) {
+        teams = project.package.features.advancedAccessControlLayer.options.teams;
+    }
 
     return (
         <Plugins>
@@ -31,7 +35,7 @@ export const AccessManagementExtension = () => {
                     </Layout>
                 </AddRoute>
             </HasPermission>{" "}
-            {canUseTeams && (
+            {teams && (
                 <HasPermission name={Permission.Teams}>
                     <AddRoute exact path={"/access-management/teams"}>
                         <Layout title={"Access Management - Teams"}>
@@ -47,7 +51,7 @@ export const AccessManagementExtension = () => {
                     </Layout>
                 </AddRoute>
             </HasPermission>
-            <HasPermission any={[Permission.Groups, Permission.ApiKeys]}>
+            <HasPermission any={[Permission.Groups, Permission.ApiKeys, Permission.Teams]}>
                 <AddMenu name={"settings"}>
                     <AddMenu name={"settings.accessManagement"} label={"Access Management"}>
                         <HasPermission name={Permission.Groups}>
@@ -57,7 +61,7 @@ export const AccessManagementExtension = () => {
                                 path={"/access-management/roles"}
                             />
                         </HasPermission>
-                        {canUseTeams && (
+                        {teams && (
                             <HasPermission name={Permission.Teams}>
                                 <AddMenu
                                     name={"settings.accessManagement.teams"}

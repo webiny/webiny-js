@@ -8,12 +8,12 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { AcoRecords_5_37_0_001 } from "~/migrations/5.37.0/001/ddb-es";
+import { AcoRecords_5_37_0_003 } from "~/migrations/5.37.0/003/ddb-es";
 import {
     PB_ACO_SEARCH_MODEL_ID,
     PB_PAGE_TYPE,
     ROOT_FOLDER
-} from "~/migrations/5.37.0/001/constants";
+} from "~/migrations/5.37.0/003/constants";
 /**
  * We are using the original 5.35.0 006 migration data and migration to set up the test data.
  */
@@ -26,7 +26,7 @@ import { createElasticsearchClient } from "@webiny/project-utils/testing/elastic
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-describe("5.37.0-001", () => {
+describe("5.37.0-003", () => {
     const documentClient = getDocumentClient();
     const ddbTable = getPrimaryDynamoDbTable();
     const ddbToEsTable = getDynamoToEsTable({
@@ -51,7 +51,7 @@ describe("5.37.0-001", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_001]
+            migrations: [AcoRecords_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -71,7 +71,7 @@ describe("5.37.0-001", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_001]
+            migrations: [AcoRecords_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -91,7 +91,7 @@ describe("5.37.0-001", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_001]
+            migrations: [AcoRecords_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -162,13 +162,13 @@ describe("5.37.0-001", () => {
         expect(ddbSearchRecordsPrepare.length).toBe(ddbPages.length * 2);
         expect(ddbEsSearchRecordsPrepare.length).toBe(ddbPages.length);
         /**
-         * And then we execute current the 5.37.0_001 migration.
+         * And then we execute current the 5.37.0_003 migration.
          */
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_001]
+            migrations: [AcoRecords_5_37_0_003]
         });
         const { data, error } = await handler();
 
@@ -194,7 +194,7 @@ describe("5.37.0-001", () => {
         expect(searchRecordsAfterMigrations).toHaveLength(ddbPages.length * 2);
         expect(cmsEntries).toHaveLength(ddbPages.length * 2);
         /**
-         * We are expecting that the AcoRecords_5_37_0_001 will be executed.
+         * We are expecting that the AcoRecords_5_37_0_003 will be executed.
          * For the AcoRecords_5_35_0_006 it is possible that it is a second iteration of the migration runs and at that point it is not executed.
          * Because of that, we are checking for skipped to be 1 or less and executed to be 1 or 2.
          */
@@ -232,10 +232,10 @@ describe("5.37.0-001", () => {
             } = page;
 
             const latestSearchRecord = searchRecords.find(
-                record => record.id === `wby-aco-${pid}#0001` && record.SK === "L"
+                record => record.id === `wby-aco-${pid}#0003` && record.SK === "L"
             );
             const revisionSearchRecord = searchRecords.find(
-                record => record.id === `wby-aco-${pid}#0001` && record.SK === "REV#0001"
+                record => record.id === `wby-aco-${pid}#0003` && record.SK === "REV#0003"
             );
 
             const values = {
@@ -268,7 +268,7 @@ describe("5.37.0-001", () => {
             expect(latestSearchRecord).toMatchObject({
                 PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
                 SK: "L",
-                id: `wby-aco-${pid}#0001`,
+                id: `wby-aco-${pid}#0003`,
                 entryId: `wby-aco-${pid}`,
                 locale,
                 locked: false,
@@ -282,8 +282,8 @@ describe("5.37.0-001", () => {
             // Checking revision 1 ACO search record
             expect(revisionSearchRecord).toMatchObject({
                 PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
-                SK: "REV#0001",
-                id: `wby-aco-${pid}#0001`,
+                SK: "REV#0003",
+                id: `wby-aco-${pid}#0003`,
                 entryId: `wby-aco-${pid}`,
                 locale,
                 locked: false,
@@ -319,13 +319,13 @@ describe("5.37.0-001", () => {
          */
         await handlerPrepare();
         /**
-         * And then we execute current the 5.37.0_001 migration.
+         * And then we execute current the 5.37.0_003 migration.
          */
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_001]
+            migrations: [AcoRecords_5_37_0_003]
         });
 
         // Should run the migration

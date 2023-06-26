@@ -49,7 +49,11 @@ async function updateTenantLinks(
 ): Promise<void> {
     const links = await security.listTenantLinksByType<PermissionsTenantLink>({
         tenant,
-        type: "permissions"
+
+        // With 5.37.0, these tenant links not only contain group-related permissions,
+        // but teams-related too. The `type=group` hasn't been changed, just so the
+        // data migrations are easier.
+        type: "group"
     });
 
     if (!links.length) {
@@ -249,7 +253,7 @@ export const createTeamsMethods = ({
             const usagesInTenantLinks = await storageOperations
                 .listTenantLinksByType({
                     tenant: getTenant(),
-                    type: "permissions"
+                    type: "group"
                 })
                 .then(links =>
                     links.filter(link => {

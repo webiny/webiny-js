@@ -1,18 +1,18 @@
 import { Table } from "dynamodb-toolbox";
-import { makeInjectable, inject } from "@webiny/ioc";
+import { inject, makeInjectable } from "@webiny/ioc";
 import {
     DataMigration,
     DataMigrationContext,
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { TenantLinkRecords_5_37_0_003_FileData } from "./TenantLinkDataMigration";
+import { AcoRecords_5_37_0_003_PageData } from "./PageDataMigration";
 
-export class TenantLinkRecords_5_37_0_003 implements DataMigration {
-    private migrations: DataMigration[];
+export class AcoRecords_5_37_0_003 implements DataMigration {
+    private readonly migrations: DataMigration[];
 
     public constructor(table: Table) {
-        this.migrations = [new TenantLinkRecords_5_37_0_003_FileData(table)];
+        this.migrations = [new AcoRecords_5_37_0_003_PageData(table)];
     }
 
     public getId() {
@@ -20,7 +20,7 @@ export class TenantLinkRecords_5_37_0_003 implements DataMigration {
     }
 
     public getDescription() {
-        return "Migrate Tenant Links Data";
+        return "Page Builder Pages search record migration";
     }
 
     async shouldExecute(context: DataMigrationContext): Promise<boolean> {
@@ -45,4 +45,4 @@ export class TenantLinkRecords_5_37_0_003 implements DataMigration {
     }
 }
 
-makeInjectable(TenantLinkRecords_5_37_0_003, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(AcoRecords_5_37_0_003, [inject(PrimaryDynamoTableSymbol)]);
