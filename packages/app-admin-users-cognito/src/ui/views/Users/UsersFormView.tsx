@@ -174,7 +174,7 @@ export class UsersFormView extends UIView {
             groupAccordion.addElement(
                 new GroupAutocompleteElement("group", {
                     name: "group",
-                    label: "Group",
+                    label: "Role",
                     validators: () => {
                         const validators = [];
                         if (!this.teams) {
