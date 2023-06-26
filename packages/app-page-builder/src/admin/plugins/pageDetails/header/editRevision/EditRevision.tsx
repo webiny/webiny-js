@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
-import { useRouter } from "@webiny/react-router";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "../../../../assets/edit.svg";
 import { CREATE_PAGE } from "~/admin/graphql/pages";
@@ -8,8 +7,9 @@ import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useMutation } from "@apollo/react-hooks";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { PbPageData } from "~/types";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 
@@ -18,11 +18,11 @@ interface EditRevisionProps {
 }
 const EditRevision: React.FC<EditRevisionProps> = props => {
     const { page } = props;
-    const { canEdit } = usePermission();
-    const { history } = useRouter();
+    const { canUpdate } = usePagesPermissions();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
     const [createPageFrom] = useMutation(CREATE_PAGE);
+    const { navigateToPageEditor } = useNavigatePage();
 
     const createFromAndEdit = useCallback(async () => {
         setInProgress(true);
@@ -41,10 +41,10 @@ const EditRevision: React.FC<EditRevisionProps> = props => {
         if (error) {
             return showSnackbar(error.message);
         }
-        history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
-    }, [page]);
+        navigateToPageEditor(data.id);
+    }, [page, navigateToPageEditor]);
 
-    if (!canEdit(page)) {
+    if (!canUpdate(page?.createdBy?.id)) {
         return null;
     }
 
@@ -67,7 +67,7 @@ const EditRevision: React.FC<EditRevisionProps> = props => {
                 disabled={inProgress}
                 icon={<EditIcon />}
                 onClick={() => {
-                    history.push(`/page-builder/editor/${encodeURIComponent(page.id)}`);
+                    navigateToPageEditor(page.id);
                 }}
                 data-testid={"pb-page-details-header-edit-revision"}
             />

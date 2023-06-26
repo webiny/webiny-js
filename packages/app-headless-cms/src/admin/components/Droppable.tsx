@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ConnectDropTarget, useDrop } from "react-dnd";
-import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
+import { DragSource } from "~/types";
 
 export interface DroppableChildrenFunctionParams {
     isDragging: boolean;

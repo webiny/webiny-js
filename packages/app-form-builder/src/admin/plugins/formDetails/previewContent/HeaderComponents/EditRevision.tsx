@@ -14,10 +14,10 @@ interface EditRevisionProps {
 const EditRevision: React.FC<EditRevisionProps> = ({ revision, form }) => {
     const { createRevision } = useRevision({ revision, form });
     const { history } = useRouter();
-    const { canEdit } = usePermission();
+    const { canUpdate } = usePermission();
 
     // Render nothing is user doesn't have required permission.
-    if (!canEdit(form)) {
+    if (!canUpdate(form)) {
         return null;
     }
 

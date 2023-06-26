@@ -1,19 +1,16 @@
 import React, { ReactElement, useCallback, useState } from "react";
-
 import { useMutation } from "@apollo/react-hooks";
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { useRouter } from "@webiny/react-router";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
-
 import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
-import usePermission from "~/hooks/usePermission";
-
+import { usePagesPermissions } from "~/hooks/permissions";
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
 import { PbPageDataItem } from "~/types";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/edit");
 
@@ -21,11 +18,11 @@ interface Props {
     record: PbPageDataItem;
 }
 export const RecordActionEdit = ({ record }: Props): ReactElement => {
-    const { canEdit } = usePermission();
-    const { history } = useRouter();
+    const { canUpdate } = usePagesPermissions();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
     const [createPageFrom] = useMutation(CREATE_PAGE);
+    const { navigateToPageEditor } = useNavigatePage();
 
     const createFromAndEdit = useCallback(async () => {
         setInProgress(true);
@@ -44,10 +41,11 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
         if (error) {
             return showSnackbar(error.message);
         }
-        history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
-    }, [record]);
 
-    if (!canEdit(record)) {
+        navigateToPageEditor(data.id);
+    }, [record, navigateToPageEditor]);
+
+    if (!canUpdate(record?.createdBy?.id)) {
         return <></>;
     }
 
@@ -65,7 +63,7 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
         <MenuItem
             disabled={inProgress}
             onClick={() => {
-                history.push(`/page-builder/editor/${encodeURIComponent(record.id)}`);
+                navigateToPageEditor(record.id);
             }}
         >
             <ListItemGraphic>

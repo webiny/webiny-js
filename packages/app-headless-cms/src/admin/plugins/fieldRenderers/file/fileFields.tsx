@@ -1,6 +1,6 @@
 import React from "react";
 import dotProp from "dot-prop-immutable";
-import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, GridInner } from "@webiny/ui/Grid";
 import { imageWrapperStyles } from "./utils";
@@ -117,7 +117,7 @@ FieldRenderer.defaultProps = {
     styles: { width: "100%", height: "auto" }
 } as Partial<FieldRendererProps>;
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-files",
     renderer: {

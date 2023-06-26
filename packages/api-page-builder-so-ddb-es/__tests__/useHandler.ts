@@ -8,13 +8,11 @@ import { getIntrospectionQuery } from "graphql";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "@webiny/api-page-builder";
 import { createStorageOperations } from "~/index";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { createFileManagerContext } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import {
     createPageCreateGraphQl,
     createPageGetGraphQl,
@@ -139,11 +137,6 @@ export const useHandler = (params: Params) => {
             }),
             createWcpContext(),
             createWcpGraphQL(),
-            createFileManagerContext({
-                storageOperations: createFileManagerStorageOperations({
-                    documentClient
-                })
-            }),
             graphqlHandler(),
             ...createTenancyAndSecurity({
                 documentClient
@@ -175,19 +168,6 @@ export const useHandler = (params: Params) => {
                     }
                 }
             }),
-            /**
-             * Mock file upload which does nothing.
-             */
-            {
-                type: "api-file-manager-storage",
-                name: "api-file-manager-storage",
-                async upload() {
-                    return;
-                },
-                async delete() {
-                    return;
-                }
-            },
             createContextPlugin<PbContext>(async context => {
                 context.pageBuilder.onPageAfterCreate.subscribe(async () => {
                     return refreshIndex();

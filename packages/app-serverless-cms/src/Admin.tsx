@@ -27,7 +27,6 @@ import { TenantManager } from "@webiny/app-tenant-manager";
 import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
-import { ACOProvider } from "@webiny/app-aco";
 import { isLegacyRenderingEngine } from "@webiny/app-page-builder/utils";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
@@ -60,7 +59,6 @@ const App = (props: AdminProps) => {
             <AdvancedPublishingWorkflow />
             <TenantManager />
             <MailerSettings />
-            <ACOProvider />
             {props.children}
         </BaseAdmin>
     );

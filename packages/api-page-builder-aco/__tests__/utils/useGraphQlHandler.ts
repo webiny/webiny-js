@@ -27,6 +27,7 @@ import { createAco } from "@webiny/api-aco";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { getIntrospectionQuery } from "graphql";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -141,6 +142,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         params,
         handler,
         invoke,
+        introspect: () => {
+            return invoke({
+                body: {
+                    query: getIntrospectionQuery()
+                }
+            });
+        },
         pageBuilder,
         search
     };

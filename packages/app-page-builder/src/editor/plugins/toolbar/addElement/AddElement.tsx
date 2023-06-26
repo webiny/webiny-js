@@ -21,6 +21,7 @@ import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "~/typ
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { DropElementActionArgsType } from "~/editor/recoil/actions/dropElement/types";
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
+import { useSnackbar } from "@webiny/app-admin";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
@@ -86,6 +87,7 @@ const AddElement: React.FC = () => {
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
     const elementPlugins = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
     const [elements, setElements] = useState(elementPlugins);
+    const { showSnackbar } = useSnackbar();
 
     const refresh = useCallback(() => {
         setElements(elementPlugins);
@@ -201,6 +203,17 @@ const AddElement: React.FC = () => {
                                           const selectedElementAllowedTargets = plugin.target;
                                           const targetedElement = params.type;
 
+                                          const targetedElementPlugin = elementPlugins.find(
+                                              p => p.elementType === targetedElement
+                                          );
+
+                                          if (!targetedElementPlugin?.canReceiveChildren) {
+                                              showSnackbar(
+                                                  "The currently active page element cannot receive child elements."
+                                              );
+                                              return;
+                                          }
+
                                           const hasRestrictions =
                                               Array.isArray(selectedElementAllowedTargets) &&
                                               selectedElementAllowedTargets.length > 0;
@@ -212,6 +225,9 @@ const AddElement: React.FC = () => {
                                                   );
 
                                               if (!isAllowed) {
+                                                  showSnackbar(
+                                                      "The element cannot be dropped into the currently active page element."
+                                                  );
                                                   return;
                                               }
                                           }

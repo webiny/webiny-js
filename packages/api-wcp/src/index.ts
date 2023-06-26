@@ -5,3 +5,4 @@
 
 export * from "./context";
 export * from "./graphql";
+export { AACL_RELEASE_DATE } from "./utils";

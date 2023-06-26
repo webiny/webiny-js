@@ -27,8 +27,6 @@ export const SimpleMultipleRenderer: React.VFC<Props> = props => {
 
     const addItem = useCallback(
         (params: AddItemParams) => {
-            console.log("values", values);
-            console.log("params", params);
             bind.onChange([...values, params]);
         },
         [bind, values]

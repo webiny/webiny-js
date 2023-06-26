@@ -32,7 +32,13 @@ export const createObjectFilterPlugin = () => {
                 ].join(".");
                 const field = fields[identifier];
                 if (!field) {
-                    throw new WebinyError(`There is no field "${identifier}".`);
+                    throw new WebinyError(
+                        `There is no field "${identifier}".`,
+                        "OBJECT_FILTER_FIELD_ERROR",
+                        {
+                            fields: Object.keys(fields)
+                        }
+                    );
                 }
                 /**
                  * We need to find the filter plugin for the child field.

@@ -22,9 +22,9 @@ import "./security/securityCreateUser";
 import "./security/securityDeleteUser";
 import "./security/securityDeleteAllUsers";
 import "./security/securityListUsers";
-import "./security/securityReadGroup";
-import "./security/securityCreateGroup";
-import "./security/securityDeleteGroup";
+import "./security/securityReadRole";
+import "./security/securityCreateRole";
+import "./security/securityDeleteRole";
 import "./security/securityReadApiKey";
 import "./security/securityCreateApiKey";
 import "./security/securityDeleteApiKey";
@@ -33,6 +33,8 @@ import "./fileManager/fmDeleteFile";
 import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
 import "cypress-mailosaur";
+
+import "./aco/acoNavigateToRootFolder";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });

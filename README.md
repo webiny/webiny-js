@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./static/webiny-logo.svg" width="250">
+  <img src="./docs/static/webiny-logo.svg" width="250">
   <br><br>
   <strong>Open-Source Serverless Enterprise CMS</strong>
 </p>

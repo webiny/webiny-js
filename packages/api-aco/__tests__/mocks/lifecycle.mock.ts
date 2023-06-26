@@ -45,6 +45,13 @@ export const assignRecordLifecycleEvents = () => {
             tracker.track("searchRecord:afterUpdate", params);
         });
 
+        context.aco.search.onSearchRecordBeforeMove.subscribe(async params => {
+            tracker.track("searchRecord:beforeMove", params);
+        });
+        context.aco.search.onSearchRecordAfterMove.subscribe(async params => {
+            tracker.track("searchRecord:afterMove", params);
+        });
+
         context.aco.search.onSearchRecordBeforeDelete.subscribe(async params => {
             tracker.track("searchRecord:beforeDelete", params);
         });

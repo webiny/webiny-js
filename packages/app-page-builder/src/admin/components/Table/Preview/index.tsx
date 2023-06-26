@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { DrawerContent } from "@webiny/ui/Drawer";
 import PageDetails from "~/admin/views/Pages/PageDetails";
 
@@ -11,7 +11,7 @@ interface PreviewProps {
     onCreatePage: () => void;
 }
 
-export const Preview = ({ open, onClose, canCreate, onCreatePage }: PreviewProps): ReactElement => {
+export const Preview: React.VFC<PreviewProps> = ({ open, onClose, canCreate, onCreatePage }) => {
     return (
         <Content modal={true} open={open} onClose={onClose} dir="rtl">
             <DrawerContent dir="ltr">

@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import WebinyError from "@webiny/error";
 import { useSecurity } from "@webiny/app-security";
 import {
     CREATE_FILE,
@@ -21,11 +22,15 @@ import {
     ListFilesQueryVariables,
     UPDATE_FILE,
     UpdateFileMutationResponse,
-    UpdateFileMutationVariables
+    UpdateFileMutationVariables,
+    FmError
 } from "../graphql";
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
+import { createFieldsList } from "@webiny/app-headless-cms/admin/graphql/createFieldsList";
+import { useFileModel } from "~/hooks/useFileModel";
+import omit from "lodash/omit";
 
 export interface ListTagsResponseItem {
     tag: string;
@@ -46,9 +51,11 @@ export interface FileManagerApiContextData<TFileItem extends FileItem = FileItem
         meta: Record<string, any>,
         options?: UploadFileOptions
     ) => Promise<TFileItem | undefined>;
-    listFiles: (
-        params?: ListFilesQueryVariables
-    ) => Promise<{ files: TFileItem[]; meta: ListFilesListFilesResponse["meta"] }>;
+    listFiles: (params?: ListFilesQueryVariables) => Promise<{
+        files: TFileItem[];
+        meta: ListFilesListFilesResponse["meta"];
+        error: FmError | null;
+    }>;
     listTags: (params?: ListTagsOptions) => Promise<ListTagsResponseItem[]>;
     getSettings(): Promise<Settings>;
 }
@@ -68,91 +75,127 @@ interface UploadFileOptions {
 
 interface ListTagsOptions {
     where?: ListFileTagsQueryVariables["where"];
+    refetch?: boolean;
 }
 
-const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
-    const { identity, getPermission } = useSecurity();
-    const client = useApolloClient();
+const getModelFields = (model: ReturnType<typeof useFileModel>) => {
+    const fields = createFieldsList({ model, fields: model.fields });
+    return /* GraphQL */ `{
+        __typename
+        id
+        createdOn
+        savedOn
+        createdBy {
+            id
+            displayName
+        }
+        src
+        ${fields}
+    }`;
+};
 
-    const fmFilePermission = useMemo<FileManagerSecurityPermission | null>(() => {
-        return getPermission<FileManagerSecurityPermission>("fm.file");
+const FM_FULL_ACCESS_PERMISSION_NAME = "fm.*";
+
+const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
+    const { identity, getIdentityId, getPermissions, getPermission } = useSecurity();
+    const client = useApolloClient();
+    const fileModel = useFileModel();
+    const [modelFields] = useState(getModelFields(fileModel));
+
+    // Note for below permissions checks:
+    // `own: true` defines full RWD access to files created by the user.
+
+    const fmFilePermissions = useMemo<FileManagerSecurityPermission[]>(() => {
+        return getPermissions<FileManagerSecurityPermission>("fm.file");
     }, [identity]);
+
+    const hasFullAccess = useMemo(
+        () => !!getPermission(FM_FULL_ACCESS_PERMISSION_NAME),
+        [identity]
+    );
+
+    const hasNoAccess = useMemo(() => fmFilePermissions.length === 0, [fmFilePermissions]);
 
     const canDelete = useCallback(
         (item: FileItem) => {
-            // Bail out early if no access
-            if (!fmFilePermission) {
+            // Bail out early if no access or has full access.
+            if (hasNoAccess) {
                 return false;
             }
 
-            if (fmFilePermission.own) {
-                const identityId = identity ? identity.id || identity.login : null;
-                if (!identityId) {
-                    return false;
-                }
-                return item.createdBy.id === identityId;
-            }
+            return (
+                hasFullAccess ||
+                fmFilePermissions.some(({ rwd, own }) => {
+                    if (own) {
+                        const identityId = getIdentityId();
+                        const createdById = item.createdBy?.id;
+                        return identityId && identityId === createdById;
+                    }
 
-            if (typeof fmFilePermission.rwd === "string") {
-                return fmFilePermission.rwd.includes("d");
-            }
-            return true;
+                    if (rwd && rwd.includes("d")) {
+                        return true;
+                    }
+
+                    return false;
+                })
+            );
         },
-        [fmFilePermission]
+        [fmFilePermissions]
     );
 
     const canRead = useMemo(() => {
-        return Boolean(fmFilePermission);
-    }, [fmFilePermission]);
-
-    const canCreate = useMemo(() => {
-        // Bail out early if no access
-        if (!fmFilePermission) {
+        // Bail out early if no access or has full access.
+        if (hasNoAccess) {
             return false;
         }
 
-        if (fmFilePermission.own) {
-            return true;
+        return hasFullAccess || fmFilePermissions.length > 0;
+    }, [fmFilePermissions]);
+
+    const canCreate = useMemo(() => {
+        // Bail out early if no access or has full access.
+        if (hasNoAccess) {
+            return false;
         }
 
-        if (typeof fmFilePermission.rwd === "string") {
-            return fmFilePermission.rwd.includes("w");
-        }
-
-        return true;
-    }, [fmFilePermission]);
+        return hasFullAccess || fmFilePermissions.some(({ rwd }) => rwd && rwd.includes("w"));
+    }, [fmFilePermissions]);
 
     const canEdit = useCallback(
         (item: FileItem) => {
-            // Bail out early if no access
-            if (!fmFilePermission) {
+            // Bail out early if no access or has full access.
+            if (hasNoAccess) {
                 return false;
             }
-            const creatorId = item.createdBy.id;
 
-            if (fmFilePermission.own && creatorId) {
-                const identityId = identity ? identity.id || identity.login : null;
-                return creatorId === identityId;
-            }
+            return (
+                hasFullAccess ||
+                fmFilePermissions.some(({ rwd, own }) => {
+                    if (own) {
+                        const identityId = getIdentityId();
+                        const createdById = item.createdBy?.id;
+                        return identityId && identityId === createdById;
+                    }
 
-            if (typeof fmFilePermission.rwd === "string") {
-                return fmFilePermission.rwd.includes("w");
-            }
+                    if (rwd && rwd.includes("w")) {
+                        return true;
+                    }
 
-            return true;
+                    return false;
+                })
+            );
         },
-        [fmFilePermission]
+        [fmFilePermissions]
     );
 
-    const createFile = async (data: FileInput, meta: Record<string, any>) => {
+    const createFile = async (data: FileInput) => {
         const response = await client.mutate<
             CreateFileMutationResponse,
             CreateFileMutationVariables
         >({
-            mutation: CREATE_FILE,
+            mutation: CREATE_FILE(modelFields),
             variables: {
-                data,
-                meta
+                data
             }
         });
 
@@ -161,10 +204,10 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
     const updateFile = async (id: string, data: Partial<FileItem>) => {
         await client.mutate<UpdateFileMutationResponse, UpdateFileMutationVariables>({
-            mutation: UPDATE_FILE,
+            mutation: UPDATE_FILE(modelFields),
             variables: {
                 id,
-                data
+                data: omit(data, ["createdOn", "savedOn", "createdBy"])
             }
         });
     };
@@ -180,29 +223,36 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
     const getFile = async (id: string) => {
         const response = await client.query({
-            query: GET_FILE,
+            query: GET_FILE(modelFields),
             variables: {
                 id
             }
         });
 
-        return response.data?.fileManager.getFile.data;
+        const { data, error } = response.data?.fileManager.getFile;
+
+        if (error) {
+            throw new WebinyError(error);
+        }
+
+        return data;
     };
 
     const listFiles: FileManagerApiContextData["listFiles"] = async (params = {}) => {
         const { data } = await client.query<ListFilesQueryResponse>({
-            query: LIST_FILES,
+            query: LIST_FILES(modelFields),
             variables: params,
             fetchPolicy: "no-cache"
         });
-        const { data: files, meta } = data.fileManager.listFiles;
-        return { files, meta };
+        const { data: files, meta, error } = data.fileManager.listFiles;
+        return { files, meta, error };
     };
 
-    const listTags = async (params = {}) => {
+    const listTags: FileManagerApiContextData["listTags"] = async ({ where, refetch } = {}) => {
         const { data } = await client.query<ListFileTagsQueryResponse>({
             query: LIST_TAGS,
-            variables: params
+            variables: { where },
+            fetchPolicy: refetch ? "network-only" : "cache-first"
         });
 
         return data.fileManager.listTags.data;
@@ -215,7 +265,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
      */
     const uploadFile = async (
         file: File,
-        meta: Record<string, any>,
+        meta: Partial<FileInput>,
         options: UploadFileOptions = {}
     ) => {
         const response = await getFileUploader().upload(file, {
@@ -225,7 +275,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
         const tags = options?.tags || [];
 
-        return await createFile({ ...response, tags }, meta);
+        return await createFile({ ...response, tags, ...meta });
     };
 
     const getSettings = async () => {

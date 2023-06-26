@@ -18,8 +18,29 @@ export const autoCompleteStyle = css({
         padding: 0,
         li: {
             padding: 10,
+            cursor: "pointer",
             span: {
                 color: "var(--mdc-theme-on-surface)"
+            }
+        }
+    },
+    "&.webiny-ui-autocomplete--size-medium": {
+        ".mdc-elevation--z1": {
+            top: 40
+        },
+        ul: {
+            li: {
+                padding: 8
+            }
+        }
+    },
+    "&.webiny-ui-autocomplete--size-small": {
+        ".mdc-elevation--z1": {
+            top: 30
+        },
+        ul: {
+            li: {
+                padding: 5
             }
         }
     }

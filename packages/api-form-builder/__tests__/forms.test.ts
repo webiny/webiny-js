@@ -333,7 +333,9 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
-            ({ data }: any) => data.formBuilder.listFormSubmissions.data.length === 2,
+            ({ data }: any) => {
+                return data.formBuilder.listFormSubmissions.data.length === 2;
+            },
             {
                 name: "after create submission"
             }
@@ -359,10 +361,10 @@ describe('Form Builder "Form" Test', () => {
         });
 
         const { data } = exportCSV.data.formBuilder.exportFormSubmissions;
-        expect(data).toMatchObject({
-            src: `https://some.domain.com/files/form_submissions_export.csv`,
-            key: "form_submissions_export.csv"
-        });
+
+        expect(data.src.endsWith("form_submissions_export.csv")).toEqual(true);
+        expect(data.key.endsWith("form_submissions_export.csv")).toEqual(true);
+        expect(data.key.includes("form-submissions")).toEqual(true);
 
         // Parse CSV and verify there are 2 submissions
         const csvFile = path.join(__dirname, data.key);

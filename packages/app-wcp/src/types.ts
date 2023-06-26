@@ -14,6 +14,12 @@ export type WcpProjectPackage = {
         advancedPublishingWorkflow: {
             enabled: boolean;
         };
+        advancedAccessControlLayer: {
+            enabled: boolean;
+            options: {
+                teams: boolean;
+            };
+        };
     };
 };
 
@@ -32,4 +38,10 @@ export interface GetWcpProjectGqlResponse {
             } | null;
         };
     };
+}
+
+export interface AaclPermission {
+    name: "aacl";
+    legacy: boolean;
+    teams: boolean;
 }

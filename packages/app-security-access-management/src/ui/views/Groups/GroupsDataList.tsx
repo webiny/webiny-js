@@ -28,7 +28,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { deserializeSorters } from "../utils";
 import { Group } from "~/types";
 
-const t = i18n.ns("app-security/admin/groups/data-list");
+const t = i18n.ns("app-security/admin/roles/data-list");
 
 const SORTERS = [
     {
@@ -105,10 +105,10 @@ export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
                     return showSnackbar(error.message);
                 }
 
-                showSnackbar(t`Group "{slug}" deleted.`({ slug: item.slug }));
+                showSnackbar(t`Role "{slug}" deleted.`({ slug: item.slug }));
 
                 if (id === item.id) {
-                    history.push(`/access-management/groups`);
+                    history.push(`/access-management/roles`);
                 }
             });
         },
@@ -141,19 +141,19 @@ export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
 
     return (
         <DataList
-            title={t`Groups`}
+            title={t`Roles`}
             actions={
                 <ButtonSecondary
                     data-testid="new-record-button"
-                    onClick={() => history.push("/access-management/groups?new=true")}
+                    onClick={() => history.push("/access-management/roles?new=true")}
                 >
-                    <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
+                    <ButtonIcon icon={<AddIcon />} /> {t`New Role`}
                 </ButtonSecondary>
             }
             data={groupList}
             loading={listLoading || deleteLoading}
             search={
-                <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search Groups`} />
+                <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search Roles`} />
             }
             modalOverlay={groupsDataListModalOverlay}
             modalOverlayAction={
@@ -169,7 +169,7 @@ export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
                         <ListItem key={item.id} selected={item.id === id}>
                             <ListItemText
                                 onClick={() =>
-                                    history.push(`/access-management/groups?id=${item.id}`)
+                                    history.push(`/access-management/roles?id=${item.id}`)
                                 }
                             >
                                 {item.name}

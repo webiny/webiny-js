@@ -16,8 +16,12 @@ import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { removeModelFromGroupCache, removeModelFromListCache, removeModelFromCache } from "./cache";
+import { removeModelFromCache, removeModelFromGroupCache, removeModelFromListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
+import {
+    DeleteCmsModelMutationResponse,
+    DeleteCmsModelMutationVariables
+} from "../../viewsGraphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { deserializeSorters } from "../utils";
@@ -26,10 +30,6 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { CmsEditorContentModel, CmsModel } from "~/types";
-import {
-    DeleteCmsModelMutationResponse,
-    DeleteCmsModelMutationVariables
-} from "../../viewsGraphql";
 import usePermission from "~/admin/hooks/usePermission";
 import styled from "@emotion/styled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -114,7 +114,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "cms-delete-content-model-dialog"
     });
-    const { models, loading } = useModels();
+    const { models, loading, refresh } = useModels();
     const { canDelete, canEdit } = usePermission();
 
     const filterData = useCallback(
@@ -203,6 +203,10 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const filteredData = filter === "" ? models : models.filter(filterData);
     const contentModels = sortData(filteredData);
 
+    const onRefreshClick = useCallback(() => {
+        refresh();
+    }, []);
+
     return (
         <UIL.DataList
             loading={loading}
@@ -229,6 +233,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                     data-testid={"default-data-list.filter"}
                 />
             }
+            refresh={onRefreshClick}
         >
             {({ data = [] }: { data: CmsModel[] }) => (
                 <UIL.List data-testid="default-data-list">

@@ -2,11 +2,17 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
+import {
+    CannotUseAaclAlert,
+    PermissionInfo,
+    gridNoPaddingClass
+} from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { useSecurity } from "@webiny/app-security";
+import { AaclPermission } from "@webiny/app-admin";
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
@@ -25,6 +31,13 @@ export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
     value,
     onChange
 }) => {
+    const { getPermission } = useSecurity();
+
+    // We disable form elements for custom permissions if AACL cannot be used.
+    const cannotUseAAcl = useMemo(() => {
+        return !getPermission<AaclPermission>("aacl", true);
+    }, []);
+
     const onFormChange = useCallback(
         data => {
             let newValue: SecurityPermission[] = [];
@@ -89,12 +102,19 @@ export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
                 return (
                     <Fragment>
                         <Grid className={gridNoPaddingClass}>
+                            <Cell span={12}>
+                                {data.accessLevel === "custom" && cannotUseAAcl && (
+                                    <CannotUseAaclAlert />
+                                )}
+                            </Cell>
+                        </Grid>
+                        <Grid className={gridNoPaddingClass}>
                             <Cell span={6}>
                                 <PermissionInfo title={t`Access Level`} />
                             </Cell>
                             <Cell span={6}>
                                 <Bind name={"accessLevel"}>
-                                    <Select label={t`Access Level`}>
+                                    <Select label={t`Access Level`} disabled={cannotUseAAcl}>
                                         <option value={NO_ACCESS}>{t`No access`}</option>
                                         <option value={FULL_ACCESS}>{t`Full access`}</option>
                                         <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
@@ -115,7 +135,9 @@ export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
                                                     <Select
                                                         {...props}
                                                         label={t`Access Scope`}
-                                                        disabled={disableUserAccessScope}
+                                                        disabled={
+                                                            cannotUseAAcl || disableUserAccessScope
+                                                        }
                                                         value={
                                                             disableUserAccessScope
                                                                 ? NO_ACCESS
