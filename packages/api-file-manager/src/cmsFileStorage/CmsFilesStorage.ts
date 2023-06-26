@@ -66,7 +66,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         }
 
         const entry = await this.security.withoutAuthorization(() => {
-            return this.cms.createEntry(model, file);
+            return this.cms.createEntry(model, { ...file, wbyAco_location: file.location });
         });
 
         await this.aliases.storeAliases(file);
@@ -169,7 +169,10 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
                 "webinyVersion"
             ]);
 
-            const updatedEntry = await this.cms.updateEntry(model, entry.id, values);
+            const updatedEntry = await this.cms.updateEntry(model, entry.id, {
+                ...values,
+                wbyAco_location: values.location ?? entry.location
+            });
 
             await this.aliases.storeAliases(file);
 
