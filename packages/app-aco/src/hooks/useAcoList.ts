@@ -76,7 +76,9 @@ const getCurrentRecordList = <T = GenericSearchData>(
     );
 };
 
-export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
+export const useAcoList = <T = GenericSearchData>(
+    params: UseAcoListParams
+): UseAcoListResponse<T> => {
     const { folderId, limit: initialLimit = 50, ...initialWhere } = params;
 
     const { folderIdPath } = useAcoApp();
@@ -269,36 +271,21 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
         listRecords();
     }, [listParams]);
 
-    return useMemo<UseAcoListResponse<T>>(() => {
-        return {
-            folders,
-            records,
-            listTitle,
-            isSearch,
-            limit: initialLimit,
-            isListLoading: Boolean(
-                recordsLoading.INIT ||
-                    foldersLoading.INIT ||
-                    recordsLoading.LIST ||
-                    foldersLoading.LIST
-            ),
-            isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
-            meta,
-            listParams,
-            setListParams,
-            sorting,
-            setSorting,
-            listMoreRecords
-        };
-    }, [
+    return {
         folders,
         records,
-        foldersLoading,
-        recordsLoading,
-        meta,
-        initialWhere,
+        listTitle,
         isSearch,
+        limit: initialLimit,
+        isListLoading: Boolean(
+            recordsLoading.INIT || foldersLoading.INIT || recordsLoading.LIST || foldersLoading.LIST
+        ),
+        isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
+        meta,
         listParams,
-        sorting
-    ]);
+        setListParams,
+        sorting,
+        setSorting,
+        listMoreRecords
+    };
 };

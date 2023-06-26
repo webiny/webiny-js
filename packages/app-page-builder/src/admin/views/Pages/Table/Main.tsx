@@ -114,6 +114,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     list.folders.length === 0 &&
                     !list.isListLoading ? (
                         <Empty
+                            isSearch={list.isSearch}
                             canCreate={canCreate()}
                             onCreatePage={openTemplatesDialog}
                             onCreateFolder={openFoldersDialog}
