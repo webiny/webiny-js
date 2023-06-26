@@ -84,7 +84,8 @@ describe("5.37.0-003", () => {
                 SK: "LINK#T#root",
                 GSI1_PK: "T#root",
                 GSI1_SK: "TYPE#permissions#IDENTITY#64942e46a5d103f5dacb7792",
-                type: "permissions",
+
+                type: "group",
                 data: {
                     group: "649429a0d9bd1f0008416796",
                     permissions: [
@@ -113,7 +114,7 @@ describe("5.37.0-003", () => {
                 SK: "LINK#T#otherTenant",
                 GSI1_PK: "T#otherTenant",
                 GSI1_SK: "TYPE#permissions#IDENTITY#64942e80610668b2ce7fd29d",
-                type: "permissions",
+                type: "group",
                 data: {
                     group: "649429a0d9bd1f0008416796",
                     permissions: [
@@ -176,7 +177,7 @@ describe("5.37.0-003", () => {
                 SK: "LINK#T#root",
                 GSI1_PK: "T#root",
                 GSI1_SK: "TYPE#permissions#IDENTITY#649429aad9bd1f0008416798",
-                type: "permissions",
+                type: "group",
                 data: {
                     group: "649429a0d9bd1f0008416796",
                     permissions: [{ name: "*" }],

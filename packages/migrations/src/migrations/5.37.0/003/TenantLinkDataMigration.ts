@@ -26,7 +26,7 @@ export class TenantLinkRecords_5_37_0_003_FileData
     }
 
     getDescription() {
-        return "Migrate Tenant Links Data 22";
+        return "Migrate Tenant Links Data";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
@@ -71,9 +71,6 @@ export class TenantLinkRecords_5_37_0_003_FileData
                 await this.tenantLinkEntity.update({
                     PK: tenantLink.PK,
                     SK: tenantLink.SK,
-                    GSI1_PK: tenantLink.GSI1_PK,
-                    GSI1_SK: tenantLink.GSI1_SK.replace("TYPE#group#", "TYPE#permissions#"),
-                    type: "permissions",
                     data: {
                         ...tenantLink.data,
                         teams: [],

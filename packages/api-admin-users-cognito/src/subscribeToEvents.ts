@@ -53,7 +53,11 @@ export const subscribeToEvents = (context: Context): void => {
                 // Use the `id` that was assigned in the user creation process.
                 // `syncWithCognito` will assign the `sub` value to the user id, so that the identity id matches the user id.
                 identity: user.id,
-                type: "permissions",
+
+                // With 5.37.0, these tenant links not only contain group-related permissions,
+                // but teams-related too. The `type=group` hasn't been changed, just so the
+                // data migrations are easier.
+                type: "group",
                 data
             }
         ]);
@@ -115,7 +119,11 @@ export const subscribeToEvents = (context: Context): void => {
                 // @ts-ignore
                 tenant,
                 identity: updatedUser.id,
-                type: "permissions",
+
+                // With 5.37.0, these tenant links not only contain group-related permissions,
+                // but teams-related too. The `type=group` hasn't been changed, just so the
+                // data migrations are easier.
+                type: "group",
                 data
             }
         ]);
@@ -138,7 +146,11 @@ export const subscribeToEvents = (context: Context): void => {
                 // @ts-ignore
                 tenant,
                 identity: user.id,
-                type: "permissions"
+
+                // With 5.37.0, these tenant links not only contain group-related permissions,
+                // but teams-related too. The `type=group` hasn't been changed, just so the
+                // data migrations are easier.
+                type: "group"
             }
         ]);
     });
