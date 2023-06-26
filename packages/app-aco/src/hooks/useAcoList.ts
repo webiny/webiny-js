@@ -13,18 +13,11 @@ import {
 } from "~/types";
 import { createSort, sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks/useAcoApp";
+import { useNavigateFolder } from "~/hooks/useNavigateFolder";
 import cloneDeep from "lodash/cloneDeep";
 import set from "lodash/set";
 import unset from "lodash/unset";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-
-interface UseAcoListParams {
-    folderId?: string;
-    limit?: number;
-    tags_in?: string[];
-    tags_startsWith?: string;
-    tags_not_startsWith?: string;
-}
 
 interface UseAcoListResponse<T> {
     folders: FolderItem[];
@@ -76,9 +69,8 @@ const getCurrentRecordList = <T = GenericSearchData>(
     );
 };
 
-export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
-    const { folderId, limit: initialLimit = 50, ...initialWhere } = params;
-
+export const useAcoList = <T = GenericSearchData>() => {
+    const { currentFolderId = "ROOT" } = useNavigateFolder();
     const { folderIdPath } = useAcoApp();
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
@@ -119,7 +111,7 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
         where: initialWhere,
         sort: initialSort,
         after,
-        limit = initialLimit,
+        limit = 50,
         search
     }: ListSearchRecordsQueryVariables) => {
         let sort: ListSearchRecordsSort | undefined = undefined;
@@ -136,8 +128,8 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             ...(initialWhere || {})
         };
 
-        if (folderId && (!where || Object.keys(where).length === 0)) {
-            where = dotPropImmutable.set(where, folderIdPath, folderId);
+        if (currentFolderId && (!where || Object.keys(where).length === 0)) {
+            where = dotPropImmutable.set(where, folderIdPath, currentFolderId);
         }
 
         const params: ListSearchRecordsQueryVariables = {
@@ -167,25 +159,22 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
         }
 
         let where: ListSearchRecordsWhereQueryVariables | undefined;
-        if (Object.keys(initialWhere).length > 0) {
-            where = initialWhere;
-        }
 
-        if (folderId) {
-            where = dotPropImmutable.set(where || {}, folderIdPath, folderId);
+        if (currentFolderId) {
+            where = dotPropImmutable.set(where || {}, folderIdPath, currentFolderId);
         }
 
         setListParams({
             where,
             sort: createSort(sorting),
-            limit: initialLimit,
+            limit: 50,
             after: undefined,
             search: undefined
         });
 
         // Reset search flag any time we receive a new `folderId`
         setIsSearch(false);
-    }, [folderId]);
+    }, [currentFolderId]);
 
     /**
      * Any time we receive a `folders` list update:
@@ -199,14 +188,14 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             return;
         }
 
-        const subFolders = getCurrentFolderList(originalFolders, folderId);
+        const subFolders = getCurrentFolderList(originalFolders, currentFolderId);
         setFolders(() => {
             return sortTableItems(subFolders, createSort(sorting));
         });
 
-        const currentFolder = originalFolders?.find(folder => folder.id === folderId);
+        const currentFolder = originalFolders?.find(folder => folder.id === currentFolderId);
         setListTitle(currentFolder?.title);
-    }, [originalFolders, folderId, isSearch]);
+    }, [originalFolders, currentFolderId, isSearch]);
 
     /**
      * Any time we receive a `records` list or `folderId` update:
@@ -222,10 +211,10 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
         const subRecords = getCurrentRecordList<T>(
             originalRecords as SearchRecordItem<T>[],
             folderIdPath,
-            folderId
+            currentFolderId
         );
         setRecords(subRecords);
-    }, [originalRecords, folderId, setRecords, isSearch]);
+    }, [originalRecords, currentFolderId, setRecords, isSearch]);
 
     /**
      * Any time we receive a new `sort` value:
@@ -275,7 +264,7 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             records,
             listTitle,
             isSearch,
-            limit: initialLimit,
+            limit: 50,
             isListLoading: Boolean(
                 recordsLoading.INIT ||
                     foldersLoading.INIT ||
@@ -290,15 +279,5 @@ export const useAcoList = <T = GenericSearchData>(params: UseAcoListParams) => {
             setSorting,
             listMoreRecords
         };
-    }, [
-        folders,
-        records,
-        foldersLoading,
-        recordsLoading,
-        meta,
-        initialWhere,
-        isSearch,
-        listParams,
-        sorting
-    ]);
+    }, [folders, records, foldersLoading, recordsLoading, meta, isSearch, listParams, sorting]);
 };

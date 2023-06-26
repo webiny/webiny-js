@@ -4,8 +4,8 @@ import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, useFolders } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
+import { useAcoList, useFolders, useNavigateFolder } from "@webiny/app-aco";
+import { CMS_ENTRY_LIST_LINK, FOLDER_ID_DEFAULT } from "~/admin/constants";
 import { ListMeta } from "@webiny/app-aco/types";
 import {
     transformCmsContentEntriesToRecordEntries,
@@ -19,10 +19,6 @@ interface UpdateSearchCallableParams {
 }
 interface UpdateSearchCallable {
     (params: UpdateSearchCallableParams): void;
-}
-
-interface UseContentEntriesListParams {
-    folderId?: string;
 }
 
 interface UseContentEntries {
@@ -43,12 +39,11 @@ interface UseContentEntries {
     sorting: Sorting;
 }
 
-export const useContentEntriesList = ({
-    folderId
-}: UseContentEntriesListParams): UseContentEntries => {
+export const useContentEntriesList = (): UseContentEntries => {
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
     const { getDescendantFolders } = useFolders();
+    const { currentFolderId = FOLDER_ID_DEFAULT } = useNavigateFolder();
     const {
         folders: initialFolders,
         isListLoading,
@@ -61,7 +56,7 @@ export const useContentEntriesList = ({
         setListParams,
         sorting,
         setSorting
-    } = useAcoList({ folderId });
+    } = useAcoList();
 
     const [search, setSearch] = useState<string>("");
     const query = new URLSearchParams(location.search);
@@ -88,12 +83,12 @@ export const useContentEntriesList = ({
                  * - in case we are inside a folder, pass the descendent folders id
                  * - otherwhise, remove `location` and search across all records
                  */
-                const folderIds = getDescendantFolders(folderId).map(folder => folder.id);
+                const folderIds = getDescendantFolders(currentFolderId).map(folder => folder.id);
                 if (folderIds?.length) {
                     wbyAco_location = { folderId_in: folderIds };
                 }
             } else {
-                wbyAco_location = { folderId };
+                wbyAco_location = { folderId: currentFolderId };
             }
 
             setListParams({ search, where: { wbyAco_location } });
@@ -109,13 +104,13 @@ export const useContentEntriesList = ({
                 history.push(`${baseUrl}?${query.toString()}`);
             }
         }, 500),
-        [baseUrl, folderId]
+        [baseUrl, currentFolderId]
     );
 
     // Set "search" from search "query" on page load.
     useEffect(() => {
         setSearch(searchQuery);
-    }, [baseUrl, folderId, searchQuery]);
+    }, [baseUrl, currentFolderId, searchQuery]);
 
     // When "search" changes, trigger search-related logics
     useEffect(() => {

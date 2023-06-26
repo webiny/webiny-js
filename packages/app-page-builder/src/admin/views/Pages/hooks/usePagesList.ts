@@ -1,16 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import debounce from "lodash/debounce";
-import { PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
-import { useAcoList, useFolders } from "@webiny/app-aco";
+import { PAGE_BUILDER_LIST_LINK, FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { useAcoList, useFolders, useNavigateFolder } from "@webiny/app-aco";
 import { PbPageDataItem } from "~/types";
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { TableProps } from "~/admin/components/Table/Table";
-
-interface UsePageListParams {
-    folderId?: string;
-}
 
 interface UsePageList {
     folders: FolderItem[];
@@ -38,7 +34,7 @@ interface UpdateSearchCallable {
     (params: UpdateSearchCallableParams): void;
 }
 
-export const usePagesList = ({ folderId }: UsePageListParams): UsePageList => {
+export const usePagesList = (): UsePageList => {
     const { history } = useRouter();
 
     const {
@@ -53,8 +49,9 @@ export const usePagesList = ({ folderId }: UsePageListParams): UsePageList => {
         setListParams,
         sorting,
         setSorting
-    } = useAcoList<PbPageDataItem>({ folderId });
+    } = useAcoList<PbPageDataItem>();
     const { getDescendantFolders } = useFolders();
+    const { currentFolderId = FOLDER_ID_DEFAULT } = useNavigateFolder();
 
     const [search, setSearch] = useState<string>("");
     const [selected, setSelected] = useState<string[]>([]);
@@ -78,12 +75,12 @@ export const usePagesList = ({ folderId }: UsePageListParams): UsePageList => {
                  * - in case we are inside a folder, pass the descendent folders id
                  * - otherwhise, remove `location` and search across all records
                  */
-                const folderIds = getDescendantFolders(folderId).map(folder => folder.id);
+                const folderIds = getDescendantFolders(currentFolderId).map(folder => folder.id);
                 if (folderIds?.length) {
                     location = { folderId_in: folderIds };
                 }
             } else {
-                location = { folderId };
+                location = { folderId: currentFolderId };
             }
 
             setListParams({ search, where: { location } });
@@ -99,13 +96,13 @@ export const usePagesList = ({ folderId }: UsePageListParams): UsePageList => {
                 history.push(`${PAGE_BUILDER_LIST_LINK}?${query.toString()}`);
             }
         }, 500),
-        [folderId]
+        [currentFolderId]
     );
 
     // Set "search" from search "query" on page load.
     useEffect(() => {
         setSearch(searchQuery);
-    }, [folderId, searchQuery]);
+    }, [currentFolderId, searchQuery]);
 
     // When "search" changes, trigger search-related logics
     useEffect(() => {

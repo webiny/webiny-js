@@ -21,7 +21,7 @@ interface Props {
 
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
-    const list = useContentEntriesList({ folderId });
+    const list = useContentEntriesList();
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
