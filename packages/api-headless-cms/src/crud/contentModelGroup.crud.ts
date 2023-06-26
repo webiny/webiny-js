@@ -206,9 +206,10 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         });
 
         return filterAsync(response, async group => {
-            const ownsGroup = await modelGroupsPermissions.ensure({
-                owns: group.createdBy
-            });
+            const ownsGroup = await modelGroupsPermissions.ensure(
+                { owns: group.createdBy },
+                { throw: false }
+            );
 
             if (!ownsGroup) {
                 return false;
