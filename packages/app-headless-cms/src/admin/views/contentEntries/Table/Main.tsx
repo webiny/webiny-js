@@ -3,6 +3,7 @@ import debounce from "lodash/debounce";
 import { FolderDialogCreate } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
+import { Filters } from "~/admin/components/ContentEntries/Filters";
 import { Header } from "~/admin/components/ContentEntries/Header";
 import { LoadingMore } from "~/admin/components/ContentEntries/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/ContentEntries/LoadMoreButton";
@@ -85,6 +86,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
+                                <Filters show={list.showingFilters} />
                                 <Table
                                     ref={tableRef}
                                     folders={list.folders}

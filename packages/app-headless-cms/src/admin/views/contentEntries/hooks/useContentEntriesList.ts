@@ -27,16 +27,19 @@ interface UseContentEntriesListParams {
 
 interface UseContentEntries {
     folders: FolderEntry[];
+    hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
     isSearch: boolean;
-    listTitle?: string;
     listMoreRecords: () => void;
+    listTitle?: string;
     meta: ListMeta;
     records: RecordEntry[];
     search: string;
     setSearch: (value: string) => void;
     setSorting: OnSortingChange;
+    showFilters: () => void;
+    showingFilters: boolean;
     sorting: Sorting;
 }
 
@@ -61,10 +64,13 @@ export const useContentEntriesList = ({
     } = useAcoList({ folderId });
 
     const [search, setSearch] = useState<string>("");
-
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
     const baseUrl = `${CMS_ENTRY_LIST_LINK}/${contentModel.modelId}`;
+
+    const [showingFilters, setShowingFilters] = useState<boolean>(false);
+    const showFilters = useCallback(() => setShowingFilters(true), []);
+    const hideFilters = useCallback(() => setShowingFilters(false), []);
 
     // Search-related logics: update `listParams` and update querystring
     const updateSearch = useCallback(
@@ -138,6 +144,9 @@ export const useContentEntriesList = ({
         search,
         setSearch,
         sorting,
-        setSorting
+        setSorting,
+        showingFilters,
+        showFilters,
+        hideFilters
     };
 };
