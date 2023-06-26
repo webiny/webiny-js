@@ -1,25 +1,30 @@
 import { Table } from "dynamodb-toolbox";
-import { inject, makeInjectable } from "@webiny/ioc";
+import { Client } from "@elastic/elasticsearch";
 import {
     DataMigration,
     DataMigrationContext,
+    ElasticsearchClientSymbol,
+    ElasticsearchDynamoTableSymbol,
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { AcoRecords_5_37_0_001_PageData } from "./PageDataMigration";
+import { inject, makeInjectable } from "@webiny/ioc";
+import { AcoRecords_5_37_0_003_PageData } from "./PageDataMigration";
 
-export class AcoRecords_5_37_0_001 implements DataMigration {
+export * from "../types";
+
+export class AcoRecords_5_37_0_003 implements DataMigration {
     private readonly migrations: DataMigration[];
 
-    public constructor(table: Table) {
-        this.migrations = [new AcoRecords_5_37_0_001_PageData(table)];
+    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+        this.migrations = [new AcoRecords_5_37_0_003_PageData(table, esTable, elasticsearchClient)];
     }
 
-    public getId() {
-        return "5.37.0-001";
+    getId(): string {
+        return "5.37.0-003";
     }
 
-    public getDescription() {
+    getDescription(): string {
         return "Page Builder Pages search record migration";
     }
 
@@ -45,4 +50,8 @@ export class AcoRecords_5_37_0_001 implements DataMigration {
     }
 }
 
-makeInjectable(AcoRecords_5_37_0_001, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(AcoRecords_5_37_0_003, [
+    inject(PrimaryDynamoTableSymbol),
+    inject(ElasticsearchDynamoTableSymbol),
+    inject(ElasticsearchClientSymbol)
+]);

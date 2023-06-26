@@ -6,11 +6,11 @@ import { createTenantEntity } from "./entities/createTenantEntity";
 import { queryAll, queryOne } from "~/utils";
 
 import { Tenant, TenantLink } from "./types";
-import { isMigratedTenantLink } from "~/migrations/5.37.0/003/utils/isMigratedTenantLink";
+import { isMigratedTenantLink } from "~/migrations/5.37.0/001/utils/isMigratedTenantLink";
 
 export type FileDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
-export class TenantLinkRecords_5_37_0_003_FileData
+export class TenantLinkRecords_5_37_0_001_FileData
     implements DataMigration<FileDataMigrationCheckpoint>
 {
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
