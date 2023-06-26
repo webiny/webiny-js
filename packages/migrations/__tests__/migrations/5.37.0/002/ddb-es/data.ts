@@ -22,6 +22,11 @@ export const createOldFoldersData = (): Folder[] => {
             title: "Test 3"
         },
         {
+            id: "test-4",
+            parent: "root",
+            title: "Test 4"
+        },
+        {
             id: "test-1-1",
             parent: "test-1",
             title: "Test 1-1"
@@ -55,6 +60,21 @@ export const createOldFoldersData = (): Folder[] => {
             id: "test-3-3",
             parent: "test-3",
             title: "Test 3-3"
+        },
+        {
+            id: "test-4-1",
+            parent: "test-4",
+            title: "Test 4-1"
+        },
+        {
+            id: "test-4-2",
+            parent: "test-4",
+            title: "Test 4-2"
+        },
+        {
+            id: "test-4-3",
+            parent: "test-4",
+            title: "Test 4-3"
         }
     ];
 };

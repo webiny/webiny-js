@@ -9,9 +9,9 @@ import {
 } from "~tests/utils";
 import { AcoFolders_5_37_0_002 } from "~/migrations/5.37.0/002/ddb";
 import { ACO_FOLDER_MODEL_ID, ROOT_FOLDER } from "~/migrations/5.37.0/002/constants";
-import { createLocalesData, createTenantsData } from "./data";
 import { insertTestFolders } from "./insertTestFolders";
-import { FolderDdbWriteItem } from "./types";
+import { FolderDdbWriteItem } from "../types";
+import { createLocalesData, createTenantsData } from "../common";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -110,20 +110,20 @@ describe("5.37.0-002", () => {
             const { id, parent, title } = folder;
             const { tenant, locale } = ddbFolder;
 
-            const latestSearchRecord = folderRecords.find(record => {
-                return !(
-                    record.tenant !== tenant ||
-                    record.locale !== locale ||
-                    record.entryId !== id ||
-                    record.SK !== "L"
+            const latestFolderRecord = folderRecords.find(record => {
+                return (
+                    record.tenant === tenant &&
+                    record.locale === locale &&
+                    record.entryId === id &&
+                    record.SK === "L"
                 );
             });
-            const revisionSearchRecord = folderRecords.find(record => {
-                return !(
-                    record.tenant !== tenant ||
-                    record.locale !== locale ||
-                    record.entryId !== id ||
-                    record.SK !== "REV#0001"
+            const revisionFolderRecord = folderRecords.find(record => {
+                return (
+                    record.tenant === tenant &&
+                    record.locale === locale &&
+                    record.entryId === id &&
+                    record.SK === "REV#0001"
                 );
             });
 
@@ -132,7 +132,7 @@ describe("5.37.0-002", () => {
                 slug: id,
                 type: "cms"
             };
-            if (!parent || parent?.toLowerCase() == ROOT_FOLDER) {
+            if (!parent || parent?.toLowerCase() === ROOT_FOLDER) {
                 numberOfValidatedRecordsWithNullParent++;
             } else {
                 numberOfValidatedRecordsWithSomeParent++;
@@ -142,7 +142,7 @@ describe("5.37.0-002", () => {
             const partitionKey = `T#${tenant}#L#${locale}#CMS#CME#CME#${id}`;
 
             // Checking latest ACO search record
-            expect(latestSearchRecord).toMatchObject({
+            expect(latestFolderRecord).toMatchObject({
                 PK: partitionKey,
                 SK: "L",
                 id: `${id}#0001`,
@@ -159,7 +159,7 @@ describe("5.37.0-002", () => {
             });
 
             // Checking revision 1 ACO search record
-            expect(revisionSearchRecord).toMatchObject({
+            expect(revisionFolderRecord).toMatchObject({
                 PK: partitionKey,
                 SK: "REV#0001",
                 id: `${id}#0001`,

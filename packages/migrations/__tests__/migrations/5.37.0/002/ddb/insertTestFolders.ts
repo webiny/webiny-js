@@ -1,8 +1,9 @@
 import { Table } from "dynamodb-toolbox";
-import { createLocalesData, createOldFoldersData, createTenantsData, Folder } from "./data";
 import { insertDynamoDbTestData } from "~tests/utils";
 import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.37.0/002/constants";
-import { FolderDdbItem, FolderDdbWriteItem } from "./types";
+import { FolderDdbItem, FolderDdbWriteItem } from "../types";
+import { createOldFoldersData, Folder } from "./data";
+import { createLocalesData, createTenantsData } from "../common";
 
 interface Response {
     folders: Folder[];

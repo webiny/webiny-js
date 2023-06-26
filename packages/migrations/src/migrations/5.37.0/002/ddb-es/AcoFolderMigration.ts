@@ -18,8 +18,7 @@ import {
 } from "~/utils";
 import { CmsEntryAcoFolder, I18NLocale, ListLocalesParams, Tenant } from "../types";
 import { ACO_FOLDER_MODEL_ID, ROOT_FOLDER, UPPERCASE_ROOT_FOLDER } from "../constants";
-import { getCompressedData } from "../utils/getCompressedData";
-import { DbItem } from "@webiny/db-dynamodb";
+import { getElasticsearchLatestEntryData } from "~/migrations/5.37.0/002/ddb-es/latestElasticsearchData";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -27,25 +26,9 @@ const isGroupMigrationCompleted = (
     return typeof status === "boolean";
 };
 
-const getEntryData = (input: DbItem<CmsEntryAcoFolder>): CmsEntryAcoFolder => {
-    const output: any = {
-        ...input
-    };
-    delete output["PK"];
-    delete output["SK"];
-    delete output["published"];
-    delete output["latest"];
-
-    return output;
-};
-
-const getESLatestEntryData = async (entry: DbItem<CmsEntryAcoFolder>) => {
-    return getCompressedData({
-        ...getEntryData(entry),
-        latest: true,
-        TYPE: "L",
-        __type: "cms.entry.l"
-    });
+const hasBuggedParent = (folder: CmsEntryAcoFolder): boolean => {
+    const parentId = (folder.values.parentId || "").toLowerCase();
+    return parentId === ROOT_FOLDER;
 };
 
 export type AcoFolderDataMigrationCheckpoint = Record<
@@ -145,6 +128,7 @@ export class AcoRecords_5_37_0_002_AcoFolder
                     continue;
                 }
 
+                const body = this.createElasticsearchFolderBody(tenant.data.id, locale.code);
                 const folder = await esFindOne<CmsEntryAcoFolder>({
                     elasticsearchClient: this.elasticsearchClient,
                     index: esGetIndexName({
@@ -153,7 +137,7 @@ export class AcoRecords_5_37_0_002_AcoFolder
                         type: ACO_FOLDER_MODEL_ID,
                         isHeadlessCmsModel: true
                     }),
-                    body: this.createElasticsearchFolderBody(tenant.data.id, locale.code)
+                    body
                 });
                 if (!folder) {
                     logger.info(
@@ -219,7 +203,7 @@ export class AcoRecords_5_37_0_002_AcoFolder
 
                         for (const folder of folders) {
                             const folderPk = `T#${tenantId}#L#${localeCode}#CMS#CME#${folder.entryId}`;
-                            const ddbFolder = await get<DbItem<CmsEntryAcoFolder>>({
+                            const ddbFolder = await get<CmsEntryAcoFolder>({
                                 entity: this.ddbEntryEntity,
                                 keys: {
                                     PK: folderPk,
@@ -231,10 +215,18 @@ export class AcoRecords_5_37_0_002_AcoFolder
                                     `Missing DDB item with PK "${folderPk}", SK "REV#0001"; skipping.`
                                 );
                                 continue;
+                            } else if (!hasBuggedParent(ddbFolder)) {
+                                continue;
                             }
+
+                            const values = {
+                                ...ddbFolder.values,
+                                parentId: null
+                            };
 
                             const latestDdb = {
                                 ...ddbFolder,
+                                values,
                                 PK: folderPk,
                                 SK: "L",
                                 TYPE: "cms.entry.l"
@@ -242,12 +234,16 @@ export class AcoRecords_5_37_0_002_AcoFolder
 
                             const revisionDdb = {
                                 ...ddbFolder,
+                                values,
                                 PK: folderPk,
                                 SK: "REV#0001",
                                 TYPE: "cms.entry"
                             };
 
-                            const esLatestData = await getESLatestEntryData(ddbFolder);
+                            const esLatestData = await getElasticsearchLatestEntryData({
+                                ...ddbFolder,
+                                values
+                            });
 
                             const latestDdbEs = {
                                 PK: folderPk,
