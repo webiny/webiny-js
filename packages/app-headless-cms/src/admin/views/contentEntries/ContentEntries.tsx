@@ -3,7 +3,7 @@ import { Table as CmsAcoTable } from "./Table";
 import { useModel } from "~/admin/components/ModelProvider";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 
-const ContentEntries: React.FC = () => {
+export const ContentEntries: React.FC = () => {
     const { model } = useModel();
 
     return (
@@ -12,5 +12,3 @@ const ContentEntries: React.FC = () => {
         </ContentEntriesProvider>
     );
 };
-
-export default ContentEntries;

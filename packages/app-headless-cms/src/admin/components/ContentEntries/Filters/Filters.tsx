@@ -1,9 +1,6 @@
 import React from "react";
-
 import { Form, FormOnSubmit } from "@webiny/form";
-
 import { useContentEntriesViewConfig } from "~/admin/views/contentEntries/ContentEntriesViewConfig";
-
 import { FiltersContainer } from "./styles";
 
 export const Filters = () => {
@@ -23,7 +20,6 @@ export const Filters = () => {
         }
 
         console.log("data", data);
-        //setFilters(data);
     };
 
     return (

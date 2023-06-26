@@ -5,6 +5,7 @@ import { Browser, BrowserConfig } from "./config/Browser";
 const base = createConfigurableComponent<ContentEntriesViewConfig>("ContentEntriesView");
 
 export const ContentEntriesViewConfig = Object.assign(base.Config, { Browser });
+
 export const ContentEntriesViewWithConfig = base.WithConfig;
 
 interface ContentEntriesViewConfig {
@@ -16,10 +17,13 @@ export function useContentEntriesViewConfig() {
 
     const browser = config.browser || {};
 
-    return useMemo(
-        () => ({
+    return useMemo(() => {
+        const finalConfig = {
             browser: { ...browser, filters: [...(browser.filters || [])] }
-        }),
-        [config]
-    );
+        };
+
+        console.log("config", finalConfig);
+
+        return finalConfig;
+    }, [config]);
 }

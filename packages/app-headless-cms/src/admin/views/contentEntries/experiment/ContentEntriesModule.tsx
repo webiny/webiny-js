@@ -1,13 +1,17 @@
 import React, { useMemo } from "react";
-import { Compose, Plugins } from "@webiny/app-admin";
+import styled from "@emotion/styled";
+import { Plugin } from "@webiny/app-admin";
 import { useBind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
-import { ContentEntriesViewRenderer, ContentEntriesViewConfig } from "./ContentEntriesViewConfig";
-import { ContentEntriesRenderer } from "./ContentEntriesRenderer";
 import { plugins } from "@webiny/plugins";
 import { CmsEntryFilterStatusPlugin } from "~/types";
+import { ContentEntriesViewConfig } from "../ContentEntriesViewConfig";
 
-const { Filter, Sorter } = ContentEntriesViewConfig;
+const { Browser } = ContentEntriesViewConfig;
+
+const DropdownContainer = styled.div`
+    width: 200px;
+`;
 
 const FilterByStatus: React.FC = () => {
     const bind = useBind({
@@ -34,26 +38,47 @@ const FilterByStatus: React.FC = () => {
     });
 
     return (
-        <Select
-            {...bind}
-            label={"Filter by status"}
-            description={"Filter by a specific entry status."}
-            options={options}
-        />
+        <DropdownContainer>
+            <Select {...bind} size={"medium"} placeholder={"Filter by status"} options={options} />
+        </DropdownContainer>
     );
 };
 
 export const ContentEntriesModule: React.FC = () => {
     return (
         <>
-            <Compose component={ContentEntriesViewRenderer} with={ContentEntriesRenderer} />
-            <Plugins>
+            <Plugin>
                 <ContentEntriesViewConfig>
-                    <Filter name={"status"} element={<FilterByStatus />} />
-                    <Sorter name={"savedOn_DESC"} label={"Newest to oldest"} />
-                    <Sorter name={"savedOn_ASC"} label={"Oldest to newest"} />
+                    <Browser.Filter
+                        name={"status"}
+                        element={
+                            <span>
+                                Status: blog <FilterByStatus />
+                            </span>
+                        }
+                        modelIds={["blog"]}
+                    />
+                    <Browser.Filter
+                        name={"carFilter"}
+                        element={
+                            <span>
+                                Status: car <FilterByStatus />
+                            </span>
+                        }
+                        modelIds={["car"]}
+                    />
+                    <Browser.Filter
+                        name={"shared"}
+                        element={
+                            <span>
+                                Shared <FilterByStatus />
+                            </span>
+                        }
+                    />
+                    {/*<Sorter name={"savedOn_DESC"} label={"Newest to oldest"} />*/}
+                    {/*<Sorter name={"savedOn_ASC"} label={"Oldest to newest"} />*/}
                 </ContentEntriesViewConfig>
-            </Plugins>
+            </Plugin>
         </>
     );
 };
