@@ -117,6 +117,7 @@ export default /* GraphQL */ `
             sort: [ReviewApiModelListSorter]
             limit: Int
             after: String
+            search: String
         ): ReviewApiModelListResponse
     }
 `;

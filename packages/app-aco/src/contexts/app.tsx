@@ -4,10 +4,10 @@ import { createGetAppQuery, GetAppResult, GetAppVariables } from "~/graphql/app.
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
 import { DialogsProvider as DialogsContextProvider } from "../dialogs";
-import { Loader } from "~/components/FolderTree/Loader";
 import { DisplayError } from "./DisplayError";
 import { ApolloClient } from "apollo-client";
 import { NavigateFolderWithRouterProvider } from "~/contexts/navigateFolderWithRouter";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 export interface AcoAppProviderContext {
     app: AcoApp;
@@ -222,7 +222,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     if (error) {
         return <div>Error: {error.message}</div>;
     } else if (loading) {
-        return <Loader />;
+        return <CircularProgress />;
     } else if (!app) {
         return (
             <DisplayError>

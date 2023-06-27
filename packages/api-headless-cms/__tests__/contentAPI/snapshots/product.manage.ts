@@ -355,6 +355,7 @@ export default /* GraphQL */ `
             sort: [ProductApiSingularListSorter]
             limit: Int
             after: String
+            search: String
         ): ProductApiSingularListResponse
     }
 

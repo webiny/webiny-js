@@ -29,7 +29,6 @@ import {
     ListTagsWhereQueryVariables,
     Loading,
     LoadingActions,
-    Meta,
     MovableSearchRecordItem,
     MoveSearchRecordResponse,
     MoveSearchRecordVariables,
@@ -52,7 +51,7 @@ interface SearchRecordsContext {
     records: SearchRecordItem[];
     tags: TagItem[];
     loading: Loading<LoadingActions>;
-    meta: Meta<ListMeta>;
+    meta: ListMeta;
     listRecords: (params: ListRecordsParams) => Promise<SearchRecordItem[]>;
     getRecord: (id: string) => Promise<SearchRecordItem | null>;
     createRecord: (record: Omit<SearchRecordItem, "id">) => Promise<SearchRecordItem>;
@@ -137,6 +136,12 @@ const getResponseData = (response: any, mode: AcoAppMode): any => {
     return response.search?.content || {};
 };
 
+const defaultMeta: ListMeta = {
+    totalCount: 0,
+    hasMoreItems: false,
+    cursor: null
+};
+
 export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
     const { app, client, mode, folderIdPath } = useAcoApp();
     const { model } = app;
@@ -144,7 +149,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [tags, setTags] = useState<TagItem[]>([]);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
-    const [meta, setMeta] = useState<Meta<ListMeta>>(Object.create(null));
+    const [meta, setMeta] = useState<ListMeta>(Object.create(defaultMeta));
 
     const {
         GET_RECORD,
@@ -213,7 +218,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                  * This happens when visiting a list with all records loaded and receives "after" param.
                  */
                 const recordsCount = getRecordCount(records, folderIdPath, folderId);
-                const totalCount = meta[folderId || "search"]?.totalCount || 0;
+                const totalCount = meta?.totalCount || 0;
                 if (after && recordsCount === totalCount) {
                     return records;
                 }
@@ -262,12 +267,10 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                      * In case of paginated request, we merge the fetched records with the existing ones, and then sort them.
                      * Otherwise, we sort the fetched records and set them as the new records.
                      */
-                    return sortTableItems(mergeRecords(after ? prev : [], data));
+                    return sortTableItems(mergeRecords(after ? prev : [], data), sort);
                 });
-                setMeta(meta => ({
-                    ...meta,
-                    [folderId || "search"]: responseMeta
-                }));
+
+                setMeta(() => responseMeta);
 
                 setLoading(prev => {
                     return {
@@ -336,8 +339,6 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 if (!CREATE_RECORD) {
                     throw new Error("Missing CREATE_RECORD operation.");
                 }
-                const { location } = record;
-                const { folderId } = location;
 
                 const { data: response } = await apolloFetchingHandler<CreateSearchRecordResponse>(
                     loadingHandler("CREATE", setLoading),
@@ -366,10 +367,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 setMeta(meta => ({
                     ...meta,
-                    [folderId]: {
-                        ...meta[folderId],
-                        totalCount: ++meta[folderId].totalCount
-                    }
+                    totalCount: ++meta.totalCount
                 }));
 
                 setTags(tags => {
@@ -462,23 +460,16 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 setRecords(prev => {
                     return prev.filter(record => record.id !== id);
                 });
-                // setMeta(meta => {
-                //     const folder = meta[folderId] || {};
-                //     return {
-                //         ...meta,
-                //         [folderId]: {
-                //             ...folder,
-                //             totalCount: (folder?.totalCount || 0) + 1
-                //         }
-                //     };
-                // });
+                setMeta(meta => ({
+                    ...meta,
+                    totalCount: --meta.totalCount
+                }));
             },
             async deleteRecord(record) {
                 if (!DELETE_RECORD) {
                     throw new Error("Missing DELETE_RECORD operation.");
                 }
-                const { id, location } = record;
-                const { folderId } = location;
+                const { id } = record;
 
                 const { data: response } = await apolloFetchingHandler(
                     loadingHandler("DELETE", setLoading),
@@ -505,10 +496,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
 
                 setMeta(meta => ({
                     ...meta,
-                    [folderId]: {
-                        ...meta[folderId],
-                        totalCount: --meta[folderId].totalCount
-                    }
+                    totalCount: --meta.totalCount
                 }));
 
                 return true;
