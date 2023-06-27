@@ -17,7 +17,7 @@ import {
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createLocalesData, createTenantsData } from "../common";
-import { insertTestFolders } from "./insertTestFolders";
+import { insertEmptyIndexes, insertTestFolders } from "./insertTestFolders";
 import {
     FolderDdbToElasticsearchWriteItem,
     FolderDdbWriteItem
@@ -91,6 +91,27 @@ describe("5.37.0-002", () => {
 
     it("should not run if no folders found", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: ddbTable,
+            elasticsearchClient,
+            dynamoToEsTable: ddbToEsTable,
+            migrations: [AcoFolders_5_37_0_002]
+        });
+
+        const { data, error } = await handler();
+
+        assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
+    });
+
+    it("should not run if no folders found - empty index", async () => {
+        await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+        await insertEmptyIndexes(elasticsearchClient);
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,

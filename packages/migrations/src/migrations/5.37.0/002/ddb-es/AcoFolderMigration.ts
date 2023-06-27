@@ -54,11 +54,11 @@ export class AcoRecords_5_37_0_002_AcoFolder
     }
 
     getId() {
-        return "PageData";
+        return "AcoFolderParentId";
     }
 
     getDescription() {
-        return "Migrate PbPage Data -> Move ACO Search Records to new model";
+        return "Fix the ACO Folders having set ROOT as parentId";
     }
 
     private createElasticsearchFolderBody(tenant: string, locale: string): Partial<SearchBody> {
@@ -137,7 +137,10 @@ export class AcoRecords_5_37_0_002_AcoFolder
                         type: ACO_FOLDER_MODEL_ID,
                         isHeadlessCmsModel: true
                     }),
-                    body
+                    body: {
+                        ...body,
+                        sort: undefined
+                    }
                 });
                 if (!folder) {
                     logger.info(
@@ -175,6 +178,22 @@ export class AcoRecords_5_37_0_002_AcoFolder
                     continue;
                 }
 
+                // there is an index? NO -> skip
+                const indexExists = await esGetIndexExist({
+                    elasticsearchClient: this.elasticsearchClient,
+                    tenant: tenant.data.id,
+                    locale: locale.code,
+                    type: ACO_FOLDER_MODEL_ID,
+                    isHeadlessCmsModel: true
+                });
+
+                if (!indexExists) {
+                    /**
+                     * No need to do anything with this index as it doesn't exist - querying will produce error.
+                     */
+                    continue;
+                }
+
                 let batch = 0;
 
                 const foldersIndexName = esGetIndexName({
@@ -192,10 +211,17 @@ export class AcoRecords_5_37_0_002_AcoFolder
                         size: 500,
                         search_after: status
                     },
+                    onError: error => {
+                        const x = JSON.stringify(error);
+                        if (x.includes("No mapping found")) {
+                            return;
+                        }
+                        throw error;
+                    },
                     callback: async (folders, cursor) => {
                         batch++;
                         logger.info(
-                            `Processing batch #${batch} in group ${groupId} (${folders.length} pages).`
+                            `Processing batch #${batch} in group ${groupId} (${folders.length} folders).`
                         );
 
                         const ddbItems: BatchWriteItem[] = [];

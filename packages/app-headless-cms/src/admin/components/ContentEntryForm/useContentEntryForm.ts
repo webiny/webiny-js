@@ -21,7 +21,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { useRecords } from "@webiny/app-aco";
-import { ROOT_FOLDER } from "@webiny/app-aco/constants";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 /**
  * Used for some fields to convert their values.

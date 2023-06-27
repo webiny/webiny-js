@@ -10,7 +10,7 @@ import {
 import { createOldFoldersData, Folder } from "./data";
 import { createLocalesData, createTenantsData } from "../common";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
-import { esGetIndexName } from "~/utils";
+import { esCreateIndex, esGetIndexName } from "~/utils";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { getElasticsearchLatestEntryData } from "~/migrations/5.37.0/002/ddb-es/latestElasticsearchData";
 
@@ -161,4 +161,30 @@ export const insertTestFolders = async (params: Params): Promise<Response> => {
         ddbFolders,
         tenants
     };
+};
+
+export const insertEmptyIndexes = async (client: ElasticsearchClient): Promise<any> => {
+    const testLocales = createLocalesData();
+    const tenants = createTenantsData()
+        .map(tenant => tenant.data.id)
+        .map(tenant => {
+            return {
+                tenant,
+                locales: testLocales
+                    .filter(item => item.PK === `T#${tenant}#I18N#L`)
+                    .map(locale => locale.code)
+            };
+        });
+
+    for (const tenant of tenants) {
+        for (const locale of tenant.locales) {
+            await esCreateIndex({
+                elasticsearchClient: client,
+                tenant: tenant.tenant,
+                locale,
+                type: ACO_FOLDER_MODEL_ID,
+                isHeadlessCmsModel: true
+            });
+        }
+    }
 };

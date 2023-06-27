@@ -36,11 +36,11 @@ export class AcoRecords_5_37_0_002_AcoFolders
     }
 
     getId() {
-        return "PageData";
+        return "AcoFolderParentId";
     }
 
     getDescription() {
-        return "Migrate PbPage Data -> Move ACO Search Records to new model";
+        return "Fix the ACO Folders having set ROOT as parentId";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
