@@ -5,5 +5,5 @@ export const FiltersContainer = styled.div`
     height: auto;
     padding: 10px;
     background-color: var(--mdc-theme-surface);
-    border-bottom: 1px solid var(--mdc-theme-on-background);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 `;

@@ -82,11 +82,11 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                         />
                     ) : (
                         <>
+                            <Filters />
                             <Scrollbar
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Filters />
                                 <Table
                                     ref={tableRef}
                                     folders={list.folders}
