@@ -135,10 +135,6 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
         }
 
         setState(state => {
-            if (currentFolderId === state.folderId) {
-                return state;
-            }
-
             return {
                 ...state,
                 folderId: currentFolderId,
@@ -162,14 +158,14 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
             return;
         }
 
-        const subFolders = getCurrentFolderList(originalFolders, currentFolderId);
+        const subFolders = getCurrentFolderList(originalFolders, state.folderId);
         setFolders(() => {
             return sortTableItems(subFolders, state.listSort);
         });
 
-        const currentFolder = originalFolders?.find(folder => folder.id === currentFolderId);
+        const currentFolder = originalFolders?.find(folder => folder.id === state.folderId);
         setListTitle(currentFolder?.title);
-    }, [originalFolders, currentFolderId, state.isSearch]);
+    }, [originalFolders, state.folderId, state.isSearch]);
 
     /**
      * Any time we receive a `records` list or `folderId` update:
@@ -185,10 +181,10 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
         const subRecords = getCurrentRecordList(
             originalRecords as SearchRecordItem[],
             folderIdPath,
-            currentFolderId
+            state.folderId
         );
         setRecords(subRecords);
-    }, [originalRecords, currentFolderId, state.isSearch]);
+    }, [originalRecords, state.folderId, state.isSearch]);
 
     /**
      * Any time we receive a new `sort` value:
