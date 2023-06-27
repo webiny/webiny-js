@@ -14,6 +14,7 @@ import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick";
+import { ROOT_FOLDER } from "~/constants";
 
 export interface AcoListContext {
     folders: FolderItem[];
@@ -65,9 +66,9 @@ const getCurrentFolderList = (
     if (!folders) {
         return [];
     }
-    if (!currentFolderId || currentFolderId.toLowerCase() === "root") {
+    if (!currentFolderId || currentFolderId.toLowerCase() === ROOT_FOLDER) {
         return folders.filter(
-            folder => !folder.parentId || folder.parentId.toLowerCase() === "root"
+            folder => !folder.parentId || folder.parentId.toLowerCase() === ROOT_FOLDER
         );
     }
     return folders.filter(folder => folder.parentId === currentFolderId);
@@ -97,7 +98,7 @@ export interface AcoListProviderProps {
 }
 
 export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) => {
-    const { currentFolderId = "ROOT" } = useNavigateFolder();
+    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
@@ -225,7 +226,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
             let locationWhere = dotPropImmutable.set({}, folderIdPath, state.folderId);
 
             if (isSearch) {
-                if (state.folderId === "ROOT") {
+                if (state.folderId === ROOT_FOLDER) {
                     locationWhere = undefined;
                 } else {
                     locationWhere = dotPropImmutable.set(
