@@ -320,6 +320,11 @@ export default /* GraphQL */ `
         data: PageModelApiName
         error: CmsError
     }
+    
+    type PageModelApiNameMoveResponse {
+        data: Boolean
+        error: CmsError
+    }
 
     type PageModelApiNameArrayResponse {
         data: [PageModelApiName]
@@ -373,7 +378,9 @@ export default /* GraphQL */ `
             revision: ID!
             data: PageModelApiNameInput!
         ): PageModelApiNameResponse
-
+    
+        movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
+    
         deletePageModelApiName(
             revision: ID!
             options: CmsDeleteEntryOptions
