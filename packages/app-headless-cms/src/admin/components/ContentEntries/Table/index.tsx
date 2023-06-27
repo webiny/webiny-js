@@ -145,7 +145,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                                             return null;
                                         }
                                         return {
-                                            id: entryId,
+                                            id: record.id,
                                             location: {
                                                 folderId: currentFolderId as string
                                             }
