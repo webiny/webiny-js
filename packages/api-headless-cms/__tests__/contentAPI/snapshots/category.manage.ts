@@ -112,6 +112,11 @@ export default /* GraphQL */ `
         error: CmsError
     }
     
+    type CategoryApiNameWhichIsABitDifferentThanModelIdMoveResponse {
+        data: Boolean
+        error: CmsError
+    }
+    
     type CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse {
         data: [CategoryApiNameWhichIsABitDifferentThanModelId]
         error: CmsError
@@ -157,6 +162,8 @@ export default /* GraphQL */ `
         createCategoryApiNameWhichIsABitDifferentThanModelIdFrom(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
         updateCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+    
+        moveCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!, folderId: ID!): CategoryApiNameWhichIsABitDifferentThanModelIdMoveResponse
 
         deleteCategoryApiNameWhichIsABitDifferentThanModelId(
             revision: ID!
