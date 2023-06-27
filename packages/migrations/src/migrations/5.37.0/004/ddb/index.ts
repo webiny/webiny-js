@@ -6,10 +6,10 @@ import {
 } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { executeWithRetry } from "@webiny/utils";
-import { createDdbEntryEntity } from "./entities/createEntryEntity";
-import { createLocaleEntity } from "./entities/createLocaleEntity";
-import { createDdbFileEntity } from "./entities/createFileEntity";
-import { createTenantEntity } from "./entities/createTenantEntity";
+import { createDdbEntryEntity } from "../entities/createEntryEntity";
+import { createLocaleEntity } from "../entities/createLocaleEntity";
+import { createDdbFileEntity } from "../entities/createFileEntity";
+import { createTenantEntity } from "../entities/createTenantEntity";
 import { batchWriteAll, ddbQueryAllWithCallback, queryAll, queryOne } from "~/utils";
 import {
     I18NLocale,
@@ -19,7 +19,7 @@ import {
     FileSearchRecordValues,
     FileEntryValues,
     FileItem
-} from "./types";
+} from "../types";
 import { inject, makeInjectable } from "@webiny/ioc";
 
 const isGroupMigrationCompleted = (

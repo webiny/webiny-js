@@ -7,7 +7,7 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { FileManager_5_37_0_004 } from "~/migrations/5.37.0/004";
+import { FileManager_5_37_0_004 } from "~/migrations/5.37.0/004/ddb";
 import { createTenantsData } from "./004.data";
 
 jest.retryTimes(0);
