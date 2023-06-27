@@ -45,7 +45,7 @@ const isGroupMigrationCompleted = (
 
 export type PageDataMigrationCheckpoint = Record<string, PrimitiveValue[] | boolean | undefined>;
 
-export class AcoRecords_5_37_0_001_PageData implements DataMigration<PageDataMigrationCheckpoint> {
+export class AcoRecords_5_37_0_003_PageData implements DataMigration<PageDataMigrationCheckpoint> {
     private readonly elasticsearchClient: Client;
     private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;

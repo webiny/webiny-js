@@ -19,7 +19,7 @@ describe("identity test", () => {
         const link1 = {
             tenant,
             identity: "1",
-            type: "permissions",
+            type: "group",
             data: { group: "full-access" }
         };
 
@@ -38,7 +38,7 @@ describe("identity test", () => {
         });
 
         const linksByType = await security.listTenantLinksByType({
-            type: "permissions",
+            type: "group",
             tenant
         });
 

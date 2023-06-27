@@ -33,7 +33,7 @@ const isGroupMigrationCompleted = (
 
 export type PageDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
-export class AcoRecords_5_37_0_001_PageData implements DataMigration<PageDataMigrationCheckpoint> {
+export class AcoRecords_5_37_0_003_PageData implements DataMigration<PageDataMigrationCheckpoint> {
     private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly pageEntity: ReturnType<typeof createDdbPageEntity>;
