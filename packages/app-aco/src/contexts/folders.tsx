@@ -278,7 +278,7 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
             },
 
             getDescendantFolders(id) {
-                if (!id || id === "ROOT" || !folders?.length) {
+                if (!id || id === ROOT_FOLDER || !folders?.length) {
                     return [];
                 }
 
