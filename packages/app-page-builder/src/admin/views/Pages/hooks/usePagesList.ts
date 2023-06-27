@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import debounce from "lodash/debounce";
 import { PAGE_BUILDER_LIST_LINK, FOLDER_ID_DEFAULT } from "~/admin/constants";
-import { useAcoList, useFolders, useNavigateFolder } from "@webiny/app-aco";
+import { createSort, useAcoList, useNavigateFolder } from "@webiny/app-aco";
 import { PbPageDataItem } from "~/types";
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -46,13 +46,12 @@ export const usePagesList = (): UsePageList => {
         listTitle,
         meta,
         records,
-        setListParams,
-        sorting,
-        setSorting
+        setSearchQuery,
+        setListSort
     } = useAcoList<PbPageDataItem>();
-    const { getDescendantFolders } = useFolders();
     const { currentFolderId = FOLDER_ID_DEFAULT } = useNavigateFolder();
 
+    const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
     const [selected, setSelected] = useState<string[]>([]);
 
@@ -68,24 +67,9 @@ export const usePagesList = (): UsePageList => {
                 return;
             }
 
-            let location;
-            if (search) {
-                /**
-                 * In case of search:
-                 * - in case we are inside a folder, pass the descendent folders id
-                 * - otherwhise, remove `location` and search across all records
-                 */
-                const folderIds = getDescendantFolders(currentFolderId).map(folder => folder.id);
-                if (folderIds?.length) {
-                    location = { folderId_in: folderIds };
-                }
-            } else {
-                location = { folderId: currentFolderId };
-            }
-
-            setListParams({ search, where: { location } });
-
             if (searchQuery !== search) {
+                setSearchQuery(search);
+
                 if (!search) {
                     // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
@@ -114,6 +98,17 @@ export const usePagesList = (): UsePageList => {
         const ids = rows.filter(row => row.$type === "RECORD").map(row => row.id);
         setSelected(ids);
     };
+
+    useEffect(() => {
+        if (!sorting?.length) {
+            return;
+        }
+        const sort = createSort(sorting);
+        if (!sort) {
+            return;
+        }
+        setListSort(sort);
+    }, [sorting]);
 
     return {
         folders,

@@ -4,7 +4,7 @@ import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, useFolders, useNavigateFolder } from "@webiny/app-aco";
+import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
 import { CMS_ENTRY_LIST_LINK, FOLDER_ID_DEFAULT } from "~/admin/constants";
 import { ListMeta } from "@webiny/app-aco/types";
 import {
@@ -37,13 +37,14 @@ interface UseContentEntries {
     showFilters: () => void;
     showingFilters: boolean;
     sorting: Sorting;
+    setFilters: (data: Record<string, any>) => void;
 }
 
 export const useContentEntriesList = (): UseContentEntries => {
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
-    const { getDescendantFolders } = useFolders();
     const { currentFolderId = FOLDER_ID_DEFAULT } = useNavigateFolder();
+
     const {
         folders: initialFolders,
         isListLoading,
@@ -53,11 +54,12 @@ export const useContentEntriesList = (): UseContentEntries => {
         listTitle,
         meta,
         records: initialRecords,
-        setListParams,
-        sorting,
-        setSorting
+        setSearchQuery,
+        setListSort,
+        setFilters
     } = useAcoList();
 
+    const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
@@ -67,7 +69,7 @@ export const useContentEntriesList = (): UseContentEntries => {
     const showFilters = useCallback(() => setShowingFilters(true), []);
     const hideFilters = useCallback(() => setShowingFilters(false), []);
 
-    // Search-related logics: update `listParams` and update querystring
+    // Search-related logics: update `searchQuery` state and querystring
     const updateSearch = useCallback(
         debounce<UpdateSearchCallable>(({ search, query }) => {
             const searchQuery = query.get("search");
@@ -76,24 +78,9 @@ export const useContentEntriesList = (): UseContentEntries => {
                 return;
             }
 
-            let wbyAco_location;
-            if (search) {
-                /**
-                 * In case of search:
-                 * - in case we are inside a folder, pass the descendent folders id
-                 * - otherwhise, remove `location` and search across all records
-                 */
-                const folderIds = getDescendantFolders(currentFolderId).map(folder => folder.id);
-                if (folderIds?.length) {
-                    wbyAco_location = { folderId_in: folderIds };
-                }
-            } else {
-                wbyAco_location = { folderId: currentFolderId };
-            }
-
-            setListParams({ search, where: { wbyAco_location } });
-
             if (searchQuery !== search) {
+                setSearchQuery(search);
+
                 if (!search) {
                     // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
@@ -127,6 +114,17 @@ export const useContentEntriesList = (): UseContentEntries => {
         return transformFolderItemsToFolderEntries(initialFolders);
     }, [initialFolders]);
 
+    useEffect(() => {
+        if (!sorting?.length) {
+            return;
+        }
+        const sort = createSort(sorting);
+        if (!sort) {
+            return;
+        }
+        setListSort(sort);
+    }, [sorting]);
+
     return {
         folders,
         isListLoading,
@@ -142,6 +140,7 @@ export const useContentEntriesList = (): UseContentEntries => {
         setSorting,
         showingFilters,
         showFilters,
-        hideFilters
+        hideFilters,
+        setFilters
     };
 };

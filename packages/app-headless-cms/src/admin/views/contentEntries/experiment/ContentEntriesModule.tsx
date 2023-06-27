@@ -5,9 +5,9 @@ import { useBind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 import { plugins } from "@webiny/plugins";
 import { CmsEntryFilterStatusPlugin } from "~/types";
-import { ContentEntriesViewConfig } from "../ContentEntriesViewConfig";
+import { ContentEntryListConfig } from "../ContentEntryListConfig";
 
-const { Browser } = ContentEntriesViewConfig;
+const { Browser } = ContentEntryListConfig;
 
 const DropdownContainer = styled.div`
     width: 200px;
@@ -48,7 +48,7 @@ export const ContentEntriesModule: React.FC = () => {
     return (
         <>
             <Plugin>
-                <ContentEntriesViewConfig>
+                <ContentEntryListConfig>
                     <Browser.Filter
                         name={"status"}
                         element={
@@ -77,7 +77,7 @@ export const ContentEntriesModule: React.FC = () => {
                     />
                     {/*<Sorter name={"savedOn_DESC"} label={"Newest to oldest"} />*/}
                     {/*<Sorter name={"savedOn_ASC"} label={"Oldest to newest"} />*/}
-                </ContentEntriesViewConfig>
+                </ContentEntryListConfig>
             </Plugin>
         </>
     );

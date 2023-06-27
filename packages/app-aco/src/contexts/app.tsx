@@ -12,6 +12,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 export interface AcoAppProviderContext {
     app: AcoApp;
     folderIdPath: string;
+    folderIdInPath: string;
     model: AcoModel;
     client: ApolloClient<any>;
     loading: boolean;
@@ -110,6 +111,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
         mode: "aco"
     });
     const folderIdPath = initialFolderIdPath || "location.folderId";
+    const folderIdInPath = folderIdPath + "_in";
 
     /**
      * The APP Provider can operate in two modes:
@@ -209,6 +211,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
         return {
             app: app as AcoApp,
             folderIdPath,
+            folderIdInPath,
             loading,
             client,
             model: model as AcoModel,

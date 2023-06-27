@@ -6,7 +6,7 @@ import { ApolloClient } from "apollo-client";
 import { CmsProvider } from "./admin/contexts/Cms";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
 import apiInformation from "./admin/plugins/apiInformation";
-import { ContentEntriesModule } from "./admin/views/contentEntries/experiment/ContentEntriesModule";
+import { ContentEntriesModule } from "./admin/views/contentEntries/ContentEntriesModule";
 import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete";
 import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
 import allPlugins from "./allPlugins";

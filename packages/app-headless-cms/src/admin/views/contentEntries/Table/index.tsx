@@ -6,7 +6,7 @@ import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
 import { useApolloClient, useModel } from "~/admin/hooks";
 import { CMS_ENTRY_LIST_LINK, LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/admin/constants";
-import { ContentEntriesViewWithConfig } from "~/admin/views/contentEntries/ContentEntriesViewConfig";
+import { ContentEntryListWithConfig } from "~/admin/views/contentEntries/ContentEntryListConfig";
 
 const View: React.VFC = () => {
     const { currentFolderId } = useNavigateFolder();
@@ -45,9 +45,9 @@ export const Table: React.VFC = () => {
             createNavigateFolderListLink={createNavigateFolderListLink}
             createNavigateFolderStorageKey={createNavigateFolderStorageKey}
         >
-            <ContentEntriesViewWithConfig>
+            <ContentEntryListWithConfig>
                 <View />
-            </ContentEntriesViewWithConfig>
+            </ContentEntryListWithConfig>
         </AcoProvider>
     );
 };

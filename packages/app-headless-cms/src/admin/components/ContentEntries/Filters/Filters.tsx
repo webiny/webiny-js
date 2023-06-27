@@ -1,25 +1,25 @@
 import React from "react";
 import { Form, FormOnSubmit } from "@webiny/form";
-import { useContentEntriesViewConfig } from "~/admin/views/contentEntries/ContentEntriesViewConfig";
+import { useContentEntryListConfig } from "~/admin/views/contentEntries/ContentEntryListConfig";
 import { FiltersContainer } from "./styles";
 
-export const Filters = () => {
-    const { browser } = useContentEntriesViewConfig();
+interface FiltersProps {
+    showingFilters: boolean;
+    setFilters: (data: Record<string, any>) => void;
+}
 
-    if (!browser.filters.length) {
+export const Filters: React.VFC<FiltersProps> = props => {
+    const { browser } = useContentEntryListConfig();
+
+    if (!props.showingFilters || !browser.filters.length) {
         return null;
     }
-
-    // if (!props.show) {
-    //     return null;
-    // }
 
     const applyFilters: FormOnSubmit = data => {
         if (!Object.keys(data).length) {
             return;
         }
-
-        console.log("data", data);
+        props.setFilters(data);
     };
 
     return (
