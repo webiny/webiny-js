@@ -158,7 +158,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
         return {
             LIST_RECORDS: createListRecords(model, mode),
             UPDATE_RECORD: createUpdateRecord(model, mode),
-            MOVE_RECORD: createMoveRecord(model),
+            MOVE_RECORD: createMoveRecord(model, mode),
             GET_RECORD: createGetRecord(model, mode),
             LIST_TAGS: createListTags(model, mode),
             DELETE_RECORD: createDeleteRecord(model, mode),
@@ -462,13 +462,16 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 setRecords(prev => {
                     return prev.filter(record => record.id !== id);
                 });
-                setMeta(meta => ({
-                    ...meta,
-                    [folderId]: {
-                        ...meta[folderId],
-                        totalCount: --meta[folderId].totalCount
-                    }
-                }));
+                // setMeta(meta => {
+                //     const folder = meta[folderId] || {};
+                //     return {
+                //         ...meta,
+                //         [folderId]: {
+                //             ...folder,
+                //             totalCount: (folder?.totalCount || 0) + 1
+                //         }
+                //     };
+                // });
             },
             async deleteRecord(record) {
                 if (!DELETE_RECORD) {
