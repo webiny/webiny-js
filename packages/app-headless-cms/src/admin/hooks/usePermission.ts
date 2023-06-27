@@ -6,6 +6,7 @@ import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types"
 export interface CreatableItem {
     createdBy: Pick<CmsIdentity, "id">;
 }
+
 export type EditableItem = CreatableItem;
 
 interface CanReadEntriesCallableParams {
@@ -75,7 +76,7 @@ export const usePermission = () => {
             }
 
             if (Array.isArray(allowedModels)) {
-                return allowedModels.includes(contentModel.id);
+                return allowedModels.includes(contentModel.modelId);
             }
 
             // Check "contentModelGroup" list.

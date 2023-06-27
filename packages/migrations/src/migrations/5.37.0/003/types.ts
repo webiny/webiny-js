@@ -61,7 +61,6 @@ export interface PageSettings {
         layout?: string;
         image?: File;
     };
-
     [key: string]: any;
 }
 
@@ -143,7 +142,6 @@ interface ExistingAcoSearchRecordValues extends Omit<AcoSearchRecordValues, "obj
         version: number;
     };
 }
-
 /**
  * Existing ACO Search Record has values data in a custom json field.
  * We removed that field in 5.37.0, so we need to remap the data.

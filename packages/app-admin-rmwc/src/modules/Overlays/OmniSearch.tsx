@@ -119,7 +119,7 @@ export const OmniSearch = () => {
                                         const description = [
                                             level1Item.label,
                                             level2Item.label
-                                        ].join("/");
+                                        ].join(" / ");
 
                                         return {
                                             id: description + child.label,
@@ -175,7 +175,7 @@ export const OmniSearch = () => {
             return {
                 ...itemsSection,
                 items: itemsSection.items.filter(item => {
-                    return item.title.toLowerCase().includes(filter.toLowerCase());
+                    return item.title?.toLowerCase().includes(filter.toLowerCase());
                 })
             };
         });

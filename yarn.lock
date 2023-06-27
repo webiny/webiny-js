@@ -13556,7 +13556,6 @@ __metadata:
     "@webiny/app-graphql-playground": 0.0.0
     "@webiny/app-headless-cms-common": 0.0.0
     "@webiny/app-i18n": 0.0.0
-    "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-plugin-admin-welcome-screen": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15041,6 +15040,7 @@ __metadata:
   dependencies:
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.2
+    "@webiny/app-admin": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": 0.0.0

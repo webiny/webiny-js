@@ -52,3 +52,6 @@ export * from "./hooks/useConfirmationDialog";
 export * from "./hooks/useDialog";
 export { useWcp } from "@webiny/app-wcp";
 export { AaclPermission } from "@webiny/app-wcp/types";
+
+// Theme
+export { useTheme, ThemeProvider } from "@webiny/app-theme";

@@ -23,7 +23,7 @@ import {
     transformCmsContentEntriesToRecordEntries,
     transformFolderItemsToFolderEntries
 } from "~/utils/acoRecordTransform";
-import { FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 interface Props {
     folderId?: string;
@@ -44,7 +44,7 @@ const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
 };
 
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
-    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
+    const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
     const {
         /**
          * TODO refactor useAcoList to accept exact generic type
@@ -59,7 +59,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         listItems,
         limit
     } = useAcoList({
-        folderId: initialFolderId || FOLDER_ID_DEFAULT
+        folderId: initialFolderId || ROOT_FOLDER
     });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);

@@ -33,7 +33,6 @@
     "@webiny/app-graphql-playground": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-i18n": "0.0.0",
-    "@webiny/app-page-builder-elements": "0.0.0",
     "@webiny/app-plugin-admin-welcome-screen": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/error": "0.0.0",
