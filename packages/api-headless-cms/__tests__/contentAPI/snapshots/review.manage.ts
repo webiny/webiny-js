@@ -123,6 +123,11 @@ export default /* GraphQL */ `
         data: ReviewApiModel
         error: CmsError
     }
+
+    type ReviewApiModelMoveResponse {
+        data: Boolean
+        error: CmsError
+    }
     
     type ReviewApiModelArrayResponse {
         data: [ReviewApiModel]
@@ -169,6 +174,8 @@ export default /* GraphQL */ `
         createReviewApiModelFrom(revision: ID!, data: ReviewApiModelInput): ReviewApiModelResponse
 
         updateReviewApiModel(revision: ID!, data: ReviewApiModelInput!): ReviewApiModelResponse
+        
+        moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 
         deleteReviewApiModel(
             revision: ID!
