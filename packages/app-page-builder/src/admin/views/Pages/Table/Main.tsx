@@ -20,7 +20,7 @@ import { ListMeta, ListSearchRecordsSort, ListSearchRecordsSortItem } from "@web
 import { PbPageDataItem } from "~/types";
 import { Sorting } from "@webiny/ui/DataTable";
 import { usePagesPermissions } from "~/hooks/permissions";
-import { FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
 
@@ -46,7 +46,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const location = useLocation();
     const history = useHistory();
 
-    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
+    const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
     const { records, folders, listTitle, meta, isListLoading, isListLoadingMore, listItems } =
         useAcoList<PbPageDataItem>({ folderId });

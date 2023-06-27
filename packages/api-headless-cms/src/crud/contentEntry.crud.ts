@@ -71,6 +71,7 @@ import { filterAsync } from "~/utils/filterAsync";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { NotAuthorizedError } from "@webiny/api-security/";
+import { ROOT_FOLDER } from "~/constants";
 
 export const STATUS_DRAFT = CONTENT_ENTRY_STATUS.DRAFT;
 export const STATUS_PUBLISHED = CONTENT_ENTRY_STATUS.PUBLISHED;
@@ -668,7 +669,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             status: STATUS_DRAFT,
             values: input,
             location: {
-                folderId: inputData.wbyAco_location?.folderId || "ROOT"
+                folderId: inputData.wbyAco_location?.folderId || ROOT_FOLDER
             }
         };
 

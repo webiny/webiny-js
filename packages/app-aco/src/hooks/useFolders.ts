@@ -1,9 +1,10 @@
 import { useContext, useEffect, useMemo } from "react";
 import { FoldersContext } from "~/contexts/folders";
 import { FolderItem } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 const getDescendantFolders = (folders: FolderItem[], folderId?: string) => {
-    if (!folderId || folderId === "ROOT" || !folders.length) {
+    if (!folderId || folderId === ROOT_FOLDER || !folders.length) {
         return [];
     }
 

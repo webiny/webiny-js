@@ -27,6 +27,7 @@ import {
 } from "~/types";
 import { useApolloClient } from "@apollo/react-hooks";
 import { AcoAppContext } from "~/contexts/app";
+import { ROOT_FOLDER } from "~/constants";
 
 interface ListFoldersParams {
     backgroundRefresh?: boolean;
@@ -61,7 +62,7 @@ const defaultLoading: Record<LoadingActions, boolean> = {
 };
 
 const rootFolder: FolderItem = {
-    id: "ROOT",
+    id: ROOT_FOLDER,
     title: "Home",
     parentId: "0",
     slug: "",
