@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 import omit from "lodash/omit";
@@ -87,6 +87,14 @@ const InputField: React.FC<InputBoxProps> = ({
     defaultValue = "",
     ...props
 }) => {
+    const [localValue, setLocalValue] = useState(value);
+
+    useEffect(() => {
+        if (localValue !== value) {
+            setLocalValue(localValue);
+        }
+    }, [value]);
+
     return (
         <React.Fragment>
             {label && (
@@ -97,7 +105,7 @@ const InputField: React.FC<InputBoxProps> = ({
             <input
                 className={classNames(inputStyle, className)}
                 value={getValue({
-                    value: value as string,
+                    value: localValue as string,
                     type: props.type || "string",
                     defaultValue
                 })}
@@ -106,6 +114,7 @@ const InputField: React.FC<InputBoxProps> = ({
                         return;
                     }
                     onChange(value);
+                    setLocalValue(value);
                 }}
                 {...omit(props, "validate")}
             />
