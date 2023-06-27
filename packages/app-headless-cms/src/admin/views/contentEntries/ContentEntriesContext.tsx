@@ -95,7 +95,7 @@ export const ContentEntriesProvider: React.FC<ContentEntriesContextProviderProps
     }, [viewConfig.sorters, contentModel.modelId]);
 
     const [listQueryVariables, setListQueryVariables] = useState<ListQueryVariables>({
-        sort: [sorters[0].value],
+        sort: sorters[0]?.value ? [sorters[0].value] : [],
         where: {}
     });
 

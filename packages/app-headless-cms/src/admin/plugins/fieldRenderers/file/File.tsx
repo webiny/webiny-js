@@ -7,7 +7,16 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const imagePreviewProps = {
     transform: { width: 300 },
-    style: { width: "100%", height: 232, objectFit: "cover" }
+    style: {
+        width: "100%",
+        height: "100%",
+        maxHeight: "160px",
+        background: "repeating-conic-gradient(#efefef 0% 25%, transparent 0% 50%) 50%/25px 25px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        objectFit: "contain"
+    }
 };
 
 const defaultStyles = {
