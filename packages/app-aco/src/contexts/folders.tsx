@@ -41,6 +41,7 @@ interface FoldersContext {
     createFolder: (folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (folder: Omit<FolderItem, "type">) => Promise<FolderItem>;
     deleteFolder(folder: Pick<FolderItem, "id">): Promise<true>;
+    getDescendantFolders(id?: string): FolderItem[];
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
@@ -274,6 +275,34 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                 context.listFolders({ backgroundRefresh: true });
 
                 return true;
+            },
+
+            getDescendantFolders(id) {
+                if (!id || id === ROOT_FOLDER || !folders?.length) {
+                    return [];
+                }
+
+                const folderMap = new Map(folders.map(folder => [folder.id, folder]));
+                const result = [] as FolderItem[];
+
+                const findChildren = (folderId: string) => {
+                    const folder = folderMap.get(folderId);
+                    if (!folder) {
+                        return;
+                    }
+
+                    result.push(folder);
+
+                    folders.forEach(child => {
+                        if (child.parentId === folder.id) {
+                            findChildren(child.id);
+                        }
+                    });
+                };
+
+                findChildren(id);
+
+                return result;
             }
         };
     }, [folders, loading, setLoading, setFolders]);
