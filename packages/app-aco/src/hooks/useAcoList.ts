@@ -12,6 +12,7 @@ import {
 } from "~/types";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks/useAcoApp";
+import { ROOT_FOLDER } from "~/constants";
 
 interface UseAcoListParams {
     folderId?: string;
@@ -54,10 +55,8 @@ const getCurrentFolderList = (
     if (!folders) {
         return [];
     }
-    if (!currentFolderId || currentFolderId.toLowerCase() === "root") {
-        return folders.filter(
-            folder => !folder.parentId || folder.parentId.toLowerCase() === "root"
-        );
+    if (!currentFolderId || currentFolderId === ROOT_FOLDER) {
+        return folders.filter(folder => !folder.parentId || folder.parentId === ROOT_FOLDER);
     }
     return folders.filter(folder => folder.parentId === currentFolderId);
 };

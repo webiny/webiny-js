@@ -121,18 +121,18 @@ describe("5.36.0-001", () => {
                 // Track generated files
                 numberOfGeneratedFiles += numberOfFiles;
             }
-            // Inserting useful data: file records
-            await insertDynamoDbTestData(ddbTable, ddbFiles);
-            await insertDynamoDbTestData(ddbToEsTable, ddbFiles);
-            await insertElasticsearchTestData<File>(elasticsearchClient, esFiles, item => {
-                return esGetIndexName({
-                    tenant: item.tenant,
-                    locale: item.locale,
-                    type: INDEX_TYPE
-                });
-            });
-            await elasticsearchClient.indices.refreshAll();
         }
+        // Inserting useful data: file records
+        await insertDynamoDbTestData(ddbTable, ddbFiles);
+        await insertDynamoDbTestData(ddbToEsTable, ddbFiles);
+        await insertElasticsearchTestData<File>(elasticsearchClient, esFiles, item => {
+            return esGetIndexName({
+                tenant: item.tenant,
+                locale: item.locale,
+                type: INDEX_TYPE
+            });
+        });
+        await elasticsearchClient.indices.refreshAll();
     };
 
     const insertEmptyFileIndexes = async () => {

@@ -7,6 +7,7 @@ import { List } from "./List";
 import { FolderDialogCreate } from "~/components";
 import { Container } from "./styled";
 import { FolderItem } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 export { Loader };
 
@@ -34,7 +35,7 @@ export const FolderTree: React.VFC<FolderTreeProps> = ({
         }
 
         return folders.reduce<FolderItem[]>((acc, item) => {
-            if (item.id === "ROOT" && rootFolderLabel) {
+            if (item.id === ROOT_FOLDER && rootFolderLabel) {
                 return [...acc, { ...item, title: rootFolderLabel }];
             }
             return [...acc, item];
