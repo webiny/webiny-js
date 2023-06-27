@@ -9,7 +9,6 @@ import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
 import PageTemplatesDialog from "~/admin/views/Pages/PageTemplatesDialog";
 import useCreatePage from "~/admin/views/Pages/hooks/useCreatePage";
 import useImportPage from "~/admin/views/Pages/hooks/useImportPage";
-import { useCanCreatePage } from "~/admin/views/Pages/hooks/useCanCreate";
 import { usePagesList } from "~/admin/views/Pages/hooks/usePagesList";
 import { Empty } from "~/admin/components/Table/Empty";
 import { Header } from "~/admin/components/Table/Header";
@@ -18,7 +17,8 @@ import { LoadMoreButton } from "~/admin/components/Table/LoadMoreButton";
 import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 import { MainContainer, Wrapper } from "./styled";
-import { FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { usePagesPermissions } from "~/hooks/permissions";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
 
@@ -30,11 +30,10 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const location = useLocation();
     const history = useHistory();
 
-    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
+    const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
     const list = usePagesList();
 
-    const canCreate = useCanCreatePage();
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
 
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -52,6 +51,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const [showPreviewDrawer, setPreviewDrawer] = useState(false);
     const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
     const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
+
+    const { canCreate } = usePagesPermissions();
 
     const { innerHeight: windowHeight } = window;
     const [tableHeight, setTableHeight] = useState(0);
@@ -100,7 +101,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             <MainContainer>
                 <Header
                     title={!list.isListLoading ? list.listTitle : undefined}
-                    canCreate={canCreate}
+                    canCreate={canCreate()}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
                     onCreateFolder={openFoldersDialog}
@@ -114,7 +115,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     !list.isListLoading ? (
                         <Empty
                             isSearch={list.isSearch}
-                            canCreate={canCreate}
+                            canCreate={canCreate()}
                             onCreatePage={openTemplatesDialog}
                             onCreateFolder={openFoldersDialog}
                         />
@@ -123,7 +124,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             <Preview
                                 open={showPreviewDrawer}
                                 onClose={() => closePreviewDrawer()}
-                                canCreate={canCreate}
+                                canCreate={canCreate()}
                                 onCreatePage={openTemplatesDialog}
                             />
                             <Scrollbar

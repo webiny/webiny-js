@@ -7,7 +7,7 @@ import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useMutation } from "@apollo/react-hooks";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { PbPageData } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
@@ -18,7 +18,7 @@ interface EditRevisionProps {
 }
 const EditRevision: React.FC<EditRevisionProps> = props => {
     const { page } = props;
-    const { canEdit } = usePermission();
+    const { canUpdate } = usePagesPermissions();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
     const [createPageFrom] = useMutation(CREATE_PAGE);
@@ -44,7 +44,7 @@ const EditRevision: React.FC<EditRevisionProps> = props => {
         navigateToPageEditor(data.id);
     }, [page, navigateToPageEditor]);
 
-    if (!canEdit(page)) {
+    if (!canUpdate(page?.createdBy?.id)) {
         return null;
     }
 

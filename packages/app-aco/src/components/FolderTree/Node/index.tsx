@@ -8,6 +8,7 @@ import { MenuActions } from "../MenuActions";
 import { Container, ArrowIcon, FolderIcon, Text, Content } from "./styled";
 import { DndFolderItem, FolderItem } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
+import { ROOT_FOLDER } from "~/constants";
 
 type NodeProps = {
     node: NodeModel<DndFolderItem>;
@@ -50,7 +51,7 @@ export const Node: React.VFC<NodeProps> = ({
     onUpdateFolder,
     onDeleteFolder
 }) => {
-    const isRoot = node.id === "ROOT";
+    const isRoot = node.id === ROOT_FOLDER;
     // Move the placeholder line to the left based on the element depth within the tree.
     // Let's add some pixels so that the element is detached from the container but takes up the whole length while it's highlighted during dnd.
     const indent = depth === 1 ? 4 : (depth - 1) * 20 + 8;
@@ -65,7 +66,7 @@ export const Node: React.VFC<NodeProps> = ({
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         onClick(node.data!);
-        if (node.data!.id !== "ROOT") {
+        if (node.data!.id !== ROOT_FOLDER) {
             onToggle(node.id);
         }
     };

@@ -1,14 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { EditorSidebarTab } from "~/editor";
 import { createComponentPlugin } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-security";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import UnlinkBlockAction from "~/pageEditor/plugins/elementSettings/UnlinkBlockAction";
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import { RootElement } from "~/editor/components/Editor/Sidebar/ElementSettingsTabContent";
-import { PageBuilderSecurityPermission } from "~/types";
 
 type UnlinkBlockWrapperProps = {
     permission: boolean;
@@ -73,15 +71,16 @@ const UnlinkTab: React.FC<UnlinkTabProps> = ({ permission }) => {
 export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab, Tab => {
     return function ElementTab({ children, ...props }) {
         const [element] = useActiveElement();
-        const { identity, getPermission } = useSecurity();
 
-        const unlinkPermission = useMemo((): boolean => {
-            const permission = getPermission<PageBuilderSecurityPermission>("pb.block.unlink");
-            if (permission?.name === "*" || permission?.name === "pb.*") {
-                return true;
-            }
-            return Boolean(permission);
-        }, [identity]);
+        const unlinkPermission = true;
+        // TODO: check if the above check even works.
+        // const unlinkPermission = useMemo((): boolean => {
+        //     const permission = getPermission<PageBuilderSecurityPermission>("pb.block.unlink");
+        //     if (permission?.name === "*" || permission?.name === "pb.*") {
+        //         return true;
+        //     }
+        //     return Boolean(permission);
+        // }, [identity]);
 
         const isReferenceBlock =
             element !== null && element.type === "block" && !!element.data?.blockId;

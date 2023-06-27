@@ -17,7 +17,14 @@ import { validation } from "@webiny/validation";
 import { mdbid } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { GetGroupParams, Group, GroupInput, GroupTenantLink, Security } from "~/types";
+import {
+    GetGroupParams,
+    Group,
+    GroupInput,
+    PermissionsTenantLink,
+    ListGroupsParams,
+    Security
+} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
@@ -46,8 +53,15 @@ async function checkPermission(security: Security): Promise<void> {
     }
 }
 
-async function updateTenantLinks(security: Security, tenant: string, group: Group): Promise<void> {
-    const links = await security.listTenantLinksByType<GroupTenantLink>({ tenant, type: "group" });
+async function updateTenantLinks(
+    security: Security,
+    tenant: string,
+    updatedGroup: Group
+): Promise<void> {
+    const links = await security.listTenantLinksByType<PermissionsTenantLink>({
+        tenant,
+        type: "group"
+    });
 
     if (!links.length) {
         return;
@@ -55,14 +69,81 @@ async function updateTenantLinks(security: Security, tenant: string, group: Grou
 
     await security.updateTenantLinks(
         links
-            .filter(link => link.data && link.data.group === group.id)
-            .map(link => ({
-                ...link,
-                data: {
-                    group: group.id,
-                    permissions: group.permissions
+            .filter(link => {
+                const linkGroups = link.data?.groups;
+                const linkHasGroups = Array.isArray(linkGroups) && linkGroups.length;
+                if (linkHasGroups) {
+                    const linkHasGroup = linkGroups.some(item => item.id === updatedGroup.id);
+                    if (linkHasGroup) {
+                        return true;
+                    }
                 }
-            }))
+
+                const linkTeams = link.data?.teams;
+                const linkHasTeams = Array.isArray(linkTeams) && linkTeams.length;
+                if (linkHasTeams) {
+                    const linkHasTeamWithGroup = linkTeams.some(team =>
+                        team.groups.some(teamGroup => teamGroup.id === updatedGroup.id)
+                    );
+
+                    if (linkHasTeamWithGroup) {
+                        return true;
+                    }
+                }
+
+                return false;
+            })
+            .map(link => {
+                const data = { ...link.data };
+
+                const linkGroups = link.data?.groups;
+                const linkHasGroups = Array.isArray(linkGroups) && linkGroups.length;
+                if (linkHasGroups) {
+                    const linkHasGroup = linkGroups.some(item => item.id === updatedGroup.id);
+                    if (linkHasGroup) {
+                        data.groups = linkGroups.map(item => {
+                            if (item.id !== updatedGroup.id) {
+                                return item;
+                            }
+
+                            return {
+                                id: updatedGroup.id,
+                                permissions: updatedGroup.permissions
+                            };
+                        });
+                    }
+                }
+
+                const linkTeams = link.data?.teams;
+                const linkHasTeams = Array.isArray(linkTeams) && linkTeams.length;
+                if (linkHasTeams) {
+                    const linkHasTeamWithGroup = linkTeams.some(team =>
+                        team.groups.some(teamGroup => teamGroup.id === updatedGroup.id)
+                    );
+
+                    if (linkHasTeamWithGroup) {
+                        data.teams = linkTeams.map(team => {
+                            const teamGroups = team.groups.map(teamGroup => {
+                                if (teamGroup.id !== updatedGroup.id) {
+                                    return teamGroup;
+                                }
+
+                                return {
+                                    id: updatedGroup.id,
+                                    permissions: updatedGroup.permissions
+                                };
+                            });
+
+                            return {
+                                ...team,
+                                groups: teamGroups
+                            };
+                        });
+                    }
+                }
+
+                return { ...link, data };
+            })
     );
 }
 
@@ -99,11 +180,12 @@ export const createGroupsMethods = ({
             return group;
         },
 
-        async listGroups(this: Security) {
+        async listGroups(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
                 return await storageOperations.listGroups({
                     where: {
+                        ...where,
                         tenant: getTenant()
                     },
                     sort: ["createdOn_ASC"]
@@ -212,6 +294,83 @@ export const createGroupsMethods = ({
             if (!group) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
             }
+
+            // We can't proceed with the deletion if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is being used by one or more tenant links.
+            // 3. The group is being used by one or more teams.
+
+            // 1. Is system group?
+            if (group.system) {
+                throw new WebinyError(
+                    `Cannot delete system groups.`,
+                    "CANNOT_DELETE_SYSTEM_GROUPS"
+                );
+            }
+
+            // 2. Is being used by one or more tenant links?
+            const usagesInTenantLinks = await storageOperations
+                .listTenantLinksByType({
+                    tenant: getTenant(),
+
+                    // With 5.37.0, these tenant links not only contain group-related permissions,
+                    // but teams-related too. The `type=group` hasn't been changed, just so the
+                    // data migrations are easier.
+                    type: "group"
+                })
+                .then(links =>
+                    links.filter(link => {
+                        const linkGroups = link.data?.groups;
+                        if (Array.isArray(linkGroups) && linkGroups.length > 0) {
+                            return linkGroups.some(linkGroup => linkGroup.id === id);
+                        }
+                        return false;
+                    })
+                );
+
+            if (usagesInTenantLinks.length > 0) {
+                let foundUsages = "(found 1 usage)";
+                if (usagesInTenantLinks.length > 1) {
+                    foundUsages = `(found ${usagesInTenantLinks.length} usages)`;
+                }
+
+                throw new WebinyError(
+                    `Cannot delete "${group.name}" group because it is currently being used in tenant links ${foundUsages}.`,
+                    "CANNOT_DELETE_GROUP_USED_IN_TENANT_LINKS",
+                    { tenantLinksCount: usagesInTenantLinks.length }
+                );
+            }
+
+            // 3. Is being used by one or more teams?
+            const usagesInTeams = await storageOperations
+                .listTeams({ where: { tenant: getTenant() } })
+                .then(teams => {
+                    return teams.filter(team => {
+                        const teamGroupsIds = team.groups;
+                        if (Array.isArray(teamGroupsIds) && teamGroupsIds.length > 0) {
+                            return teamGroupsIds.some(teamGroupId => teamGroupId === id);
+                        }
+                        return false;
+                    });
+                });
+
+            if (usagesInTeams.length > 0) {
+                let foundUsages = "(found 1 usage)";
+                if (usagesInTeams.length > 1) {
+                    foundUsages = `(found ${usagesInTeams.length} usages)`;
+                }
+
+                throw new WebinyError(
+                    `Cannot delete "${group.name}" group because it is currently being used with one or more teams ${foundUsages}.`,
+                    "GROUP_EXISTS",
+                    {
+                        teamsCount: usagesInTeams.length,
+                        teams: usagesInTeams.map(team => ({ id: team.id, name: team.name }))
+                    }
+                );
+            }
+
+            // Delete the group if none of the above conditions are met.
             try {
                 await storageOperations.deleteGroup({ group });
             } catch (ex) {

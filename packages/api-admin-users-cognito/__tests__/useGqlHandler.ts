@@ -5,6 +5,9 @@ import { PluginCollection } from "@webiny/plugins/types";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import adminUsersPlugins from "../src/index";
+import i18nContext from "@webiny/api-i18n/graphql/context";
+import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+
 // Graphql
 import {
     UPDATE_CURRENT_USER,
@@ -41,6 +44,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
     opts = Object.assign({}, defaults, opts);
 
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const i18nStorage = getStorageOps("i18n");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
@@ -48,6 +52,9 @@ export default (opts: UseGqlHandlerParams = {}) => {
             createWcpContext(),
             createWcpGraphQL(),
             ...createTenancyAndSecurity({ fullAccess: defaults.fullAccess }),
+            ...(i18nStorage.storageOperations as any),
+            i18nContext(),
+            mockLocalesPlugins(),
             adminUsersPlugins({
                 storageOperations: adminUsersStorage.storageOperations
             }),

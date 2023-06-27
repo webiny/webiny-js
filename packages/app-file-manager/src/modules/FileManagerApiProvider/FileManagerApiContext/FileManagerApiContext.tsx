@@ -80,8 +80,8 @@ interface ListTagsOptions {
 
 const getModelFields = (model: ReturnType<typeof useFileModel>) => {
     const fields = createFieldsList({ model, fields: model.fields });
-    return /* GraphQL */ `{ 
-        __typename 
+    return /* GraphQL */ `{
+        __typename
         id
         createdOn
         savedOn
@@ -90,84 +90,102 @@ const getModelFields = (model: ReturnType<typeof useFileModel>) => {
             displayName
         }
         src
-        ${fields} 
+        ${fields}
     }`;
 };
 
+const FM_FULL_ACCESS_PERMISSION_NAME = "fm.*";
+
 const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
-    const { identity, getPermission } = useSecurity();
+    const { identity, getIdentityId, getPermissions, getPermission } = useSecurity();
     const client = useApolloClient();
     const fileModel = useFileModel();
     const [modelFields] = useState(getModelFields(fileModel));
 
-    const fmFilePermission = useMemo<FileManagerSecurityPermission | null>(() => {
-        return getPermission<FileManagerSecurityPermission>("fm.file");
+    // Note for below permissions checks:
+    // `own: true` defines full RWD access to files created by the user.
+
+    const fmFilePermissions = useMemo<FileManagerSecurityPermission[]>(() => {
+        return getPermissions<FileManagerSecurityPermission>("fm.file");
     }, [identity]);
+
+    const hasFullAccess = useMemo(
+        () => !!getPermission(FM_FULL_ACCESS_PERMISSION_NAME),
+        [identity]
+    );
+
+    const hasNoAccess = useMemo(() => fmFilePermissions.length === 0, [fmFilePermissions]);
 
     const canDelete = useCallback(
         (item: FileItem) => {
-            // Bail out early if no access
-            if (!fmFilePermission) {
+            // Bail out early if no access or has full access.
+            if (hasNoAccess) {
                 return false;
             }
 
-            if (fmFilePermission.own) {
-                const identityId = identity ? identity.id || identity.login : null;
-                if (!identityId) {
-                    return false;
-                }
-                return item.createdBy.id === identityId;
-            }
+            return (
+                hasFullAccess ||
+                fmFilePermissions.some(({ rwd, own }) => {
+                    if (own) {
+                        const identityId = getIdentityId();
+                        const createdById = item.createdBy?.id;
+                        return identityId && identityId === createdById;
+                    }
 
-            if (typeof fmFilePermission.rwd === "string") {
-                return fmFilePermission.rwd.includes("d");
-            }
-            return true;
+                    if (rwd && rwd.includes("d")) {
+                        return true;
+                    }
+
+                    return false;
+                })
+            );
         },
-        [fmFilePermission]
+        [fmFilePermissions]
     );
 
     const canRead = useMemo(() => {
-        return Boolean(fmFilePermission);
-    }, [fmFilePermission]);
-
-    const canCreate = useMemo(() => {
-        // Bail out early if no access
-        if (!fmFilePermission) {
+        // Bail out early if no access or has full access.
+        if (hasNoAccess) {
             return false;
         }
 
-        if (fmFilePermission.own) {
-            return true;
+        return hasFullAccess || fmFilePermissions.length > 0;
+    }, [fmFilePermissions]);
+
+    const canCreate = useMemo(() => {
+        // Bail out early if no access or has full access.
+        if (hasNoAccess) {
+            return false;
         }
 
-        if (typeof fmFilePermission.rwd === "string") {
-            return fmFilePermission.rwd.includes("w");
-        }
-
-        return true;
-    }, [fmFilePermission]);
+        return hasFullAccess || fmFilePermissions.some(({ rwd }) => rwd && rwd.includes("w"));
+    }, [fmFilePermissions]);
 
     const canEdit = useCallback(
         (item: FileItem) => {
-            // Bail out early if no access
-            if (!fmFilePermission) {
+            // Bail out early if no access or has full access.
+            if (hasNoAccess) {
                 return false;
             }
-            const creatorId = item.createdBy?.id;
 
-            if (fmFilePermission.own && creatorId) {
-                const identityId = identity ? identity.id || identity.login : null;
-                return creatorId === identityId;
-            }
+            return (
+                hasFullAccess ||
+                fmFilePermissions.some(({ rwd, own }) => {
+                    if (own) {
+                        const identityId = getIdentityId();
+                        const createdById = item.createdBy?.id;
+                        return identityId && identityId === createdById;
+                    }
 
-            if (typeof fmFilePermission.rwd === "string") {
-                return fmFilePermission.rwd.includes("w");
-            }
+                    if (rwd && rwd.includes("w")) {
+                        return true;
+                    }
 
-            return true;
+                    return false;
+                })
+            );
         },
-        [fmFilePermission]
+        [fmFilePermissions]
     );
 
     const createFile = async (data: FileInput) => {

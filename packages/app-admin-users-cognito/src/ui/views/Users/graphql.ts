@@ -12,20 +12,34 @@ const listUserFields = /* GraphQL */ `
     }
 `;
 
-const userFormFields = /* GraphQL */ `
-    {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        group {
+const userFormFields = (params: { teams: boolean }) => {
+    const gql = /* GraphQL */ `
+        {
             id
-            slug
-            name
+            email
+            firstName
+            lastName
+            avatar
+            group {
+                id
+                slug
+                name
+            }
+            TEAM
         }
-    }
-`;
+    `;
+
+    return gql.replace(
+        "TEAM",
+        params.teams
+            ? `team {
+                id
+                slug
+                name
+            }`
+            : ""
+    );
+};
 
 export const LIST_USERS: any = gql`
     query ListUsers {
@@ -37,11 +51,11 @@ export const LIST_USERS: any = gql`
     }
 `;
 
-export const READ_USER: any = gql`
+export const READ_USER: any = (params: { teams: boolean }) => gql`
     query GetUser($id: ID!) {
         adminUsers {
             user: getUser(where: { id: $id }){
-                data ${userFormFields}
+                data ${userFormFields(params)}
                 error {
                     code
                     message
@@ -66,11 +80,11 @@ export const CREATE_USER: any = gql`
     }
 `;
 
-export const UPDATE_USER: any = gql`
+export const UPDATE_USER: any = (params: { teams: boolean }) => gql`
     mutation UpdateUser($id: ID!, $data: AdminUsersUpdateInput!){
         adminUsers {
             user: updateUser(id: $id, data: $data) {
-                data ${userFormFields}
+                data ${userFormFields(params)}
                 error {
                     code
                     message

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
-import get from "lodash/get";
 import { FormBuilderSecurityPermission } from "~/types";
 
 interface CreatableItem {
@@ -10,76 +9,101 @@ interface CreatableItem {
 }
 
 export const usePermission = () => {
-    const { identity, getPermission } = useSecurity();
+    const { identity, getIdentityId, getPermission, getPermissions } = useSecurity();
 
-    const fbFormPermission = useMemo((): FormBuilderSecurityPermission | null => {
-        return getPermission("fb.form");
-    }, [identity]);
-    const hasFullAccess = useMemo((): FormBuilderSecurityPermission | null => {
-        return getPermission("fb.*");
+    const fbFormPermissions = useMemo((): FormBuilderSecurityPermission[] => {
+        return getPermissions("fb.form");
     }, [identity]);
 
-    const canEdit = useCallback(
-        (item): boolean => {
-            const creatorId: string = get(item, "createdBy.id");
-            if (!fbFormPermission) {
+    const hasFullAccess = useMemo(() => !!getPermission("fb.*"), [identity]);
+
+    const hasNoAccess = useMemo(() => fbFormPermissions.length === 0, [fbFormPermissions]);
+
+    const canWrite = useCallback(
+        (item?: CreatableItem) => {
+            if (hasFullAccess) {
+                return true;
+            }
+
+            return fbFormPermissions.some(({ rwd, own }) => {
+                if (rwd && rwd.includes("w")) {
+                    return true;
+                }
+
+                const createdById = item?.createdBy?.id;
+
+                if (createdById && own) {
+                    const identityId = getIdentityId();
+                    return identity && createdById === identityId;
+                }
+
                 return false;
-            }
-            if (fbFormPermission.own && creatorId) {
-                return creatorId === (identity && identity.login);
-            }
-            if (typeof fbFormPermission.rwd === "string") {
-                return fbFormPermission.rwd.includes("w");
-            }
-            return true;
+            });
         },
-        [fbFormPermission]
+        [fbFormPermissions, hasFullAccess]
     );
+
+    const canCreate = useCallback(() => canWrite(), [canWrite]);
+    const canUpdate = useCallback((item: CreatableItem) => canWrite(item), [canWrite]);
 
     const canDelete = useCallback(
-        (item: CreatableItem): boolean => {
-            if (!fbFormPermission) {
+        (item: CreatableItem) => {
+            // Bail out early if no access or has full access.
+            if (hasNoAccess) {
                 return false;
             }
-            if (fbFormPermission.own) {
-                return item.createdBy?.id === (identity && identity.login);
-            }
-            if (typeof fbFormPermission.rwd === "string") {
-                return fbFormPermission.rwd.includes("d");
-            }
-            return true;
+
+            return (
+                hasFullAccess ||
+                fbFormPermissions.some(({ rwd, own }) => {
+                    if (own) {
+                        const identityId = getIdentityId();
+                        const createdById = item.createdBy?.id;
+                        return identityId && identityId === createdById;
+                    }
+
+                    if (rwd && rwd.includes("d")) {
+                        return true;
+                    }
+
+                    return false;
+                })
+            );
         },
-        [fbFormPermission]
+        [fbFormPermissions]
     );
 
-    const canPublish = useCallback((): boolean => {
+    const canPublish = useCallback(() => {
         if (hasFullAccess) {
             return true;
         }
-        if (!fbFormPermission) {
-            return false;
-        }
-        if (typeof fbFormPermission.pw === "string") {
-            return fbFormPermission.pw.includes("p");
-        }
-        return fbFormPermission.pw || false;
-    }, [fbFormPermission, hasFullAccess]);
 
-    const canUnpublish = useCallback((): boolean => {
+        return fbFormPermissions.some(({ pw }) => {
+            if (typeof pw === "string" && pw.includes("p")) {
+                return true;
+            }
+
+            return false;
+        });
+    }, [fbFormPermissions, hasFullAccess]);
+
+    const canUnpublish = useCallback(() => {
         if (hasFullAccess) {
             return true;
         }
-        if (!fbFormPermission) {
+
+        return fbFormPermissions.some(({ pw }) => {
+            if (typeof pw === "string" && pw.includes("u")) {
+                return true;
+            }
+
             return false;
-        }
-        if (typeof fbFormPermission.pw === "string") {
-            return fbFormPermission.pw.includes("u");
-        }
-        return fbFormPermission.pw || false;
-    }, [fbFormPermission, hasFullAccess]);
+        });
+    }, [fbFormPermissions, hasFullAccess]);
 
     return {
-        canEdit,
+        canCreate,
+        canUpdate,
         canDelete,
         canPublish,
         canUnpublish

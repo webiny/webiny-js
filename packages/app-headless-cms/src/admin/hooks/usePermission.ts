@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
-import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
 
 export interface CreatableItem {
     createdBy: Pick<CmsIdentity, "id">;
 }
+
 export type EditableItem = CreatableItem;
 
 interface CanReadEntriesCallableParams {
@@ -15,32 +15,31 @@ interface CanReadEntriesCallableParams {
 }
 
 export const usePermission = () => {
-    const { identity, getPermission } = useSecurity();
+    const { identity, getIdentityId, getPermission, getPermissions } = useSecurity();
     const { getCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale("content");
 
-    const hasFullAccess = useMemo((): CmsSecurityPermission | null => {
-        return getPermission("cms.*");
-    }, [identity]);
+    const hasFullAccess = useMemo(() => !!getPermission("cms.*"), [identity]);
 
     const canRead = useCallback(
         (permissionName: string): boolean => {
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
-
             if (hasFullAccess) {
                 return true;
             }
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
 
-            if (!permission) {
+            if (!permissions.length) {
                 return false;
             }
 
-            if (typeof permission.rwd !== "string") {
-                return true;
-            }
+            return permissions.some(permission => {
+                if (typeof permission.rwd !== "string") {
+                    return true;
+                }
 
-            return permission.rwd.includes("r");
+                return permission.rwd.includes("r");
+            });
         },
         [identity, hasFullAccess]
     );
@@ -51,54 +50,112 @@ export const usePermission = () => {
                 return true;
             }
 
-            const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
-            const contentModelPermission = getPermission("cms.contentModel");
-            const contentModelGroupPermission = getPermission("cms.contentModelGroup");
-
-            if (!permission) {
+            const permissions = getPermissions<CmsSecurityPermission>("cms.contentEntry");
+            if (!permissions.length) {
                 return false;
             }
 
             // Check "contentModel" list.
-            const models = get(contentModelPermission, `models.${currentLocale}`);
-            if (Array.isArray(models)) {
-                return models.includes(contentModel.modelId);
+            const contentModelPermissions = getPermissions("cms.contentModel");
+
+            // "all" means user has access to all models.
+            let allowedModels: "all" | string[] = [];
+
+            for (let i = 0; i < contentModelPermissions.length; i++) {
+                const permission = contentModelPermissions[i];
+                const permissionAllowedModels = permission?.models?.[currentLocale!];
+                // The moment we encounter a permission that gives access to all models,
+                // we can stop checking other permissions.
+                const allModelsAllowed = !Array.isArray(permissionAllowedModels);
+                if (allModelsAllowed) {
+                    allowedModels = "all";
+                    break;
+                }
+
+                allowedModels = [...allowedModels, ...permissionAllowedModels];
             }
+
+            if (Array.isArray(allowedModels)) {
+                return allowedModels.includes(contentModel.modelId);
+            }
+
             // Check "contentModelGroup" list.
-            const groups = get(contentModelGroupPermission, `groups.${currentLocale}`);
-            if (Array.isArray(groups)) {
-                return groups.includes(contentModelGroup.id);
+            const contentModelGroupPermissions = getPermissions("cms.contentModelGroup");
+
+            // "all" means user has access to all models.
+            let allowedModelGroups: "all" | string[] = [];
+
+            for (let i = 0; i < contentModelGroupPermissions.length; i++) {
+                const permission = contentModelGroupPermissions[i];
+                const permissionAllowedModelGroups = permission?.models?.[currentLocale!];
+                // The moment we encounter a permission that gives access to all models,
+                // we can stop checking other permissions.
+                const allModelGroupsAllowed = !Array.isArray(permissionAllowedModelGroups);
+                if (allModelGroupsAllowed) {
+                    allowedModelGroups = "all";
+                    break;
+                }
+
+                allowedModelGroups = [...allowedModelGroups, ...permissionAllowedModelGroups];
             }
 
-            if (typeof permission.rwd === "string") {
-                return permission.rwd.includes("r");
+            if (Array.isArray(allowedModelGroups)) {
+                return allowedModelGroups.includes(contentModelGroup.id);
             }
 
-            return true;
+            for (let i = 0; i < permissions.length; i++) {
+                const permission = permissions[i];
+
+                // If no RWD restrictions are set, we can return true.
+                if (typeof permission.rwd !== "string") {
+                    return true;
+                }
+
+                const rwdGivesReadAccess = permission.rwd.includes("r");
+                if (rwdGivesReadAccess) {
+                    return true;
+                }
+            }
+
+            return false;
         },
         [identity, hasFullAccess, currentLocale]
     );
 
     const canEdit = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
+            if (hasFullAccess) {
+                return true;
+            }
 
-            if (!permission || !identity) {
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+
+            if (!permissions.length || !identity) {
                 return false;
             }
-            if (permission.own) {
-                /**
-                 * There will be no "createdBy" field for a new entry therefore we enable the access.
-                 */
-                if (!item.createdBy) {
-                    return true;
+
+            return permissions.some(permission => {
+                if (permission.own) {
+                    /**
+                     * There will be no "createdBy" field for a new entry therefore we enable the access.
+                     */
+                    if (!item.createdBy) {
+                        return true;
+                    }
+
+                    if (item?.createdBy?.id === getIdentityId()) {
+                        return true;
+                    }
                 }
-                return get(item, "createdBy.id") === identity.login;
-            }
-            if (typeof permission.rwd === "string") {
-                return permission.rwd.includes("w");
-            }
-            return true;
+
+                if (typeof permission.rwd === "string") {
+                    if (permission.rwd.includes("w")) {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
         },
         [identity]
     );
@@ -110,34 +167,49 @@ export const usePermission = () => {
      * */
     const canCreate = useCallback(
         (permissionName: string): boolean => {
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
-            if (!permission) {
-                return false;
-            }
-
-            if (typeof permission.rwd !== "string") {
+            if (hasFullAccess) {
                 return true;
             }
 
-            return permission.rwd.includes("w");
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            if (!permissions.length) {
+                return false;
+            }
+
+            return permissions.some(permission => {
+                if (typeof permission.rwd !== "string") {
+                    return true;
+                }
+
+                return permission.rwd.includes("w");
+            });
         },
         [identity]
     );
 
     const canDelete = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
+            if (hasFullAccess) {
+                return true;
+            }
 
-            if (!permission) {
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+
+            if (!permissions.length) {
                 return false;
             }
-            if (permission.own) {
-                return get(item, "createdBy.id") === (identity ? identity.login : null);
-            }
-            if (typeof permission.rwd === "string") {
-                return permission.rwd.includes("d");
-            }
-            return true;
+
+            return permissions.some(permission => {
+                if (permission.own) {
+                    return item.createdBy.id === getIdentityId();
+                }
+
+                if (typeof permission.rwd === "string") {
+                    return permission.rwd.includes("d");
+                }
+
+                return false;
+            });
         },
         [identity]
     );
@@ -147,16 +219,15 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
 
-            if (!permission) {
+            if (!permissions.length) {
                 return false;
             }
-            if (typeof permission.pw === "string") {
-                return permission.pw.includes("p");
-            }
 
-            return false;
+            return permissions.some(permission => {
+                return permission.pw?.includes("p");
+            });
         },
         [identity, hasFullAccess]
     );
@@ -166,16 +237,15 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = getPermission<CmsSecurityPermission>(permissionName);
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
 
-            if (!permission) {
+            if (!permissions.length) {
                 return false;
             }
-            if (typeof permission.pw === "string") {
-                return permission.pw.includes("u");
-            }
 
-            return false;
+            return permissions.some(permission => {
+                return permission.pw?.includes("u");
+            });
         },
         [identity, hasFullAccess]
     );

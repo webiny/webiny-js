@@ -270,7 +270,7 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                     return sortTableItems(mergeRecords(after ? prev : [], data), sort);
                 });
 
-                setMeta(responseMeta);
+                setMeta(() => responseMeta);
 
                 setLoading(prev => {
                     return {

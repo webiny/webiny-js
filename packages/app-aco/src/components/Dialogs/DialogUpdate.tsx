@@ -19,6 +19,7 @@ import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
 import { DialogContainer, DialogFoldersContainer } from "./styled";
 import { FolderItem } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 interface FolderDialogUpdateProps {
     folder: FolderItem;
@@ -109,7 +110,7 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                                     hiddenFolderIds={[folder.id]}
                                                     onFolderClick={data =>
                                                         setParentId(
-                                                            data.id === "ROOT" ? null : data.id
+                                                            data.id === ROOT_FOLDER ? null : data.id
                                                         )
                                                     }
                                                 />
