@@ -10,6 +10,7 @@ import {
     FilesListOpts
 } from "~/types";
 import { FileManagerConfig } from "~/createFileManager/index";
+import { ROOT_FOLDER } from "~/contants";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -63,7 +64,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 aliases: Array.isArray(input.aliases) ? input.aliases : [],
                 id: input.id || id,
                 location: {
-                    folderId: input.location?.folderId ?? "ROOT"
+                    folderId: input.location?.folderId ?? ROOT_FOLDER
                 },
                 meta: {
                     private: false,
@@ -225,7 +226,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                         ...(input.meta || {})
                     },
                     location: {
-                        folderId: input.location?.folderId ?? "ROOT"
+                        folderId: input.location?.folderId ?? ROOT_FOLDER
                     },
                     tenant,
                     createdOn: new Date().toISOString(),

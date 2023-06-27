@@ -1,5 +1,5 @@
 import omit from "lodash/omit";
-import { HeadlessCms, CmsModel, CmsEntry } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
 import {
     File,
@@ -17,6 +17,7 @@ import {
 } from "~/types";
 import { ListFilesWhereProcessor } from "~/cmsFileStorage/ListFilesWhereProcessor";
 import { ListTagsWhereProcessor } from "~/cmsFileStorage/ListTagsWhereProcessor";
+import { ROOT_FOLDER } from "~/contants";
 
 interface ModelContext {
     tenant: string;
@@ -62,7 +63,10 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         const model = this.modelWithContext(file);
 
         if (!file.location?.folderId) {
-            file.location = { folderId: "ROOT" };
+            file.location = {
+                ...file.location,
+                folderId: ROOT_FOLDER
+            };
         }
 
         const entry = await this.security.withoutAuthorization(() => {

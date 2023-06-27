@@ -1,6 +1,6 @@
 import { InitialOpen, NodeModel } from "@minoru/react-dnd-treeview";
 import { DndFolderItem, FolderItem } from "~/types";
-import { ROOT_ID } from "./constants";
+import { ROOT_FOLDER } from "~/constants";
 
 /**
  * Transform an array of folders returned by useFolders hook into an array of elements for the tree component.
@@ -22,7 +22,7 @@ export const createTreeData = (
             return {
                 id,
                 // toLowerCase() fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
-                parent: parentId?.toLowerCase() || ROOT_ID,
+                parent: parentId?.toLowerCase() || ROOT_FOLDER,
                 text: title,
                 droppable: true,
                 data: {

@@ -6,17 +6,17 @@ import {
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { AcoRecords_5_37_0_001_PageData } from "./PageDataMigration";
+import { AcoRecords_5_37_0_003_PageData } from "./PageDataMigration";
 
-export class AcoRecords_5_37_0_001 implements DataMigration {
+export class AcoRecords_5_37_0_003 implements DataMigration {
     private readonly migrations: DataMigration[];
 
     public constructor(table: Table) {
-        this.migrations = [new AcoRecords_5_37_0_001_PageData(table)];
+        this.migrations = [new AcoRecords_5_37_0_003_PageData(table)];
     }
 
     public getId() {
-        return "5.37.0-001";
+        return "5.37.0-003";
     }
 
     public getDescription() {
@@ -45,4 +45,4 @@ export class AcoRecords_5_37_0_001 implements DataMigration {
     }
 }
 
-makeInjectable(AcoRecords_5_37_0_001, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(AcoRecords_5_37_0_003, [inject(PrimaryDynamoTableSymbol)]);

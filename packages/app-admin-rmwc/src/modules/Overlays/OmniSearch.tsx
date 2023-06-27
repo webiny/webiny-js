@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigation } from "@webiny/app-admin";
-import { useHistory } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
 import { getTenantId } from "@webiny/app/utils";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
@@ -79,8 +79,7 @@ export const OmniSearch = () => {
     const [focusedItemIndex, focusItemAtIndex] = useState(0);
     const { menuItems } = useNavigation();
     const { showSnackbar } = useSnackbar();
-    const history = useHistory();
-
+    const navigate = useNavigate();
     const showOmniSearch = useCallback(() => {
         setShowOmniSearch(true);
     }, []);
@@ -97,7 +96,7 @@ export const OmniSearch = () => {
 
     const selectItem = useCallback((item: Item) => {
         if (item.link) {
-            history.push(item.link);
+            navigate(item.link);
         } else if (item.callback) {
             item.callback();
         }
@@ -120,7 +119,7 @@ export const OmniSearch = () => {
                                         const description = [
                                             level1Item.label,
                                             level2Item.label
-                                        ].join("/");
+                                        ].join(" / ");
 
                                         return {
                                             id: description + child.label,
@@ -136,6 +135,20 @@ export const OmniSearch = () => {
                     .flat()
             },
             {
+                id: "other",
+                title: "Other",
+                items: [
+                    {
+                        id: "back",
+                        title: "← Back",
+                        description: "Navigates to the previous page.",
+                        callback: () => {
+                            navigate(-1);
+                        }
+                    }
+                ]
+            },
+            getTenantId() && {
                 id: "development",
                 title: "Development",
                 items: [
@@ -150,7 +163,7 @@ export const OmniSearch = () => {
                     }
                 ]
             }
-        ];
+        ].filter(Boolean) as ItemsSection[];
     }, [menuItems]);
 
     const filteredIndexedItemsList = useMemo(() => {
@@ -162,7 +175,7 @@ export const OmniSearch = () => {
             return {
                 ...itemsSection,
                 items: itemsSection.items.filter(item => {
-                    return item.title.toLowerCase().includes(filter.toLowerCase());
+                    return item.title?.toLowerCase().includes(filter.toLowerCase());
                 })
             };
         });

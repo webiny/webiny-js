@@ -14,7 +14,7 @@ env:
 jobs:
   npm-release:
     name: NPM release ("${{ github.event.client_payload.tag }}" tag)
-    runs-on: ubuntu-latest
+    runs-on: webiny-build-packages
     environment: release
     steps:
       - uses: actions/setup-node@v3

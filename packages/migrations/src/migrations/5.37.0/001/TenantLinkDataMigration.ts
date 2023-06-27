@@ -3,14 +3,14 @@ import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { createTenantLinkEntity } from "./entities/createTenantLinkEntity";
 import { createTenantEntity } from "./entities/createTenantEntity";
 
-import { queryAll, queryOne } from "~/utils";
+import { queryAll } from "~/utils";
 
 import { Tenant, TenantLink } from "./types";
-import { isMigratedTenantLink } from "~/migrations/5.37.0/003/utils/isMigratedTenantLink";
+import { isMigratedTenantLink } from "~/migrations/5.37.0/001/utils/isMigratedTenantLink";
 
 export type FileDataMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
-export class TenantLinkRecords_5_37_0_003_FileData
+export class TenantLinkRecords_5_37_0_001_FileData
     implements DataMigration<FileDataMigrationCheckpoint>
 {
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
@@ -26,7 +26,7 @@ export class TenantLinkRecords_5_37_0_003_FileData
     }
 
     getDescription() {
-        return "Migrate Tenant Links Data 22";
+        return "Migrate Tenant Links Data";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
@@ -37,7 +37,7 @@ export class TenantLinkRecords_5_37_0_003_FileData
         }
 
         for (const tenant of tenants) {
-            const legacyTenantLink = await queryOne({
+            const tenantLinks = await queryAll<TenantLink>({
                 entity: this.tenantLinkEntity,
                 partitionKey: `T#${tenant.data.id}`,
                 options: {
@@ -46,8 +46,11 @@ export class TenantLinkRecords_5_37_0_003_FileData
                 }
             });
 
-            if (legacyTenantLink) {
-                return true;
+            for (let i = 0; i < tenantLinks.length; i++) {
+                const tenantLink = tenantLinks[i];
+                if (!Array.isArray(tenantLink.data.teams)) {
+                    return true;
+                }
             }
 
             logger.info(`No tenant links found in tenant "${tenant.data.id}".`);
@@ -71,9 +74,6 @@ export class TenantLinkRecords_5_37_0_003_FileData
                 await this.tenantLinkEntity.update({
                     PK: tenantLink.PK,
                     SK: tenantLink.SK,
-                    GSI1_PK: tenantLink.GSI1_PK,
-                    GSI1_SK: tenantLink.GSI1_SK.replace("TYPE#group#", "TYPE#permissions#"),
-                    type: "permissions",
                     data: {
                         ...tenantLink.data,
                         teams: [],

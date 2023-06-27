@@ -1,31 +1,26 @@
 import { Table } from "dynamodb-toolbox";
-import { Client } from "@elastic/elasticsearch";
+import { inject, makeInjectable } from "@webiny/ioc";
 import {
     DataMigration,
     DataMigrationContext,
-    ElasticsearchClientSymbol,
-    ElasticsearchDynamoTableSymbol,
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { inject, makeInjectable } from "@webiny/ioc";
-import { AcoRecords_5_37_0_001_PageData } from "./PageDataMigration";
+import { AcoRecords_5_37_0_002_AcoFolders } from "./AcoFolderMigration";
 
-export * from "../types";
-
-export class AcoRecords_5_37_0_001 implements DataMigration {
+export class AcoFolders_5_37_0_002 implements DataMigration {
     private readonly migrations: DataMigration[];
 
-    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
-        this.migrations = [new AcoRecords_5_37_0_001_PageData(table, esTable, elasticsearchClient)];
+    public constructor(table: Table) {
+        this.migrations = [new AcoRecords_5_37_0_002_AcoFolders(table)];
     }
 
-    getId(): string {
-        return "5.37.0-001";
+    public getId() {
+        return "5.37.0-002";
     }
 
-    getDescription(): string {
-        return "Page Builder Pages search record migration";
+    public getDescription() {
+        return "ACO Folder parentId migration";
     }
 
     async shouldExecute(context: DataMigrationContext): Promise<boolean> {
@@ -50,8 +45,4 @@ export class AcoRecords_5_37_0_001 implements DataMigration {
     }
 }
 
-makeInjectable(AcoRecords_5_37_0_001, [
-    inject(PrimaryDynamoTableSymbol),
-    inject(ElasticsearchDynamoTableSymbol),
-    inject(ElasticsearchClientSymbol)
-]);
+makeInjectable(AcoFolders_5_37_0_002, [inject(PrimaryDynamoTableSymbol)]);
