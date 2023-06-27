@@ -8,6 +8,7 @@ import { DisplayError } from "./DisplayError";
 import { ApolloClient } from "apollo-client";
 import { NavigateFolderWithRouterProvider } from "~/contexts/navigateFolderWithRouter";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { AcoListProvider } from "~/contexts/acoList";
 
 export interface AcoAppProviderContext {
     app: AcoApp;
@@ -249,7 +250,9 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                         createListLink={createNavigateFolderListLink}
                         createStorageKey={createNavigateFolderStorageKey}
                     >
-                        <DialogsContextProvider>{children}</DialogsContextProvider>
+                        <AcoListProvider>
+                            <DialogsContextProvider>{children}</DialogsContextProvider>
+                        </AcoListProvider>
                     </NavigateFolderWithRouterProvider>
                 </SearchRecordsContextProvider>
             </FoldersContextProvider>

@@ -8,6 +8,7 @@ import { Title } from "./Title";
 
 import { Container, WrapperActions } from "./styled";
 import { IconButton } from "@webiny/ui/Button";
+import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 
 interface Props {
     title?: string;
@@ -16,29 +17,18 @@ interface Props {
     onCreateFolder: (event?: React.SyntheticEvent) => void;
     searchValue: string;
     onSearchChange: (value: string) => void;
-    showingFilters: boolean;
-    showFilters: () => void;
-    hideFilters: () => void;
 }
 
 export const Header: React.VFC<Props> = props => {
-    const {
-        canCreate,
-        onCreateEntry,
-        onCreateFolder,
-        title,
-        searchValue,
-        onSearchChange,
-        showingFilters,
-        showFilters,
-        hideFilters
-    } = props;
+    const { canCreate, onCreateEntry, onCreateFolder, title, searchValue, onSearchChange } = props;
+
+    const list = useContentEntriesList();
 
     const toggleFilters = () => {
-        if (showingFilters) {
-            hideFilters();
+        if (list.showingFilters) {
+            list.hideFilters();
         } else {
-            showFilters();
+            list.showFilters();
         }
     };
 
@@ -52,7 +42,7 @@ export const Header: React.VFC<Props> = props => {
                     <WrapperActions>
                         <Search value={searchValue} onChange={onSearchChange} />
                         <IconButton
-                            icon={showingFilters ? <CloseFilterIcon /> : <FilterIcon />}
+                            icon={list.showingFilters ? <CloseFilterIcon /> : <FilterIcon />}
                             onClick={toggleFilters}
                         />
                         {canCreate && (

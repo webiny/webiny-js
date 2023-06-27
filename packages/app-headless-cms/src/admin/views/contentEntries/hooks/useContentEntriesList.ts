@@ -56,7 +56,10 @@ export const useContentEntriesList = (): UseContentEntries => {
         records: initialRecords,
         setSearchQuery,
         setListSort,
-        setFilters
+        setFilters,
+        showFilters,
+        hideFilters,
+        showingFilters
     } = useAcoList();
 
     const [sorting, setSorting] = useState<Sorting>([]);
@@ -64,10 +67,6 @@ export const useContentEntriesList = (): UseContentEntries => {
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
     const baseUrl = `${CMS_ENTRY_LIST_LINK}/${contentModel.modelId}`;
-
-    const [showingFilters, setShowingFilters] = useState<boolean>(false);
-    const showFilters = useCallback(() => setShowingFilters(true), []);
-    const hideFilters = useCallback(() => setShowingFilters(false), []);
 
     // Search-related logics: update `searchQuery` state and querystring
     const updateSearch = useCallback(

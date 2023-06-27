@@ -69,9 +69,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     onCreateFolder={openFoldersDialog}
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
-                    showingFilters={list.showingFilters}
-                    showFilters={list.showFilters}
-                    hideFilters={list.hideFilters}
                 />
                 <Wrapper>
                     {list.records.length === 0 &&
@@ -89,10 +86,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Filters
-                                    showingFilters={list.showingFilters}
-                                    setFilters={list.setFilters}
-                                />
+                                <Filters />
                                 <Table
                                     ref={tableRef}
                                     folders={list.folders}
