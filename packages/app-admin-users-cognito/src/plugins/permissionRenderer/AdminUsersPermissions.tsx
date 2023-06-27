@@ -27,6 +27,7 @@ export interface AdminUsersPermissionsProps {
     value: SecurityPermission[];
     onChange: (value: SecurityPermission[]) => void;
 }
+
 export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
     value,
     onChange
@@ -114,7 +115,7 @@ export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
                             </Cell>
                             <Cell span={6}>
                                 <Bind name={"accessLevel"}>
-                                    <Select label={t`Access Level`} disabled={cannotUseAAcl}>
+                                    <Select label={t`Access Level`}>
                                         <option value={NO_ACCESS}>{t`No access`}</option>
                                         <option value={FULL_ACCESS}>{t`Full access`}</option>
                                         <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>

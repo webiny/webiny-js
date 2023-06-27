@@ -18,7 +18,7 @@ import { Preview } from "~/admin/components/Table/Preview";
 import { Table } from "~/admin/components/Table/Table";
 import { MainContainer, Wrapper } from "./styled";
 import { usePagesPermissions } from "~/hooks/permissions";
-import { FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/table/main");
 
@@ -30,7 +30,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const location = useLocation();
     const history = useHistory();
 
-    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
+    const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
     const list = usePagesList({ folderId });
 

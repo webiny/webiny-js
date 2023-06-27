@@ -11,15 +11,14 @@ import { MainContainer, Wrapper } from "./styled";
 import { useContentEntriesList, useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { useRouter } from "@webiny/react-router";
-
-import { FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 interface Props {
     folderId?: string;
 }
 
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
-    const folderId = initialFolderId === undefined ? FOLDER_ID_DEFAULT : initialFolderId;
+    const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
     const list = useContentEntriesList({ folderId });
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);

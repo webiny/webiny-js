@@ -14,6 +14,7 @@ import {
 } from "~/modules/FileManagerApiProvider/graphql";
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext";
 import { getScopeWhereParams, State } from "./state";
+import { ROOT_FOLDER } from "~/constants";
 
 function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
     if (Array.isArray(value)) {
@@ -119,7 +120,7 @@ export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseLis
         let locationWhere: ListFilesWhereLocation | undefined = { folderId };
 
         if (isSearch) {
-            if (folderId === "ROOT") {
+            if (folderId === ROOT_FOLDER) {
                 locationWhere = undefined;
             } else {
                 locationWhere = {

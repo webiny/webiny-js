@@ -13,6 +13,7 @@ import {
 } from "~/types";
 import { createSort, sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks/useAcoApp";
+import { ROOT_FOLDER } from "~/constants";
 import cloneDeep from "lodash/cloneDeep";
 import set from "lodash/set";
 import unset from "lodash/unset";
@@ -49,10 +50,8 @@ const getCurrentFolderList = (
     if (!folders) {
         return [];
     }
-    if (!currentFolderId || currentFolderId.toLowerCase() === "root") {
-        return folders.filter(
-            folder => !folder.parentId || folder.parentId.toLowerCase() === "root"
-        );
+    if (!currentFolderId || currentFolderId === ROOT_FOLDER) {
+        return folders.filter(folder => !folder.parentId || folder.parentId === ROOT_FOLDER);
     }
     return folders.filter(folder => folder.parentId === currentFolderId);
 };

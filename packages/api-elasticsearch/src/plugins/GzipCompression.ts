@@ -17,7 +17,7 @@ export interface CompressedData {
     value: string;
 }
 
-interface OriginalData {
+export interface OriginalData {
     [key: string]: any;
 }
 

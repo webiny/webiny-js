@@ -12,6 +12,7 @@ import editorFieldTextarea from "@webiny/app-form-builder/admin/plugins/editor/f
 import editorFieldNumber from "@webiny/app-form-builder/admin/plugins/editor/formFields/number";
 import editorFieldRadioButtons from "@webiny/app-form-builder/admin/plugins/editor/formFields/radioButtons";
 import editorFieldCheckboxes from "@webiny/app-form-builder/admin/plugins/editor/formFields/checkboxes";
+import editorFieldDateAndTime from "@webiny/app-form-builder/admin/plugins/editor/formFields/dateTime";
 import editorFieldFirstName from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/firstName";
 import editorFieldLastName from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/lastName";
 import editorFieldEmail from "@webiny/app-form-builder/admin/plugins/editor/formFields/contact/email";
@@ -30,8 +31,10 @@ import formFieldGroupsContact from "@webiny/app-form-builder/admin/plugins/edito
 
 /* Form Editor validation plugins */
 import editorValidatorGte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/gte";
+import editorValidatorDateGte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/dateGte";
 import editorValidatorInValidator from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/in";
 import editorValidatorLte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/lte";
+import editorValidatorDateLte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/dateLte";
 import editorValidatorRequired from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/required";
 import editorValidatorMinLength from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/minLength";
 import editorValidatorMaxLength from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/maxLength";
@@ -53,8 +56,10 @@ import pageBuilderPlugins from "@webiny/app-form-builder/page-builder/admin/plug
 
 /* Plugins performing input validation when a Form is rendered on a site or in preview mode */
 import fieldValidatorGte from "@webiny/app-form-builder/render/plugins/validators/gte";
+import fieldValidatorDateGte from "@webiny/app-form-builder/render/plugins/validators/dateGte";
 import fieldValidatorInValidator from "@webiny/app-form-builder/render/plugins/validators/in";
 import fieldValidatorLte from "@webiny/app-form-builder/render/plugins/validators/lte";
+import fieldValidatorDateLte from "@webiny/app-form-builder/render/plugins/validators/dateLte";
 import fieldValidatorMaxLength from "@webiny/app-form-builder/render/plugins/validators/maxLength";
 import fieldValidatorMinLength from "@webiny/app-form-builder/render/plugins/validators/minLength";
 import fieldValidatorPattern from "@webiny/app-form-builder/render/plugins/validators/pattern";
@@ -78,6 +83,7 @@ export default [
     editorFieldNumber,
     editorFieldRadioButtons,
     editorFieldCheckboxes,
+    editorFieldDateAndTime,
     editorFieldFirstName,
     editorFieldLastName,
     editorFieldEmail,
@@ -91,10 +97,12 @@ export default [
     editorFieldJobTitle,
     editorFieldPostCode,
     formFieldGroupsContact,
+    editorValidatorRequired,
     editorValidatorGte,
+    editorValidatorDateGte,
     editorValidatorInValidator,
     editorValidatorLte,
-    editorValidatorRequired,
+    editorValidatorDateLte,
     editorValidatorMinLength,
     editorValidatorMaxLength,
     editorValidatorPattern,
@@ -108,8 +116,10 @@ export default [
     editorTriggerWebhook,
     editorTriggerGoogleAnalyticsEvent,
     fieldValidatorGte,
+    fieldValidatorDateGte,
     fieldValidatorInValidator,
     fieldValidatorLte,
+    fieldValidatorDateLte,
     fieldValidatorMaxLength,
     fieldValidatorMinLength,
     fieldValidatorPattern,

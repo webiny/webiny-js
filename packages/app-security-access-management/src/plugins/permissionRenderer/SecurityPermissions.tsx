@@ -12,13 +12,14 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { useSecurity } from "@webiny/app-security";
-import { AaclPermission } from "@webiny/app-admin";
+import { AaclPermission, useWcp } from "@webiny/app-admin";
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
 const SECURITY = "security";
 const SECURITY_FULL_ACCESS = `${SECURITY}.*`;
 const SECURITY_GROUP_ACCESS = `${SECURITY}.group`;
+const SECURITY_TEAM_ACCESS = `${SECURITY}.team`;
 const SECURITY_API_KEY_ACCESS = `${SECURITY}.apiKey`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
@@ -31,11 +32,18 @@ interface SecurityPermissionsProps {
 
 export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value, onChange }) => {
     const { getPermission } = useSecurity();
+    const { getProject } = useWcp();
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAacl = useMemo(() => {
         return !getPermission<AaclPermission>("aacl", true);
     }, []);
+
+    const project = getProject();
+    let teams = false;
+    if (project) {
+        teams = project.package.features.advancedAccessControlLayer.options.teams;
+    }
 
     const onFormChange = useCallback(
         data => {
@@ -51,6 +59,10 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
             } else if (data.accessLevel === CUSTOM_ACCESS) {
                 if (data.groupAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_GROUP_ACCESS });
+                }
+
+                if (data.teamAccessScope === FULL_ACCESS) {
+                    permissions.push({ name: SECURITY_TEAM_ACCESS });
                 }
 
                 if (data.apiKeyAccessScope === FULL_ACCESS) {
@@ -88,12 +100,17 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
         const data = {
             accessLevel: CUSTOM_ACCESS,
             groupAccessScope: NO_ACCESS,
+            teamAccessScope: NO_ACCESS,
             apiKeyAccessScope: NO_ACCESS
         };
 
         const hasGroupAccess = permissions.find(item => item.name === SECURITY_GROUP_ACCESS);
         if (hasGroupAccess) {
             data.groupAccessScope = FULL_ACCESS;
+        }
+        const hasTeamAccess = permissions.find(item => item.name === SECURITY_TEAM_ACCESS);
+        if (hasTeamAccess) {
+            data.teamAccessScope = FULL_ACCESS;
         }
 
         const hasApiKeyAccess = permissions.find(item => item.name === SECURITY_API_KEY_ACCESS);
@@ -176,6 +193,30 @@ export const SecurityPermissions: React.FC<SecurityPermissionsProps> = ({ value,
                                         </Cell>
                                     </Grid>
                                 </Elevation>
+                                {teams && (
+                                    <Elevation z={1} style={{ marginTop: 10 }}>
+                                        <Grid>
+                                            <Cell span={12}>
+                                                <Typography use={"overline"}>{t`Teams`}</Typography>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name={"teamAccessScope"}>
+                                                    <Select
+                                                        label={t`Access Scope`}
+                                                        disabled={cannotUseAacl}
+                                                    >
+                                                        <option
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
+                                                        >{t`Full access`}</option>
+                                                    </Select>
+                                                </Bind>
+                                            </Cell>
+                                        </Grid>
+                                    </Elevation>
+                                )}
                             </React.Fragment>
                         )}
                     </Fragment>
