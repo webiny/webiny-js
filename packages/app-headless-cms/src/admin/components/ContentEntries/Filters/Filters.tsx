@@ -1,8 +1,9 @@
 import React from "react";
 import { Form, FormOnSubmit } from "@webiny/form";
-import { useContentEntryListConfig } from "~/admin/views/contentEntries/ContentEntryListConfig";
-import { FiltersContainer } from "./styles";
+import { useContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
+
+import { FiltersContainer } from "./styles";
 
 export const Filters = () => {
     const { browser } = useContentEntryListConfig();

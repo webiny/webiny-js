@@ -5,7 +5,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import usePermission from "~/admin/hooks/usePermission";
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
-const SaveContentButton: React.FC = () => {
+export const SaveContentButton: React.FC = () => {
     const { form, entry } = useContentEntry();
     const { canEdit } = usePermission();
 
@@ -22,5 +22,3 @@ const SaveContentButton: React.FC = () => {
         >{t`Save`}</ButtonSecondary>
     );
 };
-
-export default SaveContentButton;

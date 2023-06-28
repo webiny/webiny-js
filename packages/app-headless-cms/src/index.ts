@@ -1,5 +1,5 @@
 export * from "./HeadlessCMS";
-export { ContentEntryListConfig } from "./admin/views/contentEntries/ContentEntryListConfig";
+export { ContentEntryEditorConfig, ContentEntryListConfig } from "./admin/config/contentEntries";
 
 export type {
     ContentEntriesViewConfigFilterProps,

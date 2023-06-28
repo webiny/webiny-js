@@ -1,32 +1,15 @@
 import React from "react";
-import { css } from "emotion";
 import { get } from "lodash";
 import { useRouter } from "@webiny/react-router";
-import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
-import { Menu, MenuItem } from "@webiny/ui/Menu";
-import { ReactComponent as DownButton } from "~/admin/icons/round-arrow_drop_down-24px.svg";
+import { MenuItem } from "@webiny/ui/Menu";
+import { ReactComponent as DownButton } from "@material-design-icons/svg/round/arrow_drop_down.svg";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 import { CmsContentEntryRevision } from "~/types";
 
-const buttonStyle = css({
-    "&.mdc-button": {
-        color: "var(--mdc-theme-text-primary-on-background) !important"
-    }
-});
-
-const menuStyles = css({
-    width: 150,
-    right: 0,
-    ".mdc-list-item": {
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "baseline",
-        textAlign: "left"
-    }
-});
+import { Button, Menu } from "./RevisionSelector.styles";
 
 interface CmsEntryRevision extends Pick<CmsContentEntryRevision, "id"> {
     meta: Pick<CmsContentEntryRevision["meta"], "version" | "status">;
@@ -42,7 +25,7 @@ const defaultRevisions: CmsEntryRevision[] = [
     }
 ];
 
-const RevisionSelector: React.FC = () => {
+export const RevisionSelector: React.FC = () => {
     const { entry, revisions, loading } = useContentEntry();
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
@@ -56,12 +39,11 @@ const RevisionSelector: React.FC = () => {
 
     return (
         <Menu
-            className={menuStyles}
             handle={
-                <ButtonDefault className={buttonStyle} disabled={loading}>
+                <Button disabled={loading}>
                     v{currentRevision.version} ({statusLabels[currentRevision.status]}){" "}
                     <Icon icon={<DownButton />} />
-                </ButtonDefault>
+                </Button>
             }
         >
             {allRevisions.map(revision => (
@@ -79,5 +61,3 @@ const RevisionSelector: React.FC = () => {
         </Menu>
     );
 };
-
-export default RevisionSelector;

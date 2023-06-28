@@ -1,15 +1,12 @@
 import React, { useMemo } from "react";
 
-import styled from "@emotion/styled";
 import { useBind } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
 import { Select } from "@webiny/ui/Select";
 
-import { CmsEntryFilterStatusPlugin } from "@webiny/app-headless-cms-common/types";
+import { DropdownContainer } from "./styles";
 
-const DropdownContainer = styled.div`
-    width: 200px;
-`;
+import { CmsEntryFilterStatusPlugin } from "@webiny/app-headless-cms-common/types";
 
 export const FilterByStatus: React.FC = () => {
     const bind = useBind({

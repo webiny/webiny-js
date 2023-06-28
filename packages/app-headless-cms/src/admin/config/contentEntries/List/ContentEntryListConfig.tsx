@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
-import { Browser, BrowserConfig } from "./config/Browser";
+import { Browser, BrowserConfig } from "./Browser";
 
 const base = createConfigurableComponent<ContentEntryListConfig>("ContentEntryListConfig");
 
 export const ContentEntryListConfig = Object.assign(base.Config, { Browser });
-
 export const ContentEntryListWithConfig = base.WithConfig;
 
 interface ContentEntryListConfig {
@@ -17,9 +16,10 @@ export function useContentEntryListConfig() {
 
     const browser = config.browser || {};
 
-    return useMemo(() => {
-        return {
+    return useMemo(
+        () => ({
             browser: { ...browser, filters: [...(browser.filters || [])] }
-        };
-    }, [config]);
+        }),
+        [config]
+    );
 }
