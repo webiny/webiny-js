@@ -10,14 +10,14 @@ const Container = styled("div")({
     borderBottom: "1px solid var(--mdc-theme-on-background)",
     backgroundRepeat: "no-repeat",
     backgroundSize: "contain",
-    backgroundOrigin: 'content-box',
+    backgroundOrigin: "content-box",
     backgroundPosition: "center",
     padding: 5,
     minHeight: 140,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    boxSizing: "border-box",
+    boxSizing: "border-box"
 });
 
 const Icon = styled("div")({
