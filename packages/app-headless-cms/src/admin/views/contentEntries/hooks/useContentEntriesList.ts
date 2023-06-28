@@ -5,7 +5,7 @@ import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK, FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { CMS_ENTRY_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
 import { ListMeta } from "@webiny/app-aco/types";
 import {
     transformCmsContentEntriesToRecordEntries,
@@ -43,7 +43,7 @@ interface UseContentEntries {
 export const useContentEntriesList = (): UseContentEntries => {
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
-    const { currentFolderId = FOLDER_ID_DEFAULT } = useNavigateFolder();
+    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
 
     const {
         folders: initialFolders,

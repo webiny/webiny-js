@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import debounce from "lodash/debounce";
-import { PAGE_BUILDER_LIST_LINK, FOLDER_ID_DEFAULT } from "~/admin/constants";
+import { PAGE_BUILDER_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
 import { createSort, useAcoList, useNavigateFolder } from "@webiny/app-aco";
 import { PbPageDataItem } from "~/types";
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
@@ -48,8 +48,8 @@ export const usePagesList = (): UsePageList => {
         records,
         setSearchQuery,
         setListSort
-    } = useAcoList<PbPageDataItem>();
-    const { currentFolderId = FOLDER_ID_DEFAULT } = useNavigateFolder();
+    } = useAcoList();
+    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
@@ -69,7 +69,6 @@ export const usePagesList = (): UsePageList => {
 
             if (searchQuery !== search) {
                 setSearchQuery(search);
-
                 if (!search) {
                     // In case of empty `search` - remove it from `querystring`
                     query.delete("search");

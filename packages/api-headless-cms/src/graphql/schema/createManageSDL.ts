@@ -126,6 +126,11 @@ export const createManageSDL: CreateManageSDL = ({
             data: ${singularName}
             error: CmsError
         }
+        
+        type ${singularName}MoveResponse {
+            data: Boolean
+            error: CmsError
+        }
 
         type ${singularName}ArrayResponse {
             data: [${singularName}]
@@ -165,6 +170,8 @@ export const createManageSDL: CreateManageSDL = ({
             create${singularName}From(revision: ID!, data: ${singularName}Input): ${singularName}Response
     
             update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
+            
+            move${singularName}(revision: ID!, folderId: ID!): ${singularName}MoveResponse
 
             delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
