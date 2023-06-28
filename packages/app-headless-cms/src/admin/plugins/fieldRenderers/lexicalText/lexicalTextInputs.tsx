@@ -19,23 +19,13 @@ const getKey = (
     return `${formId}.${field.fieldId}.${index}`;
 };
 
-const emptyValue: Record<string, any>[] = [
-    {
-        type: "paragraph",
-        data: {
-            textAlign: "left",
-            className: null,
-            text: ""
-        }
-    }
-];
-
 const EditorWrapper = styled("div")({
     position: "relative",
     "> button": {
         position: "absolute",
-        top: 5,
-        right: 5
+        top: 0,
+        right: 5,
+        zIndex: 10
     }
 });
 
@@ -56,21 +46,21 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render(props) {
             const { field } = props;
             return (
-                <DynamicSection {...props} emptyValue={emptyValue}>
+                <DynamicSection {...props}>
                     {({ bind, index }) => (
                         <EditorWrapper>
+                            <LexicalCmsEditor
+                                value={bind.index.value}
+                                onChange={bind.index.onChange}
+                                key={getKey(field, bind, index)}
+                                placeholder={field.placeholderText}
+                            />
                             {index > 0 && (
                                 <IconButton
                                     icon={<DeleteIcon />}
                                     onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
-                            <LexicalCmsEditor
-                                value={bind.field.value}
-                                onChange={bind.field.onChange}
-                                key={getKey(field, bind, index)}
-                                placeholder={field.placeholderText}
-                            />
                         </EditorWrapper>
                     )}
                 </DynamicSection>
