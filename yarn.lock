@@ -11906,6 +11906,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-file-manager-ddb@0.0.0, @webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
