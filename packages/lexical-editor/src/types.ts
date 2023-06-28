@@ -95,3 +95,6 @@ export type ThemeEmotionMap = {
         className: string;
     };
 };
+
+// lexical types
+export { Klass, LexicalNode } from "lexical";
