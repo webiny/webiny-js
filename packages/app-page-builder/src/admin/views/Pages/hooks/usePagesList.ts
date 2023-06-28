@@ -48,7 +48,7 @@ export const usePagesList = (): UsePageList => {
         records,
         setSearchQuery,
         setListSort
-    } = useAcoList();
+    } = useAcoList<PbPageDataItem>();
     const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
 
     const [sorting, setSorting] = useState<Sorting>([]);

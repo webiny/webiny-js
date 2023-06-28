@@ -16,7 +16,7 @@ import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick";
 import { ROOT_FOLDER } from "~/constants";
 
-export interface AcoListContext {
+export interface AcoListContextData<T> {
     folders: FolderItem[];
     hideFilters: () => void;
     isListLoading: boolean;
@@ -25,7 +25,7 @@ export interface AcoListContext {
     listMoreRecords: () => void;
     listTitle?: string;
     meta: ListMeta;
-    records: SearchRecordItem[];
+    records: SearchRecordItem<T>[];
     setFilters: (data: Record<string, any>) => void;
     setListSort: (state: ListSearchRecordsSort) => void;
     setSearchQuery: (query: string) => void;
@@ -33,7 +33,9 @@ export interface AcoListContext {
     showingFilters: boolean;
 }
 
-export const AcoListContext = React.createContext<AcoListContext | undefined>(undefined);
+export const AcoListContext = React.createContext<
+    AcoListContextData<GenericSearchData> | undefined
+>(undefined);
 
 export interface State {
     after?: string;
@@ -259,7 +261,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
         }));
     }, [state.folderId, state.filters, state.searchQuery, state.after, state.listSort]);
 
-    const context: AcoListContext = {
+    const context: AcoListContextData<GenericSearchData> = {
         ...pick(state, ["isSearch", "showingFilters"]),
         folders,
         records,
