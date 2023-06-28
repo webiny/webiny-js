@@ -78,7 +78,6 @@ export const ElementControls = () => {
         );
     };
 
-
     // When dragging, if the element is droppable, we want to render the drop zones.
     if (isDragging) {
         let render = <ElementControlHorizontalDropZones />;
