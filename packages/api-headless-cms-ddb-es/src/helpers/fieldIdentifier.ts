@@ -1,6 +1,6 @@
 import { CmsEntryValues, CmsModelField } from "@webiny/api-headless-cms/types";
 
-const hasOwnProperty = (values: CmsEntryValues, property: string): boolean => {
+const hasOwnProperty = (values: CmsEntryValues = {}, property: string): boolean => {
     if (values.hasOwnProperty) {
         return values.hasOwnProperty(property);
     }
