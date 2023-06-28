@@ -140,11 +140,12 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
         setState(state => {
             return {
                 ...state,
-                folderId: currentFolderId,
                 after: undefined,
                 filters: undefined,
+                folderId: currentFolderId,
                 isSearch: false,
-                searchQuery: ""
+                searchQuery: "",
+                showingFilters: false
             };
         });
     }, [currentFolderId]);
@@ -251,14 +252,14 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
             };
 
             await listRecords(params);
+
+            setState(state => ({
+                ...state,
+                isSearch
+            }));
         };
 
         listItems();
-
-        setState(state => ({
-            ...state,
-            isSearch: Boolean(state.searchQuery || state.filters)
-        }));
     }, [state.folderId, state.filters, state.searchQuery, state.after, state.listSort]);
 
     const context: AcoListContextData<GenericSearchData> = {
