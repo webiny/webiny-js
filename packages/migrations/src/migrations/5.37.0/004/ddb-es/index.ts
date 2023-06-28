@@ -245,7 +245,8 @@ export class FileManager_5_37_0_004 implements DataMigration<FileDataMigrationCh
                                     __type: "cms.entry.l",
                                     ...latestEntry,
                                     rawValues: {
-                                        "object@location": {}
+                                        "object@location": {},
+                                        "object@meta": {}
                                     }
                                 }),
                                 index: esGetIndexName({
