@@ -243,7 +243,10 @@ export class FileManager_5_37_0_004 implements DataMigration<FileDataMigrationCh
                                 data: await getCompressedData({
                                     latest: true,
                                     __type: "cms.entry.l",
-                                    ...latestEntry
+                                    ...latestEntry,
+                                    rawValues: {
+                                        "object@location": {}
+                                    }
                                 }),
                                 index: esGetIndexName({
                                     tenant: tenantId,
