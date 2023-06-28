@@ -1,21 +1,14 @@
-/*
+/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  */
-
-import { useEffect } from "react";
-export type InsertImagePayload = Readonly<ImagePayload>;
-const getDOMSelection = (targetWindow: Window | null): Selection | null =>
-    CAN_USE_DOM ? (targetWindow || window).getSelection() : null;
-
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $createImageNode, $isImageNode, ImageNode } from "~/nodes/ImageNode";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
-import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 import {
+    $createParagraphNode,
     $createRangeSelection,
     $getSelection,
     $insertNodes,
@@ -30,9 +23,17 @@ import {
     DROP_COMMAND,
     LexicalEditor
 } from "lexical";
-import { $createParagraphNode } from "~/nodes/ParagraphNode";
-import { getTransparentImage } from "~/utils/getTransparentImage";
+import { useEffect } from "react";
+import * as React from "react";
+import { $createImageNode, $isImageNode, ImageNode } from "~/nodes/ImageNode";
+import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 import { CAN_USE_DOM } from "~/utils/canUseDOM";
+import { insertImage } from "~/utils/nodes/insertImage";
+
+export type InsertImagePayload = Readonly<ImagePayload>;
+
+const getDOMSelection = (targetWindow: Window | null): Selection | null =>
+    CAN_USE_DOM ? (targetWindow || window).getSelection() : null;
 
 export function ImagesPlugin({
     captionsEnabled
@@ -47,17 +48,9 @@ export function ImagesPlugin({
         }
 
         return mergeRegister(
-            editor.registerCommand<ImagePayload>(
+            editor.registerCommand<InsertImagePayload>(
                 INSERT_IMAGE_COMMAND,
-                payload => {
-                    const imageNode = $createImageNode(payload);
-                    $insertNodes([imageNode]);
-                    if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
-                        $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
-                    }
-
-                    return true;
-                },
+                payload => insertImage(payload),
                 COMMAND_PRIORITY_EDITOR
             ),
             editor.registerCommand<DragEvent>(
@@ -87,8 +80,10 @@ export function ImagesPlugin({
     return null;
 }
 
+const TRANSPARENT_IMAGE =
+    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const img = document.createElement("img");
-img.src = getTransparentImage();
+img.src = TRANSPARENT_IMAGE;
 
 function onDragStart(event: DragEvent): boolean {
     const node = getImageNodeInSelection();

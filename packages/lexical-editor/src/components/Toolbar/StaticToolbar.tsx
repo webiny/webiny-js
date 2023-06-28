@@ -18,7 +18,7 @@ interface useStaticToolbarProps {
 }
 
 const useStaticToolbar: FC<useStaticToolbarProps> = ({ editor }) => {
-    const { setNodeIsText, setTextBlockSelection } = useRichTextEditor();
+    const { setNodeIsText, setTextBlockSelection, setActiveEditor } = useRichTextEditor();
     const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
     const { toolbarElements } = useLexicalEditorConfig();
 
@@ -66,6 +66,7 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({ editor }) => {
             (_payload, newEditor) => {
                 updateToolbar();
                 setToolbarActiveEditor(newEditor);
+                setActiveEditor(newEditor);
                 return false;
             },
             COMMAND_PRIORITY_CRITICAL
@@ -78,6 +79,11 @@ const useStaticToolbar: FC<useStaticToolbarProps> = ({ editor }) => {
                 editorState.read(() => {
                     updateToolbar();
                 });
+            }),
+            editor.registerRootListener(() => {
+                if (editor.getRootElement() === null) {
+                    setNodeIsText(false);
+                }
             }),
             editor.registerRootListener(() => {
                 if (editor.getRootElement() === null) {

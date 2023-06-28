@@ -21,7 +21,8 @@ import {
     LinkPlugin,
     ListPlugin,
     TypographyPlugin,
-    FontColorPlugin
+    FontColorPlugin,
+    TextAlignmentAction
 } from "@webiny/lexical-editor";
 import { TypographyDropDown } from "~/admin/components/LexicalCmsEditor/TypographyDropDown";
 import { CompositionScope } from "@webiny/react-composition";
@@ -35,6 +36,7 @@ export const LexicalEditorCmsPlugin: FC = () => {
                 <ToolbarElement name="fontSize" element={<FontSizeAction />} />
                 <ToolbarElement name="fontColor" element={<FontColorAction />} />
                 <ToolbarElement name="typography" element={<TypographyAction />} />
+                <ToolbarElement name="textAlignment" element={<TextAlignmentAction />} />
                 <ToolbarElement name="divider1" element={<Divider />} />
                 <ToolbarElement name="boldAction" element={<BoldAction />} />
                 <ToolbarElement name="italic" element={<ItalicAction />} />

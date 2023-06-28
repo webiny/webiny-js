@@ -137,7 +137,11 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         <LexicalComposer initialConfig={initialConfig}>
             <>
                 {staticToolbar && staticToolbar}
-                <div ref={scrollRef} style={{ ...styles, ...sizeStyle, overflow: "auto" }}>
+                <div
+                    className={"editor-shell"}
+                    ref={scrollRef}
+                    style={{ ...styles, ...sizeStyle, overflow: "auto" }}
+                >
                     {/* data */}
                     <OnChangePlugin onChange={handleOnChange} />
                     {value && <LexicalUpdateStatePlugin value={value} />}

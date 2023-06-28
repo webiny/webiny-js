@@ -162,7 +162,6 @@ const useToolbar: FC<useToolbarProps> = ({
 }): JSX.Element | null => {
     const { nodeIsText, setNodeIsText, setActiveEditor, setIsEditable, setTextBlockSelection } =
         useRichTextEditor();
-
     const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
 
     const updateToolbar = useCallback(() => {

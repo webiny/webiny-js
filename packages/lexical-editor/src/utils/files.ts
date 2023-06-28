@@ -37,14 +37,17 @@ export const fileToImagePayload = (file: FileManagerFileItem): ImagePayload | nu
     const imagePayload = {} as ImagePayload;
     imagePayload["id"] = file.id;
     imagePayload["src"] = file.src;
-    imagePayload["showCaption"] = false;
-    imagePayload["captionsEnabled"] = false;
+    imagePayload["showCaption"] = true;
+    imagePayload["captionsEnabled"] = true;
 
     for (const metaValue of file.meta) {
         if (metaValue.key === "name") {
             imagePayload["altText"] = metaValue.value;
+        } else if (metaValue.key === "width") {
+            imagePayload["width"] = metaValue.value;
+        } else if (metaValue.key === "height") {
+            imagePayload["height"] = metaValue.value;
         }
     }
-
     return imagePayload;
 };

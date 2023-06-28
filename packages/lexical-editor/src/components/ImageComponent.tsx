@@ -8,8 +8,14 @@
 
 import type { GridSelection, LexicalEditor, NodeKey, NodeSelection, RangeSelection } from "lexical";
 
-import "../nodes/imageNode.css";
+import "~/nodes/imageNode.css";
+
+import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -28,9 +34,11 @@ import {
 } from "lexical";
 import * as React from "react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-
-import { ImageResizer } from "../ui/ImageResizer";
-import { $isImageNode } from "../nodes/ImageNode";
+import { Placeholder } from "~/ui/Placeholder";
+import { ImageResizer } from "~/ui/ImageResizer";
+import { useSharedHistoryContext } from "~/context/SharedHistoryContext";
+import { $isImageNode } from "~/nodes/ImageNode";
+import { LexicalContentEditable } from "~/ui/ContentEditable";
 
 const imageCache = new Set();
 
@@ -199,7 +207,6 @@ export default function ImageComponent({
                 CLICK_COMMAND,
                 payload => {
                     const event = payload;
-
                     if (isResizing) {
                         return true;
                     }
@@ -278,6 +285,7 @@ export default function ImageComponent({
         setIsResizing(true);
     };
 
+    const { historyState } = useSharedHistoryContext();
     const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
     const isFocused = isSelected || isResizing;
     return (
@@ -299,6 +307,25 @@ export default function ImageComponent({
                         maxWidth={maxWidth}
                     />
                 </div>
+                {showCaption && (
+                    <div className="image-caption-container">
+                        <LexicalNestedComposer initialEditor={caption}>
+                            <AutoFocusPlugin />
+                            <HistoryPlugin externalHistoryState={historyState} />
+                            <RichTextPlugin
+                                contentEditable={
+                                    <LexicalContentEditable className="ImageNode__contentEditable" />
+                                }
+                                placeholder={
+                                    <Placeholder className="ImageNode__placeholder">
+                                        Enter a caption...
+                                    </Placeholder>
+                                }
+                                ErrorBoundary={LexicalErrorBoundary}
+                            />
+                        </LexicalNestedComposer>
+                    </div>
+                )}
                 {resizable && $isNodeSelection(selection) && isFocused && (
                     <ImageResizer
                         showCaption={showCaption}
