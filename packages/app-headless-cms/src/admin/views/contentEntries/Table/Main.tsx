@@ -70,6 +70,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     onSearchChange={list.setSearch}
                 />
                 <Wrapper>
+                    <Filters />
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&
                     !list.isListLoading ? (
@@ -81,7 +82,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                         />
                     ) : (
                         <>
-                            <Filters />
                             <Scrollbar
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
