@@ -138,6 +138,13 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
                     }
                 );
             }
+
+            /**
+             * Form Builder is the last app that has an installer. Once its installation is finished,
+             * we need to notify the system that tenant is now ready to use, because many external plugins
+             * insert initial tenant data into various apps, copy data from other tenants, etc.
+             */
+            await context.tenancy.onTenantAfterInstall.publish({});
         }
     };
 };

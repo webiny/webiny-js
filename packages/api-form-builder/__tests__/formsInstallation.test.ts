@@ -48,9 +48,7 @@ describe('Form Builder "Installation" Test', () => {
                     install: {
                         data: null,
                         error: {
-                            data: {
-                                reason: `"onTenantAfterInstall" can only be published once!`
-                            }
+                            message: `"onTenantAfterInstall" can only be published once!`
                         }
                     }
                 }
