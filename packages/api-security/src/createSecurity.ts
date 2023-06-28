@@ -8,7 +8,6 @@ import { createSystemMethods } from "~/createSecurity/createSystemMethods";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods";
 import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
 import { createTopic } from "@webiny/pubsub";
-import { AACL_RELEASE_DATE } from "@webiny/api-wcp";
 import { AaclPermission } from "@webiny/api-wcp/types";
 
 export interface GetTenant {
@@ -163,8 +162,10 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                 const securitySystemRecord = await this.getStorageOperations().getSystemData({
                     tenant: "root"
                 });
-                const securityInstalledOn = securitySystemRecord?.installedOn;
-                const isWcpAacl = securityInstalledOn && securityInstalledOn >= AACL_RELEASE_DATE;
+
+                // If `installedOn` value exists, we know we're not dealing with
+                // legacy security system. It's the new AACL one.
+                const isWcpAacl = securitySystemRecord?.installedOn;
                 const isLegacyAacl = !isWcpAacl;
 
                 if (isLegacyAacl) {
