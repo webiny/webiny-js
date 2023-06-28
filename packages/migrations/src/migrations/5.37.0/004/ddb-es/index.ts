@@ -240,7 +240,11 @@ export class FileManager_5_37_0_004 implements DataMigration<FileDataMigrationCh
                             const latestDdbEs = {
                                 PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${fileId}`,
                                 SK: "L",
-                                data: await getCompressedData(latestEntry),
+                                data: await getCompressedData({
+                                    latest: true,
+                                    __type: "cms.entry.l",
+                                    ...latestEntry
+                                }),
                                 index: esGetIndexName({
                                     tenant: tenantId,
                                     locale: localeCode,
