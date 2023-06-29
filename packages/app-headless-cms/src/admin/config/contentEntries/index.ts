@@ -1,2 +1,2 @@
-export * from "./Editor";
-export * from "./List";
+export * from "./editor";
+export * from "./list";
