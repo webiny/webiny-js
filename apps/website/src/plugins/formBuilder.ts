@@ -1,6 +1,8 @@
 import formsGoogleAnalyticsEventTrigger from "@webiny/app-form-builder/render/plugins/triggers/googleAnalyticsEvent";
 import formsRedirectTrigger from "@webiny/app-form-builder/render/plugins/triggers/redirect";
 import formValidatorGte from "@webiny/app-form-builder/render/plugins/validators/gte";
+import fieldValidatorDateTimeGte from "@webiny/app-form-builder/render/plugins/validators/dateTimeGte";
+import fieldValidatorDateTimeLte from "@webiny/app-form-builder/render/plugins/validators/dateTimeLte";
 import formValidatorIn from "@webiny/app-form-builder/render/plugins/validators/in";
 import formValidatorLte from "@webiny/app-form-builder/render/plugins/validators/lte";
 import formValidatorMaxLength from "@webiny/app-form-builder/render/plugins/validators/maxLength";
@@ -14,9 +16,11 @@ import formValidatorUrl from "@webiny/app-form-builder/render/plugins/validators
 import formElement from "@webiny/app-form-builder/page-builder/render/plugins/formElement";
 
 export default [
-    formsRedirectTrigger,
     formsGoogleAnalyticsEventTrigger,
+    formsRedirectTrigger,
     formValidatorGte,
+    fieldValidatorDateTimeGte,
+    fieldValidatorDateTimeLte,
     formValidatorIn,
     formValidatorLte,
     formValidatorMaxLength,

@@ -107,7 +107,7 @@ const DateFieldWithTimeZone = (props: { field: FormRenderFbFormModelField }) => 
     );
 };
 
-export const DateField = (props: { field: FormRenderFbFormModelField }) => {
+export const DateTimeField = (props: { field: FormRenderFbFormModelField }) => {
     const { settings } = props.field;
 
     if (settings.format === "time") {
