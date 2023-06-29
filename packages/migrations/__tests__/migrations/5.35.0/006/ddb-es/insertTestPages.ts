@@ -14,7 +14,7 @@ import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch
 /**
  * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
  */
-const NUMBER_OF_PAGES = 5;
+const NUMBER_OF_PAGES = 15;
 const INDEX_TYPE = "page-builder";
 
 interface InsertTestPagesParams {

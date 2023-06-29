@@ -20,7 +20,7 @@ jest.setTimeout(900000);
 /**
  * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
  */
-const NUMBER_OF_FILES = 10;
+const NUMBER_OF_FILES = 50;
 
 describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();
