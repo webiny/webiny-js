@@ -16,10 +16,7 @@ interface PinterestEmbedProps {
     element: PbEditorElement;
 }
 
-async function appendSDK(props: PinterestEmbedProps): Promise<void> {
-    const { element } = props;
-    const { url } = get(element, "data.source") || {};
-
+async function appendSDK(url: string): Promise<void> {
     if (!url || window["PinUtils"]) {
         return Promise.resolve();
     }
@@ -60,27 +57,32 @@ const getHTML = (data: PbElementDataTypeSource): string => {
 const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
     const { element } = props;
     const variableValue = useElementVariableValue(element);
+    const data: PbElementDataTypeSource = get(element, "data.source");
+
+    const pinUrl = variableValue || data?.url;
 
     useEffect(() => {
-        appendSDK(props).then(() => initEmbed(props));
-    }, [element]);
+        appendSDK(pinUrl).then(() => initEmbed(props));
+    }, [pinUrl]);
 
     const renderEmpty = useRenderEmptyEmbed(element);
 
     const renderEmbed = useCallback((): React.ReactElement => {
-        const data: PbElementDataTypeSource = get(element, "data.source");
+        const pinData = {
+            url: variableValue ? variableValue : data?.url,
+            size: data?.size || "small"
+        };
+
         return (
             <div
                 id={element.id}
                 className={centerAlign}
-                dangerouslySetInnerHTML={{ __html: getHTML(data) }}
+                dangerouslySetInnerHTML={{ __html: getHTML(pinData) }}
             />
         );
-    }, [element]);
+    }, [pinUrl]);
 
-    const url = variableValue || get(element, "data.source.url") || "";
-
-    return url ? renderEmbed() : renderEmpty();
+    return pinUrl ? renderEmbed() : renderEmpty();
 };
 
 const MemoizedPinterestEmbed = React.memo(PinterestEmbed, (props, nextProps) =>

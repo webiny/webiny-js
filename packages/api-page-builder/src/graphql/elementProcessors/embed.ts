@@ -15,7 +15,7 @@ export default new ContextPlugin<PbContext>(context => {
         const variables = useElementVariables(block, element);
         const value = variables?.length > 0 ? variables[0].value : null;
 
-        if (value !== null) {
+        if (value !== undefined && value !== null) {
             set(element, "data.source.url", value);
 
             const provider = findProvider(value);
