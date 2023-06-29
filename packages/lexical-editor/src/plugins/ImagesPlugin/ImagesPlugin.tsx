@@ -6,14 +6,11 @@
  *
  */
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
+import { mergeRegister } from "@lexical/utils";
 import {
-    $createParagraphNode,
     $createRangeSelection,
     $getSelection,
-    $insertNodes,
     $isNodeSelection,
-    $isRootOrShadowRoot,
     $setSelection,
     COMMAND_PRIORITY_EDITOR,
     COMMAND_PRIORITY_HIGH,
@@ -24,8 +21,7 @@ import {
     LexicalEditor
 } from "lexical";
 import { useEffect } from "react";
-import * as React from "react";
-import { $createImageNode, $isImageNode, ImageNode } from "~/nodes/ImageNode";
+import { $isImageNode, ImageNode } from "~/nodes/ImageNode";
 import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 import { CAN_USE_DOM } from "~/utils/canUseDOM";
 import { insertImage } from "~/utils/nodes/insertImage";

@@ -50,10 +50,17 @@ export interface RichTextEditorProps {
      */
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
+
+    placeholderStyles?: React.CSSProperties;
     /*
-     * Set inline styles to lexical input container
+     * Set inline styles to lexical editor container
      * */
     styles?: React.CSSProperties;
+
+    /*
+     * Set inline styles to lexical editor editable content
+     * */
+    contentEditableStyles?: React.CSSProperties;
 
     /*
      * Set classes to lexical input container
@@ -76,11 +83,15 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
     height,
     theme,
     themeEmotionMap,
-    toolbarActionPlugins
+    toolbarActionPlugins,
+    contentEditableStyles,
+    placeholderStyles
 }: RichTextEditorProps) => {
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
-    const placeholderElem = <Placeholder>{placeholder || "Enter text..."}</Placeholder>;
+    const placeholderElem = (
+        <Placeholder styles={placeholderStyles}>{placeholder || "Enter text..."}</Placeholder>
+    );
     const scrollRef = useRef(null);
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
@@ -157,7 +168,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                         contentEditable={
                             <div className="editor-scroller" style={{ ...sizeStyle }}>
                                 <div className="editor" ref={onRef}>
-                                    <ContentEditable style={{ outline: 0 }} />
+                                    <ContentEditable
+                                        style={{ outline: 0, ...contentEditableStyles }}
+                                    />
                                 </div>
                             </div>
                         }
