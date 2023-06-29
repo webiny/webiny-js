@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, useSecurity } from "@webiny/app-serverless-cms";
+import { Admin, HasPermission, useSecurity } from "@webiny/app-serverless-cms";
 import { Cognito } from "@webiny/app-admin-users-cognito";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 
@@ -13,32 +13,29 @@ const MenuItemAction = (props: any) => {
     return null;
 };
 
+MenuItemAction.useMenuItemComponents = useMenuItemComponents;
+
 const ButtonAction = (props: any) => {
     return null;
 };
 
-const SendAsPdfAction = () => {
+const SendAsPdfNoProps = () => {
+    const { MenuItem } = useMenuItemComponents();
+
+    return <MenuItem icon={<span />} label={"Label"} onAction={sendPdf} />;
+};
+
+const SendAsPdf = ({ MenuItem, DisabledMenuItem, MenuItemWithIcon }) => {
     const { identity } = useSecurity();
 
     const sendPdf = () => {
         //
     };
 
-    return (
-        <MenuItemAction
-            icon={<span />}
-            name={"new-action"}
-            after={"delete"}
-            label={"Send as PDF"}
-            onAction={sendPdf}
-        />
-    );
+    return <MenuItem icon={<span />} label={"Label"} onAction={sendPdf} />;
 };
 
-const CustomButton = props => {
-
-}
-
+const CustomButton = props => {};
 
 const SaveAction = () => {
     const { identity } = useSecurity();
@@ -71,8 +68,29 @@ export const App: React.FC = () => {
                     element={<MyAction />}
                     position={"primary"}
                 />
-                <SendAsPdfAction />
+                <MenuItemAction name={"new-action"} component={SendAsPdf} />
+                <MenuItemAction name={"save"} with={SendAsPdf} />
+                <MenuItemAction name={"new-action-2"} element={<SendAsPdfNoProps />} />
             </ContentEntryEditorConfig>
+            <Plugin>
+                <ConditionalRevisions />
+            </Plugin>
         </Admin>
     );
 };
+
+const ConditionalRevisions = () => {
+    return (
+        <NotHasPermission name={"content-writer"}>
+            <ContentEntryEditorConfig>
+                <ContentEntryEditorConfig.Revisions visible={false} />
+            </ContentEntryEditorConfig>
+        </NotHasPermission>
+    );
+};
+
+// ContentEntryEditorConfig.Actions.MenuItemAction
+// ContentEntryEditorConfig.Actions.ButtonAction
+
+// ContentEntryListConfig.Actions.ButtonAction
+// ContentEntryListConfig.Table.Actions.ButtonAction
