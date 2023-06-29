@@ -3,7 +3,7 @@ import { FbFormFieldValidatorPlugin } from "~/types";
 
 const plugin: FbFormFieldValidatorPlugin = {
     type: "fb-form-field-validator",
-    name: "form-field-validator-date-lte",
+    name: "form-field-validator-date-time-lte",
     validator: {
         name: "dateLte",
         validate: async (value, validator) => {

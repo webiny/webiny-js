@@ -31,10 +31,10 @@ import formFieldGroupsContact from "@webiny/app-form-builder/admin/plugins/edito
 
 /* Form Editor validation plugins */
 import editorValidatorGte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/gte";
-import editorValidatorDateGte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/dateGte";
+import editorValidatorDateGte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/dateTimeGte";
 import editorValidatorInValidator from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/in";
 import editorValidatorLte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/lte";
-import editorValidatorDateLte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/dateLte";
+import editorValidatorDateLte from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/dateTimeLte";
 import editorValidatorRequired from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/required";
 import editorValidatorMinLength from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/minLength";
 import editorValidatorMaxLength from "@webiny/app-form-builder/admin/plugins/editor/formFieldValidators/maxLength";
@@ -56,10 +56,10 @@ import pageBuilderPlugins from "@webiny/app-form-builder/page-builder/admin/plug
 
 /* Plugins performing input validation when a Form is rendered on a site or in preview mode */
 import fieldValidatorGte from "@webiny/app-form-builder/render/plugins/validators/gte";
-import fieldValidatorDateGte from "@webiny/app-form-builder/render/plugins/validators/dateGte";
+import fieldValidatorDateGte from "@webiny/app-form-builder/render/plugins/validators/dateTimeGte";
 import fieldValidatorInValidator from "@webiny/app-form-builder/render/plugins/validators/in";
 import fieldValidatorLte from "@webiny/app-form-builder/render/plugins/validators/lte";
-import fieldValidatorDateLte from "@webiny/app-form-builder/render/plugins/validators/dateLte";
+import fieldValidatorDateLte from "@webiny/app-form-builder/render/plugins/validators/dateTimeLte";
 import fieldValidatorMaxLength from "@webiny/app-form-builder/render/plugins/validators/maxLength";
 import fieldValidatorMinLength from "@webiny/app-form-builder/render/plugins/validators/minLength";
 import fieldValidatorPattern from "@webiny/app-form-builder/render/plugins/validators/pattern";
