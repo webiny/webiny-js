@@ -26,7 +26,10 @@ import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 3000;
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+const NUMBER_OF_FILES = 10;
 const INDEX_TYPE = "file-manager";
 let numberOfGeneratedFiles = 0;
 

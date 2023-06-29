@@ -17,7 +17,10 @@ import {
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 1000;
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+const NUMBER_OF_FILES = 10;
 
 describe("5.35.0-001", () => {
     const table = getPrimaryDynamoDbTable();

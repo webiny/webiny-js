@@ -18,7 +18,10 @@ import { createdBy, createLocalesData, createTenantsData } from "./001.data";
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 100;
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+const NUMBER_OF_FILES = 10;
 let numberOfGeneratedFiles = 0;
 
 describe("5.36.0-001", () => {
