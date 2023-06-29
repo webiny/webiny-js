@@ -4,9 +4,9 @@ import { DateTime } from "~/admin/plugins/editor/formFields/components/DateTime"
 
 const plugin: FbBuilderFormFieldValidatorPlugin = {
     type: "form-editor-field-validator",
-    name: "form-editor-field-validator-date-gte",
+    name: "form-editor-field-validator-date-time-gte",
     validator: {
-        name: "dateGte",
+        name: "dateTimeGte",
         label: "Later or equal",
         description: `Entered date/time must be equal or later compared to the provided date.`,
         defaultMessage: "Date/time is earlier than the provided one.",
