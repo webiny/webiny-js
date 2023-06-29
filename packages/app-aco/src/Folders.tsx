@@ -1,6 +1,6 @@
 import React from "react";
 import { Plugin } from "@webiny/app-admin";
-import { FoldersApiProvider } from "~/contexts/foldersApi";
+import { FoldersApiProvider } from "~/contexts/FoldersApi";
 
 const FoldersApiProviderHOC = (Component: React.FC): React.FC => {
     return function FoldersApiProviderHOC({ children }) {
@@ -12,6 +12,6 @@ const FoldersApiProviderHOC = (Component: React.FC): React.FC => {
     };
 };
 
-export const ACO = () => {
+export const Folders = () => {
     return <Plugin providers={[FoldersApiProviderHOC]} />;
 };

@@ -2,7 +2,7 @@ import React, { ReactNode, useContext, useEffect, useMemo, useState } from "reac
 import { dataLoader, loadingHandler } from "~/handlers";
 import { FolderItem, Loading, LoadingActions } from "~/types";
 import { AcoAppContext } from "~/contexts/app";
-import { useFoldersApi } from "~/contexts/foldersApi";
+import { useFoldersApi } from "~/hooks";
 
 interface FoldersContext {
     folders?: FolderItem[] | null;
@@ -47,8 +47,8 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
     }
 
     useEffect(() => {
-        return foldersApi.onCacheUpdate(folders => {
-            setFolders(folders[type]);
+        return foldersApi.onFoldersChanged(type, folders => {
+            setFolders(folders);
         });
     }, []);
 

@@ -47,7 +47,8 @@ export const loadingHandler = (
 };
 
 /**
- * A simple wrapper for Apollo fetching operations that handles the `loading` state as side effect.
+ * A data loader wrapper that manages the loading state via a callback.
+ * `loader` can be any function that returns a Promise.
  */
 export async function dataLoader<T>(loadingHandler: (flag: boolean) => void, loader: () => T) {
     loadingHandler(true);

@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import {
     CREATE_FOLDER,
@@ -27,11 +27,11 @@ interface OffCacheUpdate {
     (): void;
 }
 
-interface OnCacheUpdate {
-    (folders: FoldersByType): void;
+export interface OnCacheUpdate {
+    (folders: FolderItem[]): void;
 }
 
-interface FoldersApiContext {
+export interface FoldersApiContext {
     listFolders: (type: string) => Promise<FolderItem[]>;
     getFolder: (type: string, id: string) => Promise<FolderItem>;
     createFolder: (type: string, folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
@@ -41,7 +41,7 @@ interface FoldersApiContext {
     ) => Promise<FolderItem>;
     deleteFolder(type: string, id: string): Promise<true>;
     getDescendantFolders(type: string, id?: string): FolderItem[];
-    onCacheUpdate(cb: OnCacheUpdate): OffCacheUpdate;
+    onFoldersChanged(type: string, cb: OnCacheUpdate): OffCacheUpdate;
 }
 
 export const FoldersApiContext = React.createContext<FoldersApiContext | undefined>(undefined);
@@ -70,24 +70,30 @@ interface FoldersByType {
 
 export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
     const client = useApolloClient();
-    const cacheUpdateHandlers = useRef(new Set<OnCacheUpdate>());
+    const folderObservers = useRef(new Map<string, Set<OnCacheUpdate>>());
     const [cache, setCache] = useState<FoldersByType>({});
 
     useEffect(() => {
-        cacheUpdateHandlers.current.forEach(cb => cb(cache));
+        folderObservers.current.forEach((observers, type) => {
+            observers.forEach(observer => observer(cache[type]));
+        });
     }, [cache]);
 
     useEffect(() => {
         return () => {
-            cacheUpdateHandlers.current.clear();
+            folderObservers.current.clear();
         };
     }, []);
 
     const context: FoldersApiContext = {
-        onCacheUpdate: cb => {
-            cacheUpdateHandlers.current.add(cb);
+        onFoldersChanged: (type, cb) => {
+            if (!folderObservers.current.has(type)) {
+                folderObservers.current.set(type, new Set());
+            }
+
+            folderObservers.current.get(type)!.add(cb);
             return () => {
-                cacheUpdateHandlers.current.delete(cb);
+                folderObservers.current.get(type)!.delete(cb);
             };
         },
         async listFolders(type) {
@@ -298,12 +304,3 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
 
     return <FoldersApiContext.Provider value={context}>{children}</FoldersApiContext.Provider>;
 };
-
-export function useFoldersApi() {
-    const context = useContext(FoldersApiContext);
-    if (!context) {
-        throw new Error(`Missing "FoldersApiProvider" in the component hierarchy!`);
-    }
-
-    return context;
-}
