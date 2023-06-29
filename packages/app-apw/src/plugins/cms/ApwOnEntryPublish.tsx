@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import dotPropImmutable from "dot-prop-immutable";
 import { useNavigate } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
-import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { ShowConfirmationOnAccept, useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { ApwContentReviewContent, ApwContentTypes } from "~/types";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
-    CreateContentReviewMutationResponse,
-    CreateApwContentReviewMutationVariables
+    CreateApwContentReviewMutationVariables,
+    CreateContentReviewMutationResponse
 } from "~/graphql/contentReview.gql";
 import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
 import { routePaths } from "~/utils";
@@ -16,12 +16,15 @@ import { useApolloClient } from "@apollo/react-hooks";
 
 const t = i18n.ns("app-apw/cms/dialog");
 
+interface Resolve {
+    (): void;
+}
+
 type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
 export const ApwOnEntryPublish: React.FC = () => {
     const { onEntryRevisionPublish } = useCms();
     const client = useApolloClient();
-    const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const { showSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
@@ -36,41 +39,45 @@ export const ApwOnEntryPublish: React.FC = () => {
         )
     });
 
-    const resetShowReview = () => setInput(null);
+    const handleRequestReview = useCallback(
+        (resolve: Resolve, input: CreateContentReviewInput): ShowConfirmationOnAccept => {
+            return async () => {
+                const response = await client.mutate<
+                    CreateContentReviewMutationResponse,
+                    CreateApwContentReviewMutationVariables
+                >({
+                    mutation: CREATE_CONTENT_REVIEW_MUTATION,
+                    variables: {
+                        data: {
+                            content: input
+                        }
+                    }
+                });
 
-    const handleRequestReview = useCallback(async () => {
-        if (!input) {
-            return;
-        }
-
-        const response = await client.mutate<
-            CreateContentReviewMutationResponse,
-            CreateApwContentReviewMutationVariables
-        >({
-            mutation: CREATE_CONTENT_REVIEW_MUTATION,
-            variables: {
-                data: {
-                    content: input
+                const error = response.data && response.data.apw.contentReview.error;
+                const contentReview = response.data && response.data.apw.contentReview.data;
+                if (error) {
+                    showSnackbar(error.message);
+                    resolve();
+                    return;
+                } else if (contentReview) {
+                    showSnackbar(`Content review requested successfully!`);
+                    /**
+                     * Redirect to newly created "content review".
+                     */
+                    resolve();
+                    navigate(
+                        routePaths.CONTENT_REVIEWS + "/" + encodeURIComponent(contentReview.id)
+                    );
+                    return;
                 }
-            }
-        });
-        const error = response.data && response.data.apw.contentReview.error;
-        const contentReview = response.data && response.data.apw.contentReview.data;
 
-        if (error) {
-            showSnackbar(error.message);
-        } else if (contentReview) {
-            showSnackbar(`Content review requested successfully!`);
-            /**
-             * Redirect to newly created "content review".
-             */
-            navigate(routePaths.CONTENT_REVIEWS + "/" + encodeURIComponent(contentReview.id));
-        } else {
-            showSnackbar(`Something went wrong!`);
-        }
-
-        resetShowReview();
-    }, [input]);
+                showSnackbar(`Something went wrong!`);
+                resolve();
+            };
+        },
+        []
+    );
 
     useEffect(() => {
         return onEntryRevisionPublish(next => async params => {
@@ -111,25 +118,26 @@ export const ApwOnEntryPublish: React.FC = () => {
             if (!isReviewRequired) {
                 return next(params);
             }
-
-            setInput(inputData);
-            return next({
-                ...params,
-                error: {
-                    message: `A peer review is required.`,
-                    code: "PEER_REVIEW_REQUIRED",
-                    data: {}
-                }
+            /**
+             * We need to show a confirmation dialog with a promise and a resolver
+             * because of the async nature of the dialog confirmation action.
+             *
+             * If there was no promise and resolver, the next function would be triggered immediately and the dialog would not show.
+             */
+            return await new Promise((resolve: any) => {
+                showRequestReviewConfirmation(handleRequestReview(resolve, inputData), resolve);
+            }).then(() => {
+                return next({
+                    ...params,
+                    error: {
+                        message: `A peer review is required.`,
+                        code: "PEER_REVIEW_REQUIRED",
+                        data: {}
+                    }
+                });
             });
         });
     }, []);
-
-    useEffect(() => {
-        if (!input) {
-            return;
-        }
-        showRequestReviewConfirmation(handleRequestReview, resetShowReview);
-    }, [input]);
 
     return null;
 };
