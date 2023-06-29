@@ -12,7 +12,7 @@ import objectField from "~/admin/plugins/fields/object";
 import numberFieldRenderer from "~/admin/plugins/fieldRenderers/number";
 import textFieldRenderer from "~/admin/plugins/fieldRenderers/text";
 import longTextFieldRenderer from "~/admin/plugins/fieldRenderers/longText";
-import richTextFieldRenderer from "~/admin/plugins/fieldRenderers/richText";
+import { createLegacyRichTextInput } from "~/admin/plugins/fieldRenderers/richText";
 import { createLexicalInput } from "~/admin/plugins/fieldRenderers/lexicalText";
 import booleanFieldRenderer from "~/admin/plugins/fieldRenderers/boolean";
 import dateTimeFieldRenderer from "~/admin/plugins/fieldRenderers/dateTime";
@@ -58,7 +58,7 @@ export default [
     numberFieldRenderer,
     textFieldRenderer,
     longTextFieldRenderer,
-    richTextFieldRenderer,
+    createLegacyRichTextInput(),
     booleanFieldRenderer,
     dateTimeFieldRenderer,
     fileFieldRenderer,

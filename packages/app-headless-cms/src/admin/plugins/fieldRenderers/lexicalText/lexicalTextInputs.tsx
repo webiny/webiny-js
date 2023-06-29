@@ -35,7 +35,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
     renderer: {
         rendererName: "lexical-inputs",
         name: t`Lexical Inputs`,
-        description: t`Renders a simple list of lexical editors.`,
+        description: t`Renders a list of lexical editors.`,
         canUse({ field }) {
             return (
                 field.type === "rich-text" &&
