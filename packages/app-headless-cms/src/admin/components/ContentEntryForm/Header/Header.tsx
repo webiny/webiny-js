@@ -1,5 +1,6 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { css } from "emotion";
+import { Buttons } from "@webiny/app-admin";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import classNames from "classnames";
 
@@ -35,11 +36,7 @@ export const Header: React.FC = () => {
                     <RevisionSelector />
                 </Cell>
                 <Cell span={8} className={classNames(headerActions, headerActionsLeft)}>
-                    {actions
-                        .filter(action => action.$type === "button-action")
-                        .map(action => (
-                            <Fragment key={action.name}>{action.element}</Fragment>
-                        ))}
+                    <Buttons actions={actions.filter(action => action.$type === "button-action")} />
                     <ContentFormOptionsMenu />
                 </Cell>
             </Grid>

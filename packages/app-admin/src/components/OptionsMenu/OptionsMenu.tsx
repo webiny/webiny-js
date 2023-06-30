@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { ReactComponent as MoreVerticalIcon } from "@material-design-icons/svg/outlined/more_vert.svg";
 import { IconButton } from "@webiny/ui/Button";
 
-import { OptionMenuItemProvider } from "./useOptionMenuItem";
+import { OptionsMenuItemProvider } from "./useOptionsMenuItem";
 
 import { Menu } from "./OptionsMenu.styles";
 
@@ -15,6 +15,10 @@ export interface OptionsMenuProps {
 }
 
 export const OptionsMenu: React.VFC<OptionsMenuProps> = props => {
+    if (!props.actions.length) {
+        return null;
+    }
+
     return (
         <Menu
             handle={
@@ -26,7 +30,7 @@ export const OptionsMenu: React.VFC<OptionsMenuProps> = props => {
         >
             {props.actions.map(action => (
                 <Fragment key={action.name}>
-                    <OptionMenuItemProvider>{action.element}</OptionMenuItemProvider>
+                    <OptionsMenuItemProvider>{action.element}</OptionsMenuItemProvider>
                 </Fragment>
             ))}
         </Menu>

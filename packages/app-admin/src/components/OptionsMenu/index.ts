@@ -1,3 +1,3 @@
 export * from "./OptionsMenu";
 export * from "./OptionsMenuItem";
-export { useOptionMenuItem } from "./useOptionMenuItem";
+export { useOptionsMenuItem } from "./useOptionsMenuItem";

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useRouter } from "@webiny/react-router";
-import { useOptionMenuItem } from "@webiny/app-admin";
+import { OptionsMenuItem, useOptionsMenuItem } from "@webiny/app-admin";
 
 import { usePermission } from "~/admin/hooks/usePermission";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/filled/delete.svg";
@@ -12,7 +12,7 @@ export const DeleteEntry: React.FC = () => {
     const { entry, contentModel, loading } = useContentEntry();
     const { canDelete } = usePermission();
     const { showConfirmationDialog } = useDeleteEntry();
-    const { MenuItem } = useOptionMenuItem();
+    const { OptionsMenuItem } = useOptionsMenuItem();
 
     if (!canDelete(entry, "cms.contentEntry")) {
         return null;
@@ -24,7 +24,7 @@ export const DeleteEntry: React.FC = () => {
     );
 
     return (
-        <MenuItem
+        <OptionsMenuItem
             icon={<DeleteIcon />}
             label={"Delete"}
             onAction={() =>

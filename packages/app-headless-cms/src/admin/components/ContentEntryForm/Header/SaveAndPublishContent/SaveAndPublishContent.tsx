@@ -5,14 +5,14 @@ import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevisi
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import usePermission from "~/admin/hooks/usePermission";
 import { makeComposable } from "@webiny/react-composition";
-
-import { ButtonPrimary } from "./SaveAndPublishContent.styles";
+import { useButtons } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
 const SaveAndPublishButtonComponent: React.FC = () => {
     const { form, loading, entry } = useContentEntry();
     const { publishRevision } = useRevision({ revision: entry });
+    const { ButtonPrimary } = useButtons();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Publish content`,
@@ -43,7 +43,7 @@ const SaveAndPublishButtonComponent: React.FC = () => {
 
     return (
         <ButtonPrimary
-            onClick={onPublishClick}
+            onAction={onPublishClick}
             disabled={loading}
             data-testid="cms-content-save-publish-content-button"
         >

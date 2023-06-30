@@ -1,6 +1,7 @@
 import { BaseActionConfig } from "./BaseAction";
 import { ButtonAction, ButtonActionType } from "./ButtonAction";
 import { MenuItemAction, MenuItemActionType } from "./MenuItemAction";
+import { useButtons, useOptionsMenuItem } from "@webiny/app-admin";
 
 export type ActionsConfig = (
     | BaseActionConfig<ButtonActionType>
@@ -9,8 +10,7 @@ export type ActionsConfig = (
 
 export const Actions = {
     ButtonAction,
-    MenuItemAction
-    // useMenuItemComponents: useMenuItemComponents as unknown as MenuItemActionProviderContext
+    MenuItemAction,
+    useButtons,
+    useOptionsMenuItem
 };
-
-// Actions.useMenuItemComponents
