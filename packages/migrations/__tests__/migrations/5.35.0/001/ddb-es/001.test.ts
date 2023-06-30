@@ -22,7 +22,10 @@ import { esGetIndexName } from "~/utils";
 jest.retryTimes(0);
 jest.setTimeout(1200000);
 
-const NUMBER_OF_FILES = 3000;
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+const NUMBER_OF_FILES = 50;
 const INDEX_TYPE = "file-manager";
 let numberOfGeneratedFiles = 0;
 

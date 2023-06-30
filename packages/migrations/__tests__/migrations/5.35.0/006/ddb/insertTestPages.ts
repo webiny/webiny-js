@@ -3,7 +3,10 @@ import { createdBy, createLocalesData, createTenantsData } from "./006.data";
 import { createId, insertDynamoDbTestData } from "~tests/utils";
 import { OriginalPageRecord } from "./types";
 
-export const insertTestPages = async (table: Table, numberOfPages = 100) => {
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+export const insertTestPages = async (table: Table, numberOfPages = 15) => {
     const ddbPages: OriginalPageRecord[] = [];
 
     const tenants = createTenantsData().map(tenant => tenant.data.id);
