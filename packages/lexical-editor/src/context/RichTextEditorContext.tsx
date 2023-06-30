@@ -1,5 +1,5 @@
 import React, { createContext, useState } from "react";
-import { TextBlockSelection, ThemeEmotionMap, ToolbarType } from "~/types";
+import { TextBlockSelection, ThemeEmotionMap, ToolbarActionPlugin, ToolbarType } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { LexicalEditor } from "lexical";
 
@@ -14,6 +14,8 @@ export interface RichTextEditorContext {
     setTheme: (theme: WebinyTheme) => void;
     themeEmotionMap?: ThemeEmotionMap;
     setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
+    toolbarActionPlugins: ToolbarActionPlugin[];
+    setToolbarActionPlugins: (actionPlugins: ToolbarActionPlugin[]) => void;
     activeEditor?: LexicalEditor;
     setActiveEditor: (editor: LexicalEditor) => void;
     isEditable: boolean;
@@ -31,6 +33,7 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
+    const [toolbarActionPlugins, setToolbarActionPlugins] = useState<ToolbarActionPlugin[]>([]);
     const [activeEditor, setActiveEditor] = useState<LexicalEditor>();
     const [isEditable, setIsEditable] = useState<boolean>(false);
     /*
@@ -58,7 +61,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 activeEditor,
                 setActiveEditor,
                 isEditable,
-                setIsEditable
+                setIsEditable,
+                toolbarActionPlugins,
+                setToolbarActionPlugins
             }}
         >
             {children}

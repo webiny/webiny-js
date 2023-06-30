@@ -230,10 +230,10 @@ describe("5.37.0-003", () => {
             } = page;
 
             const latestSearchRecord = searchRecords.find(
-                record => record.id === `wby-aco-${pid}#0001` && record.SK === "L"
+                record => record.id === `wby-aco-${pid}#0003` && record.SK === "L"
             );
             const revisionSearchRecord = searchRecords.find(
-                record => record.id === `wby-aco-${pid}#0001` && record.SK === "REV#0001"
+                record => record.id === `wby-aco-${pid}#0003` && record.SK === "REV#0003"
             );
 
             const values = {
@@ -266,7 +266,7 @@ describe("5.37.0-003", () => {
             expect(latestSearchRecord).toMatchObject({
                 PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
                 SK: "L",
-                id: `wby-aco-${pid}#0001`,
+                id: `wby-aco-${pid}#0003`,
                 entryId: `wby-aco-${pid}`,
                 locale,
                 locked: false,
@@ -280,8 +280,8 @@ describe("5.37.0-003", () => {
             // Checking revision 1 ACO search record
             expect(revisionSearchRecord).toMatchObject({
                 PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
-                SK: "REV#0001",
-                id: `wby-aco-${pid}#0001`,
+                SK: "REV#0003",
+                id: `wby-aco-${pid}#0003`,
                 entryId: `wby-aco-${pid}`,
                 locale,
                 locked: false,

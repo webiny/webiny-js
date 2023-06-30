@@ -15,3 +15,5 @@ export type {
 } from "./admin/views/contentEntries/experiment/ContentEntriesViewConfig";
 
 export * from "./admin/hooks";
+
+export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig";

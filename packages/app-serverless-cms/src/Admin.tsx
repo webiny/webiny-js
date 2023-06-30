@@ -54,10 +54,8 @@ const App = (props: AdminProps) => {
             <I18NContent />
             <Provider hoc={ViewCompositionProvider} />
             <PageBuilder />
-
             {!isLegacyRenderingEngine && <LexicalEditorPlugin />}
             {!isLegacyRenderingEngine && <LexicalEditorActions />}
-
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AdvancedPublishingWorkflow />

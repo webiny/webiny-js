@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
-import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
+import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";

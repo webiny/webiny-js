@@ -36,6 +36,7 @@ export {
     default as SingleImageUpload,
     SingleImageUploadProps
 } from "./components/SingleImageUpload";
+export { LexicalEditor } from "./components/LexicalEditor/LexicalEditor";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
 export type {
@@ -51,3 +52,6 @@ export * from "./hooks/useConfirmationDialog";
 export * from "./hooks/useDialog";
 export { useWcp } from "@webiny/app-wcp";
 export { AaclPermission } from "@webiny/app-wcp/types";
+
+// Theme
+export { useTheme, ThemeProvider } from "@webiny/app-theme";

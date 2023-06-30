@@ -4,6 +4,7 @@ import { CoreOptions } from "medium-editor";
 import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { CompositionScope } from "@webiny/app-admin";
 
 const mediumEditorOptions: CoreOptions = {
     toolbar: {
@@ -26,7 +27,11 @@ const PeHeading = createRenderer(() => {
     const tag = element.data?.text?.desktop?.tag || "h1";
 
     if (isActive) {
-        return <Text tag={tag} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />;
+        return (
+            <CompositionScope name={"pb.heading"}>
+                <Text tag={tag} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />
+            </CompositionScope>
+        );
     }
 
     const __html = variableValue || element.data.text.data.text;

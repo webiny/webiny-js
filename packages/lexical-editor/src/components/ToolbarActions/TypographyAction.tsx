@@ -172,6 +172,6 @@ export const TypographyAction: TypographyAction = () => {
 };
 
 {
-    /* Color action settings */
+    /* Typography dropdown settings */
 }
 TypographyAction.TypographyDropDown = TypographyActionDropDown;

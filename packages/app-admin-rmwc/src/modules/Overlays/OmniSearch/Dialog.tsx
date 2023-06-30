@@ -28,7 +28,7 @@ export const Dialog = styled.div`
 
             > li {
                 .section-title {
-                    border-bottom: 1px solid var(--mdc-theme-on-background);
+                    bottom-bottom: 1px solid var(--mdc-theme-on-background);
                     padding: 10px 15px 5px 15px;
                 }
 

@@ -8,7 +8,7 @@ export const LexicalColorPickerDropdown = () => {
     return (
         <DropDown
             buttonClassName="toolbar-item color-picker"
-            buttonAriaLabel={"Formatting options for font size"}
+            buttonAriaLabel={"Formatting options for text color"}
             buttonIconClassName="icon font-color"
             stopCloseOnClickSelf={true}
             disabled={false}

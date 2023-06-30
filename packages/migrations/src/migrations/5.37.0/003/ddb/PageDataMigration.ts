@@ -95,7 +95,7 @@ export class AcoRecords_5_37_0_003_PageData implements DataMigration<PageDataMig
                     partitionKey: `T#${tenant.data.id}#L#${locale.code}#CMS#CME#M#${PB_ACO_SEARCH_MODEL_ID}#A`,
                     options: {
                         index: "GSI1",
-                        eq: `wby-aco-${lastPage.pid}#0001`
+                        eq: `wby-aco-${lastPage.pid}#0003`
                     }
                 });
 
@@ -176,16 +176,16 @@ export class AcoRecords_5_37_0_003_PageData implements DataMigration<PageDataMig
                                     PK: `T#${tenant}#L#${locale}#CMS#CME#CME#wby-aco-${pid}`,
                                     SK: "L",
                                     GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#${PB_ACO_SEARCH_MODEL_ID}#L`,
-                                    GSI1_SK: `wby-aco-${pid}#0001`,
+                                    GSI1_SK: `wby-aco-${pid}#0003`,
                                     TYPE: "cms.entry.l"
                                 };
 
                                 const revisionEntry = {
                                     ...entry,
                                     PK: `T#${tenant}#L#${locale}#CMS#CME#CME#wby-aco-${pid}`,
-                                    SK: "REV#0001",
+                                    SK: "REV#0003",
                                     GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#${PB_ACO_SEARCH_MODEL_ID}#A`,
-                                    GSI1_SK: `wby-aco-${pid}#0001`,
+                                    GSI1_SK: `wby-aco-${pid}#0003`,
                                     TYPE: "cms.entry"
                                 };
 
