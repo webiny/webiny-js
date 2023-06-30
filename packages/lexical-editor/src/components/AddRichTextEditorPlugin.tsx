@@ -22,7 +22,13 @@ export const AddRichTextEditorPlugin: FC<AddRichTextEditorProps> = ({
 }) => {
     const RichTextEditorPlugin = React.memo(
         createComponentPlugin(RichTextEditor, Original => {
-            return function RichTextEditorElem({ tag, value, onChange, theme }): JSX.Element {
+            return function RichTextEditorElem({
+                tag,
+                value,
+                onChange,
+                theme,
+                themeStylesTransformer
+            }): JSX.Element {
                 return (
                     <Original
                         toolbar={toolbar}
@@ -31,6 +37,7 @@ export const AddRichTextEditorPlugin: FC<AddRichTextEditorProps> = ({
                         value={value}
                         onChange={onChange}
                         theme={theme}
+                        themeStylesTransformer={themeStylesTransformer}
                     >
                         {children}
                     </Original>

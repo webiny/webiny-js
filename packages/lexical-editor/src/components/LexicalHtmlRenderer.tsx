@@ -21,6 +21,7 @@ interface LexicalHtmlRendererProps {
      */
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
+    themeStylesTransformer?: any;
 }
 
 export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
@@ -60,11 +61,13 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
  * @description Main editor container
  */
 export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = props => {
+    console.log('props', props)
     return (
         <ClassNames>
             {({ css }) => {
                 const themeEmotionMap =
-                    props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
+                    props?.themeEmotionMap ??
+                    toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
                 return <BaseLexicalHtmlRenderer {...props} themeEmotionMap={themeEmotionMap} />;
             }}
         </ClassNames>

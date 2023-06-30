@@ -5,6 +5,7 @@ import TextElement from "@webiny/app-page-builder/render/components/Text";
 import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { LexicalValue } from "@webiny/lexical-editor/types";
 import { usePageElements } from "@webiny/app-page-builder-elements";
+import { assignStyles } from "@webiny/app-page-builder-elements/utils";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -18,7 +19,16 @@ export const TextElementRendererPlugin = createComponentPlugin(TextElement, Orig
         const textContent = get(element, `${DATA_NAMESPACE}.data.text`) as LexicalValue;
         const { theme } = usePageElements();
         return isValidLexicalData(textContent) ? (
-            <LexicalHtmlRenderer theme={theme} value={textContent} />
+            <LexicalHtmlRenderer
+                theme={theme}
+                themeStylesTransformer={styles => {
+                    return assignStyles({
+                        breakpoints: theme.breakpoints,
+                        styles
+                    });
+                }}
+                value={textContent}
+            />
         ) : (
             <Original element={element} rootClassName={rootClassName} />
         );

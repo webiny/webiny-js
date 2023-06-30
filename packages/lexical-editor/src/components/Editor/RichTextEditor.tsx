@@ -46,6 +46,7 @@ export interface RichTextEditorProps {
      * @description Theme to be injected into lexical editor
      */
     theme: WebinyTheme;
+    themeStylesTransformer?: any;
     themeEmotionMap?: ThemeEmotionMap;
 }
 
@@ -150,7 +151,7 @@ export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEdito
             <ClassNames>
                 {({ css }) => {
                     const themeEmotionMap =
-                        props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
+                        props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
                     return (
                         <SharedHistoryContext>
                             <BaseRichTextEditor {...props} themeEmotionMap={themeEmotionMap} />

@@ -4,6 +4,7 @@ import { LexicalValue } from "@webiny/lexical-editor/types";
 import { isHeadingTag } from "~/utils/isHeadingTag";
 import { isParagraphTag } from "~/utils/isParagraphTag";
 import { usePageElements } from "@webiny/app-page-builder-elements";
+import { assignStyles } from "@webiny/app-page-builder-elements/utils";
 
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
@@ -20,10 +21,32 @@ export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChan
     return (
         <>
             {isHeadingTag(tag) && (
-                <HeadingEditor theme={theme} value={value} onChange={onChange} {...rest} />
+                <HeadingEditor
+                    theme={theme}
+                    themeStylesTransformer={styles => {
+                        return assignStyles({
+                            breakpoints: theme.breakpoints,
+                            styles
+                        });
+                    }}
+                    value={value}
+                    onChange={onChange}
+                    {...rest}
+                />
             )}
             {isParagraphTag(tag) ? (
-                <ParagraphEditor theme={theme} value={value} onChange={onChange} {...rest} />
+                <ParagraphEditor
+                    theme={theme}
+                    themeStylesTransformer={styles => {
+                        return assignStyles({
+                            breakpoints: theme.breakpoints,
+                            styles
+                        });
+                    }}
+                    value={value}
+                    onChange={onChange}
+                    {...rest}
+                />
             ) : null}
         </>
     );
