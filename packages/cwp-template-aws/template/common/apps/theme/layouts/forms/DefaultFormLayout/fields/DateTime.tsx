@@ -110,11 +110,11 @@ const DateFieldWithTimeZone = (props: { field: FormRenderFbFormModelField }) => 
 export const DateTimeField = (props: { field: FormRenderFbFormModelField }) => {
     const { settings } = props.field;
 
-    if (settings.format === "time") {
+    if (settings["format"] === "time") {
         return <InputField {...props} type="time" />;
-    } else if (settings.format === "dateTimeWithoutTimezone") {
+    } else if (settings["format"] === "dateTimeWithoutTimezone") {
         return <InputField {...props} type="datetime-local" />;
-    } else if (settings.format === "dateTimeWithTimezone") {
+    } else if (settings["format"] === "dateTimeWithTimezone") {
         return <DateFieldWithTimeZone {...props} />;
     } else {
         return <InputField {...props} type="date" />;
