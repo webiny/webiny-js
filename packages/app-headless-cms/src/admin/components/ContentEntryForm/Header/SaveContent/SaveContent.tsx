@@ -1,14 +1,12 @@
 import React from "react";
-import { i18n } from "@webiny/app/i18n";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import usePermission from "~/admin/hooks/usePermission";
-import { useButtons } from "@webiny/app-admin";
-const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
+import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 
 export const SaveContentButton: React.FC = () => {
     const { form, entry } = useContentEntry();
     const { canEdit } = usePermission();
-    const { ButtonSecondary } = useButtons();
+    const { ButtonSecondary } = ContentEntryEditorConfig.Actions.useButtons();
 
     if (!canEdit(entry, "cms.contentEntry")) {
         return null;
@@ -20,6 +18,8 @@ export const SaveContentButton: React.FC = () => {
             onAction={ev => {
                 form.current.submit(ev);
             }}
-        >{t`Save`}</ButtonSecondary>
+        >
+            {"Save"}
+        </ButtonSecondary>
     );
 };
