@@ -1,4 +1,5 @@
 import React from "react";
+import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
@@ -7,12 +8,17 @@ import { Buttons, Icon } from "./styled";
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/empty");
 
 interface Props {
+    isSearch: boolean;
     onCreateEntry: (event: React.SyntheticEvent) => void;
     onCreateFolder: (event: React.SyntheticEvent) => void;
     canCreate: boolean;
 }
 
-export const Empty: React.VFC<Props> = ({ onCreateEntry, onCreateFolder, canCreate }) => {
+export const Empty: React.VFC<Props> = ({ isSearch, onCreateEntry, onCreateFolder, canCreate }) => {
+    if (isSearch) {
+        return <EmptyView icon={<SearchIcon />} title={t`No results found.`} action={null} />;
+    }
+
     return (
         <EmptyView
             title={t`Nothing to show here, {message} `({

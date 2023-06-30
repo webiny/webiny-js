@@ -124,7 +124,7 @@ export function useListFiles({ modifiers, folderId, state, onFirstLoad }: UseLis
                 locationWhere = undefined;
             } else {
                 locationWhere = {
-                    folderId_in: getDescendantFolders(folderId)
+                    folderId_in: getDescendantFolders(folderId).map(folder => folder.id)
                 };
             }
         }

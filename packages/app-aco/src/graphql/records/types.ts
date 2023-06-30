@@ -1,11 +1,4 @@
-import {
-    AcoError,
-    ListMeta,
-    ListSearchRecordsSort,
-    Location,
-    SearchRecordItem,
-    TagItem
-} from "~/types";
+import { AcoError, ListMeta, ListSearchRecordsSort, SearchRecordItem, TagItem } from "~/types";
 
 export interface UpdateSearchRecordResponse {
     search: {
@@ -66,8 +59,15 @@ export interface ListSearchRecordsResponse {
     };
 }
 
+interface ListSearchRecordsWhereLocationQueryVariables {
+    folderId?: string;
+    folderId_in?: string[];
+    folderId_not_in?: string[];
+}
+
 export interface ListSearchRecordsWhereQueryVariables {
-    location?: Partial<Location>;
+    location?: ListSearchRecordsWhereLocationQueryVariables;
+    wbyAco_location?: ListSearchRecordsWhereLocationQueryVariables;
     createdBy?: string;
     tags_in?: string[];
     tags_startsWith?: string;

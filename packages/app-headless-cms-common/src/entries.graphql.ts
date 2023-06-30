@@ -139,12 +139,15 @@ export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelF
     return gql`
         query CmsEntriesList${model.pluralApiName}($where: ${
         model.singularApiName
-    }ListWhereInput, $sort: [${model.singularApiName}ListSorter], $limit: Int, $after: String) {
+    }ListWhereInput, $sort: [${
+        model.singularApiName
+    }ListSorter], $limit: Int, $after: String, $search: String) {
             content: list${model.pluralApiName}(
             where: $where
             sort: $sort
             limit: $limit
             after: $after
+            search: $search
             ) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}

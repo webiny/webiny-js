@@ -84,17 +84,25 @@ const classes = {
     }),
     accordionItem: css({
         overflow: "hidden",
-        transition: "max-height 0.3s cubic-bezier(1, 0, 1, 0)",
         height: "auto",
         maxHeight: "9999px",
+        transition: "max-height 0.3s cubic-bezier(1, 0, 1, 1)",
 
         "&.collapsed": {
             maxHeight: 0,
             transition: "max-height 0.35s cubic-bezier(0, 1, 0, 1)"
         },
 
+        "&.open": {
+            animation: "delay-overflow 10ms 400ms forwards"
+        },
+
         "& .accordion-content": {
             padding: "16px 12px 24px"
+        },
+
+        "@keyframes delay-overflow": {
+            to: { overflow: "visible" }
         }
     })
 };
@@ -135,7 +143,9 @@ const Accordion: React.FC<AccordionProps> = ({
                     <div className={"icon-container"}>{icon}</div>
                 </div>
             </div>
-            <div className={classNames(classes.accordionItem, { collapsed: !isOpen })}>
+            <div
+                className={classNames(classes.accordionItem, { collapsed: !isOpen, open: isOpen })}
+            >
                 <div className="accordion-content">{children}</div>
             </div>
         </div>

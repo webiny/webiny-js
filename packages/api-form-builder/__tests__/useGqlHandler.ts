@@ -69,7 +69,6 @@ export default (params: UseGqlHandlerParams = {}) => {
 
     const handler = createHandler({
         plugins: [
-            ...plugins,
             ...cmsStorage.plugins,
             ...formBuilderStorage.plugins,
             createWcpContext(),
@@ -117,7 +116,8 @@ export default (params: UseGqlHandlerParams = {}) => {
                 async delete() {
                     // dummy
                 }
-            }
+            },
+            ...plugins
         ]
     });
 

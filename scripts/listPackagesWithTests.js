@@ -43,9 +43,6 @@ const CUSTOM_HANDLERS = {
             "packages/api-file-manager --storage=ddb-es,ddb"
         ];
     },
-    "api-file-manager-ddb-es": () => {
-        return ["packages/api-file-manager-ddb-es --storage=ddb-es,ddb"];
-    },
 
     "api-form-builder": () => {
         return [

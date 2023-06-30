@@ -32,6 +32,12 @@ export const createPagesElasticsearchFields = (): PageElasticsearchFieldPlugin[]
         keyword: true,
         searchable: true
     }),
+    new PageElasticsearchFieldPlugin({
+        field: "path",
+        unmappedType: "text",
+        keyword: true,
+        searchable: true
+    }),
     /**
      * Defines all fields that are not strictly defined.
      */
