@@ -1,25 +1,25 @@
 import { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
-import { Form, FormConfig } from "./Form";
+import { Actions, ActionsConfig } from "./Actions";
 
 const base = createConfigurableComponent<ContentEntryEditorConfig>("ContentEntryEditorConfig");
 
-export const ContentEntryEditorConfig = Object.assign(base.Config, { Form });
+export const ContentEntryEditorConfig = Object.assign(base.Config, { Actions });
 
 export const ContentEntryEditorWithConfig = base.WithConfig;
 
 interface ContentEntryEditorConfig {
-    form: FormConfig;
+    actions: ActionsConfig;
 }
 
 export function useContentEntryEditorConfig() {
     const config = base.useConfig();
 
-    const form = config.form || {};
+    const actions = config.actions || {};
 
     return useMemo(
         () => ({
-            form: { ...form, actions: [...(form.actions || [])] }
+            actions: [...(actions || [])]
         }),
         [config]
     );

@@ -3,14 +3,13 @@ import { ContentEntryEditorConfig, ContentEntryListConfig } from "~/admin/config
 
 import { FilterByStatus } from "~/admin/components/ContentEntries/Filters";
 import {
-    DeleteItem,
-    RevisionSelector,
+    DeleteEntry,
     SaveAndPublishButton,
     SaveContentButton
 } from "~/admin/components/ContentEntryForm/Header";
 
 const { Browser } = ContentEntryListConfig;
-const { Form } = ContentEntryEditorConfig;
+const { Actions } = ContentEntryEditorConfig;
 
 export const ContentEntriesModule: React.FC = () => {
     return (
@@ -19,14 +18,9 @@ export const ContentEntriesModule: React.FC = () => {
                 <Browser.Filter name={"status"} element={<FilterByStatus />} />
             </ContentEntryListConfig>
             <ContentEntryEditorConfig>
-                <Form.Action name={"save"} element={<SaveContentButton />} />
-                <Form.Action name={"publish"} element={<SaveAndPublishButton />} />
-                <Form.Action name={"delete"} element={<DeleteItem />} position={"tertiary"} />
-                <Form.Action
-                    name={"revisions-selector"}
-                    element={<RevisionSelector />}
-                    position={"secondary"}
-                />
+                <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
+                <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
+                <Actions.MenuItemAction name={"delete"} element={<DeleteEntry />} />
             </ContentEntryEditorConfig>
         </>
     );

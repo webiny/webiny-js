@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { useContentEntryEditorConfig } from "~/admin/config/contentEntries";
 
 import { ContentFormOptionsMenu } from "./ContentFormOptionsMenu";
+import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/RevisionSelector";
 
 const toolbarGrid = css({
     borderBottom: "1px solid var(--mdc-theme-on-background)"
@@ -25,20 +26,17 @@ const headerActionsRight = css({
 });
 
 export const Header: React.FC = () => {
-    const { form } = useContentEntryEditorConfig();
+    const { actions } = useContentEntryEditorConfig();
+
     return (
         <React.Fragment>
             <Grid className={toolbarGrid}>
                 <Cell span={4} className={classNames(headerActions, headerActionsRight)}>
-                    {form.actions
-                        .filter(action => action.position === "secondary")
-                        .map(action => (
-                            <Fragment key={action.name}>{action.element}</Fragment>
-                        ))}
+                    <RevisionSelector />
                 </Cell>
                 <Cell span={8} className={classNames(headerActions, headerActionsLeft)}>
-                    {form.actions
-                        .filter(action => action.position === "primary")
+                    {actions
+                        .filter(action => action.$type === "button-action")
                         .map(action => (
                             <Fragment key={action.name}>{action.element}</Fragment>
                         ))}
