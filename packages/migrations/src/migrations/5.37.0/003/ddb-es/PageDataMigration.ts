@@ -265,7 +265,7 @@ export class AcoRecords_5_37_0_003_PageData implements DataMigration<PageDataMig
                             const revisionDdb = {
                                 ...entry,
                                 PK: searchRecordPartitionKey,
-                                SK: "REV#0003",
+                                SK: "REV#0001",
                                 TYPE: "cms.entry"
                             };
 
