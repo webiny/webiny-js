@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useCompositionScope } from "~/CompositionScope";
 
-export function compose(...fns: HigherOrderComponent[]) {
+export function compose(...fns: Decorator[]) {
     return function ComposedComponent(Base: FC<unknown>): FC<unknown> {
         return fns.reduceRight((Component, hoc) => hoc(Component), Base);
     };
@@ -23,7 +23,7 @@ interface ComposedComponent {
     /**
      * HOCs used to compose the original component.
      */
-    hocs: HigherOrderComponent[];
+    hocs: Decorator[];
     /**
      * Component composition can be scoped.
      */
@@ -31,12 +31,19 @@ interface ComposedComponent {
 }
 
 /**
- * IMPORTANT: TInputProps default type is `any` because this interface is use as a prop type in the `Compose` component.
- * You can pass any HigherOrderComponent as a prop, regardless of its TInputProps type. The only way to allow that is
+ * IMPORTANT: TProps default type is `any` because this interface is use as a prop type in the `Compose` component.
+ * You can pass any Decorator as a prop, regardless of its TProps type. The only way to allow that is
  * to let it be `any` in this interface.
  */
-export interface HigherOrderComponent<TInputProps = any, TOutputProps = TInputProps> {
-    (Component: FC<TInputProps>): FC<TOutputProps>;
+export interface Decorator<TProps = any> {
+    (Component: FC<TProps>): FC<TProps>;
+}
+
+/**
+ * @deprecated Use `Decorator` instead.
+ */
+export interface HigherOrderComponent<TProps = any, TOutput = TProps> {
+    (Component: FC<TProps>): FC<TOutput>;
 }
 
 type ComposedComponents = Map<ComponentType<unknown>, ComposedComponent>;
