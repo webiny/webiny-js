@@ -93,7 +93,7 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
 
             folderObservers.current.get(type)!.add(cb);
             return () => {
-                folderObservers.current.get(type)!.delete(cb);
+                folderObservers.current.get(type)?.delete(cb);
             };
         },
         async listFolders(type) {
