@@ -15,5 +15,6 @@ export type {
 } from "./admin/views/contentEntries/experiment/ContentEntriesViewConfig";
 
 export * from "./admin/hooks";
+export { RenderFieldElement } from "./admin/components/ContentEntryForm/RenderFieldElement";
 
 export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig";
