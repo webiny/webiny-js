@@ -12,7 +12,8 @@ export const DeleteEntry: React.FC = () => {
     const { entry, contentModel, loading } = useContentEntry();
     const { canDelete } = usePermission();
     const { showConfirmationDialog } = useDeleteEntry();
-    const { OptionsMenuItem } = ContentEntryEditorConfig.Actions.useOptionsMenuItem();
+    const { OptionsMenuItem } =
+        ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
     if (!canDelete(entry, "cms.contentEntry")) {
         return null;

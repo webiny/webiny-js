@@ -6,7 +6,8 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 export const SaveContentButton: React.FC = () => {
     const { form, entry } = useContentEntry();
     const { canEdit } = usePermission();
-    const { ButtonSecondary } = ContentEntryEditorConfig.Actions.useButtons();
+    const { useButtons } = ContentEntryEditorConfig.Actions.ButtonAction;
+    const { ButtonSecondary } = useButtons();
 
     if (!canEdit(entry, "cms.contentEntry")) {
         return null;

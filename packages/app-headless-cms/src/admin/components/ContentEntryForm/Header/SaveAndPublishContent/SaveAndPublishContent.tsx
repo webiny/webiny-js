@@ -9,7 +9,7 @@ import { useSaveAndPublish } from "./useSaveAndPublish";
 const SaveAndPublishButtonComponent: React.FC = () => {
     const { loading, entry } = useContentEntry();
     const { showConfirmationDialog } = useSaveAndPublish();
-    const { ButtonPrimary } = ContentEntryEditorConfig.Actions.useButtons();
+    const { ButtonPrimary } = ContentEntryEditorConfig.Actions.ButtonAction.useButtons();
 
     const { canEdit, canPublish } = usePermission();
 
