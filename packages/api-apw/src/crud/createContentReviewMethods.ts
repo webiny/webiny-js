@@ -268,8 +268,9 @@ export function createContentReviewMethods(
             return true;
         },
         async retractSignOff(this: ApwContentReviewCrud, id, stepId) {
-            const entry: ApwContentReview = await this.get(id);
-            const { steps, reviewStatus } = entry;
+            const contentReview = await this.get(id);
+            const { steps, reviewStatus, content } = contentReview;
+
             const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
 
@@ -285,13 +286,25 @@ export function createContentReviewMethods(
              *  Check whether the retract sign-off is requested by a reviewer.
              */
             if (!hasPermission) {
-                throw new NotAuthorizedError({ entry, input: { id, step: stepId } });
+                throw new NotAuthorizedError({
+                    entry: contentReview,
+                    input: {
+                        id,
+                        step: stepId
+                    }
+                });
             }
             /**
              *  Don't allow, if step in not "done" i.e. no sign-off was provided for it.
              */
             if (currentStep.status !== ApwContentReviewStepStatus.DONE) {
-                throw new NoSignOffProvidedError({ entry, input: { id, step: stepId } });
+                throw new NoSignOffProvidedError({
+                    entry: contentReview,
+                    input: {
+                        id,
+                        step: stepId
+                    }
+                });
             }
             let previousStepStatus: ApwContentReviewStepStatus;
 
@@ -340,7 +353,21 @@ export function createContentReviewMethods(
                 newStatus = ApwContentReviewStatus.UNDER_REVIEW;
             }
 
+            /**
+             * We need to delete the scheduled action if one was created.
+             */
+            const scheduledActionId = contentReview.content?.scheduledActionId;
+            if (!!scheduledActionId) {
+                await scheduler.delete(scheduledActionId);
+            }
+
             await this.update(id, {
+                content: {
+                    ...content,
+                    scheduledOn: null,
+                    scheduledBy: null,
+                    scheduledActionId: null
+                },
                 steps: updatedSteps,
                 reviewStatus: newStatus
             });
