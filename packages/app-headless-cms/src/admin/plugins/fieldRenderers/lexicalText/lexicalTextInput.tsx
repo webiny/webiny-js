@@ -18,10 +18,26 @@ const getKey = (
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-lexical",
+    isDisabled() {
+        // Lexical RTE is default editor in use. This plugin is always enabled by default.
+        return false;
+    },
     renderer: {
         rendererName: "lexical-text-input",
         name: t`Lexical Text Input`,
         description: t`Renders a lexical text editor.`,
+        isDisabled(field) {
+            const fieldModelIsUsed = !!field?.id;
+            const isLegacyRichTextInput = field.renderer.name === "rich-text-input";
+
+            // Lexical is disabled only if legacy RTE is used.
+            if (isLegacyRichTextInput && fieldModelIsUsed) {
+                return true;
+            }
+
+            // if legacy rich text editor is used, lexical input is disabled.
+            return false;
+        },
         canUse({ field }) {
             return (
                 field.type === "rich-text" &&

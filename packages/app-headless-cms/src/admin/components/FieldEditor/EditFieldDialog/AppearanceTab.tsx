@@ -31,7 +31,7 @@ const AppearanceTab = () => {
 
     const renderPlugins = plugins
         .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
-        .filter(item => item.renderer.canUse({ field, fieldPlugin }));
+        .filter(item => !item.isDisabled?.(field) && item.renderer.canUse({ field, fieldPlugin }));
 
     useEffect((): void => {
         // If the currently selected render plugin is no longer available, select the first available one.
@@ -75,6 +75,7 @@ const AppearanceTab = () => {
                                 {renderPlugins.map(item => (
                                     <div key={item.name} className={style.radioContainer}>
                                         <Radio
+                                            disabled={item.renderer.isDisabled?.(field) || false}
                                             value={getValue(item.renderer.rendererName)}
                                             onChange={onChange(item.renderer.rendererName)}
                                             label={

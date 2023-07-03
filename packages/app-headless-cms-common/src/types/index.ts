@@ -240,6 +240,7 @@ export interface CmsModelFieldRendererPlugin extends Plugin {
      * a plugin type
      */
     type: "cms-editor-field-renderer";
+    isDisabled?: (field: CmsModelField) => boolean;
     renderer: {
         /**
          * Name of the renderer to match the one from `createField()` method in `CmsModelFieldTypePlugin`.
@@ -300,6 +301,16 @@ export interface CmsModelFieldRendererPlugin extends Plugin {
          * ```
          */
         render(props: CmsModelFieldRendererProps): React.ReactNode;
+        /**
+         * Check if the renderer is disabled for use.
+         *
+         * ```tsx
+         * isDisabled({ field }) {
+            ...
+         * }
+         * ```
+         */
+        isDisabled?: (field: CmsModelField) => boolean;
     };
 }
 
