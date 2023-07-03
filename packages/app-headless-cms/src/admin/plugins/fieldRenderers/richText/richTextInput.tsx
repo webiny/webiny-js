@@ -54,7 +54,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             // Allow renderer for selection only if legacy RTE is already used.
             if (isLegacyRichTextInput && fieldModelIsUsed) {
-                return true;
+                return false;
             }
 
             // By default this renderer is disabled
