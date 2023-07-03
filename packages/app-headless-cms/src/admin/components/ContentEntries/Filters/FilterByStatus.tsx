@@ -9,11 +9,17 @@ import { DropdownContainer } from "./styles";
 import { CmsEntryFilterStatusPlugin } from "@webiny/app-headless-cms-common/types";
 
 export const FilterByStatus: React.FC = () => {
+    const getValidFilterValue = (value: string): string | undefined => {
+        if (value === "all" || value === "") {
+            return undefined;
+        }
+        return value;
+    };
+
     const bind = useBind({
         name: "status",
-        defaultValue: "",
         beforeChange(value, cb) {
-            cb(value === "all" ? undefined : value);
+            cb(getValidFilterValue(value));
         }
     });
 

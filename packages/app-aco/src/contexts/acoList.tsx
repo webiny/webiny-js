@@ -5,7 +5,6 @@ import {
     ListMeta,
     ListSearchRecordsQueryVariables,
     ListSearchRecordsSort,
-    ListSearchRecordsWhereQueryVariables,
     SearchRecordItem
 } from "~/types";
 import { useAcoApp, useNavigateFolder } from "~/hooks";
@@ -219,12 +218,10 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
      */
     useEffect(() => {
         const listItems = async () => {
-            const isSearch = Boolean(state.searchQuery || state.filters);
-            const AND: ListSearchRecordsWhereQueryVariables[] = [];
-
-            if (state.filters) {
-                AND.push(state.filters);
-            }
+            const isSearch = Boolean(
+                state.searchQuery ||
+                    (state.filters && Object.values(state.filters).filter(Boolean).length)
+            );
 
             let locationWhere = dotPropImmutable.set({}, folderIdPath, state.folderId);
 
@@ -247,7 +244,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
                 after: state.after,
                 where: {
                     ...locationWhere,
-                    ...(AND.length && { AND })
+                    ...state.filters
                 }
             };
 
