@@ -16,6 +16,7 @@ export const GET_THEME = gql`
                         facebook
                         instagram
                         twitter
+                        linkedIn
                         image {
                             src
                         }

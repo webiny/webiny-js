@@ -27,6 +27,7 @@ const DATA_FIELDS = /* GraphQL */ `
                 facebook
                 twitter
                 instagram
+                linkedIn
                 image {
                     id
                     src
