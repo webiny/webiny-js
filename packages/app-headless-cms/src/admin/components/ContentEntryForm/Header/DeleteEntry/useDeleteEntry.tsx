@@ -15,7 +15,7 @@ interface UseDeleteEntryDialogResponse {
 
 export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
     const { deleteEntry } = useCms();
-    const { contentModel, entry, setLoading, listQueryVariables } = useContentEntry();
+    const { contentModel, entry, setLoading } = useContentEntry();
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useDialog();
 
@@ -41,8 +41,7 @@ export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
                 const { error } = await deleteEntry({
                     model: contentModel,
                     entry,
-                    id: entryId,
-                    listQueryVariables
+                    id: entryId
                 });
 
                 setLoading(false);

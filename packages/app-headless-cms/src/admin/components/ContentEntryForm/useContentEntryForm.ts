@@ -17,7 +17,6 @@ import {
 import { useCms, useModel, useMutation } from "~/admin/hooks";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
 import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { useRecords } from "@webiny/app-aco";
@@ -86,7 +85,6 @@ function useEntry(entryFromProps: Partial<CmsContentEntry>) {
 }
 
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
-    const { listQueryVariables } = useContentEntry();
     const { model } = useModel();
     const { history, search: routerSearch } = useRouter();
     const [query] = routerSearch;
@@ -203,7 +201,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             goToRevision(entry.id);
             return entry;
         },
-        [model.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache, query]
+        [model.modelId, params.onSubmit, params.addEntryToListCache, query]
     );
 
     const updateContent = useCallback(
@@ -269,7 +267,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
             return newRevision;
         },
-        [model.modelId, listQueryVariables]
+        [model.modelId]
     );
 
     const onChange: FormOnSubmit = (data, form) => {
