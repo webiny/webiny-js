@@ -31,6 +31,9 @@ interface BuildContext {
     [key: string]: boolean;
 }
 
+const buildInParallel =
+    !process.env.CI || process.env.RUNNER_NAME?.startsWith("webiny-build-packages");
+
 export const buildPackages = async () => {
     const options = yargs.argv as BuildOptions;
 
@@ -85,7 +88,7 @@ export const buildPackages = async () => {
                     const packages = allPackages.filter(pkg => packageNames.includes(pkg.name));
 
                     const batchTasks = task.newListr([], {
-                        concurrent: !process.env.CI,
+                        concurrent: buildInParallel,
                         exitOnError: true
                     });
 
@@ -119,7 +122,7 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
         title: `${pkg.name}`,
         task: async () => {
             try {
-                if (process.env.CI) {
+                if (!buildInParallel) {
                     await buildPackageInSameProcess(pkg, options.buildOverrides);
                 } else {
                     await buildPackageInNewProcess(pkg, options.buildOverrides);
@@ -156,7 +159,9 @@ const toMB = (bytes: number) => {
 const printHardwareReport = () => {
     const { cpuCount, cpuName, freeMemory, totalMemory } = getHardwareInfo();
     console.log(
-        `Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
+        `Runner: ${green(process.env.RUNNER_NAME || "N/A")}; Build packages: ${
+            buildInParallel ? green("in parallel") : green("in series")
+        }; Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
             toMB(totalMemory)
         )}; Free Memory: ${green(toMB(freeMemory))}.`
     );

@@ -131,10 +131,15 @@ export const createDroppedElement = (
     target: PbEditorElement
 ): PbEditorElement => {
     if (source.id) {
+        const id = getNanoid();
+
         return {
-            id: getNanoid(),
+            id,
             type: source.type,
-            elements: (source as any).elements || [],
+            elements: ((source as any).elements || []).map((childElement: PbEditorElement) => ({
+                ...childElement,
+                parent: id
+            })),
             data: (source as any).data || {},
             parent: target.id
         };

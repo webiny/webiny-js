@@ -8,6 +8,7 @@ import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
 import { ContentEntriesContainer } from "~/admin/views/contentEntries/ContentEntriesContainer";
 import { ContentEntries } from "~/admin/views/contentEntries/ContentEntries";
+import { CompositionScope } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
@@ -58,7 +59,9 @@ const plugins: RoutePlugin[] = [
                                 <title>{t`Content`}</title>
                             </Helmet>
                             <ContentEntriesContainer>
-                                <ContentEntries />
+                                <CompositionScope name={"cms"}>
+                                    <ContentEntries />
+                                </CompositionScope>
                             </ContentEntriesContainer>
                         </AdminLayout>
                     </SecureRoute>
@@ -78,9 +81,11 @@ const plugins: RoutePlugin[] = [
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
-                        <Loader>
-                            <ContentModelEditor />
-                        </Loader>
+                        <CompositionScope name={"cms"}>
+                            <Loader>
+                                <ContentModelEditor />
+                            </Loader>
+                        </CompositionScope>
                     </SecureRoute>
                 )}
             />

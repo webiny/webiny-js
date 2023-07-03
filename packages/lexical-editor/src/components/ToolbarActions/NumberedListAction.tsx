@@ -16,13 +16,24 @@ export const NumberedListAction = () => {
     useEffect(() => {
         const isListBulletType = textBlockSelection?.state?.textType === "number";
         setIsActive(isListBulletType);
-    }, [isListSelected]);
+    }, [textBlockSelection?.state?.textType, isListSelected]);
+
+    const getStyleId = (): string | undefined => {
+        if (!themeEmotionMap) {
+            return undefined;
+        }
+        // check default style for numbered list
+        const id = findTypographyStyleByHtmlTag("ol", themeEmotionMap)?.id;
+        if (id) {
+            return id;
+        }
+        // fallback to ul list styles
+        return findTypographyStyleByHtmlTag("ul", themeEmotionMap)?.id;
+    };
 
     const formatNumberedList = () => {
         if (!isActive) {
-            const styleId = themeEmotionMap
-                ? findTypographyStyleByHtmlTag("ol", themeEmotionMap)?.id
-                : undefined;
+            const styleId = themeEmotionMap ? getStyleId() : undefined;
             // will update the active state in the useEffect
             editor.dispatchCommand(INSERT_ORDERED_WEBINY_LIST_COMMAND, { themeStyleId: styleId });
             setIsActive(true);
