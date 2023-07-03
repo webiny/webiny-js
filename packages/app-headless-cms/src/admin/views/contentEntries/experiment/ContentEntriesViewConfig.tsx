@@ -27,9 +27,6 @@ const createHOC =
         };
     };
 
-/**
- * @deprecated Use ContentEntryListConfig instead
- */
 export const ContentEntriesViewConfig: ContentEntriesViewConfig = ({ children }) => {
     return <Compose component={ContentEntriesViewConfigApply} with={createHOC(children)} />;
 };
