@@ -5,7 +5,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { useCms, useContentEntry } from "~/admin/hooks";
 
 interface ShowConfirmationDialogParams {
-    onAccept: () => void;
+    onAccept?: () => void;
     onCancel?: () => void;
 }
 
@@ -21,7 +21,7 @@ export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
 
     const title = get(entry, "meta.title");
     const { showConfirmation } = useConfirmationDialog({
-        title: `Delete content entry`,
+        title: "Delete content entry",
         message: (
             <p>
                 You are about to delete this content entry and all of its revisions!
