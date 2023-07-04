@@ -3,6 +3,7 @@ import debounce from "lodash/debounce";
 import { FolderDialogCreate } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
+import { Filters } from "~/admin/components/ContentEntries/Filters";
 import { Header } from "~/admin/components/ContentEntries/Header";
 import { LoadingMore } from "~/admin/components/ContentEntries/LoadingMore";
 import { LoadMoreButton } from "~/admin/components/ContentEntries/LoadMoreButton";
@@ -19,7 +20,7 @@ interface Props {
 
 export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
-    const list = useContentEntriesList({ folderId });
+    const list = useContentEntriesList();
 
     const [showFoldersDialog, setFoldersDialog] = useState(false);
     const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
@@ -69,6 +70,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     onSearchChange={list.setSearch}
                 />
                 <Wrapper>
+                    <Filters />
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&
                     !list.isListLoading ? (

@@ -6,7 +6,6 @@ import defaultBar from "./editor/defaultBar";
 import formSettings from "./editor/formSettings";
 import permissionRenderer from "./permissionRenderer";
 import getObjectId from "./getObjectId";
-import contentEntryHeader from "../views/contentEntries/ContentEntry/header";
 
 export default () => [
     install,
@@ -16,6 +15,5 @@ export default () => [
     defaultBar,
     formSettings,
     permissionRenderer,
-    getObjectId,
-    contentEntryHeader
+    getObjectId
 ];

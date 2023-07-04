@@ -6,7 +6,6 @@ import { config as appConfig } from "@webiny/app/config";
 import { CmsContentEntry, CmsModel } from "~/types";
 import { MutationHookOptions } from "@apollo/react-hooks";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
-import { ListQueryVariables } from "~/admin/views/contentEntries/ContentEntriesContext";
 
 interface PublishEntryOptions {
     mutationOptions?: MutationHookOptions;
@@ -29,7 +28,6 @@ export interface OnEntryPublishRequest {
     error?: EntryError | null;
     locale: string;
     client: ApolloClient<any>;
-    listQueryVariables: ListQueryVariables;
 }
 
 export interface OnEntryPublishResponse extends Omit<OnEntryPublishRequest, "entry"> {
@@ -45,7 +43,6 @@ export interface OnEntryDeleteRequest {
     error?: EntryError | null;
     locale: string;
     client: ApolloClient<any>;
-    listQueryVariables: ListQueryVariables;
 }
 
 export interface OnEntryDeleteResponse extends Omit<OnEntryDeleteRequest, "entry"> {
@@ -63,14 +60,12 @@ interface PublishEntryRevisionParams {
     entry: CmsContentEntry;
     options?: PublishEntryOptions;
     id: string;
-    listQueryVariables: ListQueryVariables;
 }
 interface DeleteEntryParams {
     model: CmsModel;
     entry: Pick<CmsContentEntry, "id">;
     id: string;
     options?: DeleteEntryOptions;
-    listQueryVariables: ListQueryVariables;
 }
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
