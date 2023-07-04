@@ -16735,18 +16735,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-update-settings@workspace:apps/api/pageBuilder/updateSettings":
-  version: 0.0.0-use.local
-  resolution: "api-page-builder-update-settings@workspace:apps/api/pageBuilder/updateSettings"
-  dependencies:
-    "@webiny/api-page-builder": 0.0.0
-    "@webiny/api-page-builder-so-ddb": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/handler-aws": 0.0.0
-    "@webiny/project-utils": 0.0.0
-  languageName: unknown
-  linkType: soft
-
 "apollo-cache-inmemory@npm:^1.6.6":
   version: 1.6.6
   resolution: "apollo-cache-inmemory@npm:1.6.6"
