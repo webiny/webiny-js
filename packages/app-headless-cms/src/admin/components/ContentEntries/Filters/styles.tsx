@@ -5,6 +5,7 @@ export const FiltersContainer = styled.div`
     height: auto;
     background-color: var(--mdc-theme-surface);
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 8px;
 `;
 
 export const FormContainer = styled.div`
