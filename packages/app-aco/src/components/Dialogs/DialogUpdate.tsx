@@ -85,9 +85,7 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                         <Cell span={12}>
                                             <Bind
                                                 name={"title"}
-                                                validators={[
-                                                    validation.create("required,minLength:3")
-                                                ]}
+                                                validators={[validation.create("required")]}
                                             >
                                                 <Input label={t`Title`} />
                                             </Bind>
@@ -95,9 +93,7 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                         <Cell span={12}>
                                             <Bind
                                                 name={"slug"}
-                                                validators={[
-                                                    validation.create("required,minLength:3,slug")
-                                                ]}
+                                                validators={[validation.create("required,slug")]}
                                             >
                                                 <Input label={t`Slug`} value={folder.slug} />
                                             </Bind>

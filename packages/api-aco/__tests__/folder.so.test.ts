@@ -245,11 +245,11 @@ describe("`folder` CRUD", () => {
         });
     });
 
-    it("should not allow creating a `folder` with `title` too short (min. 3 chars)", async () => {
+    it("should not allow creating a `folder` with no `title` provided", async () => {
         const [response] = await aco.createFolder({
             data: {
                 ...folderMocks.folderA,
-                title: "a"
+                title: ""
             }
         });
 
@@ -263,7 +263,7 @@ describe("`folder` CRUD", () => {
                             message: "Validation failed.",
                             data: [
                                 {
-                                    error: "Value is too short.",
+                                    error: "Value is required.",
                                     fieldId: "title",
                                     storageId: "text@title"
                                 }
@@ -275,11 +275,11 @@ describe("`folder` CRUD", () => {
         });
     });
 
-    it("should not allow creating a `folder` with `slug` too short (min. 3 chars)", async () => {
+    it("should not allow creating a `folder` with no `slug` provided", async () => {
         const [response] = await aco.createFolder({
             data: {
                 ...folderMocks.folderA,
-                slug: "a"
+                slug: ""
             }
         });
 
@@ -293,37 +293,7 @@ describe("`folder` CRUD", () => {
                             message: "Validation failed.",
                             data: [
                                 {
-                                    error: "Value is too short.",
-                                    fieldId: "slug",
-                                    storageId: "text@slug"
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        });
-    });
-
-    it("should not allow creating a `folder` with `slug` too long (max. 100 chars)", async () => {
-        const [response] = await aco.createFolder({
-            data: {
-                ...folderMocks.folderA,
-                slug: "GpfyMLeacJyRzF5SmXhK9ytFf0UVtkzB0IORUwiPbqnXLyXBZX88tfy92vsnOEF87IVW0DnYDQLLlCl09hN3tcdKGAaO0oLh2bJrE"
-            }
-        });
-
-        expect(response).toEqual({
-            data: {
-                aco: {
-                    createFolder: {
-                        data: null,
-                        error: {
-                            code: "VALIDATION_FAILED",
-                            message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value is too long.",
+                                    error: "Value is required.",
                                     fieldId: "slug",
                                     storageId: "text@slug"
                                 }
