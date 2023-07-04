@@ -32,7 +32,8 @@ export const borderRadius = 4;
 const headings = {
     fontFamily: fonts.font2,
     color: colors.color3,
-    WebkitFontSmoothing: "antialiased"
+    WebkitFontSmoothing: "antialiased",
+    lineHeight: "150%"
 };
 
 const paragraphs = {
