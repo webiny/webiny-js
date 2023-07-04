@@ -27,7 +27,7 @@ const headerActionsRight = css({
 });
 
 export const Header: React.FC = () => {
-    const { actions } = useContentEntryEditorConfig();
+    const { buttonActions } = useContentEntryEditorConfig();
 
     return (
         <React.Fragment>
@@ -36,7 +36,7 @@ export const Header: React.FC = () => {
                     <RevisionSelector />
                 </Cell>
                 <Cell span={8} className={classNames(headerActions, headerActionsLeft)}>
-                    <Buttons actions={actions.filter(action => action.$type === "button-action")} />
+                    <Buttons actions={buttonActions} />
                     <ContentFormOptionsMenu />
                 </Cell>
             </Grid>

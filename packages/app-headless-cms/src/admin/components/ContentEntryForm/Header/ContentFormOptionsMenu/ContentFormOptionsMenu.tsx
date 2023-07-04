@@ -5,12 +5,12 @@ import { useContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { OptionMenuContainer } from "./ContentFormOptionsMenu.styles";
 
 export const ContentFormOptionsMenu: React.VFC = () => {
-    const { actions } = useContentEntryEditorConfig();
+    const { menuItemActions } = useContentEntryEditorConfig();
 
     return (
         <OptionMenuContainer>
             <OptionsMenu
-                actions={actions.filter(action => action.$type === "menu-item-action")}
+                actions={menuItemActions}
                 data-testid={"cms.content-form.header.more-options"}
             />
         </OptionMenuContainer>

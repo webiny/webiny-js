@@ -19,7 +19,10 @@ export function useContentEntryEditorConfig() {
 
     return useMemo(
         () => ({
-            actions: [...(actions || [])]
+            buttonActions: [...(actions.filter(action => action.$type === "button-action") || [])],
+            menuItemActions: [
+                ...(actions.filter(action => action.$type === "menu-item-action") || [])
+            ]
         }),
         [config]
     );
