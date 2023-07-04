@@ -3,6 +3,7 @@ import get from "lodash/get";
 import { useConfirmationDialog, useDialog, useSnackbar } from "@webiny/app-admin";
 import { parseIdentifier } from "@webiny/utils";
 import { useCms, useContentEntry } from "~/admin/hooks";
+import { useNavigateFolder, useRecords } from "@webiny/app-aco";
 
 interface ShowConfirmationDialogParams {
     onAccept?: () => void;
@@ -15,9 +16,11 @@ interface UseDeleteEntryDialogResponse {
 
 export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
     const { deleteEntry } = useCms();
-    const { contentModel, entry, setLoading } = useContentEntry();
+    const { contentModel, entry } = useContentEntry();
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useDialog();
+    const { navigateToLatestFolder } = useNavigateFolder();
+    const { removeRecordFromCache } = useRecords();
 
     const title = get(entry, "meta.title");
     const { showConfirmation } = useConfirmationDialog({
@@ -35,8 +38,6 @@ export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
     const showConfirmationDialog = useCallback(
         ({ onAccept, onCancel }) =>
             showConfirmation(async () => {
-                setLoading(true);
-
                 const { id: entryId } = parseIdentifier(entry.id);
                 const { error } = await deleteEntry({
                     model: contentModel,
@@ -44,18 +45,14 @@ export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
                     id: entryId
                 });
 
-                setLoading(false);
-
                 if (error) {
                     showDialog(error.message, { title: "Could not delete content!" });
                     return;
                 }
 
-                showSnackbar(
-                    <span>
-                        <strong>{title}</strong> was deleted successfully!
-                    </span>
-                );
+                showSnackbar(`${title} was deleted successfully!`);
+                removeRecordFromCache(entry.id);
+                navigateToLatestFolder();
 
                 if (typeof onAccept === "function") {
                     await onAccept();
