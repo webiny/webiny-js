@@ -3,15 +3,11 @@ import { Form, FormOnSubmit } from "@webiny/form";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 
-import { FiltersContainer } from "./styles";
+import { FilterContainer, FiltersContainer, FormContainer } from "./styles";
 
 export const Filters = () => {
     const { browser } = useContentEntryListConfig();
     const list = useContentEntriesList();
-
-    if (!list.showingFilters || !browser.filters.length) {
-        return null;
-    }
 
     const applyFilters: FormOnSubmit = data => {
         if (!Object.keys(data).length) {
@@ -20,15 +16,19 @@ export const Filters = () => {
         list.setFilters(data);
     };
 
+    if (!list.showingFilters || !browser.filters.length) {
+        return null;
+    }
+
     return (
         <FiltersContainer>
             <Form data={{}} onChange={applyFilters}>
                 {() => (
-                    <>
+                    <FormContainer>
                         {browser.filters.map(filter => (
-                            <span key={filter.name}>{filter.element}</span>
+                            <FilterContainer key={filter.name}>{filter.element}</FilterContainer>
                         ))}
-                    </>
+                    </FormContainer>
                 )}
             </Form>
         </FiltersContainer>

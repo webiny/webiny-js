@@ -4,8 +4,6 @@ import { useBind } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
 import { Select } from "@webiny/ui/Select";
 
-import { DropdownContainer } from "./styles";
-
 import { CmsEntryFilterStatusPlugin } from "@webiny/app-headless-cms-common/types";
 
 const getValidFilterValue = (value: string): string | undefined => {
@@ -41,9 +39,5 @@ export const FilterByStatus: React.FC = () => {
         return options;
     }, []);
 
-    return (
-        <DropdownContainer>
-            <Select {...bind} size={"medium"} placeholder={"Filter by status"} options={options} />
-        </DropdownContainer>
-    );
+    return <Select {...bind} size={"medium"} placeholder={"Filter by status"} options={options} />;
 };
