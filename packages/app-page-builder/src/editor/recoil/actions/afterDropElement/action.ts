@@ -40,6 +40,10 @@ export const afterDropElementAction: EventActionCallable<AfterDropElementActionA
     return {
         state: {
             ...state,
+            ui: {
+                ...state.ui,
+                isDragging: false
+            },
             activeElement: element.id,
             sidebar: {
                 activeTabIndex: 0,

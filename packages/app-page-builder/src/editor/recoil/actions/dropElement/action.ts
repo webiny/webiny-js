@@ -55,7 +55,13 @@ export const dropElementAction: EventActionCallable<DropElementActionArgsType> =
     const onReceivedCallback = plugin.onReceived || onReceived;
 
     return onReceivedCallback!({
-        state,
+        state: {
+            ...state,
+            ui: {
+                ...state.ui,
+                isDragging: false
+            }
+        },
         meta,
         source: sourceElement,
         target: targetElement,
