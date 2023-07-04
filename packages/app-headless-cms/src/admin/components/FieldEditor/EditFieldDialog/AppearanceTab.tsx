@@ -66,15 +66,15 @@ const AppearanceTab = () => {
 
     return (
         <Grid>
-            <Cell span={6}>
-                {allowCmsLegacyRichTextInput && (
+            {allowCmsLegacyRichTextInput && (
+                <Cell span={6}>
                     <Alert title={"You have legacy editor enabled"} type={"info"}>
                         Your project has been upgraded from an older Webiny version with EditorJS as
                         the default rich text editor. We suggest switching to the next Lexical rich
                         text editor where possible.
                         <br />
                         <br />
-                        Read more about this in our
+                        Read more about this in our{" "}
                         <a
                             href={"https://www.webiny.com/docs/release-notes/5.37.0/changelog"}
                             rel="noreferrer"
@@ -84,8 +84,8 @@ const AppearanceTab = () => {
                         </a>
                         .
                     </Alert>
-                )}
-            </Cell>
+                </Cell>
+            )}
             <Cell span={12}>
                 <div
                     className={style.topLabel}
