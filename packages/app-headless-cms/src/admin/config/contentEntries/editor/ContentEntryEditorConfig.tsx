@@ -15,7 +15,7 @@ interface ContentEntryEditorConfig {
 export function useContentEntryEditorConfig() {
     const config = base.useConfig();
 
-    const actions = config.actions || {};
+    const actions = config.actions || [];
 
     return useMemo(
         () => ({
