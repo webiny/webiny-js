@@ -3,7 +3,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem } from "@webiny/ui/Menu";
 
-interface OptionMenuItemProps {
+interface OptionsMenuItemProps {
     onAction: () => void;
     disabled?: boolean;
     icon: React.ReactElement;
@@ -11,7 +11,7 @@ interface OptionMenuItemProps {
     ["data-testid"]?: string;
 }
 
-export const OptionsMenuItem: React.VFC<OptionMenuItemProps> = props => {
+export const OptionsMenuItem: React.VFC<OptionsMenuItemProps> = props => {
     return (
         <MenuItem
             onClick={props.onAction}
