@@ -33,6 +33,7 @@ export * from "./plugins/PermissionRendererPlugin";
 export { AppInstaller } from "./components/AppInstaller";
 export * from "./components/Buttons";
 export * from "./components/OptionsMenu";
+export * from "./components/Filters";
 export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
 export {
     default as SingleImageUpload,
