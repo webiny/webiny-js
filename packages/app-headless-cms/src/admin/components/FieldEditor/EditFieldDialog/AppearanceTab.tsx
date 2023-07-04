@@ -9,6 +9,8 @@ import { css } from "emotion";
 import { validation } from "@webiny/validation";
 import { useModelField } from "~/admin/hooks";
 import { useForm, Bind } from "@webiny/form";
+import { Alert } from "@webiny/ui/Alert";
+import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-editor/tabs/appearance-tab");
 
@@ -64,6 +66,26 @@ const AppearanceTab = () => {
 
     return (
         <Grid>
+            <Cell span={6}>
+                {allowCmsLegacyRichTextInput && (
+                    <Alert title={"You have legacy editor enabled"} type={"info"}>
+                        Your project has been upgraded from an older Webiny version with EditorJS as
+                        the default rich text editor. We suggest switching to the next Lexical rich
+                        text editor where possible.
+                        <br />
+                        <br />
+                        Read more about this in our
+                        <a
+                            href={"https://www.webiny.com/docs/release-notes/5.37.0/changelog"}
+                            rel="noreferrer"
+                            target={"_blank"}
+                        >
+                            change log
+                        </a>
+                        .
+                    </Alert>
+                )}
+            </Cell>
             <Cell span={12}>
                 <div
                     className={style.topLabel}
