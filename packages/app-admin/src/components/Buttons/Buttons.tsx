@@ -3,13 +3,19 @@ import {
     ButtonDefault as BaseButtonDefault,
     ButtonPrimary as BaseButtonPrimary,
     ButtonSecondary as BaseButtonSecondary,
-    ButtonProps as BaseButtonProps
+    IconButton as BaseIconButton,
+    ButtonProps as BaseButtonProps,
+    IconButtonProps as BaseIconButtonProps
 } from "@webiny/ui/Button";
 
 import { ButtonsProvider } from "./useButtons";
 import { ButtonContainer } from "./Buttons.styles";
 
 interface ButtonProps extends Omit<BaseButtonProps, "onClick"> {
+    onAction: (ev?: any) => void;
+}
+
+interface IconButtonProps extends Omit<BaseIconButtonProps, "onClick"> {
     onAction: (ev?: any) => void;
 }
 
@@ -46,4 +52,8 @@ export const ButtonPrimary: React.VFC<ButtonProps> = ({ onAction, ...other }) =>
 
 export const ButtonSecondary: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
     return <BaseButtonSecondary {...other} onClick={onAction} />;
+};
+
+export const IconButton: React.VFC<IconButtonProps> = ({ onAction, ...other }) => {
+    return <BaseIconButton {...other} onClick={onAction} />;
 };
