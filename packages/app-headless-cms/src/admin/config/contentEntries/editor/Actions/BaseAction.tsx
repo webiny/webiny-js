@@ -2,7 +2,7 @@ import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useModel } from "~/admin/hooks";
 
-export interface BaseActionConfig<T> {
+export interface BaseActionConfig<T extends string> {
     name: string;
     element: React.ReactElement;
     $type: T;
