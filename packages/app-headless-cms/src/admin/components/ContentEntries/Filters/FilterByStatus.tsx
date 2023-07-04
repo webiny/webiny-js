@@ -8,14 +8,14 @@ import { DropdownContainer } from "./styles";
 
 import { CmsEntryFilterStatusPlugin } from "@webiny/app-headless-cms-common/types";
 
-export const FilterByStatus: React.FC = () => {
-    const getValidFilterValue = (value: string): string | undefined => {
-        if (value === "all" || value === "") {
-            return undefined;
-        }
-        return value;
-    };
+const getValidFilterValue = (value: string): string | undefined => {
+    if (value === "all" || value === "") {
+        return undefined;
+    }
+    return value;
+};
 
+export const FilterByStatus: React.FC = () => {
     const bind = useBind({
         name: "status",
         beforeChange(value, cb) {
@@ -23,20 +23,23 @@ export const FilterByStatus: React.FC = () => {
         }
     });
 
-    const filterStatusPlugins = useMemo(() => {
-        return plugins.byType<CmsEntryFilterStatusPlugin>("cms.entry.filter.status");
+    const options = useMemo(() => {
+        const options = [
+            { label: "All", value: "all" },
+            { label: "Draft", value: "draft" },
+            { label: "Published", value: "published" },
+            { label: "Unpublished", value: "unpublished" }
+        ];
+
+        const filterStatusPlugins =
+            plugins.byType<CmsEntryFilterStatusPlugin>("cms.entry.filter.status");
+
+        filterStatusPlugins.forEach(plugin => {
+            options.push({ label: plugin.label, value: plugin.value });
+        });
+
+        return options;
     }, []);
-
-    const options = [
-        { label: "All", value: "all" },
-        { label: "Draft", value: "draft" },
-        { label: "Published", value: "published" },
-        { label: "Unpublished", value: "unpublished" }
-    ];
-
-    filterStatusPlugins.forEach(pl => {
-        options.push({ label: pl.label, value: pl.value });
-    });
 
     return (
         <DropdownContainer>
