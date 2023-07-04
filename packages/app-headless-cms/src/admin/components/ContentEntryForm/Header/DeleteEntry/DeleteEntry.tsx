@@ -15,14 +15,14 @@ export const DeleteEntry: React.FC = () => {
     const { OptionsMenuItem } =
         ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
-    if (!canDelete(entry, "cms.contentEntry")) {
-        return null;
-    }
-
     const navigateBacktoList = useCallback(
         () => history.push("/cms/content-entries/" + contentModel.modelId),
         []
     );
+
+    if (!canDelete(entry, "cms.contentEntry")) {
+        return null;
+    }
 
     return (
         <OptionsMenuItem
