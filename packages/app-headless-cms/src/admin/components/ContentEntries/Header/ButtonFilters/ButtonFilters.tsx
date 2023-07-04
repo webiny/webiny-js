@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import styled from "@emotion/styled";
 import { ReactComponent as FilterIcon } from "@material-design-icons/svg/outlined/filter_alt.svg";
@@ -14,13 +14,13 @@ const ButtonWrapper = styled("div")`
 export const ButtonFilters = () => {
     const list = useContentEntriesList();
 
-    const toggleFilters = () => {
+    const toggleFilters = useCallback(() => {
         if (list.showingFilters) {
             list.hideFilters();
         } else {
             list.showFilters();
         }
-    };
+    }, [list.showingFilters]);
 
     return (
         <ButtonWrapper>
