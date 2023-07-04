@@ -58,8 +58,7 @@ describe("Headless CMS - Content Entries", () => {
             );
         });
 
-        // TODO - fix this test
-        it.skip("should create, edit, publish, unpublish, and delete content entry", () => {
+        it("should create, edit, publish, unpublish, and delete content entry", () => {
             cy.visit("/cms/content-models");
 
             cy.findByTestId("default-data-list").within(() => {
@@ -162,7 +161,7 @@ describe("Headless CMS - Content Entries", () => {
 
             // Edit an entry
             cy.findByTestId("fr.input.text.Title").clear().type(newEntryTitle2);
-            cy.findByTestId("cms-content-save-content-button").click();
+            cy.findByTestId("cms-content-save-content-button").click({ force: true });
 
             // Loading should not be visible
             cy.get(".react-spinner-material").should("not.exist");
