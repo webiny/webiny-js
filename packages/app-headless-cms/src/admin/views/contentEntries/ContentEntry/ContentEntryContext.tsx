@@ -80,8 +80,7 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
     isNewEntry,
     getContentId
 }) => {
-    const { contentModel, canCreate, listQueryVariables, setListQueryVariables, sorters } =
-        useContentEntries();
+    const { contentModel, canCreate } = useContentEntries();
 
     const { search } = useRouter();
     const [query] = search;
@@ -201,9 +200,6 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
         canCreate,
         contentModel,
         createEntry,
-        listQueryVariables,
-        setListQueryVariables,
-        sorters,
         entry,
         form: formRef,
         loading,

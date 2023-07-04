@@ -32,7 +32,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
 
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
-    const list = usePagesList({ folderId });
+    const list = usePagesList();
 
     const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
 

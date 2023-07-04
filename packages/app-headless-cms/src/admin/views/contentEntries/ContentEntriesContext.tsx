@@ -1,33 +1,10 @@
-import React, { useState, useMemo, Dispatch, SetStateAction, useCallback } from "react";
+import React, { useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
-import { i18n } from "@webiny/app/i18n";
 import { CmsModel, CmsSecurityPermission } from "~/types";
-import {
-    useContentEntriesViewConfig,
-    ContentEntriesViewConfigSorter
-} from "./experiment/ContentEntriesViewConfig";
-
-const t = i18n.ns("app-headless-cms/admin/contents/entries");
-
-export interface CmsEntriesSorter {
-    label: string;
-    value: string;
-}
-
-export interface ListQueryVariables {
-    sort?: string[];
-    status?: string;
-    where?: {
-        [key: string]: any;
-    };
-}
 
 export interface ContentEntriesContext {
     contentModel: CmsModel;
     canCreate: boolean;
-    listQueryVariables: ListQueryVariables;
-    sorters: CmsEntriesSorter[];
-    setListQueryVariables: Dispatch<SetStateAction<ListQueryVariables>>;
     insideDialog?: boolean;
 }
 
@@ -39,24 +16,12 @@ export interface ContentEntriesContextProviderProps {
     insideDialog?: boolean;
 }
 
-function toEntriesSorters(sorters: ContentEntriesViewConfigSorter[]) {
-    return sorters.map(s => ({ label: s.label, value: s.name }));
-}
-
 export const ContentEntriesProvider: React.FC<ContentEntriesContextProviderProps> = ({
     contentModel,
     children,
     insideDialog
 }) => {
     const { identity, getPermission } = useSecurity();
-    const viewConfig = useContentEntriesViewConfig();
-
-    const appliesToContentModel = useCallback(
-        ({ modelIds }: ContentEntriesViewConfigSorter) => {
-            return modelIds.length === 0 || modelIds.includes(contentModel.modelId);
-        },
-        [contentModel]
-    );
 
     const canCreate = useMemo((): boolean => {
         const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
@@ -71,41 +36,10 @@ export const ContentEntriesProvider: React.FC<ContentEntriesContextProviderProps
         return permission.rwd.includes("w");
     }, [identity]);
 
-    const sorters = useMemo((): CmsEntriesSorter[] => {
-        const titleField = contentModel.fields.find(
-            field => field.fieldId === contentModel.titleFieldId
-        );
-
-        const titleFieldLabel = titleField ? titleField.label : null;
-        if (!titleFieldLabel) {
-            return toEntriesSorters(viewConfig.sorters.filter(appliesToContentModel));
-        }
-
-        return [
-            ...toEntriesSorters(viewConfig.sorters.filter(appliesToContentModel)),
-            {
-                label: t`{titleFieldLabel} A-Z`({ titleFieldLabel }),
-                value: `${contentModel.titleFieldId}_ASC`
-            },
-            {
-                label: t`{titleFieldLabel} Z-A`({ titleFieldLabel }),
-                value: `${contentModel.titleFieldId}_DESC`
-            }
-        ];
-    }, [viewConfig.sorters, contentModel.modelId]);
-
-    const [listQueryVariables, setListQueryVariables] = useState<ListQueryVariables>({
-        sort: sorters[0]?.value ? [sorters[0].value] : [],
-        where: {}
-    });
-
     const value = {
         insideDialog,
         contentModel,
-        sorters,
-        canCreate,
-        listQueryVariables,
-        setListQueryVariables
+        canCreate
     };
 
     return <Context.Provider value={value}>{children}</Context.Provider>;
