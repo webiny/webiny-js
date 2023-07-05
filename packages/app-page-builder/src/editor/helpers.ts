@@ -293,7 +293,7 @@ export const onReceived: PbEditorPageElementPlugin["onReceived"] = props => {
 
     const result = executeAction<UpdateElementActionArgsType>(state, meta, updateElementAction, {
         element: parent,
-        history: true
+        history: false
     });
 
     result.actions.push(new AfterDropElementActionEvent({ element }));
