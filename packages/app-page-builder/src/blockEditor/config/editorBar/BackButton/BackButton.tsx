@@ -24,7 +24,7 @@ export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () =
             } else {
                 navigate(-1);
             }
-        }, [location, navigate]);
+        }, [key, navigate]);
 
         return (
             <IconButton
