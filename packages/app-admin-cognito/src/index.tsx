@@ -57,6 +57,7 @@ export interface AuthenticationProps {
 
 export interface AuthenticationFactoryConfig extends AuthOptions {
     onError?(error: Error): void;
+
     getIdentityData(params: {
         client: ApolloClient<any>;
         payload: { [key: string]: any };
@@ -66,6 +67,7 @@ export interface AuthenticationFactoryConfig extends AuthOptions {
 interface AuthenticationFactory {
     (params: AuthenticationFactoryConfig): React.FC<AuthenticationProps>;
 }
+
 export const createAuthentication: AuthenticationFactory = ({
     getIdentityData,
     onError,
@@ -74,9 +76,20 @@ export const createAuthentication: AuthenticationFactory = ({
     /**
      * TODO @ts-refactor
      */
+
     // @ts-ignore
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
-    Auth.configure({ ...defaultOptions, ...config });
+    Auth.configure({
+        ...defaultOptions,
+        ...config,
+
+        cookieStorage: {
+            domain: 'localhost',
+            secure: false,
+            path: '/',
+            expires: 365,
+        },
+    });
 
     const Authentication: React.FC<AuthenticationProps> = props => {
         const { children } = props;

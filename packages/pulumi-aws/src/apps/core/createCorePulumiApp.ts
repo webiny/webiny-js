@@ -87,6 +87,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
 
             app.addOutputs({
                 fileManagerBucketId: fileManagerBucket.output.id,
+                fileManagerBucketArn: fileManagerBucket.output.arn,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
                 primaryDynamodbTableName: dynamoDbTable.output.name,
                 primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,

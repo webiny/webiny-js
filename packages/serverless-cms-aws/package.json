@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch-events": "^3.54.1",
-    "@pulumi/aws": "^5.8.0",
-    "@pulumi/pulumi": "^3.34.0",
+    "@pulumi/aws": "^5.41.0",
+    "@pulumi/pulumi": "^3.73.0",
     "@webiny/api-apw": "^5.33.0",
     "@webiny/api-apw-scheduler-so-ddb": "^5.33.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.33.0",

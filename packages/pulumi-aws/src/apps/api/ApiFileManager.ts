@@ -129,12 +129,11 @@ export const ApiFileManager = createAppModule({
         });
 
         // ------------------------------------------------------------------------
+
         const role2 = app.addResource(aws.iam.Role, {
             name: `fm-get-s3-object-role`,
             config: {
-                managedPolicyArns: [
-                    aws.iam.ManagedPolicies.AdministratorAccess,
-                ],
+                managedPolicyArns: [aws.iam.ManagedPolicies.AdministratorAccess],
                 assumeRolePolicy: {
                     Version: "2012-10-17",
                     Statement: [
@@ -142,7 +141,7 @@ export const ApiFileManager = createAppModule({
                             Action: "sts:AssumeRole",
                             Principal: aws.iam.Principals.LambdaPrincipal,
                             Effect: "Allow"
-                        },
+                        }
                     ]
                 }
             }
@@ -155,7 +154,7 @@ export const ApiFileManager = createAppModule({
                 runtime: "nodejs14.x",
                 handler: "handler.handler",
                 timeout: 30,
-                memorySize: 512,
+                memorySize: 1024,
                 description: "Serves uploaded files.",
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive(
@@ -174,36 +173,119 @@ export const ApiFileManager = createAppModule({
             }
         });
 
-        const fileManagerBucketAccessPoint = new aws.s3.AccessPoint(
-            "fileManagerBucketAccessPoint",
-            {
-                name: core.fileManagerBucketId.apply((id: string) => `${id}-ap`),
-                bucket: core.fileManagerBucketId
-            }
-        );
+        // S3 AP
+        const fmBucketAp = new aws.s3.AccessPoint("fm-bucket-ap", {
+            bucket: core.fileManagerBucketId
+        });
 
-        const fileManagerBucketObjectLambdaAccessPoint = new aws.s3control.ObjectLambdaAccessPoint(
-            "fileManagerBucketObjectLambdaAccessPoint",
-            {
-                name: core.fileManagerBucketId.apply((id: string) => `${id}-object-lambda-ap`),
-                configuration: {
-                    supportingAccessPoint: fileManagerBucketAccessPoint.arn,
-                    transformationConfigurations: [
+        new aws.s3control.AccessPointPolicy("fm-bucket-ap-policy", {
+            accessPointArn: fmBucketAp.arn,
+            policy: fmBucketAp.name.apply(apName => {
+                return JSON.stringify({
+                    Version: "2012-10-17",
+                    // Id: "default",
+                    Statement: [
                         {
-                            actions: ["GetObject"],
-                            contentTransformation: {
-                                awsLambda: {
-                                    functionArn: getS3Object.output.arn
+                            Effect: "Allow",
+                            Principal: {
+                                Service: "cloudfront.amazonaws.com"
+                            },
+                            Action: "s3:*",
+                            Resource: [
+                                `arn:aws:s3:eu-central-1:674320871285:accesspoint/${apName}`,
+                                `arn:aws:s3:eu-central-1:674320871285:accesspoint/${apName}/object/*`
+                            ],
+                            Condition: {
+                                "ForAnyValue:StringEquals": {
+                                    "aws:CalledVia": "s3-object-lambda.amazonaws.com"
+                                }
+                            }
+                        }
+                    ]
+                });
+            })
+        });
+
+        // S3 OLAP
+        const fmBucketOlap = new aws.s3control.ObjectLambdaAccessPoint("fm-bucket-olap", {
+            configuration: {
+                supportingAccessPoint: fmBucketAp.arn,
+                transformationConfigurations: [
+                    {
+                        actions: ["GetObject"],
+                        contentTransformation: {
+                            awsLambda: {
+                                functionArn: getS3Object.output.arn
+                            }
+                        }
+                    }
+                ]
+            }
+        });
+
+        new aws.s3control.ObjectLambdaAccessPointPolicy("fm-bucket-olap-policy", {
+            name: fmBucketOlap.name,
+            policy: fmBucketOlap.name.apply(olapName =>
+                JSON.stringify({
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Effect: "Allow",
+                            Principal: {
+                                Service: "cloudfront.amazonaws.com"
+                            },
+                            Action: "s3-object-lambda:Get*",
+                            Resource: `arn:aws:s3-object-lambda:eu-central-1:674320871285:accesspoint/${olapName}`,
+                            Condition: {
+                                StringEquals: {
+                                    "aws:SourceArn":
+                                        "arn:aws:cloudfront::674320871285:distribution/E3FLE6J1PAR1CR"
+                                }
+                            }
+                        }
+                    ]
+                })
+            )
+        });
+
+        app.addResource(aws.s3.BucketPolicy, {
+            name: `fm-bucket-s3-policy`,
+            config: {
+                bucket: core.fileManagerBucketId,
+                policy: {
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Effect: "Allow",
+                            Principal: {
+                                AWS: "*"
+                            },
+                            Action: "*",
+                            Resource: [
+                                "arn:aws:s3:::fm-bucket-38f71e6",
+                                "arn:aws:s3:::fm-bucket-38f71e6/*"
+                            ],
+                            Condition: {
+                                StringEquals: {
+                                    "s3:DataAccessPointAccount": "674320871285"
                                 }
                             }
                         }
                     ]
                 }
             }
-        );
+        });
 
-
-        // ------------------------------------------------------------------------
+        // Add required permission to the target lambda.
+        app.addResource(aws.lambda.Permission, {
+            name: "allow-cf-to-invoke-get-s3-object",
+            config: {
+                action: "lambda:InvokeFunction",
+                function: getS3Object.output.arn,
+                principal: "cloudfront.amazonaws.com",
+                statementId: "allow-cf-to-invoke-get-s3-object"
+            }
+        });
 
         const functions = {
             transform,
@@ -214,8 +296,8 @@ export const ApiFileManager = createAppModule({
         return {
             functions,
             bucketNotification,
-            fileManagerBucketAccessPoint,
-            fileManagerBucketObjectLambdaAccessPoint
+            fileManagerBucketAccessPoint: fmBucketAp,
+            fileManagerBucketObjectLambdaAccessPoint: fmBucketOlap
         };
     }
 });
