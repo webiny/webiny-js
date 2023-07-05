@@ -11,10 +11,21 @@ const width: ElementStylesModifier = ({ theme, element }) => {
             return returnStyles;
         }
 
+        if (width[breakpointName].value === "auto") {
+            return {
+                ...returnStyles,
+                [breakpointName]: {
+                    maxWidth: "none",
+                    width: "fit-content"
+                }
+            };
+        }
+
         return {
             ...returnStyles,
             [breakpointName]: {
-                maxWidth: width[breakpointName].value
+                maxWidth: width[breakpointName].value,
+                width: "100%"
             }
         };
     }, {});

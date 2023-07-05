@@ -1,5 +1,4 @@
 import React, { forwardRef, useMemo, useState } from "react";
-
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
 import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
@@ -11,8 +10,6 @@ import { Menu } from "@webiny/ui/Menu";
  */
 // @ts-ignore
 import TimeAgo from "timeago-react";
-import useDeepCompareEffect from "use-deep-compare-effect";
-
 import { FolderName, PageName } from "./Row/Name";
 import { FolderActionDelete } from "./Row/Folder/FolderActionDelete";
 import { FolderActionEdit } from "./Row/Folder/FolderActionEdit";
@@ -21,40 +18,92 @@ import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
-
-import statusLabels from "~/admin/constants/pageStatusesLabels";
-import { FOLDER_TYPE } from "~/admin/constants/folders";
-
+import { statuses as statusLabels } from "~/admin/constants";
 import { PbPageDataItem } from "~/types";
 import { actionsColumnStyles, menuStyles } from "./styled";
 
-interface Props {
+export interface TableProps {
     records: SearchRecordItem<PbPageDataItem>[];
     folders: FolderItem[];
     loading?: boolean;
     openPreviewDrawer: () => void;
     onSelectRow: (rows: Entry[] | []) => void;
+    selectedRows: string[];
     sorting: Sorting;
     onSortingChange: OnSortingChange;
 }
 
-interface Entry {
+interface PageEntry {
+    $type: "RECORD";
+    $selectable: boolean;
     id: string;
-    type: "RECORD" | "FOLDER";
     title: string;
     createdBy: string;
     savedOn: string;
     status?: string;
     version?: number;
-    original: PbPageDataItem | FolderItem;
-    selectable: boolean;
+    original: PbPageDataItem;
 }
 
-export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
-    const { folders, records, loading, openPreviewDrawer, onSelectRow, sorting, onSortingChange } =
-        props;
+interface FolderEntry {
+    $type: "FOLDER";
+    $selectable: boolean;
+    id: string;
+    title: string;
+    createdBy: string;
+    savedOn: string;
+    status?: string;
+    version?: number;
+    original: FolderItem;
+}
 
-    const [data, setData] = useState<Entry[]>([]);
+type Entry = PageEntry | FolderEntry;
+
+const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry[] => {
+    return items.map(({ data }) => {
+        return {
+            $type: "RECORD",
+            $selectable: true,
+            id: data.pid,
+            title: data.title,
+            createdBy: data.createdBy?.displayName || "-",
+            savedOn: data.savedOn,
+            status: data.status,
+            version: data.version,
+            original: data || {}
+        };
+    });
+};
+
+const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
+    return items.map(item => {
+        return {
+            $type: "FOLDER",
+            $selectable: false,
+            id: item.id,
+            title: item.title,
+            createdBy: item.createdBy?.displayName || "-",
+            savedOn: item.createdOn,
+            original: item
+        };
+    });
+};
+
+function isPageEntry(entry: Entry): entry is PageEntry {
+    return entry.$type === "RECORD";
+}
+
+export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
+    const {
+        folders,
+        records,
+        loading,
+        openPreviewDrawer,
+        onSelectRow,
+        sorting,
+        onSortingChange,
+        selectedRows
+    } = props;
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -62,55 +111,26 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
     const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
-    const createRecordsData = useMemo(() => {
-        return (items: SearchRecordItem<PbPageDataItem>[]): Entry[] =>
-            items.map(({ data }) => ({
-                id: data.id,
-                type: "RECORD",
-                title: data.title,
-                createdBy: data.createdBy.displayName,
-                savedOn: data.savedOn,
-                status: data.status,
-                version: data.version,
-                original: data || {},
-                selectable: true
-            }));
-    }, [records]);
-
-    const createFoldersData = useMemo(() => {
-        return (items: FolderItem[]): Entry[] =>
-            items.map(item => ({
-                id: item.id,
-                type: "FOLDER",
-                title: item.title,
-                createdBy: item.createdBy.displayName || "-",
-                savedOn: item.createdOn,
-                original: item,
-                selectable: false
-            }));
-    }, [folders]);
-
-    useDeepCompareEffect(() => {
-        const foldersData = createFoldersData(folders);
-        const pagesData = createRecordsData(records);
-        setData([...foldersData, ...pagesData]);
-    }, [{ ...folders }, { ...records }]);
+    const data = useMemo<Entry[]>(() => {
+        return [...createFoldersData(folders), ...createRecordsData(records)];
+    }, [folders, records]);
 
     const columns: Columns<Entry> = {
         title: {
             header: "Name",
-            cell: ({ id, title, type }) => {
-                if (type === "RECORD") {
-                    return <PageName name={title} id={id} onClick={openPreviewDrawer} />;
-                } else {
-                    return <FolderName name={title} id={id} />;
+            cell: (entry: Entry) => {
+                if (isPageEntry(entry)) {
+                    return (
+                        <PageName name={entry.title} id={entry.id} onClick={openPreviewDrawer} />
+                    );
                 }
+                return <FolderName name={entry.title} id={entry.id} />;
             },
             enableSorting: true
         },
         savedOn: {
             header: "Last modified",
-            cell: ({ savedOn }) => <TimeAgo datetime={savedOn} />,
+            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
             enableSorting: true
         },
         createdBy: {
@@ -118,12 +138,11 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         },
         status: {
             header: "Status",
-            cell: ({ status, version }) => {
+            cell: ({ status, version }: Entry) => {
                 if (status && version) {
                     return `${statusLabels[status]} (v${version})`;
-                } else {
-                    return "-";
                 }
+                return "-";
             }
         },
         original: {
@@ -132,61 +151,59 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 alignEnd: true
             },
             className: actionsColumnStyles,
-            cell: ({ type, original }) => {
-                if (!original) {
-                    return <></>;
-                }
-
-                if (type === "RECORD") {
+            cell: (entry: Entry) => {
+                if (isPageEntry(entry)) {
                     return (
                         <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
-                            <RecordActionEdit record={original as PbPageDataItem} />
-                            <RecordActionPreview record={original as PbPageDataItem} />
-                            <RecordActionPublish record={original as PbPageDataItem} />
+                            <RecordActionEdit record={entry.original} />
+                            <RecordActionPreview record={entry.original} />
+                            <RecordActionPublish record={entry.original} />
                             <RecordActionMove
                                 onClick={() => {
                                     setMoveSearchRecordDialogOpen(true);
                                     setSelectedSearchRecord(() =>
                                         records.find(
-                                            record => record.id === (original as PbPageDataItem).pid
+                                            record => record.data.pid === entry.original.pid
                                         )
                                     );
                                 }}
                             />
-                            <RecordActionDelete record={original as PbPageDataItem} />
-                        </Menu>
-                    );
-                } else {
-                    return (
-                        <Menu handle={<IconButton icon={<More />} />}>
-                            <FolderActionEdit
-                                onClick={() => {
-                                    setUpdateDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
-                            <FolderActionDelete
-                                onClick={() => {
-                                    setDeleteDialogOpen(true);
-                                    setSelectedFolder(original as FolderItem);
-                                }}
-                            />
+                            <RecordActionDelete record={entry.original} />
                         </Menu>
                     );
                 }
+
+                return (
+                    <Menu handle={<IconButton icon={<More />} />}>
+                        <FolderActionEdit
+                            onClick={() => {
+                                setUpdateDialogOpen(true);
+                                setSelectedFolder(entry.original);
+                            }}
+                        />
+                        <FolderActionDelete
+                            onClick={() => {
+                                setDeleteDialogOpen(true);
+                                setSelectedFolder(entry.original);
+                            }}
+                        />
+                    </Menu>
+                );
             }
         }
     };
 
     return (
         <div ref={ref}>
-            <DataTable
+            <DataTable<Entry>
                 columns={columns}
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
                 onSelectRow={onSelectRow}
                 sorting={sorting}
+                selectedRows={data.filter(record => selectedRows.includes(record.id))}
+                isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}
             />
             {selectedFolder && (
@@ -205,7 +222,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             )}
             {selectedSearchRecord && (
                 <EntryDialogMove
-                    type={FOLDER_TYPE}
                     searchRecord={selectedSearchRecord}
                     open={moveSearchRecordDialogOpen}
                     onClose={() => setMoveSearchRecordDialogOpen(false)}

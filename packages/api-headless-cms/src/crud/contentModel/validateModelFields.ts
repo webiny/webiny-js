@@ -351,7 +351,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
             continue;
         }
 
-        if (lockedField.multipleValues !== existingField.multipleValues) {
+        if (Boolean(lockedField.multipleValues) !== Boolean(existingField.multipleValues)) {
             throw new WebinyError(
                 `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`,
                 "ENTRY_FIELD_USED",

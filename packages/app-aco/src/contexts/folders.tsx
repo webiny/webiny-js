@@ -1,45 +1,24 @@
-import React, { ReactNode, useState } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
-
-import { apolloFetchingHandler, loadingHandler } from "~/handlers";
-
-import {
-    CREATE_FOLDER,
-    DELETE_FOLDER,
-    GET_FOLDER,
-    LIST_FOLDERS,
-    UPDATE_FOLDER
-} from "~/graphql/folders.gql";
-
-import {
-    CreateFolderResponse,
-    CreateFolderVariables,
-    GetFolderResponse,
-    GetFolderQueryVariables,
-    DeleteFolderResponse,
-    DeleteFolderVariables,
-    FolderItem,
-    ListFoldersQueryVariables,
-    ListFoldersResponse,
-    UpdateFolderResponse,
-    UpdateFolderVariables,
-    Loading,
-    LoadingActions
-} from "~/types";
+import React, { ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { dataLoader, loadingHandler } from "~/handlers";
+import { FolderItem, Loading, LoadingActions } from "~/types";
+import { AcoAppContext } from "~/contexts/app";
+import { useFoldersApi } from "~/hooks";
 
 interface FoldersContext {
-    folders: Record<string, FolderItem[]>;
+    folders?: FolderItem[] | null;
     loading: Loading<LoadingActions>;
-    listFolders: (type: string) => Promise<FolderItem[]>;
+    listFolders: () => Promise<FolderItem[]>;
     getFolder: (id: string) => Promise<FolderItem>;
-    createFolder: (folder: Omit<FolderItem, "id">) => Promise<FolderItem>;
-    updateFolder: (folder: FolderItem) => Promise<FolderItem>;
-    deleteFolder(folder: FolderItem): Promise<true>;
+    createFolder: (folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
+    updateFolder: (folder: Omit<FolderItem, "type">) => Promise<FolderItem>;
+    deleteFolder(folder: Pick<FolderItem, "id">): Promise<true>;
+    getDescendantFolders(id?: string): FolderItem[];
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
 
 interface Props {
+    type?: string;
     children: ReactNode;
 }
 
@@ -48,176 +27,94 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     LIST: false,
     LIST_MORE: false,
     GET: false,
+    MOVE: false,
     CREATE: false,
     UPDATE: false,
     DELETE: false
 };
 
-export const FoldersProvider = ({ children }: Props) => {
-    const client = useApolloClient();
-    const [folders, setFolders] = useState<Record<string, FolderItem[]>>(Object.create(null));
+export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
+    const appContext = useContext(AcoAppContext);
+    const [folders, setFolders] = useState<FolderItem[] | null>(null);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
+    const foldersApi = useFoldersApi();
 
-    const context: FoldersContext = {
-        folders,
-        loading,
-        async listFolders(type: string, limit = 10000) {
-            if (!type) {
-                throw new Error("Folder `type` is mandatory");
-            }
+    const app = appContext ? appContext.app : undefined;
 
-            const { data: response } = await apolloFetchingHandler(
-                loadingHandler("LIST", setLoading),
-                () =>
-                    client.query<ListFoldersResponse, ListFoldersQueryVariables>({
-                        query: LIST_FOLDERS,
-                        variables: { type, limit }
-                    })
-            );
+    const type = props.type ?? app?.id;
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
 
-            const { data, error } = response.aco.listFolders;
+    useEffect(() => {
+        return foldersApi.onFoldersChanged(type, folders => {
+            setFolders(folders);
+        });
+    }, []);
 
-            if (!data) {
-                throw new Error(error?.message || "Could not fetch folders");
-            }
+    const context = useMemo<FoldersContext>(() => {
+        return {
+            folders,
+            loading,
+            async listFolders() {
+                const folders = await dataLoader(loadingHandler("LIST", setLoading), () =>
+                    foldersApi.listFolders(type)
+                );
 
-            setFolders(folders => ({
-                ...folders,
-                [type]: data || []
-            }));
+                setFolders(() => folders);
 
-            setLoading(prev => ({
-                ...prev,
-                INIT: false
-            }));
+                setLoading(prev => ({
+                    ...prev,
+                    INIT: false
+                }));
 
-            return data;
-        },
+                return folders;
+            },
 
-        async getFolder(id) {
-            if (!id) {
-                throw new Error("Folder `id` is mandatory");
-            }
-
-            const { data: response } = await apolloFetchingHandler(
-                loadingHandler("GET", setLoading),
-                () =>
-                    client.query<GetFolderResponse, GetFolderQueryVariables>({
-                        query: GET_FOLDER,
-                        variables: { id }
-                    })
-            );
-
-            const { data, error } = response.aco.getFolder;
-
-            if (!data) {
-                throw new Error(error?.message || `Could not fetch folder with id: ${id}`);
-            }
-
-            return data;
-        },
-
-        async createFolder(folder) {
-            const { type } = folder;
-
-            const { data: response } = await apolloFetchingHandler(
-                loadingHandler("CREATE", setLoading),
-                () =>
-                    client.mutate<CreateFolderResponse, CreateFolderVariables>({
-                        mutation: CREATE_FOLDER,
-                        variables: { data: folder }
-                    })
-            );
-
-            if (!response) {
-                throw new Error("Network error while creating folder");
-            }
-
-            const { data, error } = response.aco.createFolder;
-
-            if (!data) {
-                throw new Error(error?.message || "Could not create folder");
-            }
-
-            setFolders(folders => ({ ...folders, [type]: [data, ...folders[type]] }));
-
-            return data;
-        },
-
-        async updateFolder(folder) {
-            const { id, type, title, slug, parentId } = folder;
-
-            const { data: response } = await apolloFetchingHandler(
-                loadingHandler("UPDATE", setLoading),
-                () =>
-                    client.mutate<UpdateFolderResponse, UpdateFolderVariables>({
-                        mutation: UPDATE_FOLDER,
-                        variables: {
-                            id,
-                            data: {
-                                title,
-                                slug,
-                                parentId
-                            }
-                        }
-                    })
-            );
-
-            if (!response) {
-                throw new Error("Network error while updating folder");
-            }
-
-            const { data, error } = response.aco.updateFolder;
-
-            if (!data) {
-                throw new Error(error?.message || "Could not update folder");
-            }
-
-            setFolders(folders => {
-                const folderIndex = folders[type].findIndex(f => f.id === id);
-                if (folderIndex === -1) {
-                    return folders;
+            async getFolder(id) {
+                if (!id) {
+                    throw new Error("Folder `id` is mandatory");
                 }
 
-                const typeFolders = folders[type];
-                typeFolders[folderIndex] = data;
+                return await dataLoader(loadingHandler("GET", setLoading), () =>
+                    foldersApi.getFolder(type, id)
+                );
+            },
 
-                return { ...folders, [type]: typeFolders };
-            });
+            async createFolder(folder) {
+                const newFolder = await dataLoader(loadingHandler("CREATE", setLoading), () =>
+                    foldersApi.createFolder(type, folder)
+                );
 
-            return data;
-        },
+                return newFolder;
+            },
 
-        async deleteFolder(folder) {
-            const { id, type } = folder;
+            async updateFolder(folder) {
+                const { id, title, slug, parentId } = folder;
 
-            const { data: response } = await apolloFetchingHandler(
-                loadingHandler("DELETE", setLoading),
-                () =>
-                    client.mutate<DeleteFolderResponse, DeleteFolderVariables>({
-                        mutation: DELETE_FOLDER,
-                        variables: { id }
+                return await dataLoader(loadingHandler("UPDATE", setLoading), () =>
+                    foldersApi.updateFolder(type, {
+                        id,
+                        title,
+                        slug,
+                        parentId
                     })
-            );
+                );
+            },
 
-            if (!response) {
-                throw new Error("Network error while deleting folder");
+            async deleteFolder(folder) {
+                const { id } = folder;
+
+                return await dataLoader(loadingHandler("DELETE", setLoading), () =>
+                    foldersApi.deleteFolder(type, id)
+                );
+            },
+
+            getDescendantFolders(id) {
+                return foldersApi.getDescendantFolders(type, id);
             }
-
-            const { data, error } = response.aco.deleteFolder;
-
-            if (!data) {
-                throw new Error(error?.message || "Could not delete folder");
-            }
-
-            setFolders(folders => {
-                const updatedFolders = folders[type].filter(f => f.id !== id);
-                return { ...folders, [type]: updatedFolders };
-            });
-
-            return true;
-        }
-    };
+        };
+    }, [folders, loading, setLoading, setFolders]);
 
     return <FoldersContext.Provider value={context}>{children}</FoldersContext.Provider>;
 };

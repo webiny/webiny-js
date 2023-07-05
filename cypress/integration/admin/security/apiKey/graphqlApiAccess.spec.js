@@ -22,7 +22,7 @@ context("Security -> API Key -> GraphQL API Access", () => {
     });
 
     it("should able to read from GraphQL API using API key", () => {
-        return cy.securityReadGroup({ slug: "full-access" }, apiKey.token).then(group => {
+        return cy.securityReadRole({ slug: "full-access" }, apiKey.token).then(group => {
             assert.equal(group.name, "Full Access");
             assert.equal(group.slug, "full-access");
             assert.equal(group.description, "Grants full access to all apps.");

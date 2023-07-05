@@ -67,6 +67,7 @@ export interface SettingsQueryResponseData {
         facebook: string;
         instagram: string;
         twitter: string;
+        linkedIn: string;
         image: {
             src: string;
         };
@@ -100,6 +101,7 @@ export const GET_SETTINGS = gql`
                         facebook
                         instagram
                         twitter
+                        linkedIn
                         image {
                             src
                         }

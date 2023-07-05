@@ -2,7 +2,7 @@ import { Client } from "@elastic/elasticsearch";
 import {
     createElasticsearchClient as createClient,
     ElasticsearchClientOptions
-} from "../../../api-elasticsearch/src/client";
+} from "@webiny/api-elasticsearch/client";
 import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
 import { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
 

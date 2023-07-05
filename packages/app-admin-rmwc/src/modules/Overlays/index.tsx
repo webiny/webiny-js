@@ -3,6 +3,8 @@ import { Provider } from "@webiny/app-admin/";
 import Snackbar from "./Snackbar";
 import { DialogContainer } from "./Dialog";
 import { Portal } from "@rmwc/base";
+import { featureFlags } from "@webiny/feature-flags";
+import { OmniSearch } from "./OmniSearch";
 
 /**
  * Dialogs, Menus and Snackbars require a container to be rendered, and we want to place it outside of
@@ -19,6 +21,7 @@ const OverlaysHOC = (Component: React.FC): React.FC => {
                 </div>
                 <Portal />
                 <DialogContainer />
+                {featureFlags.experimentalAdminOmniSearch && <OmniSearch />}
             </Component>
         );
     };

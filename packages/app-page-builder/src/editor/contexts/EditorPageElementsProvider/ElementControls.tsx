@@ -8,12 +8,14 @@ import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Dro
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
 import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { useSnackbar } from "@webiny/app-admin";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
 // - drag and drop functionality
 export const ElementControls = () => {
     const { getElement, meta } = useRenderer();
+    const { showSnackbar } = useSnackbar();
 
     const element = getElement();
 
@@ -23,6 +25,10 @@ export const ElementControls = () => {
     if (element.type === "document") {
         return null;
     }
+
+    const elementPlugin = useElementPlugin(element);
+    const handler = useEventActionHandler();
+    const { isDragging } = useRecoilValue(uiAtom);
 
     // If the current element is a child of a pre-made block,
     // then we don't want to render any controls for any child elements.
@@ -39,13 +45,13 @@ export const ElementControls = () => {
         // in the page editor, when working with pages that were created from a template. In the
         // page editor, within the `data.template` object, we have a `slug` property, which is not
         // available in the template editor. That give us the ability to distinguish between the two.
-        if (meta.parentDocumentElement.data.template.slug) {
+
+        // If the page is unlinked from the template in the page editor, note that the
+        // `data.template` object will be removed, hence the `?.` operator here.
+        if (meta.parentDocumentElement.data.template?.slug) {
             return null;
         }
     }
-
-    const handler = useEventActionHandler();
-    const { isDragging } = useRecoilValue(uiAtom);
 
     const dropElementAction = (source: DragObjectWithTypeWithTarget) => {
         const { target } = source;
@@ -55,6 +61,7 @@ export const ElementControls = () => {
         // for which this drop zone is rendered).
         if (Array.isArray(target) && target.length > 0) {
             if (!target.includes(element.type)) {
+                showSnackbar("The currently active page element cannot receive child elements.");
                 return;
             }
         }
@@ -70,8 +77,6 @@ export const ElementControls = () => {
             })
         );
     };
-
-    const elementPlugin = useElementPlugin(element);
 
     // When dragging, if the element is droppable, we want to render the drop zones.
     if (isDragging) {

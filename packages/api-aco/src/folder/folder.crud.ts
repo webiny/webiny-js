@@ -11,6 +11,8 @@ import {
     OnFolderBeforeUpdateTopicParams
 } from "./folder.types";
 
+import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
+
 export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams): AcoFolderCrud => {
     // create
     const onFolderBeforeCreate = createTopic<OnFolderBeforeCreateTopicParams>(
@@ -66,6 +68,16 @@ export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams):
             await storageOperations.deleteFolder({ id });
             await onFolderAfterDelete.publish({ folder });
             return true;
+        },
+        async getFolderWithAncestors(id: string) {
+            const { type } = await storageOperations.getFolder({ id });
+            const [folders] = await storageOperations.listFolders({
+                where: {
+                    type
+                },
+                limit: 10000
+            });
+            return getFolderAndItsAncestors({ id, folders });
         }
     };
 };

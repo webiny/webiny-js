@@ -53,7 +53,7 @@ const createChildTypeDefs = (params: AttachTypeDefinitionsParams): string => {
         .join("\n");
     return `input ${typeName}WhereInput {
         ${filters || "_empty: String"}
-    }`;
+    }\n`;
 };
 
 interface CreateTypeNameParams {
@@ -204,7 +204,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                     fields: `${field.fieldId}: ${
                         field.multipleValues ? `[${fieldType}!]` : fieldType
                     }`,
-                    typeDefs: `${typeDefs}${childTypeDefs}`
+                    typeDefs: `${typeDefs}\n${childTypeDefs}`
                 };
             },
             createInputField({ models, model, field, fieldTypePlugins }) {

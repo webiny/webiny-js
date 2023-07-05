@@ -25,7 +25,8 @@ const getSourceElement = async (
     source: DragObjectWithTypeWithTarget
 ): Promise<PbEditorElement | DragObjectWithTypeWithTarget> => {
     if (source.id) {
-        return await state.getElementById(source.id);
+        const element = await state.getElementById(source.id);
+        return await state.getElementTree({ element });
     }
 
     return source;
@@ -54,7 +55,13 @@ export const dropElementAction: EventActionCallable<DropElementActionArgsType> =
     const onReceivedCallback = plugin.onReceived || onReceived;
 
     return onReceivedCallback!({
-        state,
+        state: {
+            ...state,
+            ui: {
+                ...state.ui,
+                isDragging: false
+            }
+        },
         meta,
         source: sourceElement,
         target: targetElement,

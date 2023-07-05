@@ -8,7 +8,7 @@ import { ReactComponent as DownButton } from "../../../../assets/round-arrow_dro
 import { MenuItem } from "@webiny/ui/Menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
-import statusesLabels from "../../../../constants/pageStatusesLabels";
+import { statuses as statusesLabels } from "~/admin/constants";
 import { PbPageData } from "~/types";
 
 const buttonStyle = css`
@@ -35,6 +35,7 @@ const statusLabel = css`
 const arrowStyles = css`
     flex-shrink: 0;
     margin-left: auto !important;
+    width: auto !important;
 `;
 
 const menuList = css`

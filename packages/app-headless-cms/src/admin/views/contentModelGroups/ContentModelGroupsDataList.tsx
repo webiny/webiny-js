@@ -175,6 +175,10 @@ const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({
     const filteredData = filter === "" ? data : data.filter(filterData);
     const contentModelGroups = sortData(filteredData);
 
+    const onRefreshClick = useCallback(() => {
+        listQuery.refetch();
+    }, []);
+
     return (
         <DataList
             loading={listQuery.loading}
@@ -204,6 +208,7 @@ const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({
                     data-testid={"default-data-list.filter"}
                 />
             }
+            refresh={onRefreshClick}
         >
             {({ data }: { data: CmsGroupWithModels[] }) => (
                 <List data-testid="default-data-list">

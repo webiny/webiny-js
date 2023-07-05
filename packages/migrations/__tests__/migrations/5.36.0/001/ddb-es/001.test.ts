@@ -1,4 +1,4 @@
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 
 import {
     assertNotError,
@@ -26,7 +26,10 @@ import { addMimeTag } from "~/migrations/5.36.0/001/utils/createMimeTag";
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 3000;
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+const NUMBER_OF_FILES = 50;
 const INDEX_TYPE = "file-manager";
 let numberOfGeneratedFiles = 0;
 
@@ -118,21 +121,21 @@ describe("5.36.0-001", () => {
                     esFiles.push(file);
                 }
 
-                // Inserting useful data: file records
-                await insertDynamoDbTestData(ddbTable, ddbFiles);
-                await insertDynamoDbTestData(ddbToEsTable, ddbFiles);
-                await insertElasticsearchTestData<File>(elasticsearchClient, esFiles, item => {
-                    return esGetIndexName({
-                        tenant: item.tenant,
-                        locale: item.locale,
-                        type: INDEX_TYPE
-                    });
-                });
-
                 // Track generated files
                 numberOfGeneratedFiles += numberOfFiles;
             }
         }
+        // Inserting useful data: file records
+        await insertDynamoDbTestData(ddbTable, ddbFiles);
+        await insertDynamoDbTestData(ddbToEsTable, ddbFiles);
+        await insertElasticsearchTestData<File>(elasticsearchClient, esFiles, item => {
+            return esGetIndexName({
+                tenant: item.tenant,
+                locale: item.locale,
+                type: INDEX_TYPE
+            });
+        });
+        await elasticsearchClient.indices.refreshAll();
     };
 
     const insertEmptyFileIndexes = async () => {
@@ -250,8 +253,6 @@ describe("5.36.0-001", () => {
         });
 
         const { data, error } = await handler();
-
-        console.log(JSON.stringify(data, null, 2));
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);

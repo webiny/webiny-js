@@ -13,12 +13,15 @@ import {
 import { AcoRecords_5_36_0_001 } from "~/migrations/5.36.0/001/ddb";
 import { ACO_SEARCH_MODEL_ID, FM_FILE_TYPE, ROOT_FOLDER } from "~/migrations/5.36.0/001/constants";
 
-import { createTenantsData, createLocalesData, createdBy } from "./001.data";
+import { createdBy, createLocalesData, createTenantsData } from "./001.data";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-const NUMBER_OF_FILES = 100;
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+const NUMBER_OF_FILES = 50;
 let numberOfGeneratedFiles = 0;
 
 describe("5.36.0-001", () => {
@@ -78,13 +81,12 @@ describe("5.36.0-001", () => {
                     });
                 }
 
-                // Inserting useful data: file record
-                await insertDynamoDbTestData(table, ddbFiles);
-
                 // Track generated files
                 numberOfGeneratedFiles += numberOfFiles;
             }
         }
+        // Inserting useful data: file record
+        await insertDynamoDbTestData(table, ddbFiles);
     };
 
     it("should not run if no tenant found", async () => {

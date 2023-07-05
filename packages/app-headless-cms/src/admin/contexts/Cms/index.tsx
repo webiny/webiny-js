@@ -3,10 +3,9 @@ import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
-import { CmsEditorContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsModel } from "~/types";
 import { MutationHookOptions } from "@apollo/react-hooks";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
-import { ListQueryVariables } from "~/admin/views/contentEntries/ContentEntriesContext";
 
 interface PublishEntryOptions {
     mutationOptions?: MutationHookOptions;
@@ -22,34 +21,32 @@ interface EntryError {
 
 export interface OnEntryPublishRequest {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: CmsContentEntry;
     id: string;
     options: PublishEntryOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: EntryError | null;
     locale: string;
     client: ApolloClient<any>;
-    listQueryVariables: ListQueryVariables;
 }
 
 export interface OnEntryPublishResponse extends Omit<OnEntryPublishRequest, "entry"> {
-    entry: CmsEditorContentEntry | undefined;
+    entry: CmsContentEntry | undefined;
 }
 
 export interface OnEntryDeleteRequest {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: Pick<CmsContentEntry, "id">;
     id: string;
     options: PublishEntryOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: EntryError | null;
     locale: string;
     client: ApolloClient<any>;
-    listQueryVariables: ListQueryVariables;
 }
 
 export interface OnEntryDeleteResponse extends Omit<OnEntryDeleteRequest, "entry"> {
-    entry: CmsEditorContentEntry | undefined;
+    entry: Pick<CmsContentEntry, "id"> | undefined;
 }
 
 type OnEntryRevisionPublishSubscriber = AsyncProcessor<
@@ -60,17 +57,15 @@ type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteRequest, OnEntryDelet
 
 interface PublishEntryRevisionParams {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: CmsContentEntry;
     options?: PublishEntryOptions;
     id: string;
-    listQueryVariables: ListQueryVariables;
 }
 interface DeleteEntryParams {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: Pick<CmsContentEntry, "id">;
     id: string;
     options?: DeleteEntryOptions;
-    listQueryVariables: ListQueryVariables;
 }
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;

@@ -14,6 +14,7 @@ import { HeadingNode } from "~/nodes/HeadingNode";
 import { ParagraphNode } from "~/nodes/ParagraphNode";
 import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { QuoteNode } from "~/nodes/QuoteNode";
+import { ImageNode } from "~/nodes/ImageNode";
 
 /*
  * This is a list of all the nodes that Webiny's Lexical implementation supports OOTB.
@@ -25,6 +26,7 @@ export const WebinyNodes: ReadonlyArray<
           with: <T extends { new (...args: any): any }>(node: InstanceType<T>) => LexicalNode;
       }
 > = [
+    ImageNode,
     ListNode,
     ListItemNode,
     CodeNode,

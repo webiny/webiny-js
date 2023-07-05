@@ -9,8 +9,8 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
-import { createGroupAuthorizer } from "@webiny/api-security/plugins/groupAuthorization";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { createTenantLinkAuthorizer } from "@webiny/api-security/plugins/tenantLinkAuthorization";
 
 interface Config {
     fullAccess?: boolean;
@@ -52,13 +52,16 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 );
             });
 
-            const groupAuthorizer = createGroupAuthorizer({ identityType: "admin" })(context);
+            const tenantLinkAuthorizer = createTenantLinkAuthorizer({
+                identityType: "admin"
+            })(context);
+
             context.security.addAuthorizer(async () => {
                 if (fullAccess) {
                     return [{ name: "*" }];
                 }
 
-                return groupAuthorizer();
+                return tenantLinkAuthorizer();
             });
         }),
         new BeforeHandlerPlugin<SecurityContext & AdminUsersContext>(context => {

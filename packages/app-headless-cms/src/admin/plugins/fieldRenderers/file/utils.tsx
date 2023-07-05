@@ -2,7 +2,7 @@ import * as React from "react";
 import { css } from "emotion";
 import { ReactComponent as FileIcon } from "../../fields/icons/round_insert_drive_file-24px.svg";
 
-export const imagePlugins = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
+export const imagePlugins = [".jpg", ".jpeg", ".gif", ".png", ".svg", ".webp"];
 
 export const imageWrapperStyles = css({
     height: "auto"

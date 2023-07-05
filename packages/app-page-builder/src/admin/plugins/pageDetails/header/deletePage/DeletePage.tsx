@@ -2,7 +2,7 @@ import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "~/admin/assets/delete.svg";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { PbPageData } from "~/types";
 import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
 
@@ -12,10 +12,10 @@ interface DeletePageProps {
 }
 const DeletePage: React.FC<DeletePageProps> = props => {
     const { page, onDelete } = props;
-    const { canDelete } = usePermission();
+    const { canDelete } = usePagesPermissions();
     const { openDialogDeletePage } = useDeletePage({ page, onDelete });
 
-    if (!canDelete(page)) {
+    if (!canDelete(page?.createdBy?.id)) {
         return null;
     }
 

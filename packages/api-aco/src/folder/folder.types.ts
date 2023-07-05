@@ -1,7 +1,12 @@
-import { AcoBaseFields, ListMeta, ListSort } from "~/types";
+import { ListMeta, ListSort, User } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
-export interface Folder extends AcoBaseFields {
+export interface Folder {
+    id: string;
+    entryId: string;
+    createdOn: string;
+    createdBy: User;
+    savedOn: string;
     title: string;
     slug: string;
     type: string;
@@ -85,6 +90,7 @@ export interface AcoFolderCrud {
     create(data: CreateFolderParams): Promise<Folder>;
     update(id: string, data: UpdateFolderParams): Promise<Folder>;
     delete(id: string): Promise<Boolean>;
+    getFolderWithAncestors(id: string): Promise<Folder[]>;
     onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
     onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
     onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;

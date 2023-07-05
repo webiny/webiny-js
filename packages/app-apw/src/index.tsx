@@ -24,7 +24,7 @@ import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/compone
  */
 import { ApwOnEntryDelete } from "~/plugins/cms/ApwOnEntryDelete";
 import { ApwOnEntryPublish } from "~/plugins/cms/ApwOnEntryPublish";
-import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/saveAndPublishContent/SaveAndPublishContent";
+import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/Header";
 import { PublishEntryRevisionListItem } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/PublishEntryRevisionListItem";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
 import {

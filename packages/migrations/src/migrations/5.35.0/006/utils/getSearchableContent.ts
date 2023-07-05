@@ -9,7 +9,7 @@ export interface CompressedValue {
     content: string | null;
 }
 
-const decompress = (page: Page): Promise<any> | null => {
+const decompress = (page: Pick<Page, "content">): Promise<any> | null => {
     if (!page || !page.content) {
         return null;
     }
@@ -21,7 +21,9 @@ const decompress = (page: Page): Promise<any> | null => {
     }
 };
 
-export async function getSearchablePageContent(page: Page): Promise<string> {
+export async function getSearchablePageContent(
+    page: Pick<Page, "title" | "content">
+): Promise<string> {
     const result = [page.title];
 
     const content = await decompress(page);

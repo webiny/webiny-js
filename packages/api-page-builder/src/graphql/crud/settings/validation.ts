@@ -89,6 +89,13 @@ export const createSettingsCreateValidation = () => {
                         .nullish()
                         .optional()
                         .transform(value => value || undefined),
+                    linkedIn: zod
+                        .string()
+                        .url()
+                        .max(500)
+                        .nullish()
+                        .optional()
+                        .transform(value => value || undefined),
                     image: zod
                         .object({
                             id: zod.string().optional(),

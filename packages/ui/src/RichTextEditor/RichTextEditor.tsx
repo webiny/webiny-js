@@ -66,6 +66,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
 
     useEffect(() => {
         const { value, context, onReady, ...nativeProps } = props;
+
         const initialData = value ? { blocks: value } : { blocks: [] };
 
         editorRef.current = new EditorJS({

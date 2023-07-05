@@ -1,145 +1,145 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import get from "lodash/get";
-import set from "lodash/set";
-import unset from "lodash/unset";
-import cloneDeep from "lodash/cloneDeep";
 import debounce from "lodash/debounce";
 import { useRouter } from "@webiny/react-router";
-import {
-    createListQuery,
-    CmsEntriesListQueryVariables,
-    CmsEntriesListQueryResponse
-} from "~/admin/graphql/contentEntries";
-import { useQuery } from "~/admin/hooks";
 import { useContentEntries } from "./useContentEntries";
-import { CmsEditorContentEntry, CmsMetaResponse } from "~/types";
+import { CmsContentEntry } from "~/types";
+import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
+import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
+import { CMS_ENTRY_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
+import { ListMeta } from "@webiny/app-aco/types";
+import {
+    transformCmsContentEntriesToRecordEntries,
+    transformFolderItemsToFolderEntries
+} from "~/utils/acoRecordTransform";
+import { FolderEntry, RecordEntry } from "~/admin/components/ContentEntries/Table/types";
 
 interface UpdateSearchCallableParams {
-    filter: string;
+    search: string;
     query: URLSearchParams;
 }
 interface UpdateSearchCallable {
     (params: UpdateSearchCallableParams): void;
 }
 
-export function useContentEntriesList() {
-    const { contentModel, listQueryVariables, setListQueryVariables, sorters, canCreate } =
-        useContentEntries();
+interface UseContentEntries {
+    folders: FolderEntry[];
+    hideFilters: () => void;
+    isListLoading: boolean;
+    isListLoadingMore: boolean;
+    isSearch: boolean;
+    listMoreRecords: () => void;
+    listTitle?: string;
+    meta: ListMeta;
+    records: RecordEntry[];
+    search: string;
+    setSearch: (value: string) => void;
+    setSorting: OnSortingChange;
+    showFilters: () => void;
+    showingFilters: boolean;
+    sorting: Sorting;
+    setFilters: (data: Record<string, any>) => void;
+}
 
-    const [loadMoreLoading, setLoadMoreLoading] = useState<boolean>(false);
-    const [filter, setFilter] = useState<string>("");
-
+export const useContentEntriesList = (): UseContentEntries => {
     const { history } = useRouter();
-    const baseUrl = `/cms/content-entries/${contentModel.modelId}`;
+    const { contentModel } = useContentEntries();
+    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
 
-    // Get entry ID and search query (if any)
+    const {
+        folders: initialFolders,
+        isListLoading,
+        isListLoadingMore,
+        isSearch,
+        listMoreRecords,
+        listTitle,
+        meta,
+        records: initialRecords,
+        setSearchQuery,
+        setListSort,
+        setFilters,
+        showFilters,
+        hideFilters,
+        showingFilters
+    } = useAcoList();
+
+    const [sorting, setSorting] = useState<Sorting>([]);
+    const [search, setSearch] = useState<string>("");
     const query = new URLSearchParams(location.search);
-    const id = query.get("id");
-    const searchQuery = query.get("search");
+    const searchQuery = query.get("search") || "";
+    const baseUrl = `${CMS_ENTRY_LIST_LINK}/${contentModel.modelId}`;
+
+    // Search-related logics: update `searchQuery` state and querystring
     const updateSearch = useCallback(
-        debounce<UpdateSearchCallable>(({ filter, query }) => {
-            const search = query.get("search");
-            if (typeof search !== "string" && !filter) {
+        debounce<UpdateSearchCallable>(({ search, query }) => {
+            const searchQuery = query.get("search");
+
+            if (typeof searchQuery !== "string" && !search) {
                 return;
             }
 
-            // We use the title field with the "contains" operator for doing basic searches.
-            const searchField = contentModel.titleFieldId + "_contains";
-            setListQueryVariables(prev => {
-                const next = cloneDeep(prev);
-                if (filter) {
-                    set(next, `where.${searchField}`, filter);
+            if (searchQuery !== search) {
+                setSearchQuery(search);
+
+                if (!search) {
+                    // In case of empty `search` - remove it from `querystring`
+                    query.delete("search");
                 } else {
-                    unset(next, `where.${searchField}`);
+                    // Otherwise, add it to `querystring`
+                    query.set("search", search);
                 }
-
-                return next;
-            });
-
-            if (search !== filter) {
-                query.set("search", filter);
                 history.push(`${baseUrl}?${query.toString()}`);
             }
-        }, 250),
-        [baseUrl]
+        }, 500),
+        [baseUrl, currentFolderId]
     );
 
-    // Set "filter" from search "query" on page load.
+    // Set "search" from search "query" on page load.
     useEffect(() => {
-        if (searchQuery) {
-            setFilter(searchQuery);
+        setSearch(searchQuery);
+    }, [baseUrl, currentFolderId, searchQuery]);
+
+    // When "search" changes, trigger search-related logics
+    useEffect(() => {
+        updateSearch({ search, query });
+    }, [search]);
+
+    const records = useMemo(() => {
+        return transformCmsContentEntriesToRecordEntries(
+            initialRecords as unknown as CmsContentEntry[]
+        );
+    }, [initialRecords]);
+
+    const folders = useMemo(() => {
+        return transformFolderItemsToFolderEntries(initialFolders);
+    }, [initialFolders]);
+
+    useEffect(() => {
+        if (!sorting?.length) {
+            return;
         }
-    }, [baseUrl, searchQuery]);
-
-    // When filter changes, run GQL query
-    useEffect(() => updateSearch({ filter, query }), [baseUrl, filter]);
-
-    // Generate a query based on current content model
-    const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
-    const { data, loading, fetchMore } = useQuery<
-        CmsEntriesListQueryResponse,
-        CmsEntriesListQueryVariables
-    >(LIST_QUERY, { variables: listQueryVariables, fetchPolicy: "network-only" });
-
-    const onCreate = useCallback(() => {
-        history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
-    }, [contentModel]);
-
-    const filterByStatus = useCallback((entries: CmsEditorContentEntry[], status?: string) => {
-        if (!status || status === "all") {
-            return entries;
+        const sort = createSort(sorting);
+        if (!sort) {
+            return;
         }
-        return entries.filter(item => item.meta.status === status);
-    }, []);
-
-    // Load more entries on scroll
-    const loadMore = useCallback((): void => {
-        const meta = get(data, "content.meta", {}) as unknown as CmsMetaResponse;
-        if (meta.hasMoreItems) {
-            setLoadMoreLoading(true);
-            fetchMore({
-                variables: {
-                    after: meta.cursor
-                },
-                updateQuery: (prev: CmsEntriesListQueryResponse, result) => {
-                    if (!result || !result.fetchMoreResult) {
-                        return prev;
-                    }
-                    const fetchMoreResult = result.fetchMoreResult;
-
-                    const next = { ...fetchMoreResult };
-
-                    next.content.data = [...prev.content.data, ...fetchMoreResult.content.data];
-                    setLoadMoreLoading(false);
-                    return next;
-                }
-            });
-        }
-    }, [data]);
-
-    const editEntry = useCallback(
-        (entry: CmsEditorContentEntry) => () => {
-            history.push(
-                `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(entry.id)}`
-            );
-        },
-        [contentModel.modelId]
-    );
+        setListSort(sort);
+    }, [sorting]);
 
     return {
-        contentModel,
-        listQueryVariables,
-        setListQueryVariables,
-        sorters,
-        id,
-        loading,
-        data: filterByStatus(get(data, "content.data", []), listQueryVariables.status),
-        loadMore,
-        loadMoreLoading,
-        canCreate,
-        onCreate,
-        filter,
-        setFilter,
-        editEntry
+        folders,
+        isListLoading,
+        isListLoadingMore,
+        isSearch,
+        listTitle,
+        listMoreRecords,
+        meta,
+        records,
+        search,
+        setSearch,
+        sorting,
+        setSorting,
+        showingFilters,
+        showFilters,
+        hideFilters,
+        setFilters
     };
-}
+};

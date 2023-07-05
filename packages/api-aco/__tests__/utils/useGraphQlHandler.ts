@@ -5,9 +5,7 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { createHandler } from "@webiny/handler-aws/gateway";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-
 import { createTenancyAndSecurity } from "./tenancySecurity";
-
 import {
     CREATE_FOLDER,
     DELETE_FOLDER,
@@ -21,10 +19,14 @@ import {
     GET_RECORD,
     LIST_RECORDS,
     LIST_TAGS,
+    MOVE_RECORD,
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
 
 import { createAco } from "~/index";
+import { createIdentity } from "./identity";
+import { getIntrospectionQuery } from "graphql";
+import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 
@@ -56,7 +58,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
                 permissions,
-                identity
+                identity: identity === undefined ? createIdentity() : identity
             }),
             createI18NContext(),
             ...i18nStorage.storageOperations,
@@ -109,6 +111,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async getFolder(variables = {}) {
             return invoke({ body: { query: GET_FOLDER, variables } });
+        },
+        async getAppModel(variables: { id: string }) {
+            return invoke({ body: { query: GET_APP_MODEL, variables } });
         }
     };
 
@@ -119,17 +124,20 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         async updateRecord(variables = {}) {
             return invoke({ body: { query: UPDATE_RECORD, variables } });
         },
+        async moveRecord(variables = {}) {
+            return invoke({ body: { query: MOVE_RECORD, variables } });
+        },
         async deleteRecord(variables = {}) {
             return invoke({ body: { query: DELETE_RECORD, variables } });
         },
         async listRecords(variables = {}) {
             return invoke({ body: { query: LIST_RECORDS, variables } });
         },
-        async listTags(variables = {}) {
-            return invoke({ body: { query: LIST_TAGS, variables } });
-        },
         async getRecord(variables = {}) {
             return invoke({ body: { query: GET_RECORD, variables } });
+        },
+        async listTags(variables = {}) {
+            return invoke({ body: { query: LIST_TAGS, variables } });
         }
     };
 
@@ -138,6 +146,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         handler,
         invoke,
         aco,
-        search
+        search,
+        async introspect() {
+            return invoke({
+                body: {
+                    query: getIntrospectionQuery()
+                }
+            });
+        }
     };
 };

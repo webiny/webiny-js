@@ -30,7 +30,10 @@ function FloatingLinkEditor({
 }): JSX.Element {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [linkUrl, setLinkUrl] = useState("");
+    const [linkUrl, setLinkUrl] = useState<{ url: string; target: string | null }>({
+        url: "",
+        target: null
+    });
     const [isEditMode, setEditMode] = useState(false);
     const [lastSelection, setLastSelection] = useState<
         RangeSelection | GridSelection | NodeSelection | null
@@ -42,11 +45,11 @@ function FloatingLinkEditor({
             const node = getSelectedNode(selection);
             const parent = node.getParent();
             if ($isLinkNode(parent)) {
-                setLinkUrl(parent.getURL());
+                setLinkUrl({ url: parent.getURL(), target: parent.getTarget() });
             } else if ($isLinkNode(node)) {
-                setLinkUrl(node.getURL());
+                setLinkUrl({ url: node.getURL(), target: node.getTarget() });
             } else {
-                setLinkUrl("");
+                setLinkUrl({ url: "", target: null });
             }
         }
         const editorElem = editorRef.current;
@@ -85,7 +88,7 @@ function FloatingLinkEditor({
             }
             setLastSelection(null);
             setEditMode(false);
-            setLinkUrl("");
+            setLinkUrl({ url: "", target: null });
         }
 
         return true;
@@ -154,36 +157,52 @@ function FloatingLinkEditor({
     return (
         <div ref={editorRef} className="link-editor">
             {isEditMode ? (
-                <input
-                    ref={inputRef}
-                    className="link-input"
-                    value={linkUrl}
-                    onChange={event => {
-                        setLinkUrl(event.target.value);
-                    }}
-                    onKeyDown={event => {
-                        if (event.key === "Enter") {
-                            event.preventDefault();
-                            if (lastSelection !== null) {
-                                if (linkUrl !== "") {
-                                    editor.dispatchCommand(
-                                        TOGGLE_LINK_COMMAND,
-                                        sanitizeUrl(linkUrl)
-                                    );
+                <>
+                    <div className={"link-editor-target-checkbox"}>
+                        <input
+                            type={"checkbox"}
+                            checked={linkUrl.target === "_blank"}
+                            onChange={() =>
+                                setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
+                            }
+                        />{" "}
+                        <span>Open in new page</span>
+                    </div>
+                    <input
+                        ref={inputRef}
+                        className="link-input"
+                        value={linkUrl.url}
+                        onChange={event => {
+                            setLinkUrl({ url: event.target.value, target: null });
+                        }}
+                        onKeyDown={event => {
+                            if (event.key === "Enter") {
+                                event.preventDefault();
+                                if (lastSelection !== null) {
+                                    if (linkUrl.url !== "") {
+                                        editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
+                                            url: sanitizeUrl(linkUrl.url),
+                                            target: linkUrl.target
+                                        });
+                                    }
+                                    setEditMode(false);
                                 }
+                            } else if (event.key === "Escape") {
+                                event.preventDefault();
                                 setEditMode(false);
                             }
-                        } else if (event.key === "Escape") {
-                            event.preventDefault();
-                            setEditMode(false);
-                        }
-                    }}
-                />
+                        }}
+                    />
+                </>
             ) : (
                 <>
+                    <div className={"link-editor-target-checkbox"}>
+                        <input type={"checkbox"} checked={linkUrl.target === "_blank"} readOnly />{" "}
+                        <span>Open in new page</span>
+                    </div>
                     <div className="link-input">
-                        <a href={linkUrl} target="_blank" rel="noopener noreferrer">
-                            {linkUrl}
+                        <a href={linkUrl.url} target="_blank" rel="noopener noreferrer">
+                            {linkUrl.url}
                         </a>
                         <div
                             className="link-edit"
@@ -204,7 +223,7 @@ function FloatingLinkEditor({
                             }}
                         />
                     </div>
-                    <LinkPreview url={linkUrl} />
+                    <LinkPreview url={linkUrl.url} />
                 </>
             )}
         </div>

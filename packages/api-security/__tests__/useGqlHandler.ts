@@ -1,5 +1,4 @@
-import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import groupAuthorization from "~/plugins/groupAuthorization";
+import tenantLinkAuthorization from "~/plugins/tenantLinkAuthorization";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -47,8 +46,6 @@ export default (opts: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
-            createWcpContext(),
-            createWcpGraphQL(),
             graphqlHandlerPlugins(),
             createTenancyContext({
                 storageOperations: tenancyStorage.storageOperations
@@ -60,7 +57,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             triggerAuthentication(),
             customAuthenticator(),
             customGroupAuthorizer(),
-            groupAuthorization({ identityType: "admin" }),
+            tenantLinkAuthorization({ identityType: "admin" }),
             opts.plugins
         ].filter(Boolean) as any
     });

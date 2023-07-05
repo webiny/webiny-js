@@ -17,12 +17,12 @@ export const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
 
 export const identityA: SecurityIdentity = {
     id: "12345678",
-    type: "test",
+    type: "admin",
     displayName: "John Doe"
 };
 
 export const identityB: SecurityIdentity = {
     id: "87654321",
-    type: "test",
+    type: "admin",
     displayName: "Jane Doe"
 };

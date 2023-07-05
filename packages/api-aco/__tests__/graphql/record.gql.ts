@@ -7,7 +7,17 @@ const SEARCH_DATA_FIELD = /* GraphQL */ `
         location {
             folderId
         }
-        data
+        data {
+            someText
+            identity {
+                id
+                displayName
+                type
+            }
+            customCreatedOn
+            customVersion
+            customLocked
+        }
         tags
         createdBy {
             id
@@ -41,9 +51,9 @@ const LIST_META_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_RECORD = /* GraphQL */ `
-    mutation CreateRecord($data: SearchRecordCreateInput!) {
+    mutation CreateRecord($data: AcoSearchRecordWebinyCreateInput!) {
         search {
-            createRecord(data: $data) {
+            createRecord: createAcoSearchRecordWebiny(data: $data) {
                 data ${SEARCH_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -52,10 +62,21 @@ export const CREATE_RECORD = /* GraphQL */ `
 `;
 
 export const UPDATE_RECORD = /* GraphQL */ `
-    mutation UpdateRecord($id: ID!, $data: SearchRecordUpdateInput!) {
+    mutation UpdateRecord($id: ID!, $data: AcoSearchRecordWebinyUpdateInput!) {
         search {
-            updateRecord(id: $id, data: $data) {
+            updateRecord: updateAcoSearchRecordWebiny(id: $id, data: $data) {
                 data ${SEARCH_DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const MOVE_RECORD = /* GraphQL */ `
+    mutation MoveRecord($id: ID!, $folderId: ID!) {
+        search {
+            moveRecord: moveAcoSearchRecordWebiny(id: $id, folderId: $folderId) {
+                data
                 error ${ERROR_FIELD}
             }
         }
@@ -65,7 +86,7 @@ export const UPDATE_RECORD = /* GraphQL */ `
 export const DELETE_RECORD = /* GraphQL */ `
     mutation DeleteRecord($id: ID!) {
         search {
-            deleteRecord(id: $id) {
+            deleteRecord: deleteAcoSearchRecordWebiny(id: $id) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -74,9 +95,9 @@ export const DELETE_RECORD = /* GraphQL */ `
 `;
 
 export const LIST_RECORDS = /* GraphQL */ `
-    query ListRecords($where: SearchRecordListWhereInput, $search: String, $limit: Int, $after: String, $sort: AcoSort) {
+    query ListRecords($where: AcoSearchRecordWebinyListWhereInput, $search: String, $limit: Int, $after: String, $sort: [AcoSearchRecordWebinyListSorter!]) {
         search {
-            listRecords(where: $where, search: $search, limit: $limit, after: $after, sort: $sort) {
+            listRecords: listAcoSearchRecordWebiny(where: $where, search: $search, limit: $limit, after: $after, sort: $sort) {
                 data ${SEARCH_DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}
@@ -88,7 +109,7 @@ export const LIST_RECORDS = /* GraphQL */ `
 export const GET_RECORD = /* GraphQL */ `
     query GetRecord($id: ID!) {
         search {
-            getRecord(id: $id ) {
+            getRecord: getAcoSearchRecordWebiny(id: $id ) {
                 data ${SEARCH_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -97,9 +118,9 @@ export const GET_RECORD = /* GraphQL */ `
 `;
 
 export const LIST_TAGS = /* GraphQL */ `
-    query ListTags($where: SearchRecordTagListWhereInput) {
+    query ListTags($where: AcoSearchRecordTagListWhereInput) {
         search {
-            listTags(where: $where) {
+            listTags: listAcoSearchRecordWebinyTags(where: $where) {
                 data ${TAG_DATA_FIELD}
                 meta ${LIST_META_FIELD}
                 error ${ERROR_FIELD}

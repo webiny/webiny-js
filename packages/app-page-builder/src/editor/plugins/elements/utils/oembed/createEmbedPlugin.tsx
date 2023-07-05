@@ -88,7 +88,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
         },
         render(props) {
             if (config.render) {
-                return config.render({ element: props.element, embedPluginConfig: config });
+                return config.render({ ...props, embedPluginConfig: config });
             }
 
             return <OEmbed element={props.element} {...(config.oembed || {})} />;

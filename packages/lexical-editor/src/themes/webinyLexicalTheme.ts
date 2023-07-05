@@ -93,5 +93,8 @@ export const webinyEditorTheme: WebinyEditorTheme = {
         underline: "WebinyLexical__textUnderline",
         underlineStrikethrough: "WebinyLexical__textUnderlineStrikethrough"
     },
-    fontColorText: "WebinyLexical__fontColorText"
+    fontColorText: "WebinyLexical__fontColorText",
+    image: "editor-image",
+    indent: "PlaygroundEditorTheme__indent",
+    inlineImage: "inline-editor-image"
 };

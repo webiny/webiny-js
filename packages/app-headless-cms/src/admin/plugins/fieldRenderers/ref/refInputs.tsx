@@ -1,5 +1,5 @@
 import React from "react";
-import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import ContentEntriesMultiAutocomplete from "./components/ContentEntriesMultiAutoComplete";
 import { NewRefEntryDialogContextProvider } from "./hooks/useNewRefEntryDialog";
 
@@ -10,7 +10,7 @@ const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const getKey = (
     field: CmsModelField,
-    bind: BindComponentRenderProp<string, CmsEditorContentEntry>
+    bind: BindComponentRenderProp<string, CmsContentEntry>
 ): string => {
     return bind.form.data.id + "." + field.fieldId;
 };

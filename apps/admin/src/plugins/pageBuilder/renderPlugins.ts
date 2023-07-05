@@ -23,6 +23,8 @@ import accordion from "@webiny/app-page-builder/render/plugins/elements/accordio
 import accordionItem from "@webiny/app-page-builder/render/plugins/elements/accordionItem";
 import tabs from "@webiny/app-page-builder/render/plugins/elements/tabs";
 import tab from "@webiny/app-page-builder/render/plugins/elements/tab";
+import carousel from "@webiny/app-page-builder/render/plugins/elements/carousel";
+import carouselElement from "@webiny/app-page-builder/render/plugins/elements/carouselElement";
 // Page settings
 import pageSettings from "@webiny/app-page-builder/render/plugins/pageSettings";
 // Element settings
@@ -67,6 +69,8 @@ export default [
     accordionItem(),
     tabs(),
     tab(),
+    carousel(),
+    carouselElement(),
     // Page settings
     pageSettings(),
     // Element settings

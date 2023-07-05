@@ -39,10 +39,6 @@ const FieldHandle = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-const FormAccordionContent = styled("div")({
-    marginLeft: -40
-});
-
 const accordionItem = css({
     "&.webiny-ui-accordion-item": {
         ".webiny-ui-accordion-item__list-item": {
@@ -131,7 +127,7 @@ export const Fields: React.FC<FieldsProps> = ({ onFieldDragStart }) => {
                         className={accordionItem}
                         data-testid={group.name}
                     >
-                        <FormAccordionContent>
+                        <>
                             {!group.fields.length && (
                                 <span>No fields are available at the moment!</span>
                             )}
@@ -144,7 +140,7 @@ export const Fields: React.FC<FieldsProps> = ({ onFieldDragStart }) => {
                                     />
                                 );
                             })}
-                        </FormAccordionContent>
+                        </>
                     </AccordionItem>
                 ))}
             </Accordion>

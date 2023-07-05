@@ -107,6 +107,49 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
+        wbyAco_location: {
+            type: "object",
+            systemField: true,
+            searchable: true,
+            sortable: true,
+            field: createSystemField({
+                storageId: "location",
+                fieldId: "wbyAco_location",
+                type: "object",
+                settings: {
+                    fields: [
+                        {
+                            id: "folderId",
+                            fieldId: "folderId",
+                            storageId: "folderId",
+                            type: "text",
+                            label: "Folder ID"
+                        }
+                    ]
+                }
+            }),
+            parents: []
+        },
+        "wbyAco_location.folderId": {
+            type: "text",
+            systemField: true,
+            searchable: true,
+            sortable: true,
+            field: createSystemField({
+                id: "folderId",
+                fieldId: "folderId",
+                storageId: "folderId",
+                type: "text",
+                label: "Folder ID"
+            }),
+            parents: [
+                {
+                    fieldId: "wbyAco_location",
+                    type: "object",
+                    storageId: "location"
+                }
+            ]
+        },
         version: {
             type: "number",
             unmappedType: undefined,

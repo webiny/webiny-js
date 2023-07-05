@@ -118,7 +118,7 @@ export const createSettingsStorageOperations = (
         const { settings } = params;
         const keys = createKeys(settings);
         try {
-            await entity.delete();
+            await entity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete the settings record by given keys.",

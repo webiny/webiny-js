@@ -108,6 +108,7 @@ export const createReadSDL: CreateReadSDL = ({
                 sort: [${singularName}ListSorter]
                 limit: Int
                 after: String
+                search: String
             ): ${singularName}ListResponse
         }
     `;

@@ -1,29 +1,28 @@
 import { useContext, useEffect, useMemo } from "react";
 import { FoldersContext } from "~/contexts/folders";
-import { FolderItem } from "~/types";
 
-export const useFolders = (type: string) => {
+export const useFolders = () => {
     const context = useContext(FoldersContext);
     if (!context) {
         throw new Error("useFolders must be used within a FoldersProvider");
     }
 
-    const { folders, loading, listFolders, getFolder, createFolder, updateFolder, deleteFolder } =
-        context;
+    const { folders, loading, listFolders, ...other } = context;
 
     useEffect(() => {
         /**
          * On first mount, call `listFolders`, which will either issue a network request, or load folders from cache.
          * We don't need to store the result of it to any local state; that is managed by the context provider.
          *
-         * IMPORTANT: we check if the folders[type] array exists: the hook can be used from multiple components and
+         * IMPORTANT: we check if the folders array exists: the hook can be used from multiple components and
          * fetch the outdated list from Apollo Cache. Since the state is managed locally, we fetch the folders only
          * at the first mount.
          */
-        if (!folders[type]) {
-            listFolders(type);
+        if (folders) {
+            return;
         }
-    }, [type]);
+        listFolders();
+    }, []);
 
     return useMemo(
         () => ({
@@ -33,20 +32,9 @@ export const useFolders = (type: string) => {
              * fetching of `folders`, which is managed by the FoldersContext.
              */
             loading,
-            folders: folders[type],
-            getFolder(id: string) {
-                return getFolder(id);
-            },
-            createFolder(folder: Omit<FolderItem, "id">) {
-                return createFolder(folder);
-            },
-            updateFolder(folder: FolderItem) {
-                return updateFolder(folder);
-            },
-            deleteFolder(folder: FolderItem) {
-                return deleteFolder(folder);
-            }
+            folders,
+            ...other
         }),
-        [folders[type], loading]
+        [folders, loading]
     );
 };

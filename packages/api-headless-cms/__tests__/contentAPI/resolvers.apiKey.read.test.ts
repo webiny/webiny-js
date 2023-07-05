@@ -241,7 +241,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `Missing permission "cms.contentEntry".`
+                            reason: `Not allowed to perform "read" on "cms.contentEntry".`
                         }
                     }
                 }
@@ -286,7 +286,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `Missing permission "cms.contentEntry".`
+                            reason: `Not allowed to perform "read" on "cms.contentEntry".`
                         }
                     },
                     meta: null
