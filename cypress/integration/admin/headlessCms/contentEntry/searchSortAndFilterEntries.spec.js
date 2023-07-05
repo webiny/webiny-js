@@ -4,8 +4,6 @@ import upperFirst from "lodash/upperFirst";
 import camelCase from "lodash/camelCase";
 import { CONTENT_MODEL_DATA } from "../mocks";
 
-const NEWEST_TO_OLDEST = "savedOn_DESC";
-const OLDEST_TO_NEWEST = "savedOn_ASC";
 const STATUS = {
     draft: "draft",
     published: "published",
@@ -20,22 +18,24 @@ const createContentEntry = ({ model, entries }) => {
     entries.push({ title: newEntryTitle });
 
     // a) Click on "New Entry" button
-    cy.findAllByTestId("new-record-button").first().click();
+    cy.findAllByTestId("new-entry-button").first().click({ force: true });
     // b) Fill entry details
     cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
     cy.findByTestId("fr.input.number.Edition").type(newEntryEdition.toString());
     // c) Save entry
-    cy.findByTestId("cms-content-save-content-button").click();
+    cy.findByTestId("cms-content-save-content-button").click({ force: true });
     // d) Verify success message
     cy.findByText(`${model.name} entry created successfully!`).should("exist");
     cy.get(".react-spinner-material").should("not.exist");
+    /**
+     * As ACO was introduced, there is a new step - navigate to root folder
+     */
+    cy.acoNavigateToRootFolder();
 };
 
 const deleteContentEntry = () => {
     // Select entry
-    cy.findByTestId("default-data-list").within(() => {
-        cy.get(".mdc-list-item").first().click();
-    });
+    cy.get("div.cms-data-list-record-title").first().click({ force: true });
     // Delete the entry
     cy.findByTestId("cms.content-form.header.more-options").click();
     cy.findByTestId("cms.content-form.header.delete").click();
@@ -46,6 +46,10 @@ const deleteContentEntry = () => {
     // Verify
     cy.findByText(/deleted successfully!/i).should("exist");
     cy.get(".react-spinner-material").should("not.exist");
+    /**
+     * As ACO was introduced, there is a new step - navigate to root folder
+     */
+    cy.acoNavigateToRootFolder();
 };
 
 context("Search, Sort and Filter Content Entries", () => {
@@ -64,6 +68,7 @@ context("Search, Sort and Filter Content Entries", () => {
             createdGroup = group;
             cy.cmsCreateContentModel({
                 data: {
+                    ...CONTENT_MODEL_DATA,
                     name: newModel,
                     modelId: kebabCase(newModel.toLowerCase()),
                     singularApiName,
@@ -71,18 +76,13 @@ context("Search, Sort and Filter Content Entries", () => {
                     group: group.id,
                     description: "Testing 123"
                 }
-            }).then(data => {
-                cy.cmsUpdateContentModel({
-                    modelId: data.modelId,
-                    data: CONTENT_MODEL_DATA
-                }).then(model => {
-                    createdModel = model;
-                    cy.visit(`/cms/content-entries/${model.modelId}`);
-                    // Create few entries
-                    for (let i = 0; i < totalEntries; i++) {
-                        createContentEntry({ model, entries });
-                    }
-                });
+            }).then(model => {
+                createdModel = model;
+                cy.visit(`/cms/content-entries/${model.modelId}?folderId=root`);
+                // Create few entries
+                for (let i = 0; i < totalEntries; i++) {
+                    createContentEntry({ model, entries });
+                }
             });
         });
     });
@@ -91,16 +91,10 @@ context("Search, Sort and Filter Content Entries", () => {
 
     after(() => {
         cy.login();
-        cy.visit(`/cms/content-entries/${createdModel.modelId}`);
-        cy.findByTestId("default-data-list.filter").click();
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").first().select("savedOn_DESC");
-            cy.wait(500);
-        });
-        cy.findByTestId("default-data-list.filter").click();
+        cy.visit(`/cms/content-entries/${createdModel.modelId}?folderId=root`);
         // Delete all entries
         for (let i = 0; i < totalEntries; i++) {
-            deleteContentEntry({});
+            deleteContentEntry();
         }
 
         cy.waitUntil(
@@ -122,65 +116,76 @@ context("Search, Sort and Filter Content Entries", () => {
         );
     });
 
-    // TODO - fix this test
-    it.skip("should search entries", () => {
+    it("should search entries", () => {
         // Should show "no records found" when searching for non existing entry
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search*/i).type("NON_EXISTING_ENTRY");
+            cy.get(".search__input").wait(200).clear().wait(100);
+            cy.get(".search__input").wait(200).type("NON_EXISTING_ENTRY");
             cy.wait(500);
         });
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.findByText(/no records found./i).should("exist");
+        cy.get(".title__container").within(() => {
+            cy.findByText("No results found.").should("exist");
         });
 
         // Should able to search for a specific entry
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search*/i)
-                .clear()
-                .type(entries[0].title);
+            cy.get(".search__input").wait(100).clear().wait(100);
+            cy.get(".search__input").wait(100).type(entries[0].title);
             cy.wait(500);
         });
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.findByText(entries[0].title).should("exist");
-        });
+
+        cy.get(".cms-data-list-record-title").should("have.length", 1);
+        cy.get(".cms-data-list-record-title")
+            .first()
+            .within(() => {
+                cy.findByText(entries[0].title).should("exist");
+            });
 
         // Clear search
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search*/i).clear();
+            cy.get(".search__input").wait(100).clear().wait(100);
         });
     });
 
-    // TODO - fix this test
-    it.skip("should sort entries", () => {
-        cy.visit(`/cms/content-entries/${createdModel.modelId}`);
-        // Sort groups by "Newest to Oldest"
-        cy.findByTestId("default-data-list.filter").click();
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").first().select(NEWEST_TO_OLDEST);
-            cy.wait(500);
+    it("should sort entries", () => {
+        cy.visit(`/cms/content-entries/${createdModel.modelId}?folderId=root`);
+        // Loading should not be visible
+        cy.get(".react-spinner-material").should("not.exist");
+        // Initial click sorts ASC
+        cy.get(".cms-aco-list-savedOn").within(() => {
+            cy.get("div").first().click();
         });
-        cy.findByTestId("default-data-list.filter").click();
+        cy.wait(500);
+        // Loading should not be visible
+        cy.get(".react-spinner-material").should("not.exist");
+        // Then we sort DESC
+        cy.get(".cms-aco-list-savedOn").within(() => {
+            cy.get("div").first().click();
+        });
+        cy.wait(500);
+        // Loading should not be visible
+        cy.get(".react-spinner-material").should("not.exist");
 
         // Last entry should be on the top
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get(".cms-data-list-record-title")
                 .first()
                 .within(() => {
                     cy.findByText(entries[totalEntries - 1].title).should("exist");
                 });
         });
 
-        // Sort groups by "Oldest to Newest"
-        cy.findByTestId("default-data-list.filter").click();
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").first().select(OLDEST_TO_NEWEST);
-            cy.wait(500);
+        // Sort by ASC
+        cy.get(".cms-aco-list-savedOn").within(() => {
+            cy.get("div").first().click();
         });
-        cy.findByTestId("default-data-list.filter").click();
+        cy.wait(500);
+        // Loading should not be visible
+        cy.get(".react-spinner-material").should("not.exist");
 
         // First entry should be on the top
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get(".cms-data-list-record-title")
                 .first()
                 .within(() => {
                     cy.findByText(entries[0].title).should("exist");
@@ -188,33 +193,37 @@ context("Search, Sort and Filter Content Entries", () => {
         });
     });
 
-    // TODO - fix this test
-    it.skip("should filter entries by status", () => {
-        cy.visit(`/cms/content-entries/${createdModel.modelId}`);
-        // Get all items with "draft" status
-        cy.findByTestId("default-data-list.filter").click();
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").last().select(STATUS.draft);
+    it("should filter entries by status", () => {
+        cy.visit(`/cms/content-entries/${createdModel.modelId}?folderId=root`);
+
+        // open the filters bar
+        cy.findByTestId("cms.list-entries.toggle-filters").click();
+
+        cy.findByTestId("filters-container").within(() => {
+            cy.get("select").first().select(STATUS.draft);
             cy.wait(500);
         });
-        cy.findByTestId("default-data-list.filter").click();
+
+        // Loading should not be visible
+        cy.get(".react-spinner-material").should("not.exist");
 
         // Should contain all entries
-        cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item").siblings().should("have.length", entries.length);
-        });
+        cy.get(".cms-data-list-record-title").should("have.length", entries.length);
 
         // Get all items with "published" status
-        cy.findByTestId("default-data-list.filter").click();
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").last().select(STATUS.published);
+
+        cy.findByTestId("filters-container").within(() => {
+            cy.get("select").first().select(STATUS.published);
             cy.wait(500);
         });
-        cy.findByTestId("default-data-list.filter").click();
+
+        // Loading should not be visible
+        cy.get(".react-spinner-material").should("not.exist");
 
         // Should contain no entries
-        cy.findByTestId("ui.list.data-list").within(() => {
-            cy.findByText(/no records found./i).should("exist");
+        cy.get(".cms-data-list-record-title").should("have.length", 0);
+        cy.get(".title__container").within(() => {
+            cy.findByText("No results found.").should("exist");
         });
     });
 });
