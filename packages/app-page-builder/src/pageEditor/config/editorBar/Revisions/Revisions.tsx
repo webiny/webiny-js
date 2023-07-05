@@ -10,7 +10,6 @@ import { RevisionItemAtomType } from "~/pageEditor/state";
 import { createComponentPlugin } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
-import cloneDeep from "lodash/cloneDeep";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -44,10 +43,6 @@ const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
 const Revisions: React.FC = () => {
     const [revisions] = useRevisions();
     const { navigateToPageEditor } = useNavigatePage();
-    // Here we sort revisions so the latest revision version will appear on the top of the list.
-    // Also we use lodash fucntion cloneDeep because revisions are read only, so in order to use Array.prototype.sort method without causing errors.
-    // We need to copy revisions and then we can use Array.prototype.sort method.
-    const modifiedRevisions = cloneDeep(revisions).sort((a, b) => b.version - a.version);
 
     return (
         <Menu
@@ -61,7 +56,7 @@ const Revisions: React.FC = () => {
                 </ButtonDefault>
             }
         >
-            {modifiedRevisions.map(rev => {
+            {revisions.map(rev => {
                 const status = getStatus(rev);
                 return (
                     <MenuItem key={rev.id} disabled={status !== RevisionStatusEnum.DRAFT}>

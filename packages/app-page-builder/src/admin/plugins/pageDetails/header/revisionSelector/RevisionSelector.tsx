@@ -76,8 +76,6 @@ const RevisionSelector: React.FC<RevisionSelectorProps> = props => {
     const query = new URLSearchParams(location.search);
 
     const { revisions = [] } = page;
-    // Here we sort revisions so the latest revision version will appear on the top of the list.
-    const modifiedRevisions = revisions.sort((a, b) => b.version - a.version);
 
     return (
         <Menu
@@ -97,7 +95,7 @@ const RevisionSelector: React.FC<RevisionSelectorProps> = props => {
             }
             anchor="bottomLeft"
         >
-            {modifiedRevisions.map(rev => (
+            {revisions.map(rev => (
                 <MenuItem key={rev.id}>
                     <StatusIndicator status={rev.status} />
                     <MenuItemContent>
