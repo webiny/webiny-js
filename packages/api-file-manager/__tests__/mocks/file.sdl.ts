@@ -18,6 +18,7 @@ export default /* GraphQL */ `
         private: Boolean
         width: Number
         height: Number
+        originalKey: String
     }
 
     input FmFile_MetaWhereInput {
@@ -49,6 +50,15 @@ export default /* GraphQL */ `
         height_between: [Number!]
         # there must be two numbers sent in the array
         height_not_between: [Number!]
+        
+        originalKey: String
+        originalKey_not: String
+        originalKey_in: [String]
+        originalKey_not_in: [String]
+        originalKey_contains: String
+        originalKey_not_contains: String
+        originalKey_startsWith: String
+        originalKey_not_startsWith: String
     }
 
     type FmFile_Extensions {
@@ -105,6 +115,7 @@ export default /* GraphQL */ `
         private: Boolean
         width: Number
         height: Number
+        originalKey: String
     }
 
     input FmFile_ExtensionsInput {
