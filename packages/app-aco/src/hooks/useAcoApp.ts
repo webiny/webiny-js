@@ -11,6 +11,7 @@ export const useAcoApp = (): AcoAppProviderContext => {
     return {
         app: context.app,
         folderIdPath: context.folderIdPath,
+        folderIdInPath: context.folderIdInPath,
         model: context.model,
         client: context.client,
         mode: context.mode,

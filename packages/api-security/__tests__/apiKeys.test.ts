@@ -1,6 +1,31 @@
+import { mockCreateGetWcpProjectEnvironment } from "./wcp/aacl/mocks/mockCreateGetWcpProjectEnvironment";
+import { mockCreateGetWcpProjectLicense } from "./wcp/aacl/mocks/mockCreateGetWcpProjectLicense";
 import useGqlHandler from "./useGqlHandler";
 import apiKeyAuthentication from "~/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "~/plugins/apiKeyAuthorization";
+
+jest.mock("@webiny/api-wcp/utils", () => {
+    // The mock returned only mocks the generateServerSeed method.
+    const actual = jest.requireActual("@webiny/api-wcp/utils");
+
+    return {
+        ...actual,
+        getWcpProjectEnvironment: mockCreateGetWcpProjectEnvironment(),
+        wcpFetch: () => ({ error: false })
+    };
+});
+
+jest.mock("@webiny/wcp", () => {
+    // The mock returned only mocks the generateServerSeed method.
+    const actual = jest.requireActual("@webiny/wcp");
+
+    return {
+        ...actual,
+        getWcpProjectLicense: mockCreateGetWcpProjectLicense(license => {
+            license.package.features.advancedAccessControlLayer.enabled = true;
+        })
+    };
+});
 
 describe("Security API Key Test", () => {
     const { install, securityApiKeys } = useGqlHandler();

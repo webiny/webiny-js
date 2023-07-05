@@ -9,8 +9,8 @@ import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import RevisionsList from "./ContentEntry/RevisionsList";
-import Header from "./ContentEntry/header/Header";
 import { useContentEntry } from "./hooks/useContentEntry";
+import { Header } from "~/admin/components/ContentEntryForm/Header";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 
 const t = i18n.namespace("app-headless-cms/admin/content-model-entries/details");

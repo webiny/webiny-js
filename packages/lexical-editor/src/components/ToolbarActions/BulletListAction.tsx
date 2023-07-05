@@ -16,7 +16,7 @@ export const BulletListAction = () => {
     useEffect(() => {
         const isListBulletType = textBlockSelection?.state?.textType === "bullet";
         setIsActive(isListBulletType);
-    }, [isListSelected]);
+    }, [textBlockSelection?.state?.textType, isListSelected]);
 
     const formatBulletList = () => {
         if (!isActive) {

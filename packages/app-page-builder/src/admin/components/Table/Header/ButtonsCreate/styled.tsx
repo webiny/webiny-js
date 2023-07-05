@@ -6,6 +6,11 @@ export const Container = styled("div")`
     align-items: center;
 
     > button {
+        flex-shrink: 0;
         margin-left: 8px;
+    }
+
+    > button:first-of-type {
+        margin-left: 0;
     }
 `;

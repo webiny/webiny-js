@@ -10,15 +10,11 @@ import {
     PageBuilderStorageOperations,
     PageElementProcessor,
     PagesCrud,
-    PageSecurityPermission,
     PageStorageOperationsGetWhereParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListTagsParams,
-    PbContext,
-    PbSecurityPermission
+    PbContext
 } from "~/types";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import normalizePath from "./pages/normalizePath";
 import {
     createPageCreateValidation,
@@ -54,13 +50,13 @@ import {
     zeroPad
 } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
+import { PagesPermissions } from "./permissions/PagesPermissions";
 
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
 
 const DEFAULT_EDITOR = "page-builder";
-const PERMISSION_NAME = "pb.page";
 
 interface DataLoaderGetByIdKey {
     id: string;
@@ -135,12 +131,13 @@ const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
 export interface CreatePageCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    pagesPermissions: PagesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
 
 export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
-    const { context, storageOperations, getLocaleCode, getTenantId } = params;
+    const { context, storageOperations, getLocaleCode, getTenantId, pagesPermissions } = params;
 
     const { compressContent, decompressContent } = createCompression({
         plugins: context.plugins
@@ -292,7 +289,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             return processPageContent(page, pageElementProcessors);
         },
         async createPage(this: PageBuilderContextObject, slug, meta): Promise<any> {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+            await pagesPermissions.ensure({ rwd: "w" });
 
             const category = await this.getCategory(slug);
             if (!category) {
@@ -429,9 +426,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async createPageFrom(this: PageBuilderContextObject, id): Promise<any> {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pagesPermissions.ensure({ rwd: "w" });
 
             const original = await this.getPage(id, {
                 decompress: false
@@ -445,7 +440,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
              * Must not be able to create a new page (revision) from a page of another author.
              */
             const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original, "ownedBy");
+
+            await pagesPermissions.ensure({ owns: original?.createdBy });
 
             const latestPage = await storageOperations.pages.get({
                 where: {
@@ -520,9 +516,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async updatePage(id, input): Promise<any> {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pagesPermissions.ensure({ rwd: "w" });
+
             const original = await storageOperations.pages.get({
                 where: {
                     id,
@@ -537,8 +532,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 throw new WebinyError(`Cannot update page because it's locked.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original, "ownedBy");
+            await pagesPermissions.ensure({ owns: original?.ownedBy });
 
             const result = await createPageUpdateValidation().safeParseAsync(input);
             if (!result.success) {
@@ -627,9 +621,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async deletePage(this: PageBuilderContextObject, id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
+            await pagesPermissions.ensure({ rwd: "d" });
 
             /*
                 ***** Comments left from the old code. These are the steps that need to happen for delete to work properly
@@ -675,8 +667,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
             const { id: pageId } = parseIdentifier(id);
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, page, "ownedBy");
+            await pagesPermissions.ensure({ owns: page.ownedBy });
 
             const settings = await this.getCurrentSettings();
             const pages = settings?.pages || {};
@@ -792,9 +783,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async publishPage(this: PageBuilderContextObject, id: string): Promise<any> {
-            await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
-                pw: "p"
-            });
+            await pagesPermissions.ensure({ pw: "p" });
 
             const original = await this.getPage(id, {
                 decompress: false
@@ -925,9 +914,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async unpublishPage(this: PageBuilderContextObject, id: string): Promise<any> {
-            await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
-                pw: "u"
-            });
+            await pagesPermissions.ensure({ pw: "u" });
 
             const original = await this.getPage(id, {
                 decompress: false
@@ -1015,9 +1002,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
 
         async getPage(id, options): Promise<any> {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+            await pagesPermissions.ensure({ rwd: "r" });
 
             let page: Page | null = null;
 
@@ -1038,8 +1023,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 throw new NotFoundError(`Page not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, page, "ownedBy");
+            await pagesPermissions.ensure({ owns: page.ownedBy });
 
             if (options && options.decompress === false) {
                 return page;
@@ -1138,11 +1122,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
         async listLatestPages(params, options = {}) {
             const { auth } = options;
-            let permission: PbSecurityPermission | null = null;
             if (auth !== false) {
-                permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                    rwd: "r"
-                });
+                await pagesPermissions.ensure({ rwd: "r" });
             }
 
             const {
@@ -1154,11 +1135,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 where: initialWhere = {}
             } = params;
 
-            /**
-             * If users can only manage own records, let's add the special filter.
-             */
             let createdBy: string | undefined = undefined;
-            if (permission && permission.own === true) {
+            if (await pagesPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
                 createdBy = identity.id;
             }

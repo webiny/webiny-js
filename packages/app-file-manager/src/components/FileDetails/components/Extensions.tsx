@@ -1,8 +1,16 @@
-import { CmsModel } from "@webiny/app-headless-cms/types";
+import styled from "@emotion/styled";
 import React, { useMemo } from "react";
+import { CompositionScope } from "@webiny/app-admin";
+import { CmsModel } from "@webiny/app-headless-cms/types";
 import { ModelProvider } from "@webiny/app-headless-cms/admin/components/ModelProvider";
 import { Fields } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/Fields";
 import { Bind, Form, useBind } from "@webiny/form";
+
+const HideEmptyCells = styled.div`
+    .mdc-layout-grid__cell:empty {
+        display: none;
+    }
+`;
 
 interface ExtensionsProps {
     model: CmsModel;
@@ -29,17 +37,21 @@ export const Extensions = ({ model }: ExtensionsProps) => {
     });
 
     return (
-        <ModelProvider model={model}>
-            <Form data={value} onChange={onChange}>
-                {() => (
-                    <Fields
-                        contentModel={model}
-                        Bind={Bind as any}
-                        fields={fields}
-                        layout={layout}
-                    />
-                )}
-            </Form>
-        </ModelProvider>
+        <CompositionScope name={"fm.fileDetails.extensionFields"}>
+            <ModelProvider model={model}>
+                <Form data={value} onChange={onChange}>
+                    {() => (
+                        <HideEmptyCells>
+                            <Fields
+                                contentModel={model}
+                                Bind={Bind as any}
+                                fields={fields}
+                                layout={layout}
+                            />
+                        </HideEmptyCells>
+                    )}
+                </Form>
+            </ModelProvider>
+        </CompositionScope>
     );
 };

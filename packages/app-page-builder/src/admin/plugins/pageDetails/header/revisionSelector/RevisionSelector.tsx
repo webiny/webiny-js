@@ -35,6 +35,7 @@ const statusLabel = css`
 const arrowStyles = css`
     flex-shrink: 0;
     margin-left: auto !important;
+    width: auto !important;
 `;
 
 const menuList = css`

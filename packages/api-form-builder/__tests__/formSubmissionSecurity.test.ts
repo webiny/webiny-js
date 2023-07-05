@@ -181,9 +181,9 @@ describe("Forms Submission Security Test", () => {
             }
         });
 
-        // Create form as Identity B (this guy can only access his own forms)
+        // Create form as Identity B (this user can only access his own forms)
         const handlerB = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "fb.*", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "fb.form", own: true }],
             identity: identityB
         });
 

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import store from "store";
+import { ROOT_FOLDER } from "~/constants";
 
 export interface NavigateFolderContext {
     currentFolderId?: string;
@@ -23,7 +24,7 @@ export interface NavigateFolderProviderProps {
 }
 
 export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
-    folderId,
+    folderId: currentFolderId,
     children,
     createStorageKey,
     ...props
@@ -52,15 +53,23 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
      */
     const navigateToLatestFolder = useCallback(() => {
         const folderId = store.get(createStorageKey());
-        props.navigateToLatestFolder(folderId || "ROOT");
-    }, [createStorageKey, folderId]);
+        /**
+         * We need to check if the stored folderId is the same as the current one or the current one is the root folder.
+         * We must skip the navigation to the latest folder in these cases as it will cause a bug where
+         * a user cannot access a CMS entry or page via the direct URL.
+         */
+        if (folderId === currentFolderId || currentFolderId === ROOT_FOLDER) {
+            return;
+        }
+        props.navigateToLatestFolder(folderId || ROOT_FOLDER);
+    }, [createStorageKey, currentFolderId]);
 
     const navigateToFolder = useCallback(
         (folderId?: string) => {
             setFolderToStorage(folderId);
-            props.navigateToFolder(folderId || "ROOT");
+            props.navigateToFolder(folderId || ROOT_FOLDER);
         },
-        [folderId]
+        [currentFolderId]
     );
 
     const navigateToListHome = () => {
@@ -69,7 +78,7 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
     };
 
     const context: NavigateFolderContext = {
-        currentFolderId: folderId || store.get(createStorageKey()),
+        currentFolderId: currentFolderId || store.get(createStorageKey()),
         setFolderToStorage,
         navigateToListHome,
         navigateToFolder,

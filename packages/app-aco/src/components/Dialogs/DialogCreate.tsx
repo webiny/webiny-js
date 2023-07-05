@@ -14,6 +14,7 @@ import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
 import { DialogContainer, DialogFoldersContainer } from "./styled";
 import { FolderItem } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 interface FolderDialogCreateProps {
     open: boolean;
@@ -32,7 +33,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
 }) => {
     const { loading, createFolder } = useFolders();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [parentId, setParentId] = useState<string>(currentParentId || "ROOT");
+    const [parentId, setParentId] = useState<string>(currentParentId || ROOT_FOLDER);
     const { showSnackbar } = useSnackbar();
 
     const onSubmit: FormOnSubmit<SubmitData> = useCallback(
@@ -40,7 +41,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
             try {
                 await createFolder({
                     ...data,
-                    parentId: parentId === "ROOT" ? null : parentId
+                    parentId: parentId === ROOT_FOLDER ? null : parentId
                 });
                 setDialogOpen(false);
                 showSnackbar(t`Folder created successfully!`);
@@ -53,7 +54,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
 
     useEffect(() => {
         if (currentParentId !== parentId) {
-            setParentId(currentParentId || "ROOT");
+            setParentId(currentParentId || ROOT_FOLDER);
         }
     }, [currentParentId]);
 
@@ -100,7 +101,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
                                 <Cell span={12}>
                                     <Bind
                                         name={"title"}
-                                        validators={[validation.create("required,minLength:3")]}
+                                        validators={[validation.create("required")]}
                                     >
                                         <Input label={t`Title`} onBlur={generateSlug(form)} />
                                     </Bind>
@@ -108,9 +109,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
                                 <Cell span={12}>
                                     <Bind
                                         name={"slug"}
-                                        validators={[
-                                            validation.create("required,minLength:3,slug")
-                                        ]}
+                                        validators={[validation.create("required,slug")]}
                                     >
                                         <Input label={t`Slug`} />
                                     </Bind>

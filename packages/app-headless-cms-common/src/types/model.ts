@@ -1,5 +1,9 @@
 import { CmsModelFieldValidator } from "~/types/validation";
-import { CmsDynamicZoneTemplate, CmsEditorFieldPredefinedValues } from "~/types/index";
+import {
+    CmsDynamicZoneTemplate,
+    CmsEditorFieldPredefinedValues,
+    CmsModelFieldRendererPlugin
+} from "~/types/index";
 import { CmsIdentity } from "~/types/shared";
 
 /**
@@ -32,9 +36,15 @@ export type CmsModelField<T = unknown> = T & {
     multipleValues?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: CmsModelFieldSettings<T>;
-    renderer: {
-        name: string;
-    };
+    renderer:
+        | {
+              name: string;
+          }
+        /**
+         * Use this only for programmatic assignment of renderers.
+         * Since functions cannot be serialized, this can only work via code.
+         */
+        | CmsModelFieldRendererPlugin["renderer"]["render"];
     tags?: string[];
 };
 

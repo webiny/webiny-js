@@ -4,6 +4,10 @@ import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerA
 import { DEFAULT_SCOPE } from "~/constants";
 import { FileTag } from "~/types";
 
+const sortTags = (tags: FileTag[]) => {
+    return tags.sort((a, b) => a.tag.localeCompare(b.tag));
+};
+
 interface UseTagsParams {
     scope?: string;
     own?: boolean;
@@ -12,7 +16,7 @@ interface UseTagsParams {
 export const useTags = ({ scope, own }: UseTagsParams) => {
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
-    const [tags, setTags] = useState<FileTag[]>([]);
+    const [tags, setSortedTags] = useState<FileTag[]>([]);
     const [loading, setLoading] = useState(false);
 
     const getTagsInitialParams = useCallback(
@@ -24,6 +28,10 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
         },
         [scope, own, identity]
     );
+
+    const setTags = useCallback(tags => {
+        setSortedTags(state => sortTags([...state, ...tags]));
+    }, []);
 
     const where = useMemo(() => getTagsInitialParams({ scope, own }), [getTagsInitialParams]);
 
@@ -40,10 +48,7 @@ export const useTags = ({ scope, own }: UseTagsParams) => {
             return;
         }
 
-        setTags(state => {
-            const newTags = tags.map(tag => ({ tag, count: 1 }));
-            return tagsModifier([...state, ...newTags]);
-        });
+        setTags(tagsModifier(tags.map(tag => ({ tag, count: 1 }))));
 
         fileManager.listTags({ where, refetch: true });
     };

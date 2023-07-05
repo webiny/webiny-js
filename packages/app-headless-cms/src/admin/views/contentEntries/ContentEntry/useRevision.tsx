@@ -49,7 +49,7 @@ export interface UseRevisionProps {
 
 export const useRevision = ({ revision }: UseRevisionProps) => {
     const { publishEntryRevision, deleteEntry } = useCms();
-    const { contentModel, entry, setLoading, listQueryVariables } = useContentEntry();
+    const { contentModel, entry, setLoading } = useContentEntry();
 
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -124,8 +124,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         const { error, entry: targetRevision } = await deleteEntry({
                             model: contentModel,
                             entry,
-                            id: id || entry.id,
-                            listQueryVariables
+                            id: id || entry.id
                         });
 
                         setLoading(false);
@@ -149,8 +148,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         const response = await publishEntryRevision({
                             model: contentModel,
                             entry,
-                            id: id || entry.id,
-                            listQueryVariables
+                            id: id || entry.id
                         });
 
                         setLoading(false);

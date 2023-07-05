@@ -2,6 +2,7 @@ import React from "react";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
+
 const t = i18n.ns("app-admin/hooks/use-confirmation-dialog");
 
 interface Params {
@@ -13,8 +14,10 @@ interface Params {
     [key: string]: any;
 }
 
-interface UseConfirmationDialogResponse {
-    showConfirmation: (onAccept: () => void, onCancel?: () => void) => void;
+export type ShowConfirmationOnAccept = (() => void) | (() => Promise<void>);
+
+export interface UseConfirmationDialogResponse {
+    showConfirmation: (onAccept: ShowConfirmationOnAccept, onCancel?: () => void) => void;
 }
 
 const useConfirmationDialog = ({

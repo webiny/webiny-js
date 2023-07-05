@@ -4,14 +4,16 @@ import { createGetAppQuery, GetAppResult, GetAppVariables } from "~/graphql/app.
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
 import { DialogsProvider as DialogsContextProvider } from "../dialogs";
-import { Loader } from "~/components/FolderTree/Loader";
 import { DisplayError } from "./DisplayError";
 import { ApolloClient } from "apollo-client";
 import { NavigateFolderWithRouterProvider } from "~/contexts/navigateFolderWithRouter";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { AcoListProvider } from "~/contexts/acoList";
 
 export interface AcoAppProviderContext {
     app: AcoApp;
     folderIdPath: string;
+    folderIdInPath: string;
     model: AcoModel;
     client: ApolloClient<any>;
     loading: boolean;
@@ -110,6 +112,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
         mode: "aco"
     });
     const folderIdPath = initialFolderIdPath || "location.folderId";
+    const folderIdInPath = folderIdPath + "_in";
 
     /**
      * The APP Provider can operate in two modes:
@@ -209,6 +212,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
         return {
             app: app as AcoApp,
             folderIdPath,
+            folderIdInPath,
             loading,
             client,
             model: model as AcoModel,
@@ -222,7 +226,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     if (error) {
         return <div>Error: {error.message}</div>;
     } else if (loading) {
-        return <Loader />;
+        return <CircularProgress />;
     } else if (!app) {
         return (
             <DisplayError>
@@ -246,7 +250,9 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                         createListLink={createNavigateFolderListLink}
                         createStorageKey={createNavigateFolderStorageKey}
                     >
-                        <DialogsContextProvider>{children}</DialogsContextProvider>
+                        <AcoListProvider>
+                            <DialogsContextProvider>{children}</DialogsContextProvider>
+                        </AcoListProvider>
                     </NavigateFolderWithRouterProvider>
                 </SearchRecordsContextProvider>
             </FoldersContextProvider>

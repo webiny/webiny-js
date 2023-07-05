@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
-import { checkBaseFormPermissions } from "@webiny/api-form-builder/plugins/crud/utils";
 import { ImportExportTaskStatus, FormsImportExportCrud, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
@@ -8,17 +7,22 @@ import { initialStats } from "~/import/utils";
 import { Payload as ExportFormsProcessHandlerPayload } from "~/export/process";
 import { EXPORT_FORMS_FOLDER_KEY } from "~/export/utils";
 import { zeroPad } from "@webiny/utils";
+import { FormsPermissions } from "@webiny/api-form-builder/plugins/crud/permissions/FormsPermissions";
 
 const EXPORT_FORMS_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_FORMS_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 
 export default new ContextPlugin<PbImportExportContext>(context => {
+    const formsPermissions = new FormsPermissions({
+        getPermissions: () => context.security.getPermissions("fb.form"),
+        getIdentity: context.security.getIdentity,
+        fullAccessPermissionName: "pb.*"
+    });
+
     context.waitFor("formBuilder", () => {
         const importExportCrud: FormsImportExportCrud = {
             async importForms({ zipFileUrl }) {
-                await checkBaseFormPermissions(context, {
-                    rwd: "w"
-                });
+                await formsPermissions.ensure({ rwd: "w" });
 
                 // Create a task for import form
                 const task = await context.pageBuilder.importExportTask.createTask({
@@ -50,9 +54,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
             },
 
             async exportForms({ ids: initialFormIds, revisionType }) {
-                await checkBaseFormPermissions(context, {
-                    rwd: "w"
-                });
+                await formsPermissions.ensure({ rwd: "w" });
                 let formIds: string[] = initialFormIds || [];
                 // If no ids are provided then it means we want to export all forms
                 if (

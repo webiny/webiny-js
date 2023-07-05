@@ -33,7 +33,7 @@ export interface PbAcoContext extends BaseContext, AcoContext, PbContext {
         app: IAcoApp;
         addPageSearchProcessor(processor: PageSearchProcessor): void;
         getSearchablePageContent(content: Page): Promise<string>;
-        getFolderHierarchyByPageId(page: Page): Promise<Folder[]>;
+        getAncestorFoldersByPage(page: Page): Promise<Folder[]>;
     };
 }
 

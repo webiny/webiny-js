@@ -1,14 +1,11 @@
-import React, { ReactElement, useMemo } from "react";
-
+import React, { ReactElement } from "react";
 import { ReactComponent as Publish } from "@material-design-icons/svg/outlined/publish.svg";
 import { ReactComponent as Restore } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
-import { SecurityPermission } from "@webiny/app-security/types";
-import { useSecurity } from "@webiny/app-security";
 import { MenuItem } from "@webiny/ui/Menu";
 
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { usePublishRevisionHandler } from "~/admin/plugins/pageDetails/pageRevisions/usePublishRevisionHandler";
 
 import { PbPageDataItem } from "~/types";
@@ -22,9 +19,7 @@ interface Props {
 }
 
 export const RecordActionPublish = ({ record }: Props): ReactElement => {
-    const { identity, getPermission } = useSecurity();
-    const { canPublish, canUnpublish } = usePermission();
-
+    const { canPublish, canUnpublish } = usePagesPermissions();
     const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
 
     const { showConfirmation: showPublishConfirmation } = useConfirmationDialog({
@@ -51,11 +46,8 @@ export const RecordActionPublish = ({ record }: Props): ReactElement => {
         )
     });
 
-    const pbPagePermission = useMemo((): SecurityPermission | null => {
-        return getPermission("pb.page");
-    }, [identity]);
-
-    if (!pbPagePermission) {
+    const { hasPermissions } = usePagesPermissions();
+    if (!hasPermissions()) {
         return <></>;
     }
 

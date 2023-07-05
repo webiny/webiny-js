@@ -23,6 +23,7 @@ const fields = /* GraphQL */ `
                 facebook
                 twitter
                 instagram
+                linkedIn
                 image {
                     id
                     src
@@ -63,6 +64,7 @@ export interface GetSettingsResponseData {
         facebook: string;
         twitter: string;
         instagram: string;
+        linkedIn: string;
         image: {
             id: string;
             src: string;
@@ -134,6 +136,7 @@ export interface UpdateSettingsMutationVariablesData {
         facebook: string;
         twitter: string;
         instagram: string;
+        linkedIn: string;
         image: {
             id: string;
             src: string;

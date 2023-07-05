@@ -5,6 +5,8 @@ import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 import { createFormsCrud } from "~/plugins/crud/forms.crud";
 import { createSubmissionsCrud } from "~/plugins/crud/submissions.crud";
 import WebinyError from "@webiny/error";
+import { FormsPermissions } from "./permissions/FormsPermissions";
+import { SettingsPermissions } from "~/plugins/crud/permissions/SettingsPermissions";
 
 export interface CreateFormBuilderCrudParams {
     storageOperations: FormBuilderStorageOperations;
@@ -47,6 +49,21 @@ export default (params: CreateFormBuilderCrudParams) => {
             }
         }
 
+        const basePermissionsArgs = {
+            getIdentity,
+            fullAccessPermissionName: "fb.*"
+        };
+
+        const formsPermissions = new FormsPermissions({
+            ...basePermissionsArgs,
+            getPermissions: () => context.security.getPermissions("fb.form")
+        });
+
+        const settingsPermissions = new SettingsPermissions({
+            ...basePermissionsArgs,
+            getPermissions: () => context.security.getPermissions("fb.settings")
+        });
+
         context.formBuilder = {
             storageOperations,
             ...createSystemCrud({
@@ -58,15 +75,18 @@ export default (params: CreateFormBuilderCrudParams) => {
             ...createSettingsCrud({
                 getTenant,
                 getLocale,
+                settingsPermissions,
                 context
             }),
             ...createFormsCrud({
                 getTenant,
                 getLocale,
+                formsPermissions,
                 context
             }),
             ...createSubmissionsCrud({
-                context
+                context,
+                formsPermissions
             })
         };
 

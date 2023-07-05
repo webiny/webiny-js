@@ -22,13 +22,10 @@ export { QuoteAction } from "~/components/ToolbarActions/QuoteAction";
 export { UnderlineAction } from "~/components/ToolbarActions/UnderlineAction";
 export { TypographyAction } from "~/components/ToolbarActions/TypographyAction";
 export { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction";
+export { ImageAction } from "~/components/ToolbarActions/ImageAction";
 // toolbars
-export { HeadingToolbar } from "~/components/Toolbar/HeadingToolbar";
-export { ParagraphToolbar } from "~/components/Toolbar/ParagraphToolbar";
 export { Toolbar } from "~/components/Toolbar/Toolbar";
-// presets
-export { ParagraphToolbarPreset } from "~/components/ToolbarPresets/ParagraphToolbarPreset";
-export { HeadingToolbarPreset } from "./components/ToolbarPresets/HeadingToolbarPreset";
+export { StaticToolbar } from "~/components/Toolbar/StaticToolbar";
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
@@ -37,18 +34,23 @@ export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
 export { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
-export { ClickableLinkPlugin } from "~/plugins/ClickableLinkPlugin/ClickableLinkPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/LexicalUpdateStatePlugin";
-// composition
-export { AddToolbarAction } from "~/components/AddToolbarAction";
-export { AddRichTextEditorPlugin } from "~/components/AddRichTextEditorPlugin";
-export { AddRichTextEditorNodeType } from "~/components/AddRichTextEditorNodeType";
+export { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
+export { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
+export { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
+export { ListPlugin } from "~/plugins/ListPLugin/ListPlugin";
+export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
 export { clearNodeFormatting } from "~/utils/nodes/clearNodeFormating";
+// Commands
+export { INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 // types
 export * as types from "./types";
 // config
-export { LexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+export {
+    LexicalEditorConfig,
+    useLexicalEditorConfig
+} from "~/components/LexicalEditorConfig/LexicalEditorConfig";

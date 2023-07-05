@@ -11,13 +11,6 @@ const titleField = () =>
             {
                 name: "required",
                 message: "Value is required."
-            },
-            {
-                name: "minLength",
-                settings: {
-                    value: "3"
-                },
-                message: "Value is too short."
             }
         ]
     });
@@ -30,20 +23,6 @@ const slugField = () =>
             {
                 name: "required",
                 message: "Value is required."
-            },
-            {
-                name: "minLength",
-                settings: {
-                    value: "3"
-                },
-                message: "Value is too short."
-            },
-            {
-                name: "maxLength",
-                settings: {
-                    value: "100"
-                },
-                message: "Value is too long."
             },
             {
                 name: "pattern",

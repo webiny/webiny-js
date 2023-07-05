@@ -81,6 +81,6 @@ export const FontColorAction: FontColorAction = () => {
 };
 
 {
-    /* Color action settings */
+    /* Color picker dropdown settings */
 }
 FontColorAction.ColorPicker = FontActionColorPicker;

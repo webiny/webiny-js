@@ -1,6 +1,7 @@
 import { mdbid } from "@webiny/utils";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import { assignFileLifecycleEvents, tracker } from "./mocks/lifecycleEvents";
+import { ROOT_FOLDER } from "~/contants";
 
 const WEBINY_VERSION = process.env.WEBINY_VERSION;
 
@@ -81,7 +82,7 @@ describe("File lifecycle events", () => {
                 ...fileData,
                 ...hookParamsExpected,
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             }
@@ -92,7 +93,7 @@ describe("File lifecycle events", () => {
                 ...fileData,
                 ...hookParamsExpected,
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             }
@@ -144,7 +145,7 @@ describe("File lifecycle events", () => {
                 ...hookParamsExpected,
                 id: expect.any(String),
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             },
@@ -153,7 +154,7 @@ describe("File lifecycle events", () => {
                 ...hookParamsExpected,
                 tags: [...fileData.tags, TAG],
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             }
@@ -166,7 +167,7 @@ describe("File lifecycle events", () => {
                 ...hookParamsExpected,
                 id: expect.any(String),
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             },
@@ -175,7 +176,7 @@ describe("File lifecycle events", () => {
                 ...hookParamsExpected,
                 tags: [...fileData.tags, TAG],
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             }
@@ -219,7 +220,7 @@ describe("File lifecycle events", () => {
                 ...fileData,
                 ...hookParamsExpected,
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             }
@@ -230,7 +231,7 @@ describe("File lifecycle events", () => {
                 ...fileData,
                 ...hookParamsExpected,
                 location: {
-                    folderId: "ROOT"
+                    folderId: ROOT_FOLDER
                 },
                 savedOn: expect.any(String)
             }
@@ -277,7 +278,7 @@ describe("File lifecycle events", () => {
                     ...fileData,
                     ...hookParamsExpected,
                     location: {
-                        folderId: "ROOT"
+                        folderId: ROOT_FOLDER
                     },
                     savedOn: expect.any(String)
                 }
@@ -290,7 +291,7 @@ describe("File lifecycle events", () => {
                     ...fileData,
                     ...hookParamsExpected,
                     location: {
-                        folderId: "ROOT"
+                        folderId: ROOT_FOLDER
                     },
                     savedOn: expect.any(String)
                 }

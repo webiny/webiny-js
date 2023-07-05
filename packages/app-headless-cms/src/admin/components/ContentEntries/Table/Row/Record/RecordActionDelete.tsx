@@ -46,8 +46,7 @@ export const RecordActionDelete: React.VFC<Props> = ({ record }) => {
                 entry: {
                     id: record.id
                 },
-                id,
-                listQueryVariables: {}
+                id
             });
 
             if (error) {

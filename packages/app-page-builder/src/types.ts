@@ -182,6 +182,7 @@ export type PbElementDataType = {
         actionType: string;
         variables: PbButtonElementClickHandlerVariable[];
         scrollToElement: string;
+        [key: string]: any;
     };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
@@ -413,6 +414,15 @@ export interface PbButtonElementClickHandlerPlugin<TVariables = Record<string, a
     title: string;
     variables?: PbButtonElementClickHandlerVariable[];
     handler: (params: { variables: TVariables }) => void | Promise<void>;
+}
+
+export interface PbPageElementActionTypePlugin extends Plugin {
+    type: "pb-page-element-action-type";
+    actionType: {
+        name: string;
+        label: string;
+        element: ReactNode;
+    };
 }
 
 export type PbPageElementImagesListComponentPlugin = Plugin & {
@@ -840,6 +850,7 @@ export interface PbMenu {
     url: string;
     slug: string;
     description: string;
+    createdBy: PbIdentity;
 }
 
 export interface PbBlockCategory {

@@ -11,14 +11,9 @@ import {
     OnBeforeBlockCategoryUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    PbContext,
-    PbSecurityPermission
+    PbContext
 } from "~/types";
-import { NotAuthorizedError } from "@webiny/api-security";
-import hasRwd from "./utils/hasRwd";
 import { NotFoundError } from "@webiny/handler-graphql";
-import checkBasePermissions from "./utils/checkBasePermissions";
-import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 import {
@@ -26,12 +21,12 @@ import {
     createBlockCategoryUpdateValidation
 } from "~/graphql/crud/blockCategories/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
-
-const PERMISSION_NAME = "pb.blockCategory";
+import { BlockCategoriesPermissions } from "~/graphql/crud/permissions/BlockCategoriesPermissions";
 
 export interface CreateBlockCategoriesCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    blockCategoriesPermissions: BlockCategoriesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
@@ -39,9 +34,8 @@ export interface CreateBlockCategoriesCrudParams {
 export const createBlockCategoriesCrud = (
     params: CreateBlockCategoriesCrudParams
 ): BlockCategoriesCrud => {
-    const { context, storageOperations, getLocaleCode, getTenantId } = params;
-
-    const getPermission = (name: string) => context.security.getPermission(name);
+    const { context, storageOperations, blockCategoriesPermissions, getLocaleCode, getTenantId } =
+        params;
 
     const onBeforeBlockCategoryCreate = createTopic<OnBeforeBlockCategoryCreateTopicParams>();
     const onAfterBlockCategoryCreate = createTopic<OnAfterBlockCategoryCreateTopicParams>();
@@ -84,17 +78,7 @@ export const createBlockCategoriesCrud = (
                 return await storageOperations.blockCategories.get(params);
             }
 
-            await context.i18n.checkI18NContentPermission();
-
-            let permission;
-            const blocksPermission = await getPermission(PERMISSION_NAME);
-            if (blocksPermission && hasRwd(blocksPermission, "r")) {
-                permission = blocksPermission;
-            }
-
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
+            await blockCategoriesPermissions.ensure({ rwd: "r" });
 
             let blockCategory: BlockCategory | null = null;
             try {
@@ -113,24 +97,13 @@ export const createBlockCategoriesCrud = (
                 return null;
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, blockCategory);
+            await blockCategoriesPermissions.ensure({ owns: blockCategory.createdBy });
 
             return blockCategory;
         },
 
         async listBlockCategories() {
-            await context.i18n.checkI18NContentPermission();
-
-            let permission: PbSecurityPermission | null = null;
-            const blocksPermission = await getPermission(PERMISSION_NAME);
-            if (blocksPermission && hasRwd(blocksPermission, "r")) {
-                permission = blocksPermission;
-            }
-
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
+            await blockCategoriesPermissions.ensure({ rwd: "r" });
 
             const params: BlockCategoryStorageOperationsListParams = {
                 where: {
@@ -139,10 +112,10 @@ export const createBlockCategoriesCrud = (
                 },
                 sort: ["createdOn_ASC"]
             };
-            // If user can only manage own records, add the createdBy to where values.
-            if (permission.own) {
-                const identity = context.security.getIdentity();
 
+            // If user can only manage own records, add the createdBy to where values.
+            if (await blockCategoriesPermissions.canAccessOnlyOwnRecords()) {
+                const identity = context.security.getIdentity();
                 params.where.createdBy = identity.id;
             }
 
@@ -161,7 +134,7 @@ export const createBlockCategoriesCrud = (
             }
         },
         async createBlockCategory(this: PageBuilderContextObject, input) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+            await blockCategoriesPermissions.ensure({ rwd: "w" });
 
             const validationResult = await createBlockCategoryCreateValidation().safeParseAsync(
                 input
@@ -217,17 +190,14 @@ export const createBlockCategoriesCrud = (
             }
         },
         async updateBlockCategory(this: PageBuilderContextObject, slug, input) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await blockCategoriesPermissions.ensure({ rwd: "w" });
 
             const original = await this.getBlockCategory(slug);
             if (!original) {
                 throw new NotFoundError(`Block Category "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, original);
+            await blockCategoriesPermissions.ensure({ owns: original.createdBy });
 
             const validationResult = await createBlockCategoryUpdateValidation().safeParseAsync(
                 input
@@ -270,17 +240,14 @@ export const createBlockCategoriesCrud = (
             }
         },
         async deleteBlockCategory(this: PageBuilderContextObject, slug) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
+            await blockCategoriesPermissions.ensure({ rwd: "d" });
 
             const blockCategory = await this.getBlockCategory(slug);
             if (!blockCategory) {
                 throw new NotFoundError(`Block Category "${slug}" not found.`);
             }
 
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, blockCategory);
+            await blockCategoriesPermissions.ensure({ owns: blockCategory.createdBy });
 
             // Before deleting, we need to check if there are any page blocks in this block category.
             // If so, prevent delete operation.
