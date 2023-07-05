@@ -151,17 +151,6 @@ context("Search, Sort and Filter Content Entries", () => {
         cy.visit(`/cms/content-entries/${createdModel.modelId}?folderId=root`);
         // Loading should not be visible
         cy.get(".react-spinner-material").should("not.exist");
-        // Initial click sorts ASC
-        cy.get(".cms-aco-list-savedOn").within(() => {
-            cy.get("div").first().click();
-        });
-        cy.wait(500);
-        // Loading should not be visible
-        cy.get(".react-spinner-material").should("not.exist");
-        // Then we sort DESC
-        cy.get(".cms-aco-list-savedOn").within(() => {
-            cy.get("div").first().click();
-        });
         cy.wait(500);
         // Loading should not be visible
         cy.get(".react-spinner-material").should("not.exist");
