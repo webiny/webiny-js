@@ -19,7 +19,7 @@ const SpinnerWrapper = styled.div`
 const DefaultSaveBlockButton: React.FC = () => {
     const [block] = useBlock();
     const eventActionHandler = useEventActionHandler();
-    const location = useLocation();
+    const { key } = useLocation();
     const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
@@ -34,7 +34,8 @@ const DefaultSaveBlockButton: React.FC = () => {
                     debounce: false,
                     onFinish: () => {
                         setLoading(false);
-                        if (location.key === "default") {
+                        // If location.key is "default", then we are in a new tab.
+                        if (key === "default") {
                             navigate(`/page-builder/page-blocks?category=${block.blockCategory}`);
                         } else {
                             navigate(-1);

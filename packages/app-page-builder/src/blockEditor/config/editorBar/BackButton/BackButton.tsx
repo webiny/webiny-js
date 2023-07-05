@@ -13,12 +13,13 @@ const backStyles = css({
 
 export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
     return function BackButton() {
-        const location = useLocation();
+        const { key } = useLocation();
         const navigate = useNavigate();
         const [block] = useBlock();
 
         const onClick = useCallback(() => {
-            if (location.key === "default") {
+            // If location.key is "default", then we are in a new tab.
+            if (key === "default") {
                 navigate(`/page-builder/page-blocks?category=${block.blockCategory}`);
             } else {
                 navigate(-1);
