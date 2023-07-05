@@ -14,7 +14,7 @@ export function updateFilesInData({
     if (!data || typeof data !== "object") {
         return;
     }
-    // Recursively call function if data is array
+    // Recursively call function if data is an array.
     if (Array.isArray(data)) {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
@@ -35,6 +35,7 @@ export function updateFilesInData({
 
             const cleanSrcPrefix = srcPrefix.endsWith("/") ? srcPrefix.slice(0, -1) : srcPrefix;
 
+            value.id = newFile.id;
             value.key = newFile.key;
             value.name = newFile.name;
             value.src = `${cleanSrcPrefix}/${newFile.key}`;
