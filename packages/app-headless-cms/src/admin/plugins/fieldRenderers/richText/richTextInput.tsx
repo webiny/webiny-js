@@ -6,6 +6,11 @@ import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/compone
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
 import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
+import { modelHasLexicalField } from "~/admin/plugins/fieldRenderers/lexicalText/utils";
+import {
+    isLegacyRteFieldSaved,
+    modelHasLegacyRteField
+} from "~/admin/plugins/fieldRenderers/richText/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -20,52 +25,32 @@ const getKey = (
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-rich-text",
-    isDisabled(field) {
-        // When feature flag is set, plugin is always enabled.
-        if (allowCmsLegacyRichTextInput) {
-            return false;
-        }
-
-        // Plugin is enabled only when legacy RTE is used by the user
-        // before introduction of lexical RTE.
-        const isLegacyRichTextInput = field.renderer.name === "rich-text-input";
-        const fieldModelIsUsed = !!field?.id;
-        if (isLegacyRichTextInput && fieldModelIsUsed) {
-            return false;
-        }
-
-        // This legacy plugin is disabled by default.
-        return true;
-    },
     renderer: {
         rendererName: "rich-text-input",
         name: t`Rich Text Input`,
         description: t`Renders a rich text editor.`,
-        isDisabled(field) {
-            const fieldModelIsUsed = !!field?.id;
-            const isLegacyRichTextInput = field.renderer.name === "rich-text-input";
-            const isLexicalInput = field.renderer.name === "lexical-text-input";
-
-            // feature flag
-            if (allowCmsLegacyRichTextInput) {
-                // Legacy RTE will be allowed for selection only if lexical RTE is not used
-                return isLexicalInput && fieldModelIsUsed;
-            }
-
-            // Allow renderer for selection only if legacy RTE is already used.
-            if (isLegacyRichTextInput && fieldModelIsUsed) {
-                return false;
-            }
-
-            // By default this renderer is disabled
-            return true;
-        },
-        canUse({ field }) {
-            return (
+        canUse({ field, model }) {
+            const canUse =
                 field.type === "rich-text" &&
                 !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+                !get(field, "predefinedValues.enabled");
+
+            if (canUse) {
+                // Check for legacy RTE usage for saved and new field
+                if (modelHasLexicalField(model)) {
+                    return false;
+                }
+
+                if (!allowCmsLegacyRichTextInput) {
+                    if (isLegacyRteFieldSaved(field) || modelHasLegacyRteField(model)) {
+                        return true;
+                    }
+                    // When feature flag is disabled by default and legacy RTE will not be used
+                    return false;
+                }
+            }
+
+            return canUse;
         },
         render({ field, getBind }) {
             const Bind = getBind();

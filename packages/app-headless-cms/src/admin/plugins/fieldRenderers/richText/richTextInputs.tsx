@@ -8,6 +8,12 @@ import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/compone
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
+import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
+import { modelHasLexicalField } from "~/admin/plugins/fieldRenderers/lexicalText/utils";
+import {
+    isLegacyRteFieldSaved,
+    modelHasLegacyRteField
+} from "~/admin/plugins/fieldRenderers/richText/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -47,12 +53,28 @@ const plugin: CmsEditorFieldRendererPlugin = {
         rendererName: "rich-text-inputs",
         name: t`Rich Text Inputs`,
         description: t`Renders a simple list of rich text editors.`,
-        canUse({ field }) {
-            return (
+        canUse({ field, model }) {
+            const canUse =
                 field.type === "rich-text" &&
                 !!field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+                !get(field, "predefinedValues.enabled");
+
+            if (canUse) {
+                // Check for legacy RTE usage for saved and new field
+                if (modelHasLexicalField(model)) {
+                    return false;
+                }
+
+                if (!allowCmsLegacyRichTextInput) {
+                    if (isLegacyRteFieldSaved(field) || modelHasLegacyRteField(model)) {
+                        return true;
+                    }
+                    // When feature flag is disabled by default and legacy RTE will not be used
+                    return false;
+                }
+            }
+
+            return canUse;
         },
         render(props) {
             const { field } = props;

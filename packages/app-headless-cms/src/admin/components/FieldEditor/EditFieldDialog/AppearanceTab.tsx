@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
-import { useModelField } from "~/admin/hooks";
+import { useModel, useModelField } from "~/admin/hooks";
 import { useForm, Bind } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
@@ -29,11 +29,12 @@ const style = {
 
 const AppearanceTab = () => {
     const form = useForm<CmsModelField>();
+    const { model } = useModel();
     const { field, fieldPlugin } = useModelField();
 
     const renderPlugins = plugins
         .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
-        .filter(item => !item.isDisabled?.(field) && item.renderer.canUse({ field, fieldPlugin }));
+        .filter(item => item.renderer.canUse({ field, fieldPlugin, model }));
 
     useEffect((): void => {
         // If the currently selected render plugin is no longer available, select the first available one.
@@ -70,7 +71,7 @@ const AppearanceTab = () => {
                 <Cell span={6}>
                     <Alert title={"You have legacy editor enabled"} type={"info"}>
                         Your project has been upgraded from an older Webiny version with EditorJS as
-                        the default rich text editor. We suggest switching to the next Lexical rich
+                        the default rich text editor. We suggest switching to the new Lexical rich
                         text editor where possible.
                         <br />
                         <br />
@@ -82,7 +83,6 @@ const AppearanceTab = () => {
                         >
                             change log
                         </a>
-                        .
                     </Alert>
                 </Cell>
             )}
@@ -97,7 +97,6 @@ const AppearanceTab = () => {
                                 {renderPlugins.map(item => (
                                     <div key={item.name} className={style.radioContainer}>
                                         <Radio
-                                            disabled={item.renderer.isDisabled?.(field) || false}
                                             value={getValue(item.renderer.rendererName)}
                                             onChange={onChange(item.renderer.rendererName)}
                                             label={
