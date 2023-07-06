@@ -48,7 +48,7 @@ export const blocksHandler = async (
         log(`Fetched sub task => ${subTask.id}`);
         console.log("subTask", subTask);
 
-        const { blockKey, category, zipFileKey, input } = subTask.data;
+        const { blockKey, zipFileKey, input } = subTask.data;
         const { fileUploadsData } = input;
 
         log(`Processing block key "${blockKey}"`);
@@ -75,7 +75,7 @@ export const blocksHandler = async (
         // Create a block
         const pbBlock = await context.pageBuilder.createPageBlock({
             name: block.name,
-            blockCategory: category,
+            blockCategory: block.blockCategory,
             content: block.content,
             preview: block.preview
         });

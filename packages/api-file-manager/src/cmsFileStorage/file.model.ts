@@ -62,12 +62,24 @@ const metaPrivateField = () => {
     });
 };
 
+const metaOriginalKeyField = () => {
+    return createModelField({
+        label: "Original Key",
+        type: "text"
+    });
+};
+
 const metaField = () => {
     return createModelField({
         label: "Meta",
         type: "object",
         settings: {
-            fields: [metaPrivateField(), metaWidthField(), metaHeightField()]
+            fields: [
+                metaPrivateField(),
+                metaWidthField(),
+                metaHeightField(),
+                metaOriginalKeyField()
+            ]
         }
     });
 };
