@@ -12,18 +12,33 @@ context("Headless CMS - Content Model Groups", () => {
     beforeEach(() => cy.login());
 
     after(() => {
-        cy.cmsListContentModelGroup().then(groups => {
-            return groups
-                .filter(group => {
-                    return groupNames.some(name => {
-                        return group.name.startsWith(name);
-                    });
-                })
-                .map(group => {
-                    return cy.cmsDeleteContentModelGroup({
-                        id: group.id
-                    });
+        return cy.cmsListContentModelGroup().then(result => {
+            const groups = result.filter(group => {
+                return groupNames.some(name => {
+                    group.name.startsWith(name);
                 });
+            });
+            return cy.waitUntil(
+                () => {
+                    return Promise.all(
+                        groups.map(async group => {
+                            return cy.cmsDeleteContentModelGroup({
+                                id: group.id
+                            });
+                        })
+                    ).then(data => {
+                        if (!Array.isArray(data)) {
+                            return false;
+                        } else if (data.length !== groups.length) {
+                            return false;
+                        }
+                        return data.every(item => !!item);
+                    });
+                },
+                {
+                    description: `Wait until all groups are deleted.`
+                }
+            );
         });
     });
 

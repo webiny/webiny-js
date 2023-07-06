@@ -14,37 +14,42 @@ describe("Headless CMS - Content Entries", () => {
         let group;
         // Runs once before all tests in the block
         before(() => {
-            cy.cmsCreateContentModelGroup({
-                data: { name: uniqid("Group-"), icon: "fas/star" }
-            }).then(data => {
-                group = data;
-                cy.cmsCreateContentModel({
-                    data: {
-                        name: newModel,
-                        modelId: kebabCase(newModel.toLowerCase()),
-                        singularApiName,
-                        pluralApiName,
-                        group: group.id,
-                        description: "Testing 123"
-                    }
-                }).then(data => {
-                    model = data;
-                    cy.cmsUpdateContentModel({
-                        modelId: data.modelId,
-                        data: CONTENT_MODEL_DATA
-                    });
+            return cy
+                .cmsCreateContentModelGroup({
+                    data: { name: uniqid("Group-"), icon: "fas/star" }
+                })
+                .then(data => {
+                    group = data;
+                    return cy
+                        .cmsCreateContentModel({
+                            data: {
+                                name: newModel,
+                                modelId: kebabCase(newModel.toLowerCase()),
+                                singularApiName,
+                                pluralApiName,
+                                group: group.id,
+                                description: "Testing 123"
+                            }
+                        })
+                        .then(data => {
+                            model = data;
+                            return cy.cmsUpdateContentModel({
+                                modelId: data.modelId,
+                                data: CONTENT_MODEL_DATA
+                            });
+                        });
                 });
-            });
         });
 
         beforeEach(() => cy.login());
 
         after(() => {
             cy.waitUntil(
-                () =>
-                    cy
+                () => {
+                    return cy
                         .cmsDeleteContentModel({ modelId: model.modelId })
-                        .then(data => data === true),
+                        .then(data => data === true);
+                },
                 {
                     description: `Wait until "ContentModel" is deleted`
                 }
@@ -146,7 +151,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle).should("exist");
                             cy.findByText(/Published \(v1\)/i).should("exist");
-                            //cy.findByText(/\(v1\)/i).should("exist");
                         });
                     });
             });
@@ -183,7 +187,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle2).should("exist");
                             cy.findByText(/Draft \(v2\)/i).should("exist");
-                            //cy.findByText(/\(v2\)/i).should("exist");
                         });
                     });
             });
@@ -220,7 +223,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle2).should("exist");
                             cy.findByText(/Published \(v2\)/i).should("exist");
-                            //cy.findByText(/\(v2\)/i).should("exist");
                         });
                     });
             });
