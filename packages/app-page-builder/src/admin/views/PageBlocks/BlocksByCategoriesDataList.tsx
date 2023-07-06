@@ -62,11 +62,6 @@ const DataListActionsWrapper = styled.div`
     align-items: center;
 `;
 
-enum Operation {
-    CREATE = "create",
-    IMPORT = "import"
-}
-
 interface Sorter {
     label: string;
     sort: string;
@@ -101,7 +96,6 @@ const BlocksByCategoriesDataList = ({
     setFilter,
     canCreate
 }: PageBuilderBlocksByCategoriesDataListProps) => {
-    const [operation, setOperation] = useState<string>(Operation.CREATE);
     const [sort, setSort] = useState<string>(SORTERS[2].sort);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const { history } = useRouter();
@@ -285,11 +279,6 @@ const BlocksByCategoriesDataList = ({
 
     const { showImportDialog } = useImportBlock();
 
-    const handleImportClick = useCallback(() => {
-        setOperation(Operation.IMPORT);
-        setIsDialogOpen(true);
-    }, []);
-
     const handleExportClick = useCallback((selectedBlocksCategory?: string | null) => {
         showExportBlockInitializeDialog({ where: { blockCategory: selectedBlocksCategory } });
     }, []);
@@ -298,22 +287,9 @@ const BlocksByCategoriesDataList = ({
         if (selectedBlocksCategory) {
             onCreatePageBlock(selectedBlocksCategory);
         } else {
-            setOperation(Operation.CREATE);
             setIsDialogOpen(true);
         }
     }, [selectedBlocksCategory]);
-
-    const onSelect = useCallback(
-        (slug: string) => {
-            if (operation === Operation.CREATE) {
-                onCreatePageBlock(slug);
-            } else {
-                showImportDialog({ slug });
-                setIsDialogOpen(false);
-            }
-        },
-        [operation]
-    );
 
     return (
         <>
@@ -334,7 +310,7 @@ const BlocksByCategoriesDataList = ({
                                 {
                                     label: "Import blocks",
                                     icon: <UploadFileIcon />,
-                                    onClick: handleImportClick
+                                    onClick: showImportDialog
                                 },
                                 {
                                     label: "Export all blocks",
@@ -422,7 +398,10 @@ const BlocksByCategoriesDataList = ({
                         ) : (
                             <List twoLine>
                                 {blockCategoriesData.map(item => (
-                                    <ListItem key={item.slug} onClick={() => onSelect(item.slug)}>
+                                    <ListItem
+                                        key={item.slug}
+                                        onClick={() => onCreatePageBlock(item.slug)}
+                                    >
                                         <ListItemGraphic>
                                             <Icon category={item} />
                                         </ListItemGraphic>
