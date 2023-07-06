@@ -4,8 +4,8 @@ import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
+import { useAcoList, createSort } from "@webiny/app-aco";
+import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
 import { ListMeta } from "@webiny/app-aco/types";
 import {
     transformCmsContentEntriesToRecordEntries,
@@ -43,7 +43,6 @@ interface UseContentEntries {
 export const useContentEntriesList = (): UseContentEntries => {
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
-    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
 
     const {
         folders: initialFolders,
@@ -77,9 +76,9 @@ export const useContentEntriesList = (): UseContentEntries => {
                 return;
             }
 
-            if (searchQuery !== search) {
-                setSearchQuery(search);
+            setSearchQuery(search);
 
+            if (searchQuery !== search) {
                 if (!search) {
                     // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
@@ -90,13 +89,13 @@ export const useContentEntriesList = (): UseContentEntries => {
                 history.push(`${baseUrl}?${query.toString()}`);
             }
         }, 500),
-        [baseUrl, currentFolderId]
+        [baseUrl]
     );
 
     // Set "search" from search "query" on page load.
     useEffect(() => {
         setSearch(searchQuery);
-    }, [baseUrl, currentFolderId, searchQuery]);
+    }, [searchQuery]);
 
     // When "search" changes, trigger search-related logics
     useEffect(() => {

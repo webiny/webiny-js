@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import debounce from "lodash/debounce";
-import { PAGE_BUILDER_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
-import { createSort, useAcoList, useNavigateFolder } from "@webiny/app-aco";
+import { PAGE_BUILDER_LIST_LINK } from "~/admin/constants";
+import { createSort, useAcoList } from "@webiny/app-aco";
 import { PbPageDataItem } from "~/types";
 import { FolderItem, ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -49,7 +49,6 @@ export const usePagesList = (): UsePageList => {
         setSearchQuery,
         setListSort
     } = useAcoList<PbPageDataItem>();
-    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
@@ -67,8 +66,9 @@ export const usePagesList = (): UsePageList => {
                 return;
             }
 
+            setSearchQuery(search);
+
             if (searchQuery !== search) {
-                setSearchQuery(search);
                 if (!search) {
                     // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
@@ -79,13 +79,13 @@ export const usePagesList = (): UsePageList => {
                 history.push(`${PAGE_BUILDER_LIST_LINK}?${query.toString()}`);
             }
         }, 500),
-        [currentFolderId]
+        []
     );
 
     // Set "search" from search "query" on page load.
     useEffect(() => {
         setSearch(searchQuery);
-    }, [currentFolderId, searchQuery]);
+    }, [searchQuery]);
 
     // When "search" changes, trigger search-related logics
     useEffect(() => {
