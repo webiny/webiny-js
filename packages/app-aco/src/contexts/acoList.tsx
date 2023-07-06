@@ -39,7 +39,7 @@ export const AcoListContext = React.createContext<
 export interface State {
     after?: string;
     filters?: Record<string, any>;
-    folderId: string;
+    folderId?: string;
     isSearch: boolean;
     limit: number;
     listSort: ListSearchRecordsSort;
@@ -47,11 +47,11 @@ export interface State {
     showingFilters: boolean;
 }
 
-const initializeAcoListState = (folderId: string): State => {
+const initializeAcoListState = (): State => {
     return {
         after: undefined,
         filters: undefined,
-        folderId: folderId,
+        folderId: undefined,
         isSearch: false,
         limit: 50,
         listSort: [],
@@ -99,7 +99,7 @@ export interface AcoListProviderProps {
 }
 
 export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) => {
-    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
+    const { currentFolderId } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
@@ -111,7 +111,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
     const [folders, setFolders] = useState<FolderItem[]>([]);
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
     const [listTitle, setListTitle] = useState<string | undefined>();
-    const [state, setState] = useState(initializeAcoListState(currentFolderId));
+    const [state, setState] = useState(initializeAcoListState());
 
     const {
         folders: originalFolders,
@@ -132,6 +132,10 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
      * We don't call `listRecords` directly, instead we call `setState` making it the only driver to fetch records from the apis.
      */
     useEffect(() => {
+        if (!currentFolderId) {
+            return;
+        }
+
         if (!originalFolders) {
             listFolders();
         }
@@ -156,6 +160,12 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
      * - we set the current folder name.
      */
     useEffect(() => {
+        const currentFolder = originalFolders?.find(
+            folder => folder.id === (state.folderId || ROOT_FOLDER)
+        );
+
+        setListTitle(currentFolder?.title);
+
         if (state.isSearch) {
             setFolders([]);
             return;
@@ -165,9 +175,6 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
         setFolders(() => {
             return sortTableItems(subFolders, state.listSort);
         });
-
-        const currentFolder = originalFolders?.find(folder => folder.id === state.folderId);
-        setListTitle(currentFolder?.title);
     }, [originalFolders, state.folderId, state.isSearch]);
 
     /**
@@ -218,6 +225,10 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
      */
     useEffect(() => {
         const listItems = async () => {
+            if (!state.folderId) {
+                return;
+            }
+
             const isSearch = Boolean(
                 state.searchQuery ||
                     (state.filters && Object.values(state.filters).filter(Boolean).length)
@@ -229,11 +240,10 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
                 if (state.folderId === ROOT_FOLDER) {
                     locationWhere = undefined;
                 } else {
-                    locationWhere = dotPropImmutable.set(
-                        {},
-                        folderIdInPath,
-                        getDescendantFolders(state.folderId).map(folder => folder.id)
+                    const descendantFolderIds = getDescendantFolders(state.folderId).map(
+                        folder => folder.id
                     );
+                    locationWhere = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
                 }
             }
 
