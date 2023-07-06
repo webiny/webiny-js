@@ -101,7 +101,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
                                 <Cell span={12}>
                                     <Bind
                                         name={"title"}
-                                        validators={[validation.create("required,minLength:3")]}
+                                        validators={[validation.create("required")]}
                                     >
                                         <Input label={t`Title`} onBlur={generateSlug(form)} />
                                     </Bind>
@@ -109,9 +109,7 @@ export const FolderDialogCreate: React.VFC<FolderDialogCreateProps> = ({
                                 <Cell span={12}>
                                     <Bind
                                         name={"slug"}
-                                        validators={[
-                                            validation.create("required,minLength:3,slug")
-                                        ]}
+                                        validators={[validation.create("required,slug")]}
                                     >
                                         <Input label={t`Slug`} />
                                     </Bind>

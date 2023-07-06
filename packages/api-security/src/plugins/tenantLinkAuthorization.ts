@@ -68,16 +68,6 @@ export const createTenantLinkAuthorizer = (config: Config) => (context: Context)
         }
     }
 
-    // If one of the permissions grants full-access, we can return it immediately.
-    const fullAccessPermission = allGroups
-        .map(securityGroup => securityGroup.permissions)
-        .flat()
-        .find(permission => permission.name === "*");
-
-    if (fullAccessPermission) {
-        return [{ name: "*" }];
-    }
-
     // Although only one group is allowed, we still pretend multiples are possible.
     // This way, in the near future, we can support multiple groups per tenant.
     return getPermissionsFromSecurityGroupsForLocale(allGroups, locale.code);

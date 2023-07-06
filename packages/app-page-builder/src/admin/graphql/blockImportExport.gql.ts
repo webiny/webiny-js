@@ -20,12 +20,10 @@ stats {
 
 export const IMPORT_BLOCKS = gql`
     mutation PbImportBlock(
-        $category: String!,
         $zipFileUrl: String
     ) {
         pageBuilder {
             importBlocks(
-                category: $category,
                 zipFileUrl: $zipFileUrl
             ) {
                 data {
