@@ -29,7 +29,6 @@
     "@webiny/telemetry": "0.0.0",
     "assert-browserify": "^2.0.0",
     "babel-loader": "8.2.3",
-    "babel-plugin-lodash": "3.3.4",
     "buffer": "^6.0.3",
     "camelcase": "5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.4.0",
@@ -108,7 +107,6 @@
         "@babel/plugin-syntax-object-rest-spread",
         "@svgr/webpack",
         "@types/webpack-env",
-        "babel-plugin-lodash",
         "chalk",
         "raw-loader",
         "sass"

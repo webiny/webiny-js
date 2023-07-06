@@ -1,6 +1,6 @@
 import React from "react";
 import { PbEditorElement } from "@webiny/app-page-builder/types";
-import { get } from "lodash";
+import get from "lodash/get";
 import { FormComponentPropsType } from "~/types";
 import { Form as FormsForm } from "~/components/Form";
 

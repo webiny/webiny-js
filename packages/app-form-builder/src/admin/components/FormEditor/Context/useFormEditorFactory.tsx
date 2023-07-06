@@ -1,6 +1,7 @@
 import React from "react";
 import shortid from "shortid";
-import { cloneDeep, pick } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import pick from "lodash/pick";
 import {
     GET_FORM,
     GetFormQueryResponse,

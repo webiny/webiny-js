@@ -1,4 +1,4 @@
-import _ from "lodash";
+import isInteger from "lodash/isInteger";
 import ValidationError from "~/validationError";
 
 export default (value: any) => {
@@ -6,7 +6,7 @@ export default (value: any) => {
         return;
     }
 
-    if (_.isInteger(value)) {
+    if (isInteger(value)) {
         return;
     }
 

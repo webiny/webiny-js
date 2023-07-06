@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useRef, useMemo } from "react";
-import { camelCase } from "lodash";
+import camelCase from "lodash/camelCase";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";

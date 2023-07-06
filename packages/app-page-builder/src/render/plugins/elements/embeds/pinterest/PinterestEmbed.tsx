@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { css } from "emotion";
-import { get } from "lodash";
+import get from "lodash/get";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { PbElement } from "~/types";
 
