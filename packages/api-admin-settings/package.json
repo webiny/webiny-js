@@ -29,7 +29,6 @@
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",
     "@babel/preset-env": "^7.22.7",
-    "@babel/preset-flow": "^7.16.0",
     "@webiny/cli": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-db": "0.0.0",
