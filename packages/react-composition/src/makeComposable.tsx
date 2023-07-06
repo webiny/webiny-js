@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo } from "react";
-import debounce from "lodash.debounce";
+import debounce from "lodash/debounce";
 import { ComposableFC } from "./Compose";
 import { useComponent } from "./Context";
 
