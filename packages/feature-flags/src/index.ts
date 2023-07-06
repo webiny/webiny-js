@@ -2,6 +2,7 @@ export type FeatureFlags<TFeatureFlags = {}> = {
     copyPermissionsButton?: boolean;
     experimentalAdminOmniSearch?: boolean;
     pbLegacyRenderingEngine?: boolean;
+    allowCmsLegacyRichTextInput?: boolean;
 } & TFeatureFlags;
 
 let featureFlags: FeatureFlags = {};

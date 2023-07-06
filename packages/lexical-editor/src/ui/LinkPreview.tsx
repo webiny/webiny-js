@@ -60,16 +60,20 @@ function LinkPreviewContent({
         return null;
     }
     return (
-        <div className="LinkPreview__container">
+        <div className="CustomLinkPreview__container">
             {preview.img && (
-                <div className="LinkPreview__imageWrapper">
-                    <img src={preview.img} alt={preview.title} className="LinkPreview__image" />
+                <div className="CustomLinkPreview__imageWrapper">
+                    <img
+                        src={preview.img}
+                        alt={preview.title}
+                        className="CustomLinkPreview__image"
+                    />
                 </div>
             )}
-            {preview.domain && <div className="LinkPreview__domain">{preview.domain}</div>}
-            {preview.title && <div className="LinkPreview__title">{preview.title}</div>}
+            {preview.domain && <div className="CustomLinkPreview__domain">{preview.domain}</div>}
+            {preview.title && <div className="CustomLinkPreview__title">{preview.title}</div>}
             {preview.description && (
-                <div className="LinkPreview__description">{preview.description}</div>
+                <div className="CustomLinkPreview__description">{preview.description}</div>
             )}
         </div>
     );
@@ -78,7 +82,7 @@ function LinkPreviewContent({
 function Glimmer(props: { style: CSSProperties; index: number }): JSX.Element {
     return (
         <div
-            className="LinkPreview__glimmer"
+            className="CustomLinkPreview__glimmer"
             {...props}
             style={{
                 animationDelay: String((props.index || 0) * 300),

@@ -1,6 +1,6 @@
 import React from "react";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import RenderFieldElement from "./RenderFieldElement";
+import { RenderFieldElement } from "./RenderFieldElement";
 import {
     CmsEditorContentModel,
     CmsModelField,

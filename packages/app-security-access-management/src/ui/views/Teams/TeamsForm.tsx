@@ -105,8 +105,6 @@ export const TeamsForm: React.FC<TeamsFormProps> = () => {
 
     const data = loading ? {} : get(getQuery, "data.security.team.data", {});
 
-    const systemTeam = data.slug === "full-access";
-
     const showEmptyView = !newTeam && !loading && isEmpty(data);
     // Render "No content" selected view.
     if (showEmptyView) {
@@ -142,7 +140,6 @@ export const TeamsForm: React.FC<TeamsFormProps> = () => {
                                     >
                                         <Input
                                             label={t`Name`}
-                                            disabled={systemTeam}
                                             data-testid="admin.am.team.new.name"
                                         />
                                     </Bind>
@@ -169,7 +166,6 @@ export const TeamsForm: React.FC<TeamsFormProps> = () => {
                                         <Input
                                             label={t`Description`}
                                             rows={3}
-                                            disabled={systemTeam}
                                             data-testid="admin.am.team.new.description"
                                         />
                                     </Bind>
@@ -177,31 +173,28 @@ export const TeamsForm: React.FC<TeamsFormProps> = () => {
                             </Grid>
                             <Grid>
                                 <Cell span={12}>
-                                    <Bind name="groups">
+                                    <Bind name="groups" validators={validation.create("required")}>
                                         <GroupsMultiAutoComplete
                                             label={t`Roles`}
-                                            disabled={systemTeam}
                                             data-testid="admin.am.team.new.groups"
                                         />
                                     </Bind>
                                 </Cell>
                             </Grid>
                         </SimpleFormContent>
-                        {systemTeam ? null : (
-                            <SimpleFormFooter>
-                                <ButtonWrapper>
-                                    <ButtonDefault
-                                        onClick={() => history.push("/access-management/teams")}
-                                    >{t`Cancel`}</ButtonDefault>
-                                    <ButtonPrimary
-                                        data-testid="admin.am.team.new.save"
-                                        onClick={ev => {
-                                            form.submit(ev);
-                                        }}
-                                    >{t`Save team`}</ButtonPrimary>
-                                </ButtonWrapper>
-                            </SimpleFormFooter>
-                        )}
+                        <SimpleFormFooter>
+                            <ButtonWrapper>
+                                <ButtonDefault
+                                    onClick={() => history.push("/access-management/teams")}
+                                >{t`Cancel`}</ButtonDefault>
+                                <ButtonPrimary
+                                    data-testid="admin.am.team.new.save"
+                                    onClick={ev => {
+                                        form.submit(ev);
+                                    }}
+                                >{t`Save team`}</ButtonPrimary>
+                            </ButtonWrapper>
+                        </SimpleFormFooter>
                     </SimpleForm>
                 );
             }}

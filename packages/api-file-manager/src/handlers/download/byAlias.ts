@@ -3,10 +3,13 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { getEnvironment } from "../utils";
 import { RoutePlugin } from "@webiny/handler-aws/gateway";
 import { extractFileInformation } from "./extractFileInformation";
-import { getS3Object } from "./getS3Object";
+import { getS3Object, isSmallObject } from "./getS3Object";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 const PRESIGNED_URL_EXPIRATION = 900; // 15 minutes
+
+const { region } = getEnvironment();
+const s3 = new S3({ region });
 
 export interface DownloadByFileAliasConfig {
     documentClient: DocumentClient;
@@ -37,7 +40,6 @@ export const createDownloadFileByAliasPlugins = ({ documentClient }: DownloadByF
     return [
         new RoutePlugin(({ onGet, context }) => {
             onGet("/*", async (request, reply) => {
-                const { region } = getEnvironment();
                 const fileInfo = extractFileInformation(request);
 
                 // TODO: `root` tenant is hardcoded for now, to satisfy the basic use case.
@@ -49,15 +51,15 @@ export const createDownloadFileByAliasPlugins = ({ documentClient }: DownloadByF
                     return reply.code(404).type("text/html").send("Not Found");
                 }
 
-                const s3 = new S3({ region });
                 const { params, object } = await getS3Object(
                     { ...fileInfo, filename: realFilename },
                     s3,
                     context
                 );
 
-                // If there's an "object", it means we can return its body directly.
-                if (object) {
+                if (object && isSmallObject(object)) {
+                    console.log("This is a small file; responding with object body.");
+
                     return reply
                         .headers({
                             "Content-Type": object.ContentType,
@@ -66,6 +68,8 @@ export const createDownloadFileByAliasPlugins = ({ documentClient }: DownloadByF
                         })
                         .send(object.Body || "");
                 }
+
+                console.log("This is a large object; redirecting to a presigned URL.");
 
                 const presignedUrl = s3.getSignedUrl("getObject", {
                     Bucket: params.Bucket,

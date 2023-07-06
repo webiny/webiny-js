@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { Form, FormRenderPropParams } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
-import RenderFieldElement from "./RenderFieldElement";
+import { RenderFieldElement } from "./RenderFieldElement";
 import { CmsContentFormRendererPlugin, CmsEditorContentModel } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 

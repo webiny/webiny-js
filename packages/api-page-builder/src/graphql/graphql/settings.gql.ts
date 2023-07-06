@@ -18,6 +18,7 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     facebook: String
                     twitter: String
                     instagram: String
+                    linkedIn: String
                     image: PbFile
                 }
 
@@ -97,6 +98,7 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     facebook: String
                     twitter: String
                     instagram: String
+                    linkedIn: String
                     image: PbFileInput
                 }
 

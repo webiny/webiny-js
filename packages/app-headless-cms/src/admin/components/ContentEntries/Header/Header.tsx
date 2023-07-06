@@ -1,6 +1,8 @@
 import React from "react";
 import { Search } from "@webiny/app-aco";
 import { Cell, Grid } from "@webiny/ui/Grid";
+
+import { ButtonFilters } from "./ButtonFilters";
 import { ButtonsCreate } from "./ButtonsCreate";
 import { Title } from "./Title";
 
@@ -17,6 +19,7 @@ interface Props {
 
 export const Header: React.VFC<Props> = props => {
     const { canCreate, onCreateEntry, onCreateFolder, title, searchValue, onSearchChange } = props;
+
     return (
         <Container>
             <Grid align={"right"} style={{ padding: 0 }}>
@@ -26,6 +29,7 @@ export const Header: React.VFC<Props> = props => {
                 <Cell span={8}>
                     <WrapperActions>
                         <Search value={searchValue} onChange={onSearchChange} />
+                        <ButtonFilters />
                         {canCreate && (
                             <ButtonsCreate
                                 onCreateFolder={onCreateFolder}

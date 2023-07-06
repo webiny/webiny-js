@@ -4,10 +4,7 @@ import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
-import {
-    createPageBuilderGraphQL,
-    createPageBuilderContext
-} from "@webiny/api-page-builder/graphql";
+import { createPageBuilderContext } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -55,12 +52,6 @@ export const handler = createHandler({
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient
-            })
-        }),
         new CmsParametersPlugin(async context => {
             const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
             return {
@@ -68,12 +59,17 @@ export const handler = createHandler({
                 locale
             };
         }),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
                 documentClient
             })
         }),
-        // Add File storage S3 plugin for API file manager.
         fileManagerS3(),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
@@ -81,7 +77,6 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        createPageBuilderGraphQL(),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient,

@@ -54,5 +54,3 @@ export const wcpFetch = async ({ url, authorization, body }: WcpFetchParams) => 
         return { error: true, status, statusText, message: "" };
     }
 };
-
-export const AACL_RELEASE_DATE = "2023-06-05";

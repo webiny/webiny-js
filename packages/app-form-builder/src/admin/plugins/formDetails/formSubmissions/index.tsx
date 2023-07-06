@@ -22,7 +22,6 @@ export default [
             const { getPermissions } = security;
 
             const fbFormPermissions = getPermissions("fb.form");
-
             if (!fbFormPermissions.length) {
                 return null;
             }
@@ -30,7 +29,7 @@ export default [
             let hasAccessToSubmissions = false;
             for (let i = 0; i < fbFormPermissions.length; i++) {
                 const { submissions } = fbFormPermissions[i];
-                if (submissions === true) {
+                if (typeof submissions == "undefined" || submissions === true) {
                     hasAccessToSubmissions = true;
                     break;
                 }

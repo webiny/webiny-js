@@ -13,6 +13,7 @@ import {
 } from "~/types";
 import {
     CreateElementActionEvent,
+    DeleteElementActionEvent,
     updateElementAction,
     UpdateElementActionArgsType
 } from "~/editor/recoil/actions";
@@ -131,10 +132,15 @@ export const createDroppedElement = (
     target: PbEditorElement
 ): PbEditorElement => {
     if (source.id) {
+        const id = getNanoid();
+
         return {
-            id: getNanoid(),
+            id,
             type: source.type,
-            elements: (source as any).elements || [],
+            elements: ((source as any).elements || []).map((childElement: PbEditorElement) => ({
+                ...childElement,
+                parent: id
+            })),
             data: (source as any).data || {},
             parent: target.id
         };
@@ -282,29 +288,26 @@ export const moveInPlace = (
 export const onReceived: PbEditorPageElementPlugin["onReceived"] = props => {
     const { source, target, position, state, meta } = props;
 
-    // Create a copy of the element with a new ID.
     const element = createDroppedElement(source as any, target);
+    const parent = addElementToParent(element, target, position);
 
-    // Add the copy into the parent (into the new position),
-    // and also delete the old one.
-    let parent = addElementToParent(element, target, position);
-    parent = removeElementFromParent(parent, source.id);
-
-    // Update parent element.
     const result = executeAction<UpdateElementActionArgsType>(state, meta, updateElementAction, {
         element: parent,
-        history: true
+        history: false
     });
 
-    // If we're just changing the position of an existing element,
-    // then we can exit here (no need to fire the below events).
-    const isDropOfAnExistingElement = !!source.id;
-    if (isDropOfAnExistingElement) {
+    result.actions.push(new AfterDropElementActionEvent({ element }));
+
+    if (source.id) {
+        // Delete source element
+        result.actions.push(
+            new DeleteElementActionEvent({
+                element: source as PbEditorElement
+            })
+        );
+
         return result;
     }
-
-    // Trigger drop and create-element events.
-    result.actions.push(new AfterDropElementActionEvent({ element }));
 
     result.actions.push(
         new CreateElementActionEvent({

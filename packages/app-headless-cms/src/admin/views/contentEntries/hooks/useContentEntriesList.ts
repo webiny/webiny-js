@@ -4,8 +4,8 @@ import { useRouter } from "@webiny/react-router";
 import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { useAcoList, useFolders } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
+import { useAcoList, createSort, useNavigateFolder } from "@webiny/app-aco";
+import { CMS_ENTRY_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
 import { ListMeta } from "@webiny/app-aco/types";
 import {
     transformCmsContentEntriesToRecordEntries,
@@ -21,31 +21,30 @@ interface UpdateSearchCallable {
     (params: UpdateSearchCallableParams): void;
 }
 
-interface UseContentEntriesListParams {
-    folderId?: string;
-}
-
 interface UseContentEntries {
     folders: FolderEntry[];
+    hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
     isSearch: boolean;
-    listTitle?: string;
     listMoreRecords: () => void;
+    listTitle?: string;
     meta: ListMeta;
     records: RecordEntry[];
     search: string;
     setSearch: (value: string) => void;
     setSorting: OnSortingChange;
+    showFilters: () => void;
+    showingFilters: boolean;
     sorting: Sorting;
+    setFilters: (data: Record<string, any>) => void;
 }
 
-export const useContentEntriesList = ({
-    folderId
-}: UseContentEntriesListParams): UseContentEntries => {
+export const useContentEntriesList = (): UseContentEntries => {
     const { history } = useRouter();
     const { contentModel } = useContentEntries();
-    const { getDescendantFolders } = useFolders();
+    const { currentFolderId = ROOT_FOLDER } = useNavigateFolder();
+
     const {
         folders: initialFolders,
         isListLoading,
@@ -55,18 +54,21 @@ export const useContentEntriesList = ({
         listTitle,
         meta,
         records: initialRecords,
-        setListParams,
-        sorting,
-        setSorting
-    } = useAcoList({ folderId });
+        setSearchQuery,
+        setListSort,
+        setFilters,
+        showFilters,
+        hideFilters,
+        showingFilters
+    } = useAcoList();
 
+    const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
-
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
     const baseUrl = `${CMS_ENTRY_LIST_LINK}/${contentModel.modelId}`;
 
-    // Search-related logics: update `listParams` and update querystring
+    // Search-related logics: update `searchQuery` state and querystring
     const updateSearch = useCallback(
         debounce<UpdateSearchCallable>(({ search, query }) => {
             const searchQuery = query.get("search");
@@ -75,24 +77,9 @@ export const useContentEntriesList = ({
                 return;
             }
 
-            let wbyAco_location;
-            if (search) {
-                /**
-                 * In case of search:
-                 * - in case we are inside a folder, pass the descendent folders id
-                 * - otherwhise, remove `location` and search across all records
-                 */
-                const folderIds = getDescendantFolders(folderId).map(folder => folder.id);
-                if (folderIds?.length) {
-                    wbyAco_location = { folderId_in: folderIds };
-                }
-            } else {
-                wbyAco_location = { folderId };
-            }
-
-            setListParams({ search, where: { wbyAco_location } });
-
             if (searchQuery !== search) {
+                setSearchQuery(search);
+
                 if (!search) {
                     // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
@@ -103,13 +90,13 @@ export const useContentEntriesList = ({
                 history.push(`${baseUrl}?${query.toString()}`);
             }
         }, 500),
-        [baseUrl, folderId]
+        [baseUrl, currentFolderId]
     );
 
     // Set "search" from search "query" on page load.
     useEffect(() => {
         setSearch(searchQuery);
-    }, [baseUrl, folderId, searchQuery]);
+    }, [baseUrl, currentFolderId, searchQuery]);
 
     // When "search" changes, trigger search-related logics
     useEffect(() => {
@@ -126,6 +113,17 @@ export const useContentEntriesList = ({
         return transformFolderItemsToFolderEntries(initialFolders);
     }, [initialFolders]);
 
+    useEffect(() => {
+        if (!sorting?.length) {
+            return;
+        }
+        const sort = createSort(sorting);
+        if (!sort) {
+            return;
+        }
+        setListSort(sort);
+    }, [sorting]);
+
     return {
         folders,
         isListLoading,
@@ -138,6 +136,10 @@ export const useContentEntriesList = ({
         search,
         setSearch,
         sorting,
-        setSorting
+        setSorting,
+        showingFilters,
+        showFilters,
+        hideFilters,
+        setFilters
     };
 };

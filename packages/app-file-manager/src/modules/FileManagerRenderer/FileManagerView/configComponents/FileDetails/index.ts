@@ -1,3 +1,4 @@
+import { createScopedFieldDecorator } from "./FieldDecorator";
 import { Width } from "./Width";
 
 export interface FileDetailsConfig {
@@ -5,5 +6,8 @@ export interface FileDetailsConfig {
 }
 
 export const FileDetails = {
-    Width
+    Width,
+    ExtensionField: {
+        createDecorator: createScopedFieldDecorator("fm.fileDetails.extensionFields")
+    }
 };

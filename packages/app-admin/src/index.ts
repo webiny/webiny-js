@@ -31,11 +31,15 @@ export * from "./plugins/PermissionRendererPlugin";
 
 // Components
 export { AppInstaller } from "./components/AppInstaller";
+export * from "./components/Buttons";
+export * from "./components/OptionsMenu";
+export * from "./components/Filters";
 export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
 export {
     default as SingleImageUpload,
     SingleImageUploadProps
 } from "./components/SingleImageUpload";
+export { LexicalEditor } from "./components/LexicalEditor/LexicalEditor";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
 export type {
@@ -51,3 +55,6 @@ export * from "./hooks/useConfirmationDialog";
 export * from "./hooks/useDialog";
 export { useWcp } from "@webiny/app-wcp";
 export { AaclPermission } from "@webiny/app-wcp/types";
+
+// Theme
+export { useTheme, ThemeProvider } from "@webiny/app-theme";

@@ -5,6 +5,7 @@ import { ensureDirSync, createWriteStream } from "fs-extra";
 import { FileInput } from "@webiny/api-file-manager/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { File as ImageFile, FileUploadsData } from "~/types";
+import { PageBlock } from "@webiny/api-page-builder/types";
 import { ExportedBlockData } from "~/export/utils";
 import { s3Stream } from "~/export/s3Stream";
 import { uploadAssets } from "~/import/utils/uploadAssets";
@@ -30,7 +31,7 @@ export async function importBlock({
     blockKey,
     context,
     fileUploadsData
-}: ImportBlockParams): Promise<ExportedBlockData["block"]> {
+}: ImportBlockParams): Promise<Pick<PageBlock, "name" | "content" | "preview" | "blockCategory">> {
     const log = console.log;
 
     // Making Directory for block in which we're going to extract the block data file.
@@ -53,7 +54,7 @@ export async function importBlock({
 
     // Load the block data file from disk.
     log(`Load file ${blockDataFileKey}`);
-    const { block, files } = await loadJson<ExportedBlockData>(BLOCK_DATA_FILE_PATH);
+    const { block, category, files } = await loadJson<ExportedBlockData>(BLOCK_DATA_FILE_PATH);
 
     // Only update block data if there are files.
     if (files && Array.isArray(files) && files.length > 0) {
@@ -88,15 +89,24 @@ export async function importBlock({
         });
     }
 
+    // Check if block category already exists
+    const blockCategory = await context.pageBuilder.getBlockCategory(category?.slug);
+    if (!blockCategory) {
+        await context.pageBuilder.createBlockCategory({
+            name: category.name,
+            slug: category.slug,
+            icon: category.icon,
+            description: category.description
+        });
+    }
+
     log("Removing Directory for block...");
     await deleteFile(blockKey);
 
     log(`Remove block contents from S3...`);
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
-    console.log("block", JSON.stringify(block, null, 2));
-
-    return block;
+    return { ...block, blockCategory: category.slug };
 }
 
 function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {

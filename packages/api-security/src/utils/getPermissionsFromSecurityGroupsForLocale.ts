@@ -12,6 +12,15 @@ export const getPermissionsFromSecurityGroupsForLocale = (
 ) => {
     return securityGroups
         .filter(securityGroup => {
+            // If one of the permissions grants full-access, we can return it immediately.
+            const fullAccessPermission = securityGroup.permissions.find(
+                permission => permission.name === "*"
+            );
+
+            if (fullAccessPermission) {
+                return true;
+            }
+
             const contentPermissionsObject = securityGroup.permissions.find(
                 permissionsObject => permissionsObject.name === "content.i18n"
             );
