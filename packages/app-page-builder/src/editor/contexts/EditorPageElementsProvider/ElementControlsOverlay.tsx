@@ -14,6 +14,7 @@ import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil
 import { ElementControlsOverlayBorders } from "./ElementControlsOverlay/ElementControlsOverlayBorders";
 import { ConnectDragSource } from "react-dnd";
 import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { getElementTitle } from "~/editor/contexts/EditorPageElementsProvider/getElementTitle";
 
 declare global {
     // eslint-disable-next-line
@@ -84,7 +85,6 @@ const PbElementControlsOverlay = ({
 
 const titleContainerBaseStyles = {
     color: "#fff",
-    textTransform: "lowercase",
     position: "absolute",
     padding: "2px 5px",
     fontSize: "10px",
@@ -238,15 +238,18 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 
     const title = useMemo(() => {
         if (element.data.blockId) {
-            const blockName = plugins
+            const blockPlugin = plugins
                 .byType<PbEditorBlockPlugin>("pb-editor-block")
-                .find(block => block.id === element.data.blockId)
-                ?.title?.toLowerCase();
+                .find(block => block.id === element.data.blockId);
 
-            return `block | ${blockName}`;
+            if (blockPlugin) {
+                return `block | ${blockPlugin.title}`;
+            }
+
+            return "block | unknown";
         }
 
-        return element.type;
+        return getElementTitle(element.type);
     }, [element.data.blockId]);
 
     // Z-index of element controls overlay depends on the depth of the page element.
