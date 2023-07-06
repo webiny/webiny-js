@@ -21,7 +21,7 @@ import { WebinyNodes } from "~/nodes/webinyNodes";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import {ClassNames, CSSObject} from "@emotion/react";
+import { ClassNames, CSSObject } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 import {
     LexicalEditorWithConfig,
