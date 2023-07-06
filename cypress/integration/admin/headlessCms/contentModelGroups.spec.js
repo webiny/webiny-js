@@ -65,7 +65,8 @@ context("Headless CMS - Content Model Groups", () => {
         });
 
         // Update groups' name
-        cy.findByTestId("cms.form.group.name").clear().type(newGroup2);
+        cy.findByTestId("cms.form.group.name").clear();
+        cy.findByTestId("cms.form.group.name").type(newGroup2);
 
         cy.findByTestId("cms.form.group.submit").click();
         // Loading should be completed
@@ -136,9 +137,9 @@ context("Headless CMS - Content Model Groups", () => {
 
         // Should able to search "Ungrouped" group
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search content model group/i)
-                .clear()
-                .type("ungrouped");
+            const input = cy.findByPlaceholderText(/search content model group/i);
+            input.clear();
+            input.type("ungrouped");
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(/ungrouped/i).should("exist");
@@ -146,9 +147,9 @@ context("Headless CMS - Content Model Groups", () => {
 
         // Should able to search Group1 and Group2
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search content model group/i)
-                .clear()
-                .type("Group");
+            const input = cy.findByPlaceholderText(/search content model group/i);
+            input.clear();
+            input.type("Group");
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(newGroup1).should("exist");
@@ -157,9 +158,9 @@ context("Headless CMS - Content Model Groups", () => {
 
         // Should able to search Group1 only
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search content model group/i)
-                .clear()
-                .type(newGroup1);
+            const input = cy.findByPlaceholderText(/search content model group/i);
+            input.clear();
+            input.type(newGroup1);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(newGroup1).should("exist");

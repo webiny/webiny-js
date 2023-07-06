@@ -119,7 +119,7 @@ context("Search, Sort and Filter Content Entries", () => {
     it("should search entries", () => {
         // Should show "no records found" when searching for non existing entry
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.get(".search__input").wait(200).clear().wait(100);
+            cy.get(".search__input").wait(200).clear();
             cy.get(".search__input").wait(200).type("NON_EXISTING_ENTRY");
             cy.wait(500);
         });
@@ -129,7 +129,7 @@ context("Search, Sort and Filter Content Entries", () => {
 
         // Should able to search for a specific entry
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.get(".search__input").wait(100).clear().wait(100);
+            cy.get(".search__input").wait(100).clear();
             cy.get(".search__input").wait(100).type(entries[0].title);
             cy.wait(500);
         });
@@ -143,7 +143,7 @@ context("Search, Sort and Filter Content Entries", () => {
 
         // Clear search
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.get(".search__input").wait(100).clear().wait(100);
+            cy.get(".search__input").wait(100).clear();
         });
     });
 
