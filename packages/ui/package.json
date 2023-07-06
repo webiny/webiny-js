@@ -87,7 +87,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/storybook-utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "babel-loader": "^8.0.0-beta.6",
+    "babel-loader": "9.1.2",
     "babel-plugin-emotion": "^9.2.8",
     "execa": "^5.0.0",
     "jest-dom": "^3.0.0",
