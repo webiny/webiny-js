@@ -21,7 +21,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "prettier": "^2.3.2",
+    "prettier": "^2.8.3",
     "theme": "0.0.0"
   },
   "publishConfig": {

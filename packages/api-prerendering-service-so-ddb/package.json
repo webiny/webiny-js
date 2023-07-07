@@ -35,7 +35,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.3.1",
-    "prettier": "^2.3.2",
+    "prettier": "^2.8.3",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"

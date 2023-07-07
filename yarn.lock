@@ -11670,28 +11670,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash.debounce@npm:^4.0.7":
-  version: 4.0.7
-  resolution: "@types/lodash.debounce@npm:4.0.7"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: e873b2d77f89010876baba3437ef826b17221b98948e00b5590828334a481dea1c8f9d28543210e564adc53199584f42c3cb171f8b6c3614fefc0b4e0888679c
-  languageName: node
-  linkType: hard
-
-"@types/lodash.get@npm:^4.4.6":
-  version: 4.4.7
-  resolution: "@types/lodash.get@npm:4.4.7"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 0dbf1960606e4707c34e8ffbe97ffaad0e47fc5df7a6e24ea6e4fe5838d2468aa13360f38815c77b06e3c9932631ae15662b4139036a69ee16aeb54827a21405
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:*, @types/lodash@npm:^4.14.190":
+"@types/lodash@npm:^4.14.190":
   version: 4.14.191
   resolution: "@types/lodash@npm:4.14.191"
   checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.191":
+  version: 4.14.195
+  resolution: "@types/lodash@npm:4.14.195"
+  checksum: 39b75ca635b3fa943d17d3d3aabc750babe4c8212485a4df166fe0516e39288e14b0c60afc6e21913cc0e5a84734633c71e617e2bd14eaa1cf51b8d7799c432e
   languageName: node
   linkType: hard
 
@@ -12907,7 +12896,7 @@ __metadata:
     get-yarn-workspaces: ^1.0.2
     jest: ^29.5.0
     jest-dynalite: ^3.6.1
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     rimraf: ^3.0.2
     sinon: ^9.0.2
     ttypescript: ^1.5.12
@@ -13038,7 +13027,7 @@ __metadata:
     graphql: ^15.7.2
     jest: ^29.5.0
     lodash: ^4.5.0
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     rimraf: ^3.0.2
     sinon: ^9.0.2
     ttypescript: ^1.5.12
@@ -13391,7 +13380,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
     lodash: ^4.17.21
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     rimraf: ^3.0.2
     sinon: ^9.0.2
     ttypescript: ^1.5.12
@@ -13466,7 +13455,7 @@ __metadata:
     p-map: ^4.0.0
     p-reduce: ^2.1.0
     pluralize: ^8.0.0
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     rimraf: ^3.0.2
     semver: ^6.3.0
     sinon: ^9.0.2
@@ -13474,7 +13463,7 @@ __metadata:
     ttypescript: ^1.5.12
     typescript: 4.7.4
     write-json-file: ^4.3.0
-    zod: ^3.20.2
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 
@@ -13594,7 +13583,7 @@ __metadata:
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
-    zod: ^3.20.2
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 
@@ -13834,7 +13823,7 @@ __metadata:
     typescript: 4.7.4
     uniqid: ^5.2.0
     zip-local: ^0.3.4
-    zod: ^3.20.2
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 
@@ -13882,7 +13871,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     dynamodb-toolbox: ^0.3.5
     jest-dynalite: ^3.3.1
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -13917,7 +13906,7 @@ __metadata:
     posthtml: ^0.15.0
     posthtml-noopener: ^1.0.5
     posthtml-plugin-link-preload: ^1.0.0
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     puppeteer-core: ^5.5.0
     rimraf: ^3.0.2
     shortid: ^2.2.16
@@ -14552,7 +14541,7 @@ __metadata:
     "@babel/preset-env": ^7.22.7
     "@babel/preset-react": ^7.22.5
     "@babel/preset-typescript": ^7.22.5
-    "@types/lodash.get": ^4.4.6
+    "@types/lodash": ^4.14.191
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     lodash: ^4.17.21
@@ -15521,7 +15510,7 @@ __metadata:
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
     "@emotion/styled": ^11.10.6
-    "@types/lodash.debounce": ^4.0.7
+    "@types/lodash": ^4.14.191
     "@types/react": 17.0.39
     "@types/warning": ^3.0.0
     "@types/web": ^0.0.61
@@ -15819,7 +15808,7 @@ __metadata:
     inquirer: ^7.3.3
     load-json-file: ^6.2.0
     ora: 4.1.1
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     rimraf: ^3.0.2
     ts-morph: ^11.0.0
     typescript: 4.7.4
@@ -16551,7 +16540,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     nanoid: ^3.3.4
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     react: 17.0.2
   languageName: unknown
   linkType: soft
@@ -16569,7 +16558,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     identity-obj-proxy: ^3.0.0
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     react: 17.0.2
     theme: 0.0.0
   languageName: unknown
@@ -16709,7 +16698,7 @@ __metadata:
     copy-to-clipboard: ^3.0.8
     execa: ^5.0.0
     highlight.js: ^9.12.0
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     react: 17.0.2
     react-dom: 17.0.2
     react-element-to-jsx-string: ^14.0.1
@@ -16890,7 +16879,7 @@ __metadata:
     ttypescript: ^1.5.12
     typescript: 4.7.4
   peerDependencies:
-    zod: ^3.20.2
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 
@@ -36496,15 +36485,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.3.2":
-  version: 2.8.3
-  resolution: "prettier@npm:2.8.3"
-  bin:
-    prettier: bin-prettier.js
-  checksum: 92f2ceb522d454370e02082aa74ad27388672f7cee8975028b59517c069fe643bdc73e322675c8faf2ff173d7a626d1a6389f26b474000308e793aa25fff46e5
-  languageName: node
-  linkType: hard
-
 "prettier@npm:^2.8.3":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
@@ -39296,10 +39276,10 @@ __metadata:
     load-json-file: ^6.2.0
     lodash: ^4.17.11
     longest: ^2.0.1
-    minimatch: ^3.0.4
+    minimatch: ^5.1.0
     node-fetch: ^2.6.1
     pm2: ^4.5.4
-    prettier: ^2.3.2
+    prettier: ^2.8.3
     rimraf: ^3.0.2
     rxjs: ^6.5.5
     semver: ^6.3.0
@@ -44402,13 +44382,6 @@ __metadata:
     compress-commons: ^4.1.0
     readable-stream: ^3.6.0
   checksum: 4a73da856738b0634700b52f4ab3fe0bf0a532bea6820ad962d0bda0163d2d5525df4859f89a7238e204a378384e12551985049790c1894c3ac191866e85887f
-  languageName: node
-  linkType: hard
-
-"zod@npm:^3.20.2":
-  version: 3.20.2
-  resolution: "zod@npm:3.20.2"
-  checksum: 04172f7e9350372684ccd298d4716908edc9113751295b6c4e1b3ea84e2af8997e504b33ba36f4741417bb2a5dc90bfd40501f6b0e7389df10e42a63d6d8366c
   languageName: node
   linkType: hard
 
