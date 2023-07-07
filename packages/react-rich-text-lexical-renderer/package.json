@@ -9,7 +9,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.19.0",
+    "@babel/runtime": "^7.22.6",
     "@types/react": "17.0.39",
     "@webiny/app-theme": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
@@ -21,7 +21,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "prettier": "^2.3.2",
+    "prettier": "^2.8.3",
     "theme": "0.0.0"
   },
   "publishConfig": {

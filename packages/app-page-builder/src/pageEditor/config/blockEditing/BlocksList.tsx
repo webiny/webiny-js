@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { get } from "lodash";
+import get from "lodash/get";
 import { List, WindowScroller } from "react-virtualized";
 import BlockPreview from "./BlockPreview";
 import { css } from "emotion";

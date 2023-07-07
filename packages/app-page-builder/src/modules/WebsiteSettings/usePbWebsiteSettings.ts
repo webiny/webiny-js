@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
-import { get, set } from "lodash";
+import get from "lodash/get";
+import set from "lodash/set";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
 /**
