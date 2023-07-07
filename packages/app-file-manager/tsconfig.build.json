@@ -12,7 +12,6 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
