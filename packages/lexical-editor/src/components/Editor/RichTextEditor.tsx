@@ -21,7 +21,7 @@ import { WebinyNodes } from "~/nodes/webinyNodes";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { ClassNames } from "@emotion/react";
+import { ClassNames, CSSObject } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 import {
     LexicalEditorWithConfig,
@@ -49,6 +49,7 @@ export interface RichTextEditorProps {
      * @description Theme to be injected into lexical editor
      */
     theme: WebinyTheme;
+    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
     themeEmotionMap?: ThemeEmotionMap;
 
     placeholderStyles?: React.CSSProperties;
@@ -195,7 +196,8 @@ export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEdito
                 <ClassNames>
                     {({ css }) => {
                         const themeEmotionMap =
-                            props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
+                            props?.themeEmotionMap ??
+                            toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
                         return (
                             <SharedHistoryContext>
                                 <BaseRichTextEditor {...props} themeEmotionMap={themeEmotionMap} />
