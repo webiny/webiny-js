@@ -30,5 +30,5 @@ const lexicalText = JSON.stringify({
     }
 });
 
-export const defaultText =  lexicalText;
+export const defaultText = lexicalText;
 export const displayText = "Heading";

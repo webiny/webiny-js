@@ -4,8 +4,7 @@ import { validation } from "@webiny/validation";
 import { Typography } from "@webiny/ui/Typography";
 import {
     createEmbedPlugin,
-    createEmbedSettingsPlugin,
-    EmbedPluginConfigRenderCallable
+    createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
 import { ReactComponent as LogoIcon } from "./codesandbox-logo.svg";
 import Accordion from "../../../elementSettings/components/Accordion";
@@ -25,8 +24,6 @@ const PreviewBox = styled("div")({
         width: 50
     }
 });
-
-const render: EmbedPluginConfigRenderCallable = props => <PeCodesandbox {...props} />;
 
 export default () => [
     createEmbedPlugin({
@@ -48,7 +45,10 @@ export default () => [
                 return data;
             }
         },
-        render
+        render: params => {
+            // @ts-ignore No need to worry about different element.elements type.
+            return <PeCodesandbox {...params} />;
+        }
     }),
     createEmbedSettingsPlugin({
         type: "codesandbox",

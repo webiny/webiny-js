@@ -8,7 +8,6 @@ import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
 
-import { PbTheme } from "~/types";
 import { Theme } from "@webiny/app-theme/types";
 const ColorPickerStyle = styled("div")({
     display: "flex",

@@ -1,8 +1,6 @@
-import React from "react";
 import kebabCase from "lodash/kebabCase";
 import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 import { createVimeo } from "@webiny/app-page-builder-elements/renderers/embeds/vimeo";
-
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
     const elementType = kebabCase(args.elementType || "vimeo");

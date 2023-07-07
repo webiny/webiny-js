@@ -1,8 +1,8 @@
+import React from "react";
 import kebabCase from "lodash/kebabCase";
 import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
 
-import React from "react";
 import { Link } from "@webiny/react-router";
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {

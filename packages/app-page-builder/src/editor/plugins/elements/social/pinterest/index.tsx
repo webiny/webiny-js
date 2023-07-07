@@ -54,6 +54,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             create: args.create,
             settings: args.settings,
             render(props) {
+                // @ts-ignore No need to worry about different `element.elements` type.
                 return <PePinterest {...props} />;
             }
         }),

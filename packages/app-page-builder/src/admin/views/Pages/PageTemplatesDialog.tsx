@@ -215,9 +215,7 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                                                 <ButtonSecondary
                                                     disabled={isLoading}
                                                     onClick={() =>
-                                                        handleCreatePageFromTemplate(
-                                                            activeTemplate
-                                                        )
+                                                        handleCreatePageFromTemplate(activeTemplate)
                                                     }
                                                 >
                                                     Use Template

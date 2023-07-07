@@ -11,8 +11,6 @@ import {
     rootElementAtom,
     elementsAtom
 } from "~/editor/recoil/modules";
-
-import Element from "../Element";
 import { EditorContent } from "~/editor";
 
 import { Element as PeElement } from "@webiny/app-page-builder-elements";

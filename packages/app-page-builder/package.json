@@ -35,7 +35,6 @@
     "@webiny/app-security": "0.0.0",
     "@webiny/app-tenancy": "0.0.0",
     "@webiny/app-theme": "0.0.0",
-    "@webiny/feature-flags": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/plugins": "0.0.0",
@@ -45,7 +44,6 @@
     "@webiny/ui": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "aos": "^2.3.4",
     "apollo-cache": "^1.3.5",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
@@ -80,8 +78,7 @@
     "store": "^2.0.12",
     "swiper": "^9.3.2",
     "timeago-react": "^2.0.0",
-    "uniqid": "^5.0.3",
-    "warning": "^4.0.2"
+    "uniqid": "^5.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",

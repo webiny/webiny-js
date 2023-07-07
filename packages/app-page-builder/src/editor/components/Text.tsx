@@ -3,7 +3,6 @@ import { CoreOptions } from "medium-editor";
 
 import PeText from "./Text/PeText";
 
-
 interface TextElementProps {
     elementId: string;
     mediumEditorOptions?: CoreOptions;

@@ -1,4 +1,3 @@
-import React from "react";
 import { PbRenderElementPlugin } from "~/types";
 import { createTabs } from "@webiny/app-page-builder-elements/renderers/tabs";
 

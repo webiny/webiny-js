@@ -3,7 +3,6 @@ import { PbEditorElement } from "~/types";
 import PeImage from "./PeImage";
 import { Element } from "@webiny/app-page-builder-elements/types";
 
-
 interface ImageProps {
     element: PbEditorElement;
 }

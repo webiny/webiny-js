@@ -6,9 +6,6 @@ import set from "lodash/set";
 import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Typography } from "@webiny/ui/Typography";
-import { Link } from "@webiny/react-router";
 import {
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,

@@ -12,7 +12,6 @@
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../app-theme/tsconfig.build.json" },
-    { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },

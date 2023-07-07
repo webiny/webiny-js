@@ -1,7 +1,5 @@
-import React from "react";
 import kebabCase from "lodash/kebabCase";
 import { PluginCollection } from "@webiny/plugins/types";
-import { Mosaic } from "./components/Mosaic";
 import {
     PbRenderElementPluginArgs,
     PbRenderElementPlugin,
@@ -22,9 +20,10 @@ export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
             elementType: elementType,
             render: createImagesList({
                 imagesListComponents: () => {
-                    const registeredPlugins = plugins.byType<PbPageElementImagesListComponentPlugin>(
-                        "pb-page-element-images-list-component"
-                    );
+                    const registeredPlugins =
+                        plugins.byType<PbPageElementImagesListComponentPlugin>(
+                            "pb-page-element-images-list-component"
+                        );
 
                     return registeredPlugins.map(plugin => {
                         return {

@@ -67,6 +67,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
                 return <img style={{ width, height }} src={placeholder} alt={"Tweet"} />;
             },
             render(props) {
+                // @ts-ignore No need to worry about different element.elements type.
                 return <PeTwitter {...props} />;
             }
         }),

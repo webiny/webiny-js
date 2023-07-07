@@ -16,7 +16,6 @@ import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import startCase from "lodash/startCase";
 
-
 const classes = {
     gridClass: css({
         "&.mdc-layout-grid": {
