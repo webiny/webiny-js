@@ -50,7 +50,6 @@ export default {
     },
 
     featureFlags: {
-        pbLegacyRenderingEngine: true,
         copyPermissionsButton: true,
         experimentalAdminOmniSearch: true
     }
