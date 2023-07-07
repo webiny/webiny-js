@@ -6,10 +6,10 @@ module.exports = createPulumiCommand({
     command: async ({ inputs, context, pulumi }) => {
         const { env, folder, json } = inputs;
 
+        const { PULUMI_SECRETS_PROVIDER, PULUMI_CONFIG_PASSPHRASE } = getPulumiEnvVars();
+
         let stackExists = true;
         try {
-            const { PULUMI_SECRETS_PROVIDER, PULUMI_CONFIG_PASSPHRASE } = getPulumiEnvVars();
-
             await pulumi.run({
                 command: ["stack", "select", env],
                 args: {
@@ -31,7 +31,12 @@ module.exports = createPulumiCommand({
                 args: {
                     json
                 },
-                execa: { stdio: "inherit" }
+                execa: {
+                    stdio: "inherit",
+                    env: {
+                        PULUMI_CONFIG_PASSPHRASE
+                    }
+                }
             });
         }
 
