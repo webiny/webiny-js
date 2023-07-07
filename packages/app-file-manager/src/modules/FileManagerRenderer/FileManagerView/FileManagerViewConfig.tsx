@@ -20,7 +20,11 @@ export function useFileManagerViewConfig() {
 
     return useMemo(
         () => ({
-            browser: { ...browser, filters: [...(browser.filters || [])] },
+            browser: {
+                ...browser,
+                filters: [...(browser.filters || [])],
+                filtersToWhere: [...(browser.filtersToWhere || [])]
+            },
             fileDetails: config.fileDetails || {
                 width: "1000px"
             }
