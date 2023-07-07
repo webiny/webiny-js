@@ -29,7 +29,7 @@ import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { TypographyStyle } from "@webiny/app-theme/types";
 
 const classes = {
@@ -95,38 +95,20 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
     const themePlugins = plugins.byType<PbThemePlugin>("pb-theme");
 
     const themeTypographyOptions = useMemo(() => {
-        if (!isLegacyRenderingEngine) {
-            const allTypographyVariants: TypographyStyle[] = [];
+        const allTypographyVariants: TypographyStyle[] = [];
 
-            const typography = pageElements.theme.styles?.typography;
-            if (typography) {
-                for (const typographyCategory in typography) {
-                    allTypographyVariants.push(...typography[typographyCategory]);
-                }
+        const typography = pageElements.theme.styles?.typography;
+        if (typography) {
+            for (const typographyCategory in typography) {
+                allTypographyVariants.push(...typography[typographyCategory]);
             }
-
-            return allTypographyVariants.map(variant => (
-                <option value={variant.id} key={variant.id}>
-                    {variant.name}
-                </option>
-            ));
         }
 
-        const [{ theme }] = themePlugins;
-        const { types = [] } = theme.elements[element.type];
-
-        return [
-            /**
-             * remove ts-ignore when determined types for the PbTheme.elements
-             * TODO @ts-refactor
-             */
-            // @ts-ignore
-            ...types.map(el => (
-                <option value={el.className} key={el.label}>
-                    {el.label}
-                </option>
-            ))
-        ];
+        return allTypographyVariants.map(variant => (
+            <option value={variant.id} key={variant.id}>
+                {variant.name}
+            </option>
+        ));
     }, [themePlugins, element]);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -257,25 +239,6 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
                 >
                     <TextAlignment value={text.alignment} onChange={updateAlignment} />
                 </Wrapper>
-
-                {isLegacyRenderingEngine && themeTypographyOptions.length === 0 && (
-                    <Grid className={classes.warningMessageGrid}>
-                        <Cell span={12}>
-                            <Typography use={"caption"}>
-                                Please add typography options in{" "}
-                                <Link
-                                    to={
-                                        "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
-                                    }
-                                    target={"_blank"}
-                                >
-                                    theme
-                                </Link>
-                                .
-                            </Typography>
-                        </Cell>
-                    </Grid>
-                )}
             </>
         </Accordion>
     );

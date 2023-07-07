@@ -1,7 +1,3 @@
-import { isLegacyRenderingEngine } from "~/utils";
-
-const legacyText = `Heading`;
-
 const lexicalText = JSON.stringify({
     root: {
         children: [
@@ -34,5 +30,5 @@ const lexicalText = JSON.stringify({
     }
 });
 
-export const defaultText = isLegacyRenderingEngine ? legacyText : lexicalText;
-export const displayText = legacyText;
+export const defaultText =  lexicalText;
+export const displayText = "Heading";

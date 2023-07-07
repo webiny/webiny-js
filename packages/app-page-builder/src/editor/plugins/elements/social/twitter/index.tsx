@@ -13,8 +13,6 @@ import {
     SimpleButton
 } from "../../../elementSettings/components/StyledComponents";
 import { PbEditorElementPluginArgs } from "~/types";
-import { EmbedPluginConfigRenderCallable } from "~/editor/plugins/elements/utils/oembed/createEmbedPlugin";
-import { isLegacyRenderingEngine } from "~/utils";
 import { PeTwitter } from "./PeTwitter";
 
 declare global {
@@ -31,14 +29,6 @@ const PreviewBox = styled("div")({
         width: 50
     }
 });
-
-let render: EmbedPluginConfigRenderCallable;
-if (!isLegacyRenderingEngine) {
-    render = props => (
-        // @ts-ignore Sync `elements` property type.
-        <PeTwitter {...props} />
-    );
-}
 
 export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "twitter");
@@ -76,7 +66,9 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             renderElementPreview({ width, height }) {
                 return <img style={{ width, height }} src={placeholder} alt={"Tweet"} />;
             },
-            render
+            render(props) {
+                return <PeTwitter {...props} />;
+            }
         }),
         createEmbedSettingsPlugin({
             type: elementType,

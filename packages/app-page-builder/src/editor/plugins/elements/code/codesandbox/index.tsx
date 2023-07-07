@@ -14,7 +14,7 @@ import {
     ButtonContainer,
     SimpleButton
 } from "../../../elementSettings/components/StyledComponents";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { PeCodesandbox } from "./PeCodesandbox";
 
 const PreviewBox = styled("div")({
@@ -26,13 +26,7 @@ const PreviewBox = styled("div")({
     }
 });
 
-let render: EmbedPluginConfigRenderCallable;
-if (!isLegacyRenderingEngine) {
-    render = props => (
-        // @ts-ignore Sync `elements` property type.
-        <PeCodesandbox {...props} />
-    );
-}
+const render: EmbedPluginConfigRenderCallable = props => <PeCodesandbox {...props} />;
 
 export default () => [
     createEmbedPlugin({

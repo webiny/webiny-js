@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import kebabCase from "lodash/kebabCase";
 import { Typography } from "@webiny/ui/Typography";
 import { createEmbedPlugin, createEmbedSettingsPlugin } from "../../utils/oembed";
-import PinterestEmbed from "./PinterestEmbed";
 import { validation } from "@webiny/validation";
 import { ReactComponent as LogoIcon } from "./pinterest-brands.svg";
 import Accordion from "../../../elementSettings/components/Accordion";
@@ -16,7 +15,7 @@ import {
     classes
 } from "../../../elementSettings/components/StyledComponents";
 import { PbEditorElementPluginArgs } from "~/types";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { PePinterest } from "~/editor/plugins/elements/social/pinterest/PePinterest";
 
 const PreviewBox = styled("div")({
@@ -55,10 +54,6 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             create: args.create,
             settings: args.settings,
             render(props) {
-                if (isLegacyRenderingEngine) {
-                    return <PinterestEmbed element={props.element} />;
-                }
-                // @ts-ignore Sync `elements` property type.
                 return <PePinterest {...props} />;
             }
         }),

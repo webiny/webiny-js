@@ -12,7 +12,6 @@ import {
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "~/editor/plugins/elementSettings/elementSettingsUtils";
 import { createElement } from "~/editor/helpers";
-import { isLegacyRenderingEngine } from "~/utils";
 
 import lodashGet from "lodash/get";
 
@@ -27,12 +26,10 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         "pb-editor-page-element-settings-mirror-cell"
     ];
 
-    if (!isLegacyRenderingEngine) {
-        defaultSettings.push(
-            "pb-editor-page-element-style-settings-horizontal-align-flex",
-            "pb-editor-page-element-style-settings-cell-vertical-align"
-        );
-    }
+    defaultSettings.push(
+        "pb-editor-page-element-style-settings-horizontal-align-flex",
+        "pb-editor-page-element-style-settings-cell-vertical-align"
+    );
 
     const elementType = kebabCase(args.elementType || "cell");
 
@@ -74,13 +71,11 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
                 }
             };
 
-            if (!isLegacyRenderingEngine) {
-                set(
-                    defaultValue,
-                    "data.settings.horizontalAlignFlex",
-                    createInitialPerDeviceSettingValue("flex-start", DisplayMode.DESKTOP)
-                );
-            }
+            set(
+                defaultValue,
+                "data.settings.horizontalAlignFlex",
+                createInitialPerDeviceSettingValue("flex-start", DisplayMode.DESKTOP)
+            );
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },

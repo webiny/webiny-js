@@ -13,7 +13,6 @@ import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonSecondary } from "@webiny/ui/Button";
 
-import ElementAnimation from "~/render/components/ElementAnimation";
 import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { LIST_PAGE_TEMPLATES } from "~/admin/views/PageTemplates/graphql";
@@ -199,41 +198,37 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                 </LeftPanel>
                 <RightPanel span={9}>
                     {activeTemplate && (
-                        <ElementAnimation>
-                            {({ refresh }) => (
-                                <DetailsContainer onScroll={refresh}>
-                                    <RenderBlock>
-                                        <Elevation z={2}>
-                                            <div style={{ position: "relative" }}>
-                                                <HeaderTitle>
-                                                    <PageTemplateTitle>
-                                                        <Typography use="headline5">
-                                                            {activeTemplate.title}
-                                                        </Typography>
-                                                        <Typography use="body2">
-                                                            {activeTemplate.description}
-                                                        </Typography>
-                                                    </PageTemplateTitle>
-                                                    <HeaderActions>
-                                                        <ButtonSecondary
-                                                            disabled={isLoading}
-                                                            onClick={() =>
-                                                                handleCreatePageFromTemplate(
-                                                                    activeTemplate
-                                                                )
-                                                            }
-                                                        >
-                                                            Use Template
-                                                        </ButtonSecondary>
-                                                    </HeaderActions>
-                                                </HeaderTitle>
-                                                <PagePreview page={activeTemplate} />
-                                            </div>
-                                        </Elevation>
-                                    </RenderBlock>
-                                </DetailsContainer>
-                            )}
-                        </ElementAnimation>
+                        <DetailsContainer>
+                            <RenderBlock>
+                                <Elevation z={2}>
+                                    <div style={{ position: "relative" }}>
+                                        <HeaderTitle>
+                                            <PageTemplateTitle>
+                                                <Typography use="headline5">
+                                                    {activeTemplate.title}
+                                                </Typography>
+                                                <Typography use="body2">
+                                                    {activeTemplate.description}
+                                                </Typography>
+                                            </PageTemplateTitle>
+                                            <HeaderActions>
+                                                <ButtonSecondary
+                                                    disabled={isLoading}
+                                                    onClick={() =>
+                                                        handleCreatePageFromTemplate(
+                                                            activeTemplate
+                                                        )
+                                                    }
+                                                >
+                                                    Use Template
+                                                </ButtonSecondary>
+                                            </HeaderActions>
+                                        </HeaderTitle>
+                                        <PagePreview page={activeTemplate} />
+                                    </div>
+                                </Elevation>
+                            </RenderBlock>
+                        </DetailsContainer>
                     )}
                 </RightPanel>
             </SplitView>

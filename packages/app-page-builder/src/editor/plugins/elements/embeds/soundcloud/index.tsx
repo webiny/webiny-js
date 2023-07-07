@@ -13,7 +13,7 @@ import {
 } from "../../../elementSettings/components/StyledComponents";
 import { PbEditorElementPluginArgs } from "~/types";
 import { EmbedPluginConfigRenderCallable } from "~/editor/plugins/elements/utils/oembed/createEmbedPlugin";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { PeSoundcloud } from "./PeSoundcloud";
 
 const PreviewBox = styled("div")({
@@ -25,13 +25,11 @@ const PreviewBox = styled("div")({
     }
 });
 
-let render: EmbedPluginConfigRenderCallable;
-if (!isLegacyRenderingEngine) {
-    render = props => (
-        // @ts-ignore Sync `elements` property type.
-        <PeSoundcloud {...props} />
-    );
-}
+const render: EmbedPluginConfigRenderCallable = props => (
+    // @ts-ignore Sync `elements` property type.
+    <PeSoundcloud {...props} />
+);
+
 export default (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "soundcloud");
     const defaultToolbar = {

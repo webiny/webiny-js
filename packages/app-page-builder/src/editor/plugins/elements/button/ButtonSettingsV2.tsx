@@ -1,9 +1,8 @@
 import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
-import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps, PbTheme } from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
 import IconPickerComponent from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
@@ -16,7 +15,7 @@ import { updateButtonElementIcon } from "../utils/iconUtils";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import startCase from "lodash/startCase";
-import { isLegacyRenderingEngine } from "~/utils";
+
 
 const classes = {
     gridClass: css({
@@ -61,23 +60,12 @@ const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> 
 
     let typesOptions: Array<{ value: string; label: string }> = [];
 
-    if (!isLegacyRenderingEngine) {
-        const { theme } = usePageElements();
-        const types = Object.keys(theme.styles.elements.button || {});
-        typesOptions = types.map(item => ({
-            value: item,
-            label: startCase(item)
-        }));
-    } else {
-        const { theme } = usePageBuilder();
-        const legacyTheme = theme as PbTheme;
-        const types = legacyTheme?.elements?.button?.types || [];
-
-        typesOptions = types.map(item => ({
-            value: item.className,
-            label: item.label
-        }));
-    }
+    const { theme } = usePageElements();
+    const types = Object.keys(theme.styles.elements.button || {});
+    typesOptions = types.map(item => ({
+        value: item,
+        label: startCase(item)
+    }));
 
     const defaultType = typesOptions[0].value;
     const { type = defaultType, icon = { width: 36 } } = element.data || {};

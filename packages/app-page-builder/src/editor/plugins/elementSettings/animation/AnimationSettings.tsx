@@ -3,7 +3,6 @@ import { css } from "emotion";
 import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
-import ElementAnimation from "~/render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import DurationInput from "../components/SliderWithInput";
@@ -39,10 +38,7 @@ const classes = {
 const STEP = 50;
 const MAX_VALUE = 3000;
 const DATA_NAMESPACE = "data.settings.animation";
-type SettingsPropsType = {
-    animation: any;
-};
-const Settings: React.FC<SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps> = ({
+const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const [element] = useActiveElement<PbEditorElement>();
@@ -181,12 +177,6 @@ type AnimationSettingsPropsType = {
 const AnimationSettings: React.FC<
     AnimationSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = props => {
-    return (
-        <ElementAnimation>
-            {animation => {
-                return <Settings {...props} animation={animation} />;
-            }}
-        </ElementAnimation>
-    );
+    return <Settings {...props} />;
 };
 export default AnimationSettings;
