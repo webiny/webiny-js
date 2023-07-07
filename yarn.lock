@@ -12567,7 +12567,6 @@ __metadata:
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
-    "@webiny/feature-flags": 0.0.0
     "@webiny/handler": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-db": 0.0.0
