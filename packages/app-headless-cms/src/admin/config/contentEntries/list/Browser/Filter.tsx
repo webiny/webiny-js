@@ -17,6 +17,11 @@ export interface FilterProps {
     after?: string;
 }
 
+export interface CreateDecoratorParams {
+    name: string;
+    modelIds?: string[];
+}
+
 const BaseFilter = makeComposable<FilterProps>(
     "Filter",
     ({ name, element, modelIds = [], after = undefined, before = undefined, remove = false }) => {
@@ -50,7 +55,7 @@ const BaseFilter = makeComposable<FilterProps>(
     }
 );
 
-const createDecorator = createDecoratorFactory<{ name: string; modelIds?: string[] }>()(
+const createDecorator = createDecoratorFactory<CreateDecoratorParams>()(
     BaseFilter,
     (decoratorProps, componentProps) => {
         const { model } = useModel();
