@@ -7,6 +7,6 @@ export default (): PbRenderElementPlugin => {
         name: "pb-render-page-element-codesandbox",
         type: "pb-render-page-element",
         elementType: "codesandbox",
-        render: createCodesandbox
+        render: createCodesandbox()
     };
 };

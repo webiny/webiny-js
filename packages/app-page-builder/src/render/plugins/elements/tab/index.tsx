@@ -8,6 +8,6 @@ export default (): PbRenderElementPlugin => {
         type: "pb-render-page-element",
         name: "pb-render-page-element-tab",
         elementType: "tab",
-        render: createTab
+        render: createTab()
     };
 };

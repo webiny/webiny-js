@@ -10,6 +10,6 @@ export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => 
         name: `pb-render-page-element-${kebabCase(elementType)}`,
         type: "pb-render-page-element",
         elementType,
-        render: createHeading
+        render: createHeading()
     };
 };

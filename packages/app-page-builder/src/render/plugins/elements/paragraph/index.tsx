@@ -11,6 +11,6 @@ export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => 
         name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
         elementType: elementType,
-        render: createParagraph
+        render: createParagraph()
     };
 };

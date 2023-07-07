@@ -11,6 +11,7 @@ import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
+import { Renderer } from "@webiny/app-page-builder-elements/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -381,7 +382,7 @@ export type PbRenderElementPlugin = Plugin & {
     type: "pb-render-page-element";
     // Name of the pb-element plugin this render plugin is handling.
     elementType: string;
-    render: (params: PbRenderElementPluginRenderParams) => React.ReactNode;
+    render: Renderer;
 };
 
 export type PbPageSettingsFieldsPlugin = Plugin & {

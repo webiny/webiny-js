@@ -7,6 +7,6 @@ export default (): PbRenderElementPlugin => {
         type: "pb-render-page-element",
         name: "pb-render-page-element-grid",
         elementType: "grid",
-        render: createGrid
+        render: createGrid()
     };
 };
