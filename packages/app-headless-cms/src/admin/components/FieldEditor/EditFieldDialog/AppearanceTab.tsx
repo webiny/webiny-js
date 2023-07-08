@@ -77,14 +77,13 @@ const AppearanceTab = () => {
                         <br />
                         Read more about this in our{" "}
                         <a
-                            href={
-                                "https://www.webiny.com/docs/release-notes/5.37.0/upgrade-guide#legacy-rich-text-editor-support-after-the-upgrade"
-                            }
+                            href={"https://webiny.link/hcms-legacy-rte-support"}
                             rel="noreferrer"
                             target={"_blank"}
                         >
                             upgrade guide
                         </a>
+                        .
                     </Alert>
                 </Cell>
             )}
