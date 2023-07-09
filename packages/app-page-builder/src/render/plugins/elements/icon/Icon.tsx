@@ -1,5 +1,5 @@
 import React from "react";
-import { get } from "lodash";
+import get from "lodash/get";
 import { css } from "emotion";
 import { ElementRoot } from "../../../components/ElementRoot";
 import { PbElement } from "~/types";

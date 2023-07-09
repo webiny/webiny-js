@@ -32,7 +32,7 @@ export const Table: React.VFC = () => {
         return `${CMS_ENTRY_LIST_LINK}/${model.modelId}`;
     }, [model.modelId]);
     const createNavigateFolderStorageKey = useCallback(() => {
-        return LOCAL_STORAGE_LATEST_VISITED_FOLDER;
+        return `${LOCAL_STORAGE_LATEST_VISITED_FOLDER}_${model.modelId}`;
     }, [model.modelId]);
 
     return (

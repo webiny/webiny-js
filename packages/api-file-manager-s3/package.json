@@ -22,8 +22,8 @@
     "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.3",
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.8",
     "@types/node-fetch": "^2.6.1",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",

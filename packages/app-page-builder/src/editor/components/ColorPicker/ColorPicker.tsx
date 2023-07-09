@@ -3,7 +3,7 @@ import classnames from "classnames";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import classNames from "classnames";
-import { isEqual } from "lodash";
+import isEqual from "lodash/isEqual";
 import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "~/hooks/usePageBuilder";

@@ -1,4 +1,5 @@
-import _ from "lodash";
+import isNaN from "lodash/isNaN";
+import isNumber from "lodash/isNumber";
 import ValidationError from "~/validationError";
 
 /**
@@ -8,11 +9,11 @@ import ValidationError from "~/validationError";
  * @return {boolean}
  */
 export default (value: any) => {
-    if (!value && !_.isNaN(value)) {
+    if (!value && !isNaN(value)) {
         return;
     }
 
-    if (_.isNumber(value) && !_.isNaN(value)) {
+    if (isNumber(value) && !isNaN(value)) {
         return;
     }
 

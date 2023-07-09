@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useMemo, useState } from "react";
-import debounce from "lodash.debounce";
+import debounce from "lodash/debounce";
 
 interface Props {
     wait?: number;

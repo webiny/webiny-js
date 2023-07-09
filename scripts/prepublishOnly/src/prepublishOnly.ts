@@ -2,7 +2,7 @@
 import getYarnWorkspaces from "get-yarn-workspaces";
 import { blueBright, gray } from "chalk";
 import fs from "fs-extra";
-import get from "lodash.get";
+import get from "lodash/get";
 import path from "path";
 import loadJson from "load-json-file";
 import writeJson from "write-json-file";

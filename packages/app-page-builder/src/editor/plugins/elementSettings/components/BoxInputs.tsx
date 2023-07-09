@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { get } from "lodash";
+import get from "lodash/get";
 import classNames from "classnames";
 import { css } from "emotion";
 import { Grid, Cell } from "@webiny/ui/Grid";

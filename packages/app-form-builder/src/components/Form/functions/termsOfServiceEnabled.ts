@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import get from "lodash/get";
 import { FbFormModel } from "~/types";
 
 export default (formData: FbFormModel): boolean => {

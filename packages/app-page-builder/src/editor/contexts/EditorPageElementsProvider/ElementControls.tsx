@@ -9,6 +9,7 @@ import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
 import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
 import { useSnackbar } from "@webiny/app-admin";
+import { getElementTitle } from "~/editor/contexts/EditorPageElementsProvider/getElementTitle";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
@@ -61,7 +62,9 @@ export const ElementControls = () => {
         // for which this drop zone is rendered).
         if (Array.isArray(target) && target.length > 0) {
             if (!target.includes(element.type)) {
-                showSnackbar("The currently active page element cannot receive child elements.");
+                const sourceTitle = getElementTitle(source.type);
+                const targetTitle = getElementTitle(element.type);
+                showSnackbar(`${sourceTitle} cannot be dropped into ${targetTitle}.`);
                 return;
             }
         }

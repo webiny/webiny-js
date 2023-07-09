@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { get } from "lodash";
+import get from "lodash/get";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { Dialog, DialogAccept, DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { ButtonPrimary } from "@webiny/ui/Button";

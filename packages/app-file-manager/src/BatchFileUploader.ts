@@ -1,4 +1,4 @@
-import { nanoid } from "nanoid";
+import { generateId } from "@webiny/utils";
 import { makeAutoObservable, runInAction, action } from "mobx";
 import { FileItem } from "@webiny/app-admin/types";
 import { FileManagerViewContext } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
@@ -22,7 +22,7 @@ class FileJob {
     public file: File;
 
     constructor(file: File) {
-        this.id = nanoid();
+        this.id = generateId();
         this.file = file;
     }
 }

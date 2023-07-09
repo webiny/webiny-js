@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { Icon } from "@webiny/ui/Icon";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { Center, Vertical, Horizontal } from "../../DropZone";
 import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";

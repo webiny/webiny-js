@@ -8,7 +8,7 @@ import { Slider } from "~/Slider";
 import { ImageEditorTool } from "./types";
 import { IconButton, ButtonDefault } from "~/Button";
 import { Tooltip } from "~/Tooltip";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import styled from "@emotion/styled";
 
 interface RenderFormState {

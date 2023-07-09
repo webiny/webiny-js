@@ -17,7 +17,7 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: "module"
     },
-    plugins: ["@typescript-eslint", "jest", "import", "react"],
+    plugins: ["@typescript-eslint", "jest", "import", "react", "lodash"],
     env: {
         jest: true,
         commonjs: true,
@@ -44,7 +44,8 @@ module.exports = {
         // This rule raises an error when you do that, so we disabled it.
         "jest/no-conditional-expect": 0,
         "jest/no-commented-out-tests": 0,
-        "jest/no-disabled-tests": 0
+        "jest/no-disabled-tests": 0,
+        "lodash/import-scope": [2, "method"]
     },
     settings: {
         react: {

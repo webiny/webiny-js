@@ -10,7 +10,7 @@ import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { Klass, LexicalNode } from "lexical";
 import { WebinyNodes } from "~/nodes/webinyNodes";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { ClassNames } from "@emotion/react";
+import { ClassNames, CSSObject } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 
 interface LexicalHtmlRendererProps {
@@ -21,6 +21,7 @@ interface LexicalHtmlRendererProps {
      */
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
+    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
 }
 
 export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
@@ -64,7 +65,8 @@ export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = props => 
         <ClassNames>
             {({ css }) => {
                 const themeEmotionMap =
-                    props?.themeEmotionMap ?? toTypographyEmotionMap(css, props.theme);
+                    props?.themeEmotionMap ??
+                    toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
                 return <BaseLexicalHtmlRenderer {...props} themeEmotionMap={themeEmotionMap} />;
             }}
         </ClassNames>

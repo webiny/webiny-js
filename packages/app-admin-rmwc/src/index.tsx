@@ -5,7 +5,7 @@ import { RMWCProvider } from "@rmwc/provider";
 import { Layout } from "./modules/Layout";
 import { Navigation } from "./modules/Navigation";
 import { Brand } from "./modules/Brand";
-import { Search } from "~/modules/Search";
+// import { Search } from "~/modules/Search"; Removed in 5.37.0, it will be refactored later
 import { UserMenu } from "~/modules/UserMenu";
 import { Overlays } from "./modules/Overlays";
 import { NotFound } from "./modules/NotFound";
@@ -30,7 +30,7 @@ export const RMWC: React.FC = () => {
             <NotFound />
             <Brand />
             <Navigation />
-            <Search />
+            {/*<Search />*/}
             <UserMenu />
             <Overlays />
         </Fragment>
