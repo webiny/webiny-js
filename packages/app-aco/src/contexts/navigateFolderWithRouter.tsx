@@ -22,7 +22,6 @@ export const NavigateFolderWithRouterProvider: React.VFC<NavigateFolderProviderP
     const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderId);
 
     useEffect(() => {
-        debugger;
         setCurrentFolderId(folderId);
     }, [folderId]);
 
