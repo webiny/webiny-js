@@ -89,7 +89,16 @@ export const ElementControls = () => {
             render = (
                 <>
                     <Droppable
-                        onDrop={source => dropElementAction(source)}
+                        onDrop={source => {
+                            // When dragging elements, we don't want to allow dropping them into saved blocks. Note
+                            // the `blockId` only exists in the page editor. It doesn't exist in the block editor.
+                            const isBlock = element.data.blockId;
+                            if (isBlock) {
+                                return null;
+                            }
+
+                            return dropElementAction(source);
+                        }}
                         type={element.type}
                         isVisible={() => true}
                     >
