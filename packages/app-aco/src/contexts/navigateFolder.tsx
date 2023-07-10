@@ -70,7 +70,7 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
     };
 
     const context: NavigateFolderContext = {
-        currentFolderId,
+        currentFolderId: currentFolderId || store.get(createStorageKey()),
         setFolderToStorage,
         navigateToListHome,
         navigateToFolder,
