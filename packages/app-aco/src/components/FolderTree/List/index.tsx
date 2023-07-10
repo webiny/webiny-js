@@ -53,7 +53,7 @@ export const List: React.VFC<ListProps> = ({
             return;
         }
         setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
-    }, []);
+    }, [focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndFolderItem>[],
