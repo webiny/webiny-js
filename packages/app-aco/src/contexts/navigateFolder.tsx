@@ -52,11 +52,8 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
      * Navigate to the latest folder, considering the latest visited folder.
      */
     const navigateToLatestFolder = useCallback(() => {
-        const folderId = store.get(createStorageKey());
-        if (folderId && folderId === currentFolderId) {
-            return;
-        }
-        props.navigateToLatestFolder(folderId || ROOT_FOLDER);
+        const storageFolderId = store.get(createStorageKey()) as string | undefined;
+        props.navigateToLatestFolder(currentFolderId || storageFolderId || ROOT_FOLDER);
     }, [createStorageKey, currentFolderId]);
 
     const navigateToFolder = useCallback(
@@ -73,7 +70,7 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
     };
 
     const context: NavigateFolderContext = {
-        currentFolderId,
+        currentFolderId: currentFolderId || store.get(createStorageKey()),
         setFolderToStorage,
         navigateToListHome,
         navigateToFolder,
