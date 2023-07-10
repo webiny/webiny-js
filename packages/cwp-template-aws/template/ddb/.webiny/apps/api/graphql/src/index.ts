@@ -35,8 +35,8 @@ import tenantManager from "@webiny/api-tenant-manager";
 import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
-// Imports plugins created via scaffolding utilities.
-import scaffoldsPlugins from "./plugins/scaffolds";
+// Import from user's project.
+import apiPlugins from "../../../../../plugins/api";
 
 const debug = process.env.DEBUG === "true";
 
@@ -98,7 +98,7 @@ export const handler = createHandler({
         createAco(),
         createAcoPageBuilderContext(),
         createAcoFileManagerContext(),
-        scaffoldsPlugins()
+        apiPlugins()
     ],
     http: { debug }
 });
