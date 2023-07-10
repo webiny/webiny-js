@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import get from "lodash/get";
 import { PbRenderElementAttributesPlugin } from "../../../../types";
 
 export default {

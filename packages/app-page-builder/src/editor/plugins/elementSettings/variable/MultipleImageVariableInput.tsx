@@ -5,7 +5,7 @@ import { css } from "emotion";
  */
 // @ts-ignore
 import { sortable } from "react-sortable";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { FileManager } from "@webiny/app-admin/components";
 import File from "~/editor/plugins/elements/imagesList/File";
 import {

@@ -22,7 +22,6 @@ module.exports = ({ path, esm }) => ({
     ],
     plugins: [
         "babel-plugin-macros",
-        "babel-plugin-lodash",
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-throw-expressions",
         [

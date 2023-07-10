@@ -1,6 +1,8 @@
-import _ from "lodash";
+import isString from "lodash/isString";
+import isEmpty from "lodash/isEmpty";
+import trim from "lodash/trim";
 import ValidationError from "./validationError";
-import { Validator, ValidateOptions, ParsedValidators } from "./types";
+import { ParsedValidators, ValidateOptions, Validator } from "./types";
 
 const entries = (validators: ParsedValidators): Array<[string, Array<string>]> => {
     return Object.entries(validators);
@@ -76,11 +78,11 @@ class Validation {
         validators: string,
         options: ValidateOptions = {}
     ): Promise<boolean | ValidationError> {
-        if (_.isString(validators) && _.isEmpty(validators)) {
+        if (isString(validators) && isEmpty(validators)) {
             return true;
         }
 
-        if (!_.isString(validators)) {
+        if (!isString(validators)) {
             throw new Error(invalidRules);
         }
 
@@ -113,11 +115,11 @@ class Validation {
         validators: string,
         options: ValidateOptions = {}
     ): boolean | ValidationError {
-        if (_.isString(validators) && _.isEmpty(validators)) {
+        if (isString(validators) && isEmpty(validators)) {
             return true;
         }
 
-        if (!_.isString(validators)) {
+        if (!isString(validators)) {
             throw new Error(invalidRules);
         }
 
@@ -167,7 +169,7 @@ class Validation {
 
         const parsedValidators: ParsedValidators = {};
         validate.forEach((v: string) => {
-            const params = _.trim(v).split(":");
+            const params = trim(v).split(":");
             const vName = params.shift();
             if (!vName) {
                 return;

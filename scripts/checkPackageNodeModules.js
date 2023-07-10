@@ -26,6 +26,11 @@ const hasWebinyPackageVersion = pkg => {
     return false;
 };
 
+const getPackageName = packageJsonFile => {
+    const packageJson = loadJsonFile.sync(packageJsonFile);
+    return packageJson.name;
+};
+
 const checkPackageNodeModules = () => {
     const packages = glob.sync(target);
     for (let pkg of packages) {
@@ -38,7 +43,12 @@ const checkPackageNodeModules = () => {
         }
         const subpackages = glob.sync(`${pkg}/node_modules/*/package.json`);
         if (subpackages.length !== 0) {
-            console.log(`[SUBPACKAGES] ${name} has ${subpackages.length} subpackages.`);
+            console.log(
+                `[SUBPACKAGES] "${name}" has ${subpackages.length} subpackages: ${subpackages
+                    .map(p => getPackageName(p))
+                    .join(", ")}`
+            );
+            console.log("------------------------------");
         }
     }
 };
