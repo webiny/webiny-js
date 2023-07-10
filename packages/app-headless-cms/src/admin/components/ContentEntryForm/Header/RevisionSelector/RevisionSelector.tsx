@@ -1,5 +1,5 @@
 import React from "react";
-import { get } from "lodash";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";

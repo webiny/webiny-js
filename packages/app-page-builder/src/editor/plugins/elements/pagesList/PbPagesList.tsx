@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { plugins } from "@webiny/plugins";
-import { get } from "lodash";
+import get from "lodash/get";
 import { PbPageElementPagesListComponentPlugin } from "~/types";
 import { usePage } from "~/pageEditor/hooks/usePage";
 

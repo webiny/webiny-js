@@ -42,7 +42,6 @@ module.exports = ({ path, esm }) => {
                 }
             ],
             ["babel-plugin-dynamic-import-node"],
-            ["babel-plugin-lodash"],
             [
                 "babel-plugin-module-resolver",
                 {

@@ -6,7 +6,7 @@ const autocomplete = require("inquirer-autocomplete-prompt");
 const maxLengthInput = require("inquirer-maxlength-input-prompt");
 const commitTypes = require("./types");
 const rightPad = require("right-pad");
-const { map } = require("lodash");
+const map = require("lodash/map");
 const longest = require("longest");
 
 function getStagedFiles() {

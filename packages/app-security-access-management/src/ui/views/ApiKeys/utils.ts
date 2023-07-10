@@ -1,4 +1,4 @@
-import { pick } from "lodash";
+import pick from "lodash/pick";
 import { ApiKey } from "~/types";
 
 export const pickDataForAPI = (

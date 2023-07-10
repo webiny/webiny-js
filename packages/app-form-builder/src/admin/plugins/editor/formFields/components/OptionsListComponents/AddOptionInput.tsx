@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "@webiny/ui/Input";
-import { trim } from "lodash";
+import trim from "lodash/trim";
 import { BindComponentRenderPropValidation, Form } from "@webiny/form";
 import { FieldOption } from "~/admin/plugins/editor/formFields/components/types";
 

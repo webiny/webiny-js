@@ -23,8 +23,8 @@
     "dynamodb-toolbox": "^0.3.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.3",
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.8",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest": "^29.5.0",
