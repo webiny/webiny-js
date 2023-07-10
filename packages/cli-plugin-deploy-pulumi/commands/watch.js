@@ -43,7 +43,8 @@ module.exports = async (inputs, context) => {
     if (inputs.folder) {
         // Detect if an app alias was provided.
         const project = getProject();
-        if (project.config.appAliases) {
+        const appAliases = require("./../utils/appAliases");
+        if (appAliases) {
             const appAliases = project.config.appAliases;
             if (appAliases[inputs.folder]) {
                 inputs.folder = appAliases[inputs.folder];

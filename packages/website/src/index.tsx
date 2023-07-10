@@ -1,3 +1,3 @@
-export * from "./plugins/ThemePlugin";
-export * from "./plugins/FbFormLayoutPlugin";
-export * from "./plugins/PbPageLayoutPlugin";
+export * from "./plugins/Theme";
+export * from "./plugins/FormLayout";
+export * from "./plugins/PageLayout";

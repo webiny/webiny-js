@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemePlugin, PbPageLayoutPlugin, FbFormLayoutPlugin } from "@webiny/admin";
+import { Theme, PageLayout, FormLayout } from "@webiny/admin";
 import { Cognito } from "@webiny/app-admin-users-cognito";
 
 import theme from "./website/theme";
@@ -9,10 +9,10 @@ import DefaultFormLayout from "./website/layouts/forms/DefaultFormLayout";
 // eslint-disable-next-line react/display-name
 export default () => (
     <>
-        <ThemePlugin theme={theme} />
-        <PbPageLayoutPlugin name={"static"} title={"Static page"} component={StaticLayout} />
+        <Theme theme={theme} />
+        <PageLayout name={"static"} title={"Static page"} component={StaticLayout} />
 
-        <FbFormLayoutPlugin
+        <FormLayout
             name={"default"}
             title={"Default form layout"}
             component={DefaultFormLayout}
