@@ -53,12 +53,7 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
      */
     const navigateToLatestFolder = useCallback(() => {
         const folderId = store.get(createStorageKey());
-        /**
-         * We need to check if the stored folderId is the same as the current one or the current one is the root folder.
-         * We must skip the navigation to the latest folder in these cases as it will cause a bug where
-         * a user cannot access a CMS entry or page via the direct URL.
-         */
-        if (folderId === currentFolderId || currentFolderId === ROOT_FOLDER) {
+        if (folderId && folderId === currentFolderId) {
             return;
         }
         props.navigateToLatestFolder(folderId || ROOT_FOLDER);
