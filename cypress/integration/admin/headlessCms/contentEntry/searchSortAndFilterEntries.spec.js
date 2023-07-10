@@ -16,10 +16,13 @@ const createContentEntry = ({ model, entries }) => {
     const newEntryEdition = Math.round(Math.random() * 10);
     // Save for later
     entries.push({ title: newEntryTitle });
+    cy.wait(500);
+    cy.get(".react-spinner-material").should("not.exist");
 
     // a) Click on "New Entry" button
     cy.findAllByTestId("new-entry-button").first().click({ force: true });
     // b) Fill entry details
+    cy.wait(500);
     cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
     cy.findByTestId("fr.input.number.Edition").type(newEntryEdition.toString());
     // c) Save entry
