@@ -371,11 +371,13 @@ describe("CRUD Test", () => {
                     getPage: {
                         data: {
                             id: page.id,
-                            revisions: revisions.map(rev => {
-                                return {
-                                    id: rev
-                                };
-                            })
+                            revisions: revisions
+                                .map(rev => {
+                                    return {
+                                        id: rev
+                                    };
+                                })
+                                .reverse() // We reverse the array because API returns revisions in DESC order.
                         },
                         error: null
                     }
