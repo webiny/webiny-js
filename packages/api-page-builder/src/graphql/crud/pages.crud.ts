@@ -1249,7 +1249,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                         tenant: getTenantId(),
                         locale: getLocaleCode()
                     },
-                    sort: ["version_ASC"],
+                    sort: ["version_DESC"],
                     /**
                      * Let's hope there will be no more than 10000 revisions.
                      * Need to implement "after" option if required.

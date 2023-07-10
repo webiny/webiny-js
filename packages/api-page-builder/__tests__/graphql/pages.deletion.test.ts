@@ -176,10 +176,10 @@ describe("deleting pages", () => {
                             publishedOn: expect.stringMatching(/20/),
                             revisions: [
                                 {
-                                    id: p1v1.id,
+                                    id: p1v3.id,
                                     locked: false,
                                     status: "draft",
-                                    version: 1
+                                    version: 3
                                 },
                                 {
                                     id: p1v2.id,
@@ -188,10 +188,10 @@ describe("deleting pages", () => {
                                     version: 2
                                 },
                                 {
-                                    id: p1v3.id,
+                                    id: p1v1.id,
                                     locked: false,
                                     status: "draft",
-                                    version: 3
+                                    version: 1
                                 }
                             ]
                         },
