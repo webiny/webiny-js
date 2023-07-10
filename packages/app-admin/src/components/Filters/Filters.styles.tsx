@@ -16,4 +16,6 @@ export const FormContainer = styled.div`
 
 export const FilterContainer = styled.div`
     padding: 8px;
+    align-items: center;
+    display: flex;
 `;
