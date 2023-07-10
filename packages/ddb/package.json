@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ddb",
-  "version": "5.37.0-local-npm.4",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -10,20 +10,20 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/admin": "5.37.0-local-npm.4",
-    "@webiny/api": "5.37.0-local-npm.4",
-    "@webiny/aws-layers": "5.37.0-local-npm.4",
-    "@webiny/cli": "5.37.0-local-npm.4",
-    "@webiny/cli-plugin-deploy-pulumi": "5.37.0-local-npm.4",
-    "@webiny/cli-plugin-scaffold": "5.37.0-local-npm.4",
-    "@webiny/cli-plugin-scaffold-admin-app-module": "5.37.0-local-npm.4",
-    "@webiny/cli-plugin-scaffold-ci": "5.37.0-local-npm.4",
-    "@webiny/cli-plugin-scaffold-graphql-service": "5.37.0-local-npm.4",
-    "@webiny/cli-plugin-workspaces": "5.37.0-local-npm.4",
-    "@webiny/infra": "5.37.0-local-npm.4",
-    "@webiny/project-utils": "5.37.0-local-npm.4",
-    "@webiny/serverless-cms-aws": "5.37.0-local-npm.4",
-    "@webiny/website": "5.37.0-local-npm.4"
+    "@webiny/admin": "0.0.0",
+    "@webiny/api": "0.0.0",
+    "@webiny/aws-layers": "0.0.0",
+    "@webiny/cli": "0.0.0",
+    "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
+    "@webiny/cli-plugin-scaffold": "0.0.0",
+    "@webiny/cli-plugin-scaffold-admin-app-module": "0.0.0",
+    "@webiny/cli-plugin-scaffold-ci": "0.0.0",
+    "@webiny/cli-plugin-scaffold-graphql-service": "0.0.0",
+    "@webiny/cli-plugin-workspaces": "0.0.0",
+    "@webiny/infra": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/serverless-cms-aws": "0.0.0",
+    "@webiny/website": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.20.7",
