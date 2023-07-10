@@ -68,9 +68,7 @@ export const NavigateFolderWithRouterProvider: React.VFC<NavigateFolderProviderP
     const navigateToLatestFolder = useCallback(
         folderId => {
             /**
-             * We need to check if the stored folderId is the same as the current one.
-             * We must skip the navigation to the latest folder in these cases as it will cause a bug where
-             * a user cannot access a CMS entry or page via the direct URL.
+             * We need to check if the stored folderId is the same as the current one, in this case we skip the navigation.
              */
             if (folderId === currentFolderId) {
                 return;
