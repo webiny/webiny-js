@@ -82,6 +82,7 @@ context("Search, Sort and Filter Content Entries", () => {
             }).then(model => {
                 createdModel = model;
                 cy.visit(`/cms/content-entries/${model.modelId}?folderId=root`);
+                cy.wait(2000);
                 // Create few entries
                 for (let i = 0; i < totalEntries; i++) {
                     createContentEntry({ model, entries });
@@ -95,6 +96,8 @@ context("Search, Sort and Filter Content Entries", () => {
     after(() => {
         cy.login();
         cy.visit(`/cms/content-entries/${createdModel.modelId}?folderId=root`);
+
+        cy.wait(2000);
         // Delete all entries
         for (let i = 0; i < totalEntries; i++) {
             deleteContentEntry();
