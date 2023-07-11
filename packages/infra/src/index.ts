@@ -8,7 +8,7 @@ import {
 import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi/types";
 
 // Config.
-export interface ConfigPluginParams {
+export interface ConfigParams {
     /**
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
@@ -43,11 +43,11 @@ export interface ConfigPluginParams {
     productionEnvironments?: PulumiAppParam<string[]>;
 }
 
-export class ConfigPlugin {
-    params: ConfigPluginParams;
+export class Config {
+    params: ConfigParams;
     app: null;
 
-    constructor(params: ConfigPluginParams) {
+    constructor(params: ConfigParams) {
         this.params = params;
         this.app = null;
     }
@@ -55,58 +55,58 @@ export class ConfigPlugin {
 
 // Apps.
 
-export interface AppConfigPluginParams extends ConfigPluginParams {
+export interface AppConfigParams extends ConfigParams {
     beforeDeploy?: () => Promise<void>;
     afterDeploy?: () => Promise<void>;
 }
 
 // Core config.
-export type CoreConfigPluginParams = AppConfigPluginParams;
+export type CoreConfigParams = AppConfigParams;
 
-export class CoreConfigPlugin {
-    params: CoreConfigPluginParams;
+export class CoreConfig {
+    params: CoreConfigParams;
     app: "core";
 
-    constructor(params: CoreConfigPluginParams) {
+    constructor(params: CoreConfigParams) {
         this.params = params;
         this.app = "core";
     }
 }
 
 // API config.
-export type ApiConfigPluginParams = AppConfigPluginParams;
+export type ApiConfigParams = AppConfigParams;
 
-export class ApiConfigPlugin {
-    params: ApiConfigPluginParams;
+export class ApiConfig {
+    params: ApiConfigParams;
     app: "api";
 
-    constructor(params: ApiConfigPluginParams) {
+    constructor(params: ApiConfigParams) {
         this.params = params;
         this.app = "api";
     }
 }
 
 // Admin config.
-export type AdminConfigPluginParams = AppConfigPluginParams;
+export type AdminConfigParams = AppConfigParams;
 
-export class AdminConfigPlugin {
-    params: AdminConfigPluginParams;
+export class AdminConfig {
+    params: AdminConfigParams;
     app: "admin";
 
-    constructor(params: AdminConfigPluginParams) {
+    constructor(params: AdminConfigParams) {
         this.params = params;
         this.app = "admin";
     }
 }
 
 // Website config.
-export type WebsiteConfigPluginParams = AppConfigPluginParams;
+export type WebsiteConfigParams = AppConfigParams;
 
-export class WebsiteConfigPlugin {
-    params: WebsiteConfigPluginParams;
+export class WebsiteConfig {
+    params: WebsiteConfigParams;
     app: "website";
 
-    constructor(params: WebsiteConfigPluginParams) {
+    constructor(params: WebsiteConfigParams) {
         this.params = params;
         this.app = "website";
     }

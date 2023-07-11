@@ -10882,7 +10882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-hamburger-menu@npm:^0.0.4":
+"@types/react-hamburger-menu@npm:0.0.4, @types/react-hamburger-menu@npm:^0.0.4":
   version: 0.0.4
   resolution: "@types/react-hamburger-menu@npm:0.0.4"
   dependencies:
@@ -14949,6 +14949,7 @@ __metadata:
     "@types/jest": 26.0.24
     "@types/react": 17.0.39
     "@types/react-dom": 17.0.11
+    "@types/react-hamburger-menu": 0.0.4
     "@typescript-eslint/eslint-plugin": 5.51.0
     "@typescript-eslint/parser": 5.51.0
     "@webiny/admin": 0.0.0
@@ -15019,6 +15020,7 @@ __metadata:
     "@types/node": 12.20.55
     "@types/react": 17.0.39
     "@types/react-dom": 17.0.20
+    "@types/react-hamburger-menu": 0.0.4
     "@typescript-eslint/eslint-plugin": 5.51.0
     "@typescript-eslint/parser": 5.51.0
     "@webiny/admin": 0.0.0

@@ -24,6 +24,7 @@
     "@types/jest": "26.0.24",
     "@types/react": "17.0.39",
     "@types/react-dom": "17.0.11",
+    "@types/react-hamburger-menu": "0.0.4",
     "@typescript-eslint/eslint-plugin": "5.51.0",
     "@typescript-eslint/parser": "5.51.0",
     "@webiny/admin": "0.0.0",
