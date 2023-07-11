@@ -47,7 +47,7 @@ export const createFileUploadModifier = (cb: FileUploadModifierCallable) => {
 };
 
 export interface FileModifier {
-    (file: FileToSign): Promise<FileToSign> | FileToSign;
+    (file: FileToSign): Promise<Partial<FileToSign>> | Partial<FileToSign>;
 }
 
 export const createModifierFromPlugins = (
