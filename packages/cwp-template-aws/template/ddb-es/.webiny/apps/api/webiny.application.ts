@@ -1,5 +1,5 @@
 import { createApiApp } from "@webiny/serverless-cms-aws";
-import type { ConfigPlugin, ApiConfigPlugin } from "@webiny/infra";
+import type { Config, ApiConfig } from "@webiny/infra";
 import * as path from "path";
 
 // @ts-ignore No Typescript definitions available.
@@ -10,23 +10,23 @@ let paramsOverrides = {};
 try {
     const defaultExport = require(path.join(getProject().root, "plugins", "infra")).default;
 
-    const infraPlugins = defaultExport() as Array<ConfigPlugin | ApiConfigPlugin>;
+    const infras = defaultExport() as Array<Config | ApiConfig>;
 
-    const configPlugins = infraPlugins.filter(infraPlugin => infraPlugin.app === null);
-    const apiConfigPlugins = infraPlugins.filter(infraPlugin => infraPlugin.app === "api");
+    const configs = infras.filter(infra => infra.app === null);
+    const apiConfigs = infras.filter(infra => infra.app === "api");
 
-    if (configPlugins.length) {
-        for (let i = 0; i < configPlugins.length; i++) {
-            const configPlugin = configPlugins[i];
-            paramsOverrides = { ...paramsOverrides, ...configPlugin.params };
+    if (configs.length) {
+        for (let i = 0; i < configs.length; i++) {
+            const config = configs[i];
+            paramsOverrides = { ...paramsOverrides, ...config.params };
 
         }
     }
 
-    if (apiConfigPlugins.length) {
-        for (let i = 0; i < apiConfigPlugins.length; i++) {
-            const configPlugin = apiConfigPlugins[i];
-            paramsOverrides = { ...paramsOverrides, ...configPlugin.params };
+    if (apiConfigs.length) {
+        for (let i = 0; i < apiConfigs.length; i++) {
+            const config = apiConfigs[i];
+            paramsOverrides = { ...paramsOverrides, ...config.params };
 
         }
     }

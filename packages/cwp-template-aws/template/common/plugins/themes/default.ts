@@ -141,7 +141,7 @@ const buttons = (overrides: CSSObject) => ({
 });
 
 // Theme object.
-const theme = createTheme({
+export default createTheme({
     breakpoints,
     styles: {
         colors,
@@ -178,5 +178,3 @@ const theme = createTheme({
         }
     }
 });
-
-export default theme;
