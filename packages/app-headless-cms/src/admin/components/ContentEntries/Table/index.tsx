@@ -82,6 +82,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const columns: Columns<Entry> = {
         title: {
             header: "Name",
+            className: "cms-aco-list-title",
             cell: (record: Entry) => {
                 const { type } = record;
                 if (type === "RECORD") {
@@ -94,14 +95,17 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         },
         savedOn: {
             header: "Last modified",
+            className: "cms-aco-list-savedOn",
             cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
             enableSorting: true
         },
         createdBy: {
-            header: "Author"
+            header: "Author",
+            className: "cms-aco-list-createdBy"
         },
         status: {
             header: "Status",
+            className: "cms-aco-list-status",
             cell: ({ status, version }: Entry) => {
                 if (status && version) {
                     return `${statusLabels[status as keyof typeof statusLabels]} (v${version})`;
@@ -177,6 +181,17 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         }
     };
 
+    const tableSorting = useMemo(() => {
+        if (!Array.isArray(sorting) || sorting.length === 0) {
+            return [
+                {
+                    id: "savedOn",
+                    desc: true
+                }
+            ];
+        }
+        return sorting;
+    }, [sorting]);
     return (
         <div ref={ref}>
             <DataTable<Entry>
@@ -184,7 +199,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
-                sorting={sorting}
+                sorting={tableSorting}
                 onSortingChange={onSortingChange}
             />
             {selectedFolder && (

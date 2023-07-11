@@ -34,7 +34,7 @@ import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
 import "cypress-mailosaur";
 
-import "./aco/acoNavigateToRootFolder";
+import "./aco/acoNavigateToFolder";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });

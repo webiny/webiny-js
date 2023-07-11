@@ -14,6 +14,39 @@ console.trace = (message, ...optionalParams) => {
 
     return consoleTrace(message, ...optionalParams);
 };
+const consoleLog = console.log.bind(console);
+console.log = (message, ...optionalParams) => {
+    if (
+        typeof message === "string" &&
+        message.startsWith("`isModuleDeclaration` has been deprecated")
+    ) {
+        return undefined; // noop
+    }
+
+    return consoleLog(message, ...optionalParams);
+};
+const consoleInfo = console.info.bind(console);
+console.info = (message, ...optionalParams) => {
+    if (
+        typeof message === "string" &&
+        message.startsWith("`isModuleDeclaration` has been deprecated")
+    ) {
+        return undefined; // noop
+    }
+
+    return consoleInfo(message, ...optionalParams);
+};
+const consoleWarn = console.warn.bind(console);
+console.warn = (message, ...optionalParams) => {
+    if (
+        typeof message === "string" &&
+        message.startsWith("`isModuleDeclaration` has been deprecated")
+    ) {
+        return undefined; // noop
+    }
+
+    return consoleWarn(message, ...optionalParams);
+};
 /**
  *
  */

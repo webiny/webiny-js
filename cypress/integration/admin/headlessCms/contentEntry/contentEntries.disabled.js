@@ -14,37 +14,42 @@ describe("Headless CMS - Content Entries", () => {
         let group;
         // Runs once before all tests in the block
         before(() => {
-            cy.cmsCreateContentModelGroup({
-                data: { name: uniqid("Group-"), icon: "fas/star" }
-            }).then(data => {
-                group = data;
-                cy.cmsCreateContentModel({
-                    data: {
-                        name: newModel,
-                        modelId: kebabCase(newModel.toLowerCase()),
-                        singularApiName,
-                        pluralApiName,
-                        group: group.id,
-                        description: "Testing 123"
-                    }
-                }).then(data => {
-                    model = data;
-                    cy.cmsUpdateContentModel({
-                        modelId: data.modelId,
-                        data: CONTENT_MODEL_DATA
-                    });
+            return cy
+                .cmsCreateContentModelGroup({
+                    data: { name: uniqid("Group-"), icon: "fas/star" }
+                })
+                .then(data => {
+                    group = data;
+                    return cy
+                        .cmsCreateContentModel({
+                            data: {
+                                name: newModel,
+                                modelId: kebabCase(newModel.toLowerCase()),
+                                singularApiName,
+                                pluralApiName,
+                                group: group.id,
+                                description: "Testing 123"
+                            }
+                        })
+                        .then(data => {
+                            model = data;
+                            return cy.cmsUpdateContentModel({
+                                modelId: data.modelId,
+                                data: CONTENT_MODEL_DATA
+                            });
+                        });
                 });
-            });
         });
 
         beforeEach(() => cy.login());
 
         after(() => {
             cy.waitUntil(
-                () =>
-                    cy
+                () => {
+                    return cy
                         .cmsDeleteContentModel({ modelId: model.modelId })
-                        .then(data => data === true),
+                        .then(data => data === true);
+                },
                 {
                     description: `Wait until "ContentModel" is deleted`
                 }
@@ -85,7 +90,9 @@ describe("Headless CMS - Content Entries", () => {
 
             // b) Fill entry details
             cy.findByTestId("cms-content-form").within(() => {
+                cy.findByTestId("fr.input.text.Title").clear();
                 cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
+                cy.findByTestId("fr.input.number.Edition").clear();
                 cy.findByTestId("fr.input.number.Edition").type(newEntryEdition);
             });
             // c) Save entry
@@ -98,6 +105,7 @@ describe("Headless CMS - Content Entries", () => {
              * As ACO was introduced, there is a new step - navigate to root folder
              */
             cy.acoNavigateToRootFolder();
+            cy.wait(500);
 
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {
@@ -107,7 +115,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle).should("exist");
                             cy.findByText(/Draft \(v1\)/i).should("exist");
-                            //cy.findByText(/\(v1\)/i).should("exist");
                         });
                     });
             });
@@ -137,6 +144,7 @@ describe("Headless CMS - Content Entries", () => {
             cy.acoNavigateToRootFolder();
             // Loading should not be visible
             cy.get(".react-spinner-material").should("not.exist");
+            cy.wait(500);
 
             // Check publish status
             cy.findByTestId("default-data-list").within(() => {
@@ -146,7 +154,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle).should("exist");
                             cy.findByText(/Published \(v1\)/i).should("exist");
-                            //cy.findByText(/\(v1\)/i).should("exist");
                         });
                     });
             });
@@ -160,7 +167,10 @@ describe("Headless CMS - Content Entries", () => {
             cy.get(".mdc-text-field__input").should("exist").wait(100);
 
             // Edit an entry
-            cy.findByTestId("fr.input.text.Title").clear().type(newEntryTitle2);
+            cy.findByTestId("fr.input.text.Title").clear();
+            cy.wait(500);
+            cy.findByTestId("fr.input.text.Title").wait(200).type(newEntryTitle2);
+            cy.findByTestId("fr.input.text.Title").should("have.value", newEntryTitle2);
             cy.findByTestId("cms-content-save-content-button").click({ force: true });
 
             // Loading should not be visible
@@ -182,7 +192,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle2).should("exist");
                             cy.findByText(/Draft \(v2\)/i).should("exist");
-                            //cy.findByText(/\(v2\)/i).should("exist");
                         });
                     });
             });
@@ -219,7 +228,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle2).should("exist");
                             cy.findByText(/Published \(v2\)/i).should("exist");
-                            //cy.findByText(/\(v2\)/i).should("exist");
                         });
                     });
             });
