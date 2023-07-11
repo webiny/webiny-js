@@ -90,7 +90,9 @@ describe("Headless CMS - Content Entries", () => {
 
             // b) Fill entry details
             cy.findByTestId("cms-content-form").within(() => {
+                cy.findByTestId("fr.input.text.Title").clear();
                 cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
+                cy.findByTestId("fr.input.number.Edition").clear();
                 cy.findByTestId("fr.input.number.Edition").type(newEntryEdition);
             });
             // c) Save entry
@@ -103,6 +105,7 @@ describe("Headless CMS - Content Entries", () => {
              * As ACO was introduced, there is a new step - navigate to root folder
              */
             cy.acoNavigateToRootFolder();
+            cy.wait(500);
 
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {
@@ -112,7 +115,6 @@ describe("Headless CMS - Content Entries", () => {
                         cy.get("tr").within(() => {
                             cy.findByText(newEntryTitle).should("exist");
                             cy.findByText(/Draft \(v1\)/i).should("exist");
-                            //cy.findByText(/\(v1\)/i).should("exist");
                         });
                     });
             });
@@ -142,6 +144,7 @@ describe("Headless CMS - Content Entries", () => {
             cy.acoNavigateToRootFolder();
             // Loading should not be visible
             cy.get(".react-spinner-material").should("not.exist");
+            cy.wait(500);
 
             // Check publish status
             cy.findByTestId("default-data-list").within(() => {
@@ -164,8 +167,10 @@ describe("Headless CMS - Content Entries", () => {
             cy.get(".mdc-text-field__input").should("exist").wait(100);
 
             // Edit an entry
-            cy.findByTestId("fr.input.text.Title").wait(100).clear();
-            cy.findByTestId("fr.input.text.Title").wait(100).type(newEntryTitle2).wait(200);
+            cy.findByTestId("fr.input.text.Title").wait(200).clear();
+            cy.wait(200);
+            cy.findByTestId("fr.input.text.Title").wait(200).type(newEntryTitle2);
+            cy.findByTestId("fr.input.text.Title").should("have.value", newEntryTitle2);
             cy.findByTestId("cms-content-save-content-button").click({ force: true });
 
             // Loading should not be visible
