@@ -167,8 +167,8 @@ describe("Headless CMS - Content Entries", () => {
             cy.get(".mdc-text-field__input").should("exist").wait(100);
 
             // Edit an entry
-            cy.findByTestId("fr.input.text.Title").wait(200).clear();
-            cy.wait(200);
+            cy.findByTestId("fr.input.text.Title").clear();
+            cy.wait(500);
             cy.findByTestId("fr.input.text.Title").wait(200).type(newEntryTitle2);
             cy.findByTestId("fr.input.text.Title").should("have.value", newEntryTitle2);
             cy.findByTestId("cms-content-save-content-button").click({ force: true });
