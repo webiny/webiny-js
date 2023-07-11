@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DisplayMode, PbTheme } from "~/types";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { Theme } from "@webiny/app-theme/types";
 import { useTheme } from "@webiny/app-theme";
 import { PageElementsProvider } from "./PageElementsProvider";
@@ -17,7 +17,9 @@ export interface ExportPageData {
 
 export interface PageBuilderContext {
     theme: Theme | PbTheme | undefined;
+
     loadThemeFromPlugins(): void;
+
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
@@ -38,12 +40,6 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
     const [revisionType, setRevisionType] = React.useState("published");
     const { theme, loadThemeFromPlugins } = useTheme();
 
-    let childrenToRender = children;
-    if (!isLegacyRenderingEngine) {
-        // With the new page elements rendering engine, we also want to include the configured `PageElementsProvider`.
-        childrenToRender = <PageElementsProvider>{childrenToRender}</PageElementsProvider>;
-    }
-
     return (
         <PageBuilderContext.Provider
             value={{
@@ -59,7 +55,7 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
                 }
             }}
         >
-            {childrenToRender}
+            <PageElementsProvider>{children}</PageElementsProvider>
         </PageBuilderContext.Provider>
     );
 };

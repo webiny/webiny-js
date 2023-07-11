@@ -5,8 +5,6 @@ import { HeadingPlugin } from "~/plugins/HeadingPlugin";
 import { ParagraphPlugin } from "~/plugins/ParagraphPlugin";
 import { RichVariableInputPlugin } from "~/plugins/elementSettings/variables/RichVariableInputPlugin";
 import { TextVariableInputPlugin } from "~/plugins/elementSettings/variables/TextVariableInputPlugin";
-import { PbTextPlugin } from "~/plugins/PbTextPlugin";
-import { TextElementRendererPlugin } from "~/render/plugins/TextElementRendererPlugin";
 import { CompositionScope } from "@webiny/react-composition";
 import { TypographyDropDown } from "~/components/TypographyDropDown";
 import { ParagraphEditorPreset } from "~/components/LexicalPresets/ParagraphEditorPreset";
@@ -24,15 +22,12 @@ export const LexicalEditorPlugin = () => {
             <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
             {/* Components */}
             <PeTextPlugin />
-            <PbTextPlugin />
             {/* Block editor variables */}
             <RichVariableInputPlugin />
             <TextVariableInputPlugin />
             {/* Render */}
             <HeadingPlugin />
             <ParagraphPlugin />
-            {/* Render public website for legacy renderer component */}
-            <TextElementRendererPlugin />
         </>
     );
 };

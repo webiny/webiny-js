@@ -2,8 +2,6 @@ import React from "react";
 import { CoreOptions } from "medium-editor";
 
 import PeText from "./Text/PeText";
-import PbText from "./Text/PbText";
-import { isLegacyRenderingEngine } from "~/utils";
 
 interface TextElementProps {
     elementId: string;
@@ -13,10 +11,6 @@ interface TextElementProps {
 }
 
 const Text: React.FC<TextElementProps> = props => {
-    if (isLegacyRenderingEngine) {
-        return <PbText {...props} />;
-    }
-
     return <PeText {...props} />;
 };
 

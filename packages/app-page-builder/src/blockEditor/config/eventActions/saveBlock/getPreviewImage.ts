@@ -9,7 +9,7 @@ import { FileUploaderPlugin } from "@webiny/app/types";
 import domToImage from "~/editor/plugins/elementSettings/save/SaveDialog/domToImage";
 import { CREATE_FILE, DELETE_FILE } from "~/editor/plugins/elementSettings/save/SaveDialog/graphql";
 import { File, PbElement, EventActionHandlerMeta } from "~/types";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { FileInput } from "@webiny/app-file-manager/types";
 
 interface ImageDimensionsType {
@@ -27,17 +27,11 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-function takePageScreenshot(element: PbElement) {
-    const node = isLegacyRenderingEngine
-        ? document.getElementById(element.id)
-        : document.querySelector("pb-document");
+function takePageScreenshot() {
+    const node = document.querySelector("pb-document");
 
     if (!node) {
         return null;
-    }
-
-    if (isLegacyRenderingEngine) {
-        return domToImage.toPng(node, { width: 1000 });
     }
 
     return domToImage.toPng(node, {
@@ -57,7 +51,7 @@ export async function getPreviewImage(
     // Hide element highlight while creating the image
     editor && editor.classList.add("pb-editor-no-highlight");
 
-    const dataUrl = await takePageScreenshot(element);
+    const dataUrl = await takePageScreenshot();
 
     editor && editor.classList.remove("pb-editor-no-highlight");
 

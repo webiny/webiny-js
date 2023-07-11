@@ -5,7 +5,6 @@ import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { GET_PAGE } from "../../graphql/pages";
-import ElementAnimation from "../../../render/components/ElementAnimation";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { i18n } from "@webiny/app/i18n";
@@ -57,11 +56,13 @@ const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCr
         />
     );
 };
+
 interface PageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
     onDelete: () => void;
 }
+
 const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate, onDelete }) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -88,19 +89,15 @@ const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate, onDe
     const page = getPageQuery.data?.pageBuilder?.getPage?.data || {};
 
     return (
-        <ElementAnimation>
-            {({ refresh }) => (
-                <DetailsContainer onScroll={refresh}>
-                    <test-id data-testid="pb-page-details">
-                        {renderPlugins("pb-page-details", {
-                            page,
-                            getPageQuery,
-                            onDelete
-                        })}
-                    </test-id>
-                </DetailsContainer>
-            )}
-        </ElementAnimation>
+        <DetailsContainer>
+            <test-id data-testid="pb-page-details">
+                {renderPlugins("pb-page-details", {
+                    page,
+                    getPageQuery,
+                    onDelete
+                })}
+            </test-id>
+        </DetailsContainer>
     );
 };
 

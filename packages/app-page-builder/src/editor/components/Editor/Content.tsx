@@ -11,11 +11,8 @@ import {
     rootElementAtom,
     elementsAtom
 } from "~/editor/recoil/modules";
-
-import { usePageBuilder } from "~/hooks/usePageBuilder";
-import Element from "../Element";
 import { EditorContent } from "~/editor";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { Element as PeElement } from "@webiny/app-page-builder-elements";
 import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
 
@@ -118,28 +115,6 @@ const Content: React.FC = () => {
             resizeObserver.disconnect();
         };
     }, []);
-
-    if (isLegacyRenderingEngine) {
-        const { theme } = usePageBuilder();
-        return (
-            <Elevation className={contentContainerWrapper} z={0}>
-                <LegacyContentContainer
-                    theme={theme as any}
-                    className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
-                        displayMode
-                    )} webiny-pb-media-query--${kebabCase(displayMode)}`}
-                >
-                    <EditorContent />
-                    <LegacyBaseContainer
-                        ref={pagePreviewRef}
-                        className={"webiny-pb-editor-content-preview"}
-                    >
-                        <Element id={rootElement.id} />
-                    </LegacyBaseContainer>
-                </LegacyContentContainer>
-            </Elevation>
-        );
-    }
 
     return (
         <Elevation className={contentContainerWrapper} z={0}>

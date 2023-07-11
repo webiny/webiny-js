@@ -13799,7 +13799,6 @@ __metadata:
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
-    "@webiny/feature-flags": 0.0.0
     "@webiny/handler": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-db": 0.0.0
@@ -14660,7 +14659,6 @@ __metadata:
     "@webiny/app-security": 0.0.0
     "@webiny/app-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
-    "@webiny/feature-flags": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -15079,7 +15077,6 @@ __metadata:
     "@webiny/app-tenancy": 0.0.0
     "@webiny/app-theme": 0.0.0
     "@webiny/cli": 0.0.0
-    "@webiny/feature-flags": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -15131,7 +15128,6 @@ __metadata:
     ttypescript: ^1.5.12
     typescript: 4.7.4
     uniqid: ^5.0.3
-    warning: ^4.0.2
   languageName: unknown
   linkType: soft
 
@@ -15404,34 +15400,6 @@ __metadata:
     typescript: 4.7.4
   peerDependencies:
     react: ^17.0.2
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-typeform@workspace:packages/app-typeform":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-typeform@workspace:packages/app-typeform"
-  dependencies:
-    "@babel/cli": ^7.22.6
-    "@babel/core": ^7.22.8
-    "@babel/preset-env": ^7.22.7
-    "@babel/preset-react": ^7.22.5
-    "@babel/preset-typescript": ^7.22.5
-    "@babel/runtime": ^7.22.6
-    "@emotion/react": ^11.10.6
-    "@emotion/styled": ^11.10.6
-    "@svgr/webpack": ^6.1.1
-    "@webiny/app": 0.0.0
-    "@webiny/app-page-builder": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    "@webiny/validation": 0.0.0
-    babel-plugin-emotion: ^9.2.8
-    lodash: ^4.17.4
-    react: 17.0.2
-    react-dom: 17.0.2
-    recoil: ^0.1.2
-    rimraf: ^3.0.2
-    typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
@@ -16243,7 +16211,6 @@ __metadata:
   resolution: "@webiny/lexical-editor-actions@workspace:packages/lexical-editor-actions"
   dependencies:
     "@emotion/styled": ^11.10.6
-    "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
@@ -20390,9 +20357,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001503":
-  version: 1.0.30001512
-  resolution: "caniuse-lite@npm:1.0.30001512"
-  checksum: 18432eecfaf4748465e5d574fd29aa018e255cda620c8e8d564b9fc03c4cb572acf9248a5da2ba7b4d58d6fbc6c7436c02e1e19247b2a72f5aab818070460dec
+  version: 1.0.30001514
+  resolution: "caniuse-lite@npm:1.0.30001514"
+  checksum: ee2e90fe63cb59fb4a1515eb6b157f1c26d3ccba496b994b0f03088c39c282ee2fb8c160ad7b677ee196b5bb078b23f2f9474c32e4e47724f4d782de92bb8bbe
   languageName: node
   linkType: hard
 
@@ -23996,9 +23963,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.431":
-  version: 1.4.451
-  resolution: "electron-to-chromium@npm:1.4.451"
-  checksum: 602ee3e5311539cfbb8644873b71987a00f1e926c32eeeb03bd9b355f60eaf1e35633a05ce6560edf8da92e8c4b0c1edb60d21da4f68dd6563e937489d112c4d
+  version: 1.4.454
+  resolution: "electron-to-chromium@npm:1.4.454"
+  checksum: 26a756485b442be04a640b8733c3e0d1ad9630541e56906332b1a5f25ec0027647561ec98d0d2a5069a1aae3875c9751c6d1c6cb9ef400b2beabedc36da14ba1
   languageName: node
   linkType: hard
 
@@ -33673,9 +33640,9 @@ __metadata:
   linkType: hard
 
 "node-releases@npm:^2.0.12":
-  version: 2.0.12
-  resolution: "node-releases@npm:2.0.12"
-  checksum: b8c56db82c4642a0f443332b331a4396dae452a2ac5a65c8dbd93ef89ecb2fbb0da9d42ac5366d4764973febadca816cf7587dad492dce18d2a6b2af59cda260
+  version: 2.0.13
+  resolution: "node-releases@npm:2.0.13"
+  checksum: 17ec8f315dba62710cae71a8dad3cd0288ba943d2ece43504b3b1aa8625bf138637798ab470b1d9035b0545996f63000a8a926e0f6d35d0996424f8b6d36dda3
   languageName: node
   linkType: hard
 
