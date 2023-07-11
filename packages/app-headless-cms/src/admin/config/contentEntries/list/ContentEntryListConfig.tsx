@@ -18,7 +18,11 @@ export function useContentEntryListConfig() {
 
     return useMemo(
         () => ({
-            browser: { ...browser, filters: [...(browser.filters || [])] }
+            browser: {
+                ...browser,
+                filters: [...(browser.filters || [])],
+                filtersToWhere: [...(browser.filtersToWhere || [])]
+            }
         }),
         [config]
     );
