@@ -1,7 +1,6 @@
 import React from "react";
 import { PbEditorElement } from "~/types";
-import GridContainer from "./GridContainer";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import PeGrid from "./PeGrid";
 import { Element } from "@webiny/app-page-builder-elements/types";
 
@@ -10,10 +9,6 @@ interface GridProps {
 }
 
 const Grid: React.FC<GridProps> = props => {
-    if (isLegacyRenderingEngine) {
-        return <GridContainer {...props} />;
-    }
-
     const { element, ...rest } = props;
     return <PeGrid element={element as Element} {...rest} />;
 };

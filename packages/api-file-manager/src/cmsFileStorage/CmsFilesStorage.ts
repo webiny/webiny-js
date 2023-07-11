@@ -1,5 +1,5 @@
 import omit from "lodash/omit";
-import { HeadlessCms, CmsModel, CmsEntry } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { Security } from "@webiny/api-security/types";
 import {
     File,
@@ -17,6 +17,7 @@ import {
 } from "~/types";
 import { ListFilesWhereProcessor } from "~/cmsFileStorage/ListFilesWhereProcessor";
 import { ListTagsWhereProcessor } from "~/cmsFileStorage/ListTagsWhereProcessor";
+import { ROOT_FOLDER } from "~/contants";
 
 interface ModelContext {
     tenant: string;
@@ -62,11 +63,14 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         const model = this.modelWithContext(file);
 
         if (!file.location?.folderId) {
-            file.location = { folderId: "ROOT" };
+            file.location = {
+                ...file.location,
+                folderId: ROOT_FOLDER
+            };
         }
 
         const entry = await this.security.withoutAuthorization(() => {
-            return this.cms.createEntry(model, file);
+            return this.cms.createEntry(model, { ...file, wbyAco_location: file.location });
         });
 
         await this.aliases.storeAliases(file);
@@ -169,7 +173,10 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
                 "webinyVersion"
             ]);
 
-            const updatedEntry = await this.cms.updateEntry(model, entry.id, values);
+            const updatedEntry = await this.cms.updateEntry(model, entry.id, {
+                ...values,
+                wbyAco_location: values.location ?? entry.location
+            });
 
             await this.aliases.storeAliases(file);
 

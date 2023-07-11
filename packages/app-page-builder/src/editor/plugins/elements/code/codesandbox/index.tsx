@@ -4,8 +4,7 @@ import { validation } from "@webiny/validation";
 import { Typography } from "@webiny/ui/Typography";
 import {
     createEmbedPlugin,
-    createEmbedSettingsPlugin,
-    EmbedPluginConfigRenderCallable
+    createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
 import { ReactComponent as LogoIcon } from "./codesandbox-logo.svg";
 import Accordion from "../../../elementSettings/components/Accordion";
@@ -14,7 +13,7 @@ import {
     ButtonContainer,
     SimpleButton
 } from "../../../elementSettings/components/StyledComponents";
-import { isLegacyRenderingEngine } from "~/utils";
+
 import { PeCodesandbox } from "./PeCodesandbox";
 
 const PreviewBox = styled("div")({
@@ -25,14 +24,6 @@ const PreviewBox = styled("div")({
         width: 50
     }
 });
-
-let render: EmbedPluginConfigRenderCallable;
-if (!isLegacyRenderingEngine) {
-    render = props => (
-        // @ts-ignore Sync `elements` property type.
-        <PeCodesandbox {...props} />
-    );
-}
 
 export default () => [
     createEmbedPlugin({
@@ -54,7 +45,10 @@ export default () => [
                 return data;
             }
         },
-        render
+        render: params => {
+            // @ts-ignore No need to worry about different element.elements type.
+            return <PeCodesandbox {...params} />;
+        }
     }),
     createEmbedSettingsPlugin({
         type: "codesandbox",

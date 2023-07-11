@@ -15,6 +15,7 @@ import { FolderTree } from "~/components";
 import { useRecords } from "~/hooks";
 import { DialogContainer, DialogFoldersContainer } from "./styled";
 import { MovableSearchRecordItem } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 interface EntryDialogMoveProps {
     searchRecord: MovableSearchRecordItem;
@@ -29,7 +30,7 @@ export const EntryDialogMove: React.VFC<EntryDialogMoveProps> = ({
     onClose,
     open
 }) => {
-    const { moveRecord, loading } = useRecords(searchRecord.location.folderId || "ROOT");
+    const { moveRecord, loading } = useRecords(searchRecord.location.folderId || ROOT_FOLDER);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [folderId, setFolderId] = useState<string>();
     const { showSnackbar } = useSnackbar();

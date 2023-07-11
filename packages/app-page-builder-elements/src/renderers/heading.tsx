@@ -3,6 +3,7 @@ import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { usePageElements } from "~/hooks/usePageElements";
+import { assignStyles } from "~/utils";
 
 export type HeadingRenderer = ReturnType<typeof createHeading>;
 
@@ -16,7 +17,18 @@ export const createHeading = () => {
         const __html = element.data.text.data.text;
 
         if (isValidLexicalData(__html)) {
-            return <LexicalHtmlRenderer theme={theme} value={__html} />;
+            return (
+                <LexicalHtmlRenderer
+                    theme={theme}
+                    themeStylesTransformer={styles => {
+                        return assignStyles({
+                            breakpoints: theme.breakpoints,
+                            styles
+                        });
+                    }}
+                    value={__html}
+                />
+            );
         }
         return React.createElement(tag, {
             dangerouslySetInnerHTML: { __html }

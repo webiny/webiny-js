@@ -4,8 +4,12 @@ import { useRenderer } from "~/hooks/useRenderer";
 
 export type IconRenderer = ReturnType<typeof createIcon>;
 
+export interface Props {
+    svg?: string;
+}
+
 export const createIcon = () => {
-    return createRenderer(() => {
+    return createRenderer((props: Props) => {
         const { getElement, theme } = useRenderer();
 
         const element = getElement();
@@ -16,7 +20,10 @@ export const createIcon = () => {
         }
 
         return (
-            <div style={{ color }} dangerouslySetInnerHTML={{ __html: element.data.icon.svg }} />
+            <div
+                style={{ color }}
+                dangerouslySetInnerHTML={{ __html: props?.svg || element.data.icon.svg }}
+            />
         );
     });
 };

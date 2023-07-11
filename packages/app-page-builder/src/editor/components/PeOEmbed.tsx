@@ -10,13 +10,13 @@ import { useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { useEventActionHandler } from "../hooks/useEventActionHandler";
+import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 import { UpdateElementActionEvent } from "../recoil/actions";
 import { PbEditorElement } from "~/types";
 import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 function appendSDK(props: OEmbedProps) {
-    const { sdk, global, element } = props;
-    const { url } = element?.data?.source || {};
+    const { sdk, global, url } = props;
 
     if (!sdk || !url || window[global as unknown as keyof Window]) {
         return Promise.resolve();
@@ -34,8 +34,8 @@ function appendSDK(props: OEmbedProps) {
 }
 
 function initEmbed(props: OEmbedProps) {
-    const { sdk, init, element } = props;
-    if (sdk && element?.data?.source?.url) {
+    const { sdk, init, element, url } = props;
+    if (sdk && url) {
         const node = document.getElementById(element.id);
         if (typeof init === "function" && node) {
             init({ props, node });
@@ -83,18 +83,25 @@ export interface OEmbedProps {
     sdk?: string;
     global?: keyof Window;
     init?: (params: OEmbedPropsInitParams) => void;
+    url?: string;
 }
 const PeOEmbedComponent: React.FC<OEmbedProps> = props => {
     const [errorMessage, setErrorMessage] = useState(null);
     const eventActionHandler = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const { element, onData = d => d } = props;
+    const variableValue = useElementVariableValue(element);
+
+    const propsWithVariable = {
+        ...props,
+        url: variableValue || element?.data?.source?.url
+    };
 
     useEffect(() => {
-        appendSDK(props).then(() => initEmbed(props));
+        appendSDK(propsWithVariable).then(() => initEmbed(propsWithVariable));
     });
 
-    const source = element.data.source || {};
+    const source = variableValue ? { url: variableValue } : element.data.source || {};
     const oembed = element.data.oembed || {};
     const sourceUrl = source.url;
     const oembedSourceUrl = oembed.source?.url;

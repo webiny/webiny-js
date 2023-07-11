@@ -1,8 +1,7 @@
 import { getWcpProjectLicense, getWcpAppUrl, getWcpApiUrl, WCP_FEATURE_LABEL } from "@webiny/wcp";
 import WError from "@webiny/error";
 import { WcpContextObject, CachedWcpProjectLicense } from "./types";
-import { getWcpProjectLicenseCacheKey, getWcpProjectEnvironment } from "./utils";
-import fetch from "node-fetch";
+import { getWcpProjectLicenseCacheKey, getWcpProjectEnvironment, wcpFetch } from "./utils";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 
@@ -10,6 +9,13 @@ const cachedWcpProjectLicense: CachedWcpProjectLicense = {
     cacheKey: null,
     license: null
 };
+
+export interface WcpFetchParams {
+    url: string;
+    authorization: string;
+    body: Record<string, any>;
+    meta: Record<string, any>;
+}
 
 export const createWcp = async (): Promise<WcpContextObject> => {
     if (wcpProjectEnvironment) {
@@ -44,71 +50,43 @@ export const createWcp = async (): Promise<WcpContextObject> => {
 
         const updateSeatsUrl = getWcpProjectUrl("package/seats");
 
-        const response = await fetch(updateSeatsUrl!, {
-            method: "POST",
-            headers: { authorization: wcpProjectEnvironment.apiKey },
-            body: JSON.stringify({ operation })
+        const response = await wcpFetch({
+            url: updateSeatsUrl!,
+            authorization: wcpProjectEnvironment.apiKey,
+            body: { operation },
+            meta: {
+                action: operation + "Seats"
+            }
         });
 
-        if (response.ok) {
-            return;
+        if (response.error) {
+            const message = response.message || `Failed to ${operation} user seats.`;
+            console.error(message, response.status, response.statusText);
+            throw new WError(message, "WCP_CANNOT_UPDATE_USER_TENANTS");
         }
-
-        let jsonParseError, json;
-
-        try {
-            json = await response.json();
-        } catch (e) {
-            jsonParseError = e;
-        }
-
-        let message: string;
-        if (jsonParseError) {
-            message = `Failed to ${operation} user seats.`;
-        } else {
-            message = json.message;
-        }
-
-        console.error(message, response.status, response.statusText, jsonParseError || json);
-
-        throw new WError(message, "WCP_CANNOT_UPDATE_USER_SEATS");
     };
 
-    const updateTenants = async (operation: "increment" | "decrement"): Promise<void> => {
+    const updateTenants = async (operation: "increment" | "decrement") => {
         if (!wcpProjectEnvironment) {
             return;
         }
 
         const updateTenantsUrl = getWcpProjectUrl("package/tenants");
 
-        const response = await fetch(updateTenantsUrl!, {
-            method: "POST",
-            headers: { authorization: wcpProjectEnvironment.apiKey },
-            body: JSON.stringify({ operation })
+        const response = await wcpFetch({
+            url: updateTenantsUrl!,
+            authorization: wcpProjectEnvironment.apiKey,
+            body: { operation },
+            meta: {
+                action: operation + "Tenants"
+            }
         });
 
-        if (response.ok) {
-            return;
+        if (response.error) {
+            const message = response.message || `Failed to ${operation} tenants.`;
+            console.error(message, response.status, response.statusText);
+            throw new WError(message, "WCP_CANNOT_UPDATE_USER_TENANTS");
         }
-
-        let jsonParseError, json;
-
-        try {
-            json = await response.json();
-        } catch (e) {
-            jsonParseError = e;
-        }
-
-        let message: string;
-        if (jsonParseError) {
-            message = `Failed to ${operation} user seats.`;
-        } else {
-            message = json.message;
-        }
-
-        console.error(message, response.status, response.statusText, jsonParseError || json);
-
-        throw new WError(message, "WCP_CANNOT_UPDATE_USER_TENANTS");
     };
 
     return {

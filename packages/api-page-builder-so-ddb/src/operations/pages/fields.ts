@@ -9,6 +9,9 @@ export const createPageFields = (): PageDynamoDbFieldPlugin[] => [
         path: "titleLC"
     }),
     new PageDynamoDbFieldPlugin({
+        field: "path"
+    }),
+    new PageDynamoDbFieldPlugin({
         field: "snippet",
         path: "settings.general.snippet"
     }),

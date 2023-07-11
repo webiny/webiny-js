@@ -1,10 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { PbTheme } from "@webiny/app-page-builder/types";
-import { isLegacyRenderingEngine } from "@webiny/app-page-builder/utils";
 import classnames from "classnames";
 import { ChromePicker } from "react-color";
 
@@ -156,22 +153,14 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
         setShowPicker(!showPicker);
     }, []);
 
-    const { theme } = usePageBuilder();
-
     const pageElements = usePageElements();
 
-    let themeColors: Record<string, any> = {};
-
-    if (isLegacyRenderingEngine) {
-        const legacyTheme = theme as PbTheme;
-        themeColors = legacyTheme?.colors || {};
-    } else {
-        const colors = pageElements.theme?.styles?.colors;
-        if (colors) {
-            for (const key in colors) {
-                if (colors[key]) {
-                    themeColors[key] = colors[key];
-                }
+    const themeColors: Record<string, any> = {};
+    const colors = pageElements.theme?.styles?.colors;
+    if (colors) {
+        for (const key in colors) {
+            if (colors[key]) {
+                themeColors[key] = colors[key];
             }
         }
     }
@@ -192,15 +181,8 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
                             onClick={() => {
                                 // With page elements implementation, we want to store the color key and
                                 // then the actual color will be retrieved from the theme object.
-                                let value = color;
-                                let themeColorName;
-                                if (!isLegacyRenderingEngine) {
-                                    const colors = pageElements.theme?.styles?.colors;
-                                    themeColorName = key;
-                                    value = colors[key];
-                                }
-
-                                onChangeComplete(value, themeColorName);
+                                const colors = pageElements.theme?.styles?.colors;
+                                onChangeComplete(colors[key], key);
                             }}
                         />
                     </ColorBox>

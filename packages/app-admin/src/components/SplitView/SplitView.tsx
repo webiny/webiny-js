@@ -3,7 +3,7 @@ import classSet from "classnames";
 import { Cell, Grid, CellProps } from "@webiny/ui/Grid";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import { clone } from "lodash";
+import clone from "lodash/clone";
 import { getClasses } from "@webiny/ui/Helpers";
 
 const grid = css({

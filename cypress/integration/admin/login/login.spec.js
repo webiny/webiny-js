@@ -39,7 +39,7 @@ context("Login Page", () => {
         const password = "12345678";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
-        cy.securityReadGroup({ slug: "full-access" }).then(group => {
+        cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
                     data: {
@@ -76,7 +76,7 @@ context("Login Page", () => {
         const password = "12345678";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
-        cy.securityReadGroup({ slug: "full-access" }).then(group => {
+        cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
                     data: {
@@ -121,7 +121,7 @@ context("Login Page", () => {
         const newPassword = "12345678910";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
-        cy.securityReadGroup({ slug: "full-access" }).then(group => {
+        cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
                     data: {

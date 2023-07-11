@@ -59,6 +59,9 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
 
             input WbyAcoLocationWhereInput {
                 folderId: ID
+                folderId_in: [ID!]
+                folderId_not: ID
+                folderId_not_in: [ID!]
             }
         `,
         resolvers: {}

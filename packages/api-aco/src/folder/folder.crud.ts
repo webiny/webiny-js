@@ -11,7 +11,7 @@ import {
     OnFolderBeforeUpdateTopicParams
 } from "./folder.types";
 
-import { createFolderHierarchy } from "~/utils/createFolderHierarchy";
+import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
 
 export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams): AcoFolderCrud => {
     // create
@@ -69,7 +69,7 @@ export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams):
             await onFolderAfterDelete.publish({ folder });
             return true;
         },
-        async getHierarchyById(id: string) {
+        async getFolderWithAncestors(id: string) {
             const { type } = await storageOperations.getFolder({ id });
             const [folders] = await storageOperations.listFolders({
                 where: {
@@ -77,7 +77,7 @@ export const createFolderCrudMethods = ({ storageOperations }: CreateAcoParams):
                 },
                 limit: 10000
             });
-            return createFolderHierarchy({ id, folders });
+            return getFolderAndItsAncestors({ id, folders });
         }
     };
 };

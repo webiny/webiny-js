@@ -10,6 +10,7 @@
   "author": "Webiny Ltd.",
   "license": "Webiny Enterprise",
   "dependencies": {
+    "@webiny/api-i18n": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/api-tenant-manager": "0.0.0",
@@ -21,8 +22,8 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.3",
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.8",
     "@types/jsonwebtoken": "8.5.1",
     "@types/jwk-to-pem": "^2.0.1",
     "@types/node-fetch": "^2.6.1",

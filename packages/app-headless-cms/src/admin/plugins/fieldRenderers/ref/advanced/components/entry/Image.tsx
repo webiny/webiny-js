@@ -9,11 +9,15 @@ const Container = styled("div")({
     borderRight: "1px solid var(--mdc-theme-on-background)",
     borderBottom: "1px solid var(--mdc-theme-on-background)",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
+    backgroundSize: "contain",
+    backgroundOrigin: "content-box",
+    backgroundPosition: "center",
+    padding: 5,
     minHeight: 140,
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    boxSizing: "border-box"
 });
 
 const Icon = styled("div")({

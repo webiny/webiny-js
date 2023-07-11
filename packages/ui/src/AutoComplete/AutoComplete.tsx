@@ -8,7 +8,7 @@ import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
 import { getOptionValue, getOptionText, findInAliases } from "./utils";
-import { isEqual } from "lodash";
+import isEqual from "lodash/isEqual";
 import MaterialSpinner from "react-spinner-material";
 import { css } from "emotion";
 
@@ -299,10 +299,12 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                         const keyCode: string = keycode(ev as unknown as Event);
 
                                         if (keyCode === "backspace") {
-                                            if (onChange) {
-                                                onChange(null);
-                                            }
-                                            setTimeout(() => openMenu(), 50);
+                                            setTimeout(() => {
+                                                if (onChange) {
+                                                    onChange(null);
+                                                    openMenu();
+                                                }
+                                            }, 50);
                                         }
                                     },
                                     onKeyUp: (ev: React.KeyboardEvent<HTMLInputElement>) => {

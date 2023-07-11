@@ -5,6 +5,7 @@ import { SystemStorageOperationsProviderPlugin } from "~/plugins/SystemStorageOp
 import WebinyError from "@webiny/error";
 import { createLocalesCrud } from "~/graphql/crud/locales.crud";
 import { createSystemCrud } from "~/graphql/crud/system.crud";
+import { LocalesPermissions } from "~/graphql/crud/permissions/LocalesPermissions";
 
 const getStorageOperations = async <T = any>(context: I18NContext, type: string): Promise<T> => {
     const providerPlugin = context.plugins.byType<any>(type).find(() => true);
@@ -39,11 +40,18 @@ export const createCrudContext = () => {
             return context.tenancy.getCurrentTenant();
         };
 
+        const localesPermissions = new LocalesPermissions({
+            getIdentity: () => context.security.getIdentity(),
+            getPermissions: () => context.security.getPermissions("i18n.locale"),
+            fullAccessPermissionName: "i18n.*"
+        });
+
         context.i18n = {
             ...(context.i18n || ({} as any)),
             locales: createLocalesCrud({
                 context,
                 storageOperations: localeStorageOperations,
+                localesPermissions,
                 getTenant
             }),
             system: createSystemCrud({

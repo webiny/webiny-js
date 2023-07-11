@@ -14,7 +14,6 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/round/edit.svg";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/delete.svg";
 
-import ElementAnimation from "~/render/components/ElementAnimation";
 import { GET_PAGE_TEMPLATE } from "./graphql";
 import { CreatableItem } from "./PageTemplates";
 import PagePreview from "~/admin/plugins/pageDetails/previewContent/PagePreview";
@@ -26,6 +25,7 @@ const DetailsContainer = styled.div`
     height: calc(100% - 10px);
     overflow: hidden;
     position: relative;
+
     nav {
         background-color: var(--mdc-theme-surface);
     }
@@ -71,6 +71,7 @@ interface EmptyTemplateDetailsProps {
     onCreate: () => void;
     canCreate: boolean;
 }
+
 const EmptyTemplateDetails: React.FC<EmptyTemplateDetailsProps> = ({ onCreate, canCreate }) => {
     return (
         <EmptyView
@@ -130,43 +131,39 @@ const PageTemplatesDetails = ({
     const template = getPageTemplateQuery.data?.pageBuilder?.getPageTemplate?.data || {};
 
     return (
-        <ElementAnimation>
-            {({ refresh }) => (
-                <DetailsContainer onScroll={refresh}>
-                    <RenderBlock>
-                        <Elevation z={2}>
-                            <div style={{ position: "relative" }}>
-                                {getPageTemplateQuery.loading && <CircularProgress />}
-                                <HeaderTitle>
-                                    <PageTemplateTitle>
-                                        <Typography use="headline5">{template.title}</Typography>
-                                    </PageTemplateTitle>
-                                    <HeaderActions>
-                                        {canEdit(template) && (
-                                            <IconButton
-                                                icon={<EditIcon />}
-                                                onClick={() =>
-                                                    history.push(
-                                                        `/page-builder/template-editor/${template.id}`
-                                                    )
-                                                }
-                                            />
-                                        )}
-                                        {canDelete(template) && (
-                                            <IconButton
-                                                icon={<DeleteIcon />}
-                                                onClick={() => onDelete(template)}
-                                            />
-                                        )}
-                                    </HeaderActions>
-                                </HeaderTitle>
-                                <PagePreview page={template} />
-                            </div>
-                        </Elevation>
-                    </RenderBlock>
-                </DetailsContainer>
-            )}
-        </ElementAnimation>
+        <DetailsContainer>
+            <RenderBlock>
+                <Elevation z={2}>
+                    <div style={{ position: "relative" }}>
+                        {getPageTemplateQuery.loading && <CircularProgress />}
+                        <HeaderTitle>
+                            <PageTemplateTitle>
+                                <Typography use="headline5">{template.title}</Typography>
+                            </PageTemplateTitle>
+                            <HeaderActions>
+                                {canEdit(template) && (
+                                    <IconButton
+                                        icon={<EditIcon />}
+                                        onClick={() =>
+                                            history.push(
+                                                `/page-builder/template-editor/${template.id}`
+                                            )
+                                        }
+                                    />
+                                )}
+                                {canDelete(template) && (
+                                    <IconButton
+                                        icon={<DeleteIcon />}
+                                        onClick={() => onDelete(template)}
+                                    />
+                                )}
+                            </HeaderActions>
+                        </HeaderTitle>
+                        <PagePreview page={template} />
+                    </div>
+                </Elevation>
+            </RenderBlock>
+        </DetailsContainer>
     );
 };
 

@@ -17,7 +17,7 @@ import { createElement } from "../../../helpers";
 import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
-import { isLegacyRenderingEngine } from "~/utils";
+
 // Components
 import CounterInput from "./CounterInput";
 import { ContentWrapper } from "../components/StyledComponents";
@@ -241,22 +241,20 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                     })}
                 </Grid>
 
-                {!isLegacyRenderingEngine && (
-                    <Grid className={classes.grid}>
-                        <Cell span={12}>
-                            <CounterInput
-                                value={element.data.settings?.grid?.rowCount || 1}
-                                label={"Row count"}
-                                minErrorMessage={"Grid can't have less rows than this."}
-                                maxErrorMessage={"Grid can't have more rows than this."}
-                                onChange={value => {
-                                    onRowsChange(value);
-                                }}
-                                maxAllowed={12}
-                            />
-                        </Cell>
-                    </Grid>
-                )}
+                <Grid className={classes.grid}>
+                    <Cell span={12}>
+                        <CounterInput
+                            value={element.data.settings?.grid?.rowCount || 1}
+                            label={"Row count"}
+                            minErrorMessage={"Grid can't have less rows than this."}
+                            maxErrorMessage={"Grid can't have more rows than this."}
+                            onChange={value => {
+                                onRowsChange(value);
+                            }}
+                            maxAllowed={12}
+                        />
+                    </Cell>
+                </Grid>
 
                 <Grid className={classes.grid}>
                     {[...Array(columnsCount)].map((_, index) => {

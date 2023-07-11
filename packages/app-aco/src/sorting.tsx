@@ -1,6 +1,7 @@
 import orderBy from "lodash/orderBy";
 
-import { ListSearchRecordsSort } from "~/types";
+import { ListSearchRecordsSort, ListSearchRecordsSortItem } from "~/types";
+import { Sorting } from "@webiny/ui/DataTable";
 
 export const validateOrGetDefaultDbSort = (
     initial?: ListSearchRecordsSort
@@ -33,4 +34,18 @@ export const sortTableItems = (
     }
 
     return orderBy(records, fields, orders);
+};
+
+export const createSort = (sorting?: Sorting): ListSearchRecordsSort | undefined => {
+    if (!sorting?.length) {
+        return undefined;
+    }
+    return sorting.reduce<ListSearchRecordsSort>((items, item) => {
+        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListSearchRecordsSortItem;
+        if (items.includes(sort)) {
+            return items;
+        }
+        items.push(sort);
+        return items;
+    }, []);
 };

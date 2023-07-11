@@ -6,7 +6,6 @@ import Paragraph from "@webiny/app-page-builder/editor/plugins/elements/paragrap
 import { PeTextRenderer } from "~/components/PeTextRenderer";
 import { isValidLexicalData } from "@webiny/lexical-editor";
 import { useElementVariableValue } from "@webiny/app-page-builder/editor/hooks/useElementVariableValue";
-import { isLegacyRenderingEngine } from "@webiny/app-page-builder/utils";
 
 export const ParagraphPlugin = createComponentPlugin(Paragraph, Original => {
     return function ParagraphPlugin({ element, ...rest }): JSX.Element {
@@ -14,7 +13,7 @@ export const ParagraphPlugin = createComponentPlugin(Paragraph, Original => {
         const variableValue = useElementVariableValue(element);
         const isActive = activeElementId === element.id;
         const content = variableValue || element?.data?.text?.data?.text;
-        if (isActive || !isValidLexicalData(content) || isLegacyRenderingEngine) {
+        if (isActive || !isValidLexicalData(content)) {
             return <Original element={element} {...rest} />;
         }
         return <PeTextRenderer element={element as Element} {...rest} />;

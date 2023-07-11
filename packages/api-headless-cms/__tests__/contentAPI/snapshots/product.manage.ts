@@ -92,7 +92,7 @@ export default /* GraphQL */ `
         category: RefField
         options: [ProductApiSingular_Variant_Options!]
     }
-        
+    
     input ProductApiSingular_VariantWhereInput {
         name: String
         name_not: String
@@ -304,6 +304,11 @@ export default /* GraphQL */ `
         error: CmsError
     }
     
+    type ProductApiSingularMoveResponse {
+        data: Boolean
+        error: CmsError
+    }
+    
     type ProductApiSingularArrayResponse {
         data: [ProductApiSingular]
         error: CmsError
@@ -350,6 +355,7 @@ export default /* GraphQL */ `
             sort: [ProductApiSingularListSorter]
             limit: Int
             after: String
+            search: String
         ): ProductApiSingularListResponse
     }
 
@@ -359,6 +365,8 @@ export default /* GraphQL */ `
         createProductApiSingularFrom(revision: ID!, data: ProductApiSingularInput): ProductApiSingularResponse
 
         updateProductApiSingular(revision: ID!, data: ProductApiSingularInput!): ProductApiSingularResponse
+        
+        moveProductApiSingular(revision: ID!, folderId: ID!): ProductApiSingularMoveResponse
 
         deleteProductApiSingular(
             revision: ID!

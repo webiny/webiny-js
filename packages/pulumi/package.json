@@ -18,8 +18,8 @@
     "find-up": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.3",
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.8",
     "@types/lodash": "^4.14.190",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",

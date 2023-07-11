@@ -325,8 +325,6 @@ export interface SystemCRUD {
     /**
      * Events
      */
-    onBeforeInstall: Topic<OnSystemBeforeInstallTopic>;
-    onAfterInstall: Topic<OnSystemAfterInstallTopic>;
     onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopic>;
     onSystemAfterInstall: Topic<OnSystemAfterInstallTopic>;
 }
@@ -350,16 +348,6 @@ export interface FbSubmission {
     savedOn: string;
     webinyVersion: string;
     tenant: string;
-}
-
-export interface SubmissionInput {
-    data: Record<string, any>;
-    meta: Record<string, any>;
-    reCaptchaResponseToken: string;
-}
-
-export interface SubmissionUpdateData {
-    logs: Record<string, any>;
 }
 
 /**

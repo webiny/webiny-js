@@ -29,7 +29,7 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
                 exportBlocks(ids: [ID!], where: PbListPageBlocksWhereInput): PbExportBlockResponse
 
                 # Import blocks
-                importBlocks(category: String!, zipFileUrl: String): PbImportBlockResponse
+                importBlocks(zipFileUrl: String): PbImportBlockResponse
             }
         `,
         resolvers: {

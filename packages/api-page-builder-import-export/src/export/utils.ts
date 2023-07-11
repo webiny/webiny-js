@@ -1,5 +1,5 @@
 import S3 from "aws-sdk/clients/s3";
-import { Page, PageBlock, PageTemplate } from "@webiny/api-page-builder/types";
+import { BlockCategory, Page, PageBlock, PageTemplate } from "@webiny/api-page-builder/types";
 import { FbForm } from "@webiny/api-form-builder/types";
 import { FileManagerContext, File } from "@webiny/api-file-manager/types";
 import get from "lodash/get";
@@ -64,11 +64,13 @@ export async function exportPage(
 
 export interface ExportedBlockData {
     block: Pick<PageBlock, "name" | "content" | "preview">;
+    category: BlockCategory;
     files: File[];
 }
 
 export async function exportBlock(
     block: PageBlock,
+    blockCategory: BlockCategory,
     exportBlocksDataKey: string,
     fileManager: FileManagerContext["fileManager"]
 ): Promise<S3.ManagedUpload.SendData> {
@@ -92,6 +94,12 @@ export async function exportBlock(
             name: block.name,
             content: block.content,
             preview: block.preview
+        },
+        category: {
+            name: blockCategory.name,
+            slug: blockCategory.slug,
+            icon: blockCategory.icon,
+            description: blockCategory.description
         },
         files: imageFilesData
     };

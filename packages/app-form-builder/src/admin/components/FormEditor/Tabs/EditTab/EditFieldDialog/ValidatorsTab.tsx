@@ -9,8 +9,10 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { useFormEditor } from "../../../Context";
-import { BindComponent, Form } from "@webiny/form";
-import { cloneDeep, debounce } from "lodash";
+import { Form } from "@webiny/form";
+import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
+import { FormRenderPropParams } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
@@ -67,16 +69,12 @@ const onFormChange = debounce(
 
 interface ValidatorsTabProps {
     field: FbFormModelField;
-    form: {
-        Bind: BindComponent;
-    };
+    form: FormRenderPropParams;
 }
 const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
     const { getFieldPlugin } = useFormEditor();
-    const {
-        field,
-        form: { Bind }
-    } = props;
+    const { field, form } = props;
+    const { Bind, data: formFieldData } = form;
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
@@ -172,7 +170,8 @@ const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
                                                         setValue("message", message);
                                                     },
                                                     data,
-                                                    Bind
+                                                    Bind,
+                                                    formFieldData
                                                 })}
                                         </SimpleFormContent>
                                     )}

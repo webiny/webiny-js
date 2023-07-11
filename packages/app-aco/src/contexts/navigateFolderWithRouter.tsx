@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { NavigateFolderProvider } from "~/contexts/navigateFolder";
+import { ROOT_FOLDER } from "~/constants";
 
 export interface NavigateFolderProviderProps {
     children: React.ReactNode;
@@ -32,7 +33,7 @@ export const NavigateFolderWithRouterProvider: React.VFC<NavigateFolderProviderP
     }, [initialCreateListLink]);
 
     /**
-     * Navigate to page-builder home list.
+     * Navigate to  home list.
      */
     const navigateToListHome = useCallback(() => {
         const url = createListLink();
@@ -40,47 +41,48 @@ export const NavigateFolderWithRouterProvider: React.VFC<NavigateFolderProviderP
             return history.push(url);
         }
 
-        return navigateToFolder(undefined);
-    }, [createListLink, folderId]);
+        return navigateToFolder(ROOT_FOLDER);
+    }, [createListLink]);
 
     /**
      * Navigate to a specific folder.
      */
     const navigateToFolder = useCallback(
-        (newFolderId?: string): void => {
+        (newFolderId: string): void => {
             const query = new URLSearchParams(location.search);
             query.delete("new");
             query.delete("id");
             query.delete("entryId");
-            query.set(folderIdQueryString, newFolderId || "");
+            query.delete("search");
+            query.set(folderIdQueryString, newFolderId);
             return history.push({
                 search: query.toString()
             });
         },
-        [location, folderIdQueryString, folderId]
+        [location, folderIdQueryString]
     );
 
     /**
-     * Navigate back to page-builder list, considering the latest visited folder.
+     * Navigate back to list, considering the latest visited folder.
      */
     const navigateToLatestFolder = useCallback(
         folderId => {
-            if (folderId) {
-                const search = new URLSearchParams({
-                    [folderIdQueryString]: folderId
-                });
-                return history.push({
-                    pathname: createListLink(),
-                    search: search.toString()
-                });
+            /**
+             * We need to check if the stored folderId is the same as the current one, in this case we skip the navigation.
+             */
+            if (folderId === currentFolderId) {
+                return;
             }
+
+            const query = new URLSearchParams(location.search);
+            query.set(folderIdQueryString, folderId);
 
             return history.push({
                 pathname: createListLink(),
-                search: new URLSearchParams({}).toString()
+                search: query.toString()
             });
         },
-        [createListLink, createStorageKey, folderIdQueryString, folderId]
+        [createListLink, folderIdQueryString]
     );
 
     return (

@@ -64,8 +64,6 @@ export interface AcoError {
     data?: Record<string, any> | null;
 }
 
-export type Meta<T> = Record<string, { [P in keyof T]: T[P] }>;
-
 export type ListSearchRecordsSortItem = `${string}_ASC` | `${string}_DESC`;
 export type ListSearchRecordsSort = ListSearchRecordsSortItem[];
 

@@ -109,7 +109,17 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
     theme,
     assignStyles: customAssignStylesCallback
 }) => {
-    const styles: Record<string, any> = {};
+    // Let's ensure all of the possible breakpoints are initially defined. We are doing this
+    // so that we can avoid breakpoint properties being added in a non-deterministic order.
+    // In other words, we want to ensure that the order of the properties is always the same.
+    // Without this step, we could end up with a situation where, for example, `@media (max-width: 600px)`
+    // is defined before `@media (max-width: 400px)`, which is not what we want. We always want the
+    // breakpoints to be defined in the same order as they are defined in the theme.
+    const breakpoints = Object.values(theme.breakpoints);
+    const styles = breakpoints.reduce<Record<string, any>>((current, item) => {
+        current[item] = {};
+        return current;
+    }, {});
 
     for (const modifierName in modifiers.styles) {
         const modifier = modifiers.styles[modifierName];

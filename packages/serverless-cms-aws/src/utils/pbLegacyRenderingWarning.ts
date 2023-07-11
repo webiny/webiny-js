@@ -4,26 +4,25 @@ import { featureFlags } from "@webiny/feature-flags";
 // @deprecation-warning pb-legacy-rendering-engine
 export const isLegacyRenderingEngine = featureFlags.pbLegacyRenderingEngine === true;
 
-const DOCS_LINK = "https://www.webiny.com/docs/page-builder-rendering-upgrade.";
+const DOCS_LINK = "https://webiny.link/pb-legacy-rendering-deprecation";
 
 const hook = async (_: Record<string, any>, context: CliContext) => {
-    if (!isLegacyRenderingEngine) {
-        return;
+    if (isLegacyRenderingEngine) {
+        const message = [
+            "It seems that the Webiny's Page Builder legacy rendering engine is still enabled",
+            `(detected %s in %s file).`,
+            "With 5.37.0 version of Webiny, the legacy rendering engine has been fully deprecated.",
+            `Learn more: ${DOCS_LINK}.`
+        ].join(" ");
+
+        console.log();
+        context.warning(message, "pbLegacyRenderingWarningPlugins: true", "webiny.project.ts");
+        console.log();
+
+        await new Promise(resolve => {
+            setTimeout(resolve, 5000);
+        });
     }
-
-    const message = [
-        "You're currently using the legacy Webiny Page Builder page rendering engine, which will become",
-        `deprecated starting ${context.warning.hl("July 1st, 2023")}.`,
-        `For more information about the new rendering engine and the upgrade guide, please visit: ${DOCS_LINK}`
-    ].join(" ");
-
-    console.log();
-    context.warning(message);
-    console.log();
-
-    await new Promise(resolve => {
-        setTimeout(resolve, 2000);
-    });
 };
 
 export const pbLegacyRenderingWarningPlugins = [

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import { isEqual } from "lodash";
+import isEqual from "lodash/isEqual";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonFloating } from "@webiny/ui/Button";
 import * as Styled from "./StyledComponents";

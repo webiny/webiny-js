@@ -19,6 +19,7 @@ import { FolderTree } from "~/components";
 import { useFolders } from "~/hooks/useFolders";
 import { DialogContainer, DialogFoldersContainer } from "./styled";
 import { FolderItem } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 interface FolderDialogUpdateProps {
     folder: FolderItem;
@@ -84,9 +85,7 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                         <Cell span={12}>
                                             <Bind
                                                 name={"title"}
-                                                validators={[
-                                                    validation.create("required,minLength:3")
-                                                ]}
+                                                validators={[validation.create("required")]}
                                             >
                                                 <Input label={t`Title`} />
                                             </Bind>
@@ -94,9 +93,7 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                         <Cell span={12}>
                                             <Bind
                                                 name={"slug"}
-                                                validators={[
-                                                    validation.create("required,minLength:3,slug")
-                                                ]}
+                                                validators={[validation.create("required,slug")]}
                                             >
                                                 <Input label={t`Slug`} value={folder.slug} />
                                             </Bind>
@@ -105,11 +102,11 @@ export const FolderDialogUpdate: React.VFC<FolderDialogUpdateProps> = ({
                                             <Typography use="body1">{t`Parent folder`}</Typography>
                                             <DialogFoldersContainer>
                                                 <FolderTree
-                                                    focusedFolderId={parentId || undefined}
+                                                    focusedFolderId={parentId || ROOT_FOLDER}
                                                     hiddenFolderIds={[folder.id]}
                                                     onFolderClick={data =>
                                                         setParentId(
-                                                            data.id === "ROOT" ? null : data.id
+                                                            data.id === ROOT_FOLDER ? null : data.id
                                                         )
                                                     }
                                                 />

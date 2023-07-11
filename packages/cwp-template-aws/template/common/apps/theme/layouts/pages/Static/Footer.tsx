@@ -3,6 +3,8 @@ import { Link } from "@webiny/react-router";
 import { ReactComponent as FacebookIcon } from "./assets/facebook-square-brands.svg";
 import { ReactComponent as TwitterIcon } from "./assets/twitter-square-brands.svg";
 import { ReactComponent as InstagramIcon } from "./assets/instagram-brands.svg";
+import { ReactComponent as LinkedInIcon } from "./assets/linkedin-brands.svg";
+
 import styled from "@emotion/styled";
 import { usePage } from "@webiny/app-page-builder-elements";
 
@@ -34,6 +36,11 @@ export const Footer: React.FC = () => {
                         {social.instagram && (
                             <a href={social.instagram}>
                                 <InstagramIcon />
+                            </a>
+                        )}
+                        {social.linkedIn && (
+                            <a href={social.linkedIn}>
+                                <LinkedInIcon />
                             </a>
                         )}
                     </FooterSocial>

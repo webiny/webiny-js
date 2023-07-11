@@ -9,11 +9,11 @@
     { "path": "../app-plugin-admin-welcome-screen" },
     { "path": "../app-security" },
     { "path": "../app-tenancy" },
-    { "path": "../feature-flags" },
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-router" },
     { "path": "../ui" },
+    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -37,8 +37,6 @@
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
       "@webiny/app-tenancy": ["../app-tenancy/src"],
-      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
-      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
@@ -47,6 +45,8 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

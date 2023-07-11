@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { camelCase } from "lodash";
+import camelCase from "lodash/camelCase";
 import { useFormEditor } from "../../../Context";
 import { validation } from "@webiny/validation";
 import { Validator } from "@webiny/validation/types";

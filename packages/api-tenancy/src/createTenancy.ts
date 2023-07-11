@@ -1,6 +1,8 @@
+import { createTopic } from "@webiny/pubsub";
 import { Tenant, TenancyStorageOperations, Tenancy } from "./types";
 import { createSystemMethods } from "~/createTenancy/createSystemMethods";
 import { createTenantsMethods } from "~/createTenancy/createTenantsMethods";
+import { Topic } from "@webiny/pubsub/types";
 
 export interface TenancyConfig {
     tenant: string | null;
@@ -19,6 +21,23 @@ const withToString = (tenant: Tenant) => {
     };
 };
 
+/**
+ * This safeguard is for the core team, in case at some point this event gets published multiple times.
+ */
+const lockToOnePublish = (topic: Topic) => {
+    let published = false;
+    const original = topic.publish;
+    topic.publish = (...args) => {
+        if (published) {
+            throw new Error(`"onTenantAfterInstall" can only be published once!`);
+        }
+        published = true;
+
+        return original(...args);
+    };
+    return topic;
+};
+
 export async function createTenancy({
     tenant,
     storageOperations,
@@ -29,6 +48,7 @@ export async function createTenancy({
     let currentTenant: Tenant | null = null;
 
     const tenancy: Tenancy = {
+        onTenantAfterInstall: lockToOnePublish(createTopic("tenancy.onTenantAfterInstall")),
         getStorageOperations() {
             return storageOperations;
         },

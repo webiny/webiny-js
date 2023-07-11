@@ -25,7 +25,7 @@ module.exports = {
                 return lineWithoutAnsi.trim().length > 0;
             })
             .forEach(item => {
-                output.logs[type].log(item);
+                output.logs[type]?.log(item);
             });
     },
     exit() {

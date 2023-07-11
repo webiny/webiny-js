@@ -62,12 +62,24 @@ const metaPrivateField = () => {
     });
 };
 
+const metaOriginalKeyField = () => {
+    return createModelField({
+        label: "Original Key",
+        type: "text"
+    });
+};
+
 const metaField = () => {
     return createModelField({
         label: "Meta",
         type: "object",
         settings: {
-            fields: [metaPrivateField(), metaWidthField(), metaHeightField()]
+            fields: [
+                metaPrivateField(),
+                metaWidthField(),
+                metaHeightField(),
+                metaOriginalKeyField()
+            ]
         }
     });
 };
@@ -97,12 +109,21 @@ export const createFileModelDefinition = (group: CmsModelGroup): CmsPrivateModel
         name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
-        layout: [["name"], ["key"], ["type"], ["size"], ["meta"], ["tags"], ["aliases"]],
+        layout: [
+            ["location"],
+            ["name"],
+            ["key"],
+            ["type"],
+            ["size"],
+            ["meta"],
+            ["tags"],
+            ["aliases"]
+        ],
         fields: [
             {
                 id: "location",
                 type: "object",
-                storageId: "location",
+                storageId: "object@location",
                 label: "Location",
                 fieldId: "location",
                 settings: {
@@ -112,7 +133,7 @@ export const createFileModelDefinition = (group: CmsModelGroup): CmsPrivateModel
                             type: "text",
                             fieldId: "folderId",
                             label: "Folder ID",
-                            storageId: "folderId",
+                            storageId: "text@folderId",
                             settings: {
                                 path: "location.folderId"
                             }

@@ -61,6 +61,13 @@ export const blocksHandler = async (
 
         log(`Processing block key "${blockId}"`);
 
+        const blockCategory = await pageBuilder.getBlockCategory(block.blockCategory);
+
+        if (!blockCategory) {
+            log(`Unable to load block category "${block.blockCategory}"`);
+            throw new NotFoundError(`Unable to load block category "${block.blockCategory}"`);
+        }
+
         // Mark task status as PROCESSING
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
             status: ImportExportTaskStatus.PROCESSING
@@ -74,7 +81,12 @@ export const blocksHandler = async (
 
         log(`Extracting block data and uploading to storage...`);
         // Extract Block
-        const blockDataZip = await exportBlock(block, exportBlocksDataKey, fileManager);
+        const blockDataZip = await exportBlock(
+            block,
+            blockCategory,
+            exportBlocksDataKey,
+            fileManager
+        );
         log(`Finish uploading zip...`);
         // Update task record in DB
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {

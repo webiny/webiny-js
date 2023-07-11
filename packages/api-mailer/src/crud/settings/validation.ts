@@ -20,6 +20,11 @@ export const createValidation = zod
 export const updateValidation = zod
     .object({
         ...common,
-        password: password.nullish().optional()
+        password: password
+            .nullish()
+            .optional()
+            .transform(value => {
+                return value === undefined ? null : value;
+            })
     })
     .required();

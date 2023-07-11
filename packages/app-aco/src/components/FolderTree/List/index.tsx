@@ -15,7 +15,7 @@ import { NodePreview } from "../NodePreview";
 import { Placeholder } from "../Placeholder";
 import { createInitialOpenList, createTreeData } from "./utils";
 import { useFolders } from "~/hooks";
-import { ROOT_ID } from "./constants";
+import { ROOT_FOLDER } from "~/constants";
 import { DndFolderItem, FolderItem } from "~/types";
 
 interface ListProps {
@@ -37,7 +37,7 @@ export const List: React.VFC<ListProps> = ({
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeModel<DndFolderItem>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | InitialOpen>();
-    const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_ID]);
+    const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
@@ -53,7 +53,7 @@ export const List: React.VFC<ListProps> = ({
             return;
         }
         setInitialOpenList(createInitialOpenList(folders, openFolderIds, focusedFolderId));
-    }, []);
+    }, [focusedFolderId]);
 
     const handleDrop = async (
         newTree: NodeModel<DndFolderItem>[],
@@ -69,7 +69,7 @@ export const List: React.VFC<ListProps> = ({
             setTreeData(newTree);
             await updateFolder({
                 ...item,
-                parentId: dropTargetId !== ROOT_ID ? (dropTargetId as string) : null
+                parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
             });
         } catch (error) {
             return showSnackbar(error.message);
@@ -78,7 +78,7 @@ export const List: React.VFC<ListProps> = ({
 
     const sort = useMemo(
         () => (a: NodeModel<DndFolderItem>, b: NodeModel<DndFolderItem>) => {
-            if (a.data!.id === ROOT_ID || b.data!.id === ROOT_ID) {
+            if (a.data!.id === ROOT_FOLDER || b.data!.id === ROOT_FOLDER) {
                 return 1;
             }
             return a.data!.title.localeCompare(b.data!.title, undefined, { numeric: true });
@@ -87,7 +87,7 @@ export const List: React.VFC<ListProps> = ({
     );
 
     const handleChangeOpen = (folderIds: string[]) => {
-        setOpenFolderIds([ROOT_ID, ...folderIds]);
+        setOpenFolderIds([ROOT_FOLDER, ...folderIds]);
     };
 
     return (
@@ -99,7 +99,7 @@ export const List: React.VFC<ListProps> = ({
                     onDrop={handleDrop}
                     onChangeOpen={ids => handleChangeOpen(ids as string[])}
                     sort={sort}
-                    canDrag={item => item!.id !== ROOT_ID}
+                    canDrag={item => item!.id !== ROOT_FOLDER}
                     render={(node, { depth, isOpen, onToggle }) => (
                         <Node
                             node={node}

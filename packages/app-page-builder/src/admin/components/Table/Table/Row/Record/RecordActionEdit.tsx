@@ -7,7 +7,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
 import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
-import usePermission from "~/hooks/usePermission";
+import { usePagesPermissions } from "~/hooks/permissions";
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
 import { PbPageDataItem } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
@@ -18,7 +18,7 @@ interface Props {
     record: PbPageDataItem;
 }
 export const RecordActionEdit = ({ record }: Props): ReactElement => {
-    const { canEdit } = usePermission();
+    const { canUpdate } = usePagesPermissions();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
     const [createPageFrom] = useMutation(CREATE_PAGE);
@@ -45,7 +45,7 @@ export const RecordActionEdit = ({ record }: Props): ReactElement => {
         navigateToPageEditor(data.id);
     }, [record, navigateToPageEditor]);
 
-    if (!canEdit(record)) {
+    if (!canUpdate(record?.createdBy?.id)) {
         return <></>;
     }
 
