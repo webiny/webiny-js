@@ -14,7 +14,14 @@ class FileUploadModifier {
     }
 
     execute(file: FileToSign) {
-        return pReduce(this.fileSetters, (file, setter) => setter(file), file);
+        return pReduce(
+            this.fileSetters,
+            async (file, setter) => {
+                // We need to spread the original file, then add (potentially) partial changes.
+                return { ...file, ...(await setter(file)) };
+            },
+            file
+        );
     }
 }
 
