@@ -11,7 +11,11 @@ export const Filters = () => {
             return;
         }
 
-        setFilters(data);
+        const convertedFilters = browser.filtersToWhere.reduce(
+            (data, converter) => converter(data),
+            data
+        );
+        setFilters(convertedFilters);
     };
 
     return (
