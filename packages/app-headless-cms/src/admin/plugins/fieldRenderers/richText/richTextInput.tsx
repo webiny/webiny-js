@@ -27,8 +27,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-rich-text",
     renderer: {
         rendererName: "rich-text-input",
-        name: t`Rich Text Input`,
-        description: t`Renders a rich text editor.`,
+        name: t`(Legacy) EditorJS Text Input`,
+        description: t`Renders the legacy rich text editor.`,
         canUse({ field, model }) {
             const canUse =
                 field.type === "rich-text" &&

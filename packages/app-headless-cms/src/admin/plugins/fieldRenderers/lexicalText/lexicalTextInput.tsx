@@ -19,10 +19,6 @@ const getKey = (
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-lexical",
-    isDisabled() {
-        // Lexical RTE is default editor in use. This plugin is always enabled by default.
-        return false;
-    },
     renderer: {
         rendererName: "lexical-text-input",
         name: t`Lexical Text Input`,
