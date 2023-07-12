@@ -4,6 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { CmsEditorContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
+import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -22,12 +23,17 @@ const plugin: CmsEditorFieldRendererPlugin = {
         rendererName: "lexical-text-input",
         name: t`Lexical Text Input`,
         description: t`Renders a lexical text editor.`,
-        canUse({ field }) {
-            return (
+        canUse({ field, model }) {
+            const canUse =
                 field.type === "rich-text" &&
                 !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+                !get(field, "predefinedValues.enabled");
+
+            if (canUse && modelHasLegacyRteField(model)) {
+                return false;
+            }
+
+            return canUse;
         },
         render({ field, getBind }) {
             const Bind = getBind();

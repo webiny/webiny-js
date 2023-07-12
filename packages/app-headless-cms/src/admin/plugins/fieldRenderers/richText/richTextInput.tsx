@@ -5,6 +5,12 @@ import { CmsContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/
 import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
+import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
+import { modelHasLexicalField } from "~/admin/plugins/fieldRenderers/lexicalText/utils";
+import {
+    isLegacyRteFieldSaved,
+    modelHasLegacyRteField
+} from "~/admin/plugins/fieldRenderers/richText/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -21,14 +27,30 @@ const plugin: CmsEditorFieldRendererPlugin = {
     name: "cms-editor-field-renderer-rich-text",
     renderer: {
         rendererName: "rich-text-input",
-        name: t`Rich Text Input`,
-        description: t`Renders a rich text editor.`,
-        canUse({ field }) {
-            return (
+        name: t`(Legacy) EditorJS Text Input`,
+        description: t`Renders the legacy rich text editor.`,
+        canUse({ field, model }) {
+            const canUse =
                 field.type === "rich-text" &&
                 !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+                !get(field, "predefinedValues.enabled");
+
+            if (canUse) {
+                // Check for legacy RTE usage for saved and new field
+                if (modelHasLexicalField(model)) {
+                    return false;
+                }
+
+                if (!allowCmsLegacyRichTextInput) {
+                    if (isLegacyRteFieldSaved(field) || modelHasLegacyRteField(model)) {
+                        return true;
+                    }
+                    // When feature flag is disabled by default and legacy RTE will not be used
+                    return false;
+                }
+            }
+
+            return canUse;
         },
         render({ field, getBind }) {
             const Bind = getBind();
