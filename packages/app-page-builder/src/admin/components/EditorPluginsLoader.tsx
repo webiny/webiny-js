@@ -115,7 +115,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
     }
     /**
      * This condition is for the list of page blocks.
-     * Page template can be selected at this point.
+     * Blocks can be selected at this point.
      */
     if (location.pathname.startsWith("/page-builder/page-blocks") && loaded.render) {
         return children as unknown as React.ReactElement;

@@ -45,7 +45,9 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                 {onDelete && (
                     <Styled.DeleteBlock>
                         <ConfirmationDialog
-                            style={{ zIndex: 99 }}
+                            // We need to have this z-index because without it Delete Block Dialog will be rendered below.
+                            // All Block Component so the user would not be able to interact with Delete Block Dialog.
+                            style={{ zIndex: 100 }}
                             title="Delete block"
                             message="Are you sure you want to delete this block?"
                             loading={<CircularProgress label={"Deleting block..."} />}

@@ -19,7 +19,9 @@ import styled from "@emotion/styled";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "~/types";
 
 const StyledDialog = styled(Dialog)`
-    z-index: 99;
+    // We need to have this z-index because without it Edit Block Dialog will be rendered below.
+    // All Block Component so the user would not be able to interact with Edit Block Dialog.
+    z-index: 100;
 
     & .mdc-dialog__surface {
         width: 600px;
