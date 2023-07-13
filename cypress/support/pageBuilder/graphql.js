@@ -119,6 +119,45 @@ export const DELETE_MENU = gql`
     }
 `;
 
+const BASE_FIELDS_BLOCK_CATEGORY = `
+    slug
+    name
+    icon
+    description
+    createdOn
+    createdBy {
+        id
+        displayName
+    }
+`;
+
+export const CREATE_BLOCK_CATEGORY = gql`
+    mutation CreateBlockCategory($data: PbBlockCategoryInput!){
+        pageBuilder {
+            blockCategory: createBlockCategory(data: $data) {
+                data {
+                    ${BASE_FIELDS_BLOCK_CATEGORY}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export const DELETE_BLOCK_CATEGORY = gql`
+    mutation DeleteBlockCategory($slug: String!) {
+        pageBuilder {
+            blockCategory: deleteBlockCategory(slug: $slug) {
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
 const BASE_FIELDS_CATEGORY = `
     slug
     name

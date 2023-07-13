@@ -244,7 +244,7 @@ const RefreshButton: React.FC<DataListProps> = props => {
 
     return (
         <ListHeaderItem>
-            <RefreshIcon onClick={() => refresh()} />
+            <RefreshIcon onClick={() => refresh()} data-testid="button-refresh" />
         </ListHeaderItem>
     );
 };

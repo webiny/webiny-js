@@ -10,6 +10,8 @@ import "./pageBuilder/pbPublishPage";
 import "./pageBuilder/pbDeletePage";
 import "./pageBuilder/pbCreateMenu";
 import "./pageBuilder/pbDeleteMenu";
+import "./pageBuilder/pbCreateBlockCategory";
+import "./pageBuilder/pbDeleteBlockCategory";
 import "./pageBuilder/pbCreateCategory";
 import "./pageBuilder/pbDeleteCategory";
 import "./headlessCms/cmsCreateContentModel";

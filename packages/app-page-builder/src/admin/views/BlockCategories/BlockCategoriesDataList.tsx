@@ -73,8 +73,12 @@ const PageBuilderBlockCategoriesDataList = ({
     });
 
     const filterData = useCallback(
-        ({ slug, name }) => {
-            return slug.toLowerCase().includes(filter) || name.toLowerCase().includes(filter);
+        ({ slug, name, description }) => {
+            return (
+                slug.toLowerCase().includes(filter) ||
+                name.toLowerCase().includes(filter) ||
+                description.toLowerCase().includes(filter)
+            );
         },
         [filter]
     );
@@ -179,6 +183,12 @@ const PageBuilderBlockCategoriesDataList = ({
                     data-testid={"default-data-list.filter"}
                 />
             }
+            refresh={() => {
+                if (!listQuery.refetch) {
+                    return;
+                }
+                listQuery.refetch();
+            }}
         >
             {({ data }: { data: PbBlockCategory[] }) => (
                 <ScrollList data-testid="default-data-list">
@@ -203,7 +213,10 @@ const PageBuilderBlockCategoriesDataList = ({
                             {canDelete(item?.createdBy?.id) && (
                                 <ListItemMeta>
                                     <ListActions>
-                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                        <DeleteIcon
+                                            onClick={() => deleteItem(item)}
+                                            data-testid="data-list-delete-record-button"
+                                        />
                                     </ListActions>
                                 </ListItemMeta>
                             )}

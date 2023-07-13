@@ -191,12 +191,15 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                     <SimpleFormHeader title={data.name || t`New block category`} />
                     <SimpleFormContent>
                         <Grid>
-                            <Cell span={6}>
+                            <Cell span={6} data-testid="pb.blockCategory.form.name.container">
                                 <Bind name="name" validators={validation.create("required")}>
-                                    <Input label={t`Name`} />
+                                    <Input
+                                        label={t`Name`}
+                                        data-testid="pb.blockCategory.form.name"
+                                    />
                                 </Bind>
                             </Cell>
-                            <Cell span={6}>
+                            <Cell span={6} data-testid="pb.blockCategory.form.slug.container">
                                 <Bind
                                     name="slug"
                                     validators={[
@@ -204,10 +207,14 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                         blockCategorySlugValidator
                                     ]}
                                 >
-                                    <Input disabled={data.createdOn} label={t`Slug`} />
+                                    <Input
+                                        disabled={data.createdOn}
+                                        label={t`Slug`}
+                                        data-testid="pb.blockCategory.form.slug"
+                                    />
                                 </Bind>
                             </Cell>
-                            <Cell span={12}>
+                            <Cell span={12} data-testid="pb.blockCategory.form.icon.container">
                                 <Bind
                                     name="icon"
                                     validators={validation.create("required")}
@@ -216,10 +223,14 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                     <IconPicker
                                         label={t`Category icon`}
                                         description={t`Icon that will be displayed in the page builder.`}
+                                        data-testid="pb.blockCategory.form.icon"
                                     />
                                 </Bind>
                             </Cell>
-                            <Cell span={12}>
+                            <Cell
+                                span={12}
+                                data-testid="pb.blockCategory.form.description.container"
+                            >
                                 <Bind
                                     name="description"
                                     validators={[
@@ -227,7 +238,10 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                         blockCategoryDescriptionValidator
                                     ]}
                                 >
-                                    <Input label={t`Description`} />
+                                    <Input
+                                        label={t`Description`}
+                                        data-testid="pb.blockCategory.form.description"
+                                    />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -236,12 +250,14 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                         <ButtonWrapper>
                             <ButtonDefault
                                 onClick={() => history.push("/page-builder/block-categories")}
+                                data-testid="pb.blockCategory.form.button.cancel"
                             >{t`Cancel`}</ButtonDefault>
                             {canSave && (
                                 <ButtonPrimary
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}
+                                    data-testid="pb.blockCategory.form.button.save"
                                 >{t`Save block category`}</ButtonPrimary>
                             )}
                         </ButtonWrapper>
