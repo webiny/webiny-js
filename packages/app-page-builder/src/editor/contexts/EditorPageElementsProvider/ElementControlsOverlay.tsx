@@ -128,12 +128,21 @@ const StyledPbElementControlsOverlay = styled(
                 // We are putting it "in front of the user", above the element controls overlay.
                 // This enables us to actually interact with the page element. For example, when
                 // activating a paragraph page element, we get to type the paragraph text.
-                Object.assign(activeStyles, {
-                    "& + *": {
-                        zIndex: zIndex + 5,
-                        position: "relative"
-                    }
-                });
+
+                // Note that we don't want to assign the z-index to the element if it's part of
+                // a block (created via Block module or if it's a page created from a template).
+                // In that case, we want the block to be on top of the element at all times. No
+                // need to increase the z-index of the element and make it interactive.
+                const isSavedBlock =
+                    elementRendererMeta.blockId || elementRendererMeta.templateBlockId;
+                if (!isSavedBlock) {
+                    Object.assign(activeStyles, {
+                        "& + *": {
+                            zIndex: zIndex + 5,
+                            position: "relative"
+                        }
+                    });
+                }
 
                 // Note that we don't apply active border styles here. We do that via the `pb-eco-border`
                 // elements, rendered within the `PbElementControlsOverlayBaseComponent` component.
