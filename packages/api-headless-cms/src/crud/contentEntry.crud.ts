@@ -863,7 +863,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
         }
 
-        if (originalStorageEntry.locked) {
+        if (inputData.wbyCms_overrideLocked !== true && originalStorageEntry.locked) {
             throw new WebinyError(
                 `Cannot update entry because it's locked.`,
                 "CONTENT_ENTRY_UPDATE_ERROR"

@@ -17,13 +17,14 @@ export const resolveMove: ResolveMove =
                 throw new Error(`The input value "folderId" is required!`);
             }
             const entry = await context.cms.updateEntry(model, revision, {
+                wbyCms_overrideLocked: true,
                 wbyAco_location: {
                     folderId
                 }
             });
 
             return new Response(entry.location?.folderId === folderId);
-        } catch (e) {
-            return new ErrorResponse(e);
+        } catch (ex) {
+            return new ErrorResponse(ex);
         }
     };

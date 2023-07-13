@@ -2218,6 +2218,7 @@ export interface CreateFromCmsEntryInput {
  * @category CmsEntry
  */
 export interface UpdateCmsEntryInput {
+    wbyCms_overrideLocked?: boolean;
     wbyAco_location?: {
         folderId?: string | null;
     };
