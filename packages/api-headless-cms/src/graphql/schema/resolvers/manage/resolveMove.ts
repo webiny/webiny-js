@@ -16,12 +16,7 @@ export const resolveMove: ResolveMove =
             if (!folderId) {
                 throw new Error(`The input value "folderId" is required!`);
             }
-            const entry = await context.cms.updateEntry(model, revision, {
-                wbyCms_overrideLocked: true,
-                wbyAco_location: {
-                    folderId
-                }
-            });
+            const entry = await context.cms.moveEntry(model, revision, folderId);
 
             return new Response(entry.location?.folderId === folderId);
         } catch (ex) {
