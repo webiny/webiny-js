@@ -46,31 +46,68 @@ import { createLatestRecordType, createPublishedRecordType, createRecordType } f
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { batchReadAll, BatchReadItem } from "@webiny/db-dynamodb";
+import { CmsEntryElasticsearchValuesModifier } from "~/plugins";
+import structuredClone from "@ungap/structured-clone";
 
-const getEntryData = (input: CmsEntry): CmsEntry => {
+interface GetElasticsearchEntryDataParams {
+    container: PluginsContainer;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+const modifyEntryValues = async (params: GetElasticsearchEntryDataParams) => {
+    const { entry, model, container } = params;
+    const plugins = container.byType<CmsEntryElasticsearchValuesModifier>(
+        CmsEntryElasticsearchValuesModifier.type
+    );
+
+    let values = structuredClone(entry.values);
+
+    for (const plugin of plugins) {
+        values = plugin.exec({
+            model,
+            entry,
+            values
+        });
+    }
+
+    entry.values = values;
+
+    return entry;
+};
+
+const getEntryData = async (params: GetElasticsearchEntryDataParams): Promise<CmsEntry> => {
     const output: any = {
-        ...input
+        ...params.entry
     };
     delete output["PK"];
     delete output["SK"];
     delete output["published"];
     delete output["latest"];
 
-    return output;
+    return modifyEntryValues({
+        ...params,
+        entry: output
+    });
 };
 
-const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
-    return compress(plugins, {
-        ...getEntryData(entry),
+const getESLatestEntryData = async (params: GetElasticsearchEntryDataParams) => {
+    const { container } = params;
+
+    const output = await getEntryData(params);
+    return compress(container, {
+        ...output,
         latest: true,
         TYPE: createLatestRecordType(),
         __type: createLatestRecordType()
     });
 };
 
-const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
-    return compress(plugins, {
-        ...getEntryData(entry),
+const getESPublishedEntryData = async (params: GetElasticsearchEntryDataParams) => {
+    const { container } = params;
+    const output = await getEntryData(params);
+    return compress(container, {
+        ...output,
         published: true,
         TYPE: createPublishedRecordType(),
         __type: createPublishedRecordType()
@@ -171,8 +208,16 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        const esLatestData = await getESLatestEntryData(plugins, esEntry);
-        const esPublishedData = await getESPublishedEntryData(plugins, esEntry);
+        const esLatestData = await getESLatestEntryData({
+            container: plugins,
+            model,
+            entry: esEntry
+        });
+        const esPublishedData = await getESPublishedEntryData({
+            container: plugins,
+            model,
+            entry: esEntry
+        });
 
         const revisionKeys = {
             PK: createPartitionKey({
@@ -324,7 +369,11 @@ export const createEntriesStorageOperations = (
             storageEntry: lodashCloneDeep(storageEntry)
         });
 
-        const esLatestData = await getESLatestEntryData(plugins, esEntry);
+        const esLatestData = await getESLatestEntryData({
+            container: plugins,
+            model,
+            entry: esEntry
+        });
 
         const items = [
             entity.putBatch({
@@ -500,7 +549,11 @@ export const createEntriesStorageOperations = (
                 })
             });
 
-            elasticsearchLatestData = await getESLatestEntryData(plugins, esEntry);
+            elasticsearchLatestData = await getESLatestEntryData({
+                container: plugins,
+                model,
+                entry: esEntry
+            });
 
             esItems.push(
                 esEntity.putBatch({
@@ -530,7 +583,11 @@ export const createEntriesStorageOperations = (
                         })
                     });
                 }
-                elasticsearchPublishedData = await getESPublishedEntryData(plugins, esEntry);
+                elasticsearchPublishedData = await getESPublishedEntryData({
+                    container: plugins,
+                    model,
+                    entry: esEntry
+                });
             } else {
                 elasticsearchPublishedData = {
                     ...elasticsearchLatestData,
@@ -867,7 +924,11 @@ export const createEntriesStorageOperations = (
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
-            const esLatestData = await getESLatestEntryData(plugins, esEntry);
+            const esLatestData = await getESLatestEntryData({
+                container: plugins,
+                model,
+                entry: esEntry
+            });
             /**
              * In the end we need to set the new latest entry
              */
@@ -1272,17 +1333,22 @@ export const createEntriesStorageOperations = (
                 latestEsEntry.data
             )) as any;
 
+            const entryData = {
+                ...latestEsEntryDataDecompressed,
+                status: CONTENT_ENTRY_STATUS.PUBLISHED,
+                locked: true,
+                savedOn: entry.savedOn,
+                publishedOn: entry.publishedOn
+            };
             esItems.push(
                 esEntity.putBatch({
                     index,
                     PK: createPartitionKey(latestEsEntryDataDecompressed),
                     SK: createLatestSortKey(),
-                    data: await getESLatestEntryData(plugins, {
-                        ...latestEsEntryDataDecompressed,
-                        status: CONTENT_ENTRY_STATUS.PUBLISHED,
-                        locked: true,
-                        savedOn: entry.savedOn,
-                        publishedOn: entry.publishedOn
+                    data: await getESLatestEntryData({
+                        container: plugins,
+                        model,
+                        entry: entryData
                     })
                 })
             );
@@ -1297,7 +1363,11 @@ export const createEntriesStorageOperations = (
         /**
          * Update the published revision entry in ES.
          */
-        const esPublishedData = await getESPublishedEntryData(plugins, preparedEntryData);
+        const esPublishedData = await getESPublishedEntryData({
+            container: plugins,
+            model,
+            entry: preparedEntryData
+        });
 
         esItems.push(
             esEntity.putBatch({
@@ -1415,7 +1485,11 @@ export const createEntriesStorageOperations = (
                 storageEntry: lodashCloneDeep(storageEntry)
             });
 
-            const esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
+            const esLatestData = await getESLatestEntryData({
+                container: plugins,
+                model,
+                entry: preparedEntryData
+            });
             esItems.push(
                 esEntity.putBatch({
                     PK: partitionKey,
