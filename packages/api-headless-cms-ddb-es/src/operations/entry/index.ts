@@ -629,9 +629,9 @@ export const createEntriesStorageOperations = (
             /**
              * We need to get the published and latest records, so we can update the Elasticsearch.
              */
-            if (record.GSI1_SK === publishedSortKey) {
+            if (record.SK === publishedSortKey) {
                 publishedRecord = record;
-            } else if (record.GSI1_SK === latestSortKey) {
+            } else if (record.SK === latestSortKey) {
                 latestRecord = record;
             }
         }
@@ -673,24 +673,24 @@ export const createEntriesStorageOperations = (
         if (esGetItems.length === 0) {
             return;
         }
+        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
+            table: esEntity.table,
+            items: esGetItems
+        });
         const esItems = (
             await Promise.all(
-                (
-                    await batchReadAll<ElasticsearchDbRecord>({
-                        table: esEntity.table,
-                        items: esGetItems
-                    })
-                ).map(async item => {
-                    if (!item) {
+                esRecords.map(async record => {
+                    if (!record) {
                         return null;
                     }
                     return {
-                        ...item,
-                        data: await decompress(plugins, item.data)
+                        ...record,
+                        data: await decompress(plugins, record.data)
                     };
                 })
             )
         ).filter(Boolean) as ElasticsearchDbRecord[];
+
         if (esItems.length === 0) {
             return;
         }

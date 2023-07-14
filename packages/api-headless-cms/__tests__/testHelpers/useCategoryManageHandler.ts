@@ -30,6 +30,9 @@ const categoryFields = `
         }
         data
     }
+    wbyAco_location {
+        folderId
+    }
     # user defined fields
     title
     slug
@@ -125,6 +128,20 @@ const updateCategoryMutation = (model: CmsModel) => {
                 data {
                     ${categoryFields}
                 }
+                ${errorFields}
+            }
+        }
+    `;
+};
+export interface MoveCategoryVariables {
+    id: string;
+    folderId: string;
+}
+const moveCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation MoveCategory($id: ID!, $folderId: ID!) {
+            moveCategory: move${model.singularApiName}(id: $id, folderId: $folderId) {
+                data
                 ${errorFields}
             }
         }
@@ -247,6 +264,15 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             return await contentHandler.invoke({
                 body: {
                     query: updateCategoryMutation(model),
+                    variables
+                },
+                headers
+            });
+        },
+        async moveCategory(variables: MoveCategoryVariables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: moveCategoryMutation(model),
                     variables
                 },
                 headers
