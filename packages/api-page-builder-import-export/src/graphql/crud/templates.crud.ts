@@ -5,10 +5,10 @@ import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
 import { Payload as ExportTemplatesProcessHandlerPayload } from "~/export/process";
-import { EXPORT_TEMPLATES_FOLDER_KEY } from "~/export/utils";
 import { zeroPad } from "@webiny/utils";
 import { PageTemplatesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PageTemplatesPermissions";
 
+const EXPORT_TEMPLATES_FOLDER_KEY = "WEBINY_PB_EXPORT_TEMPLATE";
 const EXPORT_TEMPLATES_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_TEMPLATES_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 

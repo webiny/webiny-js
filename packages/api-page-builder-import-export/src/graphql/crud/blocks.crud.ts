@@ -5,10 +5,10 @@ import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
 import { Payload as ExportBlocksProcessHandlerPayload } from "~/export/process";
-import { EXPORT_BLOCKS_FOLDER_KEY } from "~/export/utils";
 import { zeroPad } from "@webiny/utils";
 import { PageBlocksPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PageBlocksPermissions";
 
+const EXPORT_BLOCKS_FOLDER_KEY = "WEBINY_PB_EXPORT_BLOCK";
 const EXPORT_BLOCKS_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_BLOCKS_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 

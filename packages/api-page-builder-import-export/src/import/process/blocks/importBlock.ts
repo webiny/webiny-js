@@ -6,13 +6,13 @@ import { FileInput } from "@webiny/api-file-manager/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { File as ImageFile, FileUploadsData } from "~/types";
 import { PageBlock } from "@webiny/api-page-builder/types";
-import { ExportedBlockData } from "~/export/utils";
 import { s3Stream } from "~/export/s3Stream";
 import { uploadAssets } from "~/import/utils/uploadAssets";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
 import { deleteS3Folder } from "~/import/utils/deleteS3Folder";
 import { updateFilesInData } from "~/import/utils/updateFilesInData";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
+import { ExportedBlockData } from "~/export/process/exporters/BlockExporter";
 
 interface ImportBlockParams {
     key: string;
@@ -113,8 +113,6 @@ function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
     const { file: blockPreview, fileIdToNewFileMap, srcPrefix } = params;
     const newFile = fileIdToNewFileMap.get(blockPreview.id || "");
 
-    console.log("updateBlockPreviewImage", blockPreview.id, newFile);
-
     if (!newFile) {
         console.log("Block preview file not found!");
         return blockPreview;
@@ -124,6 +122,7 @@ function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
         ? srcPrefix.slice(0, -1)
         : srcPrefix;
 
+    blockPreview.id = newFile.id;
     blockPreview.src = `${srcPrefixWithoutTrailingSlash}/${newFile.key}`;
 
     return blockPreview;

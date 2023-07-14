@@ -1,12 +1,12 @@
 import { ExportRevisionType, ImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { exportPage } from "~/export/utils";
 import { Payload as ExtractPayload } from "../combine";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/export/process";
+import { PageExporter } from "./exporters/PageExporter";
 
 /**
  * Handles the export pages process workflow.
@@ -96,8 +96,10 @@ export const pagesHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         log(`Extracting page data and uploading to storage...`);
-        // Extract Page
-        const pageDataZip = await exportPage(page, exportPagesDataKey, fileManager);
+
+        const pageExporter = new PageExporter(fileManager);
+        const pageDataZip = await pageExporter.execute(page, exportPagesDataKey);
+
         log(`Finish uploading zip...`);
         // Update task record in DB
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
