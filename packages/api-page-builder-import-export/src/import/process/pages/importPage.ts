@@ -7,10 +7,10 @@ import { FileInput } from "@webiny/api-file-manager/types";
 import { PageSettings } from "@webiny/api-page-builder/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { FileUploadsData } from "~/types";
-import { ExportedPageData } from "~/export/utils";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
 import { s3Stream } from "~/export/s3Stream";
 import { deleteS3Folder, updateFilesInData, uploadAssets } from "~/import/utils";
+import { ExportedPageData } from "~/export/process/exporters/PageExporter";
 
 interface ImportPageParams {
     key: string;

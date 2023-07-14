@@ -4,13 +4,13 @@ import loadJson from "load-json-file";
 import { createWriteStream, ensureDirSync } from "fs-extra";
 import { PbImportExportContext } from "~/graphql/types";
 import { FileUploadsData } from "~/types";
-import { ExportedTemplateData } from "~/export/utils";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
 import { s3Stream } from "~/export/s3Stream";
 import { uploadAssets } from "~/import/utils/uploadAssets";
 import { updateFilesInData } from "~/import/utils/updateFilesInData";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
 import { deleteS3Folder } from "~/import/utils/deleteS3Folder";
+import { ExportedTemplateData } from "~/export/process/exporters/PageTemplateExporter";
 
 interface ImportTemplateParams {
     key: string;

@@ -1,12 +1,12 @@
 import { ExportRevisionType, ImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { exportForm } from "~/export/utils";
 import { Payload as ExtractPayload } from "../combine";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/export/process";
+import { FormExporter } from "./exporters/FormExporter";
 
 /**
  * Handles the export forms process workflow.
@@ -96,8 +96,8 @@ export const formsHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         log(`Extracting form data and uploading to storage...`);
-        // Extract Form
-        const formDataZip = await exportForm(form, exportFormsDataKey);
+        const formExporter = new FormExporter();
+        const formDataZip = await formExporter.execute(form, exportFormsDataKey);
         log(`Finish uploading zip...`);
         // Update task record in DB
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {
