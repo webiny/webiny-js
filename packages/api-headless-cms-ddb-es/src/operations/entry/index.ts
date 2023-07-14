@@ -12,7 +12,7 @@ import { configurations } from "~/configurations";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
-import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { batchWriteAll, BatchWriteItem } from "@webiny/db-dynamodb/utils/batchWrite";
 import { DataLoadersHandler } from "~/operations/entry/dataLoaders";
 import {
     createLatestSortKey,
@@ -20,7 +20,12 @@ import {
     createPublishedSortKey,
     createRevisionSortKey
 } from "~/operations/entry/keys";
-import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
+import {
+    queryAll,
+    QueryAllParams,
+    queryOne,
+    QueryOneParams
+} from "@webiny/db-dynamodb/utils/query";
 import {
     compress,
     createLimit,
@@ -40,6 +45,7 @@ import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { batchReadAll, BatchReadItem } from "@webiny/db-dynamodb";
 
 const getEntryData = (input: CmsEntry): CmsEntry => {
     const output: any = {
@@ -103,7 +109,7 @@ const convertEntryKeysFromStorage = (params: ConvertStorageEntryParams): CmsStor
 
 interface ElasticsearchDbRecord {
     index: string;
-    data: Record<string, string>;
+    data: Record<string, any>;
 }
 
 export interface CreateEntriesStorageOperationsParams {
@@ -581,6 +587,144 @@ export const createEntriesStorageOperations = (
             );
         }
         return initialStorageEntry;
+    };
+
+    const move: CmsEntryStorageOperations["move"] = async (initialModel, id, folderId) => {
+        const model = getStorageOperationsModel(initialModel);
+
+        const partitionKey = createPartitionKey({
+            id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
+        /**
+         * First we need to fetch all the records in the regular DynamoDB table.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey,
+            options: {
+                gte: " "
+            }
+        };
+        const latestSortKey = createLatestSortKey();
+        const publishedSortKey = createPublishedSortKey();
+        const records = await queryAll<CmsEntry>(queryAllParams);
+        /**
+         * Then update the folderId in each record and prepare it to be stored.
+         */
+        let latestRecord: CmsEntry | undefined = undefined;
+        let publishedRecord: CmsEntry | undefined = undefined;
+        const items: BatchWriteItem[] = [];
+        for (const record of records) {
+            items.push(
+                entity.putBatch({
+                    ...record,
+                    location: {
+                        ...record?.location,
+                        folderId
+                    }
+                })
+            );
+            /**
+             * We need to get the published and latest records, so we can update the Elasticsearch.
+             */
+            if (record.SK === publishedSortKey) {
+                publishedRecord = record;
+            } else if (record.SK === latestSortKey) {
+                latestRecord = record;
+            }
+        }
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+            dataLoaders.clearAll({
+                model
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not move all entry records from in the DynamoDB table.",
+                ex.code || "MOVE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    id
+                }
+            );
+        }
+        const esGetItems: BatchReadItem[] = [];
+        if (publishedRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: publishedSortKey
+                })
+            );
+        }
+        if (latestRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: latestSortKey
+                })
+            );
+        }
+        if (esGetItems.length === 0) {
+            return;
+        }
+        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
+            table: esEntity.table,
+            items: esGetItems
+        });
+        const esItems = (
+            await Promise.all(
+                esRecords.map(async record => {
+                    if (!record) {
+                        return null;
+                    }
+                    return {
+                        ...record,
+                        data: await decompress(plugins, record.data)
+                    };
+                })
+            )
+        ).filter(Boolean) as ElasticsearchDbRecord[];
+
+        if (esItems.length === 0) {
+            return;
+        }
+        const esUpdateItems: BatchWriteItem[] = [];
+        for (const item of esItems) {
+            esUpdateItems.push(
+                esEntity.putBatch({
+                    ...item,
+                    data: await compress(plugins, {
+                        ...item.data,
+                        location: {
+                            ...item.data?.location,
+                            folderId
+                        }
+                    })
+                })
+            );
+        }
+
+        try {
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esUpdateItems
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not move entry DynamoDB Elasticsearch records.",
+                ex.code || "MOVE_ES_ENTRY_ERROR",
+                {
+                    error: ex,
+                    partitionKey
+                }
+            );
+        }
     };
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
@@ -1607,6 +1751,7 @@ export const createEntriesStorageOperations = (
         create,
         createRevisionFrom,
         update,
+        move,
         delete: deleteEntry,
         deleteRevision,
         deleteMultipleEntries,

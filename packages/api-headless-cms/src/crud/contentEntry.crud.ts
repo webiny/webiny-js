@@ -29,6 +29,7 @@ import {
     OnEntryAfterCreateTopicParams,
     OnEntryAfterDeleteMultipleTopicParams,
     OnEntryAfterDeleteTopicParams,
+    OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
     OnEntryAfterUnpublishTopicParams,
@@ -37,6 +38,7 @@ import {
     OnEntryBeforeDeleteMultipleTopicParams,
     OnEntryBeforeDeleteTopicParams,
     OnEntryBeforeGetTopicParams,
+    OnEntryBeforeMoveTopicParams,
     OnEntryBeforePublishTopicParams,
     OnEntryBeforeRepublishTopicParams,
     OnEntryBeforeUnpublishTopicParams,
@@ -45,6 +47,7 @@ import {
     OnEntryCreateRevisionErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
     OnEntryDeleteMultipleErrorTopicParams,
+    OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
@@ -299,6 +302,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         createTopic<OnEntryBeforeUpdateTopicParams>("cms.onEntryBeforeUpdate");
     const onEntryAfterUpdate = createTopic<OnEntryAfterUpdateTopicParams>("cms.onEntryAfterUpdate");
     const onEntryUpdateError = createTopic<OnEntryUpdateErrorTopicParams>("cms.onEntryUpdateError");
+
+    /**
+     * Move
+     */
+    const onEntryBeforeMove = createTopic<OnEntryBeforeMoveTopicParams>("cms.onEntryBeforeMove");
+    const onEntryAfterMove = createTopic<OnEntryAfterMoveTopicParams>("cms.onEntryAfterMove");
+    const onEntryMoveError = createTopic<OnEntryMoveErrorTopicParams>("cms.onEntryMoveError");
 
     /**
      * Publish
@@ -965,6 +975,50 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
+
+    const moveEntry: CmsEntryContext["moveEntry"] = async (model, id, folderId) => {
+        await entriesPermissions.ensure({ rwd: "w" });
+        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        /**
+         * The entry we are going to move to another folder.
+         */
+        const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+            id
+        });
+
+        if (!originalStorageEntry) {
+            throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+        }
+
+        const entry = await entryFromStorageTransform(context, model, originalStorageEntry);
+
+        try {
+            await onEntryBeforeMove.publish({
+                entry,
+                model,
+                folderId
+            });
+            await storageOperations.entries.move(model, id, folderId);
+            await onEntryAfterMove.publish({
+                entry,
+                model,
+                folderId
+            });
+            return entry;
+        } catch (ex) {
+            await onEntryMoveError.publish({
+                entry,
+                model,
+                folderId,
+                error: ex
+            });
+            throw WebinyError.from(ex, {
+                message: `Could not move entry "${id}" of model "${model.modelId}".`,
+                code: "MOVE_ENTRY_ERROR"
+            });
+        }
+    };
+
     const republishEntry: CmsEntryContext["republishEntry"] = async (model, id) => {
         await entriesPermissions.ensure({ rwd: "w" });
         await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
@@ -1520,6 +1574,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryAfterUpdate,
         onEntryUpdateError,
         /**
+         * Move
+         */
+        onEntryBeforeMove,
+        onEntryAfterMove,
+        onEntryMoveError,
+        /**
          * Delete whole entry
          */
         onEntryBeforeDelete,
@@ -1664,6 +1724,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         async updateEntry(model, id, input, meta) {
             return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
                 return updateEntry(model, id, input, meta);
+            });
+        },
+        async moveEntry(model, id, folderId) {
+            return context.benchmark.measure("headlessCms.crud.entries.moveEntry", async () => {
+                return moveEntry(model, id, folderId);
             });
         },
         /**

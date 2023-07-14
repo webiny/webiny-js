@@ -7,6 +7,7 @@ import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSec
 import { IconButton } from "@webiny/ui/Button";
 import styled from "@emotion/styled";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
+import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -33,15 +34,20 @@ const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-lexical-inputs",
     renderer: {
-        rendererName: "lexical-inputs",
-        name: t`Lexical Inputs`,
+        rendererName: "lexical-text-inputs",
+        name: t`Lexical Text Inputs`,
         description: t`Renders a list of lexical editors.`,
-        canUse({ field }) {
-            return (
+        canUse({ field, model }) {
+            const canUse =
                 field.type === "rich-text" &&
                 !!field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+                !get(field, "predefinedValues.enabled");
+
+            if (canUse && modelHasLegacyRteField(model)) {
+                return false;
+            }
+
+            return canUse;
         },
         render(props) {
             const { field } = props;

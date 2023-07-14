@@ -136,12 +136,30 @@ export interface CreatePageCrudParams {
     getLocaleCode: () => string;
 }
 
+declare const decompressed: unique symbol;
+
+type Decompressed<T> = T & {
+    [decompressed]: "decompressed";
+};
+
 export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId, pagesPermissions } = params;
 
     const { compressContent, decompressContent } = createCompression({
         plugins: context.plugins
     });
+
+    const decompressPage = async (page: Page): Promise<Decompressed<Page>> => {
+        const content = await decompressContent(page);
+
+        return { ...page, content } as Decompressed<Page>;
+    };
+
+    const compressPage = async (page: Page) => {
+        const content = await compressContent(page);
+
+        return { ...page, content };
+    };
 
     /**
      * We need a data loader to fetch a page by id because it is being called a lot throughout the code.
@@ -396,23 +414,15 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     meta
                 });
 
-                page.content = await compressContent(page);
-
-                const result = await storageOperations.pages.create({
+                await storageOperations.pages.create({
                     input: {
                         slug
                     },
-                    page
+                    page: await compressPage(page)
                 });
-                await onPageAfterCreate.publish({
-                    page: result,
-                    meta
-                });
+                await onPageAfterCreate.publish({ page, meta });
 
-                return {
-                    ...result,
-                    content: await decompressContent(result)
-                };
+                return page;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create new page.",
@@ -428,9 +438,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         async createPageFrom(this: PageBuilderContextObject, id): Promise<any> {
             await pagesPermissions.ensure({ rwd: "w" });
 
-            const original = await this.getPage(id, {
-                decompress: false
-            });
+            const original = await this.getPage(id);
 
             if (!original) {
                 throw new NotFoundError(`Page not found.`);
@@ -483,23 +491,22 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     page
                 });
 
-                const result = await storageOperations.pages.createFrom({
-                    original,
+                await storageOperations.pages.createFrom({
+                    original: await compressPage(original),
                     latestPage,
-                    page
+                    page: await compressPage(page)
                 });
+
                 await onPageAfterCreateFrom.publish({
                     original,
-                    page: result
+                    page
                 });
                 /**
                  * Clear the dataLoader cache.
                  */
                 clearDataLoaderCache([original, page, latestPage]);
-                return {
-                    ...result,
-                    content: await decompressContent(result)
-                };
+
+                return page;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create from existing page.",
@@ -518,19 +525,22 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         async updatePage(id, input): Promise<any> {
             await pagesPermissions.ensure({ rwd: "w" });
 
-            const original = await storageOperations.pages.get({
+            const rawOriginal = await storageOperations.pages.get({
                 where: {
                     id,
                     tenant: getTenantId(),
                     locale: getLocaleCode()
                 }
             });
-            if (!original) {
+
+            if (!rawOriginal) {
                 throw new NotFoundError("Non-existing-page.");
             }
-            if (original.locked) {
+            if (rawOriginal.locked) {
                 throw new WebinyError(`Cannot update page because it's locked.`);
             }
+
+            const original = await decompressPage(rawOriginal);
 
             await pagesPermissions.ensure({ owns: original?.ownedBy });
 
@@ -559,12 +569,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 version: Number(original.version),
                 savedOn: new Date().toISOString()
             };
+
             const newContent = data.content;
             if (newContent) {
-                page.content = await compressContent({
-                    ...page,
-                    content: newContent
-                });
+                page.content = newContent;
             }
 
             try {
@@ -574,15 +582,15 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     input
                 });
 
-                const result = await storageOperations.pages.update({
+                await storageOperations.pages.update({
                     input,
-                    original,
-                    page
+                    original: rawOriginal,
+                    page: await compressPage(page)
                 });
 
                 await onPageAfterUpdate.publish({
                     original,
-                    page: result,
+                    page,
                     input
                 });
 
@@ -590,22 +598,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                  * Clear the dataLoader cache.
                  */
                 clearDataLoaderCache([original, page]);
-                /**
-                 * If we have new content, return that.
-                 */
-                if (newContent) {
-                    return {
-                        ...result,
-                        content: newContent
-                    };
-                }
-                /**
-                 * Otherwise decompress original content and return with new page.
-                 */
-                return {
-                    ...result,
-                    content: await decompressContent(original)
-                };
+
+                return page;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update existing page.",
@@ -682,7 +676,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 }
             }
 
-            let latestPage = await storageOperations.pages.get({
+            const latestPageRaw = await storageOperations.pages.get({
                 where: {
                     pid: pageId,
                     tenant: getTenantId(),
@@ -690,14 +684,18 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     latest: true
                 }
             });
-            if (!latestPage) {
+
+            if (!latestPageRaw) {
                 throw new WebinyError("Missing latest page record.", "LATEST_PAGE_RECORD", {
                     pid: pageId,
                     tenant: getTenantId(),
                     locale: getLocaleCode()
                 });
             }
-            const publishedPage = await storageOperations.pages.get({
+
+            let latestPage = await decompressPage(latestPageRaw);
+
+            const publishedPageRaw = await storageOperations.pages.get({
                 where: {
                     pid: pageId,
                     tenant: getTenantId(),
@@ -705,8 +703,11 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     published: true
                 }
             });
+
+            const publishedPage = publishedPageRaw ? await decompressPage(publishedPageRaw) : null;
+
             /**
-             * We can either delete all of the records connected to given page or single revision.
+             * We can either delete all the records connected to the given page, or a single revision.
              */
             const deleteMethod: "deleteAll" | "delete" =
                 page.version === 1 ? "deleteAll" : "delete";
@@ -723,21 +724,28 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
             try {
                 await onPageBeforeDelete.publish({
-                    page,
+                    page: await decompressPage(page),
                     latestPage,
                     publishedPage
                 });
 
-                const [resultPage, resultLatestPage] = await storageOperations.pages[deleteMethod]({
+                const [resultPageRaw, resultLatestPageRaw] = await storageOperations.pages[
+                    deleteMethod
+                ]({
                     page,
                     publishedPage,
                     latestPage
                 });
-                latestPage = resultLatestPage || latestPage;
+
+                if (resultLatestPageRaw) {
+                    latestPage = await decompressPage(resultLatestPageRaw);
+                }
+
+                const resultPage = await decompressPage(resultPageRaw);
 
                 await onPageAfterDelete.publish({
                     page: resultPage,
-                    latestPage: resultLatestPage || null,
+                    latestPage,
                     publishedPage
                 });
 
@@ -749,24 +757,9 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                  * 7. Done. We return both the deleted page, and the new latest one (if there is one).
                  */
                 if (page.version === 1) {
-                    return [
-                        {
-                            ...resultPage,
-                            content: await decompressContent(resultPage)
-                        },
-                        null
-                    ] as any;
+                    return [resultPage, null] as any;
                 }
-                return [
-                    {
-                        ...resultPage,
-                        content: await decompressContent(resultPage)
-                    },
-                    {
-                        ...latestPage,
-                        content: await decompressContent(latestPage)
-                    }
-                ] as any;
+                return [resultPage, latestPage] as any;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page.",
@@ -785,9 +778,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         async publishPage(this: PageBuilderContextObject, id: string): Promise<any> {
             await pagesPermissions.ensure({ pw: "p" });
 
-            const original = await this.getPage(id, {
-                decompress: false
-            });
+            const original = await this.getPage(id);
 
             if (original.status === STATUS_PUBLISHED) {
                 throw new NotFoundError(`Page is already published.`);
@@ -795,7 +786,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             /**
              * Already published page revision of this page.
              */
-            const publishedPage = await storageOperations.pages.get({
+            const publishedPageRaw = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -803,6 +794,9 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     published: true
                 }
             });
+
+            const publishedPage = publishedPageRaw ? await decompressPage(publishedPageRaw) : null;
+
             /**
              * We need a page that is published on given path.
              */
@@ -826,16 +820,20 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             /**
              * Latest revision of this page.
              */
-            const latestPage = await storageOperations.pages.get({
+            const latestPageRaw = await storageOperations.pages.get({
                 where: latestPageWhere
             });
-            if (!latestPage) {
+
+            if (!latestPageRaw) {
                 throw new WebinyError(
                     "Missing latest page record of the requested page. This should never happen.",
                     "LATEST_PAGE_ERROR",
                     latestPageWhere
                 );
             }
+
+            const latestPage = await decompressPage(latestPageRaw);
+
             /**
              * If this is true, let's unpublish the page first. Note that we're not talking about this
              * same page, but a previous revision. We're talking about a completely different page
@@ -868,7 +866,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     publishedPage
                 });
 
-                const result = await storageOperations.pages.publish({
+                const newPublishedPageRaw = await storageOperations.pages.publish({
                     original,
                     page,
                     latestPage,
@@ -876,8 +874,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     publishedPathPage
                 });
 
+                const newPublishedPage = await decompressPage(newPublishedPageRaw);
+
                 await onPageAfterPublish.publish({
-                    page: result,
+                    page: newPublishedPage,
                     latestPage,
                     publishedPage
                 });
@@ -888,15 +888,13 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                  */
                 clearDataLoaderCache([
                     original,
-                    result,
+                    newPublishedPage,
                     latestPage,
                     publishedPage,
                     publishedPathPage
                 ]);
-                return {
-                    ...result,
-                    content: await decompressContent(result)
-                };
+
+                return newPublishedPage;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not publish page.",
@@ -916,13 +914,12 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         async unpublishPage(this: PageBuilderContextObject, id: string): Promise<any> {
             await pagesPermissions.ensure({ pw: "u" });
 
-            const original = await this.getPage(id, {
-                decompress: false
-            });
+            const original: Decompressed<Page> = await this.getPage(id);
+
             /**
-             * Latest revision of the this page.
+             * Latest revision of this page.
              */
-            const latestPage = await storageOperations.pages.get({
+            const latestPageRaw = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -930,7 +927,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     latest: true
                 }
             });
-            if (!latestPage) {
+
+            if (!latestPageRaw) {
                 throw new WebinyError(
                     "Could not find latest revision of the page.",
                     "LATEST_PAGE_REVISION_ERROR",
@@ -946,6 +944,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 throw new WebinyError(`Page is not published.`);
             }
 
+            const latestPage = await decompressPage(latestPageRaw);
+
             const settings = await this.getCurrentSettings();
             const pages = settings?.pages || {};
             for (const key in pages) {
@@ -958,7 +958,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 }
             }
 
-            const page: Page = {
+            const page: Decompressed<Page> = {
                 ...original,
                 status: STATUS_UNPUBLISHED,
                 savedOn: new Date().toISOString()
@@ -970,22 +970,20 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     latestPage
                 });
 
-                const result = await storageOperations.pages.unpublish({
+                await storageOperations.pages.unpublish({
                     original,
                     page,
                     latestPage
                 });
+
                 await onPageAfterUnpublish.publish({
-                    page: result,
+                    page,
                     latestPage
                 });
 
                 clearDataLoaderCache([original, latestPage]);
 
-                return {
-                    ...result,
-                    content: await decompressContent(result)
-                };
+                return page;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not unpublish page.",
@@ -1062,10 +1060,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 throw new NotFoundError(`Page not found.`);
             }
 
-            return {
-                ...page,
-                content: await decompressContent(page)
-            };
+            return decompressPage(page);
         },
 
         async getPublishedPageByPath(this: PageBuilderContextObject, params): Promise<any> {
@@ -1114,10 +1109,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             if (!page) {
                 throw new NotFoundError("Page not found.");
             }
-            return {
-                ...page,
-                content: await decompressContent(page)
-            };
+
+            return decompressPage(page);
         },
 
         async listLatestPages(params, options = {}) {

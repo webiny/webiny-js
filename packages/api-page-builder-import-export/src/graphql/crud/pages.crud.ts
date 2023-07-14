@@ -6,11 +6,11 @@ import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
 import { Payload as ExportPagesProcessHandlerPayload } from "~/export/process";
-import { EXPORT_PAGES_FOLDER_KEY } from "~/export/utils";
 import { MetaResponse } from "@webiny/api-page-builder/types";
 import { zeroPad } from "@webiny/utils";
 import { PagesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PagesPermissions";
 
+export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
 const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 
@@ -101,10 +101,10 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 status: ImportExportTaskStatus.PENDING
             });
             const exportPagesDataKey = `${EXPORT_PAGES_FOLDER_KEY}/${task.id}`;
-            // For each page create a sub task and invoke the process handler.
+            // For each page create a sub-task and invoke the process handler.
             for (let i = 0; i < pageIds.length; i++) {
                 const pageId = pageIds[i];
-                // Create sub task.
+                // Create sub-task.
                 await context.pageBuilder.importExportTask.createSubTask(
                     task.id,
                     zeroPad(i + 1, 5),
