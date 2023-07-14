@@ -1,5 +1,5 @@
 import { CmsContentEntry, CmsContentEntryStatusType } from "~/types";
-import { FolderItem } from "@webiny/app-aco/types";
+import { FolderItem, Location } from "@webiny/app-aco/types";
 
 interface BaseEntry {
     id: string;
@@ -16,6 +16,7 @@ export interface RecordEntry extends BaseEntry {
     $type: "RECORD";
     original: CmsContentEntry;
     status: CmsContentEntryStatusType;
+    location: Location;
 }
 
 export interface FolderEntry extends BaseEntry {

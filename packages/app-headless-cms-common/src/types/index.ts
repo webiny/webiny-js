@@ -9,6 +9,7 @@ import {
 } from "@webiny/form";
 import { IconName, IconPrefix } from "@fortawesome/fontawesome-svg-core";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { Location } from "@webiny/app-aco/types";
 import {
     CmsModelFieldValidator,
     CmsModelFieldValidatorsFactory,
@@ -337,6 +338,7 @@ export interface CmsContentEntry {
     savedOn: string;
     modelId: string;
     createdBy: CmsIdentity;
+    wbyAco_location: Location;
     meta: {
         title: string;
         description?: string;

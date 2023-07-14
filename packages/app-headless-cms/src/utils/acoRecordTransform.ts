@@ -14,6 +14,7 @@ export const transformCmsContentEntryToRecordEntry = (item: CmsContentEntry): Re
         savedOn: item.savedOn,
         status: item.meta.status,
         version: item.meta.version,
+        location: item.wbyAco_location,
         original: item
     };
 };

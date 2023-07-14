@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
 import { FolderDialogDelete, FolderDialogUpdate, useNavigateFolder } from "@webiny/app-aco";
-import { FolderItem, MovableSearchRecordItem } from "@webiny/app-aco/types";
+import { FolderItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -17,9 +17,7 @@ import { RecordActionDelete } from "./Row/Record/RecordActionDelete";
 import { RecordActionEdit } from "./Row/Record/RecordActionEdit";
 import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
-import { EntryDialogMove } from "@webiny/app-aco/components/Dialogs/DialogMove";
 import { menuStyles } from "./styled";
-import { parseIdentifier } from "@webiny/utils";
 import { Entry, FolderEntry, RecordEntry } from "./types";
 import { useRouter } from "@webiny/react-router";
 import { useModel, usePermission } from "~/admin/hooks";
@@ -46,10 +44,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-
-    const [selectedSearchRecord, setSelectedSearchRecord] =
-        useState<MovableSearchRecordItem | null>();
-    const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
         return (folders as Entry[]).concat(records as Entry[]);
@@ -131,26 +125,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                                 canEdit={canEdit}
                             />
                             <RecordActionPublish record={record} />
-                            <RecordActionMove
-                                onClick={() => {
-                                    setMoveSearchRecordDialogOpen(true);
-                                    setSelectedSearchRecord(() => {
-                                        const { id: entryId } = parseIdentifier(record.id);
-                                        const exists = records.some(
-                                            item => item.original.entryId === entryId
-                                        );
-                                        if (!exists) {
-                                            return null;
-                                        }
-                                        return {
-                                            id: record.id,
-                                            location: {
-                                                folderId: currentFolderId as string
-                                            }
-                                        };
-                                    });
-                                }}
-                            />
+                            <RecordActionMove record={record} />
                             <RecordActionDelete record={record} />
                         </Menu>
                     );
@@ -210,13 +185,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                         onClose={() => setDeleteDialogOpen(false)}
                     />
                 </>
-            )}
-            {selectedSearchRecord && (
-                <EntryDialogMove
-                    searchRecord={selectedSearchRecord}
-                    open={moveSearchRecordDialogOpen}
-                    onClose={() => setMoveSearchRecordDialogOpen(false)}
-                />
             )}
         </div>
     );
