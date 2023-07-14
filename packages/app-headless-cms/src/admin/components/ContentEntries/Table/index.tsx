@@ -25,6 +25,7 @@ import { useRouter } from "@webiny/react-router";
 import { useModel, usePermission } from "~/admin/hooks";
 import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
+import { isRecordEntry } from "~/utils/acoRecordTransform";
 
 interface Props {
     records: RecordEntry[];
@@ -84,12 +85,10 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             header: "Name",
             className: "cms-aco-list-title",
             cell: (record: Entry) => {
-                const { type } = record;
-                if (type === "RECORD") {
+                if (isRecordEntry(record)) {
                     return <EntryName record={record} onClick={createEditEntry(record.original)} />;
-                } else {
-                    return <FolderName record={record} />;
                 }
+                return <FolderName record={record} />;
             },
             enableSorting: true
         },
@@ -120,12 +119,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 alignEnd: true
             },
             cell: (record: Entry) => {
-                const { type, original } = record;
-                if (!original) {
-                    return <></>;
-                }
-
-                if (type === "RECORD") {
+                if (isRecordEntry(record)) {
                     return (
                         <Menu
                             className={`${menuStyles} record-menu`}
@@ -161,18 +155,19 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                         </Menu>
                     );
                 }
+
                 return (
                     <Menu handle={<IconButton icon={<More />} />}>
                         <FolderActionEdit
                             onClick={() => {
                                 setUpdateDialogOpen(true);
-                                setSelectedFolder(original);
+                                setSelectedFolder(record.original);
                             }}
                         />
                         <FolderActionDelete
                             onClick={() => {
                                 setDeleteDialogOpen(true);
-                                setSelectedFolder(original);
+                                setSelectedFolder(record.original);
                             }}
                         />
                     </Menu>
