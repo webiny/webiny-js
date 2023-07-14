@@ -360,6 +360,7 @@ export interface CmsContentEntryRevision {
     savedOn: string;
     modelId: string;
     createdBy: CmsIdentity;
+    wbyAco_location: Location;
     meta: {
         title: string;
         publishedOn: string;
