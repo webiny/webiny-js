@@ -1,15 +1,13 @@
 import { useCallback } from "react";
 import { useSnackbar } from "@webiny/app-admin";
 import { useMoveToFolderDialog, useRecords } from "@webiny/app-aco";
-import { PbPageDataItem } from "~/types";
-import { Location } from "@webiny/app-aco/types";
+import { PageEntry } from "~/admin/components/Table/Table";
 
 interface UseMovePageToFolderParams {
-    record: PbPageDataItem;
-    location: Location;
+    record: PageEntry;
 }
 
-export function useMovePageToFolder({ record, location }: UseMovePageToFolderParams) {
+export function useMovePageToFolder({ record }: UseMovePageToFolderParams) {
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useMoveToFolderDialog();
     const { moveRecord } = useRecords();
@@ -20,10 +18,10 @@ export function useMovePageToFolder({ record, location }: UseMovePageToFolderPar
             message: "Select a new location for this page:",
             loadingLabel: "Moving page...",
             acceptLabel: "Move page",
-            focusedFolderId: location.folderId,
+            focusedFolderId: record.location.folderId,
             async onAccept({ folder }) {
                 await moveRecord({
-                    id: record.pid,
+                    id: record.id,
                     location: {
                         folderId: folder.id
                     }
@@ -33,5 +31,5 @@ export function useMovePageToFolder({ record, location }: UseMovePageToFolderPar
                 );
             }
         });
-    }, [record.pid]);
+    }, [record.id]);
 }

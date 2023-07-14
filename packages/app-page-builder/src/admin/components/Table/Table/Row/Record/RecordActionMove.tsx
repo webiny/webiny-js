@@ -7,17 +7,17 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { useMovePageToFolder } from "~/admin/views/Pages/hooks/useMovePageToFolder";
 
 import { ListItemGraphic } from "~/admin/components/Table/Table/styled";
-import { PbPageDataItem } from "~/types";
-import { Location } from "@webiny/app-aco/types";
+
+import { PageEntry } from "~/admin/components/Table/Table";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/actions/page/move");
 
 interface Props {
-    record: PbPageDataItem;
-    location: Location;
+    record: PageEntry;
 }
-export const RecordActionMove = ({ record, location }: Props): ReactElement => {
-    const movePageToFolder = useMovePageToFolder({ record, location });
+
+export const RecordActionMove = ({ record }: Props): ReactElement => {
+    const movePageToFolder = useMovePageToFolder({ record });
 
     return (
         <MenuItem onClick={movePageToFolder}>

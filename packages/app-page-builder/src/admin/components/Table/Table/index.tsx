@@ -33,7 +33,7 @@ export interface TableProps {
     onSortingChange: OnSortingChange;
 }
 
-interface PageEntry {
+export interface PageEntry {
     $type: "RECORD";
     $selectable: boolean;
     id: string;
@@ -157,7 +157,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             <RecordActionEdit record={entry.original} />
                             <RecordActionPreview record={entry.original} />
                             <RecordActionPublish record={entry.original} />
-                            <RecordActionMove record={entry.original} location={entry.location} />
+                            <RecordActionMove record={entry} />
                             <RecordActionDelete record={entry.original} />
                         </Menu>
                     );
