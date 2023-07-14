@@ -10,6 +10,7 @@ export interface UsePermission {
     canPublish: () => boolean;
     canUnpublish: () => boolean;
     hasPermissions: () => boolean;
+    canAccessOnlyOwn: () => boolean;
 }
 
 const PB_FULL_ACCESS_PERMISSION_NAME = "pb.*";
@@ -108,6 +109,16 @@ export const createUsePermissions = (permissionName: string) => (): UsePermissio
         });
     }, [permissionsByName, hasFullAccess]);
 
+    const canAccessOnlyOwn = useCallback<UsePermission["canAccessOnlyOwn"]>(() => {
+        if (hasFullAccess) {
+            return true;
+        }
+
+        return permissionsByName.some(({ own }) => {
+            return !!own;
+        });
+    }, [permissionsByName, hasFullAccess]);
+
     return {
         canWrite,
         canCreate,
@@ -115,6 +126,7 @@ export const createUsePermissions = (permissionName: string) => (): UsePermissio
         canDelete,
         canPublish,
         canUnpublish,
-        hasPermissions
+        hasPermissions,
+        canAccessOnlyOwn
     };
 };

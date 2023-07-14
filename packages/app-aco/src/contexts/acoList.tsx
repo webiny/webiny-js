@@ -14,6 +14,7 @@ import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
 import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick";
 import { ROOT_FOLDER } from "~/constants";
+import { useSecurity } from "@webiny/app-security";
 
 export interface AcoListContextData<T> {
     folders: FolderItem[];
@@ -96,9 +97,11 @@ const getCurrentRecordList = <T = GenericSearchData,>(
 
 export interface AcoListProviderProps {
     children: React.ReactNode;
+    own?: boolean;
 }
 
-export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) => {
+export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...props }) => {
+    const { identity } = useSecurity();
     const { currentFolderId } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();
     const folderContext = useContext(FoldersContext);
@@ -253,6 +256,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children }) =
                 search: state.searchQuery,
                 after: state.after,
                 where: {
+                    createdBy: props.own ? identity!.id : undefined,
                     ...locationWhere,
                     ...state.filters
                 }
