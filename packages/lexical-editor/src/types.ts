@@ -33,6 +33,8 @@ export type ToolbarState = {
     underline: boolean;
     italic: boolean;
     code: boolean;
+    // is direction of the text right-to-left
+    isRTL: boolean;
     // nodes selection state
     link: NodeState;
     typography: NodeState;
@@ -43,6 +45,13 @@ export type ToolbarState = {
     paragraph: NodeState;
     heading: NodeState;
 };
+
+export type ImageActionType = "image-action";
+export type ToolbarActionType = ImageActionType | string;
+export interface ToolbarActionPlugin {
+    targetAction: ToolbarActionType;
+    plugin: Record<string, any> | Function | undefined;
+}
 
 /*
  * Represent set of data from the current selection of the text and nodes selected by the user.
@@ -56,6 +65,7 @@ export type TextBlockSelection = {
     node: ElementNode | TextNode;
     anchorNode: ElementNode | TextNode;
     isElementDom: boolean;
+    selectedText: string;
     state: ToolbarState | undefined;
 };
 
@@ -92,3 +102,12 @@ export type ThemeEmotionMap = {
         className: string;
     };
 };
+
+/* Commands payload types */
+export { ImagePayload } from "~/commands/insertFiles";
+
+/* Lexical editor interfaces */
+export { RichTextEditorProps } from "~/components/Editor/RichTextEditor";
+
+// lexical types
+export { Klass, LexicalNode } from "lexical";

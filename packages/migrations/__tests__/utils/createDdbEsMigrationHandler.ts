@@ -2,7 +2,7 @@ import { Client } from "@elastic/elasticsearch";
 import { Constructor } from "@webiny/ioc";
 import { createDdbEsProjectMigration, DataMigration } from "@webiny/data-migration";
 import { getPrimaryDynamoDbTable } from "~tests/utils/getPrimaryDynamoDbTable";
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { useHandler } from "./useHandler";
 import { runResumableMigration } from "./runResumableMigration";
 

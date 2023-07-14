@@ -88,7 +88,7 @@ export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema>
                 code: err.code || "INVALID_GRAPHQL_SCHEMA_LOCATIONS",
                 data: {
                     ...(err.data || {}),
-                    locations: err.locations
+                    endpoint: context.cms.type
                 }
             });
         }

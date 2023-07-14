@@ -1,37 +1,32 @@
 import WebinyError from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
-import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import { ImportExportTaskStatus, BlocksImportExportCrud, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
 import { Payload as ExportBlocksProcessHandlerPayload } from "~/export/process";
-import { EXPORT_BLOCKS_FOLDER_KEY } from "~/export/utils";
 import { zeroPad } from "@webiny/utils";
+import { PageBlocksPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PageBlocksPermissions";
 
-const PERMISSION_NAME = "pb.block";
+const EXPORT_BLOCKS_FOLDER_KEY = "WEBINY_PB_EXPORT_BLOCK";
 const EXPORT_BLOCKS_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_BLOCKS_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 
 export default new ContextPlugin<PbImportExportContext>(context => {
-    const importExportCrud: BlocksImportExportCrud = {
-        async importBlocks({ category: categorySlug, zipFileUrl }) {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+    const pageBlocksPermissions = new PageBlocksPermissions({
+        getPermissions: () => context.security.getPermissions("pb.block"),
+        getIdentity: context.security.getIdentity,
+        fullAccessPermissionName: "pb.*"
+    });
 
-            // Bail out early if category not found
-            const category = await context.pageBuilder.getBlockCategory(categorySlug);
-            if (!category) {
-                throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
-            }
+    const importExportCrud: BlocksImportExportCrud = {
+        async importBlocks({ zipFileUrl }) {
+            await pageBlocksPermissions.ensure({ rwd: "w" });
 
             // Create a task for import block
             const task = await context.pageBuilder.importExportTask.createTask({
                 status: ImportExportTaskStatus.PENDING,
                 input: {
-                    category: categorySlug,
                     zipFileUrl
                 }
             });
@@ -44,7 +39,6 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 context,
                 name: IMPORT_BLOCKS_CREATE_HANDLER,
                 payload: {
-                    category: categorySlug,
                     zipFileUrl,
                     task,
                     type: "block",
@@ -59,9 +53,8 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         },
 
         async exportBlocks({ ids: initialBlockIds, where }) {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pageBlocksPermissions.ensure({ rwd: "w" });
+
             let blockIds: string[] = initialBlockIds || [];
             // If no ids are provided then it means we want to export all blocks
             if (

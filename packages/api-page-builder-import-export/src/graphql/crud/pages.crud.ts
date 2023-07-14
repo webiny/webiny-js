@@ -1,26 +1,29 @@
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
-import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import { ImportExportTaskStatus, PagesImportExportCrud, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
 import { Payload as ExportPagesProcessHandlerPayload } from "~/export/process";
-import { EXPORT_PAGES_FOLDER_KEY } from "~/export/utils";
 import { MetaResponse } from "@webiny/api-page-builder/types";
 import { zeroPad } from "@webiny/utils";
+import { PagesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PagesPermissions";
 
-const PERMISSION_NAME = "pb.page";
+export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
 const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 
 export default new ContextPlugin<PbImportExportContext>(context => {
+    const pagesPermissions = new PagesPermissions({
+        getPermissions: () => context.security.getPermissions("pb.page"),
+        getIdentity: context.security.getIdentity,
+        fullAccessPermissionName: "pb.*"
+    });
+
     const importExportCrud: PagesImportExportCrud = {
         async importPages({ category: categorySlug, zipFileUrl, meta }) {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pagesPermissions.ensure({ rwd: "w" });
 
             // Bail out early if category not found
             const category = await context.pageBuilder.getCategory(categorySlug);
@@ -61,9 +64,8 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         },
 
         async exportPages({ ids: initialPageIds, revisionType, where, sort, search }) {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pagesPermissions.ensure({ rwd: "w" });
+
             let pageIds: string[] = initialPageIds || [];
             // If no ids are provided then it means we want to export all pages
             if (!initialPageIds || (Array.isArray(initialPageIds) && initialPageIds.length === 0)) {
@@ -99,10 +101,10 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 status: ImportExportTaskStatus.PENDING
             });
             const exportPagesDataKey = `${EXPORT_PAGES_FOLDER_KEY}/${task.id}`;
-            // For each page create a sub task and invoke the process handler.
+            // For each page create a sub-task and invoke the process handler.
             for (let i = 0; i < pageIds.length; i++) {
                 const pageId = pageIds[i];
-                // Create sub task.
+                // Create sub-task.
                 await context.pageBuilder.importExportTask.createSubTask(
                     task.id,
                     zeroPad(i + 1, 5),

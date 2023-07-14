@@ -94,7 +94,9 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
                                 </Grid>
                                 <Grid>
                                     <Cell span={12}>
-                                        <PreviewBox>{plugin.preview()}</PreviewBox>
+                                        <PreviewBox>
+                                            {plugin.preview ? plugin.preview() : null}
+                                        </PreviewBox>
                                     </Cell>
                                 </Grid>
                             </DialogContent>

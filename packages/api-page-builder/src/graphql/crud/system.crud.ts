@@ -1,9 +1,7 @@
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { preparePageData } from "./install/welcomeToWebinyPageData";
-import { preparePageDataLegacy } from "./install/welcomeToWebinyPageDataLegacy";
 import { notFoundPageData } from "./install/notFoundPageData";
-import { notFoundPageDataLegacy } from "./install/notFoundPageDataLegacy";
 import { savePageAssets } from "./install/utils/savePageAssets";
 import {
     Category,
@@ -17,7 +15,6 @@ import {
     SystemCrud
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
-import { featureFlags } from "@webiny/feature-flags";
 
 export interface CreateSystemCrudParams {
     context: PbContext;
@@ -159,22 +156,12 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                 // 5. Create sample pages.
                 const fmSettings = await fileManager.getSettings();
 
-                let welcomeToWebinyPageContent, notFoundPageContent;
-                if (featureFlags.pbLegacyRenderingEngine === true) {
-                    welcomeToWebinyPageContent = preparePageDataLegacy({
-                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
-                        fileIdToFileMap: fileIdToFileMap
-                    });
+                const welcomeToWebinyPageContent = preparePageData({
+                    srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
+                    fileIdToFileMap: fileIdToFileMap
+                });
 
-                    notFoundPageContent = notFoundPageDataLegacy;
-                } else {
-                    welcomeToWebinyPageContent = preparePageData({
-                        srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
-                        fileIdToFileMap: fileIdToFileMap
-                    });
-
-                    notFoundPageContent = notFoundPageData;
-                }
+                const notFoundPageContent = notFoundPageData;
 
                 const initialPagesData: Page[] = [
                     /**

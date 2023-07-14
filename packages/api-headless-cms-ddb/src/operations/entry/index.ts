@@ -3,6 +3,7 @@ import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
     CmsEntryListWhere,
+    CmsEntryUniqueValue,
     CmsModel,
     CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
@@ -371,6 +372,59 @@ export const createEntriesStorageOperations = (
                     latestStorageEntry
                 }
             );
+        }
+    };
+
+    const move: CmsEntryStorageOperations["move"] = async (initialModel, id, folderId) => {
+        /**
+         * We need to:
+         * - load all the revisions of the entry, including published and latest
+         * - update all the revisions (published and latest ) of the entry with new folderId
+         */
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need to load all the revisions and published / latest entry.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({
+                id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            options: {
+                gte: " "
+            }
+        };
+        const records = await queryAll<CmsEntry>(queryAllParams);
+        /**
+         * Then create the batch writes for the DynamoDB, with the updated folderId.
+         */
+        const items = records.map(item => {
+            return entity.putBatch({
+                ...item,
+                location: {
+                    ...item.location,
+                    folderId
+                }
+            });
+        });
+        /**
+         * And finally write it...
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+        } catch (ex) {
+            throw WebinyError.from(ex, {
+                message: "Could not move records to a new folder.",
+                data: {
+                    id,
+                    folderId
+                }
+            });
         }
     };
 
@@ -1083,32 +1137,34 @@ export const createEntriesStorageOperations = (
             limit: MAX_LIST_LIMIT
         });
 
-        const valueMap = items.reduce<{ [key: string]: number }>((acc, item) => {
-            const value = item.values[field.fieldId];
-
-            const values = Array.isArray(value) ? value : [value];
-
-            for (const v of values) {
-                if (v in acc) {
-                    acc[v]++;
-                } else {
-                    acc[v] = 1;
-                }
+        const result: Record<string, CmsEntryUniqueValue> = {};
+        for (const item of items) {
+            const fieldValue = item.values[field.fieldId] as string[] | string | undefined;
+            if (!fieldValue) {
+                continue;
             }
+            const values = Array.isArray(fieldValue) ? fieldValue : [fieldValue];
+            if (values.length === 0) {
+                continue;
+            }
+            for (const value of values) {
+                result[value] = {
+                    value,
+                    count: (result[value]?.count || 0) + 1
+                };
+            }
+        }
 
-            return acc;
-        }, {});
-
-        return Object.keys(valueMap).reduce<Array<{ value: string; count: number }>>(
-            (acc, item) => [...acc, { value: item, count: valueMap[item] }],
-            []
-        );
+        return Object.values(result)
+            .sort((a, b) => (a.value > b.value ? 1 : b.value > a.value ? -1 : 0))
+            .sort((a, b) => b.count - a.count);
     };
 
     return {
         create,
         createRevisionFrom,
         update,
+        move,
         delete: deleteEntry,
         deleteRevision,
         deleteMultipleEntries,

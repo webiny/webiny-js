@@ -75,7 +75,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
 
-        target: ["cell", "block"],
+        target: ["cell", "block", "carousel-element", "tab"],
         canDelete: () => {
             return true;
         },

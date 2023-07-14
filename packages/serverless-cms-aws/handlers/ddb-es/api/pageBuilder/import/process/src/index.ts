@@ -4,10 +4,7 @@ import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
-import {
-    createPageBuilderGraphQL,
-    createPageBuilderContext
-} from "@webiny/api-page-builder/graphql";
+import { createPageBuilderContext } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -20,13 +17,12 @@ import elasticSearch, {
     createGzipCompression
 } from "@webiny/api-elasticsearch";
 import { createFileManagerContext } from "@webiny/api-file-manager";
-import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb-es";
+import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderImportExportContext } from "@webiny/api-page-builder-aco";
-import { createAcoFileManagerImportExportContext } from "@webiny/api-file-manager-aco";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 
@@ -56,13 +52,24 @@ export const handler = createHandler({
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        createFileManagerContext({
-            storageOperations: createFileManagerStorageOperations({
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
-                elasticsearchClient
+                elasticsearch: elasticsearchClient
             })
         }),
-        // Add File storage S3 plugin for API file manager.
+        createFileManagerContext({
+            storageOperations: createFileManagerStorageOperations({
+                documentClient
+            })
+        }),
         fileManagerS3(),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
@@ -70,7 +77,6 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        createPageBuilderGraphQL(),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient,
@@ -83,22 +89,8 @@ export const handler = createHandler({
         importProcessPlugins({
             handlers: { process: process.env.AWS_LAMBDA_FUNCTION_NAME }
         }),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient
-            })
-        }),
-        new CmsParametersPlugin(async context => {
-            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
-            return {
-                type: "manage",
-                locale
-            };
-        }),
         createAco(),
-        createAcoPageBuilderImportExportContext(),
-        createAcoFileManagerImportExportContext()
+        createAcoPageBuilderImportExportContext()
     ],
     http: { debug }
 });

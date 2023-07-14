@@ -24,6 +24,7 @@
     "handlebars": "4.7.7",
     "localtunnel": "2.0.2",
     "lodash": "^4.17.20",
+    "log-update": "^4.0.0",
     "mime": "2.6.0",
     "minimatch": "^5.1.0",
     "ncp": "2.0.0",

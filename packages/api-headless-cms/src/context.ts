@@ -9,6 +9,10 @@ import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
+import { ModelGroupsPermissions } from "./utils/permissions/ModelGroupsPermissions";
+import { EntriesPermissions } from "./utils/permissions/EntriesPermissions";
+import { SettingsPermissions } from "./utils/permissions/SettingsPermissions";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -30,7 +34,7 @@ export interface CrudParams {
 }
 
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
-    return new ContextPlugin<CmsContext>(async context => {
+    const plugin = new ContextPlugin<CmsContext>(async context => {
         const { type, locale } = await getParameters(context);
 
         const getLocale = () => {
@@ -58,6 +62,31 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         await context.benchmark.measure("headlessCms.createContext", async () => {
             await storageOperations.beforeInit(context);
 
+            const modelGroupsPermissions = new ModelGroupsPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
+                fullAccessPermissionName: "cms.*"
+            });
+
+            const modelsPermissions = new ModelsPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentModel"),
+                fullAccessPermissionName: "cms.*",
+                modelGroupsPermissions
+            });
+
+            const entriesPermissions = new EntriesPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentEntry"),
+                fullAccessPermissionName: "cms.*"
+            });
+
+            const settingsPermissions = new SettingsPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.settings"),
+                fullAccessPermissionName: "cms.*"
+            });
+
             context.cms = {
                 type,
                 locale,
@@ -77,28 +106,33 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     context,
                     getTenant,
                     getLocale,
-                    storageOperations
+                    storageOperations,
+                    settingsPermissions
                 }),
                 ...createModelGroupsCrud({
                     context,
                     getTenant,
                     getLocale,
                     getIdentity,
-                    storageOperations
+                    storageOperations,
+                    modelGroupsPermissions
                 }),
                 ...createModelsCrud({
                     context,
                     getLocale,
                     getTenant,
                     getIdentity,
-                    storageOperations
+                    storageOperations,
+                    modelsPermissions
                 }),
                 ...createContentEntryCrud({
                     context,
                     getIdentity,
                     getTenant,
                     getLocale,
-                    storageOperations
+                    storageOperations,
+                    entriesPermissions,
+                    modelsPermissions
                 })
             };
 
@@ -108,4 +142,8 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             await storageOperations.init(context);
         });
     });
+
+    plugin.name = "cms.createContext";
+
+    return plugin;
 };

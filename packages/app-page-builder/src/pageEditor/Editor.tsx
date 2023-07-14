@@ -33,6 +33,7 @@ import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { PageEditorConfig } from "./config/PageEditorConfig";
 import elementVariableRendererPlugins from "~/editor/plugins/elementVariables";
+import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -76,6 +77,8 @@ export const PageEditor: React.FC = () => {
         CreatePageFromMutationResponse,
         CreatePageFromMutationVariables
     >(CREATE_PAGE_FROM);
+
+    const { navigateToPageEditor } = useNavigatePage();
 
     const pageId = decodeURIComponent(params["id"]);
 
@@ -172,7 +175,7 @@ export const PageEditor: React.FC = () => {
                     showSnackbar("Missing ID in Create Page From Mutation Response.");
                     return;
                 }
-                history.push(`/page-builder/editor/${encodeURIComponent(id)}`);
+                navigateToPageEditor(id);
                 setTimeout(() => showSnackbar("New revision created."), 1500);
             });
 
@@ -181,7 +184,7 @@ export const PageEditor: React.FC = () => {
                 return { default: ({ children }: { children: React.ReactElement }) => children };
             })
         );
-    }, [pageId]);
+    }, [pageId, navigateToPageEditor]);
 
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>

@@ -23,9 +23,15 @@ export const Element: React.FC<Props> = props => {
         return null;
     }
 
+    const meta = {
+        ...props.meta,
+        templateBlockId: element.data.templateBlockId,
+        blockId: element.data.blockId
+    };
+
     return (
         <ErrorBoundary>
-            <ElementRenderer {...props} />
+            <ElementRenderer {...props} meta={meta} />
         </ErrorBoundary>
     );
 };

@@ -1,8 +1,7 @@
 import S3 from "aws-sdk/clients/s3";
 import { validation } from "@webiny/validation";
 import { FileManagerSettings } from "@webiny/api-file-manager/types";
-import { prepareFileData } from "~/utils/prepareFileData";
-import { PresignedPostPayloadData, PresignedPostPayloadDataResponse } from "~/types";
+import { FileData, PresignedPostPayloadDataResponse } from "~/types";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; // 1TB
@@ -18,11 +17,9 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
 };
 
 export const getPresignedPostPayload = (
-    data: PresignedPostPayloadData,
+    file: FileData,
     settings: FileManagerSettings
 ): PresignedPostPayloadDataResponse => {
-    const file = prepareFileData(data);
-
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(
         settings.uploadMaxFileSize,

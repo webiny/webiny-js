@@ -1,4 +1,4 @@
-import { AcoContext } from "@webiny/api-aco/types";
+import { AcoContext, Folder, IAcoApp } from "@webiny/api-aco/types";
 import { Page, PbPageElement } from "@webiny/api-page-builder/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { Context as BaseContext } from "@webiny/handler/types";
@@ -30,8 +30,10 @@ export interface PageSearchProcessor {
 
 export interface PbAcoContext extends BaseContext, AcoContext, PbContext {
     pageBuilderAco: {
+        app: IAcoApp;
         addPageSearchProcessor(processor: PageSearchProcessor): void;
         getSearchablePageContent(content: Page): Promise<string>;
+        getAncestorFoldersByPage(page: Page): Promise<Folder[]>;
     };
 }
 

@@ -9,15 +9,12 @@
 
 .Placeholder__root {
   font-size: 15px;
+  margin-top: -20px;
   color: #999;
   overflow: hidden;
-  position: absolute;
+  position: relative;
   text-overflow: ellipsis;
-  top: 0px;
-  left: 15px;
-  right: 28px;
   user-select: none;
   white-space: nowrap;
-  display: inline-block;
   pointer-events: none;
 }

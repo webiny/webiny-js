@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";

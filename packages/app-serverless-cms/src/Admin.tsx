@@ -27,8 +27,7 @@ import { TenantManager } from "@webiny/app-tenant-manager";
 import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
-import { ACOProvider } from "@webiny/app-aco";
-import { isLegacyRenderingEngine } from "@webiny/app-page-builder/utils";
+import { Folders } from "@webiny/app-aco";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -47,22 +46,20 @@ const App = (props: AdminProps) => {
             <Security />
             <AccessManagement />
             <AppInstaller />
+            <Folders />
             <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <I18N />
             <I18NContent />
             <Provider hoc={ViewCompositionProvider} />
             <PageBuilder />
-
-            {!isLegacyRenderingEngine && <LexicalEditorPlugin />}
-            {!isLegacyRenderingEngine && <LexicalEditorActions />}
-
+            <LexicalEditorPlugin />
+            <LexicalEditorActions />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AdvancedPublishingWorkflow />
             <TenantManager />
             <MailerSettings />
-            <ACOProvider />
             {props.children}
         </BaseAdmin>
     );

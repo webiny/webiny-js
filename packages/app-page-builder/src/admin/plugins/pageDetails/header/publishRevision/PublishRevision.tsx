@@ -1,16 +1,14 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
-import { useSecurity } from "@webiny/app-security";
 import { ReactComponent as PublishIcon } from "../../../../assets/round-publish-24px.svg";
 import { ReactComponent as UnpublishIcon } from "../../../../assets/unpublish.svg";
 import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisionHandler";
-import usePermission from "../../../../../hooks/usePermission";
 import { PbPageData } from "~/types";
-import { SecurityPermission } from "@webiny/app-security/types";
 import { makeComposable } from "@webiny/app-admin";
+import { usePagesPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
 
@@ -19,8 +17,7 @@ export interface PublishRevisionProps {
 }
 
 const PublishRevision: React.FC<PublishRevisionProps> = props => {
-    const { identity, getPermission } = useSecurity();
-    const { canPublish, canUnpublish } = usePermission();
+    const { canPublish, canUnpublish, hasPermissions } = usePagesPermissions();
     const { page } = props;
 
     const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
@@ -49,10 +46,7 @@ const PublishRevision: React.FC<PublishRevisionProps> = props => {
         )
     });
 
-    const pbPagePermission = useMemo((): SecurityPermission | null => {
-        return getPermission("pb.page");
-    }, [identity]);
-    if (!pbPagePermission) {
+    if (!hasPermissions()) {
         return null;
     }
 

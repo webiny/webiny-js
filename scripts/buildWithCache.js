@@ -15,6 +15,8 @@ const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
 
 (async () => {
     try {
+        await require("./linkWorkspaces");
+
         const start = new Date();
         await build();
 

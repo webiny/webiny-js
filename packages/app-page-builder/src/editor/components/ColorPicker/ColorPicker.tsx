@@ -3,10 +3,9 @@ import classnames from "classnames";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import classNames from "classnames";
-import { isEqual } from "lodash";
+import isEqual from "lodash/isEqual";
 import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
-import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
 // Icons
@@ -14,9 +13,6 @@ import { ReactComponent as IconPalette } from "../../assets/icons/round-color_le
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";
-import { isLegacyRenderingEngine } from "~/utils";
-
-import { PbTheme } from "~/types";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",
@@ -219,22 +215,15 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         [showPicker, setShowPicker]
     );
 
-    const { theme } = usePageBuilder();
-
     const pageElements = usePageElements();
 
-    let themeColors: Record<string, any> = {};
+    const themeColors: Record<string, any> = {};
 
-    if (isLegacyRenderingEngine) {
-        const legacyTheme = theme as PbTheme;
-        themeColors = legacyTheme?.colors || {};
-    } else {
-        const colors = pageElements.theme?.styles?.colors;
-        if (colors) {
-            for (const key in colors) {
-                if (colors[key]) {
-                    themeColors[key] = colors[key];
-                }
+    const colors = pageElements.theme?.styles?.colors;
+    if (colors) {
+        for (const key in colors) {
+            if (colors[key]) {
+                themeColors[key] = colors[key];
             }
         }
     }
@@ -261,12 +250,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
                                 // With page elements implementation, we want to store the color key and
                                 // then the actual color will be retrieved from the theme object.
-                                let value = color;
-                                if (!isLegacyRenderingEngine) {
-                                    value = key;
-                                }
-
-                                onChangeComplete(value);
+                                onChangeComplete(key);
                             }}
                         />
                     </ColorBox>

@@ -407,6 +407,7 @@ export interface Settings {
         facebook?: string;
         twitter?: string;
         instagram?: string;
+        linkedIn?: string;
         image?: Partial<File>;
     };
     htmlTags?: {

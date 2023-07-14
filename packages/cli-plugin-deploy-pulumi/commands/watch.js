@@ -189,11 +189,16 @@ module.exports = async (inputs, context) => {
             app.listen(3010);
 
             [
-                chalk.green(`Listening for incoming logs on port 3010...`),
-                `Note: everything you log in your code will be forwarded here ${chalk.underline(
-                    "over public internet"
+                `webiny ${chalk.blueBright(
+                    "info"
+                )}: Log forwarding enabled. Listening for incoming logs on port ${chalk.blueBright(
+                    3010
                 )}.`,
-                `To learn more, please visit https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding.`
+                `webiny ${chalk.blueBright(
+                    "info"
+                )}: Everything you log in your application code will be forwarded here over ${chalk.bold(
+                    "public internet"
+                )}. Learn more: https://webiny.link/enable-logs-forwarding.`
             ].forEach(message => output.log({ type: "logs", message }));
 
             output.log({ type: "logs", message: "" });
@@ -219,6 +224,14 @@ module.exports = async (inputs, context) => {
                 });
             }
         }
+    } else if (inputs.deploy) {
+        [
+            `webiny ${chalk.blueBright(
+                "info"
+            )}: To enable log forwarding, rerun the command with the ${chalk.blueBright(
+                "-r"
+            )} flag. Learn more: https://webiny.link/enable-logs-forwarding.`
+        ].forEach(message => output.log({ type: "logs", message }));
     }
 
     // Add deploy logs.

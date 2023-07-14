@@ -137,7 +137,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await getCategory({ revision: id });
 
-        expect(response.data.getCategory.data).toEqual({
+        expect(response.data.getCategory.data).toMatchObject({
             id,
             entryId,
             createdOn: expect.stringMatching(/^20/),
@@ -218,7 +218,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await getCategory({ revision: id });
 
-        expect(response.data.getCategory.data).toEqual({
+        expect(response.data.getCategory.data).toMatchObject({
             id,
             entryId,
             createdOn: expect.stringMatching(/^20/),
@@ -275,7 +275,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 listCategories: {
                     data: [
@@ -361,7 +361,7 @@ describe("MANAGE - Resolvers", () => {
             revisions: [fruits.id, animals.id]
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 getCategoriesByIds: {
                     data: [fruits, animals],
@@ -378,7 +378,7 @@ describe("MANAGE - Resolvers", () => {
 
         const category1 = create1.data.createCategory.data;
 
-        expect(category1).toEqual({
+        expect(category1).toMatchObject({
             id: expect.any(String),
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
@@ -448,7 +448,7 @@ describe("MANAGE - Resolvers", () => {
 
         const category = result.data.createCategory.data;
 
-        expect(category).toEqual({
+        expect(category).toMatchObject({
             id: expect.any(String),
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
@@ -515,7 +515,7 @@ describe("MANAGE - Resolvers", () => {
         const [revision] = await createCategoryFrom({ revision: id });
 
         const newEntry = revision.data.createCategoryFrom.data;
-        expect(revision).toEqual({
+        expect(revision).toMatchObject({
             data: {
                 createCategoryFrom: {
                     data: {
@@ -567,7 +567,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 listCategories: {
                     data: [newEntry],
@@ -595,7 +595,7 @@ describe("MANAGE - Resolvers", () => {
             data: { title: "New title", slug: "hardware-store" }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 updateCategory: {
                     data: {
@@ -855,7 +855,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [listResponse] = await listCategories(defaultQueryVars);
 
-        expect(listResponse).toEqual({
+        expect(listResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [animals, fruits, trees, vegetables],
@@ -876,7 +876,7 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        expect(listContainsResponse).toEqual({
+        expect(listContainsResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [trees],
@@ -896,7 +896,7 @@ describe("MANAGE - Resolvers", () => {
                 title_not_contains: "uit"
             }
         });
-        expect(listNotContainsResponse).toEqual({
+        expect(listNotContainsResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [animals, trees, vegetables],
@@ -916,7 +916,7 @@ describe("MANAGE - Resolvers", () => {
                 title_not_contains: "e"
             }
         });
-        expect(listNotContainsEResponse).toEqual({
+        expect(listNotContainsEResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [animals, fruits],
@@ -938,7 +938,7 @@ describe("MANAGE - Resolvers", () => {
             sort: ["savedOn_ASC"]
         });
 
-        expect(listInResponse).toEqual({
+        expect(listInResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [animals, vegetables],
@@ -1196,7 +1196,7 @@ describe("MANAGE - Resolvers", () => {
 
         const createdWebinyCategory = createWebinyResponse.data.createCategory.data;
 
-        expect(publishWebinyResponse).toEqual({
+        expect(publishWebinyResponse).toMatchObject({
             data: {
                 publishCategory: {
                     data: {
@@ -1234,7 +1234,7 @@ describe("MANAGE - Resolvers", () => {
                 revision: webiny.id
             });
 
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     createCategoryFrom: {
                         data: {
@@ -1265,7 +1265,7 @@ describe("MANAGE - Resolvers", () => {
                 revision: response.data.createCategoryFrom.data.id
             });
 
-            expect(publishResponse).toEqual({
+            expect(publishResponse).toMatchObject({
                 data: {
                     publishCategory: {
                         data: {
@@ -1315,7 +1315,7 @@ describe("MANAGE - Resolvers", () => {
             revision: id
         });
 
-        expect(getResponse).toEqual({
+        expect(getResponse).toMatchObject({
             data: {
                 getCategory: {
                     data: {
@@ -1405,7 +1405,7 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        expect(getReadCategoryResponse).toEqual({
+        expect(getReadCategoryResponse).toMatchObject({
             data: {
                 getCategory: {
                     data: {

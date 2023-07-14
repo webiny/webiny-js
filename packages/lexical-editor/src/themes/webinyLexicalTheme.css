@@ -8,12 +8,6 @@
 /**
  * This are fallback styles for Webiny.
  */
-
- .ContentEditable__root{
-   font-size: inherit;
-   line-height: 1.25;
-
- }
 .WebinyLexical__ltr {
   text-align: inherit;
 }

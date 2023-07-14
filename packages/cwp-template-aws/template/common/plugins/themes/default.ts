@@ -31,7 +31,8 @@ export const borderRadius = 4;
 const headings = {
     fontFamily: fonts.font2,
     color: colors.color3,
-    WebkitFontSmoothing: "antialiased"
+    WebkitFontSmoothing: "antialiased",
+    lineHeight: "150%"
 };
 
 const paragraphs = {
@@ -150,13 +151,7 @@ export default createTheme({
             document: {
                 a: { color: colors.color1 },
                 b: { fontWeight: "bold" },
-                i: { fontStyle: "italic" },
-                myCustomElement: {
-                    background: colors.color1,
-                    border: `1px solid ${colors.color1}`,
-                    borderRadius: 4,
-                    color: colors.color6
-                }
+                i: { fontStyle: "italic" }
             },
             button: {
                 default: buttons({ background: colors.color5, color: colors.color3 }),

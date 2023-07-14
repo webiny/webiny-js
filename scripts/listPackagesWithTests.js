@@ -43,9 +43,6 @@ const CUSTOM_HANDLERS = {
             "packages/api-file-manager --storage=ddb-es,ddb"
         ];
     },
-    "api-file-manager-ddb-es": () => {
-        return ["packages/api-file-manager-ddb-es --storage=ddb-es,ddb"];
-    },
 
     "api-form-builder": () => {
         return [
@@ -103,12 +100,6 @@ const CUSTOM_HANDLERS = {
         return [
             "packages/api-page-builder-aco --storage=ddb",
             "packages/api-page-builder-aco --storage=ddb-es,ddb"
-        ];
-    },
-    "api-file-manager-aco": () => {
-        return [
-            "packages/api-file-manager-aco --storage=ddb",
-            "packages/api-file-manager-aco --storage=ddb-es,ddb"
         ];
     }
 };
@@ -170,4 +161,20 @@ if (ignorePackagesPattern) {
     output = output.filter(current => !current.includes(ignorePackagesPattern));
 }
 
-console.log(JSON.stringify(output));
+const cmdToId = cmd => {
+    return cmd
+        .replace("packages/", "")
+        .replace("--storage=", "")
+        .replace(/[,\s]/g, "_")
+        .replace(/[\(\)\[\]]/g, "")
+        .toLowerCase();
+};
+
+const tasks = output.map(pkg => {
+    return {
+        cmd: pkg,
+        id: cmdToId(pkg)
+    };
+});
+
+console.log(JSON.stringify(tasks));

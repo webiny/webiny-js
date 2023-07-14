@@ -122,8 +122,8 @@ context("Headless CMS - Content Models CRUD", () => {
                 .parent()
                 .within(() => {
                     cy.findByLabelText("Enabled").check();
+                    cy.findByTestId("cms.editfield.validators.required").clear();
                     cy.findByTestId("cms.editfield.validators.required")
-                        .clear()
                         .type("Title is required.")
                         .blur();
                     cy.wait(1000);

@@ -40,7 +40,7 @@ export const GET_SETTINGS = /* GraphQL */ `
 `;
 
 export const UPDATE_SETTINGS = /* GraphQL */ `
-    mutation UpdateSettings($data: FileManagerSettingsInput) {
+    mutation UpdateSettings($data: FmSettingsInput) {
         fileManager {
             updateSettings(data: $data) {
                 data {

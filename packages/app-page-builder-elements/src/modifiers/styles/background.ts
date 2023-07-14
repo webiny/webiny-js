@@ -83,7 +83,7 @@ const background: ElementStylesModifier = ({ element, theme }) => {
 
             if (image.file) {
                 Object.assign(styles, {
-                    backgroundImage: `url(${image.file.src})`
+                    backgroundImage: `url("${image.file.src}")`
                 });
             }
         }

@@ -1,24 +1,27 @@
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
-import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import { ImportExportTaskStatus, TemplatesImportExportCrud, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
 import { Payload as ExportTemplatesProcessHandlerPayload } from "~/export/process";
-import { EXPORT_TEMPLATES_FOLDER_KEY } from "~/export/utils";
 import { zeroPad } from "@webiny/utils";
+import { PageTemplatesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PageTemplatesPermissions";
 
-const PERMISSION_NAME = "pb.template";
+const EXPORT_TEMPLATES_FOLDER_KEY = "WEBINY_PB_EXPORT_TEMPLATE";
 const EXPORT_TEMPLATES_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_TEMPLATES_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 
 export default new ContextPlugin<PbImportExportContext>(context => {
+    const pagesPermissions = new PageTemplatesPermissions({
+        getPermissions: () => context.security.getPermissions("pb.template"),
+        getIdentity: context.security.getIdentity,
+        fullAccessPermissionName: "pb.*"
+    });
+
     const importExportCrud: TemplatesImportExportCrud = {
         async importTemplates({ zipFileUrl }) {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pagesPermissions.ensure({ rwd: "w" });
 
             // Create a task for import template
             const task = await context.pageBuilder.importExportTask.createTask({
@@ -50,9 +53,8 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         },
 
         async exportTemplates({ ids: initialTemplateIds }) {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
+            await pagesPermissions.ensure({ rwd: "w" });
+
             let templateIds: string[] = initialTemplateIds || [];
             // If no ids are provided then it means we want to export all templates
             if (

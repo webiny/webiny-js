@@ -86,11 +86,20 @@ export interface FileItem {
     tags: string[];
     aliases: string[];
     createdOn: string;
+    savedOn: string;
     createdBy: {
         id: string;
         displayName: string;
     };
-    meta?: Record<string, any>;
+    location: {
+        folderId: string;
+    };
+    meta?: {
+        private?: boolean;
+        width?: number;
+        height?: number;
+    };
+    extensions?: Record<string, any>;
 }
 
 export interface FileManagerSecurityPermission extends SecurityPermission {

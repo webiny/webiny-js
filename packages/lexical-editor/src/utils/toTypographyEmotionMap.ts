@@ -7,7 +7,8 @@ import { WebinyTheme } from "~/themes/webinyLexicalTheme";
  */
 export const toTypographyEmotionMap = (
     css: (cssStyle: Record<string, any>) => string,
-    theme: WebinyTheme
+    theme: WebinyTheme,
+    themeStylesTransformer?: any
 ): ThemeEmotionMap | {} => {
     const map: ThemeEmotionMap = {};
     const typographyStyles = theme.styles?.typography;
@@ -27,9 +28,15 @@ export const toTypographyEmotionMap = (
                 // 'lx' (abbreviation of lexical) variable will lead to generate shorter class names.
                 // for example: instead of default 'css-181qz4b-453f345f'
                 // the last segment will always end with 'lx' or 'css-181qz4b-lx'
+
+                let transformedStyles = styleItem.styles;
+                if (themeStylesTransformer) {
+                    transformedStyles = themeStylesTransformer(styleItem.styles);
+                }
+
                 const lx = {
                     ...styleItem,
-                    className: [css(styleItem.styles)].filter(Boolean).join(" ")
+                    className: [css(transformedStyles)].filter(Boolean).join(" ")
                 };
                 map[styleItem.id] = lx;
             });

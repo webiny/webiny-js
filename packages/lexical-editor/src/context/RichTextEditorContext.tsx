@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
-import { TextBlockSelection, ThemeEmotionMap, ToolbarType } from "~/types";
+import { TextBlockSelection, ThemeEmotionMap, ToolbarActionPlugin, ToolbarType } from "~/types";
 import { WebinyTheme } from "~/themes/webinyLexicalTheme";
+import { LexicalEditor } from "lexical";
 
 export interface RichTextEditorContext {
     nodeIsText: boolean;
@@ -13,6 +14,12 @@ export interface RichTextEditorContext {
     setTheme: (theme: WebinyTheme) => void;
     themeEmotionMap?: ThemeEmotionMap;
     setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
+    toolbarActionPlugins: ToolbarActionPlugin[];
+    setToolbarActionPlugins: (actionPlugins: ToolbarActionPlugin[]) => void;
+    activeEditor?: LexicalEditor;
+    setActiveEditor: (editor: LexicalEditor) => void;
+    isEditable: boolean;
+    setIsEditable: (isEditable: boolean) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
@@ -26,6 +33,9 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
+    const [toolbarActionPlugins, setToolbarActionPlugins] = useState<ToolbarActionPlugin[]>([]);
+    const [activeEditor, setActiveEditor] = useState<LexicalEditor>();
+    const [isEditable, setIsEditable] = useState<boolean>(false);
     /*
      * @desc Keeps data from current user text selection like range selection, nodes, node key...
      */
@@ -47,7 +57,13 @@ export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ 
                 theme,
                 setTheme,
                 themeEmotionMap,
-                setThemeEmotionMap
+                setThemeEmotionMap,
+                activeEditor,
+                setActiveEditor,
+                isEditable,
+                setIsEditable,
+                toolbarActionPlugins,
+                setToolbarActionPlugins
             }}
         >
             {children}

@@ -21,6 +21,10 @@ import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesL
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
 import accordion from "@webiny/app-page-builder/editor/plugins/elements/accordion";
 import accordionItem from "@webiny/app-page-builder/editor/plugins/elements/accordionItem";
+import tabs from "@webiny/app-page-builder/editor/plugins/elements/tabs";
+import tab from "@webiny/app-page-builder/editor/plugins/elements/tab";
+import carousel from "@webiny/app-page-builder/editor/plugins/elements/carousel";
+import carouselElement from "@webiny/app-page-builder/editor/plugins/elements/carouselElement";
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -46,6 +50,7 @@ import border from "@webiny/app-page-builder/editor/plugins/elementSettings/bord
 import shadow from "@webiny/app-page-builder/editor/plugins/elementSettings/shadow";
 import padding from "@webiny/app-page-builder/editor/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/editor/plugins/elementSettings/margin";
+import mirrorCell from "@webiny/app-page-builder/editor/plugins/elementSettings/mirror-cell";
 import width from "@webiny/app-page-builder/editor/plugins/elementSettings/width";
 import height from "@webiny/app-page-builder/editor/plugins/elementSettings/height";
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
@@ -58,6 +63,11 @@ import textSettings from "@webiny/app-page-builder/editor/plugins/elementSetting
 import property from "@webiny/app-page-builder/editor/plugins/elementSettings/property";
 import accordionSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordion";
 import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordionItem";
+import tabsSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tabs";
+import tabSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/tab";
+import carouselSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carousel";
+import carouselElementSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselElement";
+import carouselStylesSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/carouselStyles";
 // Responsive editor mode
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
@@ -90,6 +100,10 @@ export default [
     pagesList(),
     accordion(),
     accordionItem(),
+    tabs(),
+    tab(),
+    carousel(),
+    carouselElement(),
     // grid presets
     ...gridPresets,
     // Element groups
@@ -114,6 +128,7 @@ export default [
     shadow,
     padding,
     margin,
+    mirrorCell,
     align,
     clone,
     deleteElement,
@@ -128,6 +143,11 @@ export default [
     property,
     accordionSettings,
     accordionItemSettings,
+    tabsSettings,
+    tabSettings,
+    carouselSettings,
+    carouselElementSettings,
+    carouselStylesSettings,
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings

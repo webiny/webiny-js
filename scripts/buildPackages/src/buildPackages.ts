@@ -1,4 +1,4 @@
-import { green } from "chalk";
+import { green, red } from "chalk";
 import yargs from "yargs";
 import writeJson from "write-json-file";
 import { Listr, ListrTask } from "listr2";
@@ -10,6 +10,16 @@ import { buildPackageInNewProcess, buildPackageInSameProcess } from "./buildSing
 import { MetaJSON, Package } from "./types";
 import { getHardwareInfo } from "./getHardwareInfo";
 
+class BuildError extends Error {
+    private workspace: string;
+
+    constructor(workspace: string, message: string) {
+        super("BuildError");
+        this.workspace = workspace;
+        this.message = message;
+    }
+}
+
 interface BuildOptions {
     p?: string | string[];
     debug?: boolean;
@@ -20,6 +30,9 @@ interface BuildOptions {
 interface BuildContext {
     [key: string]: boolean;
 }
+
+const buildInParallel =
+    !process.env.CI || process.env.RUNNER_NAME?.startsWith("webiny-build-packages");
 
 export const buildPackages = async () => {
     const options = yargs.argv as BuildOptions;
@@ -75,7 +88,7 @@ export const buildPackages = async () => {
                     const packages = allPackages.filter(pkg => packageNames.includes(pkg.name));
 
                     const batchTasks = task.newListr([], {
-                        concurrent: !process.env.CI,
+                        concurrent: buildInParallel,
                         exitOnError: true
                     });
 
@@ -92,7 +105,13 @@ export const buildPackages = async () => {
 
     const start = Date.now();
     const ctx = {};
-    await tasks.run(ctx);
+    try {
+        await tasks.run(ctx);
+    } catch (err) {
+        console.log(`\nError building ${red(err.workspace)}:\n`);
+        console.log(red(err.message));
+        process.exit(1);
+    }
     const duration = (Date.now() - start) / 1000;
 
     console.log(`\nBuild finished in ${green(duration)} seconds.`);
@@ -103,7 +122,7 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
         title: `${pkg.name}`,
         task: async () => {
             try {
-                if (process.env.CI) {
+                if (!buildInParallel) {
                     await buildPackageInSameProcess(pkg, options.buildOverrides);
                 } else {
                     await buildPackageInNewProcess(pkg, options.buildOverrides);
@@ -115,10 +134,20 @@ const createPackageTask = (pkg: Package, options: BuildOptions, metaJson: MetaJS
 
                 await writeJson(META_FILE_PATH, metaJson);
             } catch (err) {
-                throw new Error(`[${pkg.packageJson.name}] ${err.message}`);
+                throw new BuildError(pkg.packageJson.name, getCleanError(err.message));
             }
         }
     };
+};
+
+const getCleanError = (log: string) => {
+    const lines = log.split("\n");
+    const index = lines.findIndex(line => line.startsWith("webiny error"));
+    if (index > -1) {
+        lines[index] = lines[index].replace("webiny error: ", "");
+        return lines.slice(index).join("\n");
+    }
+    return log;
 };
 
 const toMB = (bytes: number) => {
@@ -130,7 +159,9 @@ const toMB = (bytes: number) => {
 const printHardwareReport = () => {
     const { cpuCount, cpuName, freeMemory, totalMemory } = getHardwareInfo();
     console.log(
-        `Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
+        `Runner: ${green(process.env.RUNNER_NAME || "N/A")}; Build packages: ${
+            buildInParallel ? green("in parallel") : green("in series")
+        }; Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
             toMB(totalMemory)
         )}; Free Memory: ${green(toMB(freeMemory))}.`
     );

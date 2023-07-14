@@ -1,19 +1,29 @@
 import S3 from "aws-sdk/clients/s3";
+import pMap from "p-map";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload";
 import WebinyError from "@webiny/error";
-import { checkPermission } from "~/plugins/checkPermission";
+import { checkPermissions } from "~/plugins/checkPermissions";
 import { PresignedPostPayloadData } from "~/types";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase";
 import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase";
+import { createFileNormalizerFromContext } from "~/utils/createFileNormalizerFromContext";
 
 const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     type: "graphql-schema",
     name: "graphql-schema-api-file-manager-s3",
     schema: {
         typeDefs: /* GraphQL */ `
+            type UploadFileResponseDataFile {
+                id: ID!
+                name: String!
+                type: String!
+                size: Long!
+                key: String!
+            }
+
             input PreSignedPostPayloadInput {
                 name: String!
                 type: String!
@@ -35,7 +45,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             }
 
             type GetPreSignedPostPayloadResponse {
-                error: FileError
+                error: FmError
                 data: GetPreSignedPostPayloadResponseData
             }
 
@@ -52,11 +62,11 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
             type CompleteMultiPartUploadResponse {
                 data: Boolean
-                error: FileError
+                error: FmError
             }
 
             type GetPreSignedPostPayloadsResponse {
-                error: FileError
+                error: FmError
                 data: [GetPreSignedPostPayloadResponseData!]!
             }
 
@@ -71,7 +81,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
             type CreateMultiPartUploadResponse {
                 data: CreateMultiPartUploadResponseData
-                error: FileError
+                error: FmError
             }
 
             input MultiPartUploadFilePartInput {
@@ -95,20 +105,26 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             FmQuery: {
                 getPreSignedPostPayload: async (_, args: any, context) => {
                     try {
-                        await checkPermission(context, { rwd: "w" });
+                        await checkPermissions(context, { rwd: "w" });
 
-                        const file = args.data as PresignedPostPayloadData;
+                        const data = args.data as PresignedPostPayloadData;
 
                         const settings = await context.fileManager.getSettings();
                         if (!settings) {
                             throw new WebinyError(
                                 "Missing File Manager Settings.",
                                 "FILE_MANAGER_SETTINGS_ERROR",
-                                { file }
+                                { file: data }
                             );
                         }
 
-                        return new Response(getPresignedPostPayload(file, settings));
+                        const normalizer = createFileNormalizerFromContext(context);
+                        const presignedPayload = getPresignedPostPayload(
+                            await normalizer.normalizeFile(data),
+                            settings
+                        );
+
+                        return new Response(presignedPayload);
                     } catch (e) {
                         return new ErrorResponse({
                             message: e.message,
@@ -118,7 +134,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 getPreSignedPostPayloads: async (_, args, context) => {
-                    await checkPermission(context, { rwd: "w" });
+                    await checkPermissions(context, { rwd: "w" });
 
                     const files = args.data as PresignedPostPayloadData[];
 
@@ -132,8 +148,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                             );
                         }
 
-                        const presignedPayloads = files.map(file => {
-                            return getPresignedPostPayload(file, settings);
+                        const normalizer = createFileNormalizerFromContext(context);
+
+                        const presignedPayloads = await pMap(files, async data => {
+                            return getPresignedPostPayload(
+                                await normalizer.normalizeFile(data),
+                                settings
+                            );
                         });
 
                         return new Response(presignedPayloads);
@@ -148,7 +169,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             },
             FmMutation: {
                 createMultiPartUpload: async (_, args, context) => {
-                    await checkPermission(context, { rwd: "w" });
+                    await checkPermissions(context, { rwd: "w" });
 
                     const s3Client = new S3({
                         region: process.env.AWS_REGION,
@@ -161,8 +182,10 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                             s3Client
                         );
 
+                        const normalizer = createFileNormalizerFromContext(context);
+
                         const multiPartUpload = await useCase.execute({
-                            file: args.data,
+                            file: await normalizer.normalizeFile(args.data),
                             numberOfParts: args.numberOfParts
                         });
 
@@ -176,7 +199,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 completeMultiPartUpload: async (_, args, context) => {
-                    await checkPermission(context, { rwd: "w" });
+                    await checkPermissions(context, { rwd: "w" });
 
                     const s3Client = new S3({
                         region: process.env.AWS_REGION,

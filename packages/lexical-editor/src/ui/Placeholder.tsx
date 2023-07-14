@@ -13,10 +13,16 @@ import { ReactNode } from "react";
 
 export function Placeholder({
     children,
-    className
+    className,
+    styles
 }: {
     children: ReactNode;
     className?: string;
+    styles?: React.CSSProperties;
 }): JSX.Element {
-    return <div className={className || "Placeholder__root"}>{children}</div>;
+    return (
+        <div style={{ ...styles }} className={className || "Placeholder__root"}>
+            {children}
+        </div>
+    );
 }

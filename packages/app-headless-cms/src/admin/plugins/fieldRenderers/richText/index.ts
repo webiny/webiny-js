@@ -1,4 +1,6 @@
 import richTextInput from "./richTextInput";
 import richTextInputs from "./richTextInputs";
 
-export default [richTextInput, richTextInputs];
+export const createLegacyRichTextInput = () => {
+    return [richTextInput, richTextInputs];
+};

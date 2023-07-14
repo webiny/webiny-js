@@ -2,7 +2,7 @@ import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
-import { get } from "lodash";
+import get from "lodash/get";
 import { FormSettingsPluginRenderFunctionType } from "~/types";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { useMemo } from "react";

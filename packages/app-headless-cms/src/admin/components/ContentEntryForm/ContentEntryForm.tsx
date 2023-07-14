@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import RenderFieldElement from "./RenderFieldElement";
+import { RenderFieldElement } from "./RenderFieldElement";
 import styled from "@emotion/styled";
 import { Form } from "@webiny/form";
 import { FormAPI, FormRenderPropParams } from "@webiny/form/types";

@@ -1,9 +1,15 @@
-import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
-import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { get, GetRecordParams } from "@webiny/db-dynamodb/utils/get";
+import { batchReadAll, BatchReadItem, BatchReadParams } from "@webiny/db-dynamodb/utils/batchRead";
+import {
+    batchWriteAll,
+    BatchWriteItem,
+    BatchWriteParams
+} from "@webiny/db-dynamodb/utils/batchWrite";
 import {
     queryAll,
-    queryOne,
-    queryAllWithCallback as ddbQueryAllWithCallback
+    queryAllWithCallback as ddbQueryAllWithCallback,
+    queryOne
 } from "@webiny/db-dynamodb/utils/query";
 
-export { queryAll, ddbQueryAllWithCallback, queryOne, batchReadAll, batchWriteAll };
+export { get, queryAll, ddbQueryAllWithCallback, queryOne, batchReadAll, batchWriteAll };
+export type { GetRecordParams, BatchWriteItem, BatchWriteParams, BatchReadItem, BatchReadParams };

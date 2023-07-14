@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../app-theme" },
+    { "path": "../lexical-editor" },
+    { "path": "../react-composition" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/app-theme/*": ["../app-theme/src/*"],
+      "@webiny/app-theme": ["../app-theme/src"],
+      "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
+      "@webiny/lexical-editor": ["../lexical-editor/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
+    },
+    "baseUrl": "."
+  }
+}

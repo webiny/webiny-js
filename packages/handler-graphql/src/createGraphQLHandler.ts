@@ -4,11 +4,19 @@ import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 import { PluginCollection } from "@webiny/plugins/types";
 import { GraphQLRequestBody, HandlerGraphQLOptions } from "./types";
-import { createGraphQLSchema } from "./createGraphQLSchema";
+import { createGraphQLSchema, getSchemaPlugins } from "./createGraphQLSchema";
 import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
+import { Context } from "@webiny/handler";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+
+const createCacheKey = (context: Context) => {
+    const plugins = getSchemaPlugins(context);
+    // TODO: in the near future, we have to assign a fixed name to every GraphQLSchema plugin,
+    // to be able to create a reliable cache key.
+    return plugins.length.toString();
+};
 
 const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
     /**
@@ -38,6 +46,7 @@ const formatErrorPayload = (error: Error): string => {
 
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
     let schema: GraphQLSchema | undefined = undefined;
+    let cacheKey: string | undefined = undefined;
 
     const debug = boolean(options.debug);
 
@@ -54,9 +63,11 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                 .hijack();
         });
         onPost(path, async (request, reply) => {
-            if (!schema) {
+            const contextCacheKey = createCacheKey(context as Context);
+            if (!schema || cacheKey !== contextCacheKey) {
                 try {
                     schema = createGraphQLSchema(context);
+                    cacheKey = contextCacheKey;
                 } catch (ex) {
                     return reply.code(500).send(formatErrorPayload(ex));
                 }

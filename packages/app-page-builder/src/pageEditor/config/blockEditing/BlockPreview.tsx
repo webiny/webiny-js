@@ -20,11 +20,13 @@ interface BlockPreviewProps {
     onEdit: (ev: React.MouseEvent) => void;
     onDelete: (ev: React.MouseEvent) => void;
 }
+
 const BlockPreview: React.FC<BlockPreviewProps> = props => {
     const { plugin, addBlockToContent, onEdit, onDelete } = props;
     const onClickToAddHandler = useCallback(() => {
         addBlockToContent(plugin);
     }, [plugin]);
+
     return (
         <Elevation
             z={1}
@@ -80,7 +82,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
             </Styled.Overlay>
             <Styled.BlockPreview>
                 {plugin?.image?.src ? (
-                    plugin.preview()
+                    plugin.preview?.()
                 ) : (
                     <img src={previewFallback} alt={plugin.title} />
                 )}

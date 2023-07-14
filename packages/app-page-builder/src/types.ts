@@ -11,6 +11,7 @@ import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
+import { Renderer } from "@webiny/app-page-builder-elements/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -182,6 +183,7 @@ export type PbElementDataType = {
         actionType: string;
         variables: PbButtonElementClickHandlerVariable[];
         scrollToElement: string;
+        [key: string]: any;
     };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
@@ -334,6 +336,8 @@ export interface PbPageDataSettings {
     social?: PbPageDataSettingsSocial;
 }
 
+export type PbPageDataStatus = string | "draft" | "published" | "unpublished";
+
 export interface PbPageData {
     id: string;
     pid: string;
@@ -345,7 +349,7 @@ export interface PbPageData {
     locked: boolean;
     version?: number;
     category: PbCategory;
-    status: string | "draft" | "published" | "unpublished";
+    status: PbPageDataStatus;
     settings: PbPageDataSettings;
     createdOn: string;
     savedOn: string;
@@ -378,7 +382,7 @@ export type PbRenderElementPlugin = Plugin & {
     type: "pb-render-page-element";
     // Name of the pb-element plugin this render plugin is handling.
     elementType: string;
-    render: (params: PbRenderElementPluginRenderParams) => React.ReactNode;
+    render: Renderer;
 };
 
 export type PbPageSettingsFieldsPlugin = Plugin & {
@@ -411,6 +415,15 @@ export interface PbButtonElementClickHandlerPlugin<TVariables = Record<string, a
     title: string;
     variables?: PbButtonElementClickHandlerVariable[];
     handler: (params: { variables: TVariables }) => void | Promise<void>;
+}
+
+export interface PbPageElementActionTypePlugin extends Plugin {
+    type: "pb-page-element-action-type";
+    actionType: {
+        name: string;
+        label: string;
+        element: ReactNode;
+    };
 }
 
 export type PbPageElementImagesListComponentPlugin = Plugin & {
@@ -514,6 +527,8 @@ export interface PbEditorPageElementPlugin extends PluginBase {
     render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
     // A function to check if an element can be deleted.
     canDelete?: (params: { element: PbEditorElement }) => boolean;
+    // Can the element receive other elements as children?
+    canReceiveChildren?: boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
         state: EventActionHandlerCallableState;
@@ -617,9 +632,9 @@ export type PbEditorBlockPlugin = Plugin & {
     title: string;
     blockCategory: string;
     tags: string[];
-    image: Partial<File>;
     create(): PbEditorElement;
-    preview(): ReactElement;
+    image?: Partial<File>;
+    preview?(): ReactElement;
 };
 
 export type PbEditorBlockCategoryPlugin = Plugin & {
@@ -837,6 +852,7 @@ export interface PbMenu {
     url: string;
     slug: string;
     description: string;
+    createdBy: PbIdentity;
 }
 
 export interface PbBlockCategory {

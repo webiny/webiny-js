@@ -1,4 +1,4 @@
-const { logger } = require("@webiny/project-utils/testing/logger");
+const { logger } = require("../logger");
 
 module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
     const clearEsIndices = async () => {
@@ -6,7 +6,7 @@ module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
         try {
             await client.indices.deleteAll();
         } catch (ex) {
-            logger.warning(`Could not delete all indexes: ${ex.message}.`);
+            logger.warn(`Could not delete all indexes: ${ex.message}.`);
             // throw ex;
         }
     };

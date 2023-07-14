@@ -17,7 +17,10 @@ export interface ParseWhereKeyResult {
     operator: string;
 }
 
-const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
+/**
+ * TODO remove the wbyAco prefix when we move the user fields to the values property.
+ */
+const parseWhereKeyRegExp = new RegExp(/^((?:wbyAco_)?[a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
 
 export const parseWhereKey = (key: string): ParseWhereKeyResult => {
     const match = key.match(parseWhereKeyRegExp);
@@ -28,7 +31,7 @@ export const parseWhereKey = (key: string): ParseWhereKeyResult => {
 
     const [, field, operation = "eq"] = match;
 
-    if (!field.match(/^([a-zA-Z0-9]+)$/)) {
+    if (!field.match(/^(?:wbyAco_)?([a-zA-Z0-9]+)$/)) {
         throw new Error(`Cannot filter by "${field}".`);
     }
 

@@ -7,13 +7,14 @@ import { MarkNode } from "@lexical/mark";
 import { OverflowNode } from "@lexical/overflow";
 import { FontColorNode } from "~/nodes/FontColorNode";
 import { TypographyElementNode } from "~/nodes/TypographyElementNode";
-import { WebinyListNode } from "~/nodes/list-node/WebinyListNode";
-import { WebinyListItemNode } from "~/nodes/list-node/WebinyListItemNode";
+import { ListNode } from "~/nodes/ListNode";
+import { ListItemNode } from "~/nodes/ListItemNode";
 import { ParagraphNode as BaseParagraphNode } from "lexical";
 import { HeadingNode } from "~/nodes/HeadingNode";
 import { ParagraphNode } from "~/nodes/ParagraphNode";
 import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { QuoteNode } from "~/nodes/QuoteNode";
+import { ImageNode } from "~/nodes/ImageNode";
 
 /*
  * This is a list of all the nodes that Webiny's Lexical implementation supports OOTB.
@@ -25,8 +26,9 @@ export const WebinyNodes: ReadonlyArray<
           with: <T extends { new (...args: any): any }>(node: InstanceType<T>) => LexicalNode;
       }
 > = [
-    WebinyListNode,
-    WebinyListItemNode,
+    ImageNode,
+    ListNode,
+    ListItemNode,
     CodeNode,
     HashtagNode,
     CodeHighlightNode,

@@ -12,11 +12,10 @@ const useImportBlock = () => {
     const { showImportBlockDialog } = useImportBlockDialog();
     const { showImportBlockLoadingDialog } = useImportBlockLoadingDialog();
 
-    const importBlockMutation = useCallback(async ({ slug: category }, zipFileUrl) => {
+    const importBlockMutation = useCallback(async zipFileUrl => {
         try {
             const res = await importBlock({
                 variables: {
-                    category,
                     zipFileUrl
                 }
             });
@@ -33,9 +32,9 @@ const useImportBlock = () => {
         }
     }, []);
 
-    const showImportDialog = useCallback(category => {
+    const showImportDialog = useCallback(() => {
         showImportBlockDialog(async url => {
-            await importBlockMutation(category, url);
+            await importBlockMutation(url);
         });
     }, []);
 

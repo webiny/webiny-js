@@ -26,7 +26,7 @@ export interface PageAtomType {
     version: number;
     locked: boolean;
     published: boolean;
-    savedOn?: Date;
+    savedOn?: string;
     snippet: string | null;
     category?: PageCategoryType;
     createdBy: {

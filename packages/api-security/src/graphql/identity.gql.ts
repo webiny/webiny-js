@@ -20,7 +20,7 @@ export default new GraphQLSchemaPlugin<Context>({
     resolvers: {
         SecurityIdentity: {
             permissions(_, __, context) {
-                return context.security.getPermissions();
+                return context.security.listPermissions();
             }
         },
         SecurityMutation: {

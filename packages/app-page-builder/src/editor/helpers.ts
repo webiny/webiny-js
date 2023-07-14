@@ -11,6 +11,14 @@ import {
     PbEditorElement,
     PbElement
 } from "~/types";
+import {
+    CreateElementActionEvent,
+    DeleteElementActionEvent,
+    updateElementAction,
+    UpdateElementActionArgsType
+} from "~/editor/recoil/actions";
+import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
+import { executeAction } from "~/editor/recoil/eventActions";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
@@ -18,6 +26,7 @@ export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 interface FlatElements {
     [id: string]: PbEditorElement;
 }
+
 export const flattenElements = (el?: PbEditorElement, parent?: string): FlatElements => {
     if (!el || !el.id) {
         return {};
@@ -50,6 +59,7 @@ export const flattenElements = (el?: PbEditorElement, parent?: string): FlatElem
 interface CreateElementCallableOptions {
     [key: string]: any;
 }
+
 interface CreateElementCallable {
     (
         type: string,
@@ -110,15 +120,27 @@ export const addElementToParent = (
     };
 };
 
+export const removeElementFromParent = (parent: PbEditorElement, id?: string): PbEditorElement => {
+    return {
+        ...parent,
+        elements: parent.elements.filter(child => child !== id)
+    };
+};
+
 export const createDroppedElement = (
     source: DragObjectWithTypeWithTarget,
     target: PbEditorElement
 ): PbEditorElement => {
     if (source.id) {
+        const id = getNanoid();
+
         return {
-            id: getNanoid(),
+            id,
             type: source.type,
-            elements: (source as any).elements || [],
+            elements: ((source as any).elements || []).map((childElement: PbEditorElement) => ({
+                ...childElement,
+                parent: id
+            })),
             data: (source as any).data || {},
             parent: target.id
         };
@@ -237,6 +259,7 @@ export interface UpdateBlockPositionParams {
     sourcePosition: number;
     targetPosition: number;
 }
+
 export const updateBlockPosition = (params: UpdateBlockPositionParams): PbEditorElement => {
     const { parent, sourcePosition: source, targetPosition: target } = params;
     if (source === target) {
@@ -260,4 +283,38 @@ export const moveInPlace = (
     newArray.splice(to, 0, item);
 
     return newArray;
+};
+
+export const onReceived: PbEditorPageElementPlugin["onReceived"] = props => {
+    const { source, target, position, state, meta } = props;
+
+    const element = createDroppedElement(source as any, target);
+    const parent = addElementToParent(element, target, position);
+
+    const result = executeAction<UpdateElementActionArgsType>(state, meta, updateElementAction, {
+        element: parent,
+        history: false
+    });
+
+    result.actions.push(new AfterDropElementActionEvent({ element }));
+
+    if (source.id) {
+        // Delete source element
+        result.actions.push(
+            new DeleteElementActionEvent({
+                element: source as PbEditorElement
+            })
+        );
+
+        return result;
+    }
+
+    result.actions.push(
+        new CreateElementActionEvent({
+            element,
+            source: source as PbEditorElement
+        })
+    );
+
+    return result;
 };

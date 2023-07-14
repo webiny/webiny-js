@@ -71,39 +71,39 @@ module.exports = async (inputs, context) => {
     try {
         await sendEvent({ event: "project-deploy-start" });
 
-        // Deploying `core` project application.
+        // Core.
         if (hasCore) {
             isFirstDeployment && console.log();
-            context.info(`Deploying ${green("core")} project application...`);
+            context.info(`Deploying ${green("Core")} project application...`);
 
             await deploy("core", env, inputs);
-            context.success(`${green("core")} project application was deployed successfully!`);
+            context.success(`${green("Core")} project application was deployed successfully!`);
             isFirstDeployment && (await sleep(2000));
         }
 
-        // Deploying `api` project application.
+        // API.
         console.log();
-        context.info(`Deploying ${green(apiFolder)} project application...`);
+        context.info(`Deploying ${green("API")} project application...`);
 
         await deploy(apiFolder, env, inputs);
-        context.success(`${green(apiFolder)} project application was deployed successfully!`);
+        context.success(`${green("API")} project application was deployed successfully!`);
         isFirstDeployment && (await sleep(2000));
 
-        // Deploying `apps/admin` project application.
+        // Admin.
         console.log();
-        context.info(`Deploying ${green("admin")} project application...`);
+        context.info(`Deploying ${green("Admin")} project application...`);
         isFirstDeployment && (await sleep());
 
         await deploy("admin", env, inputs);
-        context.success(`${green("admin")} project application was deployed successfully!`);
+        context.success(`${green("Admin")} project application was deployed successfully!`);
 
-        // Deploying `admin` project application.
+        // Website.
         console.log();
-        context.info(`Deploying ${green("website")} project application...`);
+        context.info(`Deploying ${green("Website")} project application...`);
         isFirstDeployment && (await sleep());
 
         await deploy("website", env, inputs);
-        context.success(`${green("website")} project application was deployed successfully!`);
+        context.success(`${green("Website")} project application was deployed successfully!`);
 
         await sendEvent({ event: "project-deploy-end" });
     } catch (e) {

@@ -1,7 +1,7 @@
 import React from "react";
 import { ButtonDefault, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { UIElement, UIElementConfig } from "../UIElement";
-import { kebabCase } from "lodash";
+import kebabCase from "lodash/kebabCase";
 
 export type ButtonElementType = "default" | "primary" | "secondary";
 

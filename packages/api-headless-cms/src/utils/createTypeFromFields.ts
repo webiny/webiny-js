@@ -57,7 +57,7 @@ export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromField
 
             ${typeOfType} ${typeNamePrefix}${typeSuffix} {
                 ${typeFields.join("\n")}
-            }
+            }\n
         `
     };
 };

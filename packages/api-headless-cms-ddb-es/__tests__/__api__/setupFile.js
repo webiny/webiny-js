@@ -10,6 +10,7 @@ const { configurations } = require("../../dist/configurations");
 const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 const { setStorageOps } = require("@webiny/project-utils/testing/environment");
 const { getElasticsearchClient } = require("@webiny/project-utils/testing/elasticsearch");
+const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -66,15 +67,19 @@ module.exports = () => {
                         });
                         await refreshIndex(model);
                     } catch (ex) {
-                        process.stdout.write(
-                            `\nCould not create index on before entry create: ${ex.message}\n`
-                        );
+                        // This is commented out to prevent noise in the console.
+                        // process.stdout.write(
+                        //     `\nCould not create index "${index}" on before entry create: ${ex.message}\n`
+                        // );
                     }
                 });
                 context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
                 context.cms.onEntryAfterUpdate.subscribe(async ({ model }) => {
+                    await refreshIndex(model);
+                });
+                context.cms.onEntryAfterMove.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
                 context.cms.onEntryRevisionAfterCreate.subscribe(async ({ model }) => {
@@ -103,6 +108,7 @@ module.exports = () => {
                 documentClient,
                 elasticsearch: elasticsearchClient,
                 plugins: [
+                    getElasticsearchOperators(),
                     createCmsEntryElasticsearchBodyModifierPlugin({
                         modifyBody: ({ body }) => {
                             if (!body.sort.customSorter) {

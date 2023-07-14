@@ -3,16 +3,11 @@ import ddbPlugins from "@webiny/db-dynamodb/plugins";
 import { PluginsContainer } from "@webiny/plugins";
 import { PluginCollection } from "@webiny/plugins/types";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
-import { FilesStorageOperations } from "~/operations/files/FilesStorageOperations";
-import { SettingsStorageOperations } from "~/operations/settings/SettingsStorageOperations";
-import { SystemStorageOperations } from "~/operations/system/SystemStorageOperations";
-import { createFileFieldsPlugins } from "~/operations/files/fields";
-import {
-    FileAttributePlugin,
-    FileDynamoDbFieldPlugin,
-    SettingsAttributePlugin,
-    SystemAttributePlugin
-} from "./plugins";
+import { FilesStorageOperations } from "~/operations/FilesStorageOperations";
+import { SettingsStorageOperations } from "~/operations/SettingsStorageOperations";
+import { SystemStorageOperations } from "~/operations/SystemStorageOperations";
+import { SettingsAttributePlugin, SystemAttributePlugin } from "./plugins";
+import { AliasesStorageOperations } from "~/operations/AliasesStorageOperations";
 
 export interface StorageOperationsConfig {
     documentClient: DocumentClient;
@@ -27,25 +22,19 @@ export const createFileManagerStorageOperations = ({
 }: StorageOperationsConfig): FileManagerStorageOperations => {
     const plugins = new PluginsContainer([
         ddbPlugins(),
-        // Built-in plugins
-        ...createFileFieldsPlugins(),
         // User plugins
         ...(userPlugins || [])
     ]);
 
     return {
         beforeInit: async context => {
-            const types: string[] = [
-                FileAttributePlugin.type,
-                FileDynamoDbFieldPlugin.type,
-                SettingsAttributePlugin.type,
-                SystemAttributePlugin.type
-            ];
+            const types: string[] = [SettingsAttributePlugin.type, SystemAttributePlugin.type];
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);
             }
         },
-        files: new FilesStorageOperations({ plugins, documentClient }),
+        files: new FilesStorageOperations(),
+        aliases: new AliasesStorageOperations({ documentClient }),
         settings: new SettingsStorageOperations({ documentClient }),
         system: new SystemStorageOperations({ documentClient })
     };

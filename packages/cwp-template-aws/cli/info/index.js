@@ -93,10 +93,10 @@ module.exports = {
                     // Get all existing environments
                     const glob = require("fast-glob");
 
-                    // We just get stack files for deployed Admin apps. That's enough to determine
-                    // into which environments the user has deployed their Webiny project.
+                    // We just get stack files for deployed Core application. That's enough
+                    // to determine into which environments the user has deployed their project.
                     const pulumiAdminStackFilesPaths = glob.sync(
-                        ".pulumi/**/apps/admin/.pulumi/stacks/*.json",
+                        ".pulumi/**/apps/core/.pulumi/stacks/**/*.json",
                         {
                             cwd: context.project.root,
                             onlyFiles: true,

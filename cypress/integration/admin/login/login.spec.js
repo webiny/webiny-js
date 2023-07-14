@@ -10,7 +10,7 @@ context("Login Page", () => {
         cy.findByLabelText(/your password/i).type("12345678");
         cy.findByTestId("submit-sign-in-form-button").click();
 
-        cy.findByPlaceholderText(/search.../i).should("exist");
+        cy.findByTestId("apps-menu").should("exist");
         cy.findByText(/pages/i).should("exist");
 
         // Make sure we can open user menu and that the e-mail is printed.
@@ -39,7 +39,7 @@ context("Login Page", () => {
         const password = "12345678";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
-        cy.securityReadGroup({ slug: "full-access" }).then(group => {
+        cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
                     data: {
@@ -76,7 +76,7 @@ context("Login Page", () => {
         const password = "12345678";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
-        cy.securityReadGroup({ slug: "full-access" }).then(group => {
+        cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
                     data: {
@@ -121,7 +121,7 @@ context("Login Page", () => {
         const newPassword = "12345678910";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
-        cy.securityReadGroup({ slug: "full-access" }).then(group => {
+        cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
                     data: {
@@ -180,7 +180,7 @@ context("Login Page", () => {
                         cy.findByLabelText(/your e-mail/i).type(newUserAccountEmail);
                         cy.findByLabelText(/your password/i).type(newPassword);
                         cy.findByTestId("submit-sign-in-form-button").click();
-                        cy.findByPlaceholderText(/search.../i).should("exist");
+                        cy.findByTestId("apps-menu").should("exist");
                         cy.findByText(/pages/i).should("exist");
                     });
                 });

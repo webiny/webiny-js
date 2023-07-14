@@ -26,6 +26,11 @@ export const SocialMedia: React.FC = () => {
                 </Bind>
             </Element>
             <Element>
+                <Bind name={"social.linkedIn"} validators={validation.create("url")}>
+                    <Input label="LinkedIn" />
+                </Bind>
+            </Element>
+            <Element>
                 <Bind name={"social.image"}>
                     <SingleImageUpload
                         label="Default Open Graph image"

@@ -1,12 +1,10 @@
 import React, { ReactElement } from "react";
-
+import styled from "@emotion/styled";
 import { ReactComponent as Folder } from "@material-design-icons/svg/outlined/folder.svg";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
-import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { useRouter } from "@webiny/react-router";
-
-import { usePageViewNavigation } from "~/hooks/usePageViewNavigation";
+import { useNavigateFolder } from "@webiny/app-aco";
 
 const Title = styled("div")`
     display: flex;
@@ -35,7 +33,7 @@ interface PageProps extends Props {
 }
 
 export const FolderName = ({ name, id }: Props): ReactElement => {
-    const { navigateToFolder } = usePageViewNavigation();
+    const { navigateToFolder } = useNavigateFolder();
 
     return (
         <Title onClick={() => navigateToFolder(id)}>

@@ -1,6 +1,27 @@
 const fs = require("fs");
 const path = require("path");
 const findUp = require("find-up");
+const { blueBright } = require("chalk");
+
+function sanitizeEsIndexName(name) {
+    if (!name) {
+        return undefined;
+    }
+
+    if ("GITHUB_RUN_ID" in process.env) {
+        return `${process.env["GITHUB_RUN_ID"]}_${name}_`;
+    }
+
+    return name;
+}
+
+// Sanitize ElasticsearchPrefix
+const esIndexPrefix = sanitizeEsIndexName(process.env.ELASTIC_SEARCH_INDEX_PREFIX);
+
+if (esIndexPrefix) {
+    process.env.ELASTIC_SEARCH_INDEX_PREFIX = esIndexPrefix;
+    process.stdout.write(`\nES index prefix: ${blueBright(esIndexPrefix)}\n\n`);
+}
 
 // Loads environment variables defined in the project root ".env" file.
 const { parsed } = require("dotenv").config({ path: path.join(__dirname, ".env") });

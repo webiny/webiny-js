@@ -17,18 +17,23 @@ const clearLine = () => {
 export const executeDataMigrations = {
     type: "hook-after-deploy",
     name: "hook-after-deploy-api-execute-data-migrations",
-    async hook(params: Record<string, any>, context: CliContext) {
-        if (params.inputs.build === false) {
+    async hook({ inputs, env, projectApplication }: Record<string, any>, context: CliContext) {
+        // Only run migrations for `api` app
+        if (projectApplication.id !== "api") {
+            return;
+        }
+
+        if (inputs.build === false) {
             context.info(`"--no-build" argument detected - skipping data migrations.`);
             return;
         }
 
         // No need to run migrations if we're doing a preview.
-        if (params.inputs.preview) {
+        if (inputs.preview) {
             return;
         }
 
-        const apiOutput = getStackOutput({ folder: "api", env: params.env });
+        const apiOutput = getStackOutput({ folder: "api", env });
 
         context.info("Executing data migrations Lambda function...");
 
@@ -68,6 +73,8 @@ export const executeDataMigrations = {
         } catch (e) {
             context.error(`An error occurred while executing data migrations Lambda function!`);
             console.log(e);
+            throw e;
+            throw e;
         }
     }
 };

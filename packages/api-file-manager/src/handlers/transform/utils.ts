@@ -1,7 +1,7 @@
 import objectHash from "object-hash";
 
-const SUPPORTED_IMAGES = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
-const SUPPORTED_TRANSFORMABLE_IMAGES = [".jpg", ".jpeg", ".png"];
+const SUPPORTED_IMAGES = [".jpg", ".jpeg", ".png", ".svg", ".gif", ".webp"];
+const SUPPORTED_TRANSFORMABLE_IMAGES = [".jpg", ".jpeg", ".png", ".webp"];
 
 const OPTIMIZED_TRANSFORMED_IMAGE_PREFIX = "img-o-t-";
 const OPTIMIZED_IMAGE_PREFIX = "img-o-";

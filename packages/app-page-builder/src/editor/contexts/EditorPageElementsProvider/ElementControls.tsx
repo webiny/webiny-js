@@ -7,17 +7,16 @@ import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import Droppable, { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { useRecoilValue } from "recoil";
 import { uiAtom } from "~/editor/recoil/modules";
-
-// Lists elements that, when empty, can receive other elements as children using
-// drag and drop. For now, the element types that are hardcoded. Down the road,
-// we might want to expose this, enabling users to create more complex elements.
-const EMPTY_DROPPABLE_ELEMENTS = ["block", "cell"];
+import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { useSnackbar } from "@webiny/app-admin";
+import { getElementTitle } from "~/editor/contexts/EditorPageElementsProvider/getElementTitle";
 
 // Provides controls and visual feedback for page elements:
 // - hover / active visual overlays
 // - drag and drop functionality
 export const ElementControls = () => {
     const { getElement, meta } = useRenderer();
+    const { showSnackbar } = useSnackbar();
 
     const element = getElement();
 
@@ -27,6 +26,10 @@ export const ElementControls = () => {
     if (element.type === "document") {
         return null;
     }
+
+    const elementPlugin = useElementPlugin(element);
+    const handler = useEventActionHandler();
+    const { isDragging } = useRecoilValue(uiAtom);
 
     // If the current element is a child of a pre-made block,
     // then we don't want to render any controls for any child elements.
@@ -43,15 +46,29 @@ export const ElementControls = () => {
         // in the page editor, when working with pages that were created from a template. In the
         // page editor, within the `data.template` object, we have a `slug` property, which is not
         // available in the template editor. That give us the ability to distinguish between the two.
-        if (meta.parentDocumentElement.data.template.slug) {
+
+        // If the page is unlinked from the template in the page editor, note that the
+        // `data.template` object will be removed, hence the `?.` operator here.
+        if (meta.parentDocumentElement.data.template?.slug) {
             return null;
         }
     }
 
-    const handler = useEventActionHandler();
-    const { isDragging } = useRecoilValue(uiAtom);
-
     const dropElementAction = (source: DragObjectWithTypeWithTarget) => {
+        const { target } = source;
+
+        // If the `target` property of the dragged element's plugin is an array, we want to
+        // check if the dragged element can be dropped into the target element (the element
+        // for which this drop zone is rendered).
+        if (Array.isArray(target) && target.length > 0) {
+            if (!target.includes(element.type)) {
+                const sourceTitle = getElementTitle(source.type);
+                const targetTitle = getElementTitle(element.type);
+                showSnackbar(`${sourceTitle} cannot be dropped into ${targetTitle}.`);
+                return;
+            }
+        }
+
         handler.trigger(
             new DropElementActionEvent({
                 source,
@@ -64,25 +81,36 @@ export const ElementControls = () => {
         );
     };
 
-    const isEmpty = element.elements.length === 0;
-    const isDroppable = EMPTY_DROPPABLE_ELEMENTS.includes(element.type);
-    if (isEmpty && isDroppable && isDragging) {
-        // Here we don't need to render `ElementControlHorizontalDropZones` as it's simply
-        // not needed. It's only needed when at least one element has been dropped.
-        return (
-            <Droppable
-                onDrop={source => dropElementAction(source)}
-                type={element.type}
-                isVisible={() => true}
-            >
-                {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
-            </Droppable>
-        );
+    // When dragging, if the element is droppable, we want to render the drop zones.
+    if (isDragging) {
+        let render = <ElementControlHorizontalDropZones />;
+
+        if (elementPlugin?.canReceiveChildren) {
+            render = (
+                <>
+                    <Droppable
+                        onDrop={source => {
+                            // When dragging elements, we don't want to allow dropping them into saved blocks. Note
+                            // the `blockId` only exists in the page editor. It doesn't exist in the block editor.
+                            const isBlock = element.data.blockId;
+                            if (isBlock) {
+                                return null;
+                            }
+
+                            return dropElementAction(source);
+                        }}
+                        type={element.type}
+                        isVisible={() => true}
+                    >
+                        {({ drop }) => <ElementControlsOverlay dropRef={drop} />}
+                    </Droppable>
+                    {render}
+                </>
+            );
+        }
+
+        return render;
     }
 
-    return (
-        <ElementControlsOverlay>
-            <ElementControlHorizontalDropZones />
-        </ElementControlsOverlay>
-    );
+    return <ElementControlsOverlay />;
 };

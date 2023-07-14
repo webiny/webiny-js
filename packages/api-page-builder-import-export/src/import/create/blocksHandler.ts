@@ -15,7 +15,7 @@ export const blocksHandler = async (
     const log = console.log;
 
     const { pageBuilder } = context;
-    const { task, type, category, zipFileUrl, identity } = payload;
+    const { task, type, zipFileUrl, identity } = payload;
     try {
         log("RUNNING Import Blocks Create");
         if (!zipFileUrl) {
@@ -41,7 +41,6 @@ export const blocksHandler = async (
                     status: ImportExportTaskStatus.PENDING,
                     data: {
                         blockKey: blocksDirMap.key,
-                        category,
                         zipFileUrl,
                         input: {
                             fileUploadsData: blocksDirMap

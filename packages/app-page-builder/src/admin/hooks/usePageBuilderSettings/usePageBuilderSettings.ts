@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import { get } from "lodash";
+import get from "lodash/get";
 import { useTenancy } from "@webiny/app-tenancy/hooks/useTenancy";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { PbPageData } from "~/types";
@@ -27,6 +27,7 @@ const DATA_FIELDS = /* GraphQL */ `
                 facebook
                 twitter
                 instagram
+                linkedIn
                 image {
                     id
                     src
@@ -87,7 +88,7 @@ export function usePageBuilderSettings() {
 
     const getPageUrl = (page: Pick<PbPageData, "id" | "status" | "path">): string => {
         const preview = page.status !== "published";
-        const url = getWebsiteUrl(preview) + page.path;
+        const url = [getWebsiteUrl(preview), page.path].join("");
         if (!preview) {
             return url;
         }

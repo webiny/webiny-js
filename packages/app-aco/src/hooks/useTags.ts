@@ -1,21 +1,18 @@
 import { useContext, useEffect, useMemo } from "react";
 import { SearchRecordsContext } from "~/contexts/records";
 import { ListTagsWhereQueryVariables, TagItem } from "~/types";
+import { useAcoApp } from "~/hooks/useAcoApp";
 
 interface UseTagsParams {
-    type: string;
     tagsModifier?: (tags: TagItem[]) => TagItem[];
-    initialWhere?: ListTagsWhereQueryVariables & {
-        type: string;
-        AND?: ListTagsWhereQueryVariables;
-        OR?: ListTagsWhereQueryVariables;
-    };
+    where?: ListTagsWhereQueryVariables;
 }
 
 export const useTags = (params: UseTagsParams) => {
-    const { type, tagsModifier, ...initialWhere } = params;
+    const { tagsModifier, where } = params;
 
     const context = useContext(SearchRecordsContext);
+    const { app } = useAcoApp();
 
     if (!context) {
         throw new Error("useTags must be used within a SearchRecordsContext");
@@ -23,17 +20,9 @@ export const useTags = (params: UseTagsParams) => {
 
     const { tags, loading, listTags } = context;
 
-    const tagsByType = tags[type] || [];
-
     useEffect(() => {
-        /**
-         * On first mount, call `listTags`, which will either issue a network request, or load tags from cache.
-         * We don't need to store the result of it to any local state; that is managed by the context provider.
-         */
-        if (type) {
-            listTags({ type, ...initialWhere });
-        }
-    }, [type]);
+        listTags({ where });
+    }, [app.id]);
 
     return useMemo(
         () => ({
@@ -42,10 +31,7 @@ export const useTags = (params: UseTagsParams) => {
              * As soon as you call `useTags()`, you'll initiate fetching of `tags`, which is managed by the `SearchRecordContext`.
              */
             loading,
-            tags:
-                tagsModifier && typeof tagsModifier === "function"
-                    ? tagsModifier(tagsByType)
-                    : tagsByType
+            tags: tagsModifier && typeof tagsModifier === "function" ? tagsModifier(tags) : tags
         }),
         [tags, loading]
     );

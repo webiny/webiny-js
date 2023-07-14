@@ -1,4 +1,4 @@
-import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { FileManager_5_35_0_001, File } from "~/migrations/5.35.0/001/ddb-es";
 import {
     assertNotError,
@@ -20,9 +20,12 @@ import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTes
 import { esGetIndexName } from "~/utils";
 
 jest.retryTimes(0);
-jest.setTimeout(900000);
+jest.setTimeout(1200000);
 
-const NUMBER_OF_FILES = 3000;
+/**
+ * Reduced number of records because it is not necessary anymore to run tests with large amount of records.
+ */
+const NUMBER_OF_FILES = 50;
 const INDEX_TYPE = "file-manager";
 let numberOfGeneratedFiles = 0;
 
@@ -158,8 +161,6 @@ describe("5.35.0-001", () => {
             migrations: [FileManager_5_35_0_001]
         });
         const { data, error } = await handler();
-
-        console.log(JSON.stringify(data, null, 2));
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);

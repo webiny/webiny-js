@@ -13,6 +13,8 @@ import Draggable from "~/editor/components/Draggable";
 import { disableDraggingMutation, enableDraggingMutation } from "~/editor/recoil/modules";
 import { ElementControlsOverlayBorders } from "./ElementControlsOverlay/ElementControlsOverlayBorders";
 import { ConnectDragSource } from "react-dnd";
+import { useElementPlugin } from "~/editor/contexts/EditorPageElementsProvider/useElementPlugin";
+import { getElementTitle } from "~/editor/contexts/EditorPageElementsProvider/getElementTitle";
 
 declare global {
     // eslint-disable-next-line
@@ -26,13 +28,6 @@ declare global {
 // Basic border colors.
 const ACTIVE_COLOR = "var(--mdc-theme-primary)";
 const HOVER_COLOR = "var(--mdc-theme-secondary)";
-
-// Until the need for custom targets arises, we're hard-coding the available
-// targets (types of elements onto which another element can be dropped).
-const DEFAULT_TARGETS = ["cell", "block"];
-
-// We're doing the same with the list of non-draggable elements.
-const NON_DRAGGABLE_ELEMENTS = ["cell", "block"];
 
 type PbElementControlsOverlayProps = React.HTMLProps<HTMLDivElement> & {
     className?: String;
@@ -90,7 +85,6 @@ const PbElementControlsOverlay = ({
 
 const titleContainerBaseStyles = {
     color: "#fff",
-    textTransform: "lowercase",
     position: "absolute",
     padding: "2px 5px",
     fontSize: "10px",
@@ -134,12 +128,21 @@ const StyledPbElementControlsOverlay = styled(
                 // We are putting it "in front of the user", above the element controls overlay.
                 // This enables us to actually interact with the page element. For example, when
                 // activating a paragraph page element, we get to type the paragraph text.
-                Object.assign(activeStyles, {
-                    "& + *": {
-                        zIndex: zIndex + 5,
-                        position: "relative"
-                    }
-                });
+
+                // Note that we don't want to assign the z-index to the element if it's part of
+                // a block (created via Block module or if it's a page created from a template).
+                // In that case, we want the block to be on top of the element at all times. No
+                // need to increase the z-index of the element and make it interactive.
+                const isSavedBlock =
+                    elementRendererMeta.blockId || elementRendererMeta.templateBlockId;
+                if (!isSavedBlock) {
+                    Object.assign(activeStyles, {
+                        "& + *": {
+                            zIndex: zIndex + 5,
+                            position: "relative"
+                        }
+                    });
+                }
 
                 // Note that we don't apply active border styles here. We do that via the `pb-eco-border`
                 // elements, rendered within the `PbElementControlsOverlayBaseComponent` component.
@@ -221,32 +224,41 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
 
     const { children, dropRef, ...rest } = props;
 
+    const elementPlugin = useElementPlugin(element);
+    const elementTargets = elementPlugin?.target || [];
+
+    let isDraggable = false;
+    if (elementPlugin) {
+        isDraggable = Array.isArray(elementPlugin?.target) && elementPlugin.target.length > 0;
+    }
+
     const beginDrag = useCallback(() => {
         const data = { id: element.id, type: element.type };
         setTimeout(() => {
             setUi(enableDraggingMutation);
         });
 
-        return { ...data, target: DEFAULT_TARGETS };
+        return { ...data, target: elementTargets };
     }, [element.id]);
 
     const endDrag = useCallback(() => {
         setUi(disableDraggingMutation);
     }, [element.id]);
 
-    const isDraggable = !NON_DRAGGABLE_ELEMENTS.includes(element.type);
-
     const title = useMemo(() => {
         if (element.data.blockId) {
-            const blockName = plugins
+            const blockPlugin = plugins
                 .byType<PbEditorBlockPlugin>("pb-editor-block")
-                .find(block => block.id === element.data.blockId)
-                ?.title?.toLowerCase();
+                .find(block => block.id === element.data.blockId);
 
-            return `block | ${blockName}`;
+            if (blockPlugin) {
+                return `block | ${blockPlugin.title}`;
+            }
+
+            return "block | unknown";
         }
 
-        return element.type;
+        return getElementTitle(element.type);
     }, [element.data.blockId]);
 
     // Z-index of element controls overlay depends on the depth of the page element.
@@ -256,7 +268,7 @@ export const ElementControlsOverlay: React.FC<Props> = props => {
     return (
         <Draggable
             enabled={isDraggable}
-            target={DEFAULT_TARGETS}
+            target={elementTargets}
             beginDrag={beginDrag}
             endDrag={endDrag}
         >

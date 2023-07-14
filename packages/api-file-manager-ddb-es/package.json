@@ -1,78 +1,16 @@
 {
   "name": "@webiny/api-file-manager-ddb-es",
   "version": "0.0.0",
-  "main": "index.js",
-  "keywords": [
-    "@webiny/api-file-manager",
-    "storage-operations",
-    "dynamodb",
-    "elasticsearch",
-    "ddb-es",
-    "fm:ddb-es"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
     "directory": "packages/api-file-manager-ddb-es"
   },
-  "description": "The DynamoDB + Elasticsearch storage operations for File Manager API.",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
+  "description": "This package is scheduled for deletion in the next version.",
+  "author": "Webiny Ltd.",
   "license": "MIT",
-  "dependencies": {
-    "@babel/runtime": "^7.19.0",
-    "@webiny/api-elasticsearch": "0.0.0",
-    "@webiny/api-file-manager": "0.0.0",
-    "@webiny/db-dynamodb": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
-    "aws-sdk": "^2.971.0",
-    "dynamodb-toolbox": "^0.3.5"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.19.3",
-    "@babel/core": "^7.19.3",
-    "@babel/plugin-proposal-object-rest-spread": "^7.16.0",
-    "@babel/plugin-transform-runtime": "^7.16.4",
-    "@babel/preset-env": "^7.19.4",
-    "@babel/preset-typescript": "^7.18.6",
-    "@elastic/elasticsearch": "7.12.0",
-    "@elastic/elasticsearch-mock": "0.3.0",
-    "@webiny/api": "0.0.0",
-    "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
-    "@webiny/api-i18n": "0.0.0",
-    "@webiny/cli": "0.0.0",
-    "@webiny/handler": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
-    "jest": "^29.5.0",
-    "jest-dynalite": "^3.2.0",
-    "jsonpack": "^1.1.5",
-    "rimraf": "^3.0.2",
-    "ttypescript": "^1.5.12",
-    "typescript": "4.7.4"
-  },
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "watch": "yarn webiny run watch",
-    "build": "yarn webiny run build"
-  },
-  "adio": {
-    "ignoreDirs": [
-      "__tests__"
-    ],
-    "ignore": {
-      "src": [
-        "aws-sdk",
-        "sharp"
-      ]
-    }
-  },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+    "directory": "."
+  }
 }

@@ -34,16 +34,16 @@ const DetailsContainer = styled("div")({
 
 interface EmptyFormDetailsProps {
     onCreateForm: () => void;
-    canCreate: boolean;
+    canCreate: () => boolean;
 }
 const EmptyFormDetails: React.FC<EmptyFormDetailsProps> = ({ canCreate, onCreateForm }) => {
     return (
         <EmptyView
             title={t`Click on the left side list to display form details {message}`({
-                message: canCreate ? " or create a..." : ""
+                message: canCreate() ? " or create a..." : ""
             })}
             action={
-                canCreate ? (
+                canCreate() ? (
                     <ButtonDefault data-testid="new-record-button" onClick={onCreateForm}>
                         <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
                     </ButtonDefault>

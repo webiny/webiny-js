@@ -1,7 +1,7 @@
 import { CoreOptions } from "medium-editor";
 import { plugins } from "@webiny/plugins";
-import { MediumEditorOptions, PbThemePlugin as PbThemePluginType } from "~/types";
-import { isLegacyRenderingEngine } from "~/utils";
+import { MediumEditorOptions } from "~/types";
+
 import { ThemePlugin } from "@webiny/app-theme";
 
 export const getMediumEditorOptions = (
@@ -15,18 +15,6 @@ export const getMediumEditorOptions = (
 };
 
 const getTypographyFromTheme = (type: string): string | undefined => {
-    if (isLegacyRenderingEngine) {
-        const [{ theme }] = plugins.byType<PbThemePluginType>("pb-theme");
-        const themeElement = theme.elements[type];
-        if (!themeElement) {
-            console.warn(`No element of type: "${type}: found in theme.`);
-            return "";
-        }
-        const { types } = themeElement;
-        const [defaultType] = types;
-        return defaultType.className;
-    }
-
     const [{ theme }] = plugins.byType<ThemePlugin>(ThemePlugin.type);
     const { typography } = theme.styles;
 

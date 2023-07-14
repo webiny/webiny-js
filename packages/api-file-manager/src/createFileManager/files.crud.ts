@@ -1,38 +1,24 @@
 import { NotFoundError } from "@webiny/handler-graphql";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CreatedBy,
     File,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
-    FilePermission,
     FilesCRUD,
     FilesListOpts
 } from "~/types";
-import { checkBasePermissions } from "./checkBasePermissions";
 import { FileManagerConfig } from "~/createFileManager/index";
-
-/**
- * If permission is limited to "own" files only, check that current identity owns the file.
- */
-const checkOwnership = (file: File, permission: FilePermission, identity: SecurityIdentity) => {
-    if (permission?.own === true) {
-        if (file.createdBy.id !== identity.id) {
-            throw new NotAuthorizedError();
-        }
-    }
-};
+import { ROOT_FOLDER } from "~/contants";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
         storageOperations,
+        filesPermissions,
         getLocaleCode,
         getTenantId,
         getIdentity,
-        getPermission,
         WEBINY_VERSION
     } = config;
 
@@ -46,7 +32,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         onFileBeforeDelete: createTopic("fileManager.onFileBeforeDelete"),
         onFileAfterDelete: createTopic("fileManager.onFileAfterDelete"),
         async getFile(id: string) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "r" });
+            await filesPermissions.ensure({ rwd: "r" });
 
             const file = await storageOperations.files.get({
                 where: {
@@ -60,12 +46,13 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(file, permission, getIdentity());
+            await filesPermissions.ensure({ owns: file.createdBy });
 
             return file;
         },
         async createFile(input, meta) {
-            await checkBasePermissions(getPermission, { rwd: "w" });
+            await filesPermissions.ensure({ rwd: "w" });
+
             const identity = getIdentity();
 
             // Extract ID from file key
@@ -76,12 +63,16 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 tags: Array.isArray(input.tags) ? input.tags : [],
                 aliases: Array.isArray(input.aliases) ? input.aliases : [],
                 id: input.id || id,
+                location: {
+                    folderId: input.location?.folderId ?? ROOT_FOLDER
+                },
                 meta: {
                     private: false,
                     ...(input.meta || {})
                 },
                 tenant: getTenantId(),
                 createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
@@ -110,7 +101,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async updateFile(id, input) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "w" });
+            await filesPermissions.ensure({ rwd: "w" });
 
             const original = await storageOperations.files.get({
                 where: {
@@ -124,7 +115,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(original, permission, getIdentity());
+            await filesPermissions.ensure({ owns: original.createdBy });
 
             const file: File = {
                 ...original,
@@ -174,7 +165,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async deleteFile(id) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "d" });
+            await filesPermissions.ensure({ rwd: "d" });
 
             const file = await storageOperations.files.get({
                 where: {
@@ -188,7 +179,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(file, permission, getIdentity());
+            await filesPermissions.ensure({ owns: file.createdBy });
 
             try {
                 await this.onFileBeforeDelete.publish({ file });
@@ -213,7 +204,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             return true;
         },
         async createFilesInBatch(inputs, meta) {
-            await checkBasePermissions(getPermission, { rwd: "w" });
+            await filesPermissions.ensure({ rwd: "w" });
 
             const identity = getIdentity();
             const tenant = getTenantId();
@@ -234,8 +225,12 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                         private: false,
                         ...(input.meta || {})
                     },
+                    location: {
+                        folderId: input.location?.folderId ?? ROOT_FOLDER
+                    },
                     tenant,
                     createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     createdBy,
                     locale,
                     webinyVersion: WEBINY_VERSION
@@ -261,60 +256,28 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async listFiles(params: FilesListOpts = {}) {
-            const permission = await checkBasePermissions(getPermission, { rwd: "r" });
+            await filesPermissions.ensure({ rwd: "r" });
 
             const {
                 limit = 40,
-                search = "",
-                types = [],
-                tags = [],
-                ids = [],
                 after = null,
                 where: initialWhere,
-                sort: initialSort
+                sort: initialSort,
+                search
             } = params;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
-                ...initialWhere,
-                private: false,
+                ...{ meta: { private_not: true }, ...initialWhere },
                 locale: getLocaleCode(),
                 tenant: getTenantId()
             };
+
             /**
              * Always override the createdBy received from the user, if any.
              */
-            if (permission.own === true) {
+            if (await filesPermissions.canAccessOnlyOwnRecords()) {
                 const identity = getIdentity();
                 where.createdBy = identity.id;
-            }
-            /**
-             * We need to map the old GraphQL definition to the new one.
-             * That GQL definition is marked as deprecated.
-             */
-            /**
-             * To have standardized where objects across the applications, we transform the types into type_in.
-             */
-            if (Array.isArray(types) && types.length > 0 && !where.type_in) {
-                where.type_in = types;
-            }
-            /**
-             * We are assigning search to tag and name search.
-             * This should be treated as OR condition in the storage operations.
-             */
-            if (search && !where.search) {
-                where.search = search;
-            }
-            /**
-             * Same as on types/type_in.
-             */
-            if (Array.isArray(tags) && tags.length > 0 && !where.tag_in) {
-                where.tag_in = tags.map(tag => tag.toLowerCase());
-            }
-            /**
-             * Same as on types/type_in.
-             */
-            if (Array.isArray(ids) && ids.length > 0 && !where.id_in) {
-                where.id_in = ids;
             }
 
             const sort =
@@ -324,7 +287,8 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     where,
                     after,
                     limit,
-                    sort
+                    sort,
+                    search
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -341,7 +305,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
             }
         },
         async listTags({ where: initialWhere, after, limit }) {
-            await checkBasePermissions(getPermission);
+            await filesPermissions.ensure();
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 ...initialWhere,

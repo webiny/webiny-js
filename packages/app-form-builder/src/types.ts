@@ -41,6 +41,10 @@ export type FbBuilderFormFieldValidatorPlugin = Plugin & {
             setValue: (name: string, value: any) => void;
             setMessage: (message: string) => void;
             data: FbBuilderFieldValidator;
+            // We need to return this optional "field" property in the case where we want to render different fields based on it's type or format
+            formFieldData?: {
+                [key: string]: any;
+            };
         }) => React.ReactElement;
     };
 };
