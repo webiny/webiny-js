@@ -53,7 +53,7 @@ describe("move content entry to another folder", () => {
         });
 
         const [moveResponse] = await manager.moveCategory({
-            id: category.id,
+            revision: category.id,
             folderId: "anotherFolder"
         });
         expect(moveResponse).toEqual({

@@ -134,13 +134,13 @@ const updateCategoryMutation = (model: CmsModel) => {
     `;
 };
 export interface MoveCategoryVariables {
-    id: string;
+    revision: string;
     folderId: string;
 }
 const moveCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation MoveCategory($id: ID!, $folderId: ID!) {
-            moveCategory: move${model.singularApiName}(id: $id, folderId: $folderId) {
+        mutation MoveCategory($revision: ID!, $folderId: ID!) {
+            moveCategory: move${model.singularApiName}(revision: $revision, folderId: $folderId) {
                 data
                 ${errorFields}
             }

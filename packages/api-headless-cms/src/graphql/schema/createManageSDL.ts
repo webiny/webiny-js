@@ -171,7 +171,7 @@ export const createManageSDL: CreateManageSDL = ({
     
             update${singularName}(revision: ID!, data: ${singularName}Input!): ${singularName}Response
             
-            move${singularName}(id: ID!, folderId: ID!): ${singularName}MoveResponse
+            move${singularName}(revision: ID!, folderId: ID!): ${singularName}MoveResponse
 
             delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
