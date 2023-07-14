@@ -375,6 +375,59 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const move: CmsEntryStorageOperations["move"] = async (initialModel, id, folderId) => {
+        /**
+         * We need to:
+         * - load all the revisions of the entry, including published and latest
+         * - update all the revisions (published and latest ) of the entry with new folderId
+         */
+        const model = getStorageOperationsModel(initialModel);
+        /**
+         * First we need to load all the revisions and published / latest entry.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({
+                id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            options: {
+                gte: " "
+            }
+        };
+        const records = await queryAll<CmsEntry>(queryAllParams);
+        /**
+         * Then create the batch writes for the DynamoDB, with the updated folderId.
+         */
+        const items = records.map(item => {
+            return entity.putBatch({
+                ...item,
+                location: {
+                    ...item.location,
+                    folderId
+                }
+            });
+        });
+        /**
+         * And finally write it...
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+        } catch (ex) {
+            throw WebinyError.from(ex, {
+                message: "Could not move records to a new folder.",
+                data: {
+                    id,
+                    folderId
+                }
+            });
+        }
+    };
+
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
         const id = entry.id || entry.entryId;
@@ -1111,6 +1164,7 @@ export const createEntriesStorageOperations = (
         create,
         createRevisionFrom,
         update,
+        move,
         delete: deleteEntry,
         deleteRevision,
         deleteMultipleEntries,

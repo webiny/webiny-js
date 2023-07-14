@@ -16,14 +16,10 @@ export const resolveMove: ResolveMove =
             if (!folderId) {
                 throw new Error(`The input value "folderId" is required!`);
             }
-            const entry = await context.cms.updateEntry(model, revision, {
-                wbyAco_location: {
-                    folderId
-                }
-            });
+            await context.cms.moveEntry(model, revision, folderId);
 
-            return new Response(entry.location?.folderId === folderId);
-        } catch (e) {
-            return new ErrorResponse(e);
+            return new Response(true);
+        } catch (ex) {
+            return new ErrorResponse(ex);
         }
     };
