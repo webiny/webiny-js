@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { useSnackbar } from "@webiny/app-admin";
 import { useMoveToFolderDialog, useRecords } from "@webiny/app-aco";
-import { parseIdentifier } from "@webiny/utils";
 import { RecordEntry } from "~/admin/components/ContentEntries/Table/types";
 
 interface UseMoveContentEntryToFolder {
@@ -21,9 +20,8 @@ export function useMoveContentEntryToFolder({ record }: UseMoveContentEntryToFol
             acceptLabel: "Move entry",
             focusedFolderId: record.location.folderId,
             async onAccept({ folder }) {
-                const { id } = parseIdentifier(record.id);
                 await moveRecord({
-                    id,
+                    id: record.id,
                     location: {
                         folderId: folder.id
                     }
