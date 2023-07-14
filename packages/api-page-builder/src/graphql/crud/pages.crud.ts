@@ -491,21 +491,22 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     page
                 });
 
-                const result = await storageOperations.pages.createFrom({
+                await storageOperations.pages.createFrom({
                     original: await compressPage(original),
                     latestPage,
                     page: await compressPage(page)
                 });
+
                 await onPageAfterCreateFrom.publish({
                     original,
-                    page: result
+                    page
                 });
                 /**
                  * Clear the dataLoader cache.
                  */
                 clearDataLoaderCache([original, page, latestPage]);
 
-                return decompressPage(result);
+                return page;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create from existing page.",
@@ -583,7 +584,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
                 await storageOperations.pages.update({
                     input,
-                    original: await compressPage(original),
+                    original: rawOriginal,
                     page: await compressPage(page)
                 });
 
