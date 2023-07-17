@@ -162,7 +162,21 @@ function createExportLambdaPolicy(app: PulumiApp) {
                         Effect: "Allow",
                         Action: ["lambda:InvokeFunction"],
                         Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
-                    }
+                    },
+                    // Attach permissions for elastic search domain as well (if ES is enabled).
+                    ...(core.elasticsearchDomainArn
+                        ? [
+                            {
+                                Sid: "PermissionForES",
+                                Effect: "Allow" as const,
+                                Action: "es:*",
+                                Resource: [
+                                    pulumi.interpolate`${core.elasticsearchDomainArn}`,
+                                    pulumi.interpolate`${core.elasticsearchDomainArn}/*`
+                                ]
+                            }
+                        ]
+                        : [])
                 ]
             }
         }
@@ -311,8 +325,8 @@ function createImportLambdaPolicy(app: PulumiApp) {
                                       Effect: "Allow" as const,
                                       Action: "es:*",
                                       Resource: [
-                                          `${core.elasticsearchDomainArn}`,
-                                          `${core.elasticsearchDomainArn}/*`
+                                          pulumi.interpolate`${core.elasticsearchDomainArn}`,
+                                          pulumi.interpolate`${core.elasticsearchDomainArn}/*`
                                       ]
                                   }
                               ]
