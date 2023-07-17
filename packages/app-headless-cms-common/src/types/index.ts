@@ -9,7 +9,6 @@ import {
 } from "@webiny/form";
 import { IconName, IconPrefix } from "@fortawesome/fontawesome-svg-core";
 import { SecurityPermission } from "@webiny/app-security/types";
-import { Location } from "@webiny/app-aco/types";
 import {
     CmsModelFieldValidator,
     CmsModelFieldValidatorsFactory,
@@ -31,6 +30,10 @@ interface QueryFieldParams {
 interface Position {
     row: number;
     index: number;
+}
+
+interface Location {
+    folderId: string;
 }
 
 export interface DragSource extends DragObjectWithType {
