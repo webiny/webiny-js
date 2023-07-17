@@ -111,7 +111,7 @@ export const createUsePermissions = (permissionName: string) => (): UsePermissio
 
     const canAccessOnlyOwn = useCallback<UsePermission["canAccessOnlyOwn"]>(() => {
         if (hasFullAccess) {
-            return true;
+            return false;
         }
 
         return permissionsByName.some(({ own }) => {
