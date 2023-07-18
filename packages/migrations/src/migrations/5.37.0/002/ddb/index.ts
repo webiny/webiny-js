@@ -1,48 +1,153 @@
 import { Table } from "dynamodb-toolbox";
-import { inject, makeInjectable } from "@webiny/ioc";
 import {
     DataMigration,
     DataMigrationContext,
-    getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { AcoRecords_5_37_0_002_AcoFolders } from "./AcoFolderMigration";
+import { createDdbEntryEntity } from "../entities/createEntryEntity";
+import { createLocaleEntity } from "../entities/createLocaleEntity";
+import { createTenantEntity } from "../entities/createTenantEntity";
+import { batchWriteAll, BatchWriteItem, ddbScanWithCallback, scan } from "~/utils";
+import { CmsEntry } from "../types";
+import { inject, makeInjectable } from "@webiny/ioc";
+import { executeWithRetry } from "@webiny/utils";
 
-export class AcoFolders_5_37_0_002 implements DataMigration {
-    private readonly migrations: DataMigration[];
+interface LastEvaluatedKey {
+    PK: string;
+    SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
+}
 
-    public constructor(table: Table) {
-        this.migrations = [new AcoRecords_5_37_0_002_AcoFolders(table)];
+interface CmsEntriesRootFolderDataMigrationCheckpoint {
+    lastEvaluatedKey?: LastEvaluatedKey | boolean;
+}
+
+export class CmsEntriesRootFolder_5_37_0_002
+    implements DataMigration<CmsEntriesRootFolderDataMigrationCheckpoint>
+{
+    private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;
+    private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
+    private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
+
+    constructor(table: Table) {
+        this.entryEntity = createDdbEntryEntity(table);
+        this.localeEntity = createLocaleEntity(table);
+        this.tenantEntity = createTenantEntity(table);
     }
 
-    public getId() {
+    getId() {
         return "5.37.0-002";
     }
 
-    public getDescription() {
-        return "ACO Folder parentId migration";
+    getDescription() {
+        return "Add default folderId to all CMS records.";
     }
 
-    async shouldExecute(context: DataMigrationContext): Promise<boolean> {
-        for (const migration of this.migrations) {
-            const childLogger = getChildLogger(context.logger, migration);
-            const childContext = { ...context, logger: childLogger };
-            if (await migration.shouldExecute(childContext)) {
-                return true;
+    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+        const result = await scan<CmsEntry>({
+            entity: this.entryEntity,
+            options: {
+                index: "GSI1",
+                filters: [
+                    {
+                        attr: "_et",
+                        beginsWith: "CmsEntries"
+                    }
+                ],
+                limit: 1
             }
+        });
+
+        if (result.items.length === 0) {
+            logger.info(`No CMS entries found in the system; skipping migration.`);
+            return false;
+        } else if (result.error) {
+            logger.error(result.error);
+            throw new Error(result.error);
         }
+        const [item] = result.items;
+        /**
+         * If no location.folderId was set, we need to push the upgrade.
+         */
+        if (!item.location?.folderId) {
+            return true;
+        }
+        logger.info(`CMS entries already upgraded. skipping...`);
         return false;
     }
 
-    async execute(context: DataMigrationContext): Promise<void> {
-        for (const migration of this.migrations) {
-            const childLogger = getChildLogger(context.logger, migration);
-            const childContext = { ...context, logger: childLogger };
-            if (await migration.shouldExecute(childContext)) {
-                await migration.execute(childContext);
-            }
+    async execute({
+        logger,
+        ...context
+    }: DataMigrationContext<CmsEntriesRootFolderDataMigrationCheckpoint>): Promise<void> {
+        const migrationStatus = context.checkpoint || {};
+
+        if (migrationStatus.lastEvaluatedKey === true) {
+            logger.info(`Migration completed, no need to start again.`);
+            return;
         }
+
+        await ddbScanWithCallback<CmsEntry>(
+            {
+                entity: this.entryEntity,
+                options: {
+                    index: "GSI1",
+                    filters: [
+                        {
+                            attr: "_et",
+                            beginsWith: "CmsEntries"
+                        }
+                    ],
+                    startKey: migrationStatus.lastEvaluatedKey || undefined,
+                    limit: 1000
+                }
+            },
+            async result => {
+                const items: BatchWriteItem[] = [];
+                for (const item of result.items) {
+                    if (!!item.location?.folderId) {
+                        continue;
+                    }
+                    items.push(
+                        this.entryEntity.putBatch({
+                            ...item,
+                            location: {
+                                ...item.location,
+                                folderId: "root"
+                            }
+                        })
+                    );
+                }
+
+                const execute = () => {
+                    return batchWriteAll({ table: this.entryEntity.table, items });
+                };
+
+                await executeWithRetry(execute, {
+                    onFailedAttempt: error => {
+                        logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
+                        logger.error(error.message);
+                    }
+                });
+
+                // Update checkpoint after every batch
+                migrationStatus.lastEvaluatedKey = result.lastEvaluatedKey?.PK
+                    ? (result.lastEvaluatedKey as unknown as LastEvaluatedKey)
+                    : true;
+
+                // Check if we should store checkpoint and exit.
+                if (context.runningOutOfTime()) {
+                    await context.createCheckpointAndExit(migrationStatus);
+                } else {
+                    await context.createCheckpoint(migrationStatus);
+                }
+            }
+        );
+
+        migrationStatus.lastEvaluatedKey = true;
+        context.createCheckpoint(migrationStatus);
     }
 }
 
-makeInjectable(AcoFolders_5_37_0_002, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(CmsEntriesRootFolder_5_37_0_002, [inject(PrimaryDynamoTableSymbol)]);
