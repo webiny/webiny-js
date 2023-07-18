@@ -9,15 +9,17 @@ import {
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { inject, makeInjectable } from "@webiny/ioc";
-import { AcoRecords_5_37_0_003_PageData } from "./PageDataMigration";
+import { AcoRecords_5_37_0_003_AcoFolder } from "./AcoFolderMigration";
 
 export * from "../types";
 
-export class AcoRecords_5_37_0_003 implements DataMigration {
+export class AcoFolders_5_37_0_003 implements DataMigration {
     private readonly migrations: DataMigration[];
 
     constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
-        this.migrations = [new AcoRecords_5_37_0_003_PageData(table, esTable, elasticsearchClient)];
+        this.migrations = [
+            new AcoRecords_5_37_0_003_AcoFolder(table, esTable, elasticsearchClient)
+        ];
     }
 
     getId(): string {
@@ -25,7 +27,7 @@ export class AcoRecords_5_37_0_003 implements DataMigration {
     }
 
     getDescription(): string {
-        return "Page Builder Pages search record migration";
+        return "ACO Folder parentId migration";
     }
 
     async shouldExecute(context: DataMigrationContext): Promise<boolean> {
@@ -50,7 +52,7 @@ export class AcoRecords_5_37_0_003 implements DataMigration {
     }
 }
 
-makeInjectable(AcoRecords_5_37_0_003, [
+makeInjectable(AcoFolders_5_37_0_003, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)

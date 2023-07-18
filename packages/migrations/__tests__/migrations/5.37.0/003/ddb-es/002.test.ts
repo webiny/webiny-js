@@ -8,12 +8,12 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { AcoFolders_5_37_0_002, CmsEntryAcoFolder } from "~/migrations/5.37.0/002/ddb-es";
+import { AcoFolders_5_37_0_003, CmsEntryAcoFolder } from "~/migrations/5.37.0/003/ddb-es";
 import {
     ACO_FOLDER_MODEL_ID,
     ROOT_FOLDER,
     UPPERCASE_ROOT_FOLDER
-} from "~/migrations/5.37.0/002/constants";
+} from "~/migrations/5.37.0/003/constants";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createLocalesData, createTenantsData } from "../common";
@@ -21,7 +21,7 @@ import { insertEmptyIndexes, insertTestFolders } from "./insertTestFolders";
 import {
     FolderDdbToElasticsearchWriteItem,
     FolderDdbWriteItem
-} from "~tests/migrations/5.37.0/002/types";
+} from "~tests/migrations/5.37.0/003/types";
 import { getDecompressedData } from "./getDecompressedData";
 import { esGetIndexName } from "~/utils";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
@@ -29,7 +29,7 @@ import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearc
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-describe("5.37.0-002", () => {
+describe("5.37.0-003", () => {
     const documentClient = getDocumentClient();
     const ddbTable = getPrimaryDynamoDbTable({
         documentClient
@@ -56,7 +56,7 @@ describe("5.37.0-002", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoFolders_5_37_0_002]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -76,7 +76,7 @@ describe("5.37.0-002", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoFolders_5_37_0_002]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -96,7 +96,7 @@ describe("5.37.0-002", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoFolders_5_37_0_002]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -117,7 +117,7 @@ describe("5.37.0-002", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoFolders_5_37_0_002]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -155,7 +155,7 @@ describe("5.37.0-002", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoFolders_5_37_0_002]
+            migrations: [AcoFolders_5_37_0_003]
         });
         const { data, error } = await handler();
 
@@ -267,7 +267,7 @@ describe("5.37.0-002", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoFolders_5_37_0_002]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         // Should run the migration
