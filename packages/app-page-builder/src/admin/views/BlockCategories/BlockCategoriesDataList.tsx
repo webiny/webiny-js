@@ -184,7 +184,7 @@ const PageBuilderBlockCategoriesDataList = ({
                 />
             }
             refresh={() => {
-                if (!listQuery.refetch) {
+                if (!listQuery?.refetch) {
                     return;
                 }
                 listQuery.refetch();

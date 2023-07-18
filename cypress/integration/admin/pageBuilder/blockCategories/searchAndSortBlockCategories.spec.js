@@ -11,6 +11,9 @@ context("Block Categories Module", () => {
     const entries = [];
 
     before(() => {
+        // Delete all block categories if such exist
+        cy.pbDeleteAllBlockCategories();
+
         // Create three block categories
         for (let i = 0; i < 3; i++) {
             const id = uniqid();

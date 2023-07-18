@@ -1,7 +1,11 @@
 import uniqid from "uniqid";
 
 context("Block Categories Module", () => {
-    beforeEach(() => cy.login());
+    beforeEach(() => {
+        cy.login();
+        // Delete all block categories if such exist
+        cy.pbDeleteAllBlockCategories();
+    });
 
     describe("When creating a block category", () => {
         const id = uniqid();
@@ -56,7 +60,7 @@ context("Block Categories Module", () => {
             });
             // Check if "slug" new validation error appeared
             cy.findByTestId("pb.blockCategory.form.slug.container").within(() => {
-                cy.findByText(/Block Category slug must consist/).should("exist");
+                cy.findByText(/Block category slug must consist/).should("exist");
             });
 
             // Change slug and click "Save Block Category" button again
@@ -64,7 +68,7 @@ context("Block Categories Module", () => {
             cy.findByTestId("pb.blockCategory.form.button.save").click();
             // Check if "slug" validation error disappeared
             cy.findByTestId("pb.blockCategory.form.slug.container").within(() => {
-                cy.findByText(/Block Category slug must consist/).should("not.exist");
+                cy.findByText(/Block category slug must consist/).should("not.exist");
             });
 
             // Check if save confirmation appeared

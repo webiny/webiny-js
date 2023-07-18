@@ -131,6 +131,21 @@ const BASE_FIELDS_BLOCK_CATEGORY = `
     }
 `;
 
+export const LIST_BLOCK_CATEGORIES = gql`
+    query PbListBlockCategories{
+        pageBuilder {
+            listBlockCategories {
+                data {
+                    ${BASE_FIELDS_BLOCK_CATEGORY}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
 export const CREATE_BLOCK_CATEGORY = gql`
     mutation CreateBlockCategory($data: PbBlockCategoryInput!){
         pageBuilder {

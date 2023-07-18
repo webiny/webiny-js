@@ -179,6 +179,12 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                     data-testid={"default-data-list.filter"}
                 />
             }
+            refresh={() => {
+                if (!listQuery?.refetch) {
+                    return;
+                }
+                listQuery.refetch();
+            }}
         >
             {({ data }: { data: PbCategory[] }) => (
                 <ScrollList data-testid="default-data-list">
