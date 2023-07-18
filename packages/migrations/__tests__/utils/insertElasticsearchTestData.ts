@@ -27,10 +27,11 @@ export const transferDynamoDbToElasticsearch = async <
     for (const record of records) {
         const index = getIndexName(record);
 
+        const id = record.PK && record.SK ? `${record.PK}:${record.SK}` : record.id;
         operations.push(
             {
                 index: {
-                    _id: `${record.PK}:${record.SK}`,
+                    _id: id,
                     _index: index
                 }
             },
