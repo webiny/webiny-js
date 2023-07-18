@@ -1,12 +1,14 @@
 import { Table } from "dynamodb-toolbox";
 import { CmsEntry, Identity } from "~/migrations/5.37.0/002/types";
 import { insertDynamoDbTestData } from "~tests/utils";
+import { esGetIndexName } from "~/utils";
+import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
+import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import { getCompressedData } from "~/migrations/5.37.0/002/utils/getCompressedData";
 
 type DbItem<T> = T & {
     PK: string;
     SK: string;
-    GSI1_PK: string;
-    GSI1_SK: string;
     TYPE: string;
     _et: string;
     _md: string;
@@ -54,29 +56,36 @@ const defaultMaxItems = 25;
  * - REV#0001
  * - REV#0002
  */
-const itemPushes = 4;
+const ddbItemPushes = 4;
 
 export const getTotalItems = () => {
-    return tenants.length * locales.length * defaultMaxItems * itemPushes;
+    return tenants.length * locales.length * defaultMaxItems * ddbItemPushes;
 };
 
 interface Options {
     maxItems?: number;
 }
 
-export const insertTestEntries = async (table: Table, options?: Options) => {
+interface Params {
+    ddbTable: Table;
+    ddbToEsTable: Table;
+    elasticsearchClient: ElasticsearchClient;
+    options?: Options;
+}
+
+export const insertTestEntries = async (params: Params) => {
+    const { ddbTable, ddbToEsTable, elasticsearchClient, options } = params;
     const maxItems = options?.maxItems || defaultMaxItems;
     for (const tenant of tenants) {
         const items = [];
+        const esItems = [];
         for (const locale of locales) {
             for (let i = 1; i <= maxItems; i++) {
                 const entryId = `${tenant}-${locale}-${i}`;
 
                 const item: DbItem<CmsEntry> = {
-                    PK: `T#${tenant}#L#${locale}#CMS#CME#CME#${entryId}`,
+                    PK: `T#${tenant}#L#${locale}#CMS#CME#${entryId}`,
                     SK: "REV#0001",
-                    GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#randomModelId#L`,
-                    GSI1_SK: `${entryId}#0001`,
                     _et: "CmsEntries",
                     _md: new Date().toISOString(),
                     _ct: new Date().toISOString(),
@@ -99,32 +108,69 @@ export const insertTestEntries = async (table: Table, options?: Options) => {
                     webinyVersion: "5.36.2",
                     version: 1
                 };
+                const itemV2 = {
+                    ...item,
+                    SK: "REV#0002",
+                    id: `${entryId}#0002`,
+                    version: 2
+                };
+                const latestItem = {
+                    ...itemV2,
+                    TYPE: "cms.entry.l",
+                    SK: "L"
+                };
+                const publishedItem = {
+                    ...latestItem,
+                    TYPE: "cms.entry.p",
+                    SK: "P"
+                };
                 // REV 1
                 items.push(item);
                 // REV 2
                 items.push({
-                    ...item,
-                    id: `${entryId}#0002`,
-                    SK: "REV#0002"
+                    ...itemV2
                 });
                 // latest
                 items.push({
-                    ...item,
-                    TYPE: "cms.entry.l",
-                    id: `${entryId}#0002`,
-                    SK: "L",
-                    GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#randomModelId#A`
+                    ...latestItem,
+                    SK: "L"
                 });
                 // published
                 items.push({
-                    ...item,
-                    TYPE: "cms.entry.p",
-                    id: `${entryId}#0002`,
+                    ...publishedItem
+                });
+                /**
+                 * Elasticsearch Data
+                 */
+                const index = esGetIndexName({
+                    tenant,
+                    locale,
+                    type: "randomModelId",
+                    isHeadlessCmsModel: true
+                });
+                esItems.push({
+                    PK: item.PK,
+                    SK: "L",
+                    index,
+                    data: await getCompressedData(latestItem)
+                });
+                esItems.push({
+                    PK: item.PK,
                     SK: "P",
-                    GSI1_PK: `T#${tenant}#L#${locale}#CMS#CME#M#randomModelId#P`
+                    index,
+                    data: await getCompressedData(publishedItem)
                 });
             }
         }
-        await insertDynamoDbTestData(table, items);
+        await insertDynamoDbTestData(ddbTable, items);
+        await insertDynamoDbTestData(ddbToEsTable, esItems);
+        await transferDynamoDbToElasticsearch(elasticsearchClient, ddbToEsTable, item => {
+            return esGetIndexName({
+                tenant: item.tenant,
+                locale: item.locale,
+                type: "randomModelId",
+                isHeadlessCmsModel: true
+            });
+        });
     }
 };

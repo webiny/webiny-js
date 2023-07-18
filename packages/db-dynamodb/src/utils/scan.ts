@@ -30,6 +30,13 @@ const convertResult = <T>(result: any): ScanResponse<T> => {
     };
 };
 
+export type ScanDbItem<T> = T & {
+    PK: string;
+    SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
+};
+
 export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
     const { entity, options } = params;
 
@@ -40,10 +47,10 @@ export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
 
 export const scanWithCallback = async <T>(
     params: ScanParams,
-    callback: (result: ScanResponse<T>) => Promise<void>
+    callback: (result: ScanResponse<ScanDbItem<T>>) => Promise<void>
 ): Promise<void> => {
-    let result = await scan<T>(params);
-    if (!result?.items?.length) {
+    let result = await scan<ScanDbItem<T>>(params);
+    if (!result.items?.length && !result.lastEvaluatedKey) {
         return;
     }
     await callback(result);

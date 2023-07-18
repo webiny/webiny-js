@@ -51,8 +51,8 @@ export class CmsEntriesRootFolder_5_37_0_002
                 index: "GSI1",
                 filters: [
                     {
-                        attr: "_et",
-                        beginsWith: "CmsEntries"
+                        attr: "TYPE",
+                        beginsWith: "cms.entry"
                     }
                 ],
                 limit: 1
@@ -95,8 +95,8 @@ export class CmsEntriesRootFolder_5_37_0_002
                     index: "GSI1",
                     filters: [
                         {
-                            attr: "_et",
-                            beginsWith: "CmsEntries"
+                            attr: "TYPE",
+                            beginsWith: "cms.entry"
                         }
                     ],
                     startKey: migrationStatus.lastEvaluatedKey || undefined,

@@ -11,7 +11,7 @@ const convertToBuffer = (value: string | Buffer) => {
     return value;
 };
 
-export const getDecompressedData = async (data: any) => {
+export const getDecompressedData = async <T>(data: any): Promise<T | null> => {
     if (data?.compression !== GZIP) {
         return null;
     }

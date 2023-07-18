@@ -26,7 +26,16 @@ export const transferDynamoDbToElasticsearch = async <
 
     for (const record of records) {
         const index = getIndexName(record);
-        operations.push({ index: { _id: record["id"], _index: index } }, record);
+
+        operations.push(
+            {
+                index: {
+                    _id: `${record.PK}:${record.SK}`,
+                    _index: index
+                }
+            },
+            record
+        );
         elasticsearch.indices.registerIndex(index);
     }
 
