@@ -10,3 +10,4 @@ export * from "./query";
 export * from "./sort";
 export * from "./createTable";
 export * from "./table";
+export * from "./scan";
