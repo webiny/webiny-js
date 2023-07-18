@@ -2,7 +2,7 @@ import chunk from "lodash/chunk";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { Table } from "dynamodb-toolbox";
 import { scanTable } from "~tests/utils/scanTable";
-import { getDecompressedData } from "~tests/migrations/5.37.0/002/ddb-es/getDecompressedData";
+import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
 
 export const transferDynamoDbToElasticsearch = async <
     TItem extends Record<string, any> = Record<string, any>
