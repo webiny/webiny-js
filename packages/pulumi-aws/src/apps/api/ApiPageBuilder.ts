@@ -166,16 +166,16 @@ function createExportLambdaPolicy(app: PulumiApp) {
                     // Attach permissions for elastic search domain as well (if ES is enabled).
                     ...(core.elasticsearchDomainArn
                         ? [
-                            {
-                                Sid: "PermissionForES",
-                                Effect: "Allow" as const,
-                                Action: "es:*",
-                                Resource: [
-                                    pulumi.interpolate`${core.elasticsearchDomainArn}`,
-                                    pulumi.interpolate`${core.elasticsearchDomainArn}/*`
-                                ]
-                            }
-                        ]
+                              {
+                                  Sid: "PermissionForES",
+                                  Effect: "Allow" as const,
+                                  Action: "es:*",
+                                  Resource: [
+                                      pulumi.interpolate`${core.elasticsearchDomainArn}`,
+                                      pulumi.interpolate`${core.elasticsearchDomainArn}/*`
+                                  ]
+                              }
+                          ]
                         : [])
                 ]
             }
