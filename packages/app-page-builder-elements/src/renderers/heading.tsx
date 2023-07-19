@@ -16,7 +16,6 @@ export const createHeading = () => {
         const tag = element.data.text.desktop.tag || "h1";
         const __html = element.data.text.data.text;
 
-            console.log('idemo?')
         if (isValidLexicalData(__html)) {
             return (
                 <LexicalHtmlRenderer

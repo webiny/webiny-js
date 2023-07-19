@@ -12,33 +12,33 @@ import { renderPlugin } from "~/editor/components/Editor/Toolbar";
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { rootElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
 import { PbEditorElement, PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { usePage } from "~/pageEditor";
 import { UNLINK_PAGE_FROM_TEMPLATE } from "~/pageEditor/graphql";
 
 const unlinkTemplateDialog = css`
-  & .mdc-dialog__surface {
-    width: 500px;
-  }
-
-  & .webiny-ui-dialog__title {
-    text-transform: uppercase;
-  }
-
-  & p {
-    margin-bottom: 16px;
-  }
-
-  & .info-wrapper {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-
-    & svg {
-      width: 18px;
-      margin-right: 5px;
+    & .mdc-dialog__surface {
+        width: 500px;
     }
-  }
+
+    & .webiny-ui-dialog__title {
+        text-transform: uppercase;
+    }
+
+    & p {
+        margin-bottom: 16px;
+    }
+
+    & .info-wrapper {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+
+        & svg {
+            width: 18px;
+            margin-right: 5px;
+        }
+    }
 `;
 
 export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, ToolbarActionsWrapper => {
@@ -51,7 +51,8 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         const [isModalShown, setIsModalShown] = useState(false);
         const rootElementId = useRecoilValue(rootElementAtom);
         const rootElement = useRecoilValue(elementByIdSelector(rootElementId)) as PbEditorElement;
-        const apolloClient = useApolloClient();
+        const [unlinkPage, unlinkPageMutation] = useMutation(UNLINK_PAGE_FROM_TEMPLATE);
+
         const [page] = usePage();
 
         // TODO: check if the below check even works.
@@ -73,16 +74,13 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         }, []);
 
         const onUnlink = useCallback(() => {
-            apolloClient
-                .mutate({
-                    mutation: UNLINK_PAGE_FROM_TEMPLATE,
-                    variables: { id: page.id }
-                })
-                .then(() => {
-                    // TODO: We do a screen refresh just because of some weird state inconsistency-related
-                    // TODO: issue. Should fix this when there's more time at hand.
-                    window.location.reload();
-                });
+            unlinkPage({
+                variables: { id: page.id }
+            }).then(() => {
+                // TODO: We do a screen refresh just because of some weird state inconsistency-related
+                // TODO: issue. Should fix this when there's more time at hand.
+                window.location.reload();
+            });
         }, [rootElement]);
 
         return (
@@ -106,14 +104,17 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
                             By unlinking it, any changes made to the template will no longer be
                             reflected on this page.
                         </p>
-                        {/* TODO: Bring back when there's actually a link to the docs.*/}
+                        {/* TODO: Bring back when there's actually a link to the docs. */}
                         {/*<div className="info-wrapper">*/}
                         {/*    <InfoIcon /> Click here to learn more about how page templates work*/}
                         {/*</div>*/}
                     </DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                        <ButtonPrimary disabled={!unlinkPermission} onClick={onUnlink}>
+                        <ButtonPrimary
+                            disabled={!unlinkPermission || unlinkPageMutation.loading}
+                            onClick={onUnlink}
+                        >
                             {unlinkPermission ? "Unlink template" : "No permissions"}
                         </ButtonPrimary>
                     </DialogActions>
