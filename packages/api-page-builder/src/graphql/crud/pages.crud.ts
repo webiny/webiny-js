@@ -52,7 +52,6 @@ import {
 } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 import { PagesPermissions } from "./permissions/PagesPermissions";
-import { unlinkPageContentFromTemplate } from "./pageTemplates/unlinkPageContentFromTemplate";
 
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
@@ -536,12 +535,25 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 );
             }
 
-            const pageContent = page.content as PageContentWithTemplate;
-            const pageContentResolvedRootElements = await this.resolvePageTemplate(pageContent);
+            const resolvedPageElements = await context.pageBuilder.resolvePageTemplate(
+                page.content as PageContentWithTemplate
+            );
 
-            const unlinkedPageContent = unlinkPageContentFromTemplate(page, pageContentResolvedRootElements);
+            // Run element processors on the full page content for potential transformations.
+            const processedPage = await context.pageBuilder.processPageContent({
+                ...page,
+                content: { ...page.content, elements: resolvedPageElements }
+            });
 
-            return this.updatePage(id, { content: unlinkedPageContent });
+            // Delete template-related data.
+            delete processedPage.content!.data.template;
+
+            for (let i = 0; i < processedPage.content!.elements.length; i++) {
+                const blockElement = processedPage.content!.elements[i];
+                delete blockElement.data.templateBlockId;
+            }
+
+            return this.updatePage(id, processedPage);
         },
 
         async updatePage(id, input): Promise<any> {
