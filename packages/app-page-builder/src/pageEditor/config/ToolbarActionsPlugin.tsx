@@ -1,45 +1,44 @@
 import React, { useCallback, useState } from "react";
 import { css } from "emotion";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 
 import { createComponentPlugin } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { IconButton, ButtonPrimary } from "@webiny/ui/Button";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ReactComponent as LockIcon } from "@material-design-icons/svg/outlined/lock.svg";
-import { ReactComponent as InfoIcon } from "@material-design-icons/svg/outlined/info.svg";
-
 import { ToolbarActions } from "~/editor";
 import { renderPlugin } from "~/editor/components/Editor/Toolbar";
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
-import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
-import { templateModeAtom } from "~/pageEditor/state";
 import { rootElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
 import { PbEditorElement, PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
+import { useApolloClient } from "@apollo/react-hooks";
+import { usePage } from "~/pageEditor";
+import { UNLINK_PAGE_FROM_TEMPLATE } from "~/pageEditor/graphql";
 
 const unlinkTemplateDialog = css`
-    & .mdc-dialog__surface {
-        width: 500px;
-    }
+  & .mdc-dialog__surface {
+    width: 500px;
+  }
 
-    & .webiny-ui-dialog__title {
-        text-transform: uppercase;
-    }
+  & .webiny-ui-dialog__title {
+    text-transform: uppercase;
+  }
 
-    & p {
-        margin-bottom: 16px;
-    }
+  & p {
+    margin-bottom: 16px;
+  }
 
-    & .info-wrapper {
-        display: flex;
-        align-items: center;
-        font-size: 12px;
+  & .info-wrapper {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
 
-        & svg {
-            width: 18px;
-            margin-right: 5px;
-        }
+    & svg {
+      width: 18px;
+      margin-right: 5px;
     }
+  }
 `;
 
 export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, ToolbarActionsWrapper => {
@@ -52,8 +51,8 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         const [isModalShown, setIsModalShown] = useState(false);
         const rootElementId = useRecoilValue(rootElementAtom);
         const rootElement = useRecoilValue(elementByIdSelector(rootElementId)) as PbEditorElement;
-        const updateElement = useUpdateElement();
-        const [, setIsTemplateMode] = useRecoilState(templateModeAtom);
+        const apolloClient = useApolloClient();
+        const [page] = usePage();
 
         // TODO: check if the below check even works.
         const unlinkPermission = true;
@@ -74,13 +73,16 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         }, []);
 
         const onUnlink = useCallback(() => {
-            // we need to drop the `template` property when unlinking.
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { template, ...newPageData } = rootElement.data;
-
-            setIsTemplateMode(false);
-            updateElement({ ...rootElement, data: newPageData }, { history: false });
-            onClose();
+            apolloClient
+                .mutate({
+                    mutation: UNLINK_PAGE_FROM_TEMPLATE,
+                    variables: { id: page.id }
+                })
+                .then(() => {
+                    // TODO: We do a screen refresh just because of some weird state inconsistency-related
+                    // TODO: issue. Should fix this when there's more time at hand.
+                    window.location.reload();
+                });
         }, [rootElement]);
 
         return (

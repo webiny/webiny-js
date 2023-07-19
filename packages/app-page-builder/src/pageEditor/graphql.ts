@@ -88,3 +88,15 @@ export const GET_PAGE = gql`
         }
     }
 `;
+
+export const UNLINK_PAGE_FROM_TEMPLATE = gql`
+    mutation UnlinkPageFromTemplate($id: ID!) {
+        pageBuilder {
+            unlinkPageFromTemplate(id: $id) {
+                data {
+                    content
+                }
+            }
+        }
+    }
+`;
