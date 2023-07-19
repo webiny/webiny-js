@@ -11,7 +11,6 @@ import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 
 import { Dialog } from "./OmniSearch/Dialog";
-import { CreatePageForm } from "~/modules/Overlays/OmniSearch/CreatePageForm";
 
 interface Item {
     id: string;
@@ -146,13 +145,7 @@ export const OmniSearch = () => {
                                 })
                             ].flat();
                         })
-                        .flat(),
-                    {
-                        id: "create-page",
-                        title: "Create page...",
-                        description: "Creates a new page",
-                        render: () => <CreatePageForm />
-                    }
+                        .flat()
                 ]
             },
             {
