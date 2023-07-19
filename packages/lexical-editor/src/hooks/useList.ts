@@ -62,7 +62,6 @@ export function useList(editor: LexicalEditor): void {
             editor.registerCommand(
                 KEY_BACKSPACE_COMMAND,
                 (event: KeyboardEvent) => {
-                    console.log("list", event);
                     const selection = $getSelection();
                     if ($isRangeSelection(selection)) {
                         const textSelection = getLexicalTextSelectionState(editor, selection);
