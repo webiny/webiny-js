@@ -73,8 +73,8 @@ describe("5.37.0-002", () => {
                 "Error inserting test entries: ",
                 JSON.stringify({
                     message: ex.message,
-                    stack: ex.stack,
                     data: ex.data,
+                    stack: ex.stack,
                     code: ex.code
                 })
             );
