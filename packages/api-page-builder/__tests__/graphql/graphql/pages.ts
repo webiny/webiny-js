@@ -187,9 +187,9 @@ export const ERROR_FIELD = /* GraphQL */ `
 
 export const createPageCreateGraphQl = (params: CreateDataFieldsParams = {}) => {
     return /* GraphQL */ `
-        mutation CreatePage($from: ID, $category: String, $templateId: ID) {
+        mutation CreatePage($from: ID, $category: String) {
             pageBuilder {
-                createPage(from: $from, category: $category, templateId: $templateId) {
+                createPage(from: $from, category: $category) {
                     data ${createDataFields(params)}
                     error ${ERROR_FIELD}
                 }
