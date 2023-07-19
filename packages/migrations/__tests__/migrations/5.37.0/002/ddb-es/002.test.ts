@@ -61,11 +61,27 @@ describe("5.37.0-002", () => {
 
     it("should execute migration", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
-        await insertTestEntries({
-            ddbTable,
-            ddbToEsTable,
-            elasticsearchClient
-        });
+
+        let testEntriesError: any = null;
+        try {
+            await insertTestEntries({
+                ddbTable,
+                ddbToEsTable,
+                elasticsearchClient
+            });
+        } catch (ex) {
+            testEntriesError = ex;
+            console.log(
+                "Error inserting test entries: ",
+                JSON.stringify({
+                    message: ex.message,
+                    stack: ex.stack,
+                    data: ex.data,
+                    code: ex.code
+                })
+            );
+        }
+        expect(testEntriesError).toBeNull();
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
