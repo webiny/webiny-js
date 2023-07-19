@@ -104,9 +104,10 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
                             By unlinking it, any changes made to the template will no longer be
                             reflected on this page.
                         </p>
-                        <div className="info-wrapper">
-                            <InfoIcon /> Click here to learn more about how page templates work
-                        </div>
+                        {/* TODO: Bring back when there's actually a link to the docs.*/}
+                        {/*<div className="info-wrapper">*/}
+                        {/*    <InfoIcon /> Click here to learn more about how page templates work*/}
+                        {/*</div>*/}
                     </DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={onClose}>Cancel</DialogCancel>

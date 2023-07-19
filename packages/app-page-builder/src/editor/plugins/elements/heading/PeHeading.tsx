@@ -27,6 +27,7 @@ const PeHeading = createRenderer(() => {
     const tag = element.data?.text?.desktop?.tag || "h1";
 
     if (isActive) {
+    console.log("isActive variableValue", variableValue);
         return (
             <CompositionScope name={"pb.heading"}>
                 <Text tag={tag} elementId={element.id} mediumEditorOptions={mediumEditorOptions} />
@@ -34,6 +35,7 @@ const PeHeading = createRenderer(() => {
         );
     }
 
+    console.log("!isActive", variableValue || element.data.text.data.text);
     const __html = variableValue || element.data.text.data.text;
 
     return React.createElement(tag, {

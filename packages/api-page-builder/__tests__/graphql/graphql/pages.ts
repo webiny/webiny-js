@@ -187,9 +187,9 @@ export const ERROR_FIELD = /* GraphQL */ `
 
 export const createPageCreateGraphQl = (params: CreateDataFieldsParams = {}) => {
     return /* GraphQL */ `
-        mutation CreatePage($from: ID, $category: String) {
+        mutation CreatePage($from: ID, $category: String, $templateId: ID) {
             pageBuilder {
-                createPage(from: $from, category: $category) {
+                createPage(from: $from, category: $category, templateId: $templateId) {
                     data ${createDataFields(params)}
                     error ${ERROR_FIELD}
                 }
@@ -230,6 +230,16 @@ export const UNPUBLISH_PAGE = /* GraphQL */ `
     mutation UnpublishPage($id: ID!) {
         pageBuilder {
             unpublishPage(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+export const UNLINK_PAGE_FROM_TEMPLATE = /* GraphQL */ `
+    mutation UnlinkPageFromTemplate($id: ID!) {
+        pageBuilder {
+            unlinkPageFromTemplate(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

@@ -18,6 +18,7 @@ interface Item {
     description: string;
     link?: string;
     callback?: () => void | Promise<void>;
+    render?: () => React.ReactElement;
 }
 
 interface ItemsSection {
@@ -75,6 +76,7 @@ const getItemFromIndexedItemsList = (
 
 export const OmniSearch = () => {
     const [omniSearchVisible, setShowOmniSearch] = useState(false);
+    const [itemRender, setItemRender] = useState(false);
     const [filter, setFilter] = useState("");
     const [focusedItemIndex, focusItemAtIndex] = useState(0);
     const { menuItems } = useNavigation();
@@ -97,11 +99,20 @@ export const OmniSearch = () => {
     const selectItem = useCallback((item: Item) => {
         if (item.link) {
             navigate(item.link);
-        } else if (item.callback) {
-            item.callback();
+            hideOmniSearch();
+            return;
         }
 
-        hideOmniSearch();
+        if (item.callback) {
+            item.callback();
+            hideOmniSearch();
+            return;
+        }
+
+        if (item.render) {
+            setFilter("")
+            setItemRender(() => item.render);
+        }
     }, []);
 
     // TODO: should be pulled from registered plugins.
@@ -110,29 +121,39 @@ export const OmniSearch = () => {
             {
                 id: "apps",
                 title: "Apps",
-                items: menuItems
-                    .map(level1Item => {
-                        return [
-                            ...level1Item.children.map(level2Item => {
-                                return [
-                                    ...level2Item.children.map(child => {
-                                        const description = [
-                                            level1Item.label,
-                                            level2Item.label
-                                        ].join(" / ");
+                items: [
+                    ...menuItems
+                        .map(level1Item => {
+                            return [
+                                ...level1Item.children.map(level2Item => {
+                                    return [
+                                        ...level2Item.children.map(child => {
+                                            const description = [
+                                                level1Item.label,
+                                                level2Item.label
+                                            ].join(" / ");
 
-                                        return {
-                                            id: description + child.label,
-                                            title: child.label!,
-                                            description,
-                                            link: child.path
-                                        };
-                                    })
-                                ];
-                            })
-                        ].flat();
-                    })
-                    .flat()
+                                            return {
+                                                id: description + child.label,
+                                                title: child.label!,
+                                                description,
+                                                link: child.path
+                                            };
+                                        })
+                                    ];
+                                })
+                            ].flat();
+                        })
+                        .flat(),
+                    {
+                        id: "create-page",
+                        title: "Create page...",
+                        description: "Creates a new page",
+                        render: () => {
+                            return <div>dela</div>;
+                        }
+                    }
+                ]
             },
             {
                 id: "other",
@@ -233,7 +254,9 @@ export const OmniSearch = () => {
     }
 
     let renderedResults = <>Nothing to show.</>;
-    if (filteredIndexedItemsList.length > 0) {
+    if (itemRender) {
+        renderedResults = itemRender();
+    } else if (filteredIndexedItemsList.length > 0) {
         renderedResults = (
             <ul>
                 {filteredIndexedItemsList.map(itemsSection => (

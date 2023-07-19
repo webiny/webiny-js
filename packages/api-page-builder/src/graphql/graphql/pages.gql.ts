@@ -242,6 +242,8 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     # Duplicate page by given ID.
                     duplicatePage(id: ID!): PbPageResponse
+                    
+                    unlinkPageFromTemplate(id: ID!): PbPageResponse
 
                     # Publish page
                     publishPage(id: ID!): PbPageResponse
@@ -452,6 +454,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return context.pageBuilder.createPage(category as string, meta);
                         });
                     },
+
                     deletePage: async (_, args: any, context) => {
                         return resolve(async () => {
                             const [page, latestPage] = await context.pageBuilder.deletePage(
@@ -491,6 +494,12 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         } catch (e) {
                             return new ErrorResponse(e);
                         }
+                    },
+
+                    unlinkPageFromTemplate: async (_, args: any, context) => {
+                        return resolve(() => {
+                            return context.pageBuilder.unlinkPageFromTemplate(args.id);
+                        });
                     },
 
                     publishPage: async (_, args: any, context) => {

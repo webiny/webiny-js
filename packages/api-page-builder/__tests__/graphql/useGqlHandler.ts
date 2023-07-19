@@ -35,6 +35,7 @@ import {
     GET_PUBLISHED_PAGE,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
+    UNLINK_PAGE_FROM_TEMPLATE,
     OEMBED_DATA
 } from "./graphql/pages";
 
@@ -64,6 +65,15 @@ import {
     LIST_PAGE_BLOCKS,
     GET_PAGE_BLOCK
 } from "./graphql/pageBlocks";
+
+import {
+    CREATE_PAGE_TEMPLATE,
+    UPDATE_PAGE_TEMPLATE,
+    DELETE_PAGE_TEMPLATE,
+    LIST_PAGE_TEMPLATES,
+    GET_PAGE_TEMPLATE,
+    CREATE_PAGE_FROM_TEMPLATE
+} from "./graphql/pageTemplates";
 
 import path from "path";
 import fs from "fs";
@@ -238,6 +248,9 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         async unpublishPage(variables: Record<string, any>) {
             return invoke({ body: { query: UNPUBLISH_PAGE, variables } });
         },
+        async unlinkPageFromTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: UNLINK_PAGE_FROM_TEMPLATE, variables } });
+        },
         async deletePage(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
         },
@@ -319,6 +332,25 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         },
         async getPageBlock(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PAGE_BLOCK, variables } });
-        }
+        },
+        // Page Templates.
+        async createPageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_PAGE_TEMPLATE, variables } });
+        },
+        async updatePageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_PAGE_TEMPLATE, variables } });
+        },
+        async deletePageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_PAGE_TEMPLATE, variables } });
+        },
+        async listPageTemplates(variables: any = {}) {
+            return invoke({ body: { query: LIST_PAGE_TEMPLATES, variables } });
+        },
+        async getPageTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_PAGE_TEMPLATE, variables } });
+        },
+        async createPageFromTemplate(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_PAGE_FROM_TEMPLATE, variables } });
+        },
     };
 };

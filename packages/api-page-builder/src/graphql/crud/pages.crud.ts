@@ -8,6 +8,7 @@ import {
     Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
+    PageContentWithTemplate,
     PageElementProcessor,
     PagesCrud,
     PageStorageOperationsGetWhereParams,
@@ -51,6 +52,7 @@ import {
 } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 import { PagesPermissions } from "./permissions/PagesPermissions";
+import { unlinkPageContentFromTemplate } from "./pageTemplates/unlinkPageContentFromTemplate";
 
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
@@ -520,6 +522,26 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     }
                 );
             }
+        },
+
+        async unlinkPageFromTemplate(this: PageBuilderContextObject, id): Promise<any> {
+            const page = await this.getPage(id);
+            if (!page) {
+                throw new NotFoundError(`Page not found.`);
+            }
+
+            if (!page.content?.data.template) {
+                throw new WebinyError(
+                    "Cannot continue because the page is not linked to a template."
+                );
+            }
+
+            const pageContent = page.content as PageContentWithTemplate;
+            const pageContentResolvedRootElements = await this.resolvePageTemplate(pageContent);
+
+            const unlinkedPageContent = unlinkPageContentFromTemplate(page, pageContentResolvedRootElements);
+
+            return this.updatePage(id, { content: unlinkedPageContent });
         },
 
         async updatePage(id, input): Promise<any> {
