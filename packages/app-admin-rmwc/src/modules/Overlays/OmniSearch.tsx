@@ -11,6 +11,7 @@ import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 
 import { Dialog } from "./OmniSearch/Dialog";
+import { CreatePageForm } from "~/modules/Overlays/OmniSearch/CreatePageForm";
 
 interface Item {
     id: string;
@@ -76,7 +77,7 @@ const getItemFromIndexedItemsList = (
 
 export const OmniSearch = () => {
     const [omniSearchVisible, setShowOmniSearch] = useState(false);
-    const [itemRender, setItemRender] = useState(false);
+    const [itemRender, setItemRender] = useState<() => React.ReactElement>();
     const [filter, setFilter] = useState("");
     const [focusedItemIndex, focusItemAtIndex] = useState(0);
     const { menuItems } = useNavigation();
@@ -88,6 +89,7 @@ export const OmniSearch = () => {
 
     const hideOmniSearch = useCallback(() => {
         setShowOmniSearch(false);
+        setItemRender(undefined);
         setFilter("");
     }, []);
 
@@ -110,7 +112,7 @@ export const OmniSearch = () => {
         }
 
         if (item.render) {
-            setFilter("")
+            setFilter("");
             setItemRender(() => item.render);
         }
     }, []);
@@ -149,9 +151,7 @@ export const OmniSearch = () => {
                         id: "create-page",
                         title: "Create page...",
                         description: "Creates a new page",
-                        render: () => {
-                            return <div>dela</div>;
-                        }
+                        render: () => <CreatePageForm />
                     }
                 ]
             },
