@@ -2,7 +2,7 @@ import chunk from "lodash/chunk";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { Table } from "dynamodb-toolbox";
 import { scanTable } from "~tests/utils/scanTable";
-import { getDecompressedData } from "~tests/migrations/5.37.0/002/ddb-es/getDecompressedData";
+import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
 
 export const transferDynamoDbToElasticsearch = async <
     TItem extends Record<string, any> = Record<string, any>
@@ -26,7 +26,17 @@ export const transferDynamoDbToElasticsearch = async <
 
     for (const record of records) {
         const index = getIndexName(record);
-        operations.push({ index: { _id: record["id"], _index: index } }, record);
+
+        const id = record.PK && record.SK ? `${record.PK}:${record.SK}` : record.id;
+        operations.push(
+            {
+                index: {
+                    _id: id,
+                    _index: index
+                }
+            },
+            record
+        );
         elasticsearch.indices.registerIndex(index);
     }
 

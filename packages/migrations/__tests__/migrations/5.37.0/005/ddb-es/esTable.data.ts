@@ -2,7 +2,7 @@ import { createGzipCompression } from "@webiny/api-elasticsearch";
 import {
     createFileRecord,
     createLatestSearchRecord
-} from "~tests/migrations/5.37.0/004/ddb-es/createFileRecord";
+} from "~tests/migrations/5.37.0/005/ddb-es/createFileRecord";
 
 const compression = createGzipCompression();
 

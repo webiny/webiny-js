@@ -116,6 +116,8 @@ function createExportLambdaPolicy(app: PulumiApp) {
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
+    const elasticSearchEnabled = !!app.params.create.elasticSearch;
+
     return app.addResource(aws.iam.Policy, {
         name: "PbExportTaskLambdaPolicy",
         config: {
@@ -164,7 +166,7 @@ function createExportLambdaPolicy(app: PulumiApp) {
                         Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
                     },
                     // Attach permissions for elastic search domain as well (if ES is enabled).
-                    ...(core.elasticsearchDomainArn
+                    ...(elasticSearchEnabled
                         ? [
                               {
                                   Sid: "PermissionForES",
@@ -255,6 +257,8 @@ function createImportLambdaPolicy(app: PulumiApp) {
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
+    const elasticSearchEnabled = !!app.params.create.elasticSearch;
+
     return app.addResource(aws.iam.Policy, {
         name: "ImportLambdaPolicy",
         config: {
@@ -318,7 +322,7 @@ function createImportLambdaPolicy(app: PulumiApp) {
                             Resource: `${core.cognitoUserPoolArn}`
                         },
                         // Attach permissions for elastic search domain as well (if ES is enabled).
-                        ...(core.elasticsearchDomainArn
+                        ...(elasticSearchEnabled
                             ? [
                                   {
                                       Sid: "PermissionForES",

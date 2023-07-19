@@ -1,6 +1,6 @@
 import { Table } from "dynamodb-toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
-import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.37.0/002/constants";
+import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.37.0/003/constants";
 import {
     FolderDdbEsWriteItem,
     FolderDdbItem,
@@ -12,7 +12,7 @@ import { createLocalesData, createTenantsData } from "../common";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { esCreateIndex, esGetIndexName } from "~/utils";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
-import { getElasticsearchLatestEntryData } from "~/migrations/5.37.0/002/ddb-es/latestElasticsearchData";
+import { getElasticsearchLatestEntryData } from "~/migrations/5.37.0/003/ddb-es/latestElasticsearchData";
 
 interface TenantsResponse {
     tenant: string;
