@@ -1,6 +1,6 @@
 import { Table } from "dynamodb-toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
-import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.37.0/002/constants";
+import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.37.0/003/constants";
 import { FolderDdbItem, FolderDdbWriteItem } from "../types";
 import { createOldFoldersData, Folder } from "./data";
 import { createLocalesData, createTenantsData } from "../common";
