@@ -8,6 +8,7 @@ import {
     Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
+    PageContentWithTemplate,
     PageElementProcessor,
     PagesCrud,
     PageStorageOperationsGetWhereParams,
@@ -520,6 +521,39 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     }
                 );
             }
+        },
+
+        async unlinkPageFromTemplate(this: PageBuilderContextObject, id): Promise<any> {
+            const page = await this.getPage(id);
+            if (!page) {
+                throw new NotFoundError(`Page not found.`);
+            }
+
+            if (!page.content?.data.template) {
+                throw new WebinyError(
+                    "Cannot continue because the page is not linked to a template."
+                );
+            }
+
+            const resolvedPageElements = await context.pageBuilder.resolvePageTemplate(
+                page.content as PageContentWithTemplate
+            );
+
+            // Run element processors on the full page content for potential transformations.
+            const processedPage = await context.pageBuilder.processPageContent({
+                ...page,
+                content: { ...page.content, elements: resolvedPageElements }
+            });
+
+            // Delete template-related data.
+            delete processedPage.content!.data.template;
+
+            for (let i = 0; i < processedPage.content!.elements.length; i++) {
+                const blockElement = processedPage.content!.elements[i];
+                delete blockElement.data.templateBlockId;
+            }
+
+            return this.updatePage(id, processedPage);
         },
 
         async updatePage(id, input): Promise<any> {
