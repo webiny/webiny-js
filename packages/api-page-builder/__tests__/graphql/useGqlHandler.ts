@@ -351,6 +351,6 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         },
         async createPageFromTemplate(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_PAGE_FROM_TEMPLATE, variables } });
-        },
+        }
     };
 };

@@ -242,7 +242,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     # Duplicate page by given ID.
                     duplicatePage(id: ID!): PbPageResponse
-                    
+
                     unlinkPageFromTemplate(id: ID!): PbPageResponse
 
                     # Publish page

@@ -9,16 +9,22 @@ export const CreatePageForm = () => {
     const [loading, setLoading] = React.useState(false);
 
     return (
-        <Form onSubmit={(data) => {
-            console.log('de', data)
-        }}>
+        <Form
+            onSubmit={data => {
+                console.log("de", data);
+            }}
+        >
             {({ data, form, Bind }) => (
                 <>
                     {loading && <CircularProgress />}
                     <Grid>
                         <Cell span={12}>
                             <Bind name="name" validators={validation.create("required")}>
-                                <Input label={`Name`} data-testid="pb.category.new.form.name" autoFocus={true} />
+                                <Input
+                                    label={`Name`}
+                                    data-testid="pb.category.new.form.name"
+                                    autoFocus={true}
+                                />
                             </Bind>
                         </Cell>
                         <Cell span={12}>
