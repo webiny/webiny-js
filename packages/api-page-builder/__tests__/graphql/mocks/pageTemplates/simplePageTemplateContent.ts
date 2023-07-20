@@ -1,3 +1,7 @@
+/**
+ * Contains a grid > cell with a heading and a paragraph.
+ * The heading and paragraph are both editable (linked elements).
+ */
 export const simplePageTemplateContent = {
     id: "lk860n5p",
     type: "document",
