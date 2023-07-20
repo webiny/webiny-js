@@ -143,12 +143,7 @@ export const simplePageBlockContent = {
                                 variableId: "FDEezrJ8NH"
                             },
                             elements: [],
-                            path: [
-                                "UTaSFnVtkV",
-                                "uFzaV9SB6q",
-                                "k77Fdcod55",
-                                "BOMdKQBt23"
-                            ]
+                            path: ["UTaSFnVtkV", "uFzaV9SB6q", "k77Fdcod55", "BOMdKQBt23"]
                         },
                         {
                             type: "paragraph",
@@ -178,12 +173,7 @@ export const simplePageBlockContent = {
                                 variableId: "SezNLOdXw3"
                             },
                             elements: [],
-                            path: [
-                                "UTaSFnVtkV",
-                                "uFzaV9SB6q",
-                                "k77Fdcod55",
-                                "BOMdKQBt23"
-                            ]
+                            path: ["UTaSFnVtkV", "uFzaV9SB6q", "k77Fdcod55", "BOMdKQBt23"]
                         }
                     ],
                     path: ["UTaSFnVtkV", "uFzaV9SB6q", "k77Fdcod55"]
@@ -193,4 +183,4 @@ export const simplePageBlockContent = {
         }
     ],
     path: ["UTaSFnVtkV"]
-}
+};
