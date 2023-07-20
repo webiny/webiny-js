@@ -89,15 +89,30 @@ export async function importBlock({
         });
     }
 
-    // Check if block category already exists
-    const blockCategory = await context.pageBuilder.getBlockCategory(category?.slug);
-    if (!blockCategory) {
-        await context.pageBuilder.createBlockCategory({
-            name: category.name,
-            slug: category.slug,
-            icon: category.icon,
-            description: category.description
-        });
+    let loadedCategory;
+    if (category) {
+        loadedCategory = await context.pageBuilder.getBlockCategory(category?.slug);
+        if (!loadedCategory) {
+            await context.pageBuilder.createBlockCategory({
+                name: category.name,
+                slug: category.slug,
+                icon: category.icon,
+                description: category.description
+            });
+        }
+    } else {
+        let importedBlocksCategory = await context.pageBuilder.getBlockCategory("imported-blocks");
+
+        if (!importedBlocksCategory) {
+            importedBlocksCategory = await context.pageBuilder.createBlockCategory({
+                name: "Imported Blocks",
+                slug: "imported-blocks",
+                description: "Imported blocks",
+                icon: "fas/star"
+            });
+        }
+
+        loadedCategory = importedBlocksCategory;
     }
 
     log("Removing Directory for block...");
@@ -106,7 +121,7 @@ export async function importBlock({
     log(`Remove block contents from S3...`);
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
-    return { ...block, blockCategory: category.slug };
+    return { ...block, blockCategory: loadedCategory!.slug };
 }
 
 function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
