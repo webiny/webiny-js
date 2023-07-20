@@ -546,12 +546,36 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             });
 
             // Delete template-related data.
-            delete processedPage.content!.data.template;
+            const allTemplateVariableIds = processedPage
+                .content!.data.template.variables.map((variablesForBlock: Record<string, any>) => {
+                    return variablesForBlock.variables.map((v: Record<string, any>) => v.id);
+                })
+                .flat();
 
             for (let i = 0; i < processedPage.content!.elements.length; i++) {
                 const blockElement = processedPage.content!.elements[i];
-                delete blockElement.data.templateBlockId;
+
+                if ("templateBlockId" in blockElement.data) {
+                    delete blockElement.data.templateBlockId;
+
+                    // In the presence of a block ID, we know that this block is not a template block.
+                    // Variable values need to stay intact.
+                    if (blockElement.data.blockId) {
+                        continue;
+                    }
+
+                    // Let's delete all template-related variables on block.
+                    if (Array.isArray(blockElement.data.variables)) {
+                        blockElement.data.variables = blockElement.data.variables.filter(
+                            (variable: Record<string, any>) =>
+                                !allTemplateVariableIds.includes(variable.id)
+                        );
+                    }
+                }
             }
+
+            // Delete base template-related data.
+            delete processedPage.content!.data.template;
 
             return this.updatePage(id, processedPage);
         },
