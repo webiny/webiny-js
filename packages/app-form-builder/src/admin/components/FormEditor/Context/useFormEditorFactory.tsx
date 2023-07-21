@@ -338,8 +338,18 @@ export const useFormEditorFactory = (
                 });
             },
             deleteStep: (id: string) => {
+                const stepFields = self.getLayoutFields(id).flat(1);
+
+                const deleteStepFields = (data: FbFormModel) => {
+                    const stepLayout = stepFields.map(field =>
+                        deleteField({ field, data, stepId: id })
+                    );
+                    return stepLayout;
+                };
+
                 self.setData(data => {
                     const deleteStepIndex = data.steps.findIndex(step => step.id === id);
+                    deleteStepFields(data);
                     data.steps.splice(deleteStepIndex, 1);
 
                     return data;
