@@ -4,9 +4,11 @@ interface MoveRowParams {
     source: number;
     destination: number;
     data: FbFormModel;
+    anotherStep?: any;
+    allSteps?: any;
 }
-export default ({ data, source, destination }: MoveRowParams): void => {
-    data.layout =
+export default ({ data, source, destination, anotherStep, allSteps }: MoveRowParams): void => {
+    allSteps.steps.find((v: any) => v.id === data.id).layout =
         source < destination
             ? [
                   ...data.layout.slice(0, source),

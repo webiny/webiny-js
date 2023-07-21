@@ -10,7 +10,7 @@ import {
     UpdateFormRevisionMutationResponse,
     UpdateFormRevisionMutationVariables
 } from "./graphql";
-import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
+import { getFieldPosition, moveField, moveRow, deleteField, moveStep } from "./functions";
 import { plugins } from "@webiny/plugins";
 
 import {
@@ -20,7 +20,10 @@ import {
     FbBuilderFieldPlugin,
     FbFormModel,
     FbUpdateFormInput,
-    FbErrorResponse
+    FbErrorResponse,
+    FbFormStep,
+    StepLayoutPositionType,
+    MoveFieldParams
 } from "~/types";
 import { ApolloClient } from "apollo-client";
 import {
@@ -30,14 +33,15 @@ import {
 } from "~/admin/components/FormEditor/Context/index";
 import dotProp from "dot-prop-immutable";
 import { useSnackbar } from "@webiny/app-admin";
+import { mdbid } from "@webiny/utils";
 
 interface SetDataCallable {
     (value: FbFormModel): FbFormModel;
 }
 
-interface MoveFieldParams {
-    field: FieldIdType | FbFormModelField;
-    position: FieldLayoutPositionType;
+interface MoveStepParams {
+    step: FbFormStep;
+    position: StepLayoutPositionType;
 }
 
 type State = FormEditorProviderContextState;
@@ -46,22 +50,30 @@ export interface FormEditor {
     data: FbFormModel;
     errors: FormEditorFieldError[] | null;
     state: State;
+    addStep: () => void;
+    deleteStep: (id: string) => void;
+    updateStep: (title: string, id: string | null) => void;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
     saveForm: (
         data: FbFormModel | null
     ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
-    getLayoutFields: () => FbFormModelField[][];
+    getLayoutFields: (stepId?: string) => FbFormModelField[][];
     getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField | null;
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
     ) => FbBuilderFieldPlugin | null;
-    insertField: (field: FbFormModelField, position: FieldLayoutPositionType) => void;
-    moveField: (params: MoveFieldParams) => void;
-    moveRow: (source: number, destination: number) => void;
+    insertField: (
+        field: FbFormModelField,
+        position: FieldLayoutPositionType,
+        stepId?: string
+    ) => void;
+    moveField: (params: MoveFieldParams & { stepId?: string }) => void;
+    moveRow: (source: number, destination: number, stepId?: string, anotherStepId?: any) => void;
+    moveStep: (params: MoveStepParams) => void;
     updateField: (field: FbFormModelField) => void;
-    deleteField: (field: FbFormModelField) => void;
+    deleteField: (field: FbFormModelField, stepId?: string) => void;
     getFieldPosition: (field: FieldIdType | FbFormModelField) => FieldLayoutPositionType | null;
 }
 
@@ -138,8 +150,20 @@ export const useFormEditorFactory = (
                     throw new Error(error.message);
                 }
 
+                // Here we need to set ids to the steps.
+                // Because we are not storing them on the API side.
+                // We need those ids in order to change title for the corresponding step.
+                // Or when we need to delete corresponding step.
+                const modifiedData = {
+                    ...data,
+                    steps: data?.steps.map(formStep => ({
+                        ...formStep,
+                        id: mdbid()
+                    }))
+                };
+
                 self.setData(() => {
-                    const form = cloneDeep(data) as FbFormModel;
+                    const form = cloneDeep(modifiedData) as FbFormModel;
                     if (!form.settings.layout.renderer) {
                         form.settings.layout.renderer = state.defaultLayoutRenderer;
                     }
@@ -150,6 +174,12 @@ export const useFormEditorFactory = (
             },
             saveForm: async data => {
                 data = data || state.data;
+                // Removing id fields from steps before sending to the API.
+                // Because API side does not need to store the id.
+                data = {
+                    ...data,
+                    steps: data.steps.map(formStep => pick(formStep, ["title", "layout"]))
+                };
                 if (!data) {
                     return {
                         data: null,
@@ -170,6 +200,7 @@ export const useFormEditorFactory = (
                          */
                         data: pick(data as FbUpdateFormInput, [
                             "layout",
+                            "steps",
                             "fields",
                             "name",
                             "settings",
@@ -231,9 +262,11 @@ export const useFormEditorFactory = (
             /**
              * Returns complete layout with fields data in it (not just field IDs)
              */
-            getLayoutFields: () => {
+            getLayoutFields: stepId => {
+                const stepLayout = state.data.steps.find(v => v.id === stepId)?.layout;
                 // Replace every field ID with actual field object.
-                return state.data.layout.map(row => {
+                // @ts-ignore
+                return stepLayout.map(row => {
                     return row
                         .map(id => {
                             return self.getField({
@@ -293,11 +326,36 @@ export const useFormEditorFactory = (
                     }) || null
                 );
             },
+            addStep: () => {
+                self.setData(data => {
+                    data.steps.push({
+                        id: mdbid(),
+                        title: "",
+                        layout: []
+                    });
 
+                    return data;
+                });
+            },
+            deleteStep: (id: string) => {
+                self.setData(data => {
+                    const deleteStepIndex = data.steps.findIndex(step => step.id === id);
+                    data.steps.splice(deleteStepIndex, 1);
+
+                    return data;
+                });
+            },
+            updateStep: (stepTitle, id) => {
+                self.setData(data => {
+                    const stepIndex = data.steps.findIndex(step => step.id === id);
+                    data.steps[stepIndex].title = stepTitle;
+                    return data;
+                });
+            },
             /**
              * Inserts a new field into the target position.
              */
-            insertField: (data, position) => {
+            insertField: (data, position, stepId) => {
                 const field = cloneDeep(data);
                 if (!field._id) {
                     field._id = shortid.generate();
@@ -323,7 +381,8 @@ export const useFormEditorFactory = (
                     moveField({
                         field,
                         position,
-                        data
+                        data,
+                        stepId
                     });
 
                     // We are dropping a new field at the specified index.
@@ -334,23 +393,43 @@ export const useFormEditorFactory = (
             /**
              * Moves field to the given target position.
              */
-            moveField: ({ field, position }) => {
+            moveField: ({ field, position, stepId, anotherStepId }) => {
                 self.setData(data => {
                     moveField({
                         field,
                         position,
-                        data
+                        data,
+                        stepId,
+                        anotherStepId
                     });
                     return data;
                 });
             },
+            moveStep: ({ step, position }) => {
+                self.setData(data => {
+                    moveStep({
+                        step,
+                        position,
+                        data: data.steps
+                    });
 
+                    return data;
+                });
+            },
             /**
              * Moves row to a destination row.
              */
-            moveRow: (source, destination) => {
+            moveRow: (source, destination, stepId, anotherStepId) => {
                 self.setData(data => {
-                    moveRow({ data, source, destination });
+                    moveRow({
+                        // @ts-ignore
+                        data: data.steps.find(v => v.id === stepId),
+                        source,
+                        destination,
+                        stepId,
+                        anotherStep: anotherStepId,
+                        allSteps: data
+                    });
                     return data;
                 });
             },
@@ -374,9 +453,9 @@ export const useFormEditorFactory = (
             /**
              * Deletes a field (both from the list of field and the layout).
              */
-            deleteField: field => {
+            deleteField: (field, stepId) => {
                 self.setData(data => {
-                    deleteField({ field, data });
+                    deleteField({ field, data, stepId });
                     return data;
                 });
             },

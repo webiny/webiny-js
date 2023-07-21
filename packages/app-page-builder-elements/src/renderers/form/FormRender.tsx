@@ -75,7 +75,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return <div>Selected form component not found.</div>;
     }
 
-    const { layout, fields, settings } = formData;
+    const { fields, settings, steps } = formData;
 
     const getFieldById = (id: string): FormDataField | null => {
         return fields.find(field => field._id === id) || null;
@@ -85,8 +85,8 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (): FormRenderComponentDataField[][] => {
-        const fieldLayout = structuredClone(layout) as FormDataFieldsLayout;
+    const getFields = (stepIndex: number): FormRenderComponentDataField[][] => {
+        const fieldLayout = structuredClone(steps[stepIndex].layout) as FormDataFieldsLayout;
 
         return fieldLayout.map(row => {
             return row.map(id => {

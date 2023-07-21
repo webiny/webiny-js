@@ -3,8 +3,9 @@ import { FbFormModelField, FbFormModel, FbFormModelFieldsLayout } from "~/types"
 interface Params {
     field: FbFormModelField;
     data: FbFormModel;
+    stepId?: string;
 }
-export default ({ field, data }: Params): FbFormModel => {
+export default ({ field, data, stepId }: Params): FbFormModel => {
     // Remove the field from fields list...
     const fieldIndex = data.fields.findIndex(item => item._id === field._id);
     data.fields.splice(fieldIndex, 1);
@@ -17,8 +18,10 @@ export default ({ field, data }: Params): FbFormModel => {
 
     // ...and rebuild the layout object.
     const layout: FbFormModelFieldsLayout = [];
+    const stepLayout = data.steps.find(s => s.id === stepId);
     let currentRowIndex = 0;
-    data.layout.forEach(row => {
+    // @ts-ignore
+    stepLayout.layout.forEach(row => {
         row.forEach(fieldId => {
             const field = data.fields.find(item => item._id === fieldId);
             if (!field) {
@@ -33,6 +36,7 @@ export default ({ field, data }: Params): FbFormModel => {
         layout[currentRowIndex] && layout[currentRowIndex].length && currentRowIndex++;
     });
 
-    data.layout = layout;
+    // @ts-ignore
+    stepLayout.layout = layout;
     return data;
 };

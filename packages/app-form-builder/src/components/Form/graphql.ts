@@ -26,6 +26,10 @@ export const DATA_FIELDS = `
         ${FIELDS_FIELDS}
     }
     layout
+    steps {
+        title
+        layout
+    }
     triggers
     settings {
         reCaptcha {

@@ -63,7 +63,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     }
 
     const formData: FbFormModel = cloneDeep(data);
-    const { layout, fields, settings } = formData;
+    const { fields, settings, steps } = formData;
 
     const getFieldById = (id: string): FbFormModelField | null => {
         return fields.find(field => field._id === id) || null;
@@ -73,8 +73,12 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (): FormRenderFbFormModelField[][] => {
-        const fieldLayout = cloneDeep(layout);
+    // We need to have "stepIndex" prop in order to get corresponding fields for the current step.
+    const getFields = (stepIndex: number): FormRenderFbFormModelField[][] => {
+        // We need this check in case we deleted last step and at the same time we were previewing it.
+        const stepFields =
+            steps[stepIndex] === undefined ? steps[steps.length - 1] : steps[stepIndex];
+        const fieldLayout = cloneDeep(stepFields.layout);
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 

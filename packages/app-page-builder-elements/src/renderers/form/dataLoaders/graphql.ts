@@ -23,6 +23,10 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
                         }
                         settings
                     }
+                    steps {
+                        title
+                        layout
+                    }
                     layout
                     triggers
                     settings {

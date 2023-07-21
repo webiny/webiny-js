@@ -84,9 +84,31 @@ export type FbFormFieldValidatorPlugin = Plugin & {
 export type FieldIdType = string;
 export type FbFormModelFieldsLayout = FieldIdType[][];
 
+export interface MoveFieldParams {
+    field: FieldIdType | FbFormModelField;
+    position: FieldLayoutPositionType;
+    stepId?: string;
+    [key: string]: any;
+}
+
 export interface FieldLayoutPositionType {
     row: number;
     index: number | null;
+}
+
+export interface StepLayoutPositionType {
+    row: {
+        title: string;
+        id: string;
+        layout: string[][];
+    };
+    index: number | null;
+}
+
+export interface FbFormStep {
+    id?: string;
+    title: string;
+    layout: FbFormModelFieldsLayout;
 }
 
 export type FbBuilderFieldPlugin = Plugin & {
@@ -150,6 +172,7 @@ export interface FbFormModel {
     version: number;
     layout: FbFormModelFieldsLayout;
     fields: FbFormModelField[];
+    steps: FbFormStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -205,6 +228,7 @@ export interface FbFormSubmissionData {
         version: number;
         fields: FbFormModelField[];
         layout: string[][];
+        steps: FbFormStep[];
     };
 }
 
@@ -273,7 +297,7 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => FormRenderFbFormModelField[][];
+    getFields: (stepIndex: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
@@ -395,6 +419,7 @@ export interface FbReCaptchaInput {
 
 export interface FbFormSettingsInput {
     layout: FbFormSettingsLayoutInput;
+    steps: FbFormStep[];
     submitButtonLabel: string;
     fullWidthSubmitButton: boolean;
     successMessage: Record<string, string>;
@@ -406,6 +431,7 @@ export interface FbUpdateFormInput {
     name?: string;
     fields?: FbFormFieldInput[];
     layout?: FbFormModelFieldsLayout;
+    steps?: FbFormStep[];
     settings?: FbFormSettingsInput;
     triggers?: Record<string, string>;
 }
