@@ -10,7 +10,7 @@ import {
     HeadingTagType,
     SerializedHeadingNode as BaseSerializedHeadingNode
 } from "@lexical/rich-text";
-import { $createParagraphNode, ParagraphNode } from "~/nodes/ParagraphNode";
+import { ParagraphNode } from "~/nodes/ParagraphNode";
 
 export type SerializeHeadingNode = Spread<
     {
@@ -152,9 +152,7 @@ export class HeadingNode
     }
 
     override collapseAtStart(): true {
-        const newElement = !this.isEmpty()
-            ? $createHeadingNode(this.getTag())
-            : $createParagraphNode();
+        const newElement = $createHeadingNode(this.getTag());
         const children = this.getChildren();
         children.forEach(child => newElement.append(child));
         this.replace(newElement);
