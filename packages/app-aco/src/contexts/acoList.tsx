@@ -298,6 +298,7 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
         setListSort(sort: ListSearchRecordsSort) {
             setState(state => ({
                 ...state,
+                after: undefined,
                 listSort: sort
             }));
         },
