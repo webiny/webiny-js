@@ -2,7 +2,6 @@ const createProjectApplicationWorkspace = require("./createProjectApplicationWor
 const getPulumi = require("./getPulumi");
 const getStackOutput = require("./getStackOutput");
 const createPulumiCommand = require("./createPulumiCommand");
-const loadEnvVariables = require("./loadEnvVariables");
 const processHooks = require("./processHooks");
 const runHook = require("./runHook");
 const notify = require("./notify");
@@ -16,7 +15,6 @@ module.exports = {
     getPulumiEnvVars,
     getStackOutput,
     createPulumiCommand,
-    loadEnvVariables,
     mapStackOutput,
     processHooks,
     runHook,

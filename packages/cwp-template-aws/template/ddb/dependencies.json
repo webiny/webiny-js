@@ -2,7 +2,7 @@
   "private": true,
   "keywords": ["aws+dynamodb"],
   "dependencies": {
-    "@webiny/ddb": "latest"
+    "@webiny/project-ddb": "latest"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

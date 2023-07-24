@@ -1,9 +1,11 @@
 const path = require("path");
-const fs = require("fs");
 const { Worker } = require("worker_threads");
 const chalk = require("chalk");
-const execa = require("execa");
 const { getRandomColorForString } = require("../../utils");
+const glob = require("fast-glob");
+const execa = require("execa");
+const fs = require("fs");
+const { getProjectApplication } = require("@webiny/cli/utils");
 
 const parseMessage = message => {
     try {
@@ -17,8 +19,31 @@ const parseMessage = message => {
 };
 
 module.exports = async ({ inputs, output, context }) => {
-    const packages = await getPackages({ inputs, output, context });
-    if (packages.length === 0) {
+    // Find webiny.config.ts files that have the watch command defined.
+    let appConfigFiles = [];
+    if (inputs.folder) {
+        const projectApplication = getProjectApplication({ name: inputs.folder });
+        appConfigFiles = glob
+            .sync(["**/webiny.config.ts"], {
+                cwd: projectApplication.paths.absolute,
+                absolute: true
+            })
+            .map(appConfigFilePath => {
+                return {
+                    name: inputs.folder + path.dirname(appConfigFilePath),
+                    // config: require(configPath).default || require(configPath),
+                    paths: {
+                        root: path.dirname(appConfigFilePath),
+                        config: appConfigFilePath
+                    }
+                };
+            });
+    }
+    const packagesConfigFiles = await getPackages({ inputs, output, context });
+
+    const configFiles = [...appConfigFiles, ...packagesConfigFiles];
+
+    if (configFiles.length === 0) {
         output.log({
             type: "build",
             message: `Could not watch any of the specified packages.`
@@ -28,20 +53,20 @@ module.exports = async ({ inputs, output, context }) => {
 
     if (inputs.debug) {
         context.debug("The following packages will be watched for changes:");
-        packages.forEach(item => console.log("‣ " + item.name));
+        configFiles.forEach(item => console.log("‣ " + item.name));
     }
 
     const { env, debug, logs } = inputs;
-    const multipleWatches = packages.length > 1;
+    const multipleWatches = configFiles.length > 1;
     if (multipleWatches) {
         output.log({
             type: "build",
-            message: `Watching ${context.info.hl(packages.length)} packages...`
+            message: `Watching ${context.info.hl(configFiles.length)} packages...`
         });
     } else {
         output.log({
             type: "build",
-            message: `Watching ${context.info.hl(packages[0].name)} package...`
+            message: `Watching ${context.info.hl(configFiles[0].name)} package...`
         });
     }
 
@@ -49,14 +74,16 @@ module.exports = async ({ inputs, output, context }) => {
 
     const commandOptions = { env, debug, logs: !multipleWatches || logs };
     const promises = [];
-    for (let i = 0; i < packages.length; i++) {
-        const current = packages[i];
+    for (let i = 0; i < configFiles.length; i++) {
+        const current = configFiles[i];
         promises.push(
             new Promise(resolve => {
                 const worker = new Worker(path.join(__dirname, "./worker.js"), {
                     workerData: {
                         options: commandOptions,
-                        package: { ...current.paths }
+                        package: {
+                            paths: current.paths
+                        }
                     }
                 });
 
@@ -100,18 +127,10 @@ const getPackages = async ({ inputs, context, output }) => {
     let packagesList = [];
     if (inputs.package) {
         packagesList = Array.isArray(inputs.package) ? inputs.package : [inputs.package];
-    } else {
-        packagesList = await execa("yarn", [
-            "webiny",
-            "workspaces",
-            "tree",
-            "--json",
-            "--depth",
-            inputs.depth,
-            "--distinct",
-            "--folder",
-            inputs.folder
-        ]).then(({ stdout }) => JSON.parse(stdout));
+    }
+
+    if (packagesList.length === 0) {
+        return [];
     }
 
     const commandArgs = [
@@ -173,7 +192,6 @@ const getPackages = async ({ inputs, context, output }) => {
         return packages;
     });
 };
-
 const createLog = ({ multipleWatches, output, context }) => {
     return (packageName, message, type) => {
         let prefix = "";

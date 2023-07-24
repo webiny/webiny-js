@@ -74,7 +74,6 @@ export const executeDataMigrations = {
             context.error(`An error occurred while executing data migrations Lambda function!`);
             console.log(e);
             throw e;
-            throw e;
         }
     }
 };

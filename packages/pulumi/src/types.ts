@@ -43,7 +43,7 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
         run: RunConfig;
     };
 
-    run(params: RunConfig): Record<string, any>;
+    run(): Record<string, any>;
 
     onResource(handler: ResourceHandler): void;
 

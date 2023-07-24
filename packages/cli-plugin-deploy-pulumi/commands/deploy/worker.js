@@ -25,10 +25,11 @@ for (let i = 0; i < types.length; i++) {
 
 (async () => {
     try {
-        const { options, package: pckg } = workerData;
-        let config = require(pckg.config).default || require(pckg.config);
+        const { options, package: pkg } = workerData;
+
+        let config = require(pkg.paths.config).default || require(pkg.paths.config);
         if (typeof config === "function") {
-            config = config({ options: { ...options, cwd: pckg.root }, context: cli });
+            config = config({ options: { ...options, cwd: pkg.paths.root }, context: cli });
         }
 
         const hasBuildCommand = config.commands && typeof config.commands.build === "function";

@@ -1,84 +1,55 @@
-const { dirname, basename, join, relative } = require("path");
-const findUp = require("find-up");
-const getProject = require("./getProject");
-const { importModule } = require("./importModule");
-const glob = require("fast-glob");
-
-const appConfigs = ["webiny.application.js", "webiny.application.ts"];
-
 module.exports = args => {
+    const { join, relative, dirname } = require("path");
+    const findUp = require("find-up");
+    const { importModule } = require("./importModule");
+    const glob = require("fast-glob");
+    const getProject = require("./getProject");
+
     // Using "Pulumi.yaml" for the backwards compatibility.
-    const applicationRootFile = findUp.sync(appConfigs.concat("Pulumi.yaml"), { cwd: args.cwd });
-
-    if (!applicationRootFile) {
-        throw new Error(`Could not detect project application in given directory (${args.cwd}).`);
-    }
-
-    const rootFile = applicationRootFile.replace(/\\/g, "/");
-    const projectAppRootPath = dirname(rootFile);
-
-    let applicationConfig;
-    if (appConfigs.includes(basename(rootFile))) {
-        applicationConfig = importModule(rootFile);
-    }
-
-    let id, name, description;
-    if (applicationConfig) {
-        id = applicationConfig.id;
-        name = applicationConfig.name;
-        description = applicationConfig.description;
-    } else {
-        name = basename(projectAppRootPath);
-        description = name;
-        id = name;
-    }
-
     const project = getProject(args);
+    if (!project) {
+        throw new Error(`Could not detect project in given directory (${args.name}).`);
+    }
 
-    const projectAppRelativePath = relative(project.root, projectAppRootPath);
-    const projectAppWorkspacePath = join(
-        project.root,
-        ".webiny",
-        "workspaces",
-        projectAppRelativePath
-    );
+    const appWorkspacePath = join(project.root, ".webiny", "workspaces", args.name);
 
-    // If we're missing the `pulumi` property in the `applicationConfig` object, that
-    // means we're dealing with an old project application where all of the Pulumi code is
-    // located in user's project. New projects applications have this code abstracted away.
-    const type = applicationConfig.pulumi ? "v5-workspaces" : "v5";
+    const webinyAppTsPath = findUp.sync("webiny.application.ts", { cwd: appWorkspacePath });
+    if (!webinyAppTsPath) {
+        throw new Error(`Could not detect project application in given directory (${args.name}).`);
+    }
+
+    let applicationConfig = importModule(webinyAppTsPath);
+
+    const id = applicationConfig.id;
+    const name = applicationConfig.name;
+    const description = applicationConfig.description;
+
+    const appRelativePath = relative(project.root, appWorkspacePath);
 
     return {
         id,
         name,
         description,
-        type,
-        root: projectAppRootPath,
+        root: appWorkspacePath,
         paths: {
-            relative: projectAppRelativePath,
-            absolute: projectAppRootPath,
-            workspace: projectAppWorkspacePath
+            relative: appRelativePath,
+            absolute: appWorkspacePath
         },
         config: applicationConfig,
         project,
         get packages() {
-            const webinyConfigs = glob.sync(
-                join(projectAppRootPath, "**/webiny.config*.{ts,js}").replace(/\\/g, "/")
+            const webinyConfigPaths = glob.sync(
+                join(appWorkspacePath, "**/webiny.config.ts").replace(/\\/g, "/")
             );
 
-            return webinyConfigs.map(config => {
-                const dirPath = dirname(config);
-                const packageJson = require(join(dirPath, "package.json"));
+            return webinyConfigPaths.map(path => {
                 return {
-                    name: packageJson.name,
                     paths: {
-                        root: dirname(config),
-                        packageJson: join(dirPath, "package.json"),
-                        config
+                        root: dirname(path),
+                        config: path
                     },
-                    packageJson,
                     get config() {
-                        return require(config).default || require(config);
+                        return require(path).default || require(path);
                     }
                 };
             });

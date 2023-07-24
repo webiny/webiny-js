@@ -16,6 +16,7 @@ export const CoreOutput = createAppModule({
                 throw new Error("Core application is not deployed.");
             }
 
+
             return {
                 fileManagerBucketId: output["fileManagerBucketId"] as string,
                 primaryDynamodbTableArn: output["primaryDynamodbTableArn"] as string,

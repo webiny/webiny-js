@@ -128,6 +128,7 @@ module.exports = (options = {}) => ({
                         command.example("$0 workspaces run build --scope=my-package");
                     },
                     async argv => {
+                        console.log('idemoooo')
                         await require("./commands/run")({ ...argv, options }, context);
                         process.exit(0);
                     }

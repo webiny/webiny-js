@@ -40,7 +40,6 @@
     { "path": "../plugins" },
     { "path": "../pulumi" },
     { "path": "../pulumi-aws" },
-    { "path": "../wcp" },
     { "path": "../migrations" }
   ],
   "compilerOptions": {
@@ -130,8 +129,6 @@
       "@webiny/pulumi": ["../pulumi/src"],
       "@webiny/pulumi-aws/*": ["../pulumi-aws/src/*"],
       "@webiny/pulumi-aws": ["../pulumi-aws/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"],
       "@webiny/migrations/*": ["../migrations/src/*"],
       "@webiny/migrations": ["../migrations/src"]
     },

@@ -1,15 +1,9 @@
-const path = require("path");
-const { getProjectApplication, getProject } = require("@webiny/cli/utils");
+const { getProjectApplication } = require("@webiny/cli/utils");
 const createProjectApplicationWorkspace = require("./createProjectApplicationWorkspace");
 const login = require("./login");
-const loadEnvVariables = require("./loadEnvVariables");
 const getPulumi = require("./getPulumi");
 
-const createPulumiCommand = ({
-    name,
-    command,
-    createProjectApplicationWorkspace: createProjectApplicationWorkspaceParam
-}) => {
+const createPulumiCommand = ({ name, command }) => {
     return async (inputs, context) => {
         // If folder not specified, that means we want to deploy the whole project (all project applications).
         // For that, we look if there are registered plugins that perform that.
@@ -22,31 +16,23 @@ const createPulumiCommand = ({
             }
 
             return plugin[name](inputs, context);
-        } else {
-            // Before proceeding, let's detect if multiple project applications were passed.
-            const folders = inputs.folder.split(",").map(current => current.trim());
-            if (folders.length > 1) {
-                for (let i = 0; i < folders.length; i++) {
-                    const folder = folders[i];
-                    await createPulumiCommand({ name, command, createProjectApplicationWorkspace })(
-                        {
-                            ...inputs,
-                            folder
-                        },
-                        context
-                    );
-                }
+        }
 
-                return;
+        // Before proceeding, let's detect if multiple project applications were passed.
+        const folders = inputs.folder.split(",").map(current => current.trim());
+        if (folders.length > 1) {
+            for (let i = 0; i < folders.length; i++) {
+                const folder = folders[i];
+                await createPulumiCommand({ name, command, createProjectApplicationWorkspace })(
+                    {
+                        ...inputs,
+                        folder
+                    },
+                    context
+                );
             }
 
-            // Detect if an app alias was provided.
-            const project = getProject();
-
-            const appAliases = require("./appAliases");
-            if (appAliases[inputs.folder]) {
-                inputs.folder = appAliases[inputs.folder];
-            }
+            return;
         }
 
         if (!inputs.env) {
@@ -58,31 +44,22 @@ const createPulumiCommand = ({
             return (new Date() - start) / 1000 + "s";
         };
 
-        const cwd = path.join(process.cwd(), inputs.folder);
-
-        // Get project application metadata.
-        const projectApplication = getProjectApplication({ cwd });
-
-        if (projectApplication.type === "v5-workspaces") {
-            // If needed, let's create a project application workspace.
-            if (createProjectApplicationWorkspaceParam !== false) {
-                await createProjectApplicationWorkspace({
-                    projectApplication,
-                    context,
-                    inputs,
-                    env: inputs.env
-                });
-            }
-
-            // Check if there are any plugins that need to be registered. This needs to happen
-            // always, no matter the value of `createProjectApplicationWorkspaceParam` parameter.
-            if (projectApplication.config.plugins) {
-                context.plugins.register(projectApplication.config.plugins);
-            }
+        const createAppWorkspacePlugins = context.plugins.byType("hook-create-app-workspace");
+        for (let i = 0; i < createAppWorkspacePlugins.length; i++) {
+            const plugin = createAppWorkspacePlugins[i];
+            await plugin.hook({
+                projectApplication: {
+                    name: inputs.folder
+                }
+            });
         }
 
-        // Load env vars specified via .env files located in project application folder.
-        await loadEnvVariables(inputs, context);
+        const projectApplication = getProjectApplication({ name: inputs.folder });
+        // Check if there are any plugins that need to be registered. This needs to happen
+        // always, no matter the value of `createProjectApplicationWorkspaceParam` parameter.
+        if (projectApplication.config.plugins) {
+            context.plugins.register(projectApplication.config.plugins);
+        }
 
         await login(projectApplication);
 

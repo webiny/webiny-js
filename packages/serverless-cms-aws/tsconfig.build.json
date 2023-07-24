@@ -40,7 +40,6 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
     { "path": "../pulumi-aws/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" },
     { "path": "../migrations/tsconfig.build.json" }
   ],
   "compilerOptions": {

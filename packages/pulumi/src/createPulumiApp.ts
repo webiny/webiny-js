@@ -31,15 +31,14 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         throw new Error("Couldn't detect Webiny project.");
     }
 
-    const appRelativePath = path.join(".webiny", params.path);
-    const appRootPath = path.join(projectRootPath, appRelativePath);
-
     const projectAppWorkspacePath = path.join(
         projectRootPath,
         ".webiny",
         "workspaces",
-        appRelativePath
+        params.name
     );
+
+    const appRelativePath = path.relative(projectRootPath, projectAppWorkspacePath);
 
     const app: PulumiApp<TResources> = {
         resourceHandlers: [],
@@ -47,7 +46,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         outputs: {},
         modules: new Map<symbol, unknown>(),
         paths: {
-            absolute: appRootPath,
+            absolute: projectAppWorkspacePath,
             relative: appRelativePath,
             workspace: projectAppWorkspacePath
         },
@@ -57,19 +56,17 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         program: params.program,
         params: {
             create: params.config || {},
-            run: {}
+            run: {
+                env: process.env.WEBINY_ENV
+            }
         },
 
-        async run(config) {
-            app.params.run = config;
-
+        async run() {
             Object.assign(app.resources, await app.program(app));
 
             for (const handler of app.handlers) {
                 await handler();
             }
-
-            app.params.run = {};
 
             return app.outputs;
         },

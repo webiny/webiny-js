@@ -11,33 +11,10 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
     "node-fetch": "^2.6.1"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
-    "@babel/plugin-transform-runtime": "^7.22.7",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-typescript": "^7.22.5",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
-    "rimraf": "^3.0.2",
-    "ttypescript": "^1.5.12",
-    "typescript": "4.7.4"
   },
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "watch": "yarn webiny run watch",
-    "build": "yarn webiny run build"
-  },
-  "adio": {
-    "ignoreDirs": [
-      "__tests__"
-    ]
+    "directory": "."
   }
 }

@@ -1,0 +1,10 @@
+{
+  "extends": "{PROJECT_ROOT_RELATIVE_PATH}/tsconfig",
+  "include": ["src"],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  }
+}

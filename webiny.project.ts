@@ -18,7 +18,8 @@ export default {
                     import("@webiny/cli-plugin-scaffold"),
                     import("@webiny/cli-plugin-scaffold-graphql-service"),
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
-                    import("@webiny/cli-plugin-scaffold-ci")
+                    import("@webiny/cli-plugin-scaffold-ci"),
+                    import("@webiny/project-ddb/cli")
                 ]);
 
                 return modules
@@ -42,13 +43,6 @@ export default {
             }
         }
     },
-    appAliases: {
-        core: "apps/core",
-        api: "apps/api",
-        admin: "apps/admin",
-        website: "apps/website"
-    },
-
     featureFlags: {
         copyPermissionsButton: true,
         experimentalAdminOmniSearch: true

@@ -1,5 +1,3 @@
-const merge = require("lodash/merge");
-
 /**
  * Prepares the options object, sent to build and watch functions.
  * @param config
@@ -7,7 +5,16 @@ const merge = require("lodash/merge");
  * @returns {Promise<{overrides}|*>}
  */
 module.exports.prepareOptions = ({ config, options }) => {
-    const mergedOptions = merge({}, config, options);
+    // For some reason, lodash's `merge` function doesn't work as expected here.
+    // Decided to merge manually.
+    const mergedOptions = {
+        ...config,
+        ...options,
+        overrides: {
+            ...config.overrides,
+            ...options.overrides
+        }
+    };
 
     // If it doesn't exist, ensure `overrides` is an empty object.
     if (!mergedOptions.overrides) {

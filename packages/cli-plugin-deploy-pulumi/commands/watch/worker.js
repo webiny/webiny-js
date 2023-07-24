@@ -25,14 +25,14 @@ for (let i = 0; i < types.length; i++) {
 
 (async () => {
     try {
-        const { options, package: pckg } = workerData;
-        let config = require(pckg.config);
+        const { options, package: pkg } = workerData;
+        let config = require(pkg.paths.config);
         if (config.default) {
             config = config.default;
         }
 
         if (typeof config === "function") {
-            config = config({ options: { ...options, cwd: pckg.root }, context: cli });
+            config = config({ options: { ...options, cwd: pkg.paths.root }, context: cli });
         }
 
         if (typeof config.commands.watch !== "function") {

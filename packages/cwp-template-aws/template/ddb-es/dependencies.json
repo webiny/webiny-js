@@ -2,7 +2,7 @@
   "private": true,
   "keywords": ["aws+dynamodb+elasticsearch"],
   "dependencies": {
-    "@webiny/ddb-es": "latest"
+    "@webiny/project-ddb-es": "latest"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

@@ -5,7 +5,7 @@ const path = require("path");
 const localtunnel = require("localtunnel");
 const express = require("express");
 const bodyParser = require("body-parser");
-const { getProjectApplication } = require("@webiny/cli/utils");
+const { getProject, getProjectApplication } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
@@ -19,7 +19,6 @@ const {
     getPulumi,
     getPulumiEnvVars,
     getRandomColorForString,
-    loadEnvVariables,
     runHook
 } = require("../utils");
 
@@ -47,33 +46,27 @@ module.exports = async (inputs, context) => {
             inputs.folder = appAliases[inputs.folder];
         }
 
+        const createAppWorkspacePlugins = context.plugins.byType("hook-create-app-workspace");
+        for (let i = 0; i < createAppWorkspacePlugins.length; i++) {
+            const plugin = createAppWorkspacePlugins[i];
+            await plugin.hook({
+                projectApplication: {
+                    name: inputs.folder
+                }
+            });
+        }
+
         // Get project application metadata. Will throw an error if invalid folder specified.
         projectApplication = getProjectApplication({
-            cwd: path.join(process.cwd(), inputs.folder)
+            name: inputs.folder
         });
 
         // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
 
-        if (projectApplication.type === "v5-workspaces") {
-            // We don't do anything here. We assume the workspace has already been created
-            // upon running the `webiny deploy` command. We rely on that.
-            // TODO: maybe we can improve this in the future, depending on the feedback.
-            // await createProjectApplicationWorkspace({
-            //     projectApplication,
-            //     env: inputs.env,
-            //     context,
-            //     inputs
-            // });
-
-            // Check if there are any plugins that need to be registered.
-            if (projectApplication.config.plugins) {
-                context.plugins.register(projectApplication.config.plugins);
-            }
+        if (projectApplication.config.plugins) {
+            context.plugins.register(projectApplication.config.plugins);
         }
-
-        // Load env vars specified via .env files located in project application folder.
-        await loadEnvVariables(inputs, context);
     }
 
     inputs.build = inputs.build !== false;
@@ -242,17 +235,11 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
 
-            let buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join("/");
-
-            // For non-workspaces projects, we still want to be watching `**/build/*.js` files located
-            // in user's project (for example `api/graphql/code/build/handler.js`).
-            if (projectApplication.type !== "v5-workspaces") {
-                buildFoldersGlob = [
-                    projectApplication.paths.absolute,
-                    inputs.folder,
-                    "**/build/*.js"
-                ].join("/");
-            }
+            const project = getProject();
+            let buildFoldersGlob = [
+                projectApplication.paths.absolute,
+                [project.root, "plugins", "infra.ts"].join("/")
+            ];
 
             const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
@@ -261,11 +248,6 @@ module.exports = async (inputs, context) => {
             let pathArg = undefined;
             if (PULUMI_WATCH_SUPPORTED) {
                 pathArg = [...buildFolders];
-
-                const pulumiFolder = path.join(projectApplication.root, "pulumi");
-                if (fs.existsSync(pulumiFolder)) {
-                    pathArg.push(pulumiFolder);
-                }
             }
 
             // Log used values if debugging has been enabled.

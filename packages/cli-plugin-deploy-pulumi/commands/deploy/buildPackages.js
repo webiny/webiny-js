@@ -1,6 +1,8 @@
 const path = require("path");
 const { Worker } = require("worker_threads");
 const chalk = require("chalk");
+const {getProjectApplication} = require("@webiny/cli/utils");
+const glob = require("fast-glob");
 
 const parseMessage = message => {
     try {
@@ -16,7 +18,29 @@ const parseMessage = message => {
 module.exports = async ({ projectApplication, inputs, context }) => {
     const start = new Date();
 
-    const { env, variant, debug } = inputs;
+    // Find webiny.config.ts files that have the watch command defined.
+    let appConfigFiles = [];
+    if (inputs.folder) {
+        const projectApplication = getProjectApplication({name: inputs.folder});
+        appConfigFiles = await glob(["**/webiny.config.ts"], {
+            cwd: projectApplication.paths.absolute,
+            absolute: true
+        });
+    }
+
+    const configFiles = [...appConfigFiles];
+
+    if (configFiles.length === 0) {
+        output.log({
+            type: "build",
+            message: `Could not watch any of the specified packages.`
+        });
+        return;
+    }
+
+    const { env, debug } = inputs;
+
+
     let multipleBuilds = false;
     switch (projectApplication.packages.length) {
         case 0:
@@ -70,11 +94,12 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                 const workerData = {
                     options: {
                         env,
-                        variant,
                         debug,
                         logs: enableLogs
                     },
-                    package: { ...current.paths }
+                    package: {
+                        paths: current.paths
+                    }
                 };
 
                 const worker = new Worker(path.join(__dirname, "./worker.js"), { workerData });

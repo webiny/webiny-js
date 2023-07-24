@@ -48,9 +48,13 @@ const stopDeploying = () => {
     deployment = green("‣ " + getDeployDurationInSeconds() + "s ‣ Deployment successful.");
 };
 
+let inputs = {};
 module.exports = {
     type: "watch-output",
-    name: "watch-output-terminal",
+    name: "watch-output-simple",
+    initialize: rawInputs => {
+        inputs = rawInputs;
+    },
     log({ message, type }) {
         message = message.trim().replace(/^\s+|\s+$/g, "");
         if (!message) {
@@ -68,10 +72,10 @@ module.exports = {
         if (type === "deploy") {
             if (message.includes("Updating...")) {
                 startDeploying();
-            }
-
-            if (message.includes("Update complete.")) {
+            } else if (message.includes("Update complete.")) {
                 stopDeploying();
+            } else if (inputs.logs) {
+                logs.push(message);
             }
         }
 

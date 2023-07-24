@@ -13,6 +13,7 @@ module.exports = async (inputs, context) => {
     if (inputs.script === "watch") {
         inputs.parallel = true;
     }
+
     const { script, scope, folder, parallel, stream, ...otherInputs } = inputs;
 
     const scopes = normalizeArray(scope);
