@@ -110,7 +110,6 @@ export interface FbForm {
     publishedOn: string | null;
     status: string;
     fields: FbFormField[];
-    layout: string[][];
     steps: FbFormStep[];
     stats: Omit<FbFormStats, "conversionRate">;
     settings: Record<string, any>;
@@ -134,7 +133,6 @@ interface FormCreateInput {
 interface FormUpdateInput {
     name: string;
     fields: Record<string, any>[];
-    layout: string[][];
     steps: FbFormStep[];
     settings: Record<string, any>;
     triggers: Record<string, any> | null;

@@ -350,7 +350,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                  * Will be added via a "update"
                  */
                 fields: [],
-                layout: [],
                 // Our form should always have at least 1 step.
                 // If we have more then 1 step then the Form will be recognized as a Multi Step Form.
                 steps: [

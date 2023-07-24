@@ -1,14 +1,12 @@
-import { FbFormModel } from "~/types";
+import { FbFormStep } from "~/types";
 
 interface MoveRowParams {
     source: number;
     destination: number;
-    data: FbFormModel;
-    anotherStep?: any;
-    allSteps?: any;
+    data: FbFormStep;
 }
-export default ({ data, source, destination, anotherStep, allSteps }: MoveRowParams): void => {
-    allSteps.steps.find((v: any) => v.id === data.id).layout =
+export default ({ data, source, destination }: MoveRowParams): void => {
+    data.layout =
         source < destination
             ? [
                   ...data.layout.slice(0, source),

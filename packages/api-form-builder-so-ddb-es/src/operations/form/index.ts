@@ -44,10 +44,7 @@ export interface CreateFormStorageOperationsParams {
     plugins: PluginsContainer;
 }
 
-type FbFormElastic = Omit<
-    FbForm,
-    "triggers" | "fields" | "settings" | "layout" | "steps" | "stats"
-> & {
+type FbFormElastic = Omit<FbForm, "triggers" | "fields" | "settings" | "steps" | "stats"> & {
     __type: string;
 };
 

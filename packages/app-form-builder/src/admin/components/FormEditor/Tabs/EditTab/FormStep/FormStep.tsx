@@ -47,17 +47,22 @@ export const FormStep = ({
     formStep: FbFormStep;
     onDelete: () => void;
     onEdit: () => void;
-    moveRow: (source: number, destination: number, stepId?: string, anotherStepId?: string) => void;
+    moveRow: (
+        source: number,
+        destination: number,
+        targetStepId: string,
+        sourceStep: FbFormStep
+    ) => void;
     moveField: (params: MoveFieldParams) => void;
     getFieldPlugin: ({ name }: { name: string }) => FbBuilderFieldPlugin | null;
     insertField: (
         field: FbFormModelField,
         position: FieldLayoutPositionType,
-        stepId?: string
+        stepId: string
     ) => void;
-    getLayoutFields: (steps: any) => FbFormModelField[][];
+    getLayoutFields: (stepId: string) => FbFormModelField[][];
     updateField: (field: FbFormModelField) => void;
-    deleteField: (field: FbFormModelField, stepId?: string) => void;
+    deleteField: (field: FbFormModelField, stepId: string) => void;
 }) => {
     const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
     const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType | null>(null);
@@ -104,8 +109,8 @@ export const FormStep = ({
                 moveField({
                     field: fieldId,
                     position,
-                    stepId: formStep.id,
-                    anotherStepId: pos.formStep.id
+                    targetStepId: formStep.id,
+                    sourceStepId: pos.formStep.id
                 });
                 return;
             }

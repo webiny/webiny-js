@@ -87,8 +87,8 @@ export type FbFormModelFieldsLayout = FieldIdType[][];
 export interface MoveFieldParams {
     field: FieldIdType | FbFormModelField;
     position: FieldLayoutPositionType;
-    stepId?: string;
-    [key: string]: any;
+    targetStepId: string;
+    sourceStepId: string;
 }
 
 export interface FieldLayoutPositionType {
@@ -106,7 +106,7 @@ export interface StepLayoutPositionType {
 }
 
 export interface FbFormStep {
-    id?: string;
+    id: string;
     title: string;
     layout: FbFormModelFieldsLayout;
 }
@@ -170,7 +170,6 @@ export interface FbFormModel {
     id: FieldIdType;
     formId: string;
     version: number;
-    layout: FbFormModelFieldsLayout;
     fields: FbFormModelField[];
     steps: FbFormStep[];
     published: boolean;
@@ -227,7 +226,6 @@ export interface FbFormSubmissionData {
         name: string;
         version: number;
         fields: FbFormModelField[];
-        layout: string[][];
         steps: FbFormStep[];
     };
 }
@@ -418,7 +416,6 @@ export interface FbReCaptchaInput {
 }
 
 export interface FbFormSettingsInput {
-    layout: FbFormSettingsLayoutInput;
     steps: FbFormStep[];
     submitButtonLabel: string;
     fullWidthSubmitButton: boolean;
@@ -430,7 +427,6 @@ export interface FbFormSettingsInput {
 export interface FbUpdateFormInput {
     name?: string;
     fields?: FbFormFieldInput[];
-    layout?: FbFormModelFieldsLayout;
     steps?: FbFormStep[];
     settings?: FbFormSettingsInput;
     triggers?: Record<string, string>;

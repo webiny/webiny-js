@@ -269,8 +269,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     parent: formFormId,
                     name: form.name,
                     version: form.version,
-                    fields: form.fields,
-                    layout: form.layout
+                    fields: form.fields
                 }
             });
 

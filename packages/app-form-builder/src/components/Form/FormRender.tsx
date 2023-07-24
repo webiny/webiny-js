@@ -78,7 +78,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         // We need this check in case we deleted last step and at the same time we were previewing it.
         const stepFields =
             steps[stepIndex] === undefined ? steps[steps.length - 1] : steps[stepIndex];
-        const fieldLayout = cloneDeep(stepFields.layout);
+        const fieldLayout = cloneDeep(stepFields.layout.filter(Boolean));
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 

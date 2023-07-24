@@ -27,7 +27,6 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
                         title
                         layout
                     }
-                    layout
                     triggers
                     settings {
                         reCaptcha {

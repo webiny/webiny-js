@@ -79,7 +79,6 @@ export const GET_FORM = gql`
                     fields {
                         ${FIELDS_FIELDS}
                     }
-                    layout
                     steps {
                         title
                         layout
@@ -122,7 +121,6 @@ export const UPDATE_REVISION = gql`
                     fields {
                         ${FIELDS_FIELDS}
                     }
-                    layout
                     steps {
                         title
                         layout

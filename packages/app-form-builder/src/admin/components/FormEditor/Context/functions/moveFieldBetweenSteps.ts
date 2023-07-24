@@ -12,22 +12,28 @@ import getFieldPosition from "./getFieldPosition";
  * @param data
  */
 
-const cleanupEmptyRows = (params: MoveFieldParams): void => {
-    const { data, targetStepId } = params;
+const cleanupEmptyRows = (params: MoveFieldBetweenRowsParams): void => {
+    const { data, targetStepId, sourceStepId } = params;
     const targetStep = data.steps.find(s => s.id === targetStepId) as FbFormStep;
+    const sourceStep = sourceStepId !== undefined && data.steps.find(s => s.id === sourceStepId);
 
-    targetStep.layout = targetStep?.layout.filter(row => row.length > 0);
+    if (sourceStep) {
+        sourceStep.layout = sourceStep?.layout.filter(row => row.length > 0);
+    }
+
+    targetStep.layout = targetStep.layout.filter(row => row.length > 0);
 };
 
-interface MoveFieldParams {
+interface MoveFieldBetweenRowsParams {
     field: FieldIdType | FbFormModelField;
     position: FieldLayoutPositionType;
     data: FbFormModel;
     targetStepId: string;
+    sourceStepId: string;
 }
 
-const moveField = (params: MoveFieldParams) => {
-    const { field, position, data, targetStepId } = params;
+const moveFieldBetweenSteps = (params: MoveFieldBetweenRowsParams) => {
+    const { field, position, data, targetStepId, sourceStepId } = params;
     const { row, index } = position;
     const fieldId = typeof field === "string" ? field : field._id;
     if (!fieldId) {
@@ -37,13 +43,13 @@ const moveField = (params: MoveFieldParams) => {
     }
 
     const targetStepLayout = data.steps.find(s => s.id === targetStepId) as FbFormStep;
-    targetStepLayout.layout = targetStepLayout.layout.filter(row => Boolean(row));
+    const sourceStepLayout = data.steps.find(s => s.id === sourceStepId) as FbFormStep;
     const existingPosition = getFieldPosition({
         field: fieldId,
-        data: targetStepLayout
+        data: sourceStepLayout || targetStepLayout
     });
     if (existingPosition) {
-        targetStepLayout.layout[existingPosition.row].splice(existingPosition.index, 1);
+        sourceStepLayout.layout[existingPosition.row].splice(existingPosition.index, 1);
     }
 
     // Setting a form field into a new non-existing row.
@@ -62,7 +68,7 @@ const moveField = (params: MoveFieldParams) => {
     targetStepLayout.layout[row].splice(index, 0, fieldId);
 };
 
-export default (params: MoveFieldParams) => {
-    moveField(params);
+export default (params: MoveFieldBetweenRowsParams) => {
+    moveFieldBetweenSteps(params);
     cleanupEmptyRows(params);
 };

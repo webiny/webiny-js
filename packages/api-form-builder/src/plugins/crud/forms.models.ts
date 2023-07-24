@@ -99,7 +99,6 @@ export const FormUpdateDataModel = withFields({
         value: [],
         instanceOf: FormFieldsModel
     }),
-    layout: object({ value: [] }),
     steps: object({ instanceOf: FormStepsModel, value: {} }),
     settings: fields({ instanceOf: FormSettingsModel, value: {} }),
     triggers: object()
@@ -129,7 +128,6 @@ export const FormSubmissionCreateDataModel = withFields({
             parent: string({ validation: validation.create("required") }),
             name: string({ validation: validation.create("required") }),
             version: number({ validation: validation.create("required") }),
-            layout: object({ value: [] }),
             steps: object({ instanceOf: FormStepsModel, value: {} }),
             fields: fields({
                 list: true,

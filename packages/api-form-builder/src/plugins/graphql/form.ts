@@ -39,7 +39,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 name: String!
                 slug: String!
                 fields: [FbFormFieldType!]!
-                layout: [[String]]!
                 steps: [FbFormStepType!]!
                 settings: FbFormSettingsType!
                 triggers: JSON
@@ -179,7 +178,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             input FbUpdateFormInput {
                 name: String
                 fields: [FbFormFieldInput]
-                layout: [[String]]
                 steps: [FbFormStepInput]
                 settings: FbFormSettingsInput
                 triggers: JSON
@@ -213,7 +211,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 parent: ID
                 name: String
                 version: Int
-                layout: [[String]]
                 fields: [FbFormFieldType]
                 steps: [FbFormStepType]
             }

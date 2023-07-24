@@ -203,11 +203,6 @@ export const LIST_FORM_SUBMISSIONS = gql`
                         id
                         name
                         version
-                        layout
-                        steps {
-                            title
-                            layout
-                        }
                         fields {
                             _id
                             fieldId
