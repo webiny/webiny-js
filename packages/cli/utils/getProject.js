@@ -2,7 +2,7 @@ const findUp = require("find-up");
 const { dirname } = require("path");
 const { importModule } = require("./importModule");
 
-const projectConfigs = ["webiny.project.js", "webiny.project.ts"];
+const projectConfigs = ["webiny.js", "webiny.ts"];
 
 function getRoot({ cwd } = {}) {
     let root = findUp.sync(projectConfigs, { cwd });

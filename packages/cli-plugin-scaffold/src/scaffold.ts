@@ -22,7 +22,7 @@ export const scaffold = async (args: ScaffoldArgs) => {
     );
     if (!scaffoldPlugins.length) {
         console.log(
-            `🚨 We couldn't find any scaffolding plugins. Add plugins to your "webiny.project.js" file!`
+            `🚨 We couldn't find any scaffolding plugins. Add plugins to your "webiny.js" file!`
         );
         process.exit(1);
     }

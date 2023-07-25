@@ -3,8 +3,8 @@ const tsMorph = require("ts-morph");
 const { log } = require("@webiny/cli/utils");
 
 module.exports.setProjectId = async ({ project, orgId, projectId }) => {
-    // Assign the necessary IDs into root `webiny.project.ts` project file.
-    const webinyProjectPath = path.join(project.root, "webiny.project.ts");
+    // Assign the necessary IDs into root `webiny.ts` project file.
+    const webinyProjectPath = path.join(project.root, "webiny.ts");
 
     const tsMorphProject = new tsMorph.Project();
     tsMorphProject.addSourceFileAtPath(webinyProjectPath);
@@ -20,7 +20,7 @@ module.exports.setProjectId = async ({ project, orgId, projectId }) => {
 
     if (!defaultExport) {
         throw new Error(
-            `Could not find the default export in ${log.error.hl("webiny.project.ts")}.`
+            `Could not find the default export in ${log.error.hl("webiny.ts")}.`
         );
     }
 

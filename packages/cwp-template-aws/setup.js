@@ -79,10 +79,10 @@ const setup = async args => {
     content = content.replace("{REGION}", region);
     fs.writeFileSync(rootEnvFilePath, content);
 
-    let projectFile = fs.readFileSync(path.join(projectRoot, "webiny.project.ts"), "utf-8");
+    let projectFile = fs.readFileSync(path.join(projectRoot, "webiny.ts"), "utf-8");
     projectFile = projectFile.replace("[PROJECT_NAME]", projectName);
     projectFile = projectFile.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
-    fs.writeFileSync(path.join(projectRoot, "webiny.project.ts"), projectFile);
+    fs.writeFileSync(path.join(projectRoot, "webiny.ts"), projectFile);
 
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;

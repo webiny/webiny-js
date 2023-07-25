@@ -11,7 +11,7 @@ A set of @webiny/cli plugins to deploy Webiny project using serverless component
 yarn add @webiny/cli-plugin-deploy-pulumi
 ```
 
-Add plugin to your project by editing `webiny.project.js`:
+Add plugin to your project by editing `webiny.js`:
 
 ```js
 module.exports = {

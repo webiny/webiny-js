@@ -10,10 +10,10 @@ This document outlines the steps necessary to enable the legacy page rendering e
 
 ## Steps
 
-The first step is to open your `webiny.project.ts` file, and set the `pbLegacyRenderingEngine` feature flag to true. 
+The first step is to open your `webiny.ts` file, and set the `pbLegacyRenderingEngine` feature flag to true. 
 
 ```ts
-// webiny.project.ts
+// webiny.ts
 {
     // (...)
     

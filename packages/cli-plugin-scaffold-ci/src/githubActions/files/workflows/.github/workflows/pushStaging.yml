@@ -18,9 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check if "webiny.project.js" exists
+      - name: Check if "webiny.js" exists
         id: webiny-project-js
-        run: echo "::set-output name=ready::${{ hashFiles('webiny.project.ts') != '' }}"
+        run: echo "::set-output name=ready::${{ hashFiles('webiny.ts') != '' }}"
 
   build-test-deploy:
     name: Build and test

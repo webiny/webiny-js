@@ -6,7 +6,7 @@ const project = getProject();
 
 if (!project) {
     console.log(
-        `🚨 Couldn't locate "webiny.project.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
+        `🚨 Couldn't locate "webiny.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
     );
     process.exit(1);
 }

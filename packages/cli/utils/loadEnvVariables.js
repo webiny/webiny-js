@@ -5,13 +5,13 @@ const getProject = require("./getProject");
 const { boolean } = require("boolean");
 
 // Load environment variables from following sources:
-// - `webiny.project.ts` file
+// - `webiny.ts` file
 // - `.env` file
 // - `.env.{PASSED_ENVIRONMENT}` file
 
 const project = getProject();
 
-// `webiny.project.ts` file.
+// `webiny.ts` file.
 // Environment variables defined via the `env` property.
 if (project.config.env) {
     Object.assign(process.env, project.config.env);

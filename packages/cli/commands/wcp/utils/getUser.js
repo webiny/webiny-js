@@ -57,7 +57,7 @@ module.exports.getUser = async () => {
         throw new Error(
             `It seems you are not logged into your WCP project. Please log in using the ${log.error.hl(
                 "yarn webiny login"
-            )} command. If you are not using WCP, make sure you don't have an "id" property in your "webiny.project.ts" file.`
+            )} command. If you are not using WCP, make sure you don't have an "id" property in your "webiny.ts" file.`
         );
     }
 

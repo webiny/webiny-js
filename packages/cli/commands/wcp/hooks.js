@@ -48,7 +48,7 @@ const getEnvironmentHookHandler = async (args, context) => {
         const isValidId = orgId && projectId;
         if (!isValidId) {
             throw new Error(
-                `It seems the project ID, specified in "webiny.project.ts" file, is invalid.`
+                `It seems the project ID, specified in "webiny.ts" file, is invalid.`
             );
         }
 

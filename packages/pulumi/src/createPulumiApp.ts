@@ -24,7 +24,7 @@ import { PulumiAppRemoteResource } from "~/PulumiAppRemoteResource";
 export function createPulumiApp<TResources extends Record<string, unknown>>(
     params: CreatePulumiAppParams<TResources>
 ): PulumiApp<TResources> {
-    let projectRootPath = findUp.sync("webiny.project.ts");
+    let projectRootPath = findUp.sync("webiny.ts");
     if (projectRootPath) {
         projectRootPath = path.dirname(projectRootPath).replace(/\\/g, "/");
     } else {

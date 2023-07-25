@@ -16,7 +16,7 @@ const hook = async (_: Record<string, any>, context: CliContext) => {
         ].join(" ");
 
         console.log();
-        context.warning(message, "pbLegacyRenderingWarningPlugins: true", "webiny.project.ts");
+        context.warning(message, "pbLegacyRenderingWarningPlugins: true", "webiny.ts");
         console.log();
 
         await new Promise(resolve => {

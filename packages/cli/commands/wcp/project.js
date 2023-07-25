@@ -178,7 +178,7 @@ const handler = async ({ context }) => {
 
     await sleep();
 
-    // Assign the necessary IDs into root `webiny.project.ts` project file.
+    // Assign the necessary IDs into root `webiny.ts` project file.
     await setProjectId({
         project: context.project,
         orgId,

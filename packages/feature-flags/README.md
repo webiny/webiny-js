@@ -30,12 +30,12 @@ yarn add @webiny/feature-flags
 
 ## Overview
 
-The `@webiny/feature-flags` exports a single `featureFlags` object which contains all of the feature flags initially set via the Webiny project's `webiny.project.ts` config file, via its `featureFlags` property.
+The `@webiny/feature-flags` exports a single `featureFlags` object which contains all of the feature flags initially set via the Webiny project's `webiny.ts` config file, via its `featureFlags` property.
 
-For example, given the following `webiny.project.ts` config file;
+For example, given the following `webiny.ts` config file;
 
 ```ts
-// webiny.project.ts
+// webiny.ts
 export default {
     name: "webiny-js",
     cli: {
@@ -85,7 +85,7 @@ declare let featureFlags: Record<string, any>;
 </p>
 </details>  
 
-The `featureFlags` object contains all of the feature flags initially set via the Webiny project's `webiny.project.ts` config file, via its `featureFlags` property.
+The `featureFlags` object contains all of the feature flags initially set via the Webiny project's `webiny.ts` config file, via its `featureFlags` property.
 
 
 ```ts
