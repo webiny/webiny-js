@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { memo, ReactElement, useMemo } from "react";
 
 import {
     DataTableContent,
@@ -19,7 +19,8 @@ import {
     OnChangeFn,
     SortingState,
     RowSelectionState,
-    Row
+    Row,
+    Cell
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
@@ -238,6 +239,34 @@ const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | nu
     return null;
 };
 
+const typedMemo: <T>(c: T) => T = memo;
+
+interface TableRowProps<T> {
+    row: Row<T>;
+}
+
+const TableRow = <T,>({ row }: TableRowProps<T>) => {
+    return (
+        <DataTableRow selected={row.getIsSelected()}>
+            {row.getVisibleCells().map(cell => (
+                <MemoTableCell<T> key={cell.id} cell={cell} />
+            ))}
+        </DataTableRow>
+    );
+};
+
+interface TableCellProps<T> {
+    cell: Cell<T, unknown>;
+}
+
+const TableCell = <T,>({ cell }: TableCellProps<T>) => (
+    <DataTableCell {...cell.column.columnDef.meta}>
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    </DataTableCell>
+);
+
+const MemoTableCell = typedMemo(TableCell);
+
 export const DataTable = <T extends Object & DefaultData>({
     data,
     columns,
@@ -311,13 +340,7 @@ export const DataTable = <T extends Object & DefaultData>({
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <DataTableRow key={row.id} selected={row.getIsSelected()}>
-                            {row.getVisibleCells().map(cell => (
-                                <DataTableCell key={cell.id} {...cell.column.columnDef.meta}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </DataTableCell>
-                            ))}
-                        </DataTableRow>
+                        <TableRow<T> key={row.id} row={row} />
                     ))}
                 </DataTableBody>
             </DataTableContent>
