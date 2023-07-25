@@ -114,74 +114,80 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         return [...createFoldersData(folders), ...createRecordsData(records)];
     }, [folders, records]);
 
-    const columns: Columns<Entry> = {
-        title: {
-            header: "Name",
-            cell: (entry: Entry) => {
-                if (isPageEntry(entry)) {
-                    return (
-                        <PageName name={entry.title} id={entry.id} onClick={openPreviewDrawer} />
-                    );
-                }
-                return <FolderName name={entry.title} id={entry.id} />;
+    const columns: Columns<Entry> = useMemo(() => {
+        return {
+            title: {
+                header: "Name",
+                cell: (entry: Entry) => {
+                    if (isPageEntry(entry)) {
+                        return (
+                            <PageName
+                                name={entry.title}
+                                id={entry.id}
+                                onClick={openPreviewDrawer}
+                            />
+                        );
+                    }
+                    return <FolderName name={entry.title} id={entry.id} />;
+                },
+                enableSorting: true
             },
-            enableSorting: true
-        },
-        savedOn: {
-            header: "Last modified",
-            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
-            enableSorting: true
-        },
-        createdBy: {
-            header: "Author"
-        },
-        status: {
-            header: "Status",
-            cell: ({ status, version }: Entry) => {
-                if (status && version) {
-                    return `${statusLabels[status]} (v${version})`;
-                }
-                return "-";
-            }
-        },
-        original: {
-            header: "",
-            meta: {
-                alignEnd: true
+            savedOn: {
+                header: "Last modified",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
             },
-            className: actionsColumnStyles,
-            cell: (entry: Entry) => {
-                if (isPageEntry(entry)) {
+            createdBy: {
+                header: "Author"
+            },
+            status: {
+                header: "Status",
+                cell: ({ status, version }: Entry) => {
+                    if (status && version) {
+                        return `${statusLabels[status]} (v${version})`;
+                    }
+                    return "-";
+                }
+            },
+            original: {
+                header: "",
+                meta: {
+                    alignEnd: true
+                },
+                className: actionsColumnStyles,
+                cell: (entry: Entry) => {
+                    if (isPageEntry(entry)) {
+                        return (
+                            <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
+                                <RecordActionEdit record={entry.original} />
+                                <RecordActionPreview record={entry.original} />
+                                <RecordActionPublish record={entry.original} />
+                                <RecordActionMove record={entry} />
+                                <RecordActionDelete record={entry.original} />
+                            </Menu>
+                        );
+                    }
+
                     return (
-                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
-                            <RecordActionEdit record={entry.original} />
-                            <RecordActionPreview record={entry.original} />
-                            <RecordActionPublish record={entry.original} />
-                            <RecordActionMove record={entry} />
-                            <RecordActionDelete record={entry.original} />
+                        <Menu handle={<IconButton icon={<More />} />}>
+                            <FolderActionEdit
+                                onClick={() => {
+                                    setUpdateDialogOpen(true);
+                                    setSelectedFolder(entry.original);
+                                }}
+                            />
+                            <FolderActionDelete
+                                onClick={() => {
+                                    setDeleteDialogOpen(true);
+                                    setSelectedFolder(entry.original);
+                                }}
+                            />
                         </Menu>
                     );
                 }
-
-                return (
-                    <Menu handle={<IconButton icon={<More />} />}>
-                        <FolderActionEdit
-                            onClick={() => {
-                                setUpdateDialogOpen(true);
-                                setSelectedFolder(entry.original);
-                            }}
-                        />
-                        <FolderActionDelete
-                            onClick={() => {
-                                setDeleteDialogOpen(true);
-                                setSelectedFolder(entry.original);
-                            }}
-                        />
-                    </Menu>
-                );
             }
-        }
-    };
+        };
+    }, []);
 
     return (
         <div ref={ref}>
