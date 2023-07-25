@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { parse } from "json2csv";
-// import { Typography } from "@webiny/ui/Typography";
+import { Typography } from "@webiny/ui/Typography";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
@@ -9,7 +9,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin";
 import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/data_object.svg";
 import { ReactComponent as TableIcon } from "@material-design-icons/svg/outlined/table_rows.svg";
-import { FbFormSubmissionData } from "~/types";
+import { FbFormModelField, FbFormSubmissionData } from "~/types";
 
 const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 
@@ -47,25 +47,25 @@ interface FormSubmissionDialogProps {
     onClose: () => void;
 }
 
-// const getFieldValueLabel = (field: FbFormModelField, value: string): string => {
-//     const options = field.options || [];
-//     if (options.length > 0) {
-//         const selectedOption = options.find(option => option.value === value);
-//         if (selectedOption) {
-//             return selectedOption.label;
-//         }
-//     }
+const getFieldValueLabel = (field: FbFormModelField, value: string): string => {
+    const options = field.options || [];
+    if (options.length > 0) {
+        const selectedOption = options.find(option => option.value === value);
+        if (selectedOption) {
+            return selectedOption.label;
+        }
+    }
 
-//     return value;
-// };
-// Will be fixed in the next commit!
-// const renderFieldValueLabel = (field: FbFormModelField, value: string): string => {
-//     if (Array.isArray(value)) {
-//         return value.map(v => getFieldValueLabel(field, v)).join(", ");
-//     }
+    return value;
+};
 
-//     return getFieldValueLabel(field, value);
-// };
+const renderFieldValueLabel = (field: FbFormModelField, value: string): string => {
+    if (Array.isArray(value)) {
+        return value.map(v => getFieldValueLabel(field, v)).join(", ");
+    }
+
+    return getFieldValueLabel(field, value);
+};
 
 /**
  * Converts deep submission meta object into flat object suitable for CSV.
@@ -137,43 +137,47 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
 
                     <DialogContent>
                         <div>
-                            {/* {formSubmission.form.layout.map(row => {
-                                return row.map(id => {
-                                    const field = formSubmission.form.fields.find(
-                                        field => field._id === id
-                                    );
-                                    if (!field) {
-                                        return null;
-                                    }
+                            {formSubmission.form.steps.map(step => {
+                                return step.layout.map(row => {
+                                    return row.map(id => {
+                                        const field = formSubmission.form.fields.find(
+                                            field => field._id === id
+                                        );
+                                        if (!field) {
+                                            return null;
+                                        }
 
-                                    return (
-                                        <div
-                                            key={id}
-                                            style={{
-                                                display: "inline-block",
-                                                width: `calc(100% / ${row.length})`
-                                            }}
-                                        >
-                                            <Typography use="overline">{field.label}: </Typography>
-                                            <Typography use="body1">
-                                                {field.type === "textarea" ? (
-                                                    <pre>
-                                                        {renderFieldValueLabel(
+                                        return (
+                                            <div
+                                                key={id}
+                                                style={{
+                                                    display: "inline-block",
+                                                    width: `calc(100% / ${row.length})`
+                                                }}
+                                            >
+                                                <Typography use="overline">
+                                                    {field.label}:{" "}
+                                                </Typography>
+                                                <Typography use="body1">
+                                                    {field.type === "textarea" ? (
+                                                        <pre>
+                                                            {renderFieldValueLabel(
+                                                                field,
+                                                                formSubmission.data[field.fieldId]
+                                                            )}
+                                                        </pre>
+                                                    ) : (
+                                                        renderFieldValueLabel(
                                                             field,
                                                             formSubmission.data[field.fieldId]
-                                                        )}
-                                                    </pre>
-                                                ) : (
-                                                    renderFieldValueLabel(
-                                                        field,
-                                                        formSubmission.data[field.fieldId]
-                                                    )
-                                                )}
-                                            </Typography>
-                                        </div>
-                                    );
+                                                        )
+                                                    )}
+                                                </Typography>
+                                            </div>
+                                        );
+                                    });
                                 });
-                            })} */}
+                            })}
                         </div>
                     </DialogContent>
                     <DialogActions>

@@ -213,6 +213,10 @@ export const LIST_FORM_SUBMISSIONS = gql`
                                 value
                             }
                         }
+                        steps {
+                            title
+                            layout
+                        }
                     }
                 }
                 meta {
