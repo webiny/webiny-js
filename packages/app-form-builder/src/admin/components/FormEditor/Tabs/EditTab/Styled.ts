@@ -24,7 +24,10 @@ export const Row = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)",
     paddingLeft: 40,
     paddingRight: 10,
-    position: "relative"
+    position: "relative",
+    // We need this because on the smaller screens fourth field in the row shifts out of the row container,
+    // so it breaks the layout.
+    overflowX: "auto"
 });
 
 export const fieldContainer = css({
