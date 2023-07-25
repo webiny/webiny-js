@@ -5,7 +5,6 @@ const renames = require("./setup/renames");
 const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
-const getPackages = require("get-yarn-workspaces");
 const { green } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
@@ -87,7 +86,7 @@ const setup = async args => {
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;
 
-    const workspaces = [projectRoot, ...getPackages(projectRoot)];
+    const workspaces = [projectRoot];
 
     for (let i = 0; i < workspaces.length; i++) {
         const packageJsonPath = path.join(workspaces[i], "package.json");
