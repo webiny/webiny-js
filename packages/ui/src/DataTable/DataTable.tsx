@@ -239,21 +239,7 @@ const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | nu
     return null;
 };
 
-const typedMemo: <T>(c: T) => T = memo;
-
-interface TableRowProps<T> {
-    row: Row<T>;
-}
-
-const TableRow = <T,>({ row }: TableRowProps<T>) => {
-    return (
-        <DataTableRow selected={row.getIsSelected()}>
-            {row.getVisibleCells().map(cell => (
-                <MemoTableCell<T> key={cell.id} cell={cell} />
-            ))}
-        </DataTableRow>
-    );
-};
+const typedMemo: <T>(component: T) => T = memo;
 
 interface TableCellProps<T> {
     cell: Cell<T, unknown>;
@@ -266,6 +252,23 @@ const TableCell = <T,>({ cell }: TableCellProps<T>) => (
 );
 
 const MemoTableCell = typedMemo(TableCell);
+
+interface TableRowProps<T> {
+    row: Row<T>;
+    selected: boolean;
+}
+
+const TableRow = <T,>({ row, selected }: TableRowProps<T>) => {
+    return (
+        <DataTableRow selected={selected}>
+            {row.getVisibleCells().map(cell => (
+                <MemoTableCell<T> key={cell.id} cell={cell} />
+            ))}
+        </DataTableRow>
+    );
+};
+
+const MemoTableRow = typedMemo(TableRow);
 
 export const DataTable = <T extends Object & DefaultData>({
     data,
@@ -340,7 +343,7 @@ export const DataTable = <T extends Object & DefaultData>({
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <TableRow<T> key={row.id} row={row} />
+                        <MemoTableRow<T> key={row.id} row={row} selected={row.getIsSelected()} />
                     ))}
                 </DataTableBody>
             </DataTableContent>
