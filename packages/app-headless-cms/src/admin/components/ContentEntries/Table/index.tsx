@@ -79,107 +79,111 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         [canEdit, model.modelId, currentFolderId]
     );
 
-    const columns: Columns<Entry> = {
-        title: {
-            header: "Name",
-            className: "cms-aco-list-title",
-            cell: (record: Entry) => {
-                const { type } = record;
-                if (type === "RECORD") {
-                    return <EntryName record={record} onClick={createEditEntry(record.original)} />;
-                } else {
-                    return <FolderName record={record} />;
+    const columns: Columns<Entry> = useMemo(() => {
+        return {
+            title: {
+                header: "Name",
+                className: "cms-aco-list-title",
+                cell: (record: Entry) => {
+                    const { type } = record;
+                    if (type === "RECORD") {
+                        return (
+                            <EntryName record={record} onClick={createEditEntry(record.original)} />
+                        );
+                    } else {
+                        return <FolderName record={record} />;
+                    }
+                },
+                enableSorting: true
+            },
+            savedOn: {
+                header: "Last modified",
+                className: "cms-aco-list-savedOn",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
+            },
+            createdBy: {
+                header: "Author",
+                className: "cms-aco-list-createdBy"
+            },
+            status: {
+                header: "Status",
+                className: "cms-aco-list-status",
+                cell: ({ status, version }: Entry) => {
+                    if (status && version) {
+                        return `${statusLabels[status as keyof typeof statusLabels]} (v${version})`;
+                    } else {
+                        return "-";
+                    }
                 }
             },
-            enableSorting: true
-        },
-        savedOn: {
-            header: "Last modified",
-            className: "cms-aco-list-savedOn",
-            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
-            enableSorting: true
-        },
-        createdBy: {
-            header: "Author",
-            className: "cms-aco-list-createdBy"
-        },
-        status: {
-            header: "Status",
-            className: "cms-aco-list-status",
-            cell: ({ status, version }: Entry) => {
-                if (status && version) {
-                    return `${statusLabels[status as keyof typeof statusLabels]} (v${version})`;
-                } else {
-                    return "-";
-                }
-            }
-        },
-        original: {
-            header: "",
-            meta: {
-                alignEnd: true
-            },
-            cell: (record: Entry) => {
-                const { type, original } = record;
-                if (!original) {
-                    return <></>;
-                }
+            original: {
+                header: "",
+                meta: {
+                    alignEnd: true
+                },
+                cell: (record: Entry) => {
+                    const { type, original } = record;
+                    if (!original) {
+                        return <></>;
+                    }
 
-                if (type === "RECORD") {
-                    return (
-                        <Menu
-                            className={`${menuStyles} record-menu`}
-                            handle={<IconButton icon={<More />} />}
-                        >
-                            <RecordActionEdit
-                                record={record}
-                                onClick={createEditEntry(record.original)}
-                                canEdit={canEdit}
-                            />
-                            <RecordActionPublish record={record} />
-                            <RecordActionMove
-                                onClick={() => {
-                                    setMoveSearchRecordDialogOpen(true);
-                                    setSelectedSearchRecord(() => {
-                                        const { id: entryId } = parseIdentifier(record.id);
-                                        const exists = records.some(
-                                            item => item.original.entryId === entryId
-                                        );
-                                        if (!exists) {
-                                            return null;
-                                        }
-                                        return {
-                                            id: record.id,
-                                            location: {
-                                                folderId: currentFolderId as string
+                    if (type === "RECORD") {
+                        return (
+                            <Menu
+                                className={`${menuStyles} record-menu`}
+                                handle={<IconButton icon={<More />} />}
+                            >
+                                <RecordActionEdit
+                                    record={record}
+                                    onClick={createEditEntry(record.original)}
+                                    canEdit={canEdit}
+                                />
+                                <RecordActionPublish record={record} />
+                                <RecordActionMove
+                                    onClick={() => {
+                                        setMoveSearchRecordDialogOpen(true);
+                                        setSelectedSearchRecord(() => {
+                                            const { id: entryId } = parseIdentifier(record.id);
+                                            const exists = records.some(
+                                                item => item.original.entryId === entryId
+                                            );
+                                            if (!exists) {
+                                                return null;
                                             }
-                                        };
-                                    });
+                                            return {
+                                                id: record.id,
+                                                location: {
+                                                    folderId: currentFolderId as string
+                                                }
+                                            };
+                                        });
+                                    }}
+                                />
+                                <RecordActionDelete record={record} />
+                            </Menu>
+                        );
+                    }
+                    return (
+                        <Menu handle={<IconButton icon={<More />} />}>
+                            <FolderActionEdit
+                                onClick={() => {
+                                    setUpdateDialogOpen(true);
+                                    setSelectedFolder(original);
                                 }}
                             />
-                            <RecordActionDelete record={record} />
+                            <FolderActionDelete
+                                onClick={() => {
+                                    setDeleteDialogOpen(true);
+                                    setSelectedFolder(original);
+                                }}
+                            />
                         </Menu>
                     );
                 }
-                return (
-                    <Menu handle={<IconButton icon={<More />} />}>
-                        <FolderActionEdit
-                            onClick={() => {
-                                setUpdateDialogOpen(true);
-                                setSelectedFolder(original);
-                            }}
-                        />
-                        <FolderActionDelete
-                            onClick={() => {
-                                setDeleteDialogOpen(true);
-                                setSelectedFolder(original);
-                            }}
-                        />
-                    </Menu>
-                );
             }
-        }
-    };
+        };
+    }, []);
 
     const tableSorting = useMemo(() => {
         if (!Array.isArray(sorting) || sorting.length === 0) {
@@ -192,6 +196,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         }
         return sorting;
     }, [sorting]);
+
     return (
         <div ref={ref}>
             <DataTable<Entry>
