@@ -228,7 +228,6 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
      */
     useEffect(() => {
         const listItems = async () => {
-            console.time("listItems");
             if (!state.folderId) {
                 return;
             }
@@ -266,7 +265,6 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
             await listRecords(params);
 
             setState({ isSearch });
-            console.timeEnd("listItems");
         };
 
         listItems();
