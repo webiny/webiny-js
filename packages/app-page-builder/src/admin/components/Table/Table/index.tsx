@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
 import { ReactComponent as More } from "@material-design-icons/svg/filled/more_vert.svg";
-import { EntryDialogMove, FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
-import { FolderItem, SearchRecordItem } from "@webiny/app-aco/types";
+import { FolderDialogDelete, FolderDialogUpdate } from "@webiny/app-aco";
+import { FolderItem, Location, SearchRecordItem } from "@webiny/app-aco/types";
 import { IconButton } from "@webiny/ui/Button";
 import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { Menu } from "@webiny/ui/Menu";
@@ -33,7 +33,7 @@ export interface TableProps {
     onSortingChange: OnSortingChange;
 }
 
-interface PageEntry {
+export interface PageEntry {
     $type: "RECORD";
     $selectable: boolean;
     id: string;
@@ -42,6 +42,7 @@ interface PageEntry {
     savedOn: string;
     status?: string;
     version?: number;
+    location: Location;
     original: PbPageDataItem;
 }
 
@@ -60,7 +61,7 @@ interface FolderEntry {
 type Entry = PageEntry | FolderEntry;
 
 const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry[] => {
-    return items.map(({ data }) => {
+    return items.map(({ data, location }) => {
         return {
             $type: "RECORD",
             $selectable: true,
@@ -70,7 +71,8 @@ const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry
             savedOn: data.savedOn,
             status: data.status,
             version: data.version,
-            original: data || {}
+            original: data || {},
+            location: location
         };
     });
 };
@@ -107,9 +109,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-
-    const [selectedSearchRecord, setSelectedSearchRecord] = useState<SearchRecordItem>();
-    const [moveSearchRecordDialogOpen, setMoveSearchRecordDialogOpen] = useState<boolean>(false);
 
     const data = useMemo<Entry[]>(() => {
         return [...createFoldersData(folders), ...createRecordsData(records)];
@@ -158,16 +157,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                             <RecordActionEdit record={entry.original} />
                             <RecordActionPreview record={entry.original} />
                             <RecordActionPublish record={entry.original} />
-                            <RecordActionMove
-                                onClick={() => {
-                                    setMoveSearchRecordDialogOpen(true);
-                                    setSelectedSearchRecord(() =>
-                                        records.find(
-                                            record => record.data.pid === entry.original.pid
-                                        )
-                                    );
-                                }}
-                            />
+                            <RecordActionMove record={entry} />
                             <RecordActionDelete record={entry.original} />
                         </Menu>
                     );
@@ -219,13 +209,6 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         onClose={() => setDeleteDialogOpen(false)}
                     />
                 </>
-            )}
-            {selectedSearchRecord && (
-                <EntryDialogMove
-                    searchRecord={selectedSearchRecord}
-                    open={moveSearchRecordDialogOpen}
-                    onClose={() => setMoveSearchRecordDialogOpen(false)}
-                />
             )}
         </div>
     );

@@ -85,16 +85,15 @@ export const DialogsProvider: React.VFC<DialogsProviderProps> = ({ children }) =
                 }));
 
                 await state.onAccept(data);
-
-                setState(state => ({
-                    ...state,
-                    loading: false
-                }));
             }
-
-            closeDialog();
         } catch (error) {
             showSnackbar(error.message);
+        } finally {
+            setState(state => ({
+                ...state,
+                loading: false
+            }));
+            closeDialog();
         }
     };
 
