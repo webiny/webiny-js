@@ -10,12 +10,6 @@ function getRoot({ cwd } = {}) {
         return dirname(root).replace(/\\/g, "/");
     }
 
-    // For backwards compatibility
-    root = findUp.sync("webiny.root.js", { cwd });
-    if (root) {
-        return dirname(root).replace(/\\/g, "/");
-    }
-
     throw new Error("Couldn't detect Webiny project.");
 }
 
