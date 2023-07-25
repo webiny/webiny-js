@@ -76,80 +76,82 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
 
     const columns: Columns<Entry> = useMemo(() => {
         return {
-        title: {
-            header: "Name",
-            className: "cms-aco-list-title",
-            cell: (record: Entry) => {
-                if (isRecordEntry(record)) {
-                    return <EntryName record={record} onClick={createEditEntry(record.original)} />;
-                }
-                return <FolderName record={record} />;
+            title: {
+                header: "Name",
+                className: "cms-aco-list-title",
+                cell: (record: Entry) => {
+                    if (isRecordEntry(record)) {
+                        return (
+                            <EntryName record={record} onClick={createEditEntry(record.original)} />
+                        );
+                    }
+                    return <FolderName record={record} />;
+                },
+                enableSorting: true
             },
-            enableSorting: true
-        },
-        savedOn: {
-            header: "Last modified",
-            className: "cms-aco-list-savedOn",
-            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
-            enableSorting: true
-        },
-        createdBy: {
-            header: "Author",
-            className: "cms-aco-list-createdBy"
-        },
-        status: {
-            header: "Status",
-            className: "cms-aco-list-status",
-            cell: ({ status, version }: Entry) => {
-                if (status && version) {
-                    return `${statusLabels[status as keyof typeof statusLabels]} (v${version})`;
-                } else {
-                    return "-";
-                }
-            }
-        },
-        original: {
-            header: "",
-            meta: {
-                alignEnd: true
+            savedOn: {
+                header: "Last modified",
+                className: "cms-aco-list-savedOn",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
             },
-            cell: (record: Entry) => {
-                if (isRecordEntry(record)) {
+            createdBy: {
+                header: "Author",
+                className: "cms-aco-list-createdBy"
+            },
+            status: {
+                header: "Status",
+                className: "cms-aco-list-status",
+                cell: ({ status, version }: Entry) => {
+                    if (status && version) {
+                        return `${statusLabels[status as keyof typeof statusLabels]} (v${version})`;
+                    } else {
+                        return "-";
+                    }
+                }
+            },
+            original: {
+                header: "",
+                meta: {
+                    alignEnd: true
+                },
+                cell: (record: Entry) => {
+                    if (isRecordEntry(record)) {
+                        return (
+                            <Menu
+                                className={`${menuStyles} record-menu`}
+                                handle={<IconButton icon={<More />} />}
+                            >
+                                <RecordActionEdit
+                                    record={record}
+                                    onClick={createEditEntry(record.original)}
+                                    canEdit={canEdit}
+                                />
+                                <RecordActionPublish record={record} />
+                                <RecordActionMove record={record} />
+                                <RecordActionDelete record={record} />
+                            </Menu>
+                        );
+                    }
+
                     return (
-                        <Menu
-                            className={`${menuStyles} record-menu`}
-                            handle={<IconButton icon={<More />} />}
-                        >
-                            <RecordActionEdit
-                                record={record}
-                                onClick={createEditEntry(record.original)}
-                                canEdit={canEdit}
+                        <Menu handle={<IconButton icon={<More />} />}>
+                            <FolderActionEdit
+                                onClick={() => {
+                                    setUpdateDialogOpen(true);
+                                    setSelectedFolder(record.original);
+                                }}
                             />
-                            <RecordActionPublish record={record} />
-                            <RecordActionMove record={record} />
-                            <RecordActionDelete record={record} />
+                            <FolderActionDelete
+                                onClick={() => {
+                                    setDeleteDialogOpen(true);
+                                    setSelectedFolder(record.original);
+                                }}
+                            />
                         </Menu>
                     );
                 }
-
-                return (
-                    <Menu handle={<IconButton icon={<More />} />}>
-                        <FolderActionEdit
-                            onClick={() => {
-                                setUpdateDialogOpen(true);
-                                setSelectedFolder(record.original);
-                            }}
-                        />
-                        <FolderActionDelete
-                            onClick={() => {
-                                setDeleteDialogOpen(true);
-                                setSelectedFolder(record.original);
-                            }}
-                        />
-                    </Menu>
-                );
             }
-        }
         };
     }, []);
 
