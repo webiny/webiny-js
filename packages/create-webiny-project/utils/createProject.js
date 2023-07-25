@@ -281,6 +281,7 @@ module.exports = async function createProject({
                 `${green("ERROR OUTPUT: ")}`,
                 "----------------------------------------",
                 err.message,
+                err.stack,
                 "",
                 `${green("SYSTEM INFORMATION: ")}`,
                 "----------------------------------------",
