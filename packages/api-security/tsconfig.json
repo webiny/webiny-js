@@ -15,8 +15,7 @@
     { "path": "../api-wcp" },
     { "path": "../db-dynamodb" },
     { "path": "../handler-aws" },
-    { "path": "../handler-db" },
-    { "path": "../wcp" }
+    { "path": "../handler-db" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -52,9 +51,7 @@
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/handler-db": ["../handler-db/src"]
     },
     "baseUrl": "."
   }

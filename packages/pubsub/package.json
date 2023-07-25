@@ -1,6 +1,6 @@
 {
   "name": "@webiny/pubsub",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -19,8 +19,8 @@
     "@babel/preset-env": "^7.22.7",
     "@babel/preset-typescript": "^7.22.5",
     "@babel/runtime": "^7.22.6",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"
@@ -28,5 +28,6 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  }
+  },
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security-access-management",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,15 +16,15 @@
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/styled": "^11.10.6",
     "@material-design-icons/svg": "^0.12.1",
-    "@webiny/app": "0.0.0",
-    "@webiny/app-admin": "0.0.0",
-    "@webiny/app-security": "0.0.0",
-    "@webiny/feature-flags": "0.0.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/react-router": "0.0.0",
-    "@webiny/ui": "0.0.0",
-    "@webiny/validation": "0.0.0",
+    "@webiny/app": "^5.38.0-local-npm.0",
+    "@webiny/app-admin": "^5.38.0-local-npm.0",
+    "@webiny/app-security": "^5.38.0-local-npm.0",
+    "@webiny/feature-flags": "^5.38.0-local-npm.0",
+    "@webiny/form": "^5.38.0-local-npm.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
+    "@webiny/react-router": "^5.38.0-local-npm.0",
+    "@webiny/ui": "^5.38.0-local-npm.0",
+    "@webiny/validation": "^5.38.0-local-npm.0",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
@@ -40,8 +40,8 @@
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
     "@types/react-helmet": "^6.1.5",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "babel-plugin-emotion": "^9.2.8",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
@@ -62,5 +62,5 @@
       ]
     }
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

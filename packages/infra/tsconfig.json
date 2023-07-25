@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../pulumi" }],
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../pulumi" }, { "path": "../pulumi-aws" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

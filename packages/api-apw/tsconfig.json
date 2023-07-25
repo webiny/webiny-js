@@ -22,8 +22,7 @@
     { "path": "../pubsub" },
     { "path": "../utils" },
     { "path": "../validation" },
-    { "path": "../handler-aws" },
-    { "path": "../wcp" }
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -73,9 +72,7 @@
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

@@ -3921,22 +3921,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-runtime@npm:7.19.6":
-  version: 7.19.6
-  resolution: "@babel/plugin-transform-runtime@npm:7.19.6"
-  dependencies:
-    "@babel/helper-module-imports": ^7.18.6
-    "@babel/helper-plugin-utils": ^7.19.0
-    babel-plugin-polyfill-corejs2: ^0.3.3
-    babel-plugin-polyfill-corejs3: ^0.6.0
-    babel-plugin-polyfill-regenerator: ^0.4.1
-    semver: ^6.3.0
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: ef93efbcbb00dcf4da6dcc55bda698a2a57fca3fb05a6a13e932ecfdb7c1c5d2f0b5b245c1c4faca0318853937caba0d82442f58b7653249f64275d08052fbd8
-  languageName: node
-  linkType: hard
-
 "@babel/plugin-transform-runtime@npm:7.22.7":
   version: 7.22.7
   resolution: "@babel/plugin-transform-runtime@npm:7.22.7"
@@ -4647,6 +4631,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@codexteam/icons@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@codexteam/icons@npm:0.0.4"
+  checksum: ead8fc8ad333e450f174fe5c7a74cbde7e34beff4ae6512962d96a115860c5a254ad5577f4e9a5c9134ef01775a6771da8fc547807b6e08dc000bd1c67642304
+  languageName: node
+  linkType: hard
+
+"@codexteam/icons@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "@codexteam/icons@npm:0.0.5"
+  checksum: 7a27857f769bab2ec6fa52662b9fad0b8084c3b1b86ad12addad774d03430a6666b88ba6f49bae945aab7e53dd5d3c9797d92948d5db177042e881caab394e86
+  languageName: node
+  linkType: hard
+
+"@codexteam/icons@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@codexteam/icons@npm:0.0.6"
+  checksum: b2d4aa71d2608f53922ca164e4c5ecb4cf446498ca65efe7da7b19c4642f6dca68119da2df5ff740e11e6e3f4dfcd822920694cab2f70ab2f1c3d2ae33b6ebfd
+  languageName: node
+  linkType: hard
+
 "@colors/colors@npm:1.5.0":
   version: 1.5.0
   resolution: "@colors/colors@npm:1.5.0"
@@ -5020,6 +5025,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@editorjs/delimiter@npm:1.3.0":
+  version: 1.3.0
+  resolution: "@editorjs/delimiter@npm:1.3.0"
+  dependencies:
+    "@codexteam/icons": ^0.0.5
+  checksum: fae437d1e99511136fe25fb8912cd18cfe4fac6442e1918b016e57578a5473a02b8f73831bbb2e1358a85b3703e5e72b16068ac397c72de52e94415fbabd80ab
+  languageName: node
+  linkType: hard
+
 "@editorjs/editorjs@npm:^2.19.0, @editorjs/editorjs@npm:^2.20.1, @editorjs/editorjs@npm:^2.24.3":
   version: 2.26.5
   resolution: "@editorjs/editorjs@npm:2.26.5"
@@ -5030,6 +5044,33 @@ __metadata:
     html-janitor: ^2.0.4
     nanoid: ^3.1.22
   checksum: 899741482b421ca8ca0f6662e9a446043a255e607b39f08394a669c0f5efa68590197dd4f740ada47ba3a72fb830c3e7e7efca0a2680338ec1a240e509f1acd4
+  languageName: node
+  linkType: hard
+
+"@editorjs/list@npm:1.8.0":
+  version: 1.8.0
+  resolution: "@editorjs/list@npm:1.8.0"
+  dependencies:
+    "@codexteam/icons": ^0.0.4
+  checksum: fb62db17e96a22305bc71d94ae89be12ad4ca44cba4bb4271bec6d38c1b24d03221ba1db8f3b9e8c6555aac9873039fec8194a2e52bca95a03c01d9ce4e88549
+  languageName: node
+  linkType: hard
+
+"@editorjs/quote@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@editorjs/quote@npm:2.5.0"
+  dependencies:
+    "@codexteam/icons": ^0.0.5
+  checksum: ead59ab48576549d477dc10bf94dba2ae03450cc5a11f2157efe911dcaecffd8fcd059e88a53cabd451362b12382d57173b352eec4024a51e36da734bd9e7ea1
+  languageName: node
+  linkType: hard
+
+"@editorjs/underline@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@editorjs/underline@npm:1.1.0"
+  dependencies:
+    "@codexteam/icons": ^0.0.6
+  checksum: 5611b76bea374e698479c06315f1d93e69f16297bd7c04eafd31bdd8d5bcdf2d16dce8711d7cee6a89f8c6edbcbafdd8c659646dc57138710d0aaefefc51bfe2
   languageName: node
   linkType: hard
 
@@ -12124,6 +12165,7 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.18.6
     "@babel/runtime": ^7.19.0
+    "@webiny/app-admin-users-cognito": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -13714,7 +13756,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito":
+"@webiny/app-admin-users-cognito@0.0.0, @webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito"
   dependencies:
@@ -14728,6 +14770,7 @@ __metadata:
     "@babel/preset-react": ^7.22.5
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
+    "@emotion/react": ^11.10.6
     "@types/react": 17.0.39
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -14901,7 +14944,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold-admin-app-module@0.0.0, @webiny/cli-plugin-scaffold-admin-app-module@workspace:packages/cli-plugin-scaffold-admin-app-module":
+"@webiny/cli-plugin-scaffold-admin-app-module@workspace:packages/cli-plugin-scaffold-admin-app-module":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-admin-app-module@workspace:packages/cli-plugin-scaffold-admin-app-module"
   dependencies:
@@ -15010,7 +15053,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold-graphql-service@0.0.0, @webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service":
+"@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service"
   dependencies:
@@ -15124,7 +15167,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-workspaces@0.0.0, @webiny/cli-plugin-workspaces@workspace:packages/cli-plugin-workspaces":
+"@webiny/cli-plugin-workspaces@workspace:packages/cli-plugin-workspaces":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-workspaces@workspace:packages/cli-plugin-workspaces"
   dependencies:
@@ -15152,10 +15195,8 @@ __metadata:
     execa: ^5.0.0
     fast-glob: ^3.2.7
     find-up: 5.0.0
-    fs-extra: ^9.1.0
     graphql-request: ^3.7.0
     inquirer: ^7.3.3
-    ncp: 2.0.0
     open: ^8.0.6
     pirates: ^4.0.1
     semver: ^7.3.4
@@ -15664,7 +15705,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-common@workspace:packages/project-common":
+"@webiny/project-common@0.0.0, @webiny/project-common@workspace:packages/project-common":
   version: 0.0.0-use.local
   resolution: "@webiny/project-common@workspace:packages/project-common"
   dependencies:
@@ -15677,6 +15718,10 @@ __metadata:
     "@babel/plugin-transform-runtime": 7.22.7
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
+    "@editorjs/delimiter": 1.3.0
+    "@editorjs/list": 1.8.0
+    "@editorjs/quote": 2.5.0
+    "@editorjs/underline": 1.1.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@types/jest": 26.0.24
@@ -15687,68 +15732,36 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.51.0
     "@typescript-eslint/parser": 5.51.0
     "@webiny/admin": 0.0.0
-    "@webiny/api": 0.0.0
-    "@webiny/api-aco": 0.0.0
-    "@webiny/api-admin-users-cognito": 0.0.0
-    "@webiny/api-admin-users-cognito-so-ddb": 0.0.0
-    "@webiny/api-apw": 0.0.0
-    "@webiny/api-apw-scheduler-so-ddb": 0.0.0
-    "@webiny/api-file-manager": 0.0.0
-    "@webiny/api-file-manager-aco": 0.0.0
-    "@webiny/api-file-manager-ddb": 0.0.0
-    "@webiny/api-file-manager-s3": 0.0.0
-    "@webiny/api-form-builder": 0.0.0
-    "@webiny/api-form-builder-so-ddb": 0.0.0
-    "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-headless-cms-ddb": 0.0.0
-    "@webiny/api-i18n": 0.0.0
-    "@webiny/api-i18n-content": 0.0.0
-    "@webiny/api-i18n-ddb": 0.0.0
-    "@webiny/api-page-builder": 0.0.0
-    "@webiny/api-page-builder-aco": 0.0.0
-    "@webiny/api-page-builder-import-export": 0.0.0
-    "@webiny/api-page-builder-import-export-so-ddb": 0.0.0
-    "@webiny/api-page-builder-so-ddb": 0.0.0
-    "@webiny/api-prerendering-service": 0.0.0
-    "@webiny/api-security": 0.0.0
-    "@webiny/api-security-cognito": 0.0.0
-    "@webiny/api-security-so-ddb": 0.0.0
-    "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-tenancy-so-ddb": 0.0.0
-    "@webiny/api-tenant-manager": 0.0.0
-    "@webiny/api-wcp": 0.0.0
+    "@webiny/app": 0.0.0
+    "@webiny/app-admin": 0.0.0
+    "@webiny/app-admin-users-cognito": 0.0.0
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
+    "@webiny/app-serverless-cms": 0.0.0
     "@webiny/app-theme": 0.0.0
     "@webiny/app-website": 0.0.0
-    "@webiny/aws-layers": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/cli-plugin-deploy-pulumi": 0.0.0
     "@webiny/cli-plugin-scaffold": 0.0.0
-    "@webiny/cli-plugin-scaffold-admin-app-module": 0.0.0
     "@webiny/cli-plugin-scaffold-ci": 0.0.0
-    "@webiny/cli-plugin-scaffold-graphql-service": 0.0.0
-    "@webiny/cli-plugin-workspaces": 0.0.0
-    "@webiny/db-dynamodb": 0.0.0
     "@webiny/form": 0.0.0
-    "@webiny/handler-aws": 0.0.0
-    "@webiny/handler-client": 0.0.0
-    "@webiny/handler-db": 0.0.0
-    "@webiny/handler-graphql": 0.0.0
-    "@webiny/handler-logs": 0.0.0
     "@webiny/infra": 0.0.0
+    "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-rich-text-renderer": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/serverless-cms-aws": 0.0.0
+    "@webiny/theme": 0.0.0
     "@webiny/validation": 0.0.0
     "@webiny/website": 0.0.0
     babel-plugin-dynamic-import-node: 2.3.3
     babel-plugin-lodash: 3.3.4
     babel-plugin-module-resolver: 4.1.0
     chalk: 4.1.2
+    core-js: 3.27.2
     cross-env: 5.2.1
+    cross-fetch: 3.1.5
     eslint: 8.33.0
     eslint-config-standard: 16.0.3
     eslint-import-resolver-babel-module: 5.3.2
@@ -15760,82 +15773,19 @@ __metadata:
     eslint-plugin-standard: 5.0.0
     execa: 5.1.1
     graphql: ^15.7.2
+    graphql-tag: ^2.12.6
+    invariant: 2.2.4
     jest: 29.5.0
     merge: 2.1.1
+    ncp: ^2.0.0
     prettier: 2.8.3
+    prop-types: 15.8.1
     react: 17.0.2
+    react-dom: 17.0.2
     react-hamburger-menu: ^1.1.1
+    regenerator-runtime: 0.13.11
     ts-jest: 28.0.8
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
-"@webiny/project-ddb-es@workspace:packages/project-ddb-es":
-  version: 0.0.0-use.local
-  resolution: "@webiny/project-ddb-es@workspace:packages/project-ddb-es"
-  dependencies:
-    "@apollo/react-hooks": ^3.1.5
-    "@babel/cli": 7.20.7
-    "@babel/core": 7.20.12
-    "@babel/plugin-proposal-class-properties": 7.18.6
-    "@babel/plugin-proposal-object-rest-spread": 7.20.7
-    "@babel/plugin-proposal-throw-expressions": 7.18.6
-    "@babel/plugin-transform-runtime": 7.19.6
-    "@babel/preset-env": 7.20.2
-    "@babel/preset-typescript": 7.18.6
-    "@emotion/react": ^11.10.6
-    "@emotion/styled": ^11.10.6
-    "@types/jest": 26.0.24
-    "@types/react": 17.0.39
-    "@types/react-dom": 17.0.11
-    "@types/react-hamburger-menu": 0.0.4
-    "@typescript-eslint/eslint-plugin": 5.51.0
-    "@typescript-eslint/parser": 5.51.0
-    "@webiny/admin": 0.0.0
-    "@webiny/api": 0.0.0
-    "@webiny/app-form-builder": 0.0.0
-    "@webiny/app-page-builder": 0.0.0
-    "@webiny/app-page-builder-elements": 0.0.0
-    "@webiny/app-theme": 0.0.0
-    "@webiny/app-website": 0.0.0
-    "@webiny/aws-layers": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/cli-plugin-deploy-pulumi": 0.0.0
-    "@webiny/cli-plugin-scaffold": 0.0.0
-    "@webiny/cli-plugin-scaffold-admin-app-module": 0.0.0
-    "@webiny/cli-plugin-scaffold-ci": 0.0.0
-    "@webiny/cli-plugin-scaffold-graphql-service": 0.0.0
-    "@webiny/cli-plugin-workspaces": 0.0.0
-    "@webiny/form": 0.0.0
-    "@webiny/infra": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    "@webiny/react-rich-text-renderer": 0.0.0
-    "@webiny/react-router": 0.0.0
-    "@webiny/serverless-cms-aws": 0.0.0
-    "@webiny/validation": 0.0.0
-    "@webiny/website": 0.0.0
-    babel-plugin-dynamic-import-node: 2.3.3
-    babel-plugin-lodash: 3.3.4
-    babel-plugin-module-resolver: 4.1.0
-    chalk: 4.1.2
-    cross-env: 5.2.1
-    eslint: 8.33.0
-    eslint-config-standard: 16.0.3
-    eslint-import-resolver-babel-module: 5.3.2
-    eslint-plugin-import: 2.27.5
-    eslint-plugin-jest: 25.7.0
-    eslint-plugin-node: 11.1.0
-    eslint-plugin-promise: 5.2.0
-    eslint-plugin-react: 7.32.2
-    eslint-plugin-standard: 5.0.0
-    execa: 5.1.1
-    graphql: ^15.7.2
-    jest: 29.5.0
-    merge: 2.1.1
-    prettier: 2.8.3
-    react: 17.0.2
-    react-hamburger-menu: ^1.1.1
-    ts-jest: 28.0.8
+    tslib: 2.5.0
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -15844,25 +15794,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-ddb@workspace:packages/project-ddb"
   dependencies:
-    "@apollo/react-hooks": ^3.1.5
-    "@babel/cli": 7.20.7
-    "@babel/core": 7.20.12
-    "@babel/plugin-proposal-class-properties": 7.18.6
-    "@babel/plugin-proposal-object-rest-spread": 7.20.7
-    "@babel/plugin-proposal-throw-expressions": 7.18.6
-    "@babel/plugin-transform-runtime": 7.22.7
-    "@babel/preset-env": 7.20.2
-    "@babel/preset-typescript": 7.18.6
-    "@emotion/react": ^11.10.6
-    "@emotion/styled": ^11.10.6
+    "@babel/cli": ^7.22.6
+    "@babel/core": ^7.22.8
+    "@babel/preset-env": ^7.22.7
+    "@babel/preset-typescript": ^7.22.5
     "@types/jest": 26.0.24
     "@types/node": 12.20.55
-    "@types/react": 17.0.39
-    "@types/react-dom": 17.0.20
-    "@types/react-hamburger-menu": 0.0.4
     "@typescript-eslint/eslint-plugin": 5.51.0
     "@typescript-eslint/parser": 5.51.0
-    "@webiny/admin": 0.0.0
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-admin-users-cognito": 0.0.0
@@ -15886,6 +15825,7 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": 0.0.0
     "@webiny/api-page-builder-so-ddb": 0.0.0
     "@webiny/api-prerendering-service": 0.0.0
+    "@webiny/api-prerendering-service-aws": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-security-cognito": 0.0.0
     "@webiny/api-security-so-ddb": 0.0.0
@@ -15893,55 +15833,24 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": 0.0.0
     "@webiny/api-tenant-manager": 0.0.0
     "@webiny/api-wcp": 0.0.0
-    "@webiny/app-form-builder": 0.0.0
-    "@webiny/app-page-builder": 0.0.0
-    "@webiny/app-page-builder-elements": 0.0.0
-    "@webiny/app-theme": 0.0.0
-    "@webiny/app-website": 0.0.0
     "@webiny/aws-layers": 0.0.0
     "@webiny/cli": 0.0.0
-    "@webiny/cli-plugin-deploy-pulumi": 0.0.0
-    "@webiny/cli-plugin-scaffold": 0.0.0
-    "@webiny/cli-plugin-scaffold-admin-app-module": 0.0.0
-    "@webiny/cli-plugin-scaffold-ci": 0.0.0
-    "@webiny/cli-plugin-scaffold-graphql-service": 0.0.0
-    "@webiny/cli-plugin-workspaces": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
-    "@webiny/form": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-client": 0.0.0
     "@webiny/handler-db": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/handler-logs": 0.0.0
     "@webiny/infra": 0.0.0
+    "@webiny/project-common": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/react-rich-text-renderer": 0.0.0
-    "@webiny/react-router": 0.0.0
     "@webiny/serverless-cms-aws": 0.0.0
     "@webiny/validation": 0.0.0
-    "@webiny/website": 0.0.0
-    babel-plugin-dynamic-import-node: 2.3.3
-    babel-plugin-lodash: 3.3.4
-    babel-plugin-module-resolver: 4.1.0
     chalk: 4.1.2
     cross-env: 5.2.1
-    eslint: 8.33.0
-    eslint-config-standard: 16.0.3
-    eslint-import-resolver-babel-module: 5.3.2
-    eslint-plugin-import: 2.27.5
-    eslint-plugin-jest: 25.7.0
-    eslint-plugin-node: 11.1.0
-    eslint-plugin-promise: 5.2.0
-    eslint-plugin-react: 7.32.2
-    eslint-plugin-standard: 5.0.0
     execa: 5.1.1
     graphql: ^15.7.2
-    jest: 29.5.0
-    merge: 2.1.1
-    prettier: 2.8.3
-    react: 17.0.2
-    react-hamburger-menu: ^1.1.1
-    ts-jest: 28.0.8
+    ncp: ^2.0.0
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -21132,6 +21041,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"core-js@npm:3.27.2, core-js@npm:^3.0.1, core-js@npm:^3.0.4, core-js@npm:^3.15.1, core-js@npm:^3.25.4, core-js@npm:^3.6.1, core-js@npm:^3.6.5":
+  version: 3.27.2
+  resolution: "core-js@npm:3.27.2"
+  checksum: 718debd426f55a6b97cf9b757c936be258afd6d4f7052f89d0f96c982d7013e9000b0b006df42831a0cf32adad298e34d6a19052dce9ae1c7ab87162c0c665e0
+  languageName: node
+  linkType: hard
+
 "core-js@npm:^1.0.0":
   version: 1.2.7
   resolution: "core-js@npm:1.2.7"
@@ -21143,13 +21059,6 @@ __metadata:
   version: 2.6.12
   resolution: "core-js@npm:2.6.12"
   checksum: 44fa9934a85f8c78d61e0c8b7b22436330471ffe59ec5076fe7f324d6e8cf7f824b14b1c81ca73608b13bdb0fef035bd820989bf059767ad6fa13123bb8bd016
-  languageName: node
-  linkType: hard
-
-"core-js@npm:^3.0.1, core-js@npm:^3.0.4, core-js@npm:^3.15.1, core-js@npm:^3.25.4, core-js@npm:^3.6.1, core-js@npm:^3.6.5":
-  version: 3.27.2
-  resolution: "core-js@npm:3.27.2"
-  checksum: 718debd426f55a6b97cf9b757c936be258afd6d4f7052f89d0f96c982d7013e9000b0b006df42831a0cf32adad298e34d6a19052dce9ae1c7ab87162c0c665e0
   languageName: node
   linkType: hard
 
@@ -21386,7 +21295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.0.6":
+"cross-fetch@npm:3.1.5, cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.0.6":
   version: 3.1.5
   resolution: "cross-fetch@npm:3.1.5"
   dependencies:
@@ -28165,7 +28074,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:^2.2.3, invariant@npm:^2.2.4":
+"invariant@npm:2.2.4, invariant@npm:^2.2.3, invariant@npm:^2.2.4":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
@@ -36095,7 +36004,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.x, prop-types@npm:^15.5.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.5.8, prop-types@npm:^15.5.9, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.8.1, prop-types@npm:15.x, prop-types@npm:^15.5.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.5.8, prop-types@npm:^15.5.9, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -37889,6 +37798,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regenerator-runtime@npm:0.13.11, regenerator-runtime@npm:^0.13.11, regenerator-runtime@npm:^0.13.2, regenerator-runtime@npm:^0.13.3, regenerator-runtime@npm:^0.13.4":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
+  languageName: node
+  linkType: hard
+
 "regenerator-runtime@npm:^0.10.0":
   version: 0.10.5
   resolution: "regenerator-runtime@npm:0.10.5"
@@ -37900,13 +37816,6 @@ __metadata:
   version: 0.11.1
   resolution: "regenerator-runtime@npm:0.11.1"
   checksum: 3c97bd2c7b2b3247e6f8e2147a002eb78c995323732dad5dc70fac8d8d0b758d0295e7015b90d3d444446ae77cbd24b9f9123ec3a77018e81d8999818301b4f4
-  languageName: node
-  linkType: hard
-
-"regenerator-runtime@npm:^0.13.11, regenerator-runtime@npm:^0.13.2, regenerator-runtime@npm:^0.13.3, regenerator-runtime@npm:^0.13.4":
-  version: 0.13.11
-  resolution: "regenerator-runtime@npm:0.13.11"
-  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
   languageName: node
   linkType: hard
 
@@ -41600,17 +41509,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:2.5.0, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
+  version: 2.5.0
+  resolution: "tslib@npm:2.5.0"
+  checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1
+  languageName: node
+  linkType: hard
+
 "tslib@npm:^1.10.0, tslib@npm:^1.11.1, tslib@npm:^1.8.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0, tslib@npm:^1.9.3":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
-  version: 2.5.0
-  resolution: "tslib@npm:2.5.0"
-  checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1
   languageName: node
   linkType: hard
 

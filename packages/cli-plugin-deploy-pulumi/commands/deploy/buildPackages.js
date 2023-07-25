@@ -31,10 +31,7 @@ module.exports = async ({ projectApplication, inputs, context }) => {
     const configFiles = [...appConfigFiles];
 
     if (configFiles.length === 0) {
-        output.log({
-            type: "build",
-            message: `Could not watch any of the specified packages.`
-        });
+        context.info(`Could not watch any of the specified packages.`);
         return;
     }
 

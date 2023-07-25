@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-file-manager-s3",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,15 +10,15 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "0.0.0",
+    "@webiny/app": "^5.38.0-local-npm.0",
     "graphql-tag": "^2.12.6",
     "p-retry": "^4.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },
@@ -30,5 +30,5 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

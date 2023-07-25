@@ -16,6 +16,7 @@ const globalStyles = css`
     }
 `;
 
+
 const Layout = styled.div`
     min-height: 100vh;
     display: flex;
@@ -25,6 +26,7 @@ const Layout = styled.div`
         margin-top: auto;
     }
 `;
+
 
 const Static: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (

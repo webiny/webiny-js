@@ -1,14 +1,15 @@
 {
-  "name": "@webiny/telemetry",
-  "version": "0.0.0",
-  "license": "MIT",
-  "dependencies": {
-    "@webiny/global-config": "0.0.0",
-    "form-data": "3.0.0",
-    "node-fetch": "2.6.1"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "."
-  }
+	"name": "@webiny/telemetry",
+	"version": "5.38.0-local-npm.0",
+	"license": "MIT",
+	"dependencies": {
+		"@webiny/global-config": "5.38.0-local-npm.0",
+		"form-data": "3.0.0",
+		"node-fetch": "2.6.1"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "."
+	},
+	"gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

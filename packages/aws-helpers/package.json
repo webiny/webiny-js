@@ -1,6 +1,6 @@
 {
   "name": "@webiny/aws-helpers",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
@@ -25,14 +25,14 @@
     "access": "public",
     "directory": "dist"
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7",
   "dependencies": {
     "@types/aws-lambda": "^8.10.93",
     "cheerio": "^1.0.0-rc.10",
     "srcset": "^4.0.0"
   },
   "devDependencies": {
-    "@webiny/project-utils": "0.0.0"
+    "@webiny/project-utils": "^5.38.0-local-npm.0"
   },
   "sideEffects": false,
   "adio": {

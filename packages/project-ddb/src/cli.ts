@@ -2,6 +2,7 @@ import fs from "fs";
 import util from "util";
 import path from "path";
 import ncpBase from "ncp";
+import commonCliPlugins from "@webiny/project-common/cli";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -16,7 +17,7 @@ const cp = async (from: string, to: string) => {
 };
 
 // Export hooks plugins for deploy and watch commands.
-module.exports = () => [
+export default () => [
     {
         type: "hook-create-app-workspace",
         name: "hook-create-app-workspace-core",
@@ -38,5 +39,6 @@ module.exports = () => [
                 await cp(from, to);
             }
         }
-    }
+    },
+    commonCliPlugins()
 ];

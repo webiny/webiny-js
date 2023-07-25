@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-website",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,12 +16,12 @@
     "@emotion/cache": "^11.10.5",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
-    "@webiny/app": "0.0.0",
-    "@webiny/app-page-builder": "0.0.0",
-    "@webiny/app-page-builder-elements": "0.0.0",
-    "@webiny/app-theme": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/react-router": "0.0.0",
+    "@webiny/app": "^5.38.0-local-npm.0",
+    "@webiny/app-page-builder": "^5.38.0-local-npm.0",
+    "@webiny/app-page-builder-elements": "^5.38.0-local-npm.0",
+    "@webiny/app-theme": "^5.38.0-local-npm.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
+    "@webiny/react-router": "^5.38.0-local-npm.0",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
@@ -36,8 +36,8 @@
     "@babel/preset-env": "^7.22.7",
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"
@@ -54,5 +54,6 @@
     "plugins": {
       "removeViewBox": false
     }
-  }
+  },
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

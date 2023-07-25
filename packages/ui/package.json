@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -82,11 +82,11 @@
     "@types/react-custom-scrollbars": "^4.0.10",
     "@types/react-transition-group": "^4.4.4",
     "@types/shortid": "^0.0.29",
-    "@webiny/cli": "0.0.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
-    "@webiny/storybook-utils": "0.0.0",
-    "@webiny/validation": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/form": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
+    "@webiny/storybook-utils": "^5.38.0-local-npm.0",
+    "@webiny/validation": "^5.38.0-local-npm.0",
     "babel-loader": "9.1.2",
     "babel-plugin-emotion": "^9.2.8",
     "execa": "^5.0.0",
@@ -133,5 +133,5 @@
       ]
     }
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

@@ -1,15 +1,16 @@
 {
-  "name": "@webiny/global-config",
-  "version": "0.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "dependencies": {
-    "load-json-file": "6.2.0",
-    "uuid": "8.3.2",
-    "write-json-file": "4.3.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "."
-  }
+	"name": "@webiny/global-config",
+	"version": "5.38.0-local-npm.0",
+	"main": "index.js",
+	"license": "MIT",
+	"dependencies": {
+		"load-json-file": "6.2.0",
+		"uuid": "8.3.2",
+		"write-json-file": "4.3.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "."
+	},
+	"gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

@@ -1,4 +1,0 @@
-name: core
-runtime: nodejs
-description: Your project's stateful cloud infrastructure resources.
-main: pulumi/

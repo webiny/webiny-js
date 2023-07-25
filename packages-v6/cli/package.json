@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/cli2",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "sideEffects": false,
   "bin": {
     "wby": "./src/bin.js"

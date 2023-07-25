@@ -2,10 +2,10 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../app-admin-users-cognito" },
     { "path": "../app-page-builder" },
-    { "path": "../app-page-builder-elements" },
-    { "path": "../app-theme" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../website" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -14,14 +14,14 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/app-admin-users-cognito/*": ["../app-admin-users-cognito/src/*"],
+      "@webiny/app-admin-users-cognito": ["../app-admin-users-cognito/src"],
       "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
       "@webiny/app-page-builder": ["../app-page-builder/src"],
-      "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
-      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
-      "@webiny/app-theme/*": ["../app-theme/src/*"],
-      "@webiny/app-theme": ["../app-theme/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/website/*": ["../website/src/*"],
+      "@webiny/website": ["../website/src"]
     },
     "baseUrl": "."
   }

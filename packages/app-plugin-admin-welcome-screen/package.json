@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-plugin-admin-welcome-screen",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/plugins": "0.0.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
@@ -23,8 +23,8 @@
     "@babel/preset-env": "^7.22.7",
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },
@@ -43,5 +43,5 @@
       ]
     }
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

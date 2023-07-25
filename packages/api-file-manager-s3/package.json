@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager-s3",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,14 +10,14 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api": "0.0.0",
-    "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/utils": "0.0.0",
-    "@webiny/validation": "0.0.0",
+    "@webiny/api": "^5.38.0-local-npm.0",
+    "@webiny/api-file-manager": "^5.38.0-local-npm.0",
+    "@webiny/api-security": "^5.38.0-local-npm.0",
+    "@webiny/error": "^5.38.0-local-npm.0",
+    "@webiny/handler-graphql": "^5.38.0-local-npm.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
+    "@webiny/utils": "^5.38.0-local-npm.0",
+    "@webiny/validation": "^5.38.0-local-npm.0",
     "form-data": "^4.0.0",
     "mime": "^3.0.0",
     "node-fetch": "^2.6.1",
@@ -29,8 +29,8 @@
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",
     "@types/node-fetch": "^2.6.1",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },
@@ -42,5 +42,5 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

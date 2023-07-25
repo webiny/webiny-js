@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,8 +13,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "0.0.0",
-    "@webiny/plugins": "0.0.0",
+    "@webiny/app": "^5.38.0-local-npm.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
     "minimatch": "^5.1.6",
     "react": "17.0.2",
     "react-dom": "17.0.2"
@@ -26,8 +26,8 @@
     "@babel/preset-env": "^7.22.7",
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "babel-plugin-emotion": "^9.2.8",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
@@ -48,5 +48,5 @@
       ]
     }
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

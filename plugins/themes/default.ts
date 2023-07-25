@@ -175,6 +175,17 @@ export default createTheme({
                     "&:hover": { transform: "translateY(-1px)" }
                 })
             }
-        }
+        },
+        global: `@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet"');`
     }
 });
+
+//<link rel="preconnect" href="https://fonts.googleapis.com">
+//<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+//<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet">
+
+// const str = `<link rel="preconnect" href="https://fonts.googleapis.com">
+// <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+// <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet">`
+// undefined
+// new DOMParser().parseFromString(str, "text/html");

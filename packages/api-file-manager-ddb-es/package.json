@@ -1,16 +1,17 @@
 {
-  "name": "@webiny/api-file-manager-ddb-es",
-  "version": "0.0.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-file-manager-ddb-es"
-  },
-  "description": "This package is scheduled for deletion in the next version.",
-  "author": "Webiny Ltd.",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public",
-    "directory": "."
-  }
+	"name": "@webiny/api-file-manager-ddb-es",
+	"version": "5.38.0-local-npm.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git",
+		"directory": "packages/api-file-manager-ddb-es"
+	},
+	"description": "This package is scheduled for deletion in the next version.",
+	"author": "Webiny Ltd.",
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"directory": "."
+	},
+	"gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-tenancy",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,21 +10,21 @@
   "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api": "0.0.0",
-    "@webiny/api-wcp": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/handler": "0.0.0",
-    "@webiny/handler-db": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
-    "@webiny/pubsub": "0.0.0",
-    "@webiny/utils": "0.0.0",
+    "@webiny/api": "^5.38.0-local-npm.0",
+    "@webiny/api-wcp": "^5.38.0-local-npm.0",
+    "@webiny/error": "^5.38.0-local-npm.0",
+    "@webiny/handler": "^5.38.0-local-npm.0",
+    "@webiny/handler-db": "^5.38.0-local-npm.0",
+    "@webiny/handler-graphql": "^5.38.0-local-npm.0",
+    "@webiny/pubsub": "^5.38.0-local-npm.0",
+    "@webiny/utils": "^5.38.0-local-npm.0",
     "dataloader": "^2.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "jest": "^29.5.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",
@@ -45,5 +45,6 @@
         "aws-sdk"
       ]
     }
-  }
+  },
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

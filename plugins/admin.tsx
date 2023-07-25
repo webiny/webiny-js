@@ -1,6 +1,5 @@
 import React from "react";
-import { Theme, PageLayout, FormLayout } from "@webiny/admin";
-import { Cognito } from "@webiny/app-admin-users-cognito";
+import { Theme, PageLayout, FormLayout, Cognito } from "@webiny/admin";
 
 import theme from "./themes/default";
 import StaticLayout from "./layouts/pages/Static";

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -19,12 +19,12 @@
     "@emotion/styled": "^11.10.6",
     "@types/react": "17.0.39",
     "@types/web": "^0.0.61",
-    "@webiny/i18n": "0.0.0",
-    "@webiny/i18n-react": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/react-composition": "0.0.0",
-    "@webiny/react-router": "0.0.0",
-    "@webiny/ui": "0.0.0",
+    "@webiny/i18n": "^5.38.0-local-npm.0",
+    "@webiny/i18n-react": "^5.38.0-local-npm.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
+    "@webiny/react-composition": "^5.38.0-local-npm.0",
+    "@webiny/react-router": "^5.38.0-local-npm.0",
+    "@webiny/ui": "^5.38.0-local-npm.0",
     "apollo-cache": "^1.3.5",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
@@ -51,8 +51,8 @@
     "@babel/preset-typescript": "^7.22.5",
     "@types/lodash": "^4.14.191",
     "@types/warning": "^3.0.0",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },
@@ -72,5 +72,5 @@
       ]
     }
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

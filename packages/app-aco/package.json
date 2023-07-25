@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-aco",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,16 +17,16 @@
     "@material-design-icons/svg": "^0.12.1",
     "@material-symbols/svg-400": "^0.4.1",
     "@minoru/react-dnd-treeview": "3.2.1",
-    "@webiny/app": "0.0.0",
-    "@webiny/app-admin": "0.0.0",
-    "@webiny/app-headless-cms-common": "0.0.0",
-    "@webiny/app-security": "0.0.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/react-router": "0.0.0",
-    "@webiny/ui": "0.0.0",
-    "@webiny/utils": "0.0.0",
-    "@webiny/validation": "0.0.0",
+    "@webiny/app": "^5.38.0-local-npm.0",
+    "@webiny/app-admin": "^5.38.0-local-npm.0",
+    "@webiny/app-headless-cms-common": "^5.38.0-local-npm.0",
+    "@webiny/app-security": "^5.38.0-local-npm.0",
+    "@webiny/form": "^5.38.0-local-npm.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
+    "@webiny/react-router": "^5.38.0-local-npm.0",
+    "@webiny/ui": "^5.38.0-local-npm.0",
+    "@webiny/utils": "^5.38.0-local-npm.0",
+    "@webiny/validation": "^5.38.0-local-npm.0",
     "dot-prop-immutable": "^2.1.1",
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
@@ -45,8 +45,8 @@
     "@babel/preset-typescript": "^7.22.5",
     "@babel/runtime": "^7.22.6",
     "@types/react": "17.0.39",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "rimraf": "^3.0.2",
@@ -60,5 +60,6 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  }
+  },
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

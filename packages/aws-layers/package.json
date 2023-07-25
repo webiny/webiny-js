@@ -1,24 +1,24 @@
 {
-  "name": "@webiny/aws-layers",
-  "version": "0.0.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/aws-layers"
-  },
-  "author": "Webiny Ltd.",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>"
-  ],
-  "description": "A utility to streamline usage of Webiny layers",
-  "dependencies": {
-    "chalk": "^4.1.0"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public",
-    "directory": "."
-  },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+	"name": "@webiny/aws-layers",
+	"version": "5.38.0-local-npm.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git",
+		"directory": "packages/aws-layers"
+	},
+	"author": "Webiny Ltd.",
+	"contributors": [
+		"Pavel Denisjuk <pavel@webiny.com>"
+	],
+	"description": "A utility to streamline usage of Webiny layers",
+	"dependencies": {
+		"chalk": "4.1.2"
+	},
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"directory": "."
+	},
+	"gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

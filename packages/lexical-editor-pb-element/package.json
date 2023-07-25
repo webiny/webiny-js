@@ -1,24 +1,24 @@
 {
   "name": "@webiny/lexical-editor-pb-element",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "dependencies": {
     "@emotion/styled": "^11.10.6",
     "@material-design-icons/svg": "^0.14.2",
-    "@webiny/app-admin": "0.0.0",
-    "@webiny/app-page-builder": "0.0.0",
-    "@webiny/app-page-builder-elements": "0.0.0",
-    "@webiny/lexical-editor": "0.0.0",
-    "@webiny/react-composition": "0.0.0",
-    "@webiny/theme": "0.0.0",
-    "@webiny/ui": "0.0.0",
+    "@webiny/app-admin": "^5.38.0-local-npm.0",
+    "@webiny/app-page-builder": "^5.38.0-local-npm.0",
+    "@webiny/app-page-builder-elements": "^5.38.0-local-npm.0",
+    "@webiny/lexical-editor": "^5.38.0-local-npm.0",
+    "@webiny/react-composition": "^5.38.0-local-npm.0",
+    "@webiny/theme": "^5.38.0-local-npm.0",
+    "@webiny/ui": "^5.38.0-local-npm.0",
     "lodash": "^4.17.10",
     "medium-editor": "^5.23.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0"
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0"
   },
   "publishConfig": {
     "access": "public",
@@ -27,5 +27,6 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  }
+  },
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

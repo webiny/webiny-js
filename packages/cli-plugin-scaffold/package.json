@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -25,9 +25,9 @@
     "@babel/core": "^7.22.8",
     "@babel/preset-env": "^7.22.7",
     "@types/inquirer": "^7.3.1",
-    "@webiny/cli": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/plugins": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "chalk": "^4.1.0",
     "fast-glob": "^3.2.7",
     "find-up": "^5.0.0",
@@ -45,6 +45,6 @@
     "watch": "yarn webiny run watch"
   },
   "adio": {},
-  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4",
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7",
   "types": "dist/types.d.ts"
 }

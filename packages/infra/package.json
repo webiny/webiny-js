@@ -1,18 +1,19 @@
 {
 	"name": "@webiny/infra",
-	"version": "0.0.0",
+	"version": "5.38.0-local-npm.0",
 	"scripts": {
 		"build": "yarn webiny run build",
 		"watch": "yarn webiny run watch"
 	},
 	"dependencies": {
-		"@webiny/cli": "0.0.0",
-		"@webiny/project-utils": "0.0.0",
-		"@webiny/pulumi": "0.0.0",
-		"@webiny/pulumi-aws": "0.0.0"
+		"@webiny/cli": "^5.38.0-local-npm.0",
+		"@webiny/project-utils": "^5.38.0-local-npm.0",
+		"@webiny/pulumi": "^5.38.0-local-npm.0",
+		"@webiny/pulumi-aws": "^5.38.0-local-npm.0"
 	},
 	"publishConfig": {
 		"access": "public",
 		"directory": "dist"
-	}
+	},
+	"gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security-okta",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,13 +10,13 @@
   "author": "Webiny Ltd.",
   "license": "Webiny Enterprise",
   "dependencies": {
-    "@webiny/api": "0.0.0",
-    "@webiny/api-i18n": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/api-tenancy": "0.0.0",
-    "@webiny/api-tenant-manager": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/api": "^5.38.0-local-npm.0",
+    "@webiny/api-i18n": "^5.38.0-local-npm.0",
+    "@webiny/api-security": "^5.38.0-local-npm.0",
+    "@webiny/api-tenancy": "^5.38.0-local-npm.0",
+    "@webiny/api-tenant-manager": "^5.38.0-local-npm.0",
+    "@webiny/error": "^5.38.0-local-npm.0",
+    "@webiny/handler-graphql": "^5.38.0-local-npm.0",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.6.1"
@@ -25,8 +25,8 @@
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",
     "@types/node-fetch": "^2.6.1",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "rimraf": "^3.0.2",
     "typescript": "4.7.4"
   },
@@ -37,5 +37,6 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  }
+  },
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

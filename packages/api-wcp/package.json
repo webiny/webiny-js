@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-wcp",
-  "version": "0.0.0",
+  "version": "5.38.0-local-npm.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,10 +12,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.22.6",
-    "@webiny/api": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
-    "@webiny/wcp": "0.0.0",
+    "@webiny/api": "^5.38.0-local-npm.0",
+    "@webiny/error": "^5.38.0-local-npm.0",
+    "@webiny/handler-graphql": "^5.38.0-local-npm.0",
+    "@webiny/wcp": "^5.38.0-local-npm.0",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
@@ -25,8 +25,8 @@
     "@babel/plugin-transform-runtime": "^7.22.7",
     "@babel/preset-env": "^7.22.7",
     "@babel/preset-typescript": "^7.22.5",
-    "@webiny/cli": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/cli": "^5.38.0-local-npm.0",
+    "@webiny/project-utils": "^5.38.0-local-npm.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
@@ -44,5 +44,6 @@
     "ignoreDirs": [
       "__tests__"
     ]
-  }
+  },
+  "gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }

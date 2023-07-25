@@ -1,39 +1,39 @@
 {
-  "name": "create-webiny-project",
-  "version": "0.0.0",
-  "description": "Webiny project bootstrap tool.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "bin": "./bin.js",
-  "keywords": [
-    "Webiny"
-  ],
-  "author": "Webiny Ltd.",
-  "license": "MIT",
-  "dependencies": {
-    "@webiny/telemetry": "0.0.0",
-    "chalk": "^4.1.0",
-    "execa": "^5.0.0",
-    "find-up": "5.0.0",
-    "fs-extra": "^9.0.1",
-    "js-yaml": "3.14.1",
-    "listr": "0.14.3",
-    "load-json-file": "6.2.0",
-    "node-fetch": "^2.6.1",
-    "os": "0.1.1",
-    "p-retry": "^4.6.0",
-    "rimraf": "3.0.2",
-    "semver": "^7.3.4",
-    "uuid": "8.3.2",
-    "validate-npm-package-name": "3.0.0",
-    "write-json-file": "4.3.0",
-    "yargs": "15.4.1"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "."
-  },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+	"name": "create-webiny-project",
+	"version": "5.38.0-local-npm.0",
+	"description": "Webiny project bootstrap tool.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"bin": "./bin.js",
+	"keywords": [
+		"Webiny"
+	],
+	"author": "Webiny Ltd.",
+	"license": "MIT",
+	"dependencies": {
+		"@webiny/telemetry": "5.38.0-local-npm.0",
+		"chalk": "4.1.2",
+		"execa": "5.1.1",
+		"find-up": "5.0.0",
+		"fs-extra": "9.1.0",
+		"js-yaml": "3.14.1",
+		"listr": "0.14.3",
+		"load-json-file": "6.2.0",
+		"node-fetch": "2.6.9",
+		"os": "0.1.1",
+		"p-retry": "4.6.2",
+		"rimraf": "3.0.2",
+		"semver": "6.3.0",
+		"uuid": "8.3.2",
+		"validate-npm-package-name": "3.0.0",
+		"write-json-file": "4.3.0",
+		"yargs": "17.6.2"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "."
+	},
+	"gitHead": "f71661427931d0d519cc41d2b810feec1a0b21f7"
 }
