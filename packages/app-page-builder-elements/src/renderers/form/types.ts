@@ -53,7 +53,6 @@ export interface FormData {
     id: string;
     formId: string;
     version: number;
-    layout: FormDataFieldsLayout;
     fields: FormDataField[];
     steps: FbFormStep[];
     published: boolean;
