@@ -632,7 +632,6 @@ export type PbEditorBlockPlugin = Plugin & {
     blockCategory: string;
     tags: string[];
     create(): PbEditorElement;
-    image?: Partial<File>;
     preview(): ReactElement;
 };
 
@@ -868,7 +867,6 @@ export interface PbPageBlock {
     name: string;
     blockCategory: string;
     content: any;
-    preview: File;
     createdOn: string;
     createdBy: PbIdentity;
 }

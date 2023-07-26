@@ -205,8 +205,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                     data: {
                         name: `${item.name} (copy)`,
                         blockCategory: item.blockCategory,
-                        content: item.content,
-                        preview: item.preview
+                        content: item.content
                     }
                 }
             });

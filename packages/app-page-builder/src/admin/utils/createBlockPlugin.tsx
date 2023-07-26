@@ -12,7 +12,6 @@ export default (element: PbPageBlock): void => {
         title: element.name,
         blockCategory: element.blockCategory,
         tags: ["saved"],
-        image: element.preview,
         create() {
             return cloneDeep({ ...element.content, source: element.id });
         },

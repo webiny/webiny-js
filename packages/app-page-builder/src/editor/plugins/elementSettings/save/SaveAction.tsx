@@ -30,7 +30,6 @@ import {
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { removeElementId } from "~/editor/helpers";
 interface PbDocumentElement extends BasePbEditorElement {
-    preview: PbEditorElement;
     overwrite?: boolean;
 }
 
@@ -63,11 +62,6 @@ const SaveAction: React.FC = ({ children }) => {
         const pbElement = (await getElementTree({ element })) as PbElement;
         formData.content = pluginOnSave(removeElementId(pbElement));
 
-        formData.preview = {
-            ...formData.content,
-            id: formData.id
-        };
-
         if (formData.type === "block") {
             const query = formData.overwrite ? UPDATE_PAGE_BLOCK : CREATE_PAGE_BLOCK;
 
@@ -76,9 +70,9 @@ const SaveAction: React.FC = ({ children }) => {
                 variables: formData.overwrite
                     ? {
                           id: element.source,
-                          data: pick(formData, ["content", "preview"])
+                          data: pick(formData, ["content"])
                       }
-                    : { data: pick(formData, ["name", "blockCategory", "preview", "content"]) },
+                    : { data: pick(formData, ["name", "blockCategory", "content"]) },
                 refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }]
             });
 
@@ -106,9 +100,9 @@ const SaveAction: React.FC = ({ children }) => {
                 variables: formData.overwrite
                     ? {
                           id: element.source,
-                          data: pick(formData, ["content", "preview"])
+                          data: pick(formData, ["content"])
                       }
-                    : { data: pick(formData, ["type", "category", "preview", "name", "content"]) }
+                    : { data: pick(formData, ["type", "category", "name", "content"]) }
             });
 
             hideDialog();
