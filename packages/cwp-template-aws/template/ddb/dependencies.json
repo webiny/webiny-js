@@ -21,6 +21,7 @@
 		"@types/react-dom": "17.0.11",
 		"@typescript-eslint/eslint-plugin": "5.51.0",
 		"@typescript-eslint/parser": "5.51.0",
+		"@webiny/cli": "latest",
 		"babel-plugin-dynamic-import-node": "2.3.3",
 		"babel-plugin-module-resolver": "4.1.0",
 		"chalk": "4.1.2",
