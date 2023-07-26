@@ -44,10 +44,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         </ThemeContext.Provider>
     );
 
-    if (theme?.styles?.global) {
+    const globalStyles = theme?.styles?.global;
+    if (globalStyles) {
         render = (
             <>
-                <Global styles={theme?.styles?.global} />
+                <Global styles={globalStyles} />
                 {render}
             </>
         );

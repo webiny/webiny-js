@@ -44,7 +44,7 @@ export interface ThemeStyles {
     borderRadius?: number;
     typography: Typography;
     elements: Record<string, Record<string, any> | StylesObject>;
-    global: StylesObject
+    global?: StylesObject
 
     [key: string]: any;
 }
