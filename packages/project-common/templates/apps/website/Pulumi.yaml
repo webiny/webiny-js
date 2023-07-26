@@ -1,0 +1,4 @@
+name: website
+runtime: nodejs
+description: Your project's public website.
+main: pulumi/

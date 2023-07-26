@@ -1,0 +1,4 @@
+name: admin
+runtime: nodejs
+description: Your project's admin area.
+main: pulumi/
