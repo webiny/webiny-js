@@ -170,6 +170,7 @@ export default createTheme({
                     "&:hover": { transform: "translateY(-1px)" }
                 })
             }
-        }
+        },
+        global: `@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,700|Lato:400,700" rel="stylesheet"');`
     }
 });

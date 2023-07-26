@@ -1,4 +1,4 @@
-import { type CSSObject } from "@emotion/react";
+import { type CSSObject, Interpolation } from "@emotion/react";
 
 export type Content = Element;
 
@@ -44,7 +44,7 @@ export interface ThemeStyles {
     borderRadius?: number;
     typography: Typography;
     elements: Record<string, Record<string, any> | StylesObject>;
-    global?: StylesObject
+    global?: Interpolation<Theme> | StylesObject
 
     [key: string]: any;
 }
