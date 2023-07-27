@@ -343,7 +343,11 @@ export const DataTable = <T extends Object & DefaultData>({
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <MemoTableRow<T> key={row.id} row={row} selected={row.getIsSelected()} />
+                        <MemoTableRow<T>
+                            key={row.original.id || row.id}
+                            row={row}
+                            selected={row.getIsSelected()}
+                        />
                     ))}
                 </DataTableBody>
             </DataTableContent>
