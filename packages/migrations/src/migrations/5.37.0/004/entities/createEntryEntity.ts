@@ -40,9 +40,6 @@ const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
     ownedBy: {
         type: "map"
     },
-    location: {
-        type: "map"
-    },
     modifiedBy: {
         type: "map"
     },
@@ -74,6 +71,9 @@ const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
         type: "map"
     },
     meta: {
+        type: "map"
+    },
+    location: {
         type: "map"
     }
 };

@@ -6,13 +6,13 @@ import { FileInput } from "@webiny/api-file-manager/types";
 import { PbImportExportContext } from "~/graphql/types";
 import { File as ImageFile, FileUploadsData } from "~/types";
 import { PageBlock } from "@webiny/api-page-builder/types";
-import { ExportedBlockData } from "~/export/utils";
 import { s3Stream } from "~/export/s3Stream";
 import { uploadAssets } from "~/import/utils/uploadAssets";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
 import { deleteS3Folder } from "~/import/utils/deleteS3Folder";
 import { updateFilesInData } from "~/import/utils/updateFilesInData";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
+import { ExportedBlockData } from "~/export/process/exporters/BlockExporter";
 
 interface ImportBlockParams {
     key: string;
@@ -89,15 +89,30 @@ export async function importBlock({
         });
     }
 
-    // Check if block category already exists
-    const blockCategory = await context.pageBuilder.getBlockCategory(category?.slug);
-    if (!blockCategory) {
-        await context.pageBuilder.createBlockCategory({
-            name: category.name,
-            slug: category.slug,
-            icon: category.icon,
-            description: category.description
-        });
+    let loadedCategory;
+    if (category) {
+        loadedCategory = await context.pageBuilder.getBlockCategory(category?.slug);
+        if (!loadedCategory) {
+            await context.pageBuilder.createBlockCategory({
+                name: category.name,
+                slug: category.slug,
+                icon: category.icon,
+                description: category.description
+            });
+        }
+    } else {
+        let importedBlocksCategory = await context.pageBuilder.getBlockCategory("imported-blocks");
+
+        if (!importedBlocksCategory) {
+            importedBlocksCategory = await context.pageBuilder.createBlockCategory({
+                name: "Imported Blocks",
+                slug: "imported-blocks",
+                description: "Imported blocks",
+                icon: "fas/star"
+            });
+        }
+
+        loadedCategory = importedBlocksCategory;
     }
 
     log("Removing Directory for block...");
@@ -106,14 +121,12 @@ export async function importBlock({
     log(`Remove block contents from S3...`);
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
-    return { ...block, blockCategory: category.slug };
+    return { ...block, blockCategory: loadedCategory!.slug };
 }
 
 function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
     const { file: blockPreview, fileIdToNewFileMap, srcPrefix } = params;
     const newFile = fileIdToNewFileMap.get(blockPreview.id || "");
-
-    console.log("updateBlockPreviewImage", blockPreview.id, newFile);
 
     if (!newFile) {
         console.log("Block preview file not found!");
@@ -124,6 +137,7 @@ function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
         ? srcPrefix.slice(0, -1)
         : srcPrefix;
 
+    blockPreview.id = newFile.id;
     blockPreview.src = `${srcPrefixWithoutTrailingSlash}/${newFile.key}`;
 
     return blockPreview;

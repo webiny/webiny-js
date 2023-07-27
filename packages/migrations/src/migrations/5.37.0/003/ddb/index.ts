@@ -6,13 +6,13 @@ import {
     getChildLogger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { AcoRecords_5_37_0_003_PageData } from "./PageDataMigration";
+import { AcoRecords_5_37_0_003_AcoFolders } from "./AcoFolderMigration";
 
-export class AcoRecords_5_37_0_003 implements DataMigration {
+export class AcoFolders_5_37_0_003 implements DataMigration {
     private readonly migrations: DataMigration[];
 
     public constructor(table: Table) {
-        this.migrations = [new AcoRecords_5_37_0_003_PageData(table)];
+        this.migrations = [new AcoRecords_5_37_0_003_AcoFolders(table)];
     }
 
     public getId() {
@@ -20,7 +20,7 @@ export class AcoRecords_5_37_0_003 implements DataMigration {
     }
 
     public getDescription() {
-        return "Page Builder Pages search record migration";
+        return "ACO Folder parentId migration";
     }
 
     async shouldExecute(context: DataMigrationContext): Promise<boolean> {
@@ -45,4 +45,4 @@ export class AcoRecords_5_37_0_003 implements DataMigration {
     }
 }
 
-makeInjectable(AcoRecords_5_37_0_003, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(AcoFolders_5_37_0_003, [inject(PrimaryDynamoTableSymbol)]);

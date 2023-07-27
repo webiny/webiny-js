@@ -8,27 +8,32 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { AcoRecords_5_37_0_003 } from "~/migrations/5.37.0/003/ddb-es";
+import { AcoFolders_5_37_0_003, CmsEntryAcoFolder } from "~/migrations/5.37.0/003/ddb-es";
 import {
-    PB_ACO_SEARCH_MODEL_ID,
-    PB_PAGE_TYPE,
-    ROOT_FOLDER
+    ACO_FOLDER_MODEL_ID,
+    ROOT_FOLDER,
+    UPPERCASE_ROOT_FOLDER
 } from "~/migrations/5.37.0/003/constants";
-/**
- * We are using the original 5.35.0 006 migration data and migration to set up the test data.
- */
-import { AcoRecords_5_35_0_006 } from "~/migrations/5.35.0/006/ddb-es";
-import { insertTestPages } from "~tests/migrations/5.35.0/006/ddb-es/insertTestPages";
-import { createLocalesData, createTenantsData } from "~tests/migrations/5.35.0/006/ddb-es/006.data";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
+import { createLocalesData, createTenantsData } from "../common";
+import { insertEmptyIndexes, insertTestFolders } from "./insertTestFolders";
+import {
+    FolderDdbToElasticsearchWriteItem,
+    FolderDdbWriteItem
+} from "~tests/migrations/5.37.0/003/types";
+import { getDecompressedData } from "./getDecompressedData";
+import { esGetIndexName } from "~/utils";
+import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
 describe("5.37.0-003", () => {
     const documentClient = getDocumentClient();
-    const ddbTable = getPrimaryDynamoDbTable();
+    const ddbTable = getPrimaryDynamoDbTable({
+        documentClient
+    });
     const ddbToEsTable = getDynamoToEsTable({
         documentClient
     });
@@ -51,7 +56,7 @@ describe("5.37.0-003", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_003]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -71,7 +76,7 @@ describe("5.37.0-003", () => {
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_003]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -84,14 +89,35 @@ describe("5.37.0-003", () => {
         expect(grouped.notApplicable.length).toBe(0);
     });
 
-    it("should not run if no pages found", async () => {
+    it("should not run if no folders found", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
 
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_003]
+            migrations: [AcoFolders_5_37_0_003]
+        });
+
+        const { data, error } = await handler();
+
+        assertNotError(error);
+        const grouped = groupMigrations(data.migrations);
+
+        expect(grouped.executed.length).toBe(0);
+        expect(grouped.skipped.length).toBe(1);
+        expect(grouped.notApplicable.length).toBe(0);
+    });
+
+    it("should not run if no folders found - empty index", async () => {
+        await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
+        await insertEmptyIndexes(elasticsearchClient);
+
+        const handler = createDdbEsMigrationHandler({
+            primaryTable: ddbTable,
+            elasticsearchClient,
+            dynamoToEsTable: ddbToEsTable,
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         const { data, error } = await handler();
@@ -106,234 +132,166 @@ describe("5.37.0-003", () => {
 
     it("should execute migration", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
-        const { ddbPages } = await insertTestPages({
-            ddbTable,
+        const { ddbFolders, tenants } = await insertTestFolders({
+            table: ddbTable,
             esTable: ddbToEsTable,
             elasticsearchClient
         });
 
-        const searchRecordsBeforeMigrations = await scanTable(ddbTable, {
-            filters: [
-                {
-                    attr: "_et",
-                    eq: "CmsEntries"
-                }
-            ]
+        const ddbFolderRecordsPrepare = (await scanTable(ddbTable)).filter(
+            record => record.modelId === ACO_FOLDER_MODEL_ID
+        );
+
+        const ddbEsFolderRecordsPrepare = (await scanTable(ddbToEsTable)).filter(record => {
+            return (record.index || "").includes(ACO_FOLDER_MODEL_ID.toLowerCase());
         });
 
-        expect(searchRecordsBeforeMigrations).toHaveLength(0);
+        expect(ddbFolderRecordsPrepare.length).toBe(ddbFolders.length * 2);
+        expect(ddbEsFolderRecordsPrepare.length).toBe(ddbFolders.length);
         /**
-         * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
-         */
-        const handlerPrepare = createDdbEsMigrationHandler({
-            primaryTable: ddbTable,
-            elasticsearchClient,
-            dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_35_0_006]
-        });
-        const { data: dataPrepare, error: errorPrepare } = await handlerPrepare();
-
-        assertNotError(errorPrepare);
-        const groupedPrepare = groupMigrations(dataPrepare.migrations);
-        expect(groupedPrepare.executed.length).toBe(1);
-        expect(groupedPrepare.skipped.length).toBe(0);
-        expect(groupedPrepare.notApplicable.length).toBe(0);
-
-        const ddbSearchRecordsPrepare = await scanTable(ddbTable, {
-            entity: "CmsEntries",
-            filters: [
-                {
-                    attr: "modelId",
-                    eq: "acoSearchRecord"
-                }
-            ]
-        });
-
-        const ddbEsSearchRecordsPrepare = await scanTable(ddbToEsTable, {
-            entity: "CmsEntriesElasticsearch",
-            filters: [
-                {
-                    attr: "index",
-                    contains: "acosearchrecord"
-                }
-            ]
-        });
-
-        expect(ddbSearchRecordsPrepare.length).toBe(ddbPages.length * 2);
-        expect(ddbEsSearchRecordsPrepare.length).toBe(ddbPages.length);
-        /**
-         * And then we execute current the 5.37.0_003 migration.
+         * And then we execute current the 5.37.0_001 migration.
          */
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_003]
+            migrations: [AcoFolders_5_37_0_003]
         });
         const { data, error } = await handler();
+
+        await elasticsearchClient.indices.refreshAll();
 
         assertNotError(error);
         const grouped = groupMigrations(data.migrations);
 
-        expect(grouped.executed.length).toBeGreaterThanOrEqual(1);
-        expect(grouped.skipped.length).toBeGreaterThanOrEqual(0);
+        expect(grouped.executed.length).toBe(1);
+        expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
         const searchRecordsAfterMigrations = await scanTable(ddbTable, {
             filters: [
                 {
-                    attr: "_et",
-                    eq: "CmsEntries"
+                    attr: "modelId",
+                    eq: ACO_FOLDER_MODEL_ID
                 }
             ]
         });
         const cmsEntries = searchRecordsAfterMigrations.filter(r => {
-            return r.modelId === PB_ACO_SEARCH_MODEL_ID;
+            return r.modelId === ACO_FOLDER_MODEL_ID;
         });
 
-        expect(searchRecordsAfterMigrations).toHaveLength(ddbPages.length * 2);
-        expect(cmsEntries).toHaveLength(ddbPages.length * 2);
-        /**
-         * We are expecting that the AcoRecords_5_37_0_003 will be executed.
-         * For the AcoRecords_5_35_0_006 it is possible that it is a second iteration of the migration runs and at that point it is not executed.
-         * Because of that, we are checking for skipped to be 1 or less and executed to be 1 or 2.
-         */
+        expect(searchRecordsAfterMigrations).toHaveLength(ddbFolders.length * 2);
+        expect(cmsEntries).toHaveLength(ddbFolders.length * 2);
+
         expect(grouped.executed.length).toBe(1);
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
-        const searchRecords = await scanTable(ddbTable, {
+        /**
+         * First we check the DDB records.
+         */
+        const folderDdbRecords: FolderDdbWriteItem[] = await scanTable(ddbTable, {
             filters: [
                 {
                     attr: "modelId",
-                    eq: PB_ACO_SEARCH_MODEL_ID
+                    eq: ACO_FOLDER_MODEL_ID
                 }
             ]
         });
 
-        expect(searchRecords.length).toBe(ddbPages.length * 2);
+        expect(folderDdbRecords.length).toBe(ddbFolders.length * 2);
 
-        for (const page of ddbPages) {
-            const {
-                createdBy,
-                createdOn,
-                id,
-                locale,
-                locked,
-                path,
-                pid,
-                savedOn,
-                status,
-                tenant,
-                title,
-                version
-            } = page;
+        for (const folder of folderDdbRecords) {
+            /**
+             * We just need to make sure that no folder has "root" or "ROOT" as parent
+             */
+            const parent = (folder.values.parentId || "").toLowerCase();
+            if (parent?.toLowerCase() === "root") {
+                console.log("we have a bogus!");
+            }
 
-            const latestSearchRecord = searchRecords.find(
-                record => record.id === `wby-aco-${pid}#0001` && record.SK === "L"
-            );
-            const revisionSearchRecord = searchRecords.find(
-                record => record.id === `wby-aco-${pid}#0001` && record.SK === "REV#0001"
-            );
-
-            const values = {
-                "text@title": title,
-                "text@content": `${title} Heading ${pid} Lorem ipsum dolor sit amet.`,
-                "text@type": PB_PAGE_TYPE,
-                "object@location": {
-                    "text@folderId": ROOT_FOLDER
-                },
-                "text@tags": [`tag-${pid}-1`, `tag-${pid}-2`],
-                "object@data": {
-                    ["object@createdBy"]: {
-                        ["text@id"]: createdBy.id,
-                        ["text@type"]: createdBy.type,
-                        ["text@displayName"]: createdBy.displayName
-                    },
-                    ["datetime@createdOn"]: createdOn,
-                    ["text@id"]: id,
-                    ["boolean@locked"]: locked,
-                    ["text@path"]: path,
-                    ["text@pid"]: pid,
-                    ["datetime@savedOn"]: savedOn,
-                    ["text@status"]: status,
-                    ["text@title"]: title,
-                    ["number@version"]: version
+            expect(parent).not.toBe(ROOT_FOLDER);
+            expect(parent).not.toBe(UPPERCASE_ROOT_FOLDER);
+        }
+        /**
+         * Then we check the DDB -> ES records.
+         */
+        const folderEsRecords: FolderDdbToElasticsearchWriteItem[] = await scanTable(ddbToEsTable, {
+            filters: [
+                {
+                    attr: "index",
+                    contains: ACO_FOLDER_MODEL_ID.toLowerCase()
                 }
-            };
+            ]
+        });
+        for (const folder of folderEsRecords) {
+            const data = await getDecompressedData<CmsEntryAcoFolder>(folder.data);
 
-            // Checking latest ACO search record
-            expect(latestSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
-                SK: "L",
-                id: `wby-aco-${pid}#0001`,
-                entryId: `wby-aco-${pid}`,
-                locale,
-                locked: false,
-                modelId: PB_ACO_SEARCH_MODEL_ID,
-                status: "draft",
-                tenant,
-                TYPE: "cms.entry.l",
-                values
-            });
+            const parent = (data.values.parentId || "").toLowerCase();
 
-            // Checking revision 1 ACO search record
-            expect(revisionSearchRecord).toMatchObject({
-                PK: `T#${tenant}#L#${locale}#CMS#CME#wby-aco-${pid}`,
-                SK: "REV#0001",
-                id: `wby-aco-${pid}#0001`,
-                entryId: `wby-aco-${pid}`,
-                locale,
-                locked: false,
-                modelId: PB_ACO_SEARCH_MODEL_ID,
-                status: "draft",
-                tenant,
-                TYPE: "cms.entry",
-                values
-            });
+            expect(parent).not.toBe(ROOT_FOLDER);
+            expect(parent).not.toBe(UPPERCASE_ROOT_FOLDER);
+        }
+        /**
+         * And in the end, we check the Elasticsearch data.
+         */
+        for (const item of tenants) {
+            const tenant = item.tenant;
+            for (const locale of item.locales) {
+                const response = await elasticsearchClient.search({
+                    index: esGetIndexName({
+                        tenant,
+                        locale,
+                        type: ACO_FOLDER_MODEL_ID,
+                        isHeadlessCmsModel: true
+                    }),
+                    body: {
+                        size: 10000
+                    }
+                });
+                const folders = response.body.hits.hits.map((item: any) => item._source);
+                expect(folders).toHaveLength(14);
+            }
         }
     });
 
     it("should not run migration if data is already in the expected shape", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
-        await insertTestPages({
-            ddbTable,
+        await insertTestFolders({
+            table: ddbTable,
             esTable: ddbToEsTable,
-            elasticsearchClient,
-            numberOfPages: 1
+            elasticsearchClient
         });
 
-        /**
-         * First we are executing the 5.35.0_006 migration as it creates the original ACO Search Records.
-         */
-        const handlerPrepare = createDdbEsMigrationHandler({
-            primaryTable: ddbTable,
-            elasticsearchClient,
-            dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_35_0_006]
-        });
-        /**
-         * We do not need to check values in the response as those are tested already.
-         */
-        await handlerPrepare();
-        /**
-         * And then we execute current the 5.37.0_003 migration.
-         */
         const handler = createDdbEsMigrationHandler({
             primaryTable: ddbTable,
             elasticsearchClient,
             dynamoToEsTable: ddbToEsTable,
-            migrations: [AcoRecords_5_37_0_003]
+            migrations: [AcoFolders_5_37_0_003]
         });
 
         // Should run the migration
         {
             process.stdout.write("[First run]\n");
             const { data, error } = await handler();
+            await elasticsearchClient.indices.refreshAll();
             assertNotError(error);
             const grouped = groupMigrations(data.migrations);
             expect(grouped.executed.length).toBe(1);
+            expect(grouped.skipped.length).toBe(0);
+            expect(grouped.notApplicable.length).toBe(0);
         }
+        /**
+         * We need to transfer the Elasticsearch data from the DDB-ES table to the Elasticsearch because the migration does not insert into the Elasticsearch directly.
+         */
+        await transferDynamoDbToElasticsearch(elasticsearchClient, ddbToEsTable, item => {
+            return esGetIndexName({
+                tenant: item.tenant,
+                locale: item.locale,
+                isHeadlessCmsModel: true,
+                type: ACO_FOLDER_MODEL_ID
+            });
+        });
 
         // Should skip the migration
         {

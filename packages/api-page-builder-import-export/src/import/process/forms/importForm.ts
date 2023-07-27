@@ -5,9 +5,9 @@ import loadJson from "load-json-file";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
 import { FileUploadsData } from "~/types";
 import { s3Stream } from "~/export/s3Stream";
-import { ExportedFormData } from "~/export/utils";
 import { deleteS3Folder } from "~/import/utils/deleteS3Folder";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
+import { ExportedFormData } from "~/export/process/exporters/FormExporter";
 
 interface ImportFormParams {
     key: string;

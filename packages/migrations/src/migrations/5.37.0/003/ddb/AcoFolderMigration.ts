@@ -22,7 +22,7 @@ const hasAcoFolderBug = (entry: CmsEntryAcoFolder): boolean => {
 
 export type AcoFolderMigrationCheckpoint = Record<string, string | boolean | undefined>;
 
-export class AcoRecords_5_37_0_002_AcoFolders
+export class AcoRecords_5_37_0_003_AcoFolders
     implements DataMigration<AcoFolderMigrationCheckpoint>
 {
     private readonly entryEntity: ReturnType<typeof createDdbEntryEntity>;

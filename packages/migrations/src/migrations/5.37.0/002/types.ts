@@ -41,13 +41,21 @@ export interface CmsEntry<T = CmsEntryValues> {
     meta?: {
         [key: string]: any;
     };
+    location?: {
+        folderId?: string | null;
+    };
 }
-
-export interface CmsEntryAcoFolderValues {
-    parentId?: string | null;
-}
-export type CmsEntryAcoFolder = CmsEntry<CmsEntryAcoFolderValues>;
 
 export interface ListLocalesParams {
     tenant: Tenant;
+}
+
+export interface ListModelsParams {
+    tenant: Tenant;
+    locale: I18NLocale;
+}
+
+export interface CmsModel {
+    modelId: string;
+    name: string;
 }

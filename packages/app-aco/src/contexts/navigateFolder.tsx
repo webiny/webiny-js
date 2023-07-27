@@ -41,6 +41,16 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
         [createStorageKey]
     );
 
+    /**
+     * Helper function to get the current folderId to local storage.
+     * NOTE: with 5.37.0 we moved from "ROOT" to "root" as home folderId,
+     * we need to return the lowercase value.
+     */
+    const getFolderFromStorage = useCallback((): string | undefined => {
+        const folderId = store.get(createStorageKey()) as string | undefined;
+        return folderId?.toLowerCase();
+    }, [createStorageKey]);
+
     useEffect(() => {
         setTimeout(() => {
             // Defer navigation to next tick.
@@ -52,9 +62,9 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
      * Navigate to the latest folder, considering the latest visited folder.
      */
     const navigateToLatestFolder = useCallback(() => {
-        const storageFolderId = store.get(createStorageKey()) as string | undefined;
+        const storageFolderId = getFolderFromStorage();
         props.navigateToLatestFolder(currentFolderId || storageFolderId || ROOT_FOLDER);
-    }, [createStorageKey, currentFolderId]);
+    }, [currentFolderId]);
 
     const navigateToFolder = useCallback(
         (folderId?: string) => {
@@ -70,7 +80,7 @@ export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
     };
 
     const context: NavigateFolderContext = {
-        currentFolderId: currentFolderId || store.get(createStorageKey()),
+        currentFolderId: currentFolderId || getFolderFromStorage(),
         setFolderToStorage,
         navigateToListHome,
         navigateToFolder,

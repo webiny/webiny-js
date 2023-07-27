@@ -18,7 +18,7 @@ import {
 } from "~/utils";
 import { CmsEntryAcoFolder, I18NLocale, ListLocalesParams, Tenant } from "../types";
 import { ACO_FOLDER_MODEL_ID, ROOT_FOLDER, UPPERCASE_ROOT_FOLDER } from "../constants";
-import { getElasticsearchLatestEntryData } from "~/migrations/5.37.0/002/ddb-es/latestElasticsearchData";
+import { getElasticsearchLatestEntryData } from "./latestElasticsearchData";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -36,7 +36,7 @@ export type AcoFolderDataMigrationCheckpoint = Record<
     PrimitiveValue[] | boolean | undefined
 >;
 
-export class AcoRecords_5_37_0_002_AcoFolder
+export class AcoRecords_5_37_0_003_AcoFolder
     implements DataMigration<AcoFolderDataMigrationCheckpoint>
 {
     private readonly elasticsearchClient: Client;
