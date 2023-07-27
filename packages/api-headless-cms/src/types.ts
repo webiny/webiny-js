@@ -18,10 +18,10 @@ import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
 export type ApiEndpoint = "manage" | "preview" | "read";
 
 interface HeadlessCmsPermissions {
-    modelGroupsPermissions: ModelGroupsPermissions;
-    modelsPermissions: ModelsPermissions;
-    entriesPermissions: EntriesPermissions;
-    settingsPermissions: SettingsPermissions;
+    groups: ModelGroupsPermissions;
+    models: ModelsPermissions;
+    entries: EntriesPermissions;
+    settings: SettingsPermissions;
 }
 
 export interface HeadlessCms

@@ -11,9 +11,9 @@ export const validateGroupAccess = async (
     context: PickedCmsContext,
     group: PickedCmsGroup
 ): Promise<boolean> => {
-    const { modelGroupsPermissions } = context.cms.permissions;
+    const { groups } = context.cms.permissions;
 
-    return modelGroupsPermissions.canAccessGroup({
+    return groups.canAccessGroup({
         group
     });
 };
@@ -22,8 +22,8 @@ export const validateModelAccess = async (
     context: PickedCmsContext,
     model: PickedCmsModel
 ): Promise<boolean> => {
-    const { modelsPermissions } = context.cms.permissions;
-    return modelsPermissions.canAccessModel({
+    const { models } = context.cms.permissions;
+    return models.canAccessModel({
         model
     });
 };
@@ -32,9 +32,9 @@ export const checkModelAccess = async (
     context: PickedCmsContext,
     model: PickedCmsModel
 ): Promise<void> => {
-    const { modelsPermissions } = context.cms.permissions;
+    const { models } = context.cms.permissions;
 
-    await modelsPermissions.ensureCanAccessModel({
+    await models.ensureCanAccessModel({
         model
     });
 };
