@@ -10,8 +10,19 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
+import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
+import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
+import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
+
+interface HeadlessCmsPermissions {
+    modelGroupsPermissions: ModelGroupsPermissions;
+    modelsPermissions: ModelsPermissions;
+    entriesPermissions: EntriesPermissions;
+    settingsPermissions: SettingsPermissions;
+}
 
 export interface HeadlessCms
     extends CmsSettingsContext,
@@ -47,6 +58,12 @@ export interface HeadlessCms
      * The storage operations loaded for current context.
      */
     storageOperations: HeadlessCmsStorageOperations;
+    /**
+     * Permissions for settings, groups, models and entries.
+     *
+     * @internal
+     */
+    permissions: HeadlessCmsPermissions;
 }
 
 /**
