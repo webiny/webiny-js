@@ -1,20 +1,20 @@
 import DataLoader from "dataloader";
 import WebinyError from "@webiny/error";
 import {
+    CmsContext,
+    CmsGroup,
     CmsGroupContext,
     CmsGroupListParams,
-    CmsGroup,
-    CmsContext,
     HeadlessCmsStorageOperations,
-    OnGroupBeforeCreateTopicParams,
     OnGroupAfterCreateTopicParams,
-    OnGroupBeforeUpdateTopicParams,
-    OnGroupAfterUpdateTopicParams,
-    OnGroupBeforeDeleteTopicParams,
     OnGroupAfterDeleteTopicParams,
+    OnGroupAfterUpdateTopicParams,
+    OnGroupBeforeCreateTopicParams,
+    OnGroupBeforeDeleteTopicParams,
+    OnGroupBeforeUpdateTopicParams,
     OnGroupCreateErrorTopicParams,
-    OnGroupUpdateErrorTopicParams,
-    OnGroupDeleteErrorTopicParams
+    OnGroupDeleteErrorTopicParams,
+    OnGroupUpdateErrorTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
@@ -185,7 +185,9 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         const group = await getGroupViaDataLoader(id);
 
         await modelGroupsPermissions.ensure({ owns: group.createdBy });
-        await modelGroupsPermissions.ensureCanAccessGroup({ group, locale: getLocale().code });
+        await modelGroupsPermissions.ensureCanAccessGroup({
+            group
+        });
 
         return group;
     };
@@ -216,8 +218,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             }
 
             return await modelGroupsPermissions.canAccessGroup({
-                group,
-                locale: getLocale().code
+                group
             });
         });
     };
