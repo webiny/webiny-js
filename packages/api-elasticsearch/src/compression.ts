@@ -13,7 +13,7 @@ const getCompressionPlugins = (plugins: PluginsContainer): CompressionPlugin[] =
 export const compress = async (
     pluginsContainer: PluginsContainer,
     data: Record<string, any>
-): Promise<Record<string, any> | string> => {
+): Promise<Record<string, any>> => {
     const plugins = getCompressionPlugins(pluginsContainer);
     if (plugins.length === 0) {
         console.log("No compression plugins");
@@ -34,7 +34,7 @@ export const compress = async (
 export const decompress = async (
     pluginsContainer: PluginsContainer,
     data: Record<string, any>
-): Promise<Record<string, any> | string> => {
+): Promise<Record<string, any>> => {
     const plugins = getCompressionPlugins(pluginsContainer);
     if (plugins.length === 0) {
         return data;
