@@ -77,7 +77,7 @@ describe("entry values modifier", () => {
             }
         );
 
-        values = await modifier.exec({
+        values = await modifier.modify({
             entry,
             model,
             values
@@ -102,7 +102,7 @@ describe("entry values modifier", () => {
             }
         );
 
-        values = await titleModifier.exec({
+        values = await titleModifier.modify({
             entry,
             model,
             values
@@ -124,7 +124,7 @@ describe("entry values modifier", () => {
             }
         );
 
-        values = await ageModifier.exec({
+        values = await ageModifier.modify({
             entry,
             model,
             values
@@ -133,5 +133,23 @@ describe("entry values modifier", () => {
             title: "Test title",
             age: 2
         });
+    });
+
+    it("should not modify anything because model is not supported", async () => {
+        const { model } = getMockData();
+        const nothingWillGetModified =
+            createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>({
+                models: ["nonExisting"],
+                modifier: async ({ setValues }) => {
+                    setValues(() => {
+                        return {
+                            title: "Test title"
+                        };
+                    });
+                }
+            });
+
+        const result = nothingWillGetModified.canModify(model.modelId);
+        expect(result).toEqual(false);
     });
 });
