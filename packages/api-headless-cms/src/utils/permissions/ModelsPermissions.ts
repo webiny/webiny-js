@@ -1,30 +1,37 @@
 import { AppPermissions, AppPermissionsParams, NotAuthorizedError } from "@webiny/api-security";
-import { CmsGroupPermission, CmsModel, CmsModelPermission } from "~/types";
+import {
+    CmsGroupPermission,
+    CmsModel as BaseCmsModel,
+    CmsModelGroup as BaseCmsModelGroup,
+    CmsModelPermission
+} from "~/types";
 import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
 
 export interface ModelsPermissionsParams extends AppPermissionsParams<CmsGroupPermission> {
     modelGroupsPermissions: ModelGroupsPermissions;
 }
 
+interface PickedCmsModel extends Pick<BaseCmsModel, "modelId" | "locale"> {
+    group: Pick<BaseCmsModelGroup, "id">;
+}
+
 export interface CanAccessModelParams {
-    model: CmsModel;
-    locale: string;
+    model: PickedCmsModel;
 }
 
 export interface EnsureModelAccessParams {
-    model: CmsModel;
-    locale: string;
+    model: PickedCmsModel;
 }
 
 export class ModelsPermissions extends AppPermissions<CmsModelPermission> {
-    private modelGroupsPermissions: ModelGroupsPermissions;
+    private readonly modelGroupsPermissions: ModelGroupsPermissions;
 
-    constructor(params: ModelsPermissionsParams) {
+    public constructor(params: ModelsPermissionsParams) {
         super(params);
         this.modelGroupsPermissions = params.modelGroupsPermissions;
     }
 
-    async canAccessModel({ model, locale }: CanAccessModelParams) {
+    public async canAccessModel({ model }: CanAccessModelParams) {
         if (await this.hasFullAccess()) {
             return true;
         }
@@ -46,6 +53,8 @@ export class ModelsPermissions extends AppPermissions<CmsModelPermission> {
 
         const modelGroupsPermissionsList = await modelGroupsPermissions.getPermissions();
         const modelsPermissionsList = await this.getPermissions();
+
+        const locale = model.locale;
 
         for (let i = 0; i < modelGroupsPermissionsList.length; i++) {
             const modelGroupPermission = modelGroupsPermissionsList[i];
@@ -89,7 +98,7 @@ export class ModelsPermissions extends AppPermissions<CmsModelPermission> {
         return false;
     }
 
-    async ensureCanAccessModel(params: EnsureModelAccessParams) {
+    public async ensureCanAccessModel(params: EnsureModelAccessParams) {
         const canAccessModel = await this.canAccessModel(params);
         if (canAccessModel) {
             return;
