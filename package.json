@@ -211,8 +211,7 @@
   "lerna": {
     "version": "0.0.0",
     "packages": [
-      "packages/*",
-      "packages-v6/*"
+      "packages/*"
     ]
   },
   "resolutions": {
