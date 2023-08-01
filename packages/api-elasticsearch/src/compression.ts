@@ -16,7 +16,6 @@ export const compress = async (
 ): Promise<Record<string, any>> => {
     const plugins = getCompressionPlugins(pluginsContainer);
     if (plugins.length === 0) {
-        console.log("No compression plugins");
         return data;
     }
     for (const plugin of plugins) {

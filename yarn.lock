@@ -12374,7 +12374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ungap/structured-clone@npm:1.2.0":
+"@ungap/structured-clone@npm:^1.2.0":
   version: 1.2.0
   resolution: "@ungap/structured-clone@npm:1.2.0"
   checksum: 4f656b7b4672f2ce6e272f2427d8b0824ed11546a601d8d5412b9d7704e83db38a8d9f402ecdf2b9063fc164af842ad0ec4a55819f621ed7e7ea4d1efcc74524
@@ -12856,7 +12856,7 @@ __metadata:
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
     "@types/ungap__structured-clone": ^0.3.0
-    "@ungap/structured-clone": 1.2.0
+    "@ungap/structured-clone": ^1.2.0
     "@webiny/api": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-i18n": 0.0.0
@@ -13371,6 +13371,7 @@ __metadata:
     "@babel/runtime": ^7.22.6
     "@elastic/elasticsearch": 7.12.0
     "@types/jsonpack": ^1.1.0
+    "@ungap/structured-clone": ^1.2.0
     "@webiny/api": 0.0.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
