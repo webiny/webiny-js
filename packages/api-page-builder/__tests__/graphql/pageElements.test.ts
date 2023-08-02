@@ -21,7 +21,6 @@ describe("PageElements Test", () => {
                 name: `${prefix}name`,
                 type: `element`,
                 category: `${prefix}category`,
-                preview: { src: `https://test.com/${prefix}/src.jpg` },
                 content: { some: `${prefix}content` }
             };
 
@@ -58,7 +57,6 @@ describe("PageElements Test", () => {
             const updateData = {
                 name: `${prefix}name-UPDATED`,
                 category: `${prefix}category-UPDATED`,
-                preview: { src: `https://test.com/${prefix}/src-UPDATED.jpg` },
                 content: { some: `${prefix}content-UPDATED` }
             };
 
@@ -98,9 +96,6 @@ describe("PageElements Test", () => {
                                 createdOn: /^20/,
                                 id: ids[0],
                                 name: "pageElement-0-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/pageElement-0-/src-UPDATED.jpg"
-                                },
                                 type: "element"
                             },
                             {
@@ -112,9 +107,6 @@ describe("PageElements Test", () => {
                                 createdOn: /^20/,
                                 id: ids[1],
                                 name: "pageElement-1-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/pageElement-1-/src-UPDATED.jpg"
-                                },
                                 type: "element"
                             },
                             {
@@ -126,9 +118,6 @@ describe("PageElements Test", () => {
                                 createdOn: /^20/,
                                 id: ids[2],
                                 name: "pageElement-2-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/pageElement-2-/src-UPDATED.jpg"
-                                },
                                 type: "element"
                             }
                         ],
