@@ -354,7 +354,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 // If we have more then 1 step then the Form will be recognized as a Multi Step Form.
                 steps: [
                     {
-                        title: "",
+                        title: "Step",
                         layout: []
                     }
                 ],

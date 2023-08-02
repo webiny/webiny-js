@@ -150,6 +150,10 @@ export const FormStep = ({
                     {fields.length === 0 && (
                         <Center
                             onDrop={item => {
+                                // We don't want to drop steps inside of steps
+                                if (item.ui === "step") {
+                                    return undefined;
+                                }
                                 handleDropField(item, {
                                     row: 0,
                                     index: 0
@@ -183,6 +187,7 @@ export const FormStep = ({
                                             });
                                             return undefined;
                                         }}
+                                        isVisible={item => item.ui !== "step"}
                                     />
                                     {/* Row start - includes field drop zones and fields */}
                                     <Row>
@@ -260,6 +265,7 @@ export const FormStep = ({
                                                 });
                                                 return undefined;
                                             }}
+                                            isVisible={item => item.ui !== "step"}
                                         />
                                     )}
                                 </RowContainer>

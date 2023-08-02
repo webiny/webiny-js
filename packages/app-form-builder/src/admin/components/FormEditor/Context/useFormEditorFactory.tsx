@@ -346,7 +346,7 @@ export const useFormEditorFactory = (
                 self.setData(data => {
                     data.steps.push({
                         id: mdbid(),
-                        title: "",
+                        title: "Step",
                         layout: []
                     });
 

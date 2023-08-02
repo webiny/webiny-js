@@ -116,10 +116,32 @@ export const EditTab: React.FC = () => {
         });
     };
 
+    // This function will render drop zones on the top of the step,
+    // if steps are locatted above "source" ("source" step is the step that we move).
+    const renderTopDropZone = (formStepId: string, stepId: string) => {
+        const stepsIds = data.steps.reduce(
+            (prevVal, currVal) => [...prevVal, currVal.id],
+            [] as string[]
+        );
+
+        return stepsIds.slice(0, stepsIds.indexOf(formStepId)).includes(stepId);
+    };
+
+    // This function will render drop zones on the top of the step,
+    // if steps are locatted below "source" ("source" step is the step that we move).
+    const renderBottomDropZone = (formStepId: string, stepId: string) => {
+        const stepsIds = data.steps.reduce(
+            (prevVal, currVal) => [...prevVal, currVal.id],
+            [] as string[]
+        );
+
+        return stepsIds.slice(stepsIds.indexOf(formStepId)).includes(stepId);
+    };
+
     return (
         <EditContainer>
             <FieldErrors errors={errors} />
-            {data.steps.map((formStep: any, index: number) => (
+            {data.steps.map((formStep: FbFormStep, index: number) => (
                 <Draggable
                     beginDrag={{ ui: "step", name: "step", pos: { row: formStep, index } }}
                     key={`step-${index}`}
@@ -164,7 +186,25 @@ export const EditTab: React.FC = () => {
                                         handleStepMove(item, formStep);
                                         return undefined;
                                     }}
-                                    isVisible={item => item.ui === "step"}
+                                    isVisible={item => {
+                                        return (
+                                            item.ui === "step" &&
+                                            renderTopDropZone(item.pos?.row?.id, formStep.id)
+                                        );
+                                    }}
+                                />
+                                <Horizontal
+                                    last
+                                    onDrop={item => {
+                                        handleStepMove(item, formStep);
+                                        return undefined;
+                                    }}
+                                    isVisible={item => {
+                                        return (
+                                            item.ui === "step" &&
+                                            renderBottomDropZone(item.pos?.row?.id, formStep.id)
+                                        );
+                                    }}
                                 />
                             </RowContainer>
                             {data.steps[data.steps.length - 1].id === formStep.id && (
