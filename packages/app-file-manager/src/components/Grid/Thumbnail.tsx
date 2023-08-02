@@ -4,9 +4,9 @@ import getFileTypePlugin from "~/getFileTypePlugin";
 import { useFile } from "~/hooks/useFile";
 
 /**
- * This component is used in the File Details preview.
+ * This component is used in the file grid to render thumbnails.
  */
-export const Thumbnail = makeComposable("FileDetailsThumbnail", () => {
+export const Thumbnail = makeComposable("GridThumbnail", () => {
     const { file } = useFile();
     const filePlugin = getFileTypePlugin(file);
 

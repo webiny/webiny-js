@@ -16,8 +16,6 @@ import { ReactComponent as DownloadIcon } from "@material-design-icons/svg/fille
 import { ReactComponent as MoveIcon } from "@material-design-icons/svg/filled/drive_file_move.svg";
 import { ReactComponent as SelectedMarker } from "@material-design-icons/svg/filled/check_circle.svg";
 
-import { FileItem } from "@webiny/app-admin/types";
-
 import {
     FileBody,
     FileClickable,
@@ -29,9 +27,9 @@ import {
     FileWrapper
 } from "./styled";
 import { useMoveFileToFolder } from "~/hooks/useMoveFileToFolder";
+import { useFile } from "~/hooks/useFile";
 
 export interface FileProps {
-    file: FileItem;
     selected: boolean;
     onSelect?: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
@@ -42,12 +40,13 @@ export interface FileProps {
 }
 
 export const FileThumbnail: React.FC<FileProps> = ({
-    file,
     selected,
     onSelect,
     children,
     showFileDetails
 }) => {
+    const { file } = useFile();
+
     const showDetails = useCallback(() => {
         showFileDetails(file.id);
     }, [file.id]);

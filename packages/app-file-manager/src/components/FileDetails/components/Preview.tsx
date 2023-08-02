@@ -9,7 +9,7 @@ const PreviewContainer = styled.div`
     width: auto;
     align-items: center;
     justify-content: center;
-    > img {
+    img {
         max-width: 400px;
         max-height: calc(100vh - 350px);
     }

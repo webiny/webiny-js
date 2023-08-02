@@ -6,7 +6,7 @@ import { FileThumbnail } from "./File";
 import { FileList, FolderList } from "./styled";
 import { FolderItem } from "@webiny/app-aco/types";
 import { FileItem } from "@webiny/app-admin/types";
-import { Thumbnail } from "~/components/FileDetails/components/Thumbnail";
+import { Thumbnail } from "./Thumbnail";
 import { FileProvider } from "~/contexts/FileProvider";
 
 const t = i18n.ns("app-admin/file-manager/components/grid");
@@ -65,7 +65,6 @@ export const Grid: React.FC<GridProps> = ({
                 {records.map(record => (
                     <FileProvider file={record} key={record.id}>
                         <FileThumbnail
-                            file={record}
                             multiple={Boolean(multiple)}
                             showFileDetails={onRecordClick}
                             selected={selected.some(current => current.id === record.id)}
