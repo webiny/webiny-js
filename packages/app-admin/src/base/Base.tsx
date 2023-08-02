@@ -4,13 +4,15 @@ import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outli
 import { Plugin } from "@webiny/app";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
-import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
+import { AddMenu, AddRoute, Layout, NotFound } from "~/index";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
 import { ReactComponent as SlackIcon } from "~/assets/icons/slack-logo.svg";
 import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
 import { FileManager } from "~/base/ui/FileManager";
+import { DashboardView } from "~/base/ui/Dashboard";
 import { globalSearchHotkey } from "~/plugins/globalSearch";
 import { uiLayoutPlugin } from "~/plugins/uiLayoutRenderer";
+import { DashboardWithConfig } from "~/base/configs/Dashboard/DashboardConfig";
 
 const BaseExtension: React.FC = () => {
     plugins.register([globalSearchHotkey, uiLayoutPlugin]);
@@ -61,7 +63,9 @@ const BaseExtension: React.FC = () => {
             />
             <AddRoute path={"/"}>
                 <Layout title={"Welcome!"}>
-                    <Dashboard />
+                    <DashboardWithConfig>
+                        <DashboardView />
+                    </DashboardWithConfig>
                 </Layout>
             </AddRoute>
             <AddRoute path={"*"}>

@@ -48,6 +48,8 @@ export {
 export type {
     ComposeProps,
     HigherOrderComponent,
+    Decorator,
+    ShouldDecorate,
     ProviderProps,
     LayoutProps,
     LoginScreenProps,

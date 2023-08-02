@@ -2,7 +2,7 @@ import React from "react";
 import { Decorator } from "~/Context";
 import { ComposableFC, Compose } from "~/Compose";
 
-interface ShouldDecorate<TDecorator = any, TComponent = any> {
+export interface ShouldDecorate<TDecorator = any, TComponent = any> {
     (decoratorProps: TDecorator, componentProps: TComponent): boolean;
 }
 

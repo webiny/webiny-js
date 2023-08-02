@@ -7,6 +7,6 @@ export type AdminWelcomeScreenWidgetPlugin = Plugin & {
     widget: {
         title: string;
         description: string;
-        cta: React.ReactNode;
+        cta: React.ReactElement;
     };
 };

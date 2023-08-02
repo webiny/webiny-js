@@ -1,5 +1,11 @@
 export * from "@webiny/app";
-export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/app";
+export type {
+    Decorator,
+    ShouldDecorate,
+    HigherOrderComponent,
+    ProviderProps,
+    ComposeProps
+} from "@webiny/app";
 // UI components
 export * from "./base/ui/Tags";
 export * from "./base/ui/Menu";
@@ -16,8 +22,11 @@ export * from "./base/ui/UserMenu";
 export type { UserMenuItemProps } from "./base/ui/UserMenu";
 export * from "./base/ui/LoginScreen";
 export * from "./base/ui/CenteredView";
-export * from "./base/ui/Dashboard";
+export { DashboardRenderer } from "./base/ui/Dashboard";
 export * from "./base/ui/NotFound";
+
+// Configs
+export { DashboardConfig, useDashboardConfig } from "./base/configs/Dashboard/DashboardConfig";
 
 // Base admin app
 export { Admin } from "./base/Admin";
