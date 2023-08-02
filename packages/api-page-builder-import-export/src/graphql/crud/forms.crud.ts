@@ -5,10 +5,10 @@ import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
 import { Payload as ExportFormsProcessHandlerPayload } from "~/export/process";
-import { EXPORT_FORMS_FOLDER_KEY } from "~/export/utils";
 import { zeroPad } from "@webiny/utils";
 import { FormsPermissions } from "@webiny/api-form-builder/plugins/crud/permissions/FormsPermissions";
 
+const EXPORT_FORMS_FOLDER_KEY = "WEBINY_FB_EXPORT_FORM";
 const EXPORT_FORMS_PROCESS_HANDLER = process.env.EXPORT_PROCESS_HANDLER as string;
 const IMPORT_FORMS_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
 

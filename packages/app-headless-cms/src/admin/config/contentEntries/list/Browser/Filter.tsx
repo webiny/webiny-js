@@ -1,5 +1,6 @@
 import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
+import { createDecoratorFactory, makeComposable } from "@webiny/react-composition";
 import { useModel } from "~/admin/hooks";
 
 export interface FilterConfig {
@@ -16,39 +17,59 @@ export interface FilterProps {
     after?: string;
 }
 
-export const Filter: React.FC<FilterProps> = ({
-    name,
-    element,
-    modelIds = [],
-    after = undefined,
-    before = undefined,
-    remove = false
-}) => {
-    const { model } = useModel();
-    const getId = useIdGenerator("filter");
+export interface CreateDecoratorParams {
+    name: string;
+    modelIds?: string[];
+}
 
-    if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {
-        return null;
-    }
+const BaseFilter = makeComposable<FilterProps>(
+    "Filter",
+    ({ name, element, modelIds = [], after = undefined, before = undefined, remove = false }) => {
+        const { model } = useModel();
+        const getId = useIdGenerator("filter");
 
-    const placeAfter = after !== undefined ? getId(after) : undefined;
-    const placeBefore = before !== undefined ? getId(before) : undefined;
+        if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {
+            return null;
+        }
 
-    return (
-        <Property id="browser" name={"browser"}>
-            <Property
-                id={getId(name)}
-                name={"filters"}
-                remove={remove}
-                array={true}
-                before={placeBefore}
-                after={placeAfter}
-            >
-                <Property id={getId(name, "name")} name={"name"} value={name} />
-                {element ? (
-                    <Property id={getId(name, "element")} name={"element"} value={element} />
-                ) : null}
+        const placeAfter = after !== undefined ? getId(after) : undefined;
+        const placeBefore = before !== undefined ? getId(before) : undefined;
+
+        return (
+            <Property id="browser" name={"browser"}>
+                <Property
+                    id={getId(name)}
+                    name={"filters"}
+                    remove={remove}
+                    array={true}
+                    before={placeBefore}
+                    after={placeAfter}
+                >
+                    <Property id={getId(name, "name")} name={"name"} value={name} />
+                    {element ? (
+                        <Property id={getId(name, "element")} name={"element"} value={element} />
+                    ) : null}
+                </Property>
             </Property>
-        </Property>
-    );
-};
+        );
+    }
+);
+
+const createDecorator = createDecoratorFactory<CreateDecoratorParams>()(
+    BaseFilter,
+    (decoratorProps, componentProps) => {
+        const { model } = useModel();
+
+        if (decoratorProps?.modelIds?.length && !decoratorProps.modelIds.includes(model.modelId)) {
+            return false;
+        }
+
+        if (decoratorProps.name === "*") {
+            return true;
+        }
+
+        return decoratorProps.name === componentProps.name;
+    }
+);
+
+export const Filter = Object.assign(BaseFilter, { createDecorator });

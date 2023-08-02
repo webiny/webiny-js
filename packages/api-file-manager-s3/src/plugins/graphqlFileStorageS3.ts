@@ -1,4 +1,5 @@
 import S3 from "aws-sdk/clients/s3";
+import pMap from "p-map";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
@@ -8,6 +9,7 @@ import { checkPermissions } from "~/plugins/checkPermissions";
 import { PresignedPostPayloadData } from "~/types";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase";
 import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase";
+import { createFileNormalizerFromContext } from "~/utils/createFileNormalizerFromContext";
 
 const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     type: "graphql-schema",
@@ -105,18 +107,24 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     try {
                         await checkPermissions(context, { rwd: "w" });
 
-                        const file = args.data as PresignedPostPayloadData;
+                        const data = args.data as PresignedPostPayloadData;
 
                         const settings = await context.fileManager.getSettings();
                         if (!settings) {
                             throw new WebinyError(
                                 "Missing File Manager Settings.",
                                 "FILE_MANAGER_SETTINGS_ERROR",
-                                { file }
+                                { file: data }
                             );
                         }
 
-                        return new Response(getPresignedPostPayload(file, settings));
+                        const normalizer = createFileNormalizerFromContext(context);
+                        const presignedPayload = getPresignedPostPayload(
+                            await normalizer.normalizeFile(data),
+                            settings
+                        );
+
+                        return new Response(presignedPayload);
                     } catch (e) {
                         return new ErrorResponse({
                             message: e.message,
@@ -140,8 +148,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                             );
                         }
 
-                        const presignedPayloads = files.map(file => {
-                            return getPresignedPostPayload(file, settings);
+                        const normalizer = createFileNormalizerFromContext(context);
+
+                        const presignedPayloads = await pMap(files, async data => {
+                            return getPresignedPostPayload(
+                                await normalizer.normalizeFile(data),
+                                settings
+                            );
                         });
 
                         return new Response(presignedPayloads);
@@ -169,8 +182,10 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                             s3Client
                         );
 
+                        const normalizer = createFileNormalizerFromContext(context);
+
                         const multiPartUpload = await useCase.execute({
-                            file: args.data,
+                            file: await normalizer.normalizeFile(args.data),
                             numberOfParts: args.numberOfParts
                         });
 

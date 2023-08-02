@@ -1,11 +1,6 @@
 import React from "react";
 import { useBind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
-import styled from "@emotion/styled";
-
-const DropdownContainer = styled.div`
-    width: 200px;
-`;
 
 export const FilterByType = () => {
     const bind = useBind({
@@ -23,9 +18,5 @@ export const FilterByType = () => {
         { label: "Documents", value: "application/" }
     ];
 
-    return (
-        <DropdownContainer>
-            <Select {...bind} placeholder={"Filter by type"} options={options} size="medium" />
-        </DropdownContainer>
-    );
+    return <Select {...bind} placeholder={"Filter by type"} options={options} size="medium" />;
 };

@@ -11,10 +11,10 @@ export interface PresignedPostPayloadData {
 
 export interface FileData {
     id: string;
-    name: string;
     key: string;
-    type: string;
+    name: string;
     size: number;
+    type: string;
 }
 
 export interface PresignedPostPayloadDataResponse {

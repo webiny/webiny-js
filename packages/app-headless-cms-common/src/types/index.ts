@@ -276,7 +276,11 @@ export interface CmsModelFieldRendererPlugin extends Plugin {
          * }
          * ```
          */
-        canUse(props: { field: CmsModelField; fieldPlugin: CmsModelFieldTypePlugin }): boolean;
+        canUse(props: {
+            field: CmsModelField;
+            fieldPlugin: CmsModelFieldTypePlugin;
+            model: CmsModel;
+        }): boolean;
         /**
          * Renders a field in the UI.
          *

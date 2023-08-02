@@ -116,6 +116,8 @@ function createExportLambdaPolicy(app: PulumiApp) {
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
+    const elasticSearchEnabled = !!app.params.create.elasticSearch;
+
     return app.addResource(aws.iam.Policy, {
         name: "PbExportTaskLambdaPolicy",
         config: {
@@ -162,7 +164,21 @@ function createExportLambdaPolicy(app: PulumiApp) {
                         Effect: "Allow",
                         Action: ["lambda:InvokeFunction"],
                         Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
-                    }
+                    },
+                    // Attach permissions for elastic search domain as well (if ES is enabled).
+                    ...(elasticSearchEnabled
+                        ? [
+                              {
+                                  Sid: "PermissionForES",
+                                  Effect: "Allow" as const,
+                                  Action: "es:*",
+                                  Resource: [
+                                      pulumi.interpolate`${core.elasticsearchDomainArn}`,
+                                      pulumi.interpolate`${core.elasticsearchDomainArn}/*`
+                                  ]
+                              }
+                          ]
+                        : [])
                 ]
             }
         }
@@ -241,6 +257,8 @@ function createImportLambdaPolicy(app: PulumiApp) {
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
+    const elasticSearchEnabled = !!app.params.create.elasticSearch;
+
     return app.addResource(aws.iam.Policy, {
         name: "ImportLambdaPolicy",
         config: {
@@ -304,15 +322,15 @@ function createImportLambdaPolicy(app: PulumiApp) {
                             Resource: `${core.cognitoUserPoolArn}`
                         },
                         // Attach permissions for elastic search domain as well (if ES is enabled).
-                        ...(core.elasticsearchDomainArn
+                        ...(elasticSearchEnabled
                             ? [
                                   {
                                       Sid: "PermissionForES",
                                       Effect: "Allow" as const,
                                       Action: "es:*",
                                       Resource: [
-                                          `${core.elasticsearchDomainArn}`,
-                                          `${core.elasticsearchDomainArn}/*`
+                                          pulumi.interpolate`${core.elasticsearchDomainArn}`,
+                                          pulumi.interpolate`${core.elasticsearchDomainArn}/*`
                                       ]
                                   }
                               ]

@@ -39,6 +39,7 @@ interface BaseAcoAppProviderProps {
     client: ApolloClient<any>;
     createNavigateFolderListLink?: () => string;
     createNavigateFolderStorageKey: () => string;
+    own?: boolean;
 }
 
 export interface AcoAppProviderPropsApi extends BaseAcoAppProviderProps {
@@ -102,7 +103,8 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     folderIdQueryString,
     createNavigateFolderListLink,
     createNavigateFolderStorageKey,
-    folderIdPath: initialFolderIdPath
+    folderIdPath: initialFolderIdPath,
+    own
 }) => {
     const [state, setState] = useState<AcoAppProviderState>({
         loading: false,
@@ -250,7 +252,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
                         createListLink={createNavigateFolderListLink}
                         createStorageKey={createNavigateFolderStorageKey}
                     >
-                        <AcoListProvider>
+                        <AcoListProvider own={own}>
                             <DialogsContextProvider>{children}</DialogsContextProvider>
                         </AcoListProvider>
                     </NavigateFolderWithRouterProvider>

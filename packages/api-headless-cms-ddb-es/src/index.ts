@@ -30,7 +30,8 @@ import {
     CmsEntryElasticsearchIndexPlugin,
     CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
     CmsEntryElasticsearchQueryModifierPlugin,
-    CmsEntryElasticsearchSortModifierPlugin
+    CmsEntryElasticsearchSortModifierPlugin,
+    CmsEntryElasticsearchValuesModifier
 } from "~/plugins";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
@@ -156,7 +157,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 CmsEntryElasticsearchQueryModifierPlugin.type,
                 CmsEntryElasticsearchSortModifierPlugin.type,
                 CmsElasticsearchModelFieldPlugin.type,
-                StorageOperationsCmsModelPlugin.type
+                StorageOperationsCmsModelPlugin.type,
+                CmsEntryElasticsearchValuesModifier.type
             ];
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);

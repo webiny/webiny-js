@@ -1,26 +1,29 @@
-import lodashCloneDeep from "lodash/cloneDeep";
 import WebinyError from "@webiny/error";
 import {
     CmsEntry,
     CmsModel,
-    CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
-import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
+import { extractEntriesFromIndex } from "~/helpers";
 import { configurations } from "~/configurations";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
-import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { DataLoadersHandler } from "~/operations/entry/dataLoaders";
+import { batchWriteAll, BatchWriteItem } from "@webiny/db-dynamodb/utils/batchWrite";
+import { DataLoadersHandler } from "./dataLoaders";
 import {
     createLatestSortKey,
     createPartitionKey,
     createPublishedSortKey,
     createRevisionSortKey
-} from "~/operations/entry/keys";
-import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
+} from "./keys";
+import {
+    queryAll,
+    QueryAllParams,
+    queryOne,
+    QueryOneParams
+} from "@webiny/db-dynamodb/utils/query";
 import {
     compress,
     createLimit,
@@ -36,74 +39,17 @@ import {
     SearchBody as ElasticsearchSearchBody
 } from "@webiny/api-elasticsearch/types";
 import { CmsEntryStorageOperations, CmsIndexEntry } from "~/types";
-import { createElasticsearchBody } from "~/operations/entry/elasticsearch/body";
+import { createElasticsearchBody } from "./elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-
-const getEntryData = (input: CmsEntry): CmsEntry => {
-    const output: any = {
-        ...input
-    };
-    delete output["PK"];
-    delete output["SK"];
-    delete output["published"];
-    delete output["latest"];
-
-    return output;
-};
-
-const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
-    return compress(plugins, {
-        ...getEntryData(entry),
-        latest: true,
-        TYPE: createLatestRecordType(),
-        __type: createLatestRecordType()
-    });
-};
-
-const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
-    return compress(plugins, {
-        ...getEntryData(entry),
-        published: true,
-        TYPE: createPublishedRecordType(),
-        __type: createPublishedRecordType()
-    });
-};
-
-interface ConvertStorageEntryParams {
-    entry: CmsStorageEntry;
-    model: StorageOperationsCmsModel;
-}
-const convertEntryKeysToStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
-    const { model, entry } = params;
-
-    const values = model.convertValueKeyToStorage({
-        fields: model.fields,
-        values: entry.values
-    });
-    return {
-        ...entry,
-        values
-    };
-};
-
-const convertEntryKeysFromStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
-    const { model, entry } = params;
-
-    const values = model.convertValueKeyFromStorage({
-        fields: model.fields,
-        values: entry.values
-    });
-    return {
-        ...entry,
-        values
-    };
-};
+import { batchReadAll, BatchReadItem } from "@webiny/db-dynamodb";
+import { createTransformer } from "./transformations";
+import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
 
 interface ElasticsearchDbRecord {
     index: string;
-    data: Record<string, string>;
+    data: Record<string, any>;
 }
 
 export interface CreateEntriesStorageOperationsParams {
@@ -145,28 +91,23 @@ export const createEntriesStorageOperations = (
         const isPublished = initialEntry.status === "published";
         const locked = isPublished ? true : initialEntry.locked;
 
-        const entry = convertEntryKeysToStorage({
-            model,
-            entry: initialEntry
-        });
-        const storageEntry = convertEntryKeysToStorage({
-            model,
-            entry: initialStorageEntry
-        });
+        initialEntry.locked = locked;
+        initialStorageEntry.locked = locked;
 
-        const esEntry = prepareEntryToIndex({
+        const transformer = createTransformer({
             plugins,
             model,
-            entry: lodashCloneDeep({ ...entry, locked }),
-            storageEntry: lodashCloneDeep({ ...storageEntry, locked })
+            entry: initialEntry,
+            storageEntry: initialStorageEntry
         });
+
+        const { entry, storageEntry } = transformer.transformEntryKeys();
+
+        const esEntry = transformer.transformToIndex();
 
         const { index: esIndex } = configurations.es({
             model
         });
-
-        const esLatestData = await getESLatestEntryData(plugins, esEntry);
-        const esPublishedData = await getESPublishedEntryData(plugins, esEntry);
 
         const revisionKeys = {
             PK: createPartitionKey({
@@ -241,6 +182,7 @@ export const createEntriesStorageOperations = (
             );
         }
 
+        const esLatestData = await transformer.getElasticsearchLatestEntryData();
         const esItems = [
             esEntity.putBatch({
                 ...latestKeys,
@@ -249,6 +191,7 @@ export const createEntriesStorageOperations = (
             })
         ];
         if (isPublished) {
+            const esPublishedData = await transformer.getElasticsearchPublishedEntryData();
             esItems.push(
                 esEntity.putBatch({
                     ...publishedKeys,
@@ -285,14 +228,13 @@ export const createEntriesStorageOperations = (
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const entry = convertEntryKeysToStorage({
+        const transformer = createTransformer({
+            plugins,
             model,
-            entry: initialEntry
+            entry: initialEntry,
+            storageEntry: initialStorageEntry
         });
-        const storageEntry = convertEntryKeysToStorage({
-            model,
-            entry: initialStorageEntry
-        });
+        const { entry, storageEntry } = transformer.transformEntryKeys();
 
         const revisionKeys = {
             PK: createPartitionKey({
@@ -311,14 +253,7 @@ export const createEntriesStorageOperations = (
             SK: createLatestSortKey()
         };
 
-        const esEntry = prepareEntryToIndex({
-            plugins,
-            model,
-            entry: lodashCloneDeep(entry),
-            storageEntry: lodashCloneDeep(storageEntry)
-        });
-
-        const esLatestData = await getESLatestEntryData(plugins, esEntry);
+        const esLatestData = await transformer.getElasticsearchLatestEntryData();
 
         const items = [
             entity.putBatch({
@@ -384,14 +319,14 @@ export const createEntriesStorageOperations = (
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const entry = convertEntryKeysToStorage({
+        const transformer = createTransformer({
+            plugins,
             model,
-            entry: initialEntry
+            entry: initialEntry,
+            storageEntry: initialStorageEntry
         });
-        const storageEntry = convertEntryKeysToStorage({
-            model,
-            entry: initialStorageEntry
-        });
+
+        const { entry, storageEntry } = transformer.transformEntryKeys();
 
         const isPublished = entry.status === "published";
         const locked = isPublished ? true : entry.locked;
@@ -460,13 +395,8 @@ export const createEntriesStorageOperations = (
             model
         });
         /**
-         * Variable for the elasticsearch entry so we do not convert it more than once
-         */
-        let esEntry: CmsIndexEntry | undefined = undefined;
-        /**
          * If the latest entry is the one being updated, we need to create a new latest entry records.
          */
-        let elasticsearchLatestData: any = null;
         if (latestStorageEntry?.id === entry.id) {
             /**
              * First we update the regular DynamoDB table
@@ -481,20 +411,7 @@ export const createEntriesStorageOperations = (
             /**
              * And then update the Elasticsearch table to propagate changes to the Elasticsearch
              */
-            esEntry = prepareEntryToIndex({
-                plugins,
-                model,
-                entry: lodashCloneDeep({
-                    ...entry,
-                    locked
-                }),
-                storageEntry: lodashCloneDeep({
-                    ...storageEntry,
-                    locked
-                })
-            });
-
-            elasticsearchLatestData = await getESLatestEntryData(plugins, esEntry);
+            const elasticsearchLatestData = await transformer.getElasticsearchLatestEntryData();
 
             esItems.push(
                 esEntity.putBatch({
@@ -504,36 +421,9 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
-        let elasticsearchPublishedData = null;
         if (isPublished && publishedStorageEntry?.id === entry.id) {
-            if (!elasticsearchLatestData) {
-                /**
-                 * And then update the Elasticsearch table to propagate changes to the Elasticsearch
-                 */
-                if (!esEntry) {
-                    esEntry = prepareEntryToIndex({
-                        plugins,
-                        model,
-                        entry: lodashCloneDeep({
-                            ...entry,
-                            locked
-                        }),
-                        storageEntry: lodashCloneDeep({
-                            ...storageEntry,
-                            locked
-                        })
-                    });
-                }
-                elasticsearchPublishedData = await getESPublishedEntryData(plugins, esEntry);
-            } else {
-                elasticsearchPublishedData = {
-                    ...elasticsearchLatestData,
-                    published: true,
-                    TYPE: createPublishedRecordType(),
-                    __type: createPublishedRecordType()
-                };
-                delete elasticsearchPublishedData.latest;
-            }
+            const elasticsearchPublishedData =
+                await transformer.getElasticsearchPublishedEntryData();
             esItems.push(
                 esEntity.putBatch({
                     ...publishedKeys,
@@ -581,6 +471,144 @@ export const createEntriesStorageOperations = (
             );
         }
         return initialStorageEntry;
+    };
+
+    const move: CmsEntryStorageOperations["move"] = async (initialModel, id, folderId) => {
+        const model = getStorageOperationsModel(initialModel);
+
+        const partitionKey = createPartitionKey({
+            id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
+        /**
+         * First we need to fetch all the records in the regular DynamoDB table.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey,
+            options: {
+                gte: " "
+            }
+        };
+        const latestSortKey = createLatestSortKey();
+        const publishedSortKey = createPublishedSortKey();
+        const records = await queryAll<CmsEntry>(queryAllParams);
+        /**
+         * Then update the folderId in each record and prepare it to be stored.
+         */
+        let latestRecord: CmsEntry | undefined = undefined;
+        let publishedRecord: CmsEntry | undefined = undefined;
+        const items: BatchWriteItem[] = [];
+        for (const record of records) {
+            items.push(
+                entity.putBatch({
+                    ...record,
+                    location: {
+                        ...record?.location,
+                        folderId
+                    }
+                })
+            );
+            /**
+             * We need to get the published and latest records, so we can update the Elasticsearch.
+             */
+            if (record.SK === publishedSortKey) {
+                publishedRecord = record;
+            } else if (record.SK === latestSortKey) {
+                latestRecord = record;
+            }
+        }
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+            dataLoaders.clearAll({
+                model
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not move all entry records from in the DynamoDB table.",
+                ex.code || "MOVE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    id
+                }
+            );
+        }
+        const esGetItems: BatchReadItem[] = [];
+        if (publishedRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: publishedSortKey
+                })
+            );
+        }
+        if (latestRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: latestSortKey
+                })
+            );
+        }
+        if (esGetItems.length === 0) {
+            return;
+        }
+        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
+            table: esEntity.table,
+            items: esGetItems
+        });
+        const esItems = (
+            await Promise.all(
+                esRecords.map(async record => {
+                    if (!record) {
+                        return null;
+                    }
+                    return {
+                        ...record,
+                        data: await decompress(plugins, record.data)
+                    };
+                })
+            )
+        ).filter(Boolean) as ElasticsearchDbRecord[];
+
+        if (esItems.length === 0) {
+            return;
+        }
+        const esUpdateItems: BatchWriteItem[] = [];
+        for (const item of esItems) {
+            esUpdateItems.push(
+                esEntity.putBatch({
+                    ...item,
+                    data: await compress(plugins, {
+                        ...item.data,
+                        location: {
+                            ...item.data?.location,
+                            folderId
+                        }
+                    })
+                })
+            );
+        }
+
+        try {
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esUpdateItems
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not move entry DynamoDB Elasticsearch records.",
+                ex.code || "MOVE_ES_ENTRY_ERROR",
+                {
+                    error: ex,
+                    partitionKey
+                }
+            );
+        }
     };
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
@@ -696,7 +724,7 @@ export const createEntriesStorageOperations = (
             })
         ];
 
-        const esItems = [];
+        const esItems: BatchWriteItem[] = [];
 
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
@@ -716,14 +744,13 @@ export const createEntriesStorageOperations = (
             );
         }
         if (latestEntry && latestStorageEntry) {
-            const esEntry = prepareEntryToIndex({
+            const latestTransformer = createTransformer({
                 plugins,
                 model,
-                entry: lodashCloneDeep(latestEntry),
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                entry: latestEntry,
+                storageEntry: latestStorageEntry
             });
-
-            const esLatestData = await getESLatestEntryData(plugins, esEntry);
+            const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
             /**
              * In the end we need to set the new latest entry
              */
@@ -988,14 +1015,14 @@ export const createEntriesStorageOperations = (
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const entry = convertEntryKeysToStorage({
+        const transformer = createTransformer({
+            plugins,
             model,
-            entry: initialEntry
+            entry: initialEntry,
+            storageEntry: initialStorageEntry
         });
-        const storageEntry = convertEntryKeysToStorage({
-            model,
-            entry: initialStorageEntry
-        });
+
+        const { entry, storageEntry } = transformer.transformEntryKeys();
 
         /**
          * We need currently published entry to check if need to remove it.
@@ -1123,38 +1150,37 @@ export const createEntriesStorageOperations = (
              *
              * No need to transform it for the storage because it was fetched directly from the Elasticsearch table, where it sits transformed.
              */
-            const latestEsEntryDataDecompressed: CmsEntry = (await decompress(
+            const latestEsEntryDataDecompressed: CmsIndexEntry = (await decompress(
                 plugins,
                 latestEsEntry.data
             )) as any;
+
+            const latestTransformer = createTransformer({
+                plugins,
+                model,
+                transformedToIndex: {
+                    ...latestEsEntryDataDecompressed,
+                    status: CONTENT_ENTRY_STATUS.PUBLISHED,
+                    locked: true,
+                    savedOn: entry.savedOn,
+                    publishedOn: entry.publishedOn
+                }
+            });
 
             esItems.push(
                 esEntity.putBatch({
                     index,
                     PK: createPartitionKey(latestEsEntryDataDecompressed),
                     SK: createLatestSortKey(),
-                    data: await getESLatestEntryData(plugins, {
-                        ...latestEsEntryDataDecompressed,
-                        status: CONTENT_ENTRY_STATUS.PUBLISHED,
-                        locked: true,
-                        savedOn: entry.savedOn,
-                        publishedOn: entry.publishedOn
-                    })
+                    data: await latestTransformer.getElasticsearchLatestEntryData()
                 })
             );
         }
 
-        const preparedEntryData = prepareEntryToIndex({
-            plugins,
-            model,
-            entry: lodashCloneDeep(entry),
-            storageEntry: lodashCloneDeep(storageEntry)
-        });
         /**
          * Update the published revision entry in ES.
          */
-        const esPublishedData = await getESPublishedEntryData(plugins, preparedEntryData);
-
+        const esPublishedData = await transformer.getElasticsearchPublishedEntryData();
         esItems.push(
             esEntity.putBatch({
                 ...publishedKeys,
@@ -1214,14 +1240,13 @@ export const createEntriesStorageOperations = (
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const entry = convertEntryKeysToStorage({
+        const transformer = createTransformer({
+            plugins,
             model,
-            entry: initialEntry
+            entry: initialEntry,
+            storageEntry: initialStorageEntry
         });
-        const storageEntry = convertEntryKeysToStorage({
-            model,
-            entry: initialStorageEntry
-        });
+        const { entry, storageEntry } = await transformer.transformEntryKeys();
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -1264,14 +1289,7 @@ export const createEntriesStorageOperations = (
                 model
             });
 
-            const preparedEntryData = prepareEntryToIndex({
-                plugins,
-                model,
-                entry: lodashCloneDeep(entry),
-                storageEntry: lodashCloneDeep(storageEntry)
-            });
-
-            const esLatestData = await getESLatestEntryData(plugins, preparedEntryData);
+            const esLatestData = await transformer.getElasticsearchLatestEntryData();
             esItems.push(
                 esEntity.putBatch({
                     PK: partitionKey,
@@ -1404,6 +1422,7 @@ export const createEntriesStorageOperations = (
             model,
             ids: params.ids
         });
+
         return entries.map(entry => {
             return convertEntryKeysFromStorage({
                 model,
@@ -1607,6 +1626,7 @@ export const createEntriesStorageOperations = (
         create,
         createRevisionFrom,
         update,
+        move,
         delete: deleteEntry,
         deleteRevision,
         deleteMultipleEntries,

@@ -1,12 +1,12 @@
 import { ImportExportTaskStatus, PbImportExportContext } from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { exportTemplate } from "~/export/utils";
 import { Payload as ExtractPayload } from "../combine";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { zeroPad } from "@webiny/utils";
 import { Configuration, Payload, Response } from "~/export/process";
+import { PageTemplateExporter } from "~/export/process/exporters/PageTemplateExporter";
 
 /**
  * Handles the export templates process workflow.
@@ -73,8 +73,9 @@ export const templatesHandler = async (
         prevStatusOfSubTask = subTask.status;
 
         log(`Extracting template data and uploading to storage...`);
-        // Extract Template
-        const templateDataZip = await exportTemplate(template, exportTemplatesDataKey, fileManager);
+        const templateExporter = new PageTemplateExporter(fileManager);
+        const templateDataZip = await templateExporter.execute(template, exportTemplatesDataKey);
+
         log(`Finish uploading zip...`);
         // Update task record in DB
         subTask = await pageBuilder.importExportTask.updateSubTask(taskId, subTask.id, {

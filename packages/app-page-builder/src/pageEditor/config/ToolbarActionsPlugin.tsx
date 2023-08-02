@@ -1,21 +1,20 @@
 import React, { useCallback, useState } from "react";
 import { css } from "emotion";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 
 import { createComponentPlugin } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { IconButton, ButtonPrimary } from "@webiny/ui/Button";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ReactComponent as LockIcon } from "@material-design-icons/svg/outlined/lock.svg";
-import { ReactComponent as InfoIcon } from "@material-design-icons/svg/outlined/info.svg";
-
 import { ToolbarActions } from "~/editor";
 import { renderPlugin } from "~/editor/components/Editor/Toolbar";
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
-import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
-import { templateModeAtom } from "~/pageEditor/state";
 import { rootElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
 import { PbEditorElement, PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
+import { useMutation } from "@apollo/react-hooks";
+import { usePage } from "~/pageEditor";
+import { UNLINK_PAGE_FROM_TEMPLATE } from "~/pageEditor/graphql";
 
 const unlinkTemplateDialog = css`
     & .mdc-dialog__surface {
@@ -52,8 +51,9 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         const [isModalShown, setIsModalShown] = useState(false);
         const rootElementId = useRecoilValue(rootElementAtom);
         const rootElement = useRecoilValue(elementByIdSelector(rootElementId)) as PbEditorElement;
-        const updateElement = useUpdateElement();
-        const [, setIsTemplateMode] = useRecoilState(templateModeAtom);
+        const [unlinkPage, unlinkPageMutation] = useMutation(UNLINK_PAGE_FROM_TEMPLATE);
+
+        const [page] = usePage();
 
         // TODO: check if the below check even works.
         const unlinkPermission = true;
@@ -74,13 +74,13 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
         }, []);
 
         const onUnlink = useCallback(() => {
-            // we need to drop the `template` property when unlinking.
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { template, ...newPageData } = rootElement.data;
-
-            setIsTemplateMode(false);
-            updateElement({ ...rootElement, data: newPageData }, { history: false });
-            onClose();
+            unlinkPage({
+                variables: { id: page.id }
+            }).then(() => {
+                // TODO: We do a screen refresh just because of some weird state inconsistency-related
+                // TODO: issue. Should fix this when there's more time at hand.
+                window.location.reload();
+            });
         }, [rootElement]);
 
         return (
@@ -104,13 +104,17 @@ export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, Toolba
                             By unlinking it, any changes made to the template will no longer be
                             reflected on this page.
                         </p>
-                        <div className="info-wrapper">
-                            <InfoIcon /> Click here to learn more about how page templates work
-                        </div>
+                        {/* TODO: Bring back when there's actually a link to the docs. */}
+                        {/*<div className="info-wrapper">*/}
+                        {/*    <InfoIcon /> Click here to learn more about how page templates work*/}
+                        {/*</div>*/}
                     </DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                        <ButtonPrimary disabled={!unlinkPermission} onClick={onUnlink}>
+                        <ButtonPrimary
+                            disabled={!unlinkPermission || unlinkPageMutation.loading}
+                            onClick={onUnlink}
+                        >
                             {unlinkPermission ? "Unlink template" : "No permissions"}
                         </ButtonPrimary>
                     </DialogActions>

@@ -33,9 +33,6 @@ export interface CmsEntry<T = CmsEntryValues> {
     savedOn: string;
     modelId: string;
     locale: string;
-    location: {
-        folderId: string;
-    };
     publishedOn?: string;
     version: number;
     locked: boolean;
@@ -46,74 +43,113 @@ export interface CmsEntry<T = CmsEntryValues> {
     };
 }
 
-export interface FileSearchRecordValues {
-    "object@location": {
-        "text@folderId": string;
+export interface PageSettings {
+    social?: {
+        title: string;
+        description: string;
+        image: File;
+        meta: Array<{ property: string; content: string }>;
     };
-    "text@type": "FmFile";
-    "wby-aco-json@data": {
-        aliases: string[];
-        size: number;
-        createdBy: {
-            type: string;
-            displayName: string;
-            id: string;
-        };
-        meta: {
-            private: boolean;
-            width?: number;
-            height?: number;
-        };
-        name: string;
-        id: string;
-        type: string;
-        createdOn: string;
-        key: string;
+    seo?: {
+        title: string;
+        description: string;
+        meta: Array<{ name: string; content: string }>;
     };
-    "text@tags": string[];
+    general?: {
+        tags?: string[];
+        snippet?: string;
+        layout?: string;
+        image?: File;
+    };
+    [key: string]: any;
 }
 
-export interface FileEntryValues {
-    "object@meta": {
-        "boolean@private": boolean;
-        "number@width"?: number;
-        "number@height"?: number;
+export type PageStatus = "published" | "unpublished" | "draft";
+
+export interface Page {
+    id: string;
+    pid: string;
+    locale: string;
+    tenant: string;
+    title: string;
+    editor: string;
+    createdFrom: string | null;
+    path: string;
+    category: string;
+    content: Record<string, any> | null;
+    publishedOn: string | null;
+    version: number;
+    settings: PageSettings;
+    locked: boolean;
+    status: string;
+    createdOn: string;
+    savedOn: string;
+    createdBy: Identity;
+    ownedBy: Identity;
+    webinyVersion: string;
+}
+
+interface BaseAcoSearchRecord {
+    id: string;
+    locale: string;
+    tenant: string;
+    entryId: string;
+    modelId: string;
+    webinyVersion: string;
+}
+
+export interface AcoSearchRecord extends BaseAcoSearchRecord {
+    values: AcoSearchRecordValues;
+}
+
+interface AcoSearchRecordValues {
+    ["text@title"]: string;
+    ["text@content"]: string;
+    ["text@type"]: string;
+    ["text@tags"]?: string[];
+    ["object@data"]: {
+        ["text@id"]: string;
+        ["text@pid"]: string;
+        ["text@title"]: string;
+        ["text@status"]: string;
+        ["object@createdBy"]: {
+            ["text@id"]: string;
+            ["text@displayName"]: string | null;
+            ["text@type"]: string;
+        };
+        ["datetime@createdOn"]: string;
+        ["datetime@savedOn"]: string;
+        ["boolean@locked"]: boolean;
+        ["text@path"]: string;
+        ["number@version"]: number;
     };
-    "object@location": {
-        "text@folderId": string;
+    ["object@location"]?: {
+        ["text@folderId"]?: string;
     };
-    "text@key": string;
-    "text@aliases": string[];
-    "number@size": number;
-    "text@name": string;
-    "text@type": string;
-    "text@tags": string[];
+}
+
+interface ExistingAcoSearchRecordValues extends Omit<AcoSearchRecordValues, "object@data"> {
+    ["wby-aco-json@data"]: {
+        id: string;
+        pid: string;
+        title: string;
+        status: string;
+        createdBy: Identity;
+        createdOn: string;
+        savedOn: string;
+        locked: boolean;
+        path: string;
+        version: number;
+    };
+}
+/**
+ * Existing ACO Search Record has values data in a custom json field.
+ * We removed that field in 5.37.0, so we need to remap the data.
+ */
+export interface ExistingAcoSearchRecord extends BaseAcoSearchRecord {
+    values: ExistingAcoSearchRecordValues;
 }
 
 export interface ListLocalesParams {
     tenant: Tenant;
-}
-
-export interface File {
-    id: string;
-    key: string;
-    size: number;
-    type: string;
-    name: string;
-    meta: Record<string, any>;
-    tags: string[];
-    aliases: string[];
-    createdOn: string;
-    createdBy: Identity;
-    tenant: string;
-    locale: string;
-    webinyVersion: string;
-    /**
-     * User can add new fields to the File object so we must allow it in the types.
-     */
-    [key: string]: any;
-}
-
-export interface FileItem {
-    data: File;
 }

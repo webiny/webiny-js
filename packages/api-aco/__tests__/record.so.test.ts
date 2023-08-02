@@ -98,7 +98,12 @@ describe("`search` CRUD", () => {
         // Let's check whether both of the record exists, listing them by `type` and `location`.
         // List records -> type: "page" / folderId: "folder-1"
         const [listResponsePageFolder1] = await search.listRecords({
-            where: { type: "page", location: { folderId: "folder-1" } },
+            where: {
+                type: "page",
+                location: {
+                    folderId: "folder-1"
+                }
+            },
             sort: ["createdOn_ASC"]
         });
 

@@ -283,7 +283,7 @@ describe("latest entries", function () {
             revision: updatedFruitCategory.id
         });
 
-        expect(publishFruitResponse).toEqual({
+        expect(publishFruitResponse).toMatchObject({
             data: {
                 publishCategory: {
                     data: {

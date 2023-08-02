@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { AcoContext, Folder } from "~/types";
+import { AcoContext, Folder, IAcoApp } from "~/types";
 
 const throwDeleteError = (folder: Folder) => {
     throw new WebinyError(
@@ -28,26 +28,26 @@ export const onFolderBeforeDeleteHook = ({ aco }: AcoContext) => {
             if (children.length > 0) {
                 throwDeleteError(folder);
             }
-            /**
-             * Then for entries in each of the apps.
-             * Because we split the apps we must do it like this.
-             */
-            const apps = aco.listApps();
-            for (const app of apps) {
-                const [records] = await app.search.list({
-                    where: {
-                        type,
-                        location: {
-                            folderId: id
-                        }
-                    },
-                    limit: 1
-                });
-                if (records.length === 0) {
-                    continue;
-                }
-                throwDeleteError(folder);
+
+            let app: IAcoApp | undefined = undefined;
+            try {
+                app = aco.getApp(type);
+            } catch {
+                return;
             }
+            const [records] = await app.search.list({
+                where: {
+                    type,
+                    location: {
+                        folderId: id
+                    }
+                },
+                limit: 1
+            });
+            if (records.length === 0) {
+                return;
+            }
+            throwDeleteError(folder);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFolderBeforeDelete hook",

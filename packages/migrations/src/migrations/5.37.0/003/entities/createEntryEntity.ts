@@ -72,6 +72,9 @@ const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
     },
     meta: {
         type: "map"
+    },
+    location: {
+        type: "map"
     }
 };
 

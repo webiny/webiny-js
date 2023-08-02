@@ -11,7 +11,13 @@ export const Filters = () => {
         if (!Object.keys(data).length) {
             return;
         }
-        list.setFilters(data);
+
+        const convertedFilters = browser.filtersToWhere.reduce(
+            (data, converter) => converter(data),
+            data
+        );
+
+        list.setFilters(convertedFilters);
     };
 
     return (

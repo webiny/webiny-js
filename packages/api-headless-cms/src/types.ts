@@ -10,8 +10,19 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
+import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
+import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
+import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
+
+interface HeadlessCmsPermissions {
+    groups: ModelGroupsPermissions;
+    models: ModelsPermissions;
+    entries: EntriesPermissions;
+    settings: SettingsPermissions;
+}
 
 export interface HeadlessCms
     extends CmsSettingsContext,
@@ -47,6 +58,12 @@ export interface HeadlessCms
      * The storage operations loaded for current context.
      */
     storageOperations: HeadlessCmsStorageOperations;
+    /**
+     * Permissions for settings, groups, models and entries.
+     *
+     * @internal
+     */
+    permissions: HeadlessCmsPermissions;
 }
 
 /**
@@ -2071,6 +2088,28 @@ export interface OnEntryUpdateErrorTopicParams {
 }
 
 /**
+ * Move
+ */
+export interface OnEntryBeforeMoveTopicParams {
+    folderId: string;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryAfterMoveTopicParams {
+    folderId: string;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryMoveErrorTopicParams {
+    error: Error;
+    folderId: string;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+/**
  * Publish
  */
 
@@ -2324,6 +2363,10 @@ export interface CmsEntryContext {
         meta?: Record<string, any>
     ) => Promise<CmsEntry>;
     /**
+     * Move entry, and all its revisions, to a new folder.
+     */
+    moveEntry: (model: CmsModel, id: string, folderId: string) => Promise<CmsEntry>;
+    /**
      * Method that republishes entry with given identifier.
      * @internal
      */
@@ -2445,6 +2488,10 @@ export interface CmsEntryContext {
     onEntryBeforeUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
     onEntryAfterUpdate: Topic<OnEntryAfterUpdateTopicParams>;
     onEntryUpdateError: Topic<OnEntryUpdateErrorTopicParams>;
+
+    onEntryBeforeMove: Topic<OnEntryBeforeMoveTopicParams>;
+    onEntryAfterMove: Topic<OnEntryAfterMoveTopicParams>;
+    onEntryMoveError: Topic<OnEntryMoveErrorTopicParams>;
 
     onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
     onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
@@ -2936,6 +2983,10 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Update existing entry.
      */
     update: (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams<T>) => Promise<T>;
+    /**
+     * Move entry and all its entries into a new folder.
+     */
+    move: (model: CmsModel, id: string, folderId: string) => Promise<void>;
     /**
      * Delete the entry revision.
      */

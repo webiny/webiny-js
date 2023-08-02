@@ -4,25 +4,28 @@ import { waitPage } from "./utils/waitPage";
 
 const sort: string[] = ["createdOn_DESC"];
 
-const content = [
-    {
-        type: "heading",
-        content: "Heading"
-    },
-    {
-        type: "div",
-        content: [
-            {
-                type: "p",
-                content: "Paragraph"
-            },
-            {
-                type: "span",
-                content: "Span"
-            }
-        ]
-    }
-];
+const content = {
+    type: "document",
+    elements: [
+        {
+            type: "heading",
+            content: "Heading"
+        },
+        {
+            type: "div",
+            content: [
+                {
+                    type: "p",
+                    content: "Paragraph"
+                },
+                {
+                    type: "span",
+                    content: "Span"
+                }
+            ]
+        }
+    ]
+};
 
 jest.setTimeout(100000);
 

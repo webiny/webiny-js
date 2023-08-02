@@ -4,7 +4,7 @@ import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
 
 export interface CreatableItem {
-    createdBy: Pick<CmsIdentity, "id">;
+    createdBy?: Pick<CmsIdentity, "id">;
 }
 
 export type EditableItem = CreatableItem;
@@ -201,7 +201,10 @@ export const usePermission = () => {
 
             return permissions.some(permission => {
                 if (permission.own) {
-                    return item.createdBy.id === getIdentityId();
+                    // Using optional chaining here because there might be cases where the item
+                    // or its `createdBy` property is not defined. In that case, we want to
+                    // return `false` and not throw an error.
+                    return item?.createdBy?.id === getIdentityId();
                 }
 
                 if (typeof permission.rwd === "string") {

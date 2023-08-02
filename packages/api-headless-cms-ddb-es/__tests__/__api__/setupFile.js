@@ -79,6 +79,9 @@ module.exports = () => {
                 context.cms.onEntryAfterUpdate.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });
+                context.cms.onEntryAfterMove.subscribe(async ({ model }) => {
+                    await refreshIndex(model);
+                });
                 context.cms.onEntryRevisionAfterCreate.subscribe(async ({ model }) => {
                     await refreshIndex(model);
                 });

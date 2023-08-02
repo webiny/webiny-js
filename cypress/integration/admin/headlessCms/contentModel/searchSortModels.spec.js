@@ -98,9 +98,9 @@ context("Headless CMS - Search and Sort Content Models", () => {
 
         // Should able to search models by prefix
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search content model/i)
-                .clear()
-                .type(newModel);
+            const input = cy.findByPlaceholderText(/search content model/i);
+            input.clear();
+            input.type(newModel);
             cy.wait(500);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
@@ -112,9 +112,9 @@ context("Headless CMS - Search and Sort Content Models", () => {
 
         // Should able to search a specific model by name
         cy.findByTestId("default-data-list.search").within(() => {
-            cy.findByPlaceholderText(/search content model/i)
-                .clear()
-                .type(models[0].name);
+            const input = cy.findByPlaceholderText(/search content model/i);
+            input.clear();
+            input.type(models[0].name);
             cy.wait(500);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
