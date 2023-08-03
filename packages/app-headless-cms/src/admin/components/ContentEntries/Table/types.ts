@@ -1,5 +1,5 @@
 import { CmsContentEntry, CmsContentEntryStatusType } from "~/types";
-import { FolderItem } from "@webiny/app-aco/types";
+import { FolderItem, Location } from "@webiny/app-aco/types";
 
 interface BaseEntry {
     id: string;
@@ -9,17 +9,18 @@ interface BaseEntry {
     createdBy: string;
     savedOn: string;
     version?: number;
-    selectable: boolean;
+    $selectable: boolean;
 }
 
 export interface RecordEntry extends BaseEntry {
-    type: "RECORD";
+    $type: "RECORD";
     original: CmsContentEntry;
     status: CmsContentEntryStatusType;
+    location: Location;
 }
 
 export interface FolderEntry extends BaseEntry {
-    type: "FOLDER";
+    $type: "FOLDER";
     original: FolderItem;
     status?: never;
 }
