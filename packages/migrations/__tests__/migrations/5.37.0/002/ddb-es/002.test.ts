@@ -14,7 +14,10 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
 import { createLocalesData, createTenantsData } from "~tests/migrations/5.35.0/006/ddb-es/006.data";
-import { esGetIndexName, esGetIndexSettings } from "~/utils";
+import { esGetIndexSettings } from "~/utils";
+import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
+import { getRecordIndexName } from "~tests/migrations/5.37.0/002/ddb-es/helpers";
+import { listElasticsearchItems } from "~tests/utils/listElasticsearchItems";
 
 jest.retryTimes(0);
 jest.setTimeout(9000000);
@@ -70,9 +73,9 @@ describe("5.37.0-002", () => {
                 ddbToEsTable,
                 elasticsearchClient,
                 options: {
-                    maxItems: 1000,
-                    maxTenants: 1,
-                    maxLocales: 1
+                    maxItems: 100,
+                    maxTenants: 2,
+                    maxLocales: 2
                 }
             });
         } catch (ex) {
@@ -103,6 +106,15 @@ describe("5.37.0-002", () => {
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
+        await transferDynamoDbToElasticsearch(
+            elasticsearchClient,
+            ddbToEsTable,
+            getRecordIndexName
+        );
+        /**
+         * Validations of the records.
+         */
+
         const entries = await scanTable(ddbTable, {
             filters: [
                 {
@@ -130,21 +142,49 @@ describe("5.37.0-002", () => {
             limit: 10000000
         });
         const indexes = new Set<string>();
+        /**
+         * We need to check if all the records in the DDB-ES table are present and updated.
+         */
         expect(ddbEsRecords.length).toBe(totalEntries * 2);
+
         for (const record of ddbEsRecords) {
             const entry = await getDecompressedData(record.data);
             expect(entry.location?.folderId).toBe("root");
 
-            indexes.add(
-                esGetIndexName({
-                    tenant: entry.tenant,
-                    locale: entry.locale,
-                    type: entry.modelId,
-                    isHeadlessCmsModel: true
-                })
-            );
+            indexes.add(getRecordIndexName(entry));
         }
         expect(indexes.size).toBeGreaterThanOrEqual(1);
+        /**
+         * Then we are going to check all the indexes for the correct data.
+         */
+        for (const index of indexes) {
+            const allItems = await listElasticsearchItems({
+                client: elasticsearchClient,
+                index
+            });
+            expect(allItems.length).toBeGreaterThanOrEqual(1);
+            for (const item of allItems) {
+                expect(item.location?.folderId).toEqual("root");
+            }
+            const filteredItems = await listElasticsearchItems({
+                client: elasticsearchClient,
+                index,
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        "location.folderId.keyword": "root"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+            expect(filteredItems).toHaveLength(allItems.length);
+        }
         /**
          * Test that all indexes have the expected settings after the migration.
          */

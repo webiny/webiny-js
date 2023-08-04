@@ -3,6 +3,7 @@ import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch
 import { Table } from "dynamodb-toolbox";
 import { scanTable } from "~tests/utils/scanTable";
 import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
+import { esPutIndexSettings } from "~/utils";
 
 export const transferDynamoDbToElasticsearch = async <
     TItem extends Record<string, any> = Record<string, any>
@@ -30,6 +31,8 @@ export const transferDynamoDbToElasticsearch = async <
     }
     const operations = [];
 
+    const indexes = new Set<string>();
+
     for (const record of records) {
         const index = getIndexName(record);
 
@@ -43,7 +46,28 @@ export const transferDynamoDbToElasticsearch = async <
             },
             record
         );
+        indexes.add(index);
         elasticsearch.indices.registerIndex(index);
+    }
+
+    for (const index of indexes) {
+        const response = await elasticsearch.indices.exists({
+            index
+        });
+
+        if (response.body) {
+            continue;
+        }
+        await elasticsearch.indices.create({
+            index,
+            body: {
+                settings: {
+                    refresh_interval: -1,
+                    number_of_replicas: 0,
+                    max_result_window: 10000000
+                }
+            }
+        });
     }
 
     const chunkedItems: any[][] = chunk(operations, 3000);
@@ -56,6 +80,16 @@ export const transferDynamoDbToElasticsearch = async <
         }
         console.log(JSON.stringify(result.body.items, null, 2));
         throw new Error("Error while inserting data into Elasticsearch.");
+    }
+    for (const index of indexes) {
+        await esPutIndexSettings({
+            elasticsearchClient: elasticsearch,
+            index,
+            settings: {
+                refresh_interval: "1s",
+                number_of_replicas: 1
+            }
+        });
     }
     await elasticsearch.indices.refreshAll();
     return records;

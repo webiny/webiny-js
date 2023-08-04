@@ -1,6 +1,4 @@
 import { ArticleCmsEntry, DynamoDbRecord } from "./types";
-import { esGetIndexName } from "~/utils";
-import { ARTICLE_MODEL_ID } from "./model";
 import {
     getESLatestEntryData,
     getESPublishedEntryData
@@ -9,6 +7,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { StorageOperationsCmsModel } from "@webiny/api-headless-cms/types";
 import { entryToStorageTransform } from "@webiny/api-headless-cms";
 import { prepareEntryToIndex } from "@webiny/api-headless-cms-ddb-es/helpers";
+import { getRecordIndexName } from "~tests/migrations/5.37.0/002/ddb-es/helpers";
 
 interface ElasticsearchRecord {
     index: string;
@@ -107,7 +106,7 @@ export const createDynamoDbElasticsearchRecords = async (params: CreateRecordsPa
         model,
         entry
     );
-    const { entryId, tenant, locale } = entry;
+    const { entryId, tenant, locale, modelId } = entry;
 
     const esEntry = prepareEntryToIndex({
         plugins,
@@ -130,11 +129,10 @@ export const createDynamoDbElasticsearchRecords = async (params: CreateRecordsPa
     /**
      * Elasticsearch Data
      */
-    const index = esGetIndexName({
+    const index = getRecordIndexName({
         tenant,
         locale,
-        type: ARTICLE_MODEL_ID,
-        isHeadlessCmsModel: true
+        modelId
     });
     const latestData = await getESLatestEntryData(plugins, esEntry);
     const publishedData = await getESPublishedEntryData(plugins, esEntry);
