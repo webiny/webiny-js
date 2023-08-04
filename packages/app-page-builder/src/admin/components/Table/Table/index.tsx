@@ -154,7 +154,10 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             cell: (entry: Entry) => {
                 if (isPageEntry(entry)) {
                     return (
-                        <Menu className={menuStyles} handle={<IconButton icon={<More />} />}>
+                        <Menu
+                            className={menuStyles}
+                            handle={<IconButton icon={<More />} data-testid="page-actions-menu" />}
+                        >
                             <RecordActionEdit record={entry.original} />
                             <RecordActionPreview record={entry.original} />
                             <RecordActionPublish record={entry.original} />

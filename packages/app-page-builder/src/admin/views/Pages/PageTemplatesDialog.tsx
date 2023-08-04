@@ -191,7 +191,11 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
                         ))}
                     </ScrollList>
                     <BlankTemplateButtonWrapper>
-                        <ButtonSecondary disabled={isLoading} onClick={() => onSelect()}>
+                        <ButtonSecondary
+                            disabled={isLoading}
+                            onClick={() => onSelect()}
+                            data-testid="create-blank-page-button"
+                        >
                             Use a blank page template
                         </ButtonSecondary>
                     </BlankTemplateButtonWrapper>

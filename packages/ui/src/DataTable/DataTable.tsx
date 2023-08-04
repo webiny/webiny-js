@@ -311,7 +311,11 @@ export const DataTable = <T extends Object & DefaultData>({
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <DataTableRow key={row.id} selected={row.getIsSelected()}>
+                        <DataTableRow
+                            key={row.id}
+                            selected={row.getIsSelected()}
+                            data-testid="datatable-row"
+                        >
                             {row.getVisibleCells().map(cell => (
                                 <DataTableCell key={cell.id} {...cell.column.columnDef.meta}>
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

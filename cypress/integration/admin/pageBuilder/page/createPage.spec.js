@@ -1,77 +1,59 @@
-// Removed since ACO integration: we need to implement new Cypress Tests
+import uniqid from "uniqid";
 
-// import uniqid from "uniqid";
-//
-// context("Pages Creation", () => {
-//     beforeEach(() => cy.login());
-//
-//     it.skip("should be able to create, publish, create new revision, and immediately delete everything", () => {
-//         const newPageTitle = `Test page ${uniqid()}`;
-//
-//         cy.visit("/page-builder/pages");
-//         cy.findAllByTestId("new-record-button").first().click();
-//
-//         cy.findByTestId("pb-new-page-category-modal").within(() => {
-//             cy.findByText("Static").click();
-//         });
-//         cy.findByTestId("pb-editor-page-title").click();
-//         cy.get(`input[value="Untitled"]`).clear().type(newPageTitle).blur();
-//         cy.findByText("Page title updated successfully!");
-//
-//         cy.findByTestId("pb.editor.header.publish.button").click();
-//
-//         cy.findByRole("alertdialog").within(() => {
-//             cy.findByTestId("confirmationdialog-confirm-action").click();
-//         });
-//
-//         cy.findByText("Your page was published successfully!");
-//
-//         // Wait till the "/pages" route
-//         cy.findAllByTestId("new-record-button").first().should("exist");
-//
-//         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
-//                 .first()
-//                 .within(() => {
-//                     cy.findByText(newPageTitle).should("exist");
-//                     cy.findByText(/Static/i).should("exist");
-//                     cy.findByText(/Published/i).should("exist");
-//                     cy.findByText(/\(v1\)/i).should("exist");
-//                 });
-//         });
-//
-//         cy.findByTestId("pb-page-details").within(() => {
-//             cy.findByTestId("pb-page-details-header-edit-revision").click();
-//         });
-//
-//         cy.findByTestId("pb-editor-back-button").click();
-//
-//         // Wait till the "/pages" route
-//         cy.findAllByTestId("new-record-button").first().should("exist");
-//
-//         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
-//                 .first()
-//                 .within(() => {
-//                     cy.findByText(newPageTitle).should("exist");
-//                     cy.findByText(/Static/i).should("exist");
-//                     cy.findByText(/Draft/i).should("exist");
-//                     cy.findByText(/\(v2\)/i).should("exist");
-//                 });
-//         });
-//
-//         // Delete page
-//         cy.findByTestId("pb-page-details-header-delete-button").click();
-//         cy.findByRole("alertdialog").within(() => {
-//             cy.findAllByTestId("dialog-accept").next().click();
-//         });
-//
-//         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
-//                 .first()
-//                 .within(() => {
-//                     cy.findByText(newPageTitle).should("not.exist");
-//                 });
-//         });
-//     });
-// });
+context("Page Builder Page Creation", () => {
+    beforeEach(() => {
+        cy.login();
+    });
+
+    describe("When creating new page", () => {
+        const id = uniqid();
+
+        afterEach(() => {
+            // Here we can pass id (this id is the part of the page title) instead of full page title,
+            // because query can search not only by a full title, but also by some specific symbols in our case it is an id.
+            cy.pbDeleteSpecificPage(id);
+        });
+
+        it("should be able to create page, publish page and check whether it exists in the list of the pages", () => {
+            const newPageTitle = `Test page ${id}`;
+
+            cy.visit("/page-builder/pages");
+
+            // Button is hidden so we need to force click it.
+            cy.findByTestId("new-page-button").click({ force: true });
+            // Redirects us to the Page Builder Editor page (route "/page-builder/editor/").
+            cy.findByTestId("create-blank-page-button").click();
+            // Check if we got redirected to the Page Builder Editor (route "/page-builder/editor/").
+            cy.url().should("includes", "/page-builder/editor/");
+            // Check if we are on the Page Builder Editor page (route "/page-builder/editor/") and it is empty.
+            cy.findByTestId("pb-content-add-block-button", { timeout: 15000 });
+
+            // Changing default name for the page (because default name is Undefined) so we can use it in the query to find it's id,
+            // so we can use that id to delete the page.
+            cy.findByTestId("pb-editor-page-title").click();
+            cy.get(`input[value="Untitled"]`).clear().type(newPageTitle).blur();
+            cy.findByText("Page title updated successfully!");
+
+            // Publishing newly create page.
+            cy.findByTestId("pb.editor.header.publish.button").click();
+
+            // Confirming that we want to publish the page.
+            cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
+                cy.findByTestId("confirmationdialog-confirm-action").click();
+            });
+
+            // We should be able to see it in case page was published successfully,
+            // and we also should be redirected to the "/page-builder/pages" route.
+            cy.findByText("Your page was published successfully!");
+
+            // Check if we got redirected to the "/page-builder/pages/" route.
+            cy.url().should("includes", "/page-builder/pages");
+
+            // If we are on "/page-builder/pages/" route then we should see "New Page" button.
+            cy.findByTestId("new-page-button").should("exist");
+
+            // Checking whether we have new page in the the list of pages.
+            cy.findByText(`${newPageTitle}`, { timeout: 15000 });
+        });
+    });
+});

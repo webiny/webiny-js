@@ -34,10 +34,15 @@ export const TableActions = ({ selected, onImportPage }: TableActionsProps): Rea
     return (
         <>
             <Tooltip content={t`Import page`} placement={"bottom"}>
-                <IconButton icon={<ImportIcon />} onClick={onImportPage} />
+                <IconButton
+                    icon={<ImportIcon />}
+                    onClick={onImportPage}
+                    data-testid="default-data-list.import"
+                />
             </Tooltip>
             <Tooltip content={renderExportPagesTooltip(selected)} placement={"bottom"}>
                 <IconButton
+                    data-testid="default-data-list.export"
                     icon={<ExportIcon />}
                     onClick={() => {
                         showExportPageRevisionSelectorDialog({
