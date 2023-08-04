@@ -1,6 +1,5 @@
 import { Table } from "dynamodb-toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
-import { esGetIndexName } from "~/utils";
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { ElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { createArticleEntry } from "~tests/migrations/5.37.0/002/ddb-es/mocks/entry";
@@ -8,12 +7,10 @@ import {
     createDynamoDbElasticsearchRecords,
     createDynamoDbRecords
 } from "~tests/migrations/5.37.0/002/ddb-es/mocks/record";
-import {
-    ARTICLE_MODEL_ID,
-    createArticleModel
-} from "~tests/migrations/5.37.0/002/ddb-es/mocks/model";
+import { createArticleModel } from "~tests/migrations/5.37.0/002/ddb-es/mocks/model";
 import { getStorageModel } from "./mocks/storageModel";
 import { getPlugins } from "./mocks/plugins";
+import { getRecordIndexName } from "~tests/migrations/5.37.0/002/ddb-es/helpers";
 
 const tenants = [
     "root",
@@ -123,14 +120,11 @@ export const insertTestEntries = async (params: Params) => {
             }
             await insertDynamoDbTestData(ddbTable, items);
             await insertDynamoDbTestData(ddbToEsTable, esItems);
-            await transferDynamoDbToElasticsearch(elasticsearchClient, ddbToEsTable, item => {
-                return esGetIndexName({
-                    tenant: item.tenant,
-                    locale: item.locale,
-                    type: ARTICLE_MODEL_ID,
-                    isHeadlessCmsModel: true
-                });
-            });
+            await transferDynamoDbToElasticsearch(
+                elasticsearchClient,
+                ddbToEsTable,
+                getRecordIndexName
+            );
             if (currentLocale >= maxLocales) {
                 break;
             }

@@ -10,6 +10,7 @@
     { "path": "../error" },
     { "path": "../ioc" },
     { "path": "../utils" },
+    { "path": "../plugins" },
     { "path": "../handler-aws" }
   ],
   "compilerOptions": {
