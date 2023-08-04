@@ -40,4 +40,5 @@ export interface CmsReferenceContentEntry {
 export interface CmsReferenceValue {
     id: string;
     modelId: string;
+    title?: string;
 }

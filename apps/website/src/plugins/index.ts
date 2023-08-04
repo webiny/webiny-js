@@ -7,4 +7,11 @@ import dynamicPages from "./dynamicPages";
 
 import theme from "theme";
 
-plugins.register([imageComponent(), pageBuilder, formBuilder, dynamicPages, apolloLinks(), theme()]);
+plugins.register([
+    imageComponent(),
+    pageBuilder,
+    formBuilder,
+    dynamicPages,
+    apolloLinks(),
+    theme()
+]);

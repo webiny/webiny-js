@@ -64,7 +64,6 @@ export const Select: React.VFC<Props> = ({ entry, selected, onChange }) => {
         onChange({
             id: entry.id,
             modelId: entry.model.modelId,
-            // @ts-ignore
             title: entry.title
         });
     }, [entry, onChange]);
