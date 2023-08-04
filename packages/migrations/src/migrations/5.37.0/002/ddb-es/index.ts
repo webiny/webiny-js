@@ -4,6 +4,7 @@ import {
     DataMigrationContext,
     ElasticsearchClientSymbol,
     ElasticsearchDynamoTableSymbol,
+    Logger,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { createDdbEntryEntity, createDdbEsEntryEntity } from "../entities/createEntryEntity";
@@ -18,7 +19,12 @@ import {
 } from "@webiny/db-dynamodb";
 import { CmsEntry } from "../types";
 import { Client } from "@elastic/elasticsearch";
-import { ddbScanWithCallback } from "~/utils";
+import {
+    ddbScanWithCallback,
+    esGetIndexName,
+    esGetIndexSettings,
+    esPutIndexSettings
+} from "~/utils";
 import { executeWithRetry } from "@webiny/utils";
 import { getDecompressedData } from "~/migrations/5.37.0/002/utils/getDecompressedData";
 import { getCompressedData } from "~/migrations/5.37.0/002/utils/getCompressedData";
@@ -31,8 +37,31 @@ interface LastEvaluatedKey {
     GSI1_SK: string;
 }
 
+interface IndexSettings {
+    number_of_replicas: number;
+    refresh_interval: `${number}s`;
+}
+
 interface CmsEntriesRootFolderDataMigrationCheckpoint {
     lastEvaluatedKey?: LastEvaluatedKey | boolean;
+    indexes: {
+        [index: string]: IndexSettings | null;
+    };
+}
+
+interface FetchOriginalElasticsearchSettingsParams {
+    index: string;
+    logger: Logger;
+}
+
+interface RestoreOriginalElasticsearchSettingsParams {
+    migrationStatus: CmsEntriesRootFolderDataMigrationCheckpoint;
+    logger: Logger;
+}
+
+interface DisableElasticsearchIndexingParams {
+    index: string;
+    logger: Logger;
 }
 
 interface DynamoDbElasticsearchRecord {
@@ -50,7 +79,7 @@ export class CmsEntriesRootFolder_5_37_0_002
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+    public constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
@@ -104,10 +133,18 @@ export class CmsEntriesRootFolder_5_37_0_002
         return false;
     }
 
-    async execute({ logger, ...context }: DataMigrationContext): Promise<void> {
-        const migrationStatus = context.checkpoint || {};
+    async execute({
+        logger,
+        ...context
+    }: DataMigrationContext<CmsEntriesRootFolderDataMigrationCheckpoint>): Promise<void> {
+        const migrationStatus =
+            context.checkpoint || ({} as CmsEntriesRootFolderDataMigrationCheckpoint);
 
         if (migrationStatus.lastEvaluatedKey === true) {
+            await this.restoreOriginalElasticsearchSettings({
+                migrationStatus,
+                logger
+            });
             logger.info(`Migration completed, no need to start again.`);
             return;
         }
@@ -125,7 +162,7 @@ export class CmsEntriesRootFolder_5_37_0_002
                         }
                     ],
                     startKey: migrationStatus.lastEvaluatedKey || undefined,
-                    limit: 100
+                    limit: 500
                 }
             },
             async result => {
@@ -140,6 +177,31 @@ export class CmsEntriesRootFolder_5_37_0_002
                     if (!!item.location?.folderId) {
                         continue;
                     }
+                    const index = esGetIndexName({
+                        tenant: item.tenant,
+                        locale: item.locale,
+                        type: item.modelId,
+                        isHeadlessCmsModel: true
+                    });
+                    // Check for the elasticsearch index settings
+                    if (!migrationStatus.indexes || migrationStatus.indexes[index] === undefined) {
+                        // We need to fetch the index settings first
+                        const settings = await this.fetchOriginalElasticsearchSettings({
+                            index,
+                            logger
+                        });
+                        // ... add it to the checkpoint...
+                        migrationStatus.indexes = {
+                            ...migrationStatus.indexes,
+                            [index]: settings
+                        };
+                        // and then set not to index
+                        await this.disableElasticsearchIndexing({
+                            index,
+                            logger
+                        });
+                    }
+                    //
                     ddbItems.push(
                         this.ddbEntryEntity.putBatch({
                             ...item,
@@ -159,7 +221,7 @@ export class CmsEntriesRootFolder_5_37_0_002
                         PK: item.PK,
                         SK: "L"
                     });
-                    if (item.status === "published") {
+                    if (item.status === "published" || !!item.locked) {
                         ddbEsGetItems[`${item.entryId}:P`] = this.ddbEsEntryEntity.getBatch({
                             PK: item.PK,
                             SK: "P"
@@ -239,10 +301,102 @@ export class CmsEntriesRootFolder_5_37_0_002
             }
         );
         /**
-         *
+         * This is the end of the migration.
          */
+        await this.restoreOriginalElasticsearchSettings({
+            migrationStatus,
+            logger
+        });
         migrationStatus.lastEvaluatedKey = true;
+        migrationStatus.indexes = {};
         context.createCheckpoint(migrationStatus);
+    }
+
+    private async fetchOriginalElasticsearchSettings(
+        params: FetchOriginalElasticsearchSettingsParams
+    ): Promise<IndexSettings | null> {
+        const { index, logger } = params;
+        try {
+            const settings = await esGetIndexSettings({
+                elasticsearchClient: this.elasticsearchClient,
+                index,
+                fields: ["number_of_replicas", "refresh_interval"]
+            });
+            return {
+                number_of_replicas: settings.number_of_replicas || 1,
+                refresh_interval: settings.refresh_interval || "1s"
+            };
+        } catch (ex) {
+            logger.error(`Failed to fetch original Elasticsearch settings for index "${index}".`);
+            logger.error(ex.message);
+            logger.info(ex.code);
+            logger.info(JSON.stringify(ex.data));
+            if (ex.stack) {
+                logger.info(ex.stack);
+            }
+        }
+        return null;
+    }
+
+    private async restoreOriginalElasticsearchSettings(
+        params: RestoreOriginalElasticsearchSettingsParams
+    ): Promise<void> {
+        const { migrationStatus, logger } = params;
+        const indexes = migrationStatus.indexes;
+        if (!indexes || typeof indexes !== "object") {
+            return;
+        }
+        for (const index in indexes) {
+            const settings = indexes[index];
+            if (!settings || typeof settings !== "object") {
+                continue;
+            }
+            try {
+                await esPutIndexSettings({
+                    elasticsearchClient: this.elasticsearchClient,
+                    index,
+                    settings: {
+                        number_of_replicas: settings.number_of_replicas || 1,
+                        refresh_interval: settings.refresh_interval || `1s`
+                    }
+                });
+            } catch (ex) {
+                logger.error(
+                    `Failed to restore original settings for index "${index}". Please do it manually.`
+                );
+                logger.error(ex.message);
+                logger.info(ex.code);
+                logger.info(JSON.stringify(ex.data));
+                if (ex.stack) {
+                    logger.info(ex.stack);
+                }
+            }
+        }
+    }
+
+    private async disableElasticsearchIndexing(
+        params: DisableElasticsearchIndexingParams
+    ): Promise<void> {
+        const { index, logger } = params;
+
+        try {
+            await esPutIndexSettings({
+                elasticsearchClient: this.elasticsearchClient,
+                index,
+                settings: {
+                    number_of_replicas: 0,
+                    refresh_interval: -1
+                }
+            });
+        } catch (ex) {
+            logger.error(`Failed to disable indexing for index "${index}".`);
+            logger.error(ex.message);
+            logger.info(ex.code);
+            logger.info(JSON.stringify(ex.data));
+            if (ex.stack) {
+                logger.info(ex.stack);
+            }
+        }
     }
 }
 
