@@ -4,7 +4,7 @@ import { CmsEntry, CmsModel, CmsModelField, CmsContext } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface GetStoragePluginFactory {
-    (context: CmsContext): (fieldType: string) => StorageTransformPlugin<any>;
+    (context: Pick<CmsContext, "plugins">): (fieldType: string) => StorageTransformPlugin<any>;
 }
 
 const getStoragePluginFactory: GetStoragePluginFactory = context => {
@@ -41,7 +41,7 @@ const getStoragePluginFactory: GetStoragePluginFactory = context => {
  * This should be used when transforming the whole entry.
  */
 const entryStorageTransform = async (
-    context: CmsContext,
+    context: Pick<CmsContext, "plugins">,
     model: CmsModel,
     operation: "toStorage" | "fromStorage",
     entry: CmsEntry
@@ -75,7 +75,7 @@ const entryStorageTransform = async (
  * A function that is used in crud to transform entry into the storage type.
  */
 export const entryToStorageTransform = async (
-    context: CmsContext,
+    context: Pick<CmsContext, "plugins">,
     model: CmsModel,
     entry: CmsEntry
 ): Promise<CmsEntry> => {
