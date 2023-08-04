@@ -1,4 +1,5 @@
 import * as React from "react";
+import ApolloClient from "apollo-client";
 import { ReactElement, ReactNode } from "react";
 import { Plugin } from "@webiny/plugins/types";
 import {
@@ -209,6 +210,14 @@ export interface CmsModelFieldTypePlugin extends Plugin {
              */
             queryField?: string | ((params: QueryFieldParams) => string);
         };
+        getChildFields?: (
+            client: ApolloClient<any>,
+            field: CmsModelField,
+            /**
+             * gqlTypeName is used to resolve dynamic zone template fields
+             */
+            gqlTypeName?: string
+        ) => Promise<CmsModelField[]>;
         render?(params: any): React.ReactElement;
         tags?: string[];
         /**

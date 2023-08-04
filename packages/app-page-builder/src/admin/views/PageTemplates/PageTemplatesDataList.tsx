@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
-import { useQuery } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
 /**
  * Package timeago-react does not have types.
@@ -41,7 +40,6 @@ import useImportTemplate from "~/admin/views/PageTemplates/hooks/useImportTempla
 import { OptionsMenu } from "~/admin/components/OptionsMenu";
 
 import { PbPageTemplate } from "~/types";
-import { LIST_PAGE_TEMPLATES } from "./graphql";
 
 const t = i18n.ns("app-page-builder/admin/views/page-templates/page-templates-details");
 
@@ -74,33 +72,33 @@ const SORTERS: Sorter[] = [
 ];
 
 type PageTemplatesDataListProps = {
+    pageTemplatesData: PbPageTemplate[];
     canCreate: boolean;
     canEdit: (item: CreatableItem) => boolean;
     canDelete: (item: CreatableItem) => boolean;
     onCreate: () => void;
     onDelete: (item: PbPageTemplate) => void;
     isLoading: boolean;
+    refetch: () => void;
 };
 
 const PageTemplatesDataList = ({
+    pageTemplatesData,
     canCreate,
     canEdit,
     canDelete,
     onCreate,
     onDelete,
-    isLoading
+    isLoading,
+    refetch
 }: PageTemplatesDataListProps) => {
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const { history } = useRouter();
-    const listQuery = useQuery(LIST_PAGE_TEMPLATES) || {};
     const query = new URLSearchParams(location.search);
     const search = {
         query: query.get("search") || undefined
     };
-
-    const pageTemplatesData: PbPageTemplate[] =
-        listQuery?.data?.pageBuilder?.listPageTemplates?.data || [];
 
     const filterData = useCallback(
         ({ title }) => {
@@ -121,7 +119,6 @@ const PageTemplatesDataList = ({
     );
 
     const selectedTemplate = new URLSearchParams(location.search).get("id");
-    const loading = [listQuery].find(item => item.loading);
 
     const templatesDataListModalOverlay = useMemo(
         () => (
@@ -186,7 +183,7 @@ const PageTemplatesDataList = ({
     return (
         <DataList
             title={t`Templates`}
-            loading={Boolean(loading)}
+            loading={isLoading}
             data={templatesList}
             actions={listActions}
             modalOverlay={templatesDataListModalOverlay}
@@ -216,10 +213,10 @@ const PageTemplatesDataList = ({
                 />
             }
             refresh={() => {
-                if (!listQuery.refetch) {
+                if (!refetch) {
                     return;
                 }
-                listQuery.refetch();
+                refetch();
             }}
         >
             {({ data }: { data: PbPageTemplate[] }) => (

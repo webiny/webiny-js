@@ -36,13 +36,12 @@ type CreatePageTemplateDialogProps = {
     onSubmit: (formData: Pick<PbPageTemplate, "title" | "slug" | "description">) => void;
 };
 
-const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialogProps) => {
+const CreateStaticTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialogProps) => {
     const [loading, setLoading] = useState(false);
     const submitForm = useCallback(
-        async data => {
+        data => {
             setLoading(true);
-            await onSubmit(data);
-            setLoading(false);
+            onSubmit(data);
         },
         [onSubmit]
     );
@@ -99,4 +98,4 @@ const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialo
     );
 };
 
-export default CreatePageTemplateDialog;
+export default CreateStaticTemplateDialog;

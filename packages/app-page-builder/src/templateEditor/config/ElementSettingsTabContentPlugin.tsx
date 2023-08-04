@@ -9,6 +9,7 @@ import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import ElementNotLinked from "~/blockEditor/components/elementSettingsTab/ElementNotLinked";
 import VariableSettings from "~/blockEditor/components/elementSettingsTab/VariableSettings";
 import VariablesList from "~/blockEditor/components/elementSettingsTab/VariablesList";
+import { useElementById } from "~/editor/hooks/useElementById";
 import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElementSettings";
 import { useRefreshBlock } from "~/editor/hooks/useRefreshBlock";
 import { PbBlockEditorCreateVariablePlugin, PbEditorElement } from "~/types";
@@ -22,6 +23,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
 
         return function SettingsTabContent({ children, ...props }) {
             const [element] = useActiveElement();
+            const [parentElement] = useElementById(element?.parent || null);
             const elementSettings = useElementSettings();
             const refreshBlock = useRefreshBlock(element as PbEditorElement);
             const canHaveVariable =
@@ -30,11 +32,15 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
             const hasVariable = element && element.data?.variableId;
             const isBlock = element && element.type === "block";
             const isReferenceBlock = element && element.data?.blockId;
+            const hideSave =
+                isReferenceBlock ||
+                element?.data?.dynamicSource ||
+                parentElement?.data?.isVariantBlock;
 
             return (
                 <>
                     <SidebarActionsWrapper {...props}>
-                        {isReferenceBlock ? (
+                        {hideSave ? (
                             <>
                                 {elementSettings.map(({ plugin, options }, index) => {
                                     return (
@@ -46,22 +52,26 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                         </div>
                                     );
                                 })}
-                                <Action
-                                    tooltip={"Edit block"}
-                                    icon={<EditIcon />}
-                                    onClick={() =>
-                                        window.open(
-                                            `/page-builder/block-editor/${element?.data?.blockId}`,
-                                            "_blank",
-                                            "noopener"
-                                        )
-                                    }
-                                />
-                                <Action
-                                    tooltip={"Refresh block"}
-                                    onClick={refreshBlock}
-                                    icon={<RefreshIcon />}
-                                />
+                                {isReferenceBlock && (
+                                    <>
+                                        <Action
+                                            tooltip={"Edit block"}
+                                            icon={<EditIcon />}
+                                            onClick={() =>
+                                                window.open(
+                                                    `/page-builder/block-editor/${element?.data?.blockId}`,
+                                                    "_blank",
+                                                    "noopener"
+                                                )
+                                            }
+                                        />
+                                        <Action
+                                            tooltip={"Refresh block"}
+                                            onClick={refreshBlock}
+                                            icon={<RefreshIcon />}
+                                        />
+                                    </>
+                                )}
                             </>
                         ) : (
                             children

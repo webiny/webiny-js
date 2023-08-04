@@ -20,6 +20,7 @@ const DATA_FIELD = `
         description
         content
         createdOn
+        templatePageData
         savedOn
         createdBy {
             id

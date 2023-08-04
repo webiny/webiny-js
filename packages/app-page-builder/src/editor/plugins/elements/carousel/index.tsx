@@ -55,16 +55,12 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         canDelete: () => {
-            return false;
+            return true;
         },
         create: () => {
             const defaultValue = {
                 type: elementType,
-                elements: [
-                    createElement("carousel-element"),
-                    createElement("carousel-element"),
-                    createElement("carousel-element")
-                ],
+                elements: [createElement("carousel-element")],
                 data: {
                     settings: {
                         carousel: {

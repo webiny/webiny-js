@@ -5,6 +5,7 @@ import { SidebarActions } from "~/editor";
 import { createComponentPlugin } from "@webiny/app-admin";
 import Action from "~/editor/plugins/elementSettings/components/Action";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useElementById } from "~/editor/hooks/useElementById";
 import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElementSettings";
 import { useRefreshBlock } from "~/editor/hooks/useRefreshBlock";
 import VariableSettings from "~/editor/plugins/elementSettings/variable/VariableSettings";
@@ -16,6 +17,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
     SidebarActionsWrapper => {
         return function SettingsTabContent({ children, ...props }) {
             const [element] = useActiveElement();
+            const [parentElement] = useElementById(element?.parent || null);
             const elementSettings = useElementSettings();
             const [isTemplateMode] = useTemplateMode();
             const refreshBlock = useRefreshBlock(element as PbEditorElement);
@@ -25,11 +27,15 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
             }
 
             const isReferenceBlockElement = element?.data?.blockId;
+            const hideSave =
+                isReferenceBlockElement ||
+                element?.data?.dynamicSource ||
+                parentElement?.data?.isVariantBlock;
 
             return (
                 <>
                     <SidebarActionsWrapper {...props}>
-                        {isReferenceBlockElement ? (
+                        {hideSave ? (
                             <>
                                 {elementSettings.map(({ plugin, options }, index) => {
                                     return (
@@ -41,22 +47,26 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                         </div>
                                     );
                                 })}
-                                <Action
-                                    tooltip={"Edit block"}
-                                    icon={<EditIcon />}
-                                    onClick={() =>
-                                        window.open(
-                                            `/page-builder/block-editor/${element?.data?.blockId}`,
-                                            "_blank",
-                                            "noopener"
-                                        )
-                                    }
-                                />
-                                <Action
-                                    tooltip={"Refresh block"}
-                                    onClick={refreshBlock}
-                                    icon={<RefreshIcon />}
-                                />
+                                {isReferenceBlockElement && (
+                                    <>
+                                        <Action
+                                            tooltip={"Edit block"}
+                                            icon={<EditIcon />}
+                                            onClick={() =>
+                                                window.open(
+                                                    `/page-builder/block-editor/${element?.data?.blockId}`,
+                                                    "_blank",
+                                                    "noopener"
+                                                )
+                                            }
+                                        />
+                                        <Action
+                                            tooltip={"Refresh block"}
+                                            onClick={refreshBlock}
+                                            icon={<RefreshIcon />}
+                                        />
+                                    </>
+                                )}
                             </>
                         ) : (
                             children

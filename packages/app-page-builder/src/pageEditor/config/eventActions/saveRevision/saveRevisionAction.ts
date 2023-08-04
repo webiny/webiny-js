@@ -67,6 +67,23 @@ const removeTemplateBlockIds = (content: PbElement) => {
     return { ...content, elements: blocks };
 };
 
+const removeSelectedVariantIds = (content: PbElement) => {
+    const blocks = content.elements.map(block => {
+        if (block.data.isVariantBlock) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { selectedVariantId, ...blockData } = block.data;
+            return {
+                ...block,
+                data: blockData
+            };
+        } else {
+            return block;
+        }
+    });
+
+    return { ...content, elements: blocks };
+};
+
 export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsType> = async (
     state,
     meta,
@@ -85,6 +102,8 @@ export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsT
     } else {
         updatedContent = removeTemplateBlockIds(updatedContent);
     }
+
+    updatedContent = removeSelectedVariantIds(updatedContent);
 
     const data: PageRevisionType = {
         title: state.page.title,

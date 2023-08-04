@@ -15,7 +15,7 @@ import {
     CREATE_TEMPLATE_FROM_PAGE,
     LIST_PAGE_TEMPLATES
 } from "~/admin/views/PageTemplates/graphql";
-import CreatePageTemplateDialog from "~/admin/views/PageTemplates/CreatePageTemplateDialog";
+import CreateStaticTemplateDialog from "~/admin/views/PageTemplates/CreateStaticTemplateDialog";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
@@ -233,7 +233,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
             )}
 
             {isCreateTemplateDialogOpen && (
-                <CreatePageTemplateDialog
+                <CreateStaticTemplateDialog
                     onClose={() => setIsCreateTemplateDialogOpen(false)}
                     onSubmit={handleCreateTemplateClick}
                 />

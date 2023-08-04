@@ -4,6 +4,8 @@ import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 
+import { DynamicSourceProvider } from "@webiny/app-dynamic-pages/contexts/DynamicSource";
+
 export type CarouselRenderer = ReturnType<typeof createCarousel>;
 
 const CarouselWrapper = styled.div`
@@ -24,6 +26,10 @@ const CarouselWrapper = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    & swiper-slide:only-of-type {
+        width: 1100px;
     }
 
     // We need to apply these styles because scripts for swiper js are being loaded with the delay
@@ -87,13 +93,15 @@ export const createCarousel = () => {
         return (
             <CarouselWrapper>
                 <swiper-container class="carousel-preview" {...navProps}>
-                    {element.elements.map((carousel, index) => (
-                        <swiper-slide key={index}>
-                            <div className="carousel-element-wrapper">
-                                <Elements element={{ ...element, elements: [carousel] }} />
-                            </div>
-                        </swiper-slide>
-                    ))}
+                    <DynamicSourceProvider element={element}>
+                        {element.elements.map((carousel, index) => (
+                            <swiper-slide key={index}>
+                                <div className="carousel-element-wrapper">
+                                    <Elements element={{ ...element, elements: [carousel] }} />
+                                </div>
+                            </swiper-slide>
+                        ))}
+                    </DynamicSourceProvider>
                 </swiper-container>
             </CarouselWrapper>
         );

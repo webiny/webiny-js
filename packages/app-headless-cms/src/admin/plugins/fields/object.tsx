@@ -42,6 +42,9 @@ const plugin: CmsModelFieldTypePlugin = {
                 const fields = (field.settings ? field.settings.fields : []) as CmsModelField[];
                 return `{ ${createFieldsList({ model, fields })} }`;
             }
+        },
+        async getChildFields(_, field) {
+            return field.settings?.fields || [];
         }
     }
 };

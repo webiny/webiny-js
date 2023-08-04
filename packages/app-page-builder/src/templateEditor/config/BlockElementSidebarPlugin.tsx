@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import { EditorSidebarTab } from "~/editor";
 import { createComponentPlugin } from "@webiny/app-admin";
@@ -6,6 +6,8 @@ import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import UnlinkBlockAction from "~/pageEditor/plugins/elementSettings/UnlinkBlockAction";
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
+import { useElementSidebar } from "~/editor/hooks/useElementSidebar";
+import { updateSidebarActiveTabIndexMutation } from "~/editor/recoil/modules";
 import { RootElement } from "~/editor/components/Editor/Sidebar/ElementSettingsTabContent";
 
 type UnlinkBlockWrapperProps = {
@@ -71,6 +73,7 @@ const UnlinkTab: React.FC<UnlinkTabProps> = ({ permission }) => {
 export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab, Tab => {
     return function ElementTab({ children, ...props }) {
         const [element] = useActiveElement();
+        const [sidebar, setSidebar] = useElementSidebar();
 
         const unlinkPermission = true;
         // TODO: check if the above check even works.
@@ -82,9 +85,21 @@ export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab,
         //     return Boolean(permission);
         // }, [identity]);
 
-        const isReferenceBlock =
-            element !== null && element.type === "block" && !!element.data?.blockId;
+        const isBlock = element !== null && element.type === "block";
+        const isReferenceBlock = isBlock && !!element.data?.blockId;
+        const isVariantBlock =
+            isBlock && (element.data?.isVariantBlock || element.data?.conditions);
         const isStyleTab = props?.label === "Style";
+
+        useEffect(() => {
+            if (isReferenceBlock) {
+                setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 1));
+            } else if (isVariantBlock) {
+                setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 2));
+            } else if (sidebar.activeTabIndex !== 0) {
+                setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, 0));
+            }
+        }, [element?.id]);
 
         return (
             <Tab {...props}>

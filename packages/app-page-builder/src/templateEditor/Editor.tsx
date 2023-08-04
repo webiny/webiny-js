@@ -3,6 +3,9 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import { CmsModel } from "@webiny/app-headless-cms/types";
+import { GET_CONTENT_MODEL } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { createElement, addElementId } from "~/editor/helpers";
@@ -47,9 +50,11 @@ const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorEleme
 export const TemplateEditor: React.FC = () => {
     plugins.register(elementVariableRendererPlugins());
     const client = useApolloClient();
+    const { readApolloClient: cmsClient } = useCms();
     const { history, params } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [template, setTemplate] = useState<PageTemplateWithContent>();
+    const [sourceModel, setSourceModel] = useState<CmsModel>();
 
     const templateId = decodeURIComponent(params["id"]);
 
@@ -99,7 +104,7 @@ export const TemplateEditor: React.FC = () => {
                 },
                 fetchPolicy: "network-only"
             })
-            .then(({ data }) => {
+            .then(async ({ data }) => {
                 const errorData = get(
                     data,
                     "pageBuilder.getPageTemplate.error"
@@ -117,6 +122,15 @@ export const TemplateEditor: React.FC = () => {
                     "pageBuilder.getPageTemplate.data"
                 ) as unknown as PbPageTemplate;
 
+                if (pageTemplateData.templatePageData?.modelId) {
+                    const { data: modelData } = await cmsClient.query({
+                        query: GET_CONTENT_MODEL,
+                        variables: { modelId: pageTemplateData.templatePageData.modelId }
+                    });
+
+                    setSourceModel(get(modelData, "getContentModel.data"));
+                }
+
                 const { content, ...restOfTemplateData } = pageTemplateData;
 
                 const existingContent = content
@@ -125,7 +139,17 @@ export const TemplateEditor: React.FC = () => {
 
                 setTemplate({
                     ...restOfTemplateData,
-                    content: existingContent || createElement("document")
+                    content:
+                        {
+                            ...existingContent,
+                            data: {
+                                ...existingContent.data,
+                                dynamicSource: {
+                                    modelId: pageTemplateData?.templatePageData?.modelId,
+                                    entryId: pageTemplateData?.templatePageData?.entryId
+                                }
+                            }
+                        } || createElement("document")
                 });
             });
 
@@ -142,7 +166,8 @@ export const TemplateEditor: React.FC = () => {
             <LoadData>
                 <PbEditor
                     stateInitializerFactory={createStateInitializer(
-                        template as PageTemplateWithContent
+                        template as PageTemplateWithContent,
+                        sourceModel
                     )}
                 />
             </LoadData>
