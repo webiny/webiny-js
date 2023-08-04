@@ -128,7 +128,7 @@ export const FormStep = ({
     const fields = getLayoutFields(formStep.id);
 
     return (
-        <div style={{ marginLeft: "45px" }}>
+        <div style={{ marginLeft: "45px" }} data-testid="form-step-element">
             <Accordion>
                 <div className={rowHandle}>
                     <Icon icon={<HandleIcon />} />

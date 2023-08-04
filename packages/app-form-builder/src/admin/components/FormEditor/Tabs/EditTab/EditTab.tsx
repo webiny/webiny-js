@@ -208,7 +208,7 @@ export const EditTab: React.FC = () => {
                                 />
                             </RowContainer>
                             {data.steps[data.steps.length - 1].id === formStep.id && (
-                                <AddStepBtn onClick={addStep}>
+                                <AddStepBtn onClick={addStep} data-testid="add-step-action">
                                     Add new step
                                     <IconButton icon={<AddIcon />} />
                                 </AddStepBtn>
