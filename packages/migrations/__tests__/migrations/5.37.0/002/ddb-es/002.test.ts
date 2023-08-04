@@ -9,11 +9,12 @@ import {
     scanTable
 } from "~tests/utils";
 import { CmsEntriesRootFolder_5_37_0_002 } from "~/migrations/5.37.0/002/ddb-es";
-import { getTotalItems, insertTestEntries } from "./insertTestEntries";
+import { ddbItemPushes, insertTestEntries } from "./insertTestEntries";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
 import { createLocalesData, createTenantsData } from "~tests/migrations/5.35.0/006/ddb-es/006.data";
+import { esGetIndexName, esGetIndexSettings } from "~/utils";
 
 jest.retryTimes(0);
 jest.setTimeout(9000000);
@@ -62,11 +63,17 @@ describe("5.37.0-002", () => {
     it("should execute migration", async () => {
         await insertTestData(ddbTable, [...createTenantsData(), ...createLocalesData()]);
 
+        let totalEntries = 0;
         try {
-            await insertTestEntries({
+            totalEntries = await insertTestEntries({
                 ddbTable,
                 ddbToEsTable,
-                elasticsearchClient
+                elasticsearchClient,
+                options: {
+                    maxItems: 1000,
+                    maxTenants: 1,
+                    maxLocales: 1
+                }
             });
         } catch (ex) {
             console.log(
@@ -111,7 +118,7 @@ describe("5.37.0-002", () => {
          * Must be total items inserted.
          * This is calculated from the tenant / locale combination, max items and amount of pushes for a single item.
          */
-        expect(entries.length).toBe(getTotalItems());
+        expect(entries.length).toBe(ddbItemPushes * totalEntries);
         const setCheck = new Set<string>();
         for (const entry of entries) {
             expect(entry.location?.folderId).toBe("root");
@@ -119,13 +126,38 @@ describe("5.37.0-002", () => {
         }
         expect(setCheck.size).toBe(entries.length);
 
-        const ddbEsEntries = await scanTable(ddbToEsTable, {
+        const ddbEsRecords = await scanTable(ddbToEsTable, {
             limit: 10000000
         });
-        expect(ddbEsEntries.length).toBe(entries.length / 2);
-        for (const entry of ddbEsEntries) {
-            const data = await getDecompressedData(entry.data);
-            expect(data.location?.folderId).toBe("root");
+        const indexes = new Set<string>();
+        expect(ddbEsRecords.length).toBe(totalEntries * 2);
+        for (const record of ddbEsRecords) {
+            const entry = await getDecompressedData(record.data);
+            expect(entry.location?.folderId).toBe("root");
+
+            indexes.add(
+                esGetIndexName({
+                    tenant: entry.tenant,
+                    locale: entry.locale,
+                    type: entry.modelId,
+                    isHeadlessCmsModel: true
+                })
+            );
+        }
+        expect(indexes.size).toBeGreaterThanOrEqual(1);
+        /**
+         * Test that all indexes have the expected settings after the migration.
+         */
+        for (const index of indexes) {
+            const settings = await esGetIndexSettings({
+                elasticsearchClient,
+                index,
+                fields: ["number_of_replicas", "refresh_interval"]
+            });
+            expect(Number(settings?.number_of_replicas)).toBeGreaterThanOrEqual(1);
+            expect(settings?.refresh_interval).not.toBe(-1);
+            const interval = parseInt((settings?.refresh_interval as string).replace("s", ""));
+            expect(interval).toBeGreaterThanOrEqual(1);
         }
     });
 
@@ -135,7 +167,9 @@ describe("5.37.0-002", () => {
             ddbTable,
             ddbToEsTable,
             options: {
-                maxItems: 10
+                maxItems: 1,
+                maxTenants: 1,
+                maxLocales: 1
             },
             elasticsearchClient
         });

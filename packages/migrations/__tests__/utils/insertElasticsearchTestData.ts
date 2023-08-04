@@ -14,8 +14,14 @@ export const transferDynamoDbToElasticsearch = async <
     const records: TItem[] = await Promise.all(
         (
             await scanTable(table)
-        ).map(record => {
-            return getDecompressedData(record.data);
+        ).map(async record => {
+            const result = await getDecompressedData(record.data);
+
+            return {
+                ...result,
+                PK: record.PK,
+                SK: record.SK
+            };
         })
     );
 
@@ -42,9 +48,14 @@ export const transferDynamoDbToElasticsearch = async <
 
     const chunkedItems: any[][] = chunk(operations, 3000);
     for (const items of chunkedItems) {
-        await elasticsearch.bulk({
+        const result = await elasticsearch.bulk({
             body: items
         });
+        if (!result.body.errors) {
+            continue;
+        }
+        console.log(JSON.stringify(result.body.items, null, 2));
+        throw new Error("Error while inserting data into Elasticsearch.");
     }
     await elasticsearch.indices.refreshAll();
     return records;
