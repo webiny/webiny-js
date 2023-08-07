@@ -111,11 +111,26 @@ export interface FileManagerSystem {
     tenant: string;
 }
 
+export interface OnSettingsBeforeUpdateTopicParams {
+    input: Partial<FileManagerSettings>;
+    original: FileManagerSettings;
+    settings: FileManagerSettings;
+}
+
+export interface OnSettingsAfterUpdateTopicParams {
+    input: Partial<FileManagerSettings>;
+    original: FileManagerSettings;
+    settings: FileManagerSettings;
+}
+
 export type SettingsCRUD = {
     getSettings(): Promise<FileManagerSettings | null>;
     createSettings(data?: Partial<FileManagerSettings>): Promise<FileManagerSettings>;
     updateSettings(data: Partial<FileManagerSettings>): Promise<FileManagerSettings>;
     deleteSettings(): Promise<boolean>;
+
+    onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
+    onSettingsAfterUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
 };
 /********
  * Storage operations
