@@ -2,6 +2,7 @@ import { plugins } from "@webiny/plugins";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
+import auditLogsPlugins from "./auditLogs";
 import theme from "theme";
 
 // Imports plugins created via scaffolding utilities.
@@ -20,6 +21,10 @@ plugins.register([
      * Headless CMS app.
      */
     headlessCmsPlugins,
+    /**
+     * Audit Logs app.
+     */
+    auditLogsPlugins,
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */

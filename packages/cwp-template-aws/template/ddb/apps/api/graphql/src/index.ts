@@ -26,8 +26,10 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createAcoAuditLogsContext } from "@webiny/api-audit-logs-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
+import { createAuditLogs } from "@webiny/api-audit-logs";
 /**
  * APW
  */
@@ -96,7 +98,9 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        scaffoldsPlugins()
+        scaffoldsPlugins(),
+        createAuditLogs(),
+        createAcoAuditLogsContext()
     ],
     http: { debug }
 });

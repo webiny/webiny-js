@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-audit-logs" },
+    { "path": "../app-aco" },
+    { "path": "../react-properties" },
+    { "path": "../ui" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-audit-log/*": ["../api-audit-log/src/*"],
+      "@webiny/api-audit-log": ["../api-audit-log/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
+      "@webiny/react-properties/*": ["../react-properties/src/*"],
+      "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
+    },
+    "baseUrl": "."
+  }
+}
