@@ -9,9 +9,23 @@
   "description": "",
   "license": "MIT",
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
     "@babel/runtime": "^7.19.0",
     "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6"
+    "@emotion/styled": "^11.10.6",
+    "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-aco": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/app-security": "0.0.0",
+    "@webiny/form": "0.0.0",
+    "@webiny/react-properties": "0.0.0",
+    "@webiny/react-router": "0.0.0",
+    "@webiny/ui": "0.0.0",
+    "date-fns": "^2.22.1",
+    "emotion": "^10.0.17",
+    "graphql-tag": "^2.12.6",
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "react": "^17.0.2"
@@ -25,12 +39,8 @@
     "@material-design-icons/svg": "^0.14.3",
     "@material-symbols/svg-400": "^0.4.1",
     "@types/react": "17.0.39",
-    "@webiny/api-audit-logs": "0.0.0",
-    "@webiny/app-aco": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/react-properties": "0.0.0",
-    "@webiny/ui": "0.0.0",
     "execa": "^5.0.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
