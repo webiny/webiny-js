@@ -5,6 +5,7 @@ import { css } from "emotion";
 import AceEditor from "react-ace";
 // Modes
 import "brace/mode/html";
+import "brace/mode/json";
 // Themes
 import "brace/theme/github";
 import "brace/theme/twilight";
@@ -28,6 +29,8 @@ interface Props extends FormComponentProps {
     mode: string;
 
     theme: string;
+
+    readOnly?: boolean;
 
     // Description beneath the input.
     description?: React.ReactNode;

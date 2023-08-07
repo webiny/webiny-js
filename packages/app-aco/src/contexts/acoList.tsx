@@ -218,6 +218,19 @@ export const AcoListProvider: React.VFC<AcoListProviderProps> = ({ children, ...
     }, [state.listSort]);
 
     /**
+     * Any time we receive a new `filters` value:
+     * - we reset after value;
+     */
+    useEffect(() => {
+        setState(state => {
+            return {
+                ...state,
+                after: undefined
+            };
+        });
+    }, [state.filters]);
+
+    /**
      * Utility function to list/load more records, the `meta` state is tracked internally.
      */
     const listMoreRecords = useCallback(() => {

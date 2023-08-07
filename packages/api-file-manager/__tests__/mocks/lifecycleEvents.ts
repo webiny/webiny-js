@@ -35,3 +35,14 @@ export const assignFileLifecycleEvents = () => {
         });
     });
 };
+
+export const assignSettingsLifecycleEvents = () => {
+    return new ContextPlugin<FileManagerContext>(async context => {
+        context.fileManager.onSettingsBeforeUpdate.subscribe(async params => {
+            tracker.track("settings:beforeUpdate", params);
+        });
+        context.fileManager.onSettingsAfterUpdate.subscribe(async params => {
+            tracker.track("settings:afterUpdate", params);
+        });
+    });
+};
