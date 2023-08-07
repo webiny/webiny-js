@@ -35,9 +35,6 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
-    "@webiny/api-audit-logs": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/handler": "0.0.0",
-    "lodash": "^4.17.11"
+    "@webiny/handler": "0.0.0"
   }
 }
