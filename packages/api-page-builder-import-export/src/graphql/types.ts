@@ -1,3 +1,4 @@
+import { Topic } from "@webiny/pubsub/types";
 import { PbContext } from "@webiny/api-page-builder/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import {
@@ -27,9 +28,42 @@ export interface ImportPagesParams {
     meta?: Record<string, any>;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnPagesBeforeExportTopicParams {
+    params: ExportPagesParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPagesAfterExportTopicParams {
+    params: ExportPagesParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPagesBeforeImportTopicParams {
+    params: ImportPagesParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnPagesAfterImportTopicParams {
+    params: ImportPagesParams;
+}
+
 export type PagesImportExportCrud = {
     exportPages(params: ExportPagesParams): Promise<{ task: ImportExportTask }>;
     importPages(params: ImportPagesParams): Promise<{ task: ImportExportTask }>;
+
+    onPagesBeforeExport: Topic<OnPagesBeforeExportTopicParams>;
+    onPagesAfterExport: Topic<OnPagesAfterExportTopicParams>;
+    onPagesBeforeImport: Topic<OnPagesBeforeImportTopicParams>;
+    onPagesAfterImport: Topic<OnPagesAfterImportTopicParams>;
 };
 
 export interface ExportBlocksParams {
@@ -44,9 +78,42 @@ export interface ImportBlocksParams {
     zipFileUrl: string;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBlocksBeforeExportTopicParams {
+    params: ExportBlocksParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBlocksAfterExportTopicParams {
+    params: ExportBlocksParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBlocksBeforeImportTopicParams {
+    params: ImportBlocksParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBlocksAfterImportTopicParams {
+    params: ImportBlocksParams;
+}
+
 export type BlocksImportExportCrud = {
     exportBlocks(params: ExportBlocksParams): Promise<{ task: ImportExportTask }>;
     importBlocks(params: ImportBlocksParams): Promise<{ task: ImportExportTask }>;
+
+    onBlocksBeforeExport: Topic<OnBlocksBeforeExportTopicParams>;
+    onBlocksAfterExport: Topic<OnBlocksAfterExportTopicParams>;
+    onBlocksBeforeImport: Topic<OnBlocksBeforeImportTopicParams>;
+    onBlocksAfterImport: Topic<OnBlocksAfterImportTopicParams>;
 };
 
 export interface ExportTemplatesParams {
@@ -58,9 +125,42 @@ export interface ImportTemplatesParams {
     zipFileUrl: string;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnTemplatesBeforeExportTopicParams {
+    params: ExportTemplatesParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnTemplatesAfterExportTopicParams {
+    params: ExportTemplatesParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnTemplatesBeforeImportTopicParams {
+    params: ImportTemplatesParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnTemplatesAfterImportTopicParams {
+    params: ImportTemplatesParams;
+}
+
 export type TemplatesImportExportCrud = {
     exportTemplates(params: ExportTemplatesParams): Promise<{ task: ImportExportTask }>;
     importTemplates(params: ImportTemplatesParams): Promise<{ task: ImportExportTask }>;
+
+    onTemplatesBeforeExport: Topic<OnTemplatesBeforeExportTopicParams>;
+    onTemplatesAfterExport: Topic<OnTemplatesAfterExportTopicParams>;
+    onTemplatesBeforeImport: Topic<OnTemplatesBeforeImportTopicParams>;
+    onTemplatesAfterImport: Topic<OnTemplatesAfterImportTopicParams>;
 };
 
 export interface ExportFormsParams {
@@ -74,9 +174,42 @@ export interface ImportFormsParams {
     zipFileUrl: string;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnFormsBeforeExportTopicParams {
+    params: ExportFormsParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnFormsAfterExportTopicParams {
+    params: ExportFormsParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnFormsBeforeImportTopicParams {
+    params: ImportFormsParams;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnFormsAfterImportTopicParams {
+    params: ImportFormsParams;
+}
+
 export type FormsImportExportCrud = {
     exportForms(params: ExportFormsParams): Promise<{ task: ImportExportTask }>;
     importForms(params: ImportFormsParams): Promise<{ task: ImportExportTask }>;
+
+    onFormsBeforeExport: Topic<OnFormsBeforeExportTopicParams>;
+    onFormsAfterExport: Topic<OnFormsAfterExportTopicParams>;
+    onFormsBeforeImport: Topic<OnFormsBeforeImportTopicParams>;
+    onFormsAfterImport: Topic<OnFormsAfterImportTopicParams>;
 };
 
 type ImportExportTaskCreateData = Omit<ImportExportTask, "id" | "createdOn" | "createdBy">;

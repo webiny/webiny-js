@@ -19,7 +19,7 @@ const graphql = {
             }
         `,
     UPDATE_SETTINGS: gql`
-        mutation UpdateFileManagerSettings($data: FileManagerSettingsInput) {
+        mutation UpdateFileManagerSettings($data: FmSettingsInput) {
             fileManager {
                 updateSettings(data: $data) ${fields}
             }

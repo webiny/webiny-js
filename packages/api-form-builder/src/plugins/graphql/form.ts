@@ -532,6 +532,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     const { form } = args;
 
                     try {
+                        await formBuilder.onFormSubmissionsBeforeExport.publish({ form });
                         const [submissions] = await formBuilder.listFormSubmissions(form, {
                             limit: 10000
                         });
@@ -651,6 +652,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             key,
                             src: (settings?.srcPrefix || "") + key
                         };
+                        await formBuilder.onFormSubmissionsAfterExport.publish({ result });
 
                         return new Response(result);
                     } catch (e) {
