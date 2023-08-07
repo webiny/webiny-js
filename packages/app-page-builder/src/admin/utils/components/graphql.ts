@@ -14,7 +14,6 @@ const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
         type
         category
         content
-        preview
     }
 `;
 

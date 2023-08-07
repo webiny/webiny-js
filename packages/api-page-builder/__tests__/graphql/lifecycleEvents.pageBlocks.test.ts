@@ -8,7 +8,6 @@ const blockCategory = "block-category-lifecycle-events";
 const pageBlockData = {
     name: "Page Block Lifecycle Events",
     blockCategory,
-    preview: { src: "https://test.com/src.jpg" },
     content: { some: "page-block-content" }
 };
 
