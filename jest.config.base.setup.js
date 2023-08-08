@@ -3,4 +3,7 @@
 
 // Runs failed tests five times until they pass or until the max number of retries is exhausted.
 // https://jestjs.io/docs/jest-object#jestretrytimesnumretries-options
-jest.retryTimes(3);
+jest.retryTimes(0);
+if (process.env.CI === "true") {
+    jest.retryTimes(3);
+}

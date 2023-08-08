@@ -5,3 +5,4 @@ export * from "./CmsEntryElasticsearchQueryModifierPlugin";
 export * from "./CmsEntryElasticsearchSortModifierPlugin";
 export * from "./CmsEntryElasticsearchFullTextSearchPlugin";
 export * from "./CmsElasticsearchModelFieldPlugin";
+export * from "./CmsEntryElasticsearchValuesModifier";

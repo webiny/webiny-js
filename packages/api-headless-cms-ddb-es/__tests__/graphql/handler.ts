@@ -18,6 +18,7 @@ import { createEntryEntity } from "~/definitions/entry";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
+    path?: "/graphql" | `/cms/manage/${Lowercase<string>}-${Uppercase<string>}`;
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
@@ -69,7 +70,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         /**
          * If no path defined, use /graphql as we want to make request to main api
          */
-        path: "/cms/manage/en-US",
+        path: params.path || "/cms/manage/en-US",
         headers: {
             ["x-tenant"]: "root",
             ["Content-Type"]: "application/json"

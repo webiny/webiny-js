@@ -88,6 +88,7 @@ export const getToolbarState = (
     if ($isListNode(element)) {
         const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
         const type = parentList ? parentList.getListType() : element.getListType();
+        state.list.isSelected = true;
         state.textType = type;
     }
 

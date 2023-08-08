@@ -4,7 +4,7 @@ import Zipper from "~/export/zipper";
 import { extractFilesFromData } from "~/export/utils";
 
 export interface ExportedBlockData {
-    block: Pick<PageBlock, "name" | "content" | "preview">;
+    block: Pick<PageBlock, "name" | "content">;
     category: BlockCategory;
     files: File[];
 }
@@ -26,21 +26,12 @@ export class BlockExporter {
             const [filesData] = await this.fileManager.listFiles({ where: { id_in: fileIds } });
             imageFilesData.push(...filesData);
         }
-        // Add block preview image file data
-        if (block.preview.id) {
-            const previewImage = await this.getPreviewImageFile(block);
-            if (previewImage) {
-                imageFilesData.push(previewImage);
-                block.preview.id = previewImage.id;
-            }
-        }
 
         // Extract the block data in a json file and upload it to S3
         const blockData = {
             block: {
                 name: block.name,
-                content: block.content,
-                preview: block.preview
+                content: block.content
             },
             category: {
                 name: blockCategory.name,
@@ -62,17 +53,5 @@ export class BlockExporter {
         });
 
         return zipper.process();
-    }
-
-    private async getPreviewImageFile(block: PageBlock): Promise<File | undefined> {
-        // For BC, we need to check 2 IDs: the preview `id` and the `id` from the file URL.
-        const idFromSrc = block.preview.src?.split("/files/")[1].split("/")[0];
-        const possibleIds = [block.preview.id, idFromSrc].filter(Boolean);
-
-        const [files] = await this.fileManager.listFiles({
-            where: { id_in: possibleIds, meta: { private: true } }
-        });
-
-        return files[0];
     }
 }

@@ -32,14 +32,7 @@ export const createPageBlocksCreateValidation = () => {
             .string()
             .min(1)
             .max(100)
-            .refine(refineValidation, refineValidationMessage),
-        preview: zod
-            .object({
-                id: zod.string(),
-                src: zod.string()
-            })
-            .partial()
-            .passthrough()
+            .refine(refineValidation, refineValidationMessage)
     });
 };
 
@@ -58,15 +51,7 @@ export const createPageBlocksUpdateValidation = () => {
                         return true;
                     }
                     return refineValidation(value);
-                }, refineValidationMessage),
-            preview: zod
-                .object({
-                    id: zod.string(),
-                    src: zod.string()
-                })
-                .partial()
-                .passthrough()
-                .optional()
+                }, refineValidationMessage)
         })
         .partial();
 };

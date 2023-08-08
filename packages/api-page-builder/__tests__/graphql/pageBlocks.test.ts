@@ -34,7 +34,6 @@ describe("Page Blocks Test", () => {
             const data = {
                 name: `${prefix}name`,
                 blockCategory: `block-category`,
-                preview: { src: `https://test.com/${prefix}name/src.jpg` },
                 content: { some: `${prefix}content` }
             };
 
@@ -71,7 +70,6 @@ describe("Page Blocks Test", () => {
             const updateData = {
                 name: `${prefix}name-UPDATED`,
                 blockCategory: `block-category`,
-                preview: { src: `https://test.com/${prefix}name-UPDATED/src.jpg` },
                 content: { some: `${prefix}content-UPDATED` }
             };
 
@@ -110,10 +108,7 @@ describe("Page Blocks Test", () => {
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[0],
-                                name: "page-block-one-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/page-block-one-name-UPDATED/src.jpg"
-                                }
+                                name: "page-block-one-name-UPDATED"
                             },
                             {
                                 blockCategory: "block-category",
@@ -123,10 +118,7 @@ describe("Page Blocks Test", () => {
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[1],
-                                name: "page-block-two-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/page-block-two-name-UPDATED/src.jpg"
-                                }
+                                name: "page-block-two-name-UPDATED"
                             },
                             {
                                 blockCategory: "block-category",
@@ -136,10 +128,7 @@ describe("Page Blocks Test", () => {
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[2],
-                                name: "page-block-three-name-UPDATED",
-                                preview: {
-                                    src: "https://test.com/page-block-three-name-UPDATED/src.jpg"
-                                }
+                                name: "page-block-three-name-UPDATED"
                             }
                         ],
                         error: null
@@ -184,7 +173,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -218,7 +206,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "invalid-block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -255,7 +242,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -267,7 +253,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -279,7 +264,6 @@ describe("Page Blocks Test", () => {
                         data: {
                             name: "name",
                             blockCategory: "block-category",
-                            preview: { src: "https://test.com/src.jpg" },
                             content: { some: "content" }
                         },
                         error: null
@@ -293,7 +277,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: "name",
                 blockCategory: "invalid-block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
@@ -356,7 +339,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: `page-block-one-name`,
                 blockCategory: `block-category-one`,
-                preview: { src: `https://test.com/page-block-one-name/src.jpg` },
                 content: { some: `page-block-one-content` }
             }
         });
@@ -366,7 +348,6 @@ describe("Page Blocks Test", () => {
             data: {
                 name: `page-block-two-name`,
                 blockCategory: `block-category-two`,
-                preview: { src: `https://test.com/page-block-two-name/src.jpg` },
                 content: { some: `page-block-two-content` }
             }
         });
@@ -391,10 +372,7 @@ describe("Page Blocks Test", () => {
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: pageBlockOneId,
-                                name: "page-block-one-name",
-                                preview: {
-                                    src: "https://test.com/page-block-one-name/src.jpg"
-                                }
+                                name: "page-block-one-name"
                             }
                         ],
                         error: null
@@ -422,10 +400,7 @@ describe("Page Blocks Test", () => {
                                 createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: pageBlockTwoId,
-                                name: "page-block-two-name",
-                                preview: {
-                                    src: "https://test.com/page-block-two-name/src.jpg"
-                                }
+                                name: "page-block-two-name"
                             }
                         ],
                         error: null

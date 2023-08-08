@@ -9,22 +9,21 @@ import {
     ElementNode,
     LexicalEditor,
     LexicalNode,
-    NodeKey,
-    ParagraphNode as BaseParagraphNode
+    NodeKey
 } from "lexical";
 import { $createListNode, $isListNode, ListNode } from "../ListNode";
+import { $getNearestNodeOfType } from "@lexical/utils";
+import { $createListItemNode, $isListItemNode, ListItemNode } from "~/nodes/ListItemNode";
+import { ListType } from "@lexical/list";
+import { $createParagraphNode, ParagraphNode } from "~/nodes/ParagraphNode";
 import {
     $getAllListItems,
     $getTopListNode,
     $removeHighestEmptyListParent,
-    findNearestWebinyListItemNode,
-    getUniqueWebinyListItemNodes,
+    findNearestListItemNode,
+    getUniqueListItemNodes,
     isNestedListNode
 } from "~/utils/nodes/listNode";
-import { $getNearestNodeOfType } from "@lexical/utils";
-import { $createListItemNode, $isListItemNode, ListItemNode } from "~/nodes/ListItemNode";
-import { ListType } from "@lexical/list";
-import { $createParagraphNode } from "~/nodes/ParagraphNode";
 
 const DEFAULT_LIST_START_NUMBER = 1;
 
@@ -177,6 +176,30 @@ function createListOrMerge(node: ElementNode, listType: ListType, styleId?: stri
     }
 }
 
+/**
+ * A recursive function that goes through each list and their children, including nested lists,
+ * appending list2 children after list1 children and updating ListItemNode values.
+ * @param list1 - The first list to be merged.
+ * @param list2 - The second list to be merged.
+ */
+export function mergeLists(list1: ListNode, list2: ListNode): void {
+    const listItem1 = list1.getLastChild();
+    const listItem2 = list2.getFirstChild();
+
+    if (listItem1 && listItem2 && isNestedListNode(listItem1) && isNestedListNode(listItem2)) {
+        mergeLists(listItem1.getFirstChild(), listItem2.getFirstChild());
+        listItem2.remove();
+    }
+
+    const toMerge = list2.getChildren();
+    if (toMerge.length > 0) {
+        list1.append(...toMerge);
+        updateChildrenListItemValue(list1);
+    }
+
+    list2.remove();
+}
+
 export function removeList(editor: LexicalEditor): void {
     editor.update(() => {
         const selection = $getSelection();
@@ -193,24 +216,24 @@ export function removeList(editor: LexicalEditor): void {
                     const node = nodes[i];
 
                     if ($isLeafNode(node)) {
-                        const WebinyListItemNode = $getNearestNodeOfType(node, ListNode);
+                        const listItemNode = $getNearestNodeOfType(node, ListItemNode);
 
-                        if (WebinyListItemNode != null) {
-                            listNodes.add($getTopListNode(WebinyListItemNode));
+                        if (listItemNode != null) {
+                            listNodes.add($getTopListNode(listItemNode));
                         }
                     }
                 }
             }
 
             for (const listNode of listNodes) {
-                let insertionPoint: ListNode | BaseParagraphNode = listNode;
+                let insertionPoint: ListNode | ParagraphNode = listNode;
 
                 const listItems = $getAllListItems(listNode);
 
-                for (const WebinyListItemNode of listItems) {
+                for (const listItemNode of listItems) {
                     const paragraph = $createParagraphNode();
 
-                    append(paragraph, WebinyListItemNode.getChildren());
+                    append(paragraph, listItemNode.getChildren());
 
                     insertionPoint.insertAfter(paragraph);
                     insertionPoint = paragraph;
@@ -218,17 +241,17 @@ export function removeList(editor: LexicalEditor): void {
                     // When the anchor and focus fall on the textNode
                     // we don't have to change the selection because the textNode will be appended to
                     // the newly generated paragraph.
-                    // When selection is in empty nested list item, selection is actually on the WebinyListItemNode.
-                    // When the corresponding WebinyListItemNode is deleted and replaced by the newly generated paragraph
+                    // When selection is in empty nested list item, selection is actually on the listItemNode.
+                    // When the corresponding listItemNode is deleted and replaced by the newly generated paragraph
                     // we should manually set the selection's focus and anchor to the newly generated paragraph.
-                    if (WebinyListItemNode.__key === selection.anchor.key) {
+                    if (listItemNode.__key === selection.anchor.key) {
                         selection.anchor.set(paragraph.getKey(), 0, "element");
                     }
-                    if (WebinyListItemNode.__key === selection.focus.key) {
+                    if (listItemNode.__key === selection.focus.key) {
                         selection.focus.set(paragraph.getKey(), 0, "element");
                     }
 
-                    WebinyListItemNode.remove();
+                    listItemNode.remove();
                 }
                 listNode.remove();
             }
@@ -409,13 +432,13 @@ function maybeIndentOrOutdent(direction: "indent" | "outdent"): void {
     if (selectedNodes.length === 1) {
         // Only 1 node selected. Selection may not contain the ListNodeItem so we traverse the tree to
         // find whether this is part of a WebinyListItemNode
-        const nearestWebinyListItemNode = findNearestWebinyListItemNode(selectedNodes[0]);
+        const nearestWebinyListItemNode = findNearestListItemNode(selectedNodes[0]);
 
         if (nearestWebinyListItemNode !== null) {
             webinyListItemNodes = [nearestWebinyListItemNode];
         }
     } else {
-        webinyListItemNodes = getUniqueWebinyListItemNodes(selectedNodes);
+        webinyListItemNodes = getUniqueListItemNodes(selectedNodes);
     }
 
     if (webinyListItemNodes.length > 0) {

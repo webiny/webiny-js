@@ -15,6 +15,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import useExportBlockDialog from "~/editor/plugins/defaultBar/components/ExportBlockButton/useExportBlockDialog";
+import { addElementId } from "~/editor/helpers";
 
 import { PbPageBlock } from "~/types";
 import {
@@ -24,7 +25,8 @@ import {
     DELETE_PAGE_BLOCK
 } from "./graphql";
 import { CreatableItem } from "./PageBlocks";
-import previewFallback from "./assets/preview.png";
+import { Content } from "@webiny/app-page-builder-elements/components/Content";
+import { Content as ContentType } from "@webiny/app-page-builder-elements/types";
 
 const t = i18n.ns("app-page-builder/admin/page-blocks/data-list");
 
@@ -203,8 +205,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                     data: {
                         name: `${item.name} (copy)`,
                         blockCategory: item.blockCategory,
-                        content: item.content,
-                        preview: item.preview
+                        content: item.content
                     }
                 }
             });
@@ -252,10 +253,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
                 {isLoading && <CircularProgress />}
                 {filteredBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
-                        <img
-                            src={pageBlock?.preview?.src || previewFallback}
-                            alt={pageBlock.name}
-                        />
+                        <Content content={addElementId(pageBlock.content) as ContentType} />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
                             <ExportButton

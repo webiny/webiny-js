@@ -23,7 +23,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
     let workspacesPackages = (
         getPackages({
-            includes: ["/packages/", "/packages-v6/"]
+            includes: ["/packages/"]
         }) as Package[]
     )
         .filter(pkg => pkg.isTs)

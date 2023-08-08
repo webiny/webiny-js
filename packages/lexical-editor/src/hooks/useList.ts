@@ -1,9 +1,12 @@
 import type { LexicalEditor } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import {
+    $getSelection,
+    $isRangeSelection,
     COMMAND_PRIORITY_LOW,
     INDENT_CONTENT_COMMAND,
     INSERT_PARAGRAPH_COMMAND,
+    KEY_BACKSPACE_COMMAND,
     OUTDENT_CONTENT_COMMAND
 } from "lexical";
 import { useEffect } from "react";
@@ -19,6 +22,7 @@ import {
     INSERT_UNORDERED_WEBINY_LIST_COMMAND,
     REMOVE_WEBINY_LIST_COMMAND
 } from "~/commands/webiny-list";
+import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 
 export function useList(editor: LexicalEditor): void {
     useEffect(() => {
@@ -52,6 +56,27 @@ export function useList(editor: LexicalEditor): void {
                 ({ themeStyleId }) => {
                     insertList(editor, "bullet", themeStyleId);
                     return true;
+                },
+                COMMAND_PRIORITY_LOW
+            ),
+            editor.registerCommand(
+                KEY_BACKSPACE_COMMAND,
+                (event: KeyboardEvent) => {
+                    const selection = $getSelection();
+                    if ($isRangeSelection(selection)) {
+                        const textSelection = getLexicalTextSelectionState(editor, selection);
+                        // Check if list have one list item remain, without text.
+                        if (
+                            textSelection?.state?.list.isSelected &&
+                            textSelection?.element?.__size === 1 &&
+                            typeof textSelection?.anchorNode.__text === "undefined"
+                        ) {
+                            event.preventDefault();
+                            removeList(editor);
+                            return true;
+                        }
+                    }
+                    return false;
                 },
                 COMMAND_PRIORITY_LOW
             ),

@@ -167,12 +167,14 @@ const plugins: RoutePlugin[] = [
             <Route
                 exact
                 path="/page-builder/page-blocks"
-                render={() => (
+                render={({ location }) => (
                     <SecureRoute permission={ROLE_PB_BLOCK}>
-                        <AdminLayout>
-                            <Helmet title={"Page Builder - Blocks"} />
-                            <PageBlocks />
-                        </AdminLayout>
+                        <EditorPluginsLoader location={location}>
+                            <AdminLayout>
+                                <Helmet title={"Page Builder - Blocks"} />
+                                <PageBlocks />
+                            </AdminLayout>
+                        </EditorPluginsLoader>
                     </SecureRoute>
                 )}
             />

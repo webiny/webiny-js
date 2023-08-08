@@ -3,7 +3,6 @@ import React, { useEffect, useCallback, useState } from "react";
  * Package dataurl-to-blob does not have types.
  */
 // @ts-ignore
-import dataURLtoBlob from "dataurl-to-blob";
 import SaveDialog from "./SaveDialog";
 import pick from "lodash/pick";
 import get from "lodash/get";
@@ -21,8 +20,6 @@ import {
     LIST_PAGE_BLOCKS_AND_CATEGORIES
 } from "~/admin/views/PageBlocks/graphql";
 import { useRecoilValue } from "recoil";
-import { CREATE_FILE } from "./SaveDialog/graphql";
-import { FileUploaderPlugin } from "@webiny/app/types";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
@@ -32,24 +29,7 @@ import {
 } from "~/types";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { removeElementId } from "~/editor/helpers";
-import { FileInput } from "@webiny/app-file-manager/types";
-
-interface ImageDimensionsType {
-    width: number;
-    height: number;
-}
-function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType> {
-    return new Promise(resolve => {
-        const image = new window.Image();
-        image.onload = function () {
-            resolve({ width: image.width, height: image.height });
-        };
-        image.src = dataURL;
-    });
-}
-
 interface PbDocumentElement extends BasePbEditorElement {
-    preview: string;
     overwrite?: boolean;
 }
 
@@ -82,46 +62,6 @@ const SaveAction: React.FC = ({ children }) => {
         const pbElement = (await getElementTree({ element })) as PbElement;
         formData.content = pluginOnSave(removeElementId(pbElement));
 
-        const meta = await getDataURLImageDimensions(formData.preview);
-        const blob = dataURLtoBlob(formData.preview);
-        blob.name = "pb-editor-page-element-" + element.id + ".png";
-
-        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
-        /**
-         * We break the method because it would break if there is no fileUploaderPlugin.
-         */
-        if (!fileUploaderPlugin) {
-            return;
-        }
-        const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
-
-        const createFile: FileInput = {
-            ...previewImage,
-            tags: [],
-            meta: {
-                ...meta,
-                private: true
-            }
-        };
-
-        const createdImageResponse = await client.mutate({
-            mutation: CREATE_FILE,
-            variables: {
-                data: createFile
-            }
-        });
-
-        const createdImage = get(createdImageResponse, "data.fileManager.createFile", {});
-        if (createdImage.error) {
-            showSnackbar("Image could not be saved.");
-            return;
-        } else if (!createdImage.data.id) {
-            showSnackbar("Missing saved image id.");
-            return;
-        }
-
-        formData.preview = createdImage.data;
-
         if (formData.type === "block") {
             const query = formData.overwrite ? UPDATE_PAGE_BLOCK : CREATE_PAGE_BLOCK;
 
@@ -130,9 +70,9 @@ const SaveAction: React.FC = ({ children }) => {
                 variables: formData.overwrite
                     ? {
                           id: element.source,
-                          data: pick(formData, ["content", "preview"])
+                          data: pick(formData, ["content"])
                       }
-                    : { data: pick(formData, ["name", "blockCategory", "preview", "content"]) },
+                    : { data: pick(formData, ["name", "blockCategory", "content"]) },
                 refetchQueries: [{ query: LIST_PAGE_BLOCKS_AND_CATEGORIES }]
             });
 
@@ -160,9 +100,9 @@ const SaveAction: React.FC = ({ children }) => {
                 variables: formData.overwrite
                     ? {
                           id: element.source,
-                          data: pick(formData, ["content", "preview"])
+                          data: pick(formData, ["content"])
                       }
-                    : { data: pick(formData, ["type", "category", "preview", "name", "content"]) }
+                    : { data: pick(formData, ["type", "category", "name", "content"]) }
             });
 
             hideDialog();

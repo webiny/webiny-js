@@ -241,7 +241,6 @@ const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
         type
         category
         content
-        preview
     }
 `;
 /**
@@ -262,7 +261,6 @@ export interface ListPageElementsQueryResponseData {
     category: string;
     type: string;
     content: PbElement;
-    preview: ListPageElementsQueryResponseDataPreview;
 }
 
 export interface ListPageElementsQueryResponse {

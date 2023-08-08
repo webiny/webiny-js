@@ -413,7 +413,6 @@ describe("CRUD Test", () => {
             data: {
                 name: "block-name",
                 blockCategory: "block-category",
-                preview: { src: "https://test.com/src.jpg" },
                 content: { data: {}, elements: [], type: "block" }
             }
         });
@@ -425,7 +424,6 @@ describe("CRUD Test", () => {
                 name: "element-name",
                 type: "element",
                 category: "element-category",
-                preview: { src: "https://test.com/element/src.jpg" },
                 content: { some: "element-content" }
             }
         });
@@ -499,7 +497,6 @@ describe("CRUD Test", () => {
                 {
                     id: pageElementData.id,
                     category: "element-category",
-                    preview: { src: "https://test.com/element/src.jpg" },
                     name: "element-name",
                     content: { some: "element-content" },
                     type: "element",

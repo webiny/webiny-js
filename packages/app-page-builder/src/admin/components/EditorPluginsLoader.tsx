@@ -17,10 +17,12 @@ interface State {
     render?: boolean;
     editor?: boolean;
 }
+
 interface EditorPluginsLoaderProps {
     location: History.Location;
     children: React.ReactNode;
 }
+
 export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ children, location }) => {
     const [loaded, setLoaded] = useReducer(
         (state: State, newState: Partial<State>) => ({ ...state, ...newState }),
@@ -52,6 +54,17 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
 
         // If we are on pages list route, import plugins required to render the page content.
         if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {
+            const renderPlugins = await loadRenderPlugins();
+
+            // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
+            plugins.register(renderPlugins, { skipExisting: true });
+
+            globalState.render = true;
+            setLoaded({ render: true });
+        }
+
+        // If we are on pages list route, import plugins required to render the page content.
+        if (location.pathname.startsWith("/page-builder/page-blocks") && !loaded.render) {
             const renderPlugins = await loadRenderPlugins();
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
@@ -98,6 +111,13 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
      * Page can be selected at this point.
      */
     if (location.pathname.startsWith("/page-builder/pages") && loaded.render) {
+        return children as unknown as React.ReactElement;
+    }
+    /**
+     * This condition is for the list of page blocks.
+     * Blocks can be selected at this point.
+     */
+    if (location.pathname.startsWith("/page-builder/page-blocks") && loaded.render) {
         return children as unknown as React.ReactElement;
     }
     /**

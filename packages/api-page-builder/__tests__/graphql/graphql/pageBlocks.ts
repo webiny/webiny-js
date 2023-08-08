@@ -2,7 +2,6 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         id
         blockCategory
-        preview
         name
         content
         createdOn

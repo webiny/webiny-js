@@ -8,7 +8,6 @@ export { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 const PAGE_BLOCK_BASE_FIELDS = `
     id
     blockCategory
-    preview
     name
     content
     createdOn
