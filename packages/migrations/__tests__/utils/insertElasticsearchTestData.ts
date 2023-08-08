@@ -20,8 +20,8 @@ export const transferDynamoDbToElasticsearch = async <
 
             return {
                 ...result,
-                PK: record.PK,
-                SK: record.SK
+                PK: record.PK || result.PK,
+                SK: record.SK || result.SK
             };
         })
     );
@@ -106,7 +106,8 @@ export const insertElasticsearchTestData = async <
 
     for (const record of data) {
         const index = getIndexName(record);
-        operations.push({ index: { _id: record["id"], _index: index } }, record);
+        const id = record.PK && record.SK ? `${record.PK}:${record.SK}` : record.id;
+        operations.push({ index: { _id: id, _index: index } }, record);
         elasticsearch.indices.registerIndex(index);
     }
 
