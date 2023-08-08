@@ -59,7 +59,7 @@ const getEntryData = (input: CmsEntry): CmsEntry => {
     return output;
 };
 
-const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
+export const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
     return compress(plugins, {
         ...getEntryData(entry),
         latest: true,
@@ -68,7 +68,7 @@ const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) 
     });
 };
 
-const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
+export const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
     return compress(plugins, {
         ...getEntryData(entry),
         published: true,
