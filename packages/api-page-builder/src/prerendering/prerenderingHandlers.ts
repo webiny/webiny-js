@@ -1,4 +1,3 @@
-import lodashGet from "lodash/get";
 import WebinyError from "@webiny/error";
 import { FlushEvent, RenderEvent, QueueAddJob } from "@webiny/api-prerendering-service/types";
 import { ContextPlugin } from "@webiny/api";
@@ -89,14 +88,8 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
         },
 
         async flush(args): Promise<void> {
-            const current = await context.pageBuilder.getCurrentSettings();
             const tenant = context.tenancy.getCurrentTenant().id;
             const locale = context.i18n.getContentLocale()!;
-            const storageName = lodashGet(current, "prerendering.storage.name");
-
-            if (!storageName) {
-                return;
-            }
 
             const { paths, tags } = args;
 
