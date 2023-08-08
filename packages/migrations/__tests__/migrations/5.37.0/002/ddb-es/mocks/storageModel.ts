@@ -6,7 +6,7 @@ const storageModels: Record<string, StorageOperationsCmsModel> = {};
 
 const factory = createCmsModelFieldConvertersAttachFactory(getPlugins());
 export const getStorageModel = (model: CmsModel) => {
-    const key = `${model.tenant}:${model.layout}:${model.modelId}`;
+    const key = `${model.tenant}:${model.locale}:${model.modelId}`;
     if (storageModels[key]) {
         return storageModels[key];
     }

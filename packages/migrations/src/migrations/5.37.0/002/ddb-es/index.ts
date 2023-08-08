@@ -174,9 +174,6 @@ export class CmsEntriesRootFolder_5_37_0_002
                  * Update the DynamoDB part of the records.
                  */
                 for (const item of result.items) {
-                    if (!!item.location?.folderId) {
-                        continue;
-                    }
                     const index = esGetIndexName({
                         tenant: item.tenant,
                         locale: item.locale,
@@ -207,7 +204,7 @@ export class CmsEntriesRootFolder_5_37_0_002
                             ...item,
                             location: {
                                 ...item.location,
-                                folderId: "root"
+                                folderId: item.location?.folderId || "root"
                             }
                         })
                     );
@@ -238,8 +235,14 @@ export class CmsEntriesRootFolder_5_37_0_002
                 for (const esRecord of esRecords) {
                     const decompressedData = await getDecompressedData<CmsEntry>(esRecord.data);
                     if (!decompressedData) {
+                        logger.debug(
+                            `Skipping record "${esRecord.PK}" as it is not a valid CMS entry...`
+                        );
                         continue;
                     } else if (decompressedData.location?.folderId) {
+                        logger.debug(
+                            `Skipping record "${decompressedData.entryId}" as it already has folderId defined...`
+                        );
                         continue;
                     }
                     const compressedData = await getCompressedData({
