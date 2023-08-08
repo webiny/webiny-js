@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { StorageTransformPlugin } from "~/plugins/StorageTransformPlugin";
-import { CmsEntry, CmsModel, CmsModelField, CmsContext } from "~/types";
+import { CmsContext, CmsEntry, CmsModel, CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface GetStoragePluginFactory {
@@ -86,7 +86,7 @@ export const entryToStorageTransform = async (
  * A function that is used to transform the whole entry from storage into its native form.
  */
 export const entryFromStorageTransform = async (
-    context: CmsContext,
+    context: Pick<CmsContext, "plugins">,
     model: CmsModel,
     entry: CmsEntry
 ): Promise<CmsEntry> => {
@@ -94,7 +94,7 @@ export const entryFromStorageTransform = async (
 };
 
 interface EntryFieldFromStorageTransformParams {
-    context: CmsContext;
+    context: Pick<CmsContext, "plugins">;
     model: CmsModel;
     field: CmsModelField;
     value: any;

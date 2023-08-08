@@ -272,7 +272,10 @@ describe("Republish entries", () => {
         });
     });
 
-    test("should not allow republishing of unpublished entries", async () => {
+    /**
+     * Code was removed from the crud as we actually should be able to run the method.
+     */
+    test.skip("should not allow republishing of unpublished entries", async () => {
         const group = await setupGroup();
         await setupModel(group, "category");
 
