@@ -2136,7 +2136,6 @@ export interface OnEntryPublishErrorTopicParams {
 export interface OnEntryBeforeRepublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
-    storageEntry: CmsEntry;
 }
 
 export interface OnEntryAfterRepublishTopicParams {

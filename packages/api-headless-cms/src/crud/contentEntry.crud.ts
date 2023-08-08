@@ -1099,7 +1099,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         try {
             await onEntryBeforeRepublish.publish({
                 entry,
-                storageEntry,
                 model
             });
 
