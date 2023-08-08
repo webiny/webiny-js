@@ -412,37 +412,35 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * A helper to delete the entire entry.
      */
     const deleteEntryHelper = async (params: DeleteEntryParams): Promise<void> => {
-        return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
-            const { model, entry } = params;
-            try {
-                await onEntryBeforeDelete.publish({
-                    entry,
-                    model
-                });
+        const { model, entry } = params;
+        try {
+            await onEntryBeforeDelete.publish({
+                entry,
+                model
+            });
 
-                await storageOperations.entries.delete(model, {
+            await storageOperations.entries.delete(model, {
+                entry
+            });
+
+            await onEntryAfterDelete.publish({
+                entry,
+                model
+            });
+        } catch (ex) {
+            await onEntryDeleteError.publish({
+                entry,
+                model,
+                error: ex
+            });
+            throw new WebinyError(
+                ex.message || "Could not delete entry.",
+                ex.code || "DELETE_ERROR",
+                {
                     entry
-                });
-
-                await onEntryAfterDelete.publish({
-                    entry,
-                    model
-                });
-            } catch (ex) {
-                await onEntryDeleteError.publish({
-                    entry,
-                    model,
-                    error: ex
-                });
-                throw new WebinyError(
-                    ex.message || "Could not delete entry.",
-                    ex.code || "DELETE_ERROR",
-                    {
-                        entry
-                    }
-                );
-            }
-        });
+                }
+            );
+        }
     };
     /**
      * A helper to get entries by revision IDs
@@ -450,14 +448,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids) => {
         return context.benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
             await entriesPermissions.ensure({ rwd: "r" });
-            await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+            await modelsPermissions.ensureCanAccessModel({
+                model
+            });
 
             const entries = await storageOperations.entries.getByIds(model, {
                 ids
             });
 
             return filterAsync(entries, async entry => {
-                return entriesPermissions.ensure({ owns: entry.createdBy }, { throw: false });
+                return entriesPermissions.ensure(
+                    {
+                        owns: entry.createdBy
+                    },
+                    {
+                        throw: false
+                    }
+                );
             });
         });
     };
@@ -480,7 +487,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         ids
     ) => {
         await entriesPermissions.ensure({ rwd: "r" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const entries = await storageOperations.entries.getPublishedByIds(model, {
             ids
@@ -492,7 +501,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
     const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (model, ids) => {
         await entriesPermissions.ensure({ rwd: "r" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const entries = await storageOperations.entries.getLatestByIds(model, {
             ids
@@ -544,7 +555,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         }
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const { where: initialWhere, limit: initialLimit } = params;
         const limit = initialLimit && initialLimit > 0 ? initialLimit : 50;
@@ -633,7 +646,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
     const createEntry: CmsEntryContext["createEntry"] = async (model, inputData) => {
         await entriesPermissions.ensure({ rwd: "w" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         /**
          * Make sure we only work with fields that are defined in the model.
@@ -730,7 +745,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         inputData
     ) => {
         await entriesPermissions.ensure({ rwd: "w" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         /**
          * Make sure we only work with fields that are defined in the model.
@@ -855,7 +872,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
     const updateEntry: CmsEntryContext["updateEntry"] = async (model, id, inputData, metaInput) => {
         await entriesPermissions.ensure({ rwd: "w" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         /**
          * Make sure we only work with fields that are defined in the model.
@@ -978,7 +997,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     const moveEntry: CmsEntryContext["moveEntry"] = async (model, id, folderId) => {
         await entriesPermissions.ensure({ rwd: "w" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
         /**
          * The entry we are going to move to another folder.
          */
@@ -1021,7 +1042,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     const republishEntry: CmsEntryContext["republishEntry"] = async (model, id) => {
         await entriesPermissions.ensure({ rwd: "w" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         /**
          * Fetch the entry from the storage.
@@ -1116,7 +1139,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         revisionId
     ) => {
         await entriesPermissions.ensure({ rwd: "d" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const { id: entryId, version } = parseIdentifier(revisionId);
 
@@ -1224,7 +1249,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
 
         await entriesPermissions.ensure({ rwd: "d" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const { items: entries } = await storageOperations.entries.list(model, {
             where: {
@@ -1277,7 +1304,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
         await entriesPermissions.ensure({ rwd: "d" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const { force } = options || {};
 
@@ -1319,7 +1348,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
     const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
         await entriesPermissions.ensure({ pw: "p" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
             id
@@ -1455,7 +1486,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     const getUniqueFieldValues: CmsEntryContext["getUniqueFieldValues"] = async (model, params) => {
         await entriesPermissions.ensure({ rwd: "r" });
-        await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+        await modelsPermissions.ensureCanAccessModel({
+            model
+        });
 
         const { where: initialWhere, fieldId } = params;
 

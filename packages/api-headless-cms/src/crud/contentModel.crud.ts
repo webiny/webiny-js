@@ -4,23 +4,23 @@ import {
     CmsContext,
     CmsModel,
     CmsModelContext,
+    CmsModelGroup,
     CmsModelManager,
-    HeadlessCmsStorageOperations,
-    OnModelBeforeCreateTopicParams,
-    OnModelAfterCreateTopicParams,
-    OnModelBeforeUpdateTopicParams,
-    OnModelAfterUpdateTopicParams,
-    OnModelBeforeDeleteTopicParams,
-    OnModelAfterDeleteTopicParams,
-    OnModelInitializeParams,
-    OnModelBeforeCreateFromTopicParams,
-    OnModelAfterCreateFromTopicParams,
     CmsModelUpdateInput,
+    HeadlessCmsStorageOperations,
+    OnModelAfterCreateFromTopicParams,
+    OnModelAfterCreateTopicParams,
+    OnModelAfterDeleteTopicParams,
+    OnModelAfterUpdateTopicParams,
+    OnModelBeforeCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams,
+    OnModelBeforeDeleteTopicParams,
+    OnModelBeforeUpdateTopicParams,
     OnModelCreateErrorTopicParams,
     OnModelCreateFromErrorParams,
-    OnModelUpdateErrorTopicParams,
     OnModelDeleteErrorTopicParams,
-    CmsModelGroup
+    OnModelInitializeParams,
+    OnModelUpdateErrorTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
@@ -42,9 +42,8 @@ import {
     createModelCreateValidation,
     createModelUpdateValidation
 } from "~/crud/contentModel/validation";
-import { createZodError } from "@webiny/utils";
+import { createZodError, removeUndefinedValues } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
-import { removeUndefinedValues } from "@webiny/utils";
 import {
     ensurePluralApiName,
     ensureSingularApiName
@@ -203,7 +202,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     return false;
                 }
 
-                return modelsPermissions.canAccessModel({ model, locale: getLocale().code });
+                return modelsPermissions.canAccessModel({
+                    model
+                });
             });
         });
     };
@@ -215,7 +216,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const model = await modelsGet(modelId);
 
             await modelsPermissions.ensure({ owns: model.createdBy });
-            await modelsPermissions.ensureCanAccessModel({ model, locale: getLocale().code });
+            await modelsPermissions.ensureCanAccessModel({
+                model
+            });
 
             return model;
         });

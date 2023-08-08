@@ -1,22 +1,23 @@
 import { AppPermissions, NotAuthorizedError } from "@webiny/api-security";
 import { CmsGroup, CmsGroupPermission } from "~/types";
 
-interface CanAccessGroupParams {
-    group: CmsGroup;
-    locale: string;
+export interface CanAccessGroupParams {
+    group: Pick<CmsGroup, "id" | "locale">;
 }
 
 export class ModelGroupsPermissions extends AppPermissions<CmsGroupPermission> {
-    async canAccessGroup({ group, locale }: CanAccessGroupParams) {
+    async canAccessGroup({ group }: CanAccessGroupParams) {
         if (await this.hasFullAccess()) {
             return true;
         }
 
         const permissions = await this.getPermissions();
 
-        for (let i = 0; i < permissions.length; i++) {
-            const permission = permissions[i];
+        const locale = group.locale;
+
+        for (const permission of permissions) {
             const { groups } = permission;
+
             // When no groups defined on permission it means user has access to everything.
             if (!groups) {
                 return true;
@@ -28,7 +29,7 @@ export class ModelGroupsPermissions extends AppPermissions<CmsGroupPermission> {
                 Array.isArray(groups[locale]) === false ||
                 groups[locale].includes(group.id) === false
             ) {
-                return false;
+                continue;
             }
             return true;
         }

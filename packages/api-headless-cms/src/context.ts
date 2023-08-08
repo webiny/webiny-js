@@ -95,6 +95,12 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 PREVIEW: type === "preview",
                 MANAGE: type === "manage",
                 storageOperations,
+                permissions: {
+                    groups: modelGroupsPermissions,
+                    models: modelsPermissions,
+                    entries: entriesPermissions,
+                    settings: settingsPermissions
+                },
                 ...createSystemCrud({
                     context,
                     getTenant,
