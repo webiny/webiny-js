@@ -5,13 +5,11 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 class Mock {
     public name: string;
     public blockCategory: string;
-    public preview: { src: string };
     public content: { some: string };
 
     constructor(prefix = "") {
         this.name = `${prefix}name`;
         this.blockCategory = `block-category`;
-        this.preview = { src: `https://test.com/${prefix}name/src.jpg` };
         this.content = { some: `${prefix}content` };
     }
 }
@@ -167,9 +165,6 @@ describe("Page blocks Security Test", () => {
                                     createdOn: /^20/,
                                     name: "list-page-blocks-one-name",
                                     blockCategory: "block-category",
-                                    preview: {
-                                        src: "https://test.com/list-page-blocks-one-name/src.jpg"
-                                    },
                                     content: { some: "list-page-blocks-one-content" }
                                 },
                                 {
@@ -177,9 +172,6 @@ describe("Page blocks Security Test", () => {
                                     createdOn: /^20/,
                                     name: "list-page-blocks-two-name",
                                     blockCategory: "block-category",
-                                    preview: {
-                                        src: "https://test.com/list-page-blocks-two-name/src.jpg"
-                                    },
                                     content: { some: "list-page-blocks-two-content" }
                                 },
                                 {
@@ -187,9 +179,6 @@ describe("Page blocks Security Test", () => {
                                     createdOn: /^20/,
                                     name: "list-page-blocks-three-name",
                                     blockCategory: "block-category",
-                                    preview: {
-                                        src: "https://test.com/list-page-blocks-three-name/src.jpg"
-                                    },
                                     content: { some: "list-page-blocks-three-content" }
                                 },
                                 {
@@ -197,9 +186,6 @@ describe("Page blocks Security Test", () => {
                                     createdOn: /^20/,
                                     name: "list-page-blocks-four-name",
                                     blockCategory: "block-category",
-                                    preview: {
-                                        src: "https://test.com/list-page-blocks-four-name/src.jpg"
-                                    },
                                     content: { some: "list-page-blocks-four-content" }
                                 }
                             ],
@@ -226,9 +212,6 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-one-name",
                                 blockCategory: "block-category",
-                                preview: {
-                                    src: "https://test.com/list-page-blocks-one-name/src.jpg"
-                                },
                                 content: { some: "list-page-blocks-one-content" }
                             },
                             {
@@ -236,9 +219,6 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-two-name",
                                 blockCategory: "block-category",
-                                preview: {
-                                    src: "https://test.com/list-page-blocks-two-name/src.jpg"
-                                },
                                 content: { some: "list-page-blocks-two-content" }
                             }
                         ],
@@ -264,9 +244,6 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-three-name",
                                 blockCategory: "block-category",
-                                preview: {
-                                    src: "https://test.com/list-page-blocks-three-name/src.jpg"
-                                },
                                 content: { some: "list-page-blocks-three-content" }
                             },
                             {
@@ -274,9 +251,6 @@ describe("Page blocks Security Test", () => {
                                 createdOn: /^20/,
                                 name: "list-page-blocks-four-name",
                                 blockCategory: "block-category",
-                                preview: {
-                                    src: "https://test.com/list-page-blocks-four-name/src.jpg"
-                                },
                                 content: { some: "list-page-blocks-four-content" }
                             }
                         ],

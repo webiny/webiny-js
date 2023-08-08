@@ -2,9 +2,8 @@ import path from "path";
 import dotProp from "dot-prop-immutable";
 import loadJson from "load-json-file";
 import { ensureDirSync, createWriteStream } from "fs-extra";
-import { FileInput } from "@webiny/api-file-manager/types";
 import { PbImportExportContext } from "~/graphql/types";
-import { File as ImageFile, FileUploadsData } from "~/types";
+import { FileUploadsData } from "~/types";
 import { PageBlock } from "@webiny/api-page-builder/types";
 import { s3Stream } from "~/export/s3Stream";
 import { uploadAssets } from "~/import/utils/uploadAssets";
@@ -21,17 +20,11 @@ interface ImportBlockParams {
     fileUploadsData: FileUploadsData;
 }
 
-interface UpdateBlockPreviewImage {
-    fileIdToNewFileMap: Map<string, FileInput>;
-    srcPrefix: string;
-    file: ImageFile;
-}
-
 export async function importBlock({
     blockKey,
     context,
     fileUploadsData
-}: ImportBlockParams): Promise<Pick<PageBlock, "name" | "content" | "preview" | "blockCategory">> {
+}: ImportBlockParams): Promise<Pick<PageBlock, "name" | "content" | "blockCategory">> {
     const log = console.log;
 
     // Making Directory for block in which we're going to extract the block data file.
@@ -78,26 +71,32 @@ export async function importBlock({
             fileIdToNewFileMap,
             srcPrefix
         });
-
-        block.preview = updateBlockPreviewImage({
-            /**
-             * Casting as this is only a type error.
-             */
-            file: (block.preview as ImageFile) || {},
-            fileIdToNewFileMap,
-            srcPrefix
-        });
     }
 
-    // Check if block category already exists
-    const blockCategory = await context.pageBuilder.getBlockCategory(category?.slug);
-    if (!blockCategory) {
-        await context.pageBuilder.createBlockCategory({
-            name: category.name,
-            slug: category.slug,
-            icon: category.icon,
-            description: category.description
-        });
+    let loadedCategory;
+    if (category) {
+        loadedCategory = await context.pageBuilder.getBlockCategory(category?.slug);
+        if (!loadedCategory) {
+            await context.pageBuilder.createBlockCategory({
+                name: category.name,
+                slug: category.slug,
+                icon: category.icon,
+                description: category.description
+            });
+        }
+    } else {
+        let importedBlocksCategory = await context.pageBuilder.getBlockCategory("imported-blocks");
+
+        if (!importedBlocksCategory) {
+            importedBlocksCategory = await context.pageBuilder.createBlockCategory({
+                name: "Imported Blocks",
+                slug: "imported-blocks",
+                description: "Imported blocks",
+                icon: "fas/star"
+            });
+        }
+
+        loadedCategory = importedBlocksCategory;
     }
 
     log("Removing Directory for block...");
@@ -106,24 +105,5 @@ export async function importBlock({
     log(`Remove block contents from S3...`);
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
-    return { ...block, blockCategory: category.slug };
-}
-
-function updateBlockPreviewImage(params: UpdateBlockPreviewImage): ImageFile {
-    const { file: blockPreview, fileIdToNewFileMap, srcPrefix } = params;
-    const newFile = fileIdToNewFileMap.get(blockPreview.id || "");
-
-    if (!newFile) {
-        console.log("Block preview file not found!");
-        return blockPreview;
-    }
-
-    const srcPrefixWithoutTrailingSlash = srcPrefix.endsWith("/")
-        ? srcPrefix.slice(0, -1)
-        : srcPrefix;
-
-    blockPreview.id = newFile.id;
-    blockPreview.src = `${srcPrefixWithoutTrailingSlash}/${newFile.key}`;
-
-    return blockPreview;
+    return { ...block, blockCategory: loadedCategory!.slug };
 }
