@@ -44,8 +44,6 @@ export const ActionPublish = () => {
                             throw new Error("Error while updating the entry status");
                         }
 
-                        console.log("entry", entry);
-
                         updateRecordInCache(entry);
 
                         report.success({
