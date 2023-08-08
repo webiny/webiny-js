@@ -13,6 +13,7 @@ import { useContentEntriesList, useContentEntry } from "~/admin/views/contentEnt
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { useRouter } from "@webiny/react-router";
 import { ROOT_FOLDER } from "~/admin/constants";
+import { BulkActions } from "~/admin/components/ContentEntries/BulkActions";
 
 interface Props {
     folderId?: string;
@@ -69,8 +70,10 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
                 />
+                <BulkActions />
                 <Wrapper>
                     <Filters />
+
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&
                     !list.isListLoading ? (
@@ -93,6 +96,8 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     loading={list.isListLoading}
                                     sorting={list.sorting}
                                     onSortingChange={list.setSorting}
+                                    onSelectRow={list.onSelectRow}
+                                    selectedRows={list.selected}
                                 />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}

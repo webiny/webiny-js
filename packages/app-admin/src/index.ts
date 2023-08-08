@@ -53,6 +53,8 @@ export type {
 export * from "./hooks/useSnackbar";
 export * from "./hooks/useConfirmationDialog";
 export * from "./hooks/useDialog";
+export * from "./hooks/useDialogWithReport";
+export * from "./hooks/Worker";
 export { useWcp } from "@webiny/app-wcp";
 export { AaclPermission } from "@webiny/app-wcp/types";
 

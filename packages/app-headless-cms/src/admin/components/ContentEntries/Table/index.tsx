@@ -24,18 +24,22 @@ import { useModel, usePermission } from "~/admin/hooks";
 import { CreatableItem } from "~/admin/hooks/usePermission";
 import { statuses as statusLabels } from "~/admin/constants/statusLabels";
 import { isRecordEntry } from "~/utils/acoRecordTransform";
+import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
-interface Props {
-    records: RecordEntry[];
+export interface TableProps {
     folders: FolderEntry[];
     loading?: boolean;
-    sorting: Sorting;
+    onSelectRow: (rows: Entry[] | []) => void;
     onSortingChange: OnSortingChange;
+    records: RecordEntry[];
+    selectedRows: CmsContentEntry[];
+    sorting: Sorting;
 }
 
-export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
+export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const { currentFolderId } = useNavigateFolder();
-    const { folders, records, loading, sorting, onSortingChange } = props;
+    const { folders, records, loading, sorting, onSortingChange, selectedRows, onSelectRow } =
+        props;
     const { model } = useModel();
 
     const { history } = useRouter();
@@ -172,10 +176,13 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             <DataTable<Entry>
                 columns={columns}
                 data={data}
+                isRowSelectable={row => row.original.$selectable}
                 loadingInitial={loading}
-                stickyRows={1}
-                sorting={tableSorting}
+                onSelectRow={onSelectRow}
                 onSortingChange={onSortingChange}
+                selectedRows={data.filter(record => selectedRows.find(row => row.id === record.id))}
+                sorting={tableSorting}
+                stickyRows={1}
             />
             {selectedFolder && (
                 <>

@@ -1,6 +1,7 @@
 import React from "react";
 import { ContentEntryEditorConfig, ContentEntryListConfig } from "~/admin/config/contentEntries";
 
+import { ActionPublish, ActionUnpublish } from "~/admin/components/ContentEntries/BulkActions";
 import { FilterByStatus } from "~/admin/components/ContentEntries/Filters";
 import {
     DeleteEntry,
@@ -16,6 +17,8 @@ export const ContentEntriesModule: React.FC = () => {
         <>
             <ContentEntryListConfig>
                 <Browser.Filter name={"status"} element={<FilterByStatus />} />
+                <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
+                <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
             </ContentEntryListConfig>
             <ContentEntryEditorConfig>
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
