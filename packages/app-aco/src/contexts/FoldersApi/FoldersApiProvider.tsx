@@ -53,6 +53,7 @@ interface Props {
 const rootFolder: FolderItem = {
     id: ROOT_FOLDER,
     title: "Home",
+    permissions: [],
     parentId: "0",
     slug: "",
     createdOn: "",
@@ -197,7 +198,7 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
         },
 
         async updateFolder(type, folder) {
-            const { id, title, slug, parentId } = folder;
+            const { id, title, slug, permissions, parentId } = folder;
 
             const { data: response } = await client.mutate<
                 UpdateFolderResponse,
@@ -209,6 +210,7 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
                     data: {
                         title,
                         slug,
+                        permissions,
                         parentId
                     }
                 }

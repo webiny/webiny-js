@@ -6,10 +6,16 @@ import {
 
 export * from "~/graphql/records/types";
 
+export interface FolderItemPermission {
+    target: string;
+    level: string;
+}
+
 export interface FolderItem {
     id: string;
     title: string;
     slug: string;
+    permissions: FolderItemPermission[];
     type: string;
     parentId: string | null;
     createdOn: string;

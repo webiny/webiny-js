@@ -90,13 +90,14 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
             },
 
             async updateFolder(folder) {
-                const { id, title, slug, parentId } = folder;
+                const { id, title, slug, permissions, parentId } = folder;
 
                 return await dataLoader(loadingHandler("UPDATE", setLoading), () =>
                     foldersApi.updateFolder(type, {
                         id,
                         title,
                         slug,
+                        permissions,
                         parentId
                     })
                 );

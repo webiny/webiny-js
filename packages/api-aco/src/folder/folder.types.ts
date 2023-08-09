@@ -1,6 +1,13 @@
 import { ListMeta, ListSort, User } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
+export type FolderAccessLevel = "owner" | "viewer" | "editor";
+
+export interface FolderPermission  {
+    target: string
+    level: FolderAccessLevel
+}
+
 export interface Folder {
     id: string;
     entryId: string;
@@ -9,6 +16,7 @@ export interface Folder {
     savedOn: string;
     title: string;
     slug: string;
+    permissions: FolderPermission[];
     type: string;
     parentId?: string | null;
 }
@@ -25,11 +33,17 @@ export interface ListFoldersParams {
     after?: string | null;
 }
 
+export interface ListAllFoldersParams {
+    where: ListFoldersWhere;
+    sort?: ListSort;
+}
+
 export type CreateFolderParams = Pick<Folder, "title" | "slug" | "type" | "parentId">;
 
 export interface UpdateFolderParams {
     title?: string;
     slug?: string;
+    permissions?: any;
     parentId?: string;
 }
 

@@ -13,6 +13,10 @@ const DATA_FIELD = /* GraphQL */ `
         id
         title
         slug
+        permissions {
+            target
+            level
+        }
         parentId
         type
         savedOn

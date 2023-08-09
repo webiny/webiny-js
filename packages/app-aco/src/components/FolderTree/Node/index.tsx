@@ -19,6 +19,7 @@ type NodeProps = {
     onClick: (data: FolderItem) => void;
     onUpdateFolder: (data: FolderItem) => void;
     onDeleteFolder: (data: FolderItem) => void;
+    onSetFolderPermissions: (data: FolderItem) => void;
 };
 
 type FolderProps = {
@@ -49,7 +50,8 @@ export const Node: React.VFC<NodeProps> = ({
     onToggle,
     onClick,
     onUpdateFolder,
-    onDeleteFolder
+    onDeleteFolder,
+    onSetFolderPermissions
 }) => {
     const isRoot = node.id === ROOT_FOLDER;
     // Move the placeholder line to the left based on the element depth within the tree.
@@ -100,6 +102,7 @@ export const Node: React.VFC<NodeProps> = ({
                     folder={node.data}
                     onUpdateFolder={onUpdateFolder}
                     onDeleteFolder={onDeleteFolder}
+                    onSetFolderPermissions={onSetFolderPermissions}
                 />
             )}
         </Container>

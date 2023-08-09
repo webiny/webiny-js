@@ -9,7 +9,7 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { useSnackbar } from "@webiny/app-admin";
 import { DndProvider } from "react-dnd";
-import { FolderDialogDelete, FolderDialogUpdate } from "~/components";
+import { FolderDialogDelete, FolderDialogUpdate, FolderDialogSetPermissions } from "~/components";
 import { Node } from "../Node";
 import { NodePreview } from "../NodePreview";
 import { Placeholder } from "../Placeholder";
@@ -40,6 +40,7 @@ export const List: React.VFC<ListProps> = ({
     const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
     const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+    const [permissionsDialogOpen, setPermissionsDialogOpen] = useState<boolean>(false);
     const [selectedFolder, setSelectedFolder] = useState<FolderItem>();
 
     useEffect(() => {
@@ -116,6 +117,10 @@ export const List: React.VFC<ListProps> = ({
                                 setSelectedFolder(data);
                                 setDeleteDialogOpen(true);
                             }}
+                            onSetFolderPermissions={data => {
+                                setSelectedFolder(data);
+                                setPermissionsDialogOpen(true);
+                            }}
                         />
                     )}
                     dragPreviewRender={monitorProps => <NodePreview monitorProps={monitorProps} />}
@@ -145,6 +150,14 @@ export const List: React.VFC<ListProps> = ({
                         open={deleteDialogOpen}
                         onClose={() => {
                             setDeleteDialogOpen(false);
+                            setSelectedFolder(undefined);
+                        }}
+                    />{" "}
+                    <FolderDialogSetPermissions
+                        folder={selectedFolder}
+                        open={permissionsDialogOpen}
+                        onClose={() => {
+                            setPermissionsDialogOpen(false);
                             setSelectedFolder(undefined);
                         }}
                     />

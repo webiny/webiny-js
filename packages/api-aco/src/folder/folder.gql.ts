@@ -8,10 +8,21 @@ import { AcoContext } from "~/types";
 
 export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
+        type FolderPermission {
+            target: String!
+            level: String!
+        }
+
+        input FolderPermissionInput {
+            target: String!
+            level: String!
+        }
+        
         type Folder {
             id: ID!
             title: String!
             slug: String!
+            permissions: [FolderPermission]
             type: String!
             parentId: ID
             savedOn: DateTime
@@ -29,6 +40,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
         input FolderUpdateInput {
             title: String
             slug: String
+            permissions: [FolderPermissionInput]
             parentId: ID
         }
 
