@@ -34,7 +34,8 @@ const PeForm: FormRenderer = props => {
                     } catch {
                         return apolloClient
                             .query({ query: gql(GET_PUBLISHED_FORM), variables })
-                            .then(({ data }) => data.formBuilder.getPublishedForm.data);
+                            .then(({ data }) => data.formBuilder.getPublishedForm.data)
+                            .catch(() => null);
                     }
                 },
                 submitForm: ({ variables }) => {

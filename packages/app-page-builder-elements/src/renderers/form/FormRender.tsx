@@ -31,10 +31,11 @@ export interface FormRenderProps {
     createFormParams: CreateFormParams;
     formData: FormData;
     loading: boolean;
+    isLatestRevision?: boolean;
 }
 
 const FormRender: React.FC<FormRenderProps> = props => {
-    const { formData, createFormParams } = props;
+    const { formData, createFormParams, isLatestRevision } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
 
     const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
@@ -210,7 +211,15 @@ const FormRender: React.FC<FormRenderProps> = props => {
     return (
         <>
             <FormLayoutComponent {...layoutProps} />
-            <ps-tag data-key="fb-form" data-value={formData.formId} />
+            {/* 
+                We need to add #latest in case we have chosen "Latest Form Revision" in the "Revisions List",
+                so we can update only those pages that are using "Latest Form Revision". 
+                And those pages that are using fixed version of "Form Revision" for example (v2) won't be rerendered.
+            */}
+            <ps-tag
+                data-key="fb-form"
+                data-value={`${formData.formId}${isLatestRevision ? "#latest" : ""}`}
+            />
         </>
     );
 };

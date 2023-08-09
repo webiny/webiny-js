@@ -20,6 +20,7 @@ import { CategoriesPermissions } from "./crud/permissions/CategoriesPermissions"
 import { BlockCategoriesPermissions } from "./crud/permissions/BlockCategoriesPermissions";
 import { PageTemplatesPermissions } from "~/graphql/crud/permissions/PageTemplatesPermissions";
 import { PageBlocksPermissions } from "~/graphql/crud/permissions/PageBlocksPermissions";
+import { FormBuilderContext } from "@webiny/api-form-builder/types";
 
 export interface CreateCrudParams {
     storageOperations: PageBuilderStorageOperations;
@@ -53,7 +54,7 @@ const createPageBuilder = () => {
 
 const setup = (params: CreateCrudParams) => {
     const { storageOperations } = params;
-    const plugin = new ContextPlugin<PbContext>(async context => {
+    const plugin = new ContextPlugin<FormBuilderContext & PbContext>(async context => {
         if (context.pageBuilder) {
             throw new WebinyError("PbContext setup must be first loaded.", "CONTEXT_SETUP_ERROR");
         }

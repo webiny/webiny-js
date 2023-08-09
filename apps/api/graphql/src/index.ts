@@ -77,6 +77,11 @@ export const handler = createHandler({
         prerenderingServicePlugins({
             eventBus: String(process.env.EVENT_BUS)
         }),
+        createFormBuilder({
+            storageOperations: createFormBuilderStorageOperations({
+                documentClient
+            })
+        }),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
                 documentClient
@@ -86,11 +91,6 @@ export const handler = createHandler({
         pageBuilderPrerenderingPlugins(),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
-        }),
-        createFormBuilder({
-            storageOperations: createFormBuilderStorageOperations({
-                documentClient
-            })
         }),
         createApwGraphQL(),
         createApwPageBuilderContext({
