@@ -241,12 +241,12 @@ export class CmsEntriesRootFolder_5_37_0_002
                 for (const esRecord of esRecords) {
                     const decompressedData = await getDecompressedData<CmsEntry>(esRecord.data);
                     if (!decompressedData) {
-                        logger.debug(
+                        logger.trace(
                             `Skipping record "${esRecord.PK}" as it is not a valid CMS entry...`
                         );
                         continue;
                     } else if (decompressedData.location?.folderId) {
-                        logger.debug(
+                        logger.trace(
                             `Skipping record "${decompressedData.entryId}" as it already has folderId defined...`
                         );
                         continue;

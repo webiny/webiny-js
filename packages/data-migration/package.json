@@ -24,6 +24,7 @@
     "dynamodb-toolbox": "^0.3.5",
     "minimatch": "^5.1.6",
     "pino": "^8.11.0",
+    "pino-pretty": "^9.4.0",
     "semver": "^6.3.0"
   },
   "devDependencies": {

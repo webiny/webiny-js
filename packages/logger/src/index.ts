@@ -1,5 +1,10 @@
-import { LevelWithSilent, Logger, LoggerOptions as BaseLoggerOptions, pino } from "pino";
-import pinoPretty from "pino-pretty";
+import {
+    DestinationStream,
+    LevelWithSilent,
+    Logger,
+    LoggerOptions as BaseLoggerOptions,
+    pino
+} from "pino";
 
 export * from "pino";
 
@@ -27,20 +32,19 @@ export const getLogLevel = (input?: string, defaultLevel: LevelWithSilent = "inf
 
 let logger: Logger;
 
-export const createPinoLogger = (options: LoggerOptions = {}) => {
-    return pino(
-        {
-            level: getLogLevel(options?.level),
-            ...(options || {})
-        },
-        pinoPretty({
-            ignore: "pid,hostname"
-        })
-    );
+export const createPinoLogger = (input?: LoggerOptions, stream?: DestinationStream) => {
+    const options = {
+        ...(input || {}),
+        level: getLogLevel(input?.level)
+    };
+    if (!stream) {
+        return pino(options);
+    }
+    return pino(options, stream);
 };
 
-export const configureLogger = (options: LoggerOptions): void => {
-    logger = createPinoLogger(options);
+export const configureLogger = (options: LoggerOptions, stream?: DestinationStream): void => {
+    logger = createPinoLogger(options, stream);
 };
 
 export const getLogger = () => {
