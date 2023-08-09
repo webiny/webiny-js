@@ -96,16 +96,19 @@ export class CmsEntriesRootFolder_5_37_0_002
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+        /**
+         * We will load a few CMS entryes
+         */
         const result = await scan<DynamoDbElasticsearchRecord>({
             entity: this.ddbEsEntryEntity,
             options: {
                 filters: [
                     {
                         attr: "PK",
-                        contains: "#CMS#"
+                        contains: "#CMS#CME#"
                     }
                 ],
-                limit: 10
+                limit: 100
             }
         });
 
@@ -148,9 +151,11 @@ export class CmsEntriesRootFolder_5_37_0_002
             logger.info(`Migration completed, no need to start again.`);
             return;
         }
-        /**
-         *
-         */
+        let usingKey = "";
+        if (migrationStatus?.lastEvaluatedKey) {
+            usingKey = JSON.stringify(migrationStatus.lastEvaluatedKey);
+        }
+        logger.debug(`Scanning DynamoDB Elasticsearch table... ${usingKey}`);
         await ddbScanWithCallback<CmsEntry>(
             {
                 entity: this.ddbEntryEntity,
@@ -166,6 +171,7 @@ export class CmsEntriesRootFolder_5_37_0_002
                 }
             },
             async result => {
+                logger.debug(`Processing ${result.items.length} items...`);
                 const ddbItems: BatchWriteItem[] = [];
                 const ddbEsItems: BatchWriteItem[] = [];
 
@@ -274,13 +280,16 @@ export class CmsEntriesRootFolder_5_37_0_002
                     });
                 };
 
+                logger.trace("Storing the DynamoDB records...");
                 await executeWithRetry(execute, {
                     onFailedAttempt: error => {
                         logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
                         logger.error(error.message);
                     }
                 });
+                logger.trace("...stored.");
 
+                logger.trace("Storing the DynamoDB Elasticsearch records...");
                 await executeWithRetry(executeDdbEs, {
                     onFailedAttempt: error => {
                         logger.error(
@@ -289,6 +298,7 @@ export class CmsEntriesRootFolder_5_37_0_002
                         logger.error(error.message);
                     }
                 });
+                logger.trace("...stored.");
 
                 // Update checkpoint after every batch
                 migrationStatus.lastEvaluatedKey = result.lastEvaluatedKey?.PK
