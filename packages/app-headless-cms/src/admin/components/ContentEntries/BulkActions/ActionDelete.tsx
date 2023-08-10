@@ -1,15 +1,14 @@
 import React, { useMemo } from "react";
-import { ReactComponent as PublishIcon } from "@material-design-icons/svg/round/publish.svg";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/filled/delete.svg";
 import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { usePermission, useCms, useContentEntry } from "~/admin/hooks";
+import { useCms, useContentEntry } from "~/admin/hooks";
 
-const ActionPublish = () => {
-    const { canPublish } = usePermission();
-    const { publishEntryRevision } = useCms();
+const ActionDelete = () => {
+    const { deleteEntry } = useCms();
     const { contentModel } = useContentEntry();
-    const { updateRecordInCache } = useRecords();
+    const { removeRecordFromCache } = useRecords();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -23,31 +22,31 @@ const ActionPublish = () => {
 
     const openPublishEntriesDialog = () =>
         showConfirmationDialog({
-            title: "Publish entries",
+            title: "Delete entries",
             message: `You are about to publish ${entriesLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        const response = await publishEntryRevision({
+                        const response = await deleteEntry({
                             model: contentModel,
                             entry: item,
                             id: item.id
                         });
 
-                        const { error, entry } = response;
+                        const { error } = response;
 
                         if (error) {
                             throw new Error(
-                                error.message || "Unknown error while publishing the entry"
+                                error.message || "Unknown error while deleting the entry"
                             );
                         }
 
-                        updateRecordInCache(entry);
+                        removeRecordFromCache(item.id);
 
                         report.success({
                             title: `${item.meta.title}`,
-                            message: "Entry successfully published."
+                            message: "Entry successfully deleted."
                         });
                     } catch (e) {
                         report.error({
@@ -61,24 +60,20 @@ const ActionPublish = () => {
 
                 showResultsDialog({
                     results: worker.results,
-                    title: "Publish entries",
+                    title: "Delete entries",
                     message: "Operation completed, here below you find the complete report:"
                 });
             }
         });
 
-    if (!canPublish("cms.contentEntry")) {
-        return null;
-    }
-
     return (
         <IconButton
-            icon={<PublishIcon />}
+            icon={<DeleteIcon />}
             onAction={openPublishEntriesDialog}
-            label={`Publish ${entriesLabel}`}
+            label={`Delete ${entriesLabel}`}
             tooltipPlacement={"bottom"}
         />
     );
 };
 
-export default observer(ActionPublish);
+export default observer(ActionDelete);

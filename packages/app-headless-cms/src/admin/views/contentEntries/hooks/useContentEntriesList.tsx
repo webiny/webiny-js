@@ -37,6 +37,7 @@ export interface ContentEntriesListProviderContext {
     search: string;
     selected: CmsContentEntry[];
     setSearch: (value: string) => void;
+    setSelected: (data: CmsContentEntry[]) => void;
     setSorting: OnSortingChange;
     showFilters: () => void;
     showingFilters: boolean;
@@ -65,17 +66,18 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         listTitle,
         meta,
         records: initialRecords,
+        selected,
         setSearchQuery,
         setListSort,
         setFilters,
+        setSelected,
         showFilters,
         hideFilters,
         showingFilters
-    } = useAcoList();
+    } = useAcoList<CmsContentEntry>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");
-    const [selected, setSelected] = useState<CmsContentEntry[]>([]);
     const query = new URLSearchParams(location.search);
     const searchQuery = query.get("search") || "";
     const baseUrl = `${CMS_ENTRY_LIST_LINK}/${contentModel.modelId}`;
@@ -154,6 +156,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         records,
         search,
         selected,
+        setSelected,
         setSearch,
         sorting,
         setSorting,

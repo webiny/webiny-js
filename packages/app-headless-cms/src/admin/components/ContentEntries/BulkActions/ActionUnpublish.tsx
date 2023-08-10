@@ -1,36 +1,33 @@
 import React, { useMemo } from "react";
 import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/round/settings_backup_restore.svg";
+import { observer } from "mobx-react-lite";
+import { useRecords } from "@webiny/app-aco";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useCms, useContentEntry, usePermission } from "~/admin/hooks";
-import { useRecords } from "@webiny/app-aco";
 
-export const ActionUnpublish = () => {
+const ActionUnpublish = () => {
     const { canUnpublish } = usePermission();
     const { unpublishEntryRevision } = useCms();
     const { contentModel } = useContentEntry();
     const { updateRecordInCache } = useRecords();
+
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
-    const { processInSeries, items, results } = useWorker();
+    const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        const count = items.length || 0;
-
-        if (items.length === 1) {
-            return `${count} entry`;
-        }
-
-        return `${count} entries`;
-    }, [items.length]);
+        const count = worker.items.length || 0;
+        return `${count} ${count === 1 ? "entry" : "entries"}`;
+    }, [worker.items.length]);
 
     const openUnpublishEntriesDialog = () =>
         showConfirmationDialog({
             title: "Unpublish entries",
             message: `You are about to unpublish ${entriesLabel}. Are you sure you want to continue?`,
-            loadingLabel: `Unpublishing ${entriesLabel}`,
+            loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
-                await processInSeries(async ({ item, report }) => {
+                await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await unpublishEntryRevision({
                             model: contentModel,
@@ -41,23 +38,29 @@ export const ActionUnpublish = () => {
                         const { error, entry } = response;
 
                         if (error) {
-                            throw new Error("Error while updating the entry status");
+                            throw new Error(
+                                error.message || "Unknown error while unpublishing the entry"
+                            );
                         }
 
                         updateRecordInCache(entry);
 
                         report.success({
-                            message: `${item.meta.title} unpublished`
+                            title: `${item.meta.title}`,
+                            message: "Entry successfully unpublished."
                         });
-                    } catch {
+                    } catch (e) {
                         report.error({
-                            message: `${item.meta.title} errored`
+                            title: `${item.meta.title}`,
+                            message: e.message
                         });
                     }
                 });
 
+                worker.resetItems();
+
                 showResultsDialog({
-                    results,
+                    results: worker.results,
                     title: "Unpublish entries",
                     message: "Operation completed, here below you find the complete report:"
                 });
@@ -77,3 +80,5 @@ export const ActionUnpublish = () => {
         />
     );
 };
+
+export default observer(ActionUnpublish);

@@ -14470,6 +14470,7 @@ __metadata:
     graphlib: ^2.1.7
     graphql: ^15.7.2
     lodash: ^4.17.11
+    mobx: ^6.9.0
     nanoid: ^3.1.23
     prop-types: ^15.7.2
     react: 17.0.2

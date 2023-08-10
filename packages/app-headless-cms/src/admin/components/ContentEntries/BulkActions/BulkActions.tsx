@@ -14,7 +14,7 @@ const t = i18n.ns("app-headless-cms/admin/content-entries/bulk-actions");
 
 export const BulkActions = () => {
     const { browser } = useContentEntryListConfig();
-    const { selected } = useContentEntriesList();
+    const { selected, setSelected } = useContentEntriesList();
 
     const headline = useMemo((): string => {
         return t`{count|count:1:entry:default:entries} selected:`({
@@ -33,7 +33,7 @@ export const BulkActions = () => {
                     <Typography use={"headline6"}>{headline}</Typography>
                     <Buttons actions={browser.bulkActions} />
                 </ButtonsContainer>
-                <IconButton icon={<Close />} onClick={() => console.log("demo")} />
+                <IconButton icon={<Close />} onClick={() => setSelected([])} />
             </BulkActionsInner>
         </BulkActionsContainer>
     );

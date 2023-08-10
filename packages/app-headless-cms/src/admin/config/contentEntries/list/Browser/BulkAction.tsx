@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
+import React, { useCallback, useEffect, useRef } from "react";
+import { CallbackParams, useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useContentEntriesList, useModel } from "~/admin/hooks";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
@@ -54,8 +54,33 @@ export const BaseBulkAction: React.FC<BulkActionProps> = ({
 };
 
 const useWorker = () => {
-    const { selected } = useContentEntriesList();
-    return useMemo(() => new Worker<CmsContentEntry>(selected), [selected]);
+    const { selected, setSelected } = useContentEntriesList();
+    const { current: worker } = useRef(new Worker<CmsContentEntry>());
+
+    useEffect(() => {
+        worker.items = selected;
+    }, [selected]);
+
+    // Reset selected items in both useContentEntriesList and Worker
+    const resetItems = useCallback(() => {
+        worker.items = [];
+        setSelected([]);
+    }, []);
+
+    return {
+        items: worker.items,
+        process: (callback: (items: CmsContentEntry[]) => void) => worker.process(callback),
+        processInSeries: async (
+            callback: ({
+                item,
+                allItems,
+                report
+            }: CallbackParams<CmsContentEntry>) => Promise<void>,
+            chunkSize?: number
+        ) => worker.processInSeries(callback, chunkSize),
+        resetItems: resetItems,
+        results: worker.results
+    };
 };
 
 export const BulkAction = Object.assign(BaseBulkAction, {

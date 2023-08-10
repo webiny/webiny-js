@@ -73,7 +73,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                 <BulkActions />
                 <Wrapper>
                     <Filters />
-
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&
                     !list.isListLoading ? (

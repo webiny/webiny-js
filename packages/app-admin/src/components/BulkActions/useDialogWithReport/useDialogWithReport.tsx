@@ -1,13 +1,9 @@
 import React from "react";
-import { ReactComponent as ErrorIcon } from "@material-design-icons/svg/round/error.svg";
-import { ReactComponent as SuccessIcon } from "@material-design-icons/svg/round/check_circle.svg";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { i18n } from "@webiny/app/i18n";
-import { Icon } from "@webiny/ui/Icon";
-import { List, ListItem, ListItemGraphic, ListItemText } from "@webiny/ui/List";
 import { CircularProgress } from "@webiny/ui/Progress";
-
-import { Result } from "~/hooks/Worker";
+import { ResultDialogMessage } from "./DialogMessage";
+import { Result } from "../Worker";
 
 const t = i18n.ns("app-admin/hooks/use-dialog-with-report");
 
@@ -28,28 +24,6 @@ export interface UseDialogWithReportResponse {
     showConfirmationDialog: (params: ShowConfirmationDialogParams) => void;
     showResultsDialog: (results: ShowResultsDialogParams) => void;
 }
-
-type ResultDialogMessageProps = Pick<ShowResultsDialogParams, "results" | "message">;
-
-const ResultDialogMessage: React.FC<ResultDialogMessageProps> = ({ results, message }) => {
-    return (
-        <>
-            {message && <div style={{ marginBottom: 16 }}>{message}</div>}
-            <List nonInteractive={true}>
-                {results.map((result, index) => (
-                    <ListItem key={`item-${index}`}>
-                        <ListItemGraphic>
-                            <Icon
-                                icon={result.status === "success" ? <SuccessIcon /> : <ErrorIcon />}
-                            />
-                        </ListItemGraphic>
-                        <ListItemText>{result.message} </ListItemText>
-                    </ListItem>
-                ))}
-            </List>
-        </>
-    );
-};
 
 export const useDialogWithReport = (): UseDialogWithReportResponse => {
     const ui = useUi();
