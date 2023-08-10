@@ -165,8 +165,7 @@ describe("Page Templates Test", () => {
             data: {
                 name: "New block",
                 blockCategory: "block-category",
-                content: simplePageBlockContent,
-                preview: {}
+                content: simplePageBlockContent
             }
         }).then(([response]) => response.data.pageBuilder.createPageBlock.data);
 

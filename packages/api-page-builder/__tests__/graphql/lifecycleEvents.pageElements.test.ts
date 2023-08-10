@@ -12,13 +12,6 @@ const updatedContent = {
     ...content,
     updated: true
 };
-const preview = {
-    previewTest: true
-};
-const updatedPreview = {
-    ...preview,
-    updated: true
-};
 
 describe("Page Element Lifecycle Events", () => {
     const handler = useGqlHandler({
@@ -37,8 +30,7 @@ describe("Page Element Lifecycle Events", () => {
                 name,
                 type,
                 category,
-                content,
-                preview
+                content
             }
         });
         expect(response).toMatchObject({
@@ -50,8 +42,7 @@ describe("Page Element Lifecycle Events", () => {
                             name,
                             type,
                             category,
-                            content,
-                            preview
+                            content
                         },
                         error: null
                     }
@@ -73,8 +64,7 @@ describe("Page Element Lifecycle Events", () => {
                 name,
                 type,
                 category,
-                content,
-                preview
+                content
             }
         });
 
@@ -88,8 +78,7 @@ describe("Page Element Lifecycle Events", () => {
                 name,
                 type,
                 category,
-                content: updatedContent,
-                preview: updatedPreview
+                content: updatedContent
             }
         });
         expect(response).toMatchObject({
@@ -101,8 +90,7 @@ describe("Page Element Lifecycle Events", () => {
                             name,
                             type,
                             category,
-                            content: updatedContent,
-                            preview: updatedPreview
+                            content: updatedContent
                         },
                         error: null
                     }
@@ -124,8 +112,7 @@ describe("Page Element Lifecycle Events", () => {
                 name,
                 type,
                 category,
-                content,
-                preview
+                content
             }
         });
 
@@ -146,8 +133,7 @@ describe("Page Element Lifecycle Events", () => {
                             name,
                             type,
                             category,
-                            content,
-                            preview
+                            content
                         },
                         error: null
                     }
