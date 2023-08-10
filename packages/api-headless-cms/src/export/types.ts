@@ -1,35 +1,5 @@
 import { CmsGroup, CmsModel } from "~/types";
 
-export interface HeadlessCmsExportModelsResponse {
-    url: string;
-    json: string;
-}
-
-export interface HeadlessCmsExportModelsParams {
-    code: boolean;
-    groups?: string[];
-}
-
-export interface HeadlessCmsExportModels {
-    (params: HeadlessCmsExportModelsParams): Promise<HeadlessCmsExportModelsResponse>;
-}
-
-/**
- * Groups export.
- */
-export interface HeadlessCmsExportGroupsResponse {
-    url: string;
-    json: string;
-}
-
-export interface HeadlessCmsExportGroupsParams {
-    code: boolean;
-}
-
-export interface HeadlessCmsExportGroups {
-    (params: HeadlessCmsExportGroupsParams): Promise<HeadlessCmsExportGroupsResponse>;
-}
-
 /**
  * Structure export - groups and models.
  */
@@ -76,7 +46,5 @@ export interface HeadlessCmsExportStructure {
  * Interface for the main context interface.
  */
 export interface HeadlessCmsExport {
-    // groups: HeadlessCmsExportGroups;
-    // models: HeadlessCmsExportModels;
     structure: HeadlessCmsExportStructure;
 }
