@@ -60,8 +60,6 @@ const indexCreate = async (params: IndexCreateParams): Promise<void> => {
         await client.indices.create({
             index,
             body: {
-                include_type_name: false,
-                wait_for_active_shards: 1,
                 ...plugin.body
             }
         });
