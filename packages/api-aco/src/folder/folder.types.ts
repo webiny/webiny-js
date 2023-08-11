@@ -1,12 +1,6 @@
 import { ListMeta, ListSort, User } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
-
-export type FolderAccessLevel = "owner" | "viewer" | "editor";
-
-export interface FolderPermission  {
-    target: string
-    level: FolderAccessLevel
-}
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface Folder {
     id: string;
@@ -98,13 +92,35 @@ export interface OnFolderAfterDeleteTopicParams {
     folder: Folder;
 }
 
+export type FolderAccessLevel = "owner" | "viewer" | "editor";
+
+export interface FolderPermission {
+    target: string;
+    level: FolderAccessLevel;
+}
+
+interface CanAccessFolderParams {
+    identity: SecurityIdentity;
+    folder: Pick<Folder, "id">;
+    foldersPermissions?: Pick<Folder, "id" | "slug" | "permissions">[];
+    rwd?: "r" | "w" | "d";
+}
+
 export interface AcoFolderCrud {
+    canAccessFolder(params: CanAccessFolderParams): Promise<boolean>;
+
     get(id: string): Promise<Folder>;
+
     list(params: ListFoldersParams): Promise<[Folder[], ListMeta]>;
+
     create(data: CreateFolderParams): Promise<Folder>;
+
     update(id: string, data: UpdateFolderParams): Promise<Folder>;
+
     delete(id: string): Promise<Boolean>;
+
     getFolderWithAncestors(id: string): Promise<Folder[]>;
+
     onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
     onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
     onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;
@@ -115,8 +131,12 @@ export interface AcoFolderCrud {
 
 export interface AcoFolderStorageOperations {
     getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
+
     listFolders(params: StorageOperationsListFoldersParams): Promise<[Folder[], ListMeta]>;
+
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
+
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
+
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<boolean>;
 }

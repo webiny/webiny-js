@@ -13,6 +13,7 @@ import {
 
 import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import NotAuthorizedError from "@webiny/api-security/NotAuthorizedError";
 
 export const createFolderCrudMethods = ({
     storageOperations,
@@ -97,10 +98,10 @@ export const createFolderCrudMethods = ({
         identity: SecurityIdentity;
         folder: Folder;
         foldersPermissions?: Pick<Folder, "id" | "slug" | "permissions">[];
-        action?: "create" | "update" | "delete" | "read";
+        rwd?: "r" | "w" | "d";
     }
 
-    const canAccessFolder = async (params: CanAccessFolderParams) => {
+    const canAccessFolder = async (params: CanAccessFolderParams): Promise<boolean> => {
         const { folder, foldersPermissions } = params;
         const folderPermissions = await listFolderPermissions({ folder, foldersPermissions });
 
@@ -110,41 +111,53 @@ export const createFolderCrudMethods = ({
         }
 
         const identity = getIdentity();
-        const userPermission = folderPermissions.find(p => p.target === identity.id);
-        const teamPermission = folderPermissions.find(p => p.target === "team:my-team");
+        const userAccessLevel = folderPermissions.find(p => p.target === identity.id)?.level;
+        const teamAccessLevel = folderPermissions.find(p => p.target === "team:my-team")?.level;
 
-        if (!params.action) {
-            return userPermission || teamPermission;
+        if (!params.rwd || params.rwd === "r") {
+            return !!(userAccessLevel || teamAccessLevel);
         }
 
-        const {action} = params;
-
-        return false;
-        // if (userPermission) {
-        //     if (userPermission.level === params.level) {
-        //         return true;
-        //     }
-        // }
-        //
-        // if (teamPermission) {
-        //     if (teamPermission.level === params.level) {
-        //         return true;
-        //     }
-        // }
-        //
-        // return false;
+        // If we are here, it means we are checking for "w" or "d" access. In this case,
+        // we need to check if the user has "owner" or "editor" access.
+        const accessLevels = [userAccessLevel, teamAccessLevel];
+        return accessLevels.includes("owner") || accessLevels.includes("editor");
     };
 
-    const filterInaccessibleFolders = async (folders, options: { level?: FolderAccessLevel }) => {
-        const filteredFolders = [];
+    interface FilterAccessibleFoldersParams {
+        identity: SecurityIdentity;
+        folders: Folder[];
+        foldersPermissions?: Pick<Folder, "id" | "slug" | "permissions">[];
+        rwd?: "r" | "w" | "d";
+    }
+
+    const filterAccessibleFolders = async (
+        params: FilterAccessibleFoldersParams
+    ): Promise<Folder[]> => {
+        const { folders } = params;
+        if (folders.length === 0) {
+            return [];
+        }
+
+        // Just take the type from the first folder.
+        const folderType = folders[0].type;
+
+        let { foldersPermissions } = params;
+        if (!foldersPermissions) {
+            foldersPermissions = await listFoldersPermissions({
+                where: { type: folderType }
+            });
+        }
+
+        const accessibleFolders = [];
         for (let i = 0; i < folders.length; i++) {
             const folder = folders[i];
-            const canAccess = await canAccessFolder(folder, options);
+            const canAccess = await canAccessFolder({ folder, foldersPermissions, ...params });
             if (canAccess) {
-                filteredFolders.push(folder);
+                accessibleFolders.push(folder);
             }
         }
-        return filteredFolders;
+        return accessibleFolders;
     };
 
     return {
@@ -157,17 +170,31 @@ export const createFolderCrudMethods = ({
         onFolderAfterUpdate,
         onFolderBeforeDelete,
         onFolderAfterDelete,
+
+        canAccessFolder,
         async get(id) {
-            return storageOperations.getFolder({ id });
+            const folder = await storageOperations.getFolder({ id });
+
+            if (await canAccessFolder({ folder, identity: getIdentity(), rwd: "r" })) {
+                return folder;
+            }
+
+            throw new NotAuthorizedError();
         },
         async list(params) {
-            const [folders, meta] = storageOperations.listFolders(params);
+            const [folders, meta] = await storageOperations.listFolders(params);
 
             if (folders.length === 0) {
                 return [folders, meta];
             }
 
-            const [allFolders] = this.listAll({ where: { type: params.where.type } });
+            const accessibleFolders = await filterAccessibleFolders({
+                identity: getIdentity(),
+                folders,
+                rwd: "r"
+            });
+
+            return [accessibleFolders, meta];
         },
         async create(data) {
             await onFolderBeforeCreate.publish({ input: data });
