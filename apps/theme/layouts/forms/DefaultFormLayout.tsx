@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, FormAPI } from "@webiny/form";
-import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { FormLayoutComponent } from "@webiny/app-form-builder/types";
 import styled from "@emotion/styled";
 import { Row } from "./DefaultFormLayout/Row";
@@ -9,6 +8,8 @@ import { Field } from "./DefaultFormLayout/Field";
 import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
 import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
+import { SubmitButton } from "./DefaultFormLayout/SubmitButton";
+import { DefaultButton } from "./DefaultFormLayout/DefaultButton";
 
 const Wrapper = styled.div`
     width: 100%;
@@ -46,6 +47,9 @@ const DefaultFormLayout: FormLayoutComponent = ({
     getFields,
     getDefaultValues,
     submit,
+    handleNextStep,
+    handlePrevStep,
+    currentStep,
     formData,
     ReCaptcha,
     reCaptchaEnabled,
@@ -58,30 +62,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
     // Is the form successfully submitted?
     const [formSuccess, setFormSuccess] = useState(false);
 
-    // State to show fields corresponding to the step.
-    const [currentStep, setCurrentStep] = useState<number>(0);
-
     // All form fields - an array of rows where each row is an array that contain fields.
-    // @ts-ignore
     const fields = getFields(currentStep);
 
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
-
-    const handleNextStep = () => {
-        setCurrentStep(prevStep => (prevStep += 1));
-    };
-
-    const handlePrevStep = () => {
-        setCurrentStep(prevStep => (prevStep -= 1));
-    };
-
-    // We need this useEffect in case when user has deleted a step and he was on that step on the preview tab,
-    // so it won't trigger an error when we trying to view the step that we have deleted,
-    // we will simpy change currentStep to the first step.
-    useEffect(() => {
-        setCurrentStep(0);
-    }, [formData.steps]);
 
     // Validate fields for current step with "form.validateInput" function,
     // if current step is invalid then we should block posibility to move to the next step,
@@ -154,30 +139,35 @@ const DefaultFormLayout: FormLayoutComponent = ({
                     */}
                     {isMultiStepForm && (
                         <ButtonsWrapper>
-                            <ButtonDefault onClick={handlePrevStep} disabled={currentStep === 0}>
+                            <DefaultButton onClick={handlePrevStep} disabled={currentStep === 0}>
                                 Previous Step
-                            </ButtonDefault>
+                            </DefaultButton>
                             {currentStep === formData.steps.length - 1 ? (
-                                <ButtonPrimary onClick={submit} disabled={loading}>
+                                <SubmitButton onClick={submit} loading={loading} fullWidth={false}>
                                     {formData.settings.submitButtonLabel || "Submit"}
-                                </ButtonPrimary>
+                                </SubmitButton>
                             ) : (
-                                <ButtonPrimary
+                                <SubmitButton
                                     onClick={() => {
                                         validateCurrentStepFields(form);
                                     }}
-                                    disabled={loading}
+                                    loading={loading}
+                                    fullWidth={false}
                                 >
                                     Next Step
-                                </ButtonPrimary>
+                                </SubmitButton>
                             )}
                         </ButtonsWrapper>
                     )}
                     {/* If form is single step then we just render submit button */}
                     {!isMultiStepForm && (
-                        <ButtonPrimary onClick={submit} disabled={loading}>
+                        <SubmitButton
+                            onClick={submit}
+                            loading={loading}
+                            fullWidth={formData.settings.fullWidthSubmitButton}
+                        >
                             {formData.settings.submitButtonLabel || "Submit"}
-                        </ButtonPrimary>
+                        </SubmitButton>
                     )}
                 </Wrapper>
             )}

@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import cloneDeep from "lodash/cloneDeep";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -43,6 +43,7 @@ interface FieldValidator {
 const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
+    const [currentStep, setCurrentStep] = useState<number>(0);
 
     useEffect((): void => {
         if (!data.id) {
@@ -55,12 +56,27 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         });
     }, [data.id]);
 
+    // We need this useEffect in case when user has deleted a step and he was on that step on the preview tab,
+    // so it won't trigger an error when we trying to view the step that we have deleted,
+    // we will simpy change currentStep to the first step.
+    useEffect(() => {
+        setCurrentStep(0);
+    }, [data.steps]);
+
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
 
     if (!data.id) {
         return null;
     }
+
+    const handleNextStep = () => {
+        setCurrentStep(prevStep => (prevStep += 1));
+    };
+
+    const handlePrevStep = () => {
+        setCurrentStep(prevStep => (prevStep -= 1));
+    };
 
     const formData: FbFormModel = cloneDeep(data);
     const { fields, settings, steps } = formData;
@@ -209,6 +225,9 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         getDefaultValues,
         getFields,
         submit,
+        handleNextStep,
+        handlePrevStep,
+        currentStep,
         formData,
         ReCaptcha,
         reCaptchaEnabled: reCaptchaEnabled(formData),

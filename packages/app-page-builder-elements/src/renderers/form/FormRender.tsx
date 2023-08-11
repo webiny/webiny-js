@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./FormRender/components";
 import {
     createFormSubmission,
@@ -36,6 +36,15 @@ export interface FormRenderProps {
 const FormRender: React.FC<FormRenderProps> = props => {
     const { formData, createFormParams } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
+    const [currentStep, setCurrentStep] = useState<number>(0);
+
+    const handleNextStep = () => {
+        setCurrentStep(prevStep => (prevStep += 1));
+    };
+
+    const handlePrevStep = () => {
+        setCurrentStep(prevStep => (prevStep -= 1));
+    };
 
     const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
         let validators: CreateFormParamsValidator[] = [];
@@ -200,6 +209,9 @@ const FormRender: React.FC<FormRenderProps> = props => {
         getDefaultValues,
         getFields,
         submit,
+        handleNextStep,
+        handlePrevStep,
+        currentStep,
         formData,
         ReCaptcha,
         reCaptchaEnabled: reCaptchaEnabled(formData),

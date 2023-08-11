@@ -43,7 +43,7 @@ export interface FormDataRevision {
     createdBy: FormDataCreatedBy;
 }
 
-export interface FbFormStep {
+export interface FormDataStep {
     id: string;
     title: string;
     layout: string[][];
@@ -54,7 +54,7 @@ export interface FormData {
     formId: string;
     version: number;
     fields: FormDataField[];
-    steps: FbFormStep[];
+    steps: FormDataStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -85,6 +85,9 @@ export type FormLayoutComponentProps<T = any> = {
     getFieldByFieldId: Function;
     getFields: (stepIndex: number) => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
+    handleNextStep: () => void;
+    handlePrevStep: () => void;
+    currentStep: number;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;

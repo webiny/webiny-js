@@ -16,12 +16,12 @@ export const Wrapper = styled.div<{ fullWidth: boolean }>`
 
 interface Props {
     fullWidth: boolean;
-    onClick: FormRenderPropParamsSubmit;
     loading: boolean;
     children: React.ReactNode;
+    onClick: FormRenderPropParamsSubmit | (() => void);
 }
 
-export const SubmitButton: React.FC<Props> = ({ fullWidth, onClick, loading, children }) => {
+export const SubmitButton: React.FC<Props> = ({ fullWidth, loading, children, onClick }) => {
     return (
         <Wrapper fullWidth={fullWidth}>
             <button className={"button-body"} onClick={onClick} disabled={loading}>

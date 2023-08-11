@@ -87,7 +87,10 @@ export interface FormEditor {
     moveStep: (params: MoveStepParams) => void;
     updateField: (field: FbFormModelField) => void;
     deleteField: (field: FbFormModelField, targetStepId: string) => void;
-    getFieldPosition: (field: FieldIdType | FbFormModelField) => FieldLayoutPositionType | null;
+    getFieldPosition: (
+        field: FieldIdType | FbFormModelField,
+        data: FbFormStep
+    ) => FieldLayoutPositionType | null;
 }
 
 const extractFieldErrors = (error: FbErrorResponse, form: FbFormModel): FormEditorFieldError[] => {
@@ -513,8 +516,8 @@ export const useFormEditorFactory = (
             /**
              * Returns row / index position for given field.
              */
-            getFieldPosition: field => {
-                return getFieldPosition({ field, data: self.data });
+            getFieldPosition: (field, data) => {
+                return getFieldPosition({ field, data });
             }
         };
 

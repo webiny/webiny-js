@@ -92,6 +92,8 @@ export const FormStep = ({
             if (ui === "row") {
                 // Reorder rows.
                 // Reorder logic is different depending on the source and target position.
+                // pos.formStep is a source step from which we move row.
+                // formStep is a target step in which we move row.
                 moveRow(pos.row, position.row, formStep.id, pos.formStep);
                 return;
             }
@@ -103,9 +105,8 @@ export const FormStep = ({
                     console.log(source);
                     return;
                 }
-                const fieldId = (pos.formStep.id !== formStep.id ? pos.formStep : formStep).layout[
-                    pos.row
-                ][pos.index];
+                // Here we are getting field from the source step ("source step" is a step from which we take a field)
+                const fieldId = pos.formStep.layout[pos.row][pos.index];
                 moveField({
                     field: fieldId,
                     position,

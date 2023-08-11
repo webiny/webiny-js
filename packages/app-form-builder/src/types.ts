@@ -297,6 +297,9 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldByFieldId: Function;
     getFields: (stepIndex: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
+    handleNextStep: () => void;
+    handlePrevStep: () => void;
+    currentStep: number;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
