@@ -69,15 +69,9 @@ describe("5.37.0-002", () => {
                 elasticsearchClient
             });
         } catch (ex) {
-            console.log(
-                "Error inserting test entries: ",
-                JSON.stringify({
-                    message: ex.message,
-                    data: ex.data,
-                    stack: ex.stack,
-                    code: ex.code
-                })
-            );
+            console.log(JSON.stringify(ex.data));
+            console.error(ex.message);
+            console.log(ex.stack);
             throw ex;
         }
 
