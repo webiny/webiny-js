@@ -38,7 +38,7 @@ describe("deleting pages", () => {
         await waitPage(handler, p1v3);
     });
 
-    test("deleting v1 page should delete all related DB / index entries", async () => {
+    test("deleting page via `pid` should delete all related DB / index entries", async () => {
         await publishPage({ id: p1v3.id });
         await until(
             () =>
@@ -58,13 +58,13 @@ describe("deleting pages", () => {
             }
         );
 
-        await deletePage({ id: p1v1.id }).then(([res]) => {
+        await deletePage({ id: p1v1.pid }).then(([res]) => {
             expect(res.data.pageBuilder.deletePage).toMatchObject({
                 error: null,
                 data: {
                     latestPage: null,
                     page: {
-                        version: 1
+                        version: 3
                     }
                 }
             });
@@ -76,14 +76,14 @@ describe("deleting pages", () => {
                 return res.data.pageBuilder.listPages.data.length === 0;
             },
             {
-                name: "list all pages after deleting p1v1"
+                name: "list all pages after deleting the page via pid"
             }
         );
         await until(
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
             {
-                name: "list published pages after deleting p1v1"
+                name: "list published pages after deleting the page via pid"
             }
         );
     });
@@ -267,5 +267,28 @@ describe("deleting pages", () => {
         );
 
         expect(page.revisions.length).toBe(2);
+    });
+
+    test("deleting all revisions should delete all related DB / index entries", async () => {
+        await deletePage({ id: p1v3.id });
+        await deletePage({ id: p1v2.id });
+        await deletePage({ id: p1v1.id });
+
+        await until(
+            () => listPages({}),
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length === 0;
+            },
+            {
+                name: "list all pages after deleting p1 via pid"
+            }
+        );
+        await until(
+            listPublishedPages,
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
+            {
+                name: "list published pages after deleting p1 via pid"
+            }
+        );
     });
 });
