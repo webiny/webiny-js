@@ -84,6 +84,12 @@ const createResolver = (
     endpointType: ApiEndpoint
 ): CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> => {
     return ({ model, models, field, fieldTypePlugins, createFieldResolvers, graphQLType }) => {
+        const templates = getFieldTemplates(field);
+
+        if (!templates.length) {
+            return false;
+        }
+
         const resolver = (parent: any) => {
             const value = parent[field.fieldId];
             if (!value) {
@@ -103,8 +109,6 @@ const createResolver = (
 
             return remapTemplateValue(value, typeName);
         };
-
-        const templates = getFieldTemplates(field);
 
         const { templateTypes } = createTypeDefsForTemplates({
             models,
@@ -173,6 +177,10 @@ export const createDynamicZoneField =
             read: {
                 createTypeField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
+                    if (!templates.length) {
+                        return null;
+                    }
+
                     const unionTypeName = createUnionTypeName(model, field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
@@ -199,6 +207,11 @@ export const createDynamicZoneField =
             manage: {
                 createTypeField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
+
+                    if (!templates.length) {
+                        return null;
+                    }
+
                     const unionTypeName = createUnionTypeName(model, field);
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
@@ -230,6 +243,10 @@ export const createDynamicZoneField =
                 },
                 createInputField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
+
+                    if (!templates.length) {
+                        return null;
+                    }
 
                     const { typeDefs, templateTypes } = createTypeDefsForTemplates({
                         models,

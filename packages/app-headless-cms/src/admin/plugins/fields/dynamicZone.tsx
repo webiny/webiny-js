@@ -58,6 +58,10 @@ export const dynamicZoneField: CmsModelFieldTypePlugin = {
                 const prefix = `${graphQLTypePrefix}_${createTypeName(field.fieldId)}`;
                 const templates = field.settings?.templates || [];
 
+                if (!templates.length) {
+                    return null;
+                }
+
                 const fragments = templates.map(template => {
                     const templateGraphQLType = `${prefix}_${template.gqlTypeName}`;
                     return `...on ${templateGraphQLType} {

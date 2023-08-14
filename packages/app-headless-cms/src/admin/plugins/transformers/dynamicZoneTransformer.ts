@@ -27,6 +27,6 @@ export const createDynamicZoneTransformer = (): CmsFieldValueTransformer => ({
     transform: (value, field) => {
         const templates = field.settings?.templates || [];
 
-        return value ? convertToGraphQLInput(value, templates) : null;
+        return value ? convertToGraphQLInput(value, templates) : undefined;
     }
 });

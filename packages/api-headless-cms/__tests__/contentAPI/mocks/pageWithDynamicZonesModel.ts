@@ -129,7 +129,7 @@ export const pageModel: CmsModel = {
                         ]
                     },
                     {
-                        layout: [["ttyh493ugfd"], ["nli9u1rm"]],
+                        layout: [["ttyh493ugfd"], ["nli9u1rm"], ["lsd78slxc8"]],
                         name: "Objecting",
                         gqlTypeName: "Objecting",
                         icon: "fas/file-text",
@@ -174,11 +174,6 @@ export const pageModel: CmsModel = {
                             },
                             {
                                 type: "dynamicZone",
-                                listValidation: [
-                                    {
-                                        name: "dynamicZone"
-                                    }
-                                ],
                                 settings: {
                                     templates: [
                                         {
@@ -219,6 +214,22 @@ export const pageModel: CmsModel = {
                                 label: "DynamicZone",
                                 fieldId: "dynamicZone",
                                 id: "nli9u1rm"
+                            },
+                            /**
+                             * Add a dynamic zone field without any templates, to test for correct schema generation.
+                             */
+                            {
+                                type: "dynamicZone",
+                                settings: {
+                                    templates: []
+                                },
+                                renderer: {
+                                    name: "dynamicZone"
+                                },
+                                validation: [],
+                                label: "DynamicZone",
+                                fieldId: "emptyDynamicZone",
+                                id: "lsd78slxc8"
                             }
                         ]
                     },

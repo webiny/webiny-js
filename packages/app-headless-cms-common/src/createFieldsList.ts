@@ -33,6 +33,13 @@ export function createFieldsList({
                         ? queryField
                         : queryField({ model, field, graphQLTypePrefix: typePrefix });
 
+                /**
+                 * If field type plugin returns `null`, we don't include the field in the selection.
+                 */
+                if (selection === null) {
+                    return null;
+                }
+
                 return `${field.fieldId} ${selection}`;
             }
 

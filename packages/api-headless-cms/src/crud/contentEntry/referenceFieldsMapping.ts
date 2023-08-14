@@ -79,6 +79,10 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
 
                 if (field.multipleValues) {
                     const values = dotProp.get(input, field.fieldId, []);
+                    if (!Array.isArray(values)) {
+                        return collection;
+                    }
+
                     values.forEach((value, index) => {
                         const valueTemplate = Object.keys(value)[0];
                         const template = templates.find(tpl => tpl.gqlTypeName === valueTemplate);
@@ -103,6 +107,10 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
                 }
 
                 const value = dotProp.get(input, field.fieldId, {});
+                if (!value) {
+                    return collection;
+                }
+
                 const valueTemplate = Object.keys(value)[0];
                 const template = templates.find(tpl => tpl.gqlTypeName === valueTemplate);
 

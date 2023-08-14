@@ -292,6 +292,23 @@ describe("dynamicZone field", () => {
             }
         });
 
+        const [updatePageResponse] = await manage.updatePage({
+            revision: createPageResponse.data.createPage.data.id,
+            data: contentEntryMutationData
+        });
+
+        expect(updatePageResponse).toEqual({
+            data: {
+                updatePage: {
+                    data: {
+                        id: expect.any(String),
+                        ...contentEntryQueryData
+                    },
+                    error: null
+                }
+            }
+        });
+
         const page = createPageResponse.data.createPage.data;
 
         const [manageList] = await manage.listPages();

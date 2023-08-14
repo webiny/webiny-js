@@ -208,7 +208,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
              * }
              * ```
              */
-            queryField?: string | ((params: QueryFieldParams) => string);
+            queryField?: string | ((params: QueryFieldParams) => string | null);
         };
         render?(params: any): React.ReactElement;
         tags?: string[];
