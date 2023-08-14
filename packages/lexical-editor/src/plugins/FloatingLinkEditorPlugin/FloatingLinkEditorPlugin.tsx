@@ -20,6 +20,7 @@ import { LinkPreview } from "../../ui/LinkPreview";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import { sanitizeUrl } from "../../utils/sanitizeUrl";
 import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
+import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
 
 function FloatingLinkEditor({
     editor,
@@ -162,6 +163,7 @@ function FloatingLinkEditor({
                         <input
                             type={"checkbox"}
                             checked={linkUrl.target === "_blank"}
+                            disabled={isUrlLinkReference(linkUrl.url)}
                             onChange={() =>
                                 setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
                             }
