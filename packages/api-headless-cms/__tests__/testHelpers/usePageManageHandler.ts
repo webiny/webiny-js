@@ -17,10 +17,31 @@ const pageFields = `
         }
         ...on ${singularPageApiName}_Content_Objecting {
             nestedObject {
+                __typename
                 objectTitle
                 objectNestedObject {
                     nestedObjectNestedTitle
                 }
+            }
+            dynamicZone {
+                __typename
+                ... on ${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject {
+                    authors {
+                        id
+                        modelId
+                    }
+                }
+            }
+            __typename
+        }
+        ...on ${singularPageApiName}_Content_Author {
+            author {
+                id
+                modelId
+            }
+            authors {
+                id
+                modelId
             }
             __typename
         }
@@ -58,8 +79,18 @@ const pageFields = `
             }
         }
     }
-    references {
-        ...on ${singularPageApiName}_References_Author {
+    references1 {
+        ...on ${singularPageApiName}_References1_Authors {
+            authors {
+                id
+                modelId
+                __typename
+            }
+            __typename
+        }
+    }
+    references2 {
+        ...on ${singularPageApiName}_References2_Author {
             author {
                 id
                 modelId

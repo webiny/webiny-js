@@ -1,4 +1,4 @@
-export default `
+export default /* GraphQL */ `
     """
     Page
     """
@@ -14,10 +14,15 @@ export default `
         header: PageModelApiName_Header
         objective: PageModelApiName_Objective
         reference: PageModelApiName_Reference
-        references: [PageModelApiName_References!]
+        references1: PageModelApiName_References1
+        references2: [PageModelApiName_References2!]
     }
 
-    union PageModelApiName_Content = PageModelApiName_Content_Hero | PageModelApiName_Content_SimpleText | PageModelApiName_Content_Objecting
+    union PageModelApiName_Content =
+          PageModelApiName_Content_Hero
+        | PageModelApiName_Content_SimpleText
+        | PageModelApiName_Content_Objecting
+        | PageModelApiName_Content_Author
 
     type PageModelApiName_Content_Hero {
         title: String
@@ -26,11 +31,11 @@ export default `
     type PageModelApiName_Content_SimpleText {
         text: String
     }
-    
+
     type PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-    
+
     input PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
@@ -41,12 +46,12 @@ export default `
         nestedObjectNestedTitle_startsWith: String
         nestedObjectNestedTitle_not_startsWith: String
     }
-    
+
     type PageModelApiName_Content_Objecting_NestedObject {
         objectTitle: String
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
     }
-    
+
     input PageModelApiName_Content_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -56,15 +61,30 @@ export default `
         objectTitle_not_contains: String
         objectTitle_startsWith: String
         objectTitle_not_startsWith: String
-    
+
         objectNestedObject: PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
-    
-    type PageModelApiName_Content_Objecting {
-        nestedObject: PageModelApiName_Content_Objecting_NestedObject
+
+    union PageModelApiName_Content_Objecting_DynamicZone =
+          PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject
+
+    type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
+        authors(populate: Boolean = true): [AuthorApiModel!]
     }
 
-    union PageModelApiName_Header = PageModelApiName_Header_TextHeader | PageModelApiName_Header_ImageHeader
+    type PageModelApiName_Content_Objecting {
+        nestedObject: PageModelApiName_Content_Objecting_NestedObject
+        dynamicZone: PageModelApiName_Content_Objecting_DynamicZone
+    }
+
+    type PageModelApiName_Content_Author {
+        author(populate: Boolean = true): AuthorApiModel
+        authors(populate: Boolean = true): [AuthorApiModel!]
+    }
+
+    union PageModelApiName_Header =
+          PageModelApiName_Header_TextHeader
+        | PageModelApiName_Header_ImageHeader
 
     type PageModelApiName_Header_TextHeader {
         title: String
@@ -74,13 +94,13 @@ export default `
         title: String
         image: String
     }
-    
+
     union PageModelApiName_Objective = PageModelApiName_Objective_Objecting
-    
+
     type PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject {
         nestedObjectNestedTitle: String
     }
-    
+
     input PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput {
         nestedObjectNestedTitle: String
         nestedObjectNestedTitle_not: String
@@ -91,13 +111,13 @@ export default `
         nestedObjectNestedTitle_startsWith: String
         nestedObjectNestedTitle_not_startsWith: String
     }
-    
+
     type PageModelApiName_Objective_Objecting_NestedObject {
         objectTitle: String
         objectBody: JSON
         objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
-    
+
     input PageModelApiName_Objective_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -107,27 +127,32 @@ export default `
         objectTitle_not_contains: String
         objectTitle_startsWith: String
         objectTitle_not_startsWith: String
-    
+
         objectNestedObject: PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
     }
-    
+
     type PageModelApiName_Objective_Objecting {
         nestedObject: PageModelApiName_Objective_Objecting_NestedObject
     }
-    
+
     union PageModelApiName_Reference = PageModelApiName_Reference_Author
-    
+
     type PageModelApiName_Reference_Author {
         author(populate: Boolean = true): AuthorApiModel
     }
-    
-    union PageModelApiName_References = PageModelApiName_References_Author
-    
-    type PageModelApiName_References_Author {
-       author(populate: Boolean = true): AuthorApiModel
+
+    union PageModelApiName_References1 = PageModelApiName_References1_Authors
+
+    type PageModelApiName_References1_Authors {
+        authors(populate: Boolean = true): [AuthorApiModel!]
     }
 
-    
+    union PageModelApiName_References2 = PageModelApiName_References2_Author
+
+    type PageModelApiName_References2_Author {
+        author(populate: Boolean = true): AuthorApiModel
+    }
+
     input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String

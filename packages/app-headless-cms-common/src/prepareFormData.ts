@@ -62,53 +62,13 @@ export const prepareFormData = (
 
     return fields.reduce<Record<string, any>>((output, field) => {
         const inputValue = input[field.fieldId];
-        const childFields = field.type === "object" ? field.settings?.fields : undefined;
-        /**
-         * There is a possibility that we have an object field - it has child fields.
-         */
-        if (childFields) {
-            /**
-             * Field can be repeatable, and in that case, we must go through all values and transform them.
-             */
-            if (field.multipleValues) {
-                if (!inputValue) {
-                    return output;
-                }
-                const values = Array.isArray(inputValue) ? inputValue : undefined;
-                if (!values) {
-                    return output;
-                }
-                output[field.fieldId] = values.map(value => {
-                    return prepareFormData(value, childFields);
-                });
-                return output;
-            }
-            if (!inputValue) {
-                return output;
-            }
-            /**
-             * Or if is not repeatable, just go through the fields without the need to go through an array.
-             */
-            output[field.fieldId] = prepareFormData(inputValue, childFields);
 
-            return output;
-        }
-        /**
-         * Regular fields, multiple values enabled.
-         */
-        //
-        else if (field.multipleValues) {
+        if (field.multipleValues) {
             const values = Array.isArray(inputValue) ? inputValue : undefined;
             if (!values) {
                 return output;
             }
-            output[field.fieldId] = values
-                /**
-                 * Transformations need to run on all the available fields.
-                 */
-                .map(value => {
-                    return runTransformation(field, value);
-                });
+            output[field.fieldId] = values.map(value => runTransformation(field, value));
             return output;
         }
         /**

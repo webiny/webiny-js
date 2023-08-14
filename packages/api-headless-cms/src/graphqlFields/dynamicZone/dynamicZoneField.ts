@@ -83,17 +83,22 @@ const remapTemplateValue = (value: any, typeName: string) => {
 const createResolver = (
     endpointType: ApiEndpoint
 ): CmsModelFieldToGraphQLCreateResolver<CmsModelDynamicZoneField> => {
-    return ({ model, models, field, fieldTypePlugins, createFieldResolvers }) => {
+    return ({ model, models, field, fieldTypePlugins, createFieldResolvers, graphQLType }) => {
         const resolver = (parent: any) => {
             const value = parent[field.fieldId];
             if (!value) {
                 return value;
             }
 
-            const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
+            const typeName = `${graphQLType}_${createTypeName(field.fieldId)}`;
+            // const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
             if (field.multipleValues && Array.isArray(value)) {
-                return value.map(v => remapTemplateValue(v, typeName));
+                const remappedValues = value.map(v => {
+                    return remapTemplateValue(v, typeName);
+                });
+
+                return remappedValues;
             }
 
             return remapTemplateValue(value, typeName);
@@ -111,17 +116,24 @@ const createResolver = (
             templates
         });
 
-        const typeResolvers = templateTypes.reduce<
-            Record<string, Record<string, GraphQLFieldResolver>>
-        >((typeResolvers, templateType, index) => {
-            return {
-                ...typeResolvers,
-                ...createFieldResolvers({
-                    graphQLType: templateType,
-                    fields: field.settings.templates[index].fields
-                })
-            };
-        }, {});
+        const replace = new RegExp(`${model.singularApiName}_`, "g");
+
+        const typeResolvers = templateTypes
+            .map(templateType => {
+                return templateType.replace(replace, `${graphQLType}_`);
+            })
+            .reduce<Record<string, Record<string, GraphQLFieldResolver>>>(
+                (typeResolvers, templateType, index) => {
+                    return {
+                        ...typeResolvers,
+                        ...createFieldResolvers({
+                            graphQLType: templateType,
+                            fields: field.settings.templates[index].fields
+                        })
+                    };
+                },
+                {}
+            );
 
         return {
             resolver,

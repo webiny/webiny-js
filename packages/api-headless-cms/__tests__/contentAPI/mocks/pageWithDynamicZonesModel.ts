@@ -22,7 +22,14 @@ export const pageModel: CmsModel = {
     savedOn: "2022-12-19T19:10:02.731Z",
     titleFieldId: "id",
     lockedFields: [],
-    layout: [["kcq9kt40"], ["peeeyhtc"], ["t4pfesadsa"], ["ahterwfesi2"], ["ahterwfesi3"]],
+    layout: [
+        ["kcq9kt40"],
+        ["peeeyhtc"],
+        ["t4pfesadsa"],
+        ["ahterwfesi2"],
+        ["rethawfesi2"],
+        ["ahterwfesi3"]
+    ],
     tags: ["type:model"],
     fields: [
         {
@@ -122,7 +129,7 @@ export const pageModel: CmsModel = {
                         ]
                     },
                     {
-                        layout: [["ttyh493ugfd"]],
+                        layout: [["ttyh493ugfd"], ["nli9u1rm"]],
                         name: "Objecting",
                         gqlTypeName: "Objecting",
                         icon: "fas/file-text",
@@ -163,6 +170,125 @@ export const pageModel: CmsModel = {
                                 },
                                 renderer: {
                                     name: "dynamicZone"
+                                }
+                            },
+                            {
+                                type: "dynamicZone",
+                                listValidation: [
+                                    {
+                                        name: "dynamicZone"
+                                    }
+                                ],
+                                settings: {
+                                    templates: [
+                                        {
+                                            name: "SuperNestedObject",
+                                            gqlTypeName: "SuperNestedObject",
+                                            icon: "fab/buysellads",
+                                            description: "SuperNestedObject",
+                                            id: "0emukbsvmzpozx2lzk883",
+                                            fields: [
+                                                {
+                                                    type: "ref",
+                                                    settings: {
+                                                        models: [
+                                                            {
+                                                                modelId: "author"
+                                                            }
+                                                        ]
+                                                    },
+                                                    validation: [],
+                                                    renderer: {
+                                                        name: "ref-inputs"
+                                                    },
+                                                    multipleValues: true,
+                                                    listValidation: [],
+                                                    label: "Authors",
+                                                    fieldId: "authors",
+                                                    id: "tuuehcqp"
+                                                }
+                                            ],
+                                            layout: [["tuuehcqp"]]
+                                        }
+                                    ]
+                                },
+                                renderer: {
+                                    name: "dynamicZone"
+                                },
+                                validation: [],
+                                label: "DynamicZone",
+                                fieldId: "dynamicZone",
+                                id: "nli9u1rm"
+                            }
+                        ]
+                    },
+                    {
+                        layout: [["jms49ui"], ["xcv50da"]],
+                        name: "Author",
+                        gqlTypeName: "Author",
+                        icon: "fas/file-text",
+                        description: "Reference to an Author.",
+                        id: "qi81z2v453wx9uque0gox",
+                        validation: [
+                            {
+                                name: "minLength",
+                                message: "You need to add at least 1 Simple Text template.",
+                                settings: {
+                                    value: "1"
+                                }
+                            }
+                        ],
+                        fields: [
+                            {
+                                id: "jms49ui",
+                                multipleValues: false,
+                                helpText: "",
+                                label: "Author",
+                                fieldId: "author",
+                                type: "ref",
+                                validation: [
+                                    {
+                                        name: "required",
+                                        message: "Please select an author"
+                                    }
+                                ],
+                                listValidation: [],
+                                settings: {
+                                    models: [{ modelId: "author" }]
+                                },
+                                placeholderText: "placeholder text",
+                                predefinedValues: {
+                                    enabled: false,
+                                    values: []
+                                },
+                                renderer: {
+                                    name: "renderer"
+                                }
+                            },
+                            {
+                                id: "xcv50da",
+                                multipleValues: true,
+                                helpText: "",
+                                label: "Authors",
+                                fieldId: "authors",
+                                type: "ref",
+                                validation: [
+                                    {
+                                        name: "required",
+                                        message: "Please select some authors"
+                                    }
+                                ],
+                                listValidation: [],
+                                settings: {
+                                    models: [{ modelId: "author" }]
+                                },
+                                placeholderText: "placeholder text",
+                                predefinedValues: {
+                                    enabled: false,
+                                    values: []
+                                },
+                                renderer: {
+                                    name: "renderer"
                                 }
                             }
                         ]
@@ -317,6 +443,7 @@ export const pageModel: CmsModel = {
         {
             id: "ahterwfesi2",
             fieldId: "reference",
+            helpText: "Single-value DZ with 2 templates",
             type: "dynamicZone",
             label: "Reference",
             settings: {
@@ -348,8 +475,45 @@ export const pageModel: CmsModel = {
             }
         },
         {
+            id: "rethawfesi2",
+            fieldId: "references1",
+            helpText: "Single value DZ with multi-value ref field.",
+            type: "dynamicZone",
+            multipleValues: false,
+            label: "Reference",
+            settings: {
+                templates: [
+                    {
+                        layout: [["gt409u8qhgoudsahfds"]],
+                        name: "AuthorReference Field",
+                        gqlTypeName: "Authors",
+                        icon: "fas/file-text",
+                        description: "Reference field test.",
+                        id: "tg9u4h3qgfsauighafs",
+                        fields: [
+                            {
+                                id: "gt409u8qhgoudsahfds",
+                                multipleValues: true,
+                                fieldId: "authors",
+                                label: "Reference Field",
+                                type: "ref",
+                                settings: {
+                                    models: [
+                                        {
+                                            modelId: "author"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
             id: "ahterwfesi3",
-            fieldId: "references",
+            fieldId: "references2",
+            helpText: "Multi-value DZ with a single-value ref field.",
             type: "dynamicZone",
             multipleValues: true,
             label: "Reference",

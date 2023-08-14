@@ -1,17 +1,23 @@
-import { CmsModelField, CmsEditorFieldTypePlugin, CmsModel } from "~/types";
+import { CmsModelField, CmsModelFieldTypePlugin, CmsModel } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 interface CreateFieldsListParams {
     model: CmsModel;
     fields: CmsModelField[];
+    graphQLTypePrefix?: string;
 }
 
-export function createFieldsList({ model, fields }: CreateFieldsListParams): string {
-    const fieldPlugins: Record<string, CmsEditorFieldTypePlugin["field"]> = plugins
-        .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+export function createFieldsList({
+    model,
+    fields,
+    graphQLTypePrefix
+}: CreateFieldsListParams): string {
+    const fieldPlugins: Record<string, CmsModelFieldTypePlugin["field"]> = plugins
+        .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
         .reduce((acc, item) => ({ ...acc, [item.field.type]: item.field }), {});
 
-    // console.log(fields, model);
+    const typePrefix = graphQLTypePrefix ?? model.singularApiName;
+
     return fields
         .map(field => {
             if (!fieldPlugins[field.type]) {
@@ -23,7 +29,9 @@ export function createFieldsList({ model, fields }: CreateFieldsListParams): str
             if (graphql && graphql.queryField) {
                 const { queryField } = graphql;
                 const selection =
-                    typeof queryField === "string" ? queryField : queryField({ model, field });
+                    typeof queryField === "string"
+                        ? queryField
+                        : queryField({ model, field, graphQLTypePrefix: typePrefix });
 
                 return `${field.fieldId} ${selection}`;
             }

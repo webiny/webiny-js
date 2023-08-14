@@ -25,6 +25,7 @@ export * from "./shared";
 interface QueryFieldParams {
     model: CmsModel;
     field: CmsModelField;
+    graphQLTypePrefix: string;
 }
 
 interface Position {
