@@ -42,7 +42,7 @@ export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string
     } catch (ex) {
         // Despite the fact the above `esGetIndexExist` check told us the index does not exist,
         // we've seen cases where the `resource_already_exists_exception` would still be thrown
-        // by Elasticsearch, hence the check below.
+        // upon index creation. That's why we're doing an additional check of the error message.
         if (ex.message === "resource_already_exists_exception") {
             return indexName;
         }
