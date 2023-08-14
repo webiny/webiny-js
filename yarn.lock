@@ -24768,12 +24768,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-webiny-i18n@link:./eslint/webiny-i18n::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "eslint-plugin-webiny-i18n@link:./eslint/webiny-i18n::locator=root-workspace-0b6124%40workspace%3A."
-  languageName: node
-  linkType: soft
-
 "eslint-scope@npm:5.1.1, eslint-scope@npm:^5.1.1":
   version: 5.1.1
   resolution: "eslint-scope@npm:5.1.1"
@@ -39219,7 +39213,6 @@ __metadata:
     eslint-plugin-promise: ^5.2.0
     eslint-plugin-react: ^7.27.1
     eslint-plugin-standard: ^5.0.0
-    eslint-plugin-webiny-i18n: "link:./eslint/webiny-i18n"
     execa: ^1.0.0
     flatten: ^1.0.2
     folder-hash: ^4.0.0
