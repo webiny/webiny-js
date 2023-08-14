@@ -454,7 +454,7 @@ describe("Pages -> Search records", () => {
         });
     });
 
-    it("should update a search record in case a page revisions has been deleted, but there are other page revisions available", async () => {
+    it("should update a search record in case a page revision has been deleted, but there are other page revisions available", async () => {
         const { pageBuilder, search } = useGraphQlHandler({
             plugins: [assignPageLifecycleEvents()]
         });
