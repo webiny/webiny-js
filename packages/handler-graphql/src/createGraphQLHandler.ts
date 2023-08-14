@@ -18,17 +18,19 @@ const createCacheKey = (context: Context) => {
 
     // @ts-ignore TODO: `getCurrentTenant` should be injected as a parameter.
     // @ts-ignore TODO: We should not be accessing `context` like this here.
-    const { getCurrentTenant } = context.tenancy;
+    const tenant = context.tenancy?.getCurrentTenant();
 
     // @ts-ignore TODO: `getContentLocale` should be injected as a parameter.
     // @ts-ignore TODO: We should not be accessing `context` like this here.
-    const { getContentLocale } = context.i18n;
+    const contentLocale = context.i18n?.getContentLocale();
 
     return [
-        `tenant:${getCurrentTenant().id}`,
-        `locale:${getContentLocale().code}`,
+        tenant ? `tenant:${tenant.id}` : null,
+        contentLocale ? `locale:${contentLocale.code}` : null,
         plugins.length.toString()
-    ].join("#");
+    ]
+        .filter(Boolean)
+        .join("#");
 };
 
 const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
