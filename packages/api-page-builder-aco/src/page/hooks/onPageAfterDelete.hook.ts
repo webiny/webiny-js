@@ -22,7 +22,7 @@ export const onPageAfterDeleteHook = (context: PbAcoContext) => {
                     return;
                 }
                 throw WebinyError.from(error, {
-                    message: "Error while executing onPageAfterDeleteHook hook",
+                    message: "Error while executing onPageAfterDeleteHook hook.",
                     code: "ACO_AFTER_PAGE_DELETE_HOOK"
                 });
             }
@@ -37,8 +37,8 @@ export const onPageAfterDeleteHook = (context: PbAcoContext) => {
             }
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing onPageAfterUpdateHook hook",
-                code: "ACO_AFTER_PAGE_UPDATE_HOOK"
+                message: "Error while executing onPageAfterDeleteHook hook.",
+                code: "ACO_AFTER_PAGE_DELETE_HOOK"
             });
         }
     });
