@@ -14,13 +14,13 @@ export interface EsCreateIndexParams {
 export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string> => {
     const { elasticsearchClient, tenant, locale, type, isHeadlessCmsModel } = params;
 
-    const index = esGetIndexName({ tenant, locale, type, isHeadlessCmsModel });
+    const indexName = esGetIndexName({ tenant, locale, type, isHeadlessCmsModel });
 
     try {
         const exist = await esGetIndexExist(params);
 
         if (exist) {
-            return index;
+            return indexName;
         }
 
         // Get registered plugins
@@ -35,16 +35,16 @@ export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string
             .pop();
 
         await elasticsearchClient.indices.create({
-            index,
+            index: indexName,
             ...(plugin && { body: plugin.body })
         });
-        return index;
+        return indexName;
     } catch (ex) {
         // Despite the fact the above `esGetIndexExist` check told us the index does not exist,
         // we've seen cases where the `resource_already_exists_exception` would still be thrown
         // by Elasticsearch, hence the check below.
         if (ex.message === "resource_already_exists_exception") {
-            return index;
+            return indexName;
         }
 
         throw new WebinyError(
