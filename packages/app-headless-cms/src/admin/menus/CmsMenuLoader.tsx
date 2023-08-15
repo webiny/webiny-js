@@ -35,23 +35,6 @@ const CmsContentGroupsMenu: React.VFC<ChildMenuProps> = ({ canAccess }) => {
     );
 };
 
-const CmsExportImportMenu: React.VFC = () => {
-    return (
-        <Menu name={"headlessCMS.exportImport"} label={"Export & Import"}>
-            <Menu
-                name={"headlessCMS.exportImport.export"}
-                label={"Export Groups & Models"}
-                path={"/cms/export"}
-            />
-            <Menu
-                name={"headlessCMS.exportImport.import"}
-                label={"Import Groups & Models"}
-                path={"/cms/import"}
-            />
-        </Menu>
-    );
-};
-
 const CmsMenuLoaderComponent: React.FC = () => {
     const {
         canAccessManageEndpoint,
@@ -72,17 +55,10 @@ const CmsMenuLoaderComponent: React.FC = () => {
         <Fragment>
             <Menu name={"headlessCMS"} label={"Headless CMS"} icon={<HeadlessCmsIcon />}>
                 {(canCreateContentModels || canCreateContentModelGroups) && (
-                    <>
-                        <CmsExportImportMenu />
-                        <Menu
-                            name={"headlessCMS.contentModels"}
-                            label={"Content Models"}
-                            pin={"first"}
-                        >
-                            <CmsContentModelsMenu canAccess={canCreateContentModels} />
-                            <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
-                        </Menu>
-                    </>
+                    <Menu name={"headlessCMS.contentModels"} label={"Content Models"} pin={"first"}>
+                        <CmsContentModelsMenu canAccess={canCreateContentModels} />
+                        <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
+                    </Menu>
                 )}
                 <ContentGroupsMenuItems />
             </Menu>

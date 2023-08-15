@@ -1,15 +1,9 @@
 import ApolloClient from "apollo-client";
-import gql from "graphql-tag";
 import { CmsGroup, CmsModel } from "@webiny/app-headless-cms-common/types";
-
-interface State {
-    group: string;
-    models: string[];
-}
+import { EXPORT_MODELS_QUERY } from "./graphql";
 
 interface Params {
     client: ApolloClient<any>;
-    state: State[];
 }
 
 interface ResponseData {
@@ -22,28 +16,9 @@ interface Response {
     data?: ResponseData;
 }
 
-export const runExport = async ({ client, state }: Params): Promise<Response> => {
+export const runExport = async ({ client }: Params): Promise<Response> => {
     const result = await client.query({
-        query: gql`
-            query ExportCmsStructure($targets: [ExportCmsStructureTargetInput!]!) {
-                exportCmsStructure(targets: $targets) {
-                    data
-                    error {
-                        message
-                        code
-                        data
-                    }
-                }
-            }
-        `,
-        variables: {
-            targets: state.map(item => {
-                return {
-                    id: item.group,
-                    models: item.models
-                };
-            })
-        }
+        query: EXPORT_MODELS_QUERY
     });
 
     if (result.errors?.length) {

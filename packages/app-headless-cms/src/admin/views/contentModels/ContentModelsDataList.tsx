@@ -34,6 +34,9 @@ import usePermission from "~/admin/hooks/usePermission";
 import styled from "@emotion/styled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { OptionsMenu } from "./OptionsMenu";
+import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
+import { useModelExport } from "./exporting/useModelExport";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -60,6 +63,12 @@ const SORTERS: Sorter[] = [
         sorters: "name_DESC"
     }
 ];
+
+const DataListActionsWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+`;
 
 const rightAlign = css({
     alignItems: "flex-end !important",
@@ -203,6 +212,8 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const filteredData = filter === "" ? models : models.filter(filterData);
     const contentModels = sortData(filteredData);
 
+    const { handleModelsExport } = useModelExport(contentModels);
+
     const onRefreshClick = useCallback(() => {
         refresh();
     }, []);
@@ -213,11 +224,23 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
             data={contentModels}
             title={t`Content Models`}
             actions={
-                canCreate ? (
-                    <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`New Model`}
-                    </ButtonSecondary>
-                ) : null
+                <DataListActionsWrapper>
+                    {canCreate ? (
+                        <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Model`}
+                        </ButtonSecondary>
+                    ) : null}
+                    <OptionsMenu
+                        data-testid="pb-blocks-list-options-menu"
+                        items={[
+                            {
+                                label: "Export all models",
+                                icon: <DownloadFileIcon />,
+                                onClick: handleModelsExport
+                            }
+                        ]}
+                    />
+                </DataListActionsWrapper>
             }
             search={
                 <SearchUI

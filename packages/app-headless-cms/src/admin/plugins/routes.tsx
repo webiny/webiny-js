@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { lazy, Suspense } from "react";
 import Helmet from "react-helmet";
 import { SecureRoute } from "@webiny/app-security/components";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -21,7 +21,6 @@ const Loader: React.FC = ({ children, ...props }) => (
 const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));
 const ContentModelsView = lazy(() => import("../views/contentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/contentModelGroups/ContentModelGroups"));
-const ExportView = lazy(() => import("../views/export/Export"));
 
 const plugins: RoutePlugin[] = [
     {
@@ -105,29 +104,6 @@ const plugins: RoutePlugin[] = [
                             <Helmet title={t`Content Models`} />
                             <Loader>
                                 <ContentModelsView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    /**
-     * Export / import
-     */
-    {
-        name: "route-cms-export",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path="/cms/export"
-                render={() => (
-                    <SecureRoute>
-                        <AdminLayout>
-                            <Helmet title={t`Export & Import`} />
-                            <Loader>
-                                <ExportView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>
