@@ -13,6 +13,7 @@ import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { ModelGroupsPermissions } from "./utils/permissions/ModelGroupsPermissions";
 import { EntriesPermissions } from "./utils/permissions/EntriesPermissions";
 import { SettingsPermissions } from "./utils/permissions/SettingsPermissions";
+import { createExportCrud } from "~/export";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -139,7 +140,10 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     storageOperations,
                     entriesPermissions,
                     modelsPermissions
-                })
+                }),
+                export: {
+                    ...createExportCrud(context)
+                }
             };
 
             if (!storageOperations.init) {

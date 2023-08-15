@@ -14,6 +14,7 @@ import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissio
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { SettingsPermissions } from "~/utils/permissions/SettingsPermissions";
+import { HeadlessCmsExport } from "~/export/types";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -64,6 +65,10 @@ export interface HeadlessCms
      * @internal
      */
     permissions: HeadlessCmsPermissions;
+    /**
+     * Export operations.
+     */
+    export: HeadlessCmsExport;
 }
 
 /**
@@ -1013,6 +1018,7 @@ export type CmsSystemContext = {
  * @category GraphQL params
  */
 export interface CmsGroupCreateInput {
+    id?: string;
     name: string;
     slug?: string;
     description?: string;

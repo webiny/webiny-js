@@ -79,9 +79,9 @@ describe("5.37.0-002", () => {
                 }
             });
         } catch (ex) {
-            for (const property of Object.getOwnPropertyNames(ex)) {
-                console.log(`${ex[property]}`);
-            }
+            console.log(JSON.stringify(ex.data));
+            console.error(ex.message);
+            console.log(ex.stack);
             throw ex;
         }
 
