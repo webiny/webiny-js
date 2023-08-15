@@ -16,6 +16,7 @@ interface PageListVariables {
     };
     // [key: string]: any;
 }
+
 export const readPageListVariables = (): PageListVariables => {
     let variables;
 
@@ -176,7 +177,7 @@ export const removeRevisionFromEntryCache = (
 ): PbPageRevision[] => {
     const gqlParams = {
         query: GQL.GET_PAGE,
-        variables: { id: revision.id }
+        variables: { id: revision.pid }
     };
 
     const data = cache.readQuery(gqlParams);
