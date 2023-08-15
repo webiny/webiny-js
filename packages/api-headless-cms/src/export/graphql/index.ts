@@ -10,15 +10,8 @@ const plugin = new CmsGraphQLSchemaPlugin({
             error: CmsError
         }
 
-        input ExportCmsStructureTargetInput {
-            id: ID!
-            models: [ID!]
-        }
-
         extend type Query {
-            exportCmsStructure(
-                targets: [ExportCmsStructureTargetInput!]!
-            ): ExportCmsStructureResponse!
+            exportCmsStructure(models: [String!]): ExportCmsStructureResponse!
         }
     `,
     resolvers: {
@@ -26,7 +19,7 @@ const plugin = new CmsGraphQLSchemaPlugin({
             exportCmsStructure: async (_, args, context) => {
                 try {
                     const result = await context.cms.export.structure({
-                        targets: args.targets
+                        models: args.models
                     });
                     return new Response(JSON.stringify(result));
                 } catch (ex) {

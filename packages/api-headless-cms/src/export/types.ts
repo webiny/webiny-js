@@ -3,13 +3,9 @@ import { CmsGroup, CmsModel } from "~/types";
 /**
  * Structure export - groups and models.
  */
-export interface HeadlessCmsExportStructureParamsTargets {
-    id: string;
-    models?: string[];
-}
 
 export interface HeadlessCmsExportStructureParams {
-    targets: HeadlessCmsExportStructureParamsTargets[];
+    models?: string[];
 }
 
 export type SanitizedCmsGroup = Pick<CmsGroup, "id" | "name" | "slug" | "description" | "icon">;
@@ -29,7 +25,7 @@ export interface SanitizedCmsModel
         | "name"
         | "description"
     > {
-    group: Pick<CmsGroup, "id" | "slug" | "name">;
+    group: Pick<CmsGroup, "id" | "name">;
 }
 
 export interface HeadlessCmsExportStructureResponse {

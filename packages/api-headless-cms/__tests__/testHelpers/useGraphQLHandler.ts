@@ -122,7 +122,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             return invoke({ body: { query: INSTALL_MUTATION } });
         },
         //
-        async exportCmsStructureQuery(variables: ExportCmsStructureQueryVariables) {
+        async exportCmsStructureQuery(variables?: ExportCmsStructureQueryVariables) {
             return invoke({
                 body: {
                     query: EXPORT_CMS_STRUCTURE_QUERY,

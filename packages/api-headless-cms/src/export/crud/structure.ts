@@ -1,26 +1,11 @@
-import { HeadlessCmsExportStructure, SanitizedCmsGroup } from "~/export/types";
+import { HeadlessCmsExportStructure, SanitizedCmsModel } from "~/export/types";
 import { CmsContext } from "~/types";
-import { createFiltering } from "./filtering";
 import { sanitizeGroup, sanitizeModel } from "./sanitize";
 
 export const createExportStructureContext = (context: CmsContext): HeadlessCmsExportStructure => {
     return async params => {
-        const { targets } = params;
-
-        const filter = createFiltering({
-            targets,
-            // We can add functionality to exclude the code models from the export.
-            // Not implemented yet.
-            code: true,
-            plugins: context.plugins
-        });
-        /**
-         * We need all the groups which:
-         * * are accessible by current user
-         * * are not private
-         * * are included (if targets are provided)
-         */
-        const groups = (await context.cms.listGroups()).filter(filter.group).map(sanitizeGroup);
+        const { models: modelIdList } = params;
+        const groups = (await context.cms.listGroups()).map(sanitizeGroup);
         /**
          * We need all the models which:
          * * are accessible by current user
@@ -30,21 +15,26 @@ export const createExportStructureContext = (context: CmsContext): HeadlessCmsEx
          */
         const models = (await context.cms.listModels())
             .filter(model => {
-                const group = groups.find(group => group.id === model.group.id);
-                if (!group) {
-                    return false;
+                if (!modelIdList?.length) {
+                    return true;
                 }
-                return filter.model(model);
+                return modelIdList.includes(model.modelId);
             })
             .map(model => {
-                const group = groups.find(
-                    group => group.id === model.group.id
-                ) as SanitizedCmsGroup;
+                const group = groups.find(group => group.id === model.group.id);
+                if (!group) {
+                    return null;
+                }
                 return sanitizeModel(group, model);
+            })
+            .filter((model): model is SanitizedCmsModel => {
+                return model !== null;
             });
 
         return {
-            groups,
+            groups: groups.filter(group => {
+                return models.some(model => model.group.id === group.id);
+            }),
             models
         };
     };

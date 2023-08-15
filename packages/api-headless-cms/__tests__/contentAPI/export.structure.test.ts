@@ -1,6 +1,4 @@
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import { createContentModelGroup } from "./mocks/contentModelGroup";
-import { createCmsGroup } from "~/plugins";
 import { CmsGroup } from "~tests/types";
 import models from "./mocks/contentModels";
 import { CmsModel, CmsModelField } from "~/types";
@@ -51,14 +49,14 @@ describe("export cms structure", () => {
         return results;
     };
 
-    it("should export only database groups and models", async () => {
+    it("should export all groups and models", async () => {
         const {
             exportCmsStructureQuery,
             createContentModelGroupMutation,
             createContentModelMutation
         } = useGraphQLHandler({
             path: "manage/en-US",
-            plugins: [createCmsGroup(createContentModelGroup())]
+            plugins: []
         });
 
         const createdGroups = await insertGroups(createContentModelGroupMutation);
@@ -90,9 +88,7 @@ describe("export cms structure", () => {
 
         expect(createdModels.length).toBe(models.length);
 
-        const [result] = await exportCmsStructureQuery({
-            code: false
-        });
+        const [result] = await exportCmsStructureQuery();
 
         expect(result).toEqual({
             data: {
@@ -127,7 +123,6 @@ describe("export cms structure", () => {
                 icon: model.icon,
                 group: {
                     id: group.id,
-                    slug: group.slug,
                     name: group.name
                 },
                 fields: fixFieldsNullTexts(model.fields),

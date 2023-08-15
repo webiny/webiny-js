@@ -6,8 +6,8 @@ export interface ExportCmsStructureQueryVariables {
 }
 
 export const EXPORT_CMS_STRUCTURE_QUERY = /* GraphQL */ `
-    query ExportContentModelGroupsQuery($code: Boolean, $targets: ExportCmsStructureTargetsInput) {
-        exportCmsStructure(code: $code, targets: $targets) {
+    query ExportContentModelGroupsQuery($models: [String!]) {
+        exportCmsStructure(models: $models) {
             data
             error {
                 message
