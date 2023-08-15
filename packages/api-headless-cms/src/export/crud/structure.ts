@@ -5,11 +5,13 @@ import { sanitizeGroup, sanitizeModel } from "./sanitize";
 
 export const createExportStructureContext = (context: CmsContext): HeadlessCmsExportStructure => {
     return async params => {
-        const { targets, code } = params;
+        const { targets } = params;
 
         const filter = createFiltering({
             targets,
-            code,
+            // We can add functionality to exclude the code models from the export.
+            // Not implemented yet.
+            code: true,
             plugins: context.plugins
         });
         /**

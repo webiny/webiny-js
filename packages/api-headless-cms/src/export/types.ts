@@ -9,8 +9,7 @@ export interface HeadlessCmsExportStructureParamsTargets {
 }
 
 export interface HeadlessCmsExportStructureParams {
-    code: boolean;
-    targets?: HeadlessCmsExportStructureParamsTargets[];
+    targets: HeadlessCmsExportStructureParamsTargets[];
 }
 
 export type SanitizedCmsGroup = Pick<CmsGroup, "id" | "name" | "slug" | "description" | "icon">;
