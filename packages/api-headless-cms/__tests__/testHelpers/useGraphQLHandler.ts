@@ -38,6 +38,10 @@ import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
+import {
+    EXPORT_CMS_STRUCTURE_QUERY,
+    ExportCmsStructureQueryVariables
+} from "~tests/testHelpers/graphql/structure";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -116,6 +120,15 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         },
         async installMutation() {
             return invoke({ body: { query: INSTALL_MUTATION } });
+        },
+        //
+        async exportCmsStructureQuery(variables: ExportCmsStructureQueryVariables) {
+            return invoke({
+                body: {
+                    query: EXPORT_CMS_STRUCTURE_QUERY,
+                    variables
+                }
+            });
         },
         // content model group
         async createContentModelGroupMutation(variables: ContentModelGroupsMutationVariables) {

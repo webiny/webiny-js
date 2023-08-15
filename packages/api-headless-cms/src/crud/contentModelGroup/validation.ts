@@ -9,6 +9,7 @@ const icon = str.min(1).max(255);
 
 export const createGroupCreateValidation = () => {
     return zod.object({
+        id: str.optional().nullish(),
         name: name.min(1),
         slug: str
             .max(100)

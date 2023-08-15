@@ -234,7 +234,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
         const identity = getIdentity();
 
-        const id = mdbid();
+        const id = data.id || mdbid();
         const group: CmsGroup = {
             ...data,
             id,
