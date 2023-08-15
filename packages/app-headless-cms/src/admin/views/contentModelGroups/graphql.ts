@@ -42,6 +42,7 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
                 contentModels {
                     modelId
                     name
+                    plugin
                 }
             }
             error {

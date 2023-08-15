@@ -5,6 +5,53 @@ import GlobalSearchPlugins from "./GlobalSearchPlugins";
 import usePermission from "~/admin/hooks/usePermission";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems";
 
+interface ChildMenuProps {
+    canAccess: boolean;
+}
+
+const CmsContentModelsMenu: React.VFC<ChildMenuProps> = ({ canAccess }) => {
+    if (!canAccess) {
+        return null;
+    }
+    return (
+        <Menu
+            name={"headlessCMS.contentModels.models"}
+            label={"Models"}
+            path={"/cms/content-models"}
+        />
+    );
+};
+
+const CmsContentGroupsMenu: React.VFC<ChildMenuProps> = ({ canAccess }) => {
+    if (!canAccess) {
+        return null;
+    }
+    return (
+        <Menu
+            name={"headlessCMS.contentModels.groups"}
+            label={"Groups"}
+            path={"/cms/content-model-groups"}
+        />
+    );
+};
+
+const CmsExportImportMenu: React.VFC = () => {
+    return (
+        <Menu name={"headlessCMS.exportImport"} label={"Export & Import"}>
+            <Menu
+                name={"headlessCMS.exportImport.export"}
+                label={"Export Groups & Models"}
+                path={"/cms/export"}
+            />
+            <Menu
+                name={"headlessCMS.exportImport.import"}
+                label={"Import Groups & Models"}
+                path={"/cms/import"}
+            />
+        </Menu>
+    );
+};
+
 const CmsMenuLoaderComponent: React.FC = () => {
     const {
         canAccessManageEndpoint,
@@ -25,22 +72,17 @@ const CmsMenuLoaderComponent: React.FC = () => {
         <Fragment>
             <Menu name={"headlessCMS"} label={"Headless CMS"} icon={<HeadlessCmsIcon />}>
                 {(canCreateContentModels || canCreateContentModelGroups) && (
-                    <Menu name={"headlessCMS.contentModels"} label={"Content Models"} pin={"first"}>
-                        {canCreateContentModels && (
-                            <Menu
-                                name={"headlessCMS.contentModels.models"}
-                                label={"Models"}
-                                path={"/cms/content-models"}
-                            />
-                        )}
-                        {canCreateContentModelGroups && (
-                            <Menu
-                                name={"headlessCMS.contentModels.groups"}
-                                label={"Groups"}
-                                path={"/cms/content-model-groups"}
-                            />
-                        )}
-                    </Menu>
+                    <>
+                        <CmsExportImportMenu />
+                        <Menu
+                            name={"headlessCMS.contentModels"}
+                            label={"Content Models"}
+                            pin={"first"}
+                        >
+                            <CmsContentModelsMenu canAccess={canCreateContentModels} />
+                            <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
+                        </Menu>
+                    </>
                 )}
                 <ContentGroupsMenuItems />
             </Menu>
