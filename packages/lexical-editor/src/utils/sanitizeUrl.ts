@@ -18,9 +18,6 @@ export const sanitizeUrl = (url: string): string => {
     url = String(url).trim();
 
     if (isUrlLinkReference(url)) {
-        console.clear();
-        console.log("url", url);
-        console.log("isUrlLinkReference", isUrlLinkReference(url));
         return url;
     }
 
