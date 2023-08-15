@@ -1,6 +1,11 @@
 import React from "react";
 import classNames from "classnames";
 import { OutputBlockData as BaseOutputBlockData } from "@editorjs/editorjs";
+import sanitize from "sanitize-html";
+
+const sanitizeContent = (content: string) => {
+    return sanitize(content) || "";
+};
 
 interface OutputBlockData extends BaseOutputBlockData {
     data: {
@@ -34,7 +39,7 @@ const renderParagraph = (block: OutputBlockData): React.ReactElement => {
         <p
             {...props}
             className={classNames("rte-block-paragraph", props.className)}
-            dangerouslySetInnerHTML={{ __html: block.data.text }}
+            dangerouslySetInnerHTML={{ __html: sanitizeContent(block.data.text) }}
         />
     );
 };
@@ -69,7 +74,7 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h1"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeContent(block.data.text) }}
                 />
             );
 
@@ -81,7 +86,7 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h2"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeContent(block.data.text) }}
                 />
             );
 
@@ -93,7 +98,7 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h3"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeContent(block.data.text) }}
                 />
             );
 
@@ -105,7 +110,7 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h4"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeContent(block.data.text) }}
                 />
             );
 
@@ -117,7 +122,7 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h5"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeContent(block.data.text) }}
                 />
             );
 
@@ -129,7 +134,7 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h6"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeContent(block.data.text) }}
                 />
             );
         default:
