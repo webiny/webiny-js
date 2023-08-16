@@ -12,21 +12,18 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
             name: String
             blockCategory: String
             content: JSON
-            preview: JSON
         }
 
         input PbCreatePageBlockInput {
             name: String!
             blockCategory: String!
             content: JSON!
-            preview: JSON!
         }
 
         input PbUpdatePageBlockInput {
             name: String
             blockCategory: String
             content: JSON
-            preview: JSON
         }
 
         input PbListPageBlocksWhereInput {

@@ -298,7 +298,6 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 name: `page-block-one-name`,
                 blockCategory: `delete-block-cat`,
-                preview: { src: `https://test.com/page-block-one-name/src.jpg` },
                 content: { some: `page-block-one-content` }
             }
         }).then(([res]) => res.data.pageBuilder.createPageBlock.data);
@@ -306,7 +305,6 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 name: `page-block-two-name`,
                 blockCategory: `delete-block-cat`,
-                preview: { src: `https://test.com/page-block-two-name/src.jpg` },
                 content: { some: `page-block-two-content` }
             }
         }).then(([res]) => res.data.pageBuilder.createPageBlock.data);
@@ -314,7 +312,6 @@ describe("Block Categories CRUD Test", () => {
             data: {
                 name: `page-block-three-name`,
                 blockCategory: `delete-block-cat`,
-                preview: { src: `https://test.com/page-block-three-name/src.jpg` },
                 content: { some: `page-block-three-content` }
             }
         }).then(([res]) => res.data.pageBuilder.createPageBlock.data);

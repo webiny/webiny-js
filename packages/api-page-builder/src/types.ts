@@ -795,7 +795,6 @@ export interface PageBlock {
     name: string;
     blockCategory: string;
     content: any;
-    preview: Partial<File>;
     createdOn: string;
     createdBy: CreatedBy;
     tenant: string;

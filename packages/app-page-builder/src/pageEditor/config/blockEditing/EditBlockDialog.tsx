@@ -1,5 +1,4 @@
 import React from "react";
-import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import {
     Dialog,
@@ -19,15 +18,17 @@ import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "~/types";
 
-const narrowDialog = css({
-    ".mdc-dialog__surface": {
-        width: 600,
-        minWidth: 600
+const StyledDialog = styled(Dialog)`
+    // We need to have this z-index because without it Edit Block Dialog will be rendered below All Blocks Component.
+    z-index: 100;
+
+    & .mdc-dialog__surface {
+        width: 600px;
+        min-width: 600px;
     }
-});
+`;
 
 const PreviewBox = styled("div")({
-    width: 500,
     minHeight: 250,
     border: "1px solid var(--mdc-theme-on-background)",
     backgroundColor: "#fff", // this must always be white
@@ -60,7 +61,7 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
     }));
 
     return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+        <StyledDialog open={open} onClose={onClose}>
             {loading && <CircularProgress label={"Saving block..."} />}
             {plugin && (
                 <Form onSubmit={onSubmit} data={plugin}>
@@ -108,7 +109,7 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
                     )}
                 </Form>
             )}
-        </Dialog>
+        </StyledDialog>
     );
 };
 

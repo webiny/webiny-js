@@ -2,7 +2,6 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         id
         category
-        preview
         name
         content
         type
