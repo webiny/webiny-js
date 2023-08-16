@@ -81,6 +81,7 @@ export interface ButtonElementData {
         href: string;
         clickHandler?: string;
         variables?: Record<string, any>;
+        scrollToElement?: string;
     };
 }
 
@@ -100,7 +101,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
             const { link, icon } = element.data;
 
             const buttonText = props.buttonText || element.data.buttonText;
-            const action = props.action || element.data.action;
+            const action = props.action?.href ? props.action : element.data.action;
 
             let buttonInnerContent = <ButtonText text={buttonText} />;
 
@@ -138,9 +139,19 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
             const linkActions = ["link", "scrollToElement"];
             if (link?.href || linkActions.includes(action?.actionType)) {
-                const href = link?.href || action?.href;
-                const newTab = link?.newTab || action?.newTab;
+                let href = "";
+                if (link?.href) {
+                    href = link.href;
+                } else {
+                    if (action.actionType === "link") {
+                        href = action.href;
+                    }
+                    if (action.actionType === "scrollToElement" && action?.scrollToElement) {
+                        href = "#" + action.scrollToElement;
+                    }
+                }
 
+                const newTab = link?.newTab || action?.newTab;
                 return (
                     <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
                         <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
