@@ -34,11 +34,12 @@ const createSchema = zod.object({
     layout: zod.string().max(100).optional(),
     pageCategory: zod.string().max(100),
     content: zod.any(),
-    modelId: zod.string().max(100).optional(),
-    templatePageData: zod.object({
-        modelId: zod.string().max(100).optional(),
-        entryId: zod.string().max(100).optional()
-    })
+    dynamicSource: zod
+        .object({
+            modelId: zod.string().max(100),
+            entryId: zod.string().max(100).optional()
+        })
+        .optional()
 });
 
 const updateSchema = zod.object({
@@ -49,10 +50,12 @@ const updateSchema = zod.object({
     layout: zod.string().max(100).optional(),
     pageCategory: zod.string().max(100).optional(),
     content: zod.any(),
-    templatePageData: zod.object({
-        modelId: zod.string().max(100).optional(),
-        entryId: zod.string().max(100).optional()
-    })
+    dynamicSource: zod
+        .object({
+            modelId: zod.string().max(100),
+            entryId: zod.string().max(100).optional()
+        })
+        .optional()
 });
 
 const getDefaultContent = () => {

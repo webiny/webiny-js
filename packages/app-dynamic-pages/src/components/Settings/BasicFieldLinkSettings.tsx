@@ -4,7 +4,8 @@ import get from "lodash/get";
 
 import { ButtonIcon, ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { BindComponent } from "@webiny/form/types";
-import { useCms } from "@webiny/app-headless-cms/index";
+import { useCms } from "@webiny/app-headless-cms";
+import { useModelById } from "@webiny/app-headless-cms/admin/hooks";
 
 import { ReactComponent as InfoIcon } from "@material-design-icons/svg/outlined/info.svg";
 import { ReactComponent as DatabaseIcon } from "@material-symbols/svg-400/rounded/database.svg";
@@ -46,7 +47,8 @@ export const BasicFieldLinkSettings: React.FC<BasicFieldLinkSettingsProps> = ({
     onUnlink,
     allowedFields
 }) => {
-    const { readApolloClient } = useCms();
+    const { apolloClient } = useCms();
+    const { model } = useModelById(sourceModelId);
 
     const dynamicSource = useMemo(() => {
         return get(data, "dynamicSource");
@@ -54,21 +56,31 @@ export const BasicFieldLinkSettings: React.FC<BasicFieldLinkSettingsProps> = ({
 
     const handlePathChange = useCallback(
         async (path: string, onChange: (dynamicSource: any) => void) => {
-            if (sourceModelId) {
-                const nesting = await getNestingByPath(readApolloClient, sourceModelId, path);
-                const resolvedPath = nesting
-                    .filter(nestingItem => !nestingItem.selectedTemplate)
-                    .map(({ pathPart }) => pathPart)
-                    .join(".");
+            if (model) {
+                const nesting = await getNestingByPath(apolloClient, model, path);
+                let dynamicZonePathPart = "";
+                const resolvedPath: string[] = [];
+
+                nesting.forEach(nestingItem => {
+                    if (nestingItem.selectedField?.type === "dynamicZone" && nestingItem.pathPart) {
+                        dynamicZonePathPart = nestingItem.pathPart;
+                    } else if (nestingItem.selectedTemplate) {
+                        resolvedPath.push(
+                            `${dynamicZonePathPart}_${nestingItem.selectedTemplate.gqlTypeName}`
+                        );
+                    } else if (nestingItem.pathPart) {
+                        resolvedPath.push(nestingItem.pathPart);
+                    }
+                });
 
                 onChange({
                     ...dynamicSource,
-                    resolvedPath,
+                    resolvedPath: resolvedPath.join("."),
                     path
                 });
             }
         },
-        [sourceModelId, dynamicSource]
+        [model, dynamicSource]
     );
 
     return (

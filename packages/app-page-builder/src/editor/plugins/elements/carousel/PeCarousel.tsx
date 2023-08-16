@@ -1,14 +1,13 @@
 import React, { useRef, useEffect } from "react";
+import { register } from "swiper/element/bundle";
 import styled from "@emotion/styled";
-import { useRecoilValue } from "recoil";
-import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
+
+import { createRenderer, useRenderer, Elements } from "@webiny/app-page-builder-elements";
+import { Element } from "@webiny/app-page-builder-elements/types";
+import { useIsDynamicElement } from "@webiny/app-dynamic-pages/hooks/useIsDynamicElement";
 
 import { DynamicElementWrapper } from "~/editor/components/DynamicElementWrapper";
-import { createRenderer, useRenderer, Elements } from "@webiny/app-page-builder-elements";
-import { useIsDynamicElement } from "@webiny/app-dynamic-pages/hooks/useIsDynamicElement";
-import { Element } from "@webiny/app-page-builder-elements/types";
-
-import { register } from "swiper/element/bundle";
+import { useElementWithChildrenById } from "~/editor/hooks/useElementById";
 
 declare global {
     // eslint-disable-next-line
@@ -53,9 +52,7 @@ const PeCarousel = createRenderer(() => {
     const { getElement, meta } = useRenderer();
     const element = getElement();
     const isDynamic = useIsDynamicElement(element);
-    const elementWithChildren = useRecoilValue(
-        elementWithChildrenByIdSelector(element.id)
-    ) as Element;
+    const elementWithChildren = useElementWithChildrenById(element.id) as Element;
     const childrenElements = elementWithChildren?.elements;
 
     const { arrowsToggle = true, bulletsToggle = true } = element?.data?.settings?.carousel;

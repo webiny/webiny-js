@@ -1,11 +1,9 @@
 import { PbElement, PbEditorElement } from "~/types";
 
 export function useIsDynamicElement(element?: PbElement | PbEditorElement) {
-    if (element?.data?.dynamicSource?.path) {
-        return true;
-    }
+    const { path, modelId } = element?.data?.dynamicSource || {};
 
-    if (element?.data?.dynamicSource?.modelId) {
+    if (path || modelId) {
         return true;
     }
 

@@ -11,4 +11,5 @@ export { useModelField } from "../components/ModelFieldProvider";
 export { useModelFieldEditor } from "../components/FieldEditor";
 export * from "./useContentModelGroups";
 export * from "./useContentModels";
+export * from "./useModelById";
 export * from "~/admin/views/contentEntries/hooks";

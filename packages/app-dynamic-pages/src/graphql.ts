@@ -1,5 +1,4 @@
 import gql from "graphql-tag";
-import { CmsErrorResponse } from "@webiny/app-headless-cms/types";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -9,24 +8,25 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export interface GetPageQueryResponse {
-    data: {
-        runQuery: {
-            data: {
-                data: any;
-                error: CmsErrorResponse | null;
-            };
-        };
-    };
-}
-
-export interface RunQueryVariables {
-    query: string;
-}
-
-export const RUN_QUERY = gql`
-    query RunQuery($query: String!) {
-        runQuery(query: $query) {
+export const GET_DYNAMIC_PAGE_DATA = gql`
+    query GetDynamicPageData(
+        $modelId: String!
+        $paths: [String!]
+        $filter: GetDynamicPageDataFilterInput
+        $sort: [GetDynamicPageDataSortInput!]
+        $limit: Number
+        $where: GetDynamicPageDataWhereInput
+        $isPreviewEndpoint: Boolean
+    ) {
+        getDynamicPageData(
+            modelId: $modelId,
+            paths: $paths,
+            filter: $filter,
+            sort: $sort,
+            limit: $limit,
+            where: $where,
+            isPreviewEndpoint: $isPreviewEndpoint
+        ) {
             data
             error ${ERROR_FIELD}
         }

@@ -18,6 +18,7 @@ type DynamicSourceProviderProps = {
     templateWhereField?: Record<string, string>;
 };
 
+// Dynamic source provider for website.
 export const DynamicSourceProvider: React.FC<DynamicSourceProviderProps> = ({
     children,
     element
@@ -47,6 +48,7 @@ export const DynamicSourceProvider: React.FC<DynamicSourceProviderProps> = ({
     return <>{children}</>;
 };
 
+// Dynamic source provider for editors (page editor, template editor).
 export const EditorDynamicSourceProvider: React.FC<DynamicSourceProviderProps> = ({
     children,
     element,

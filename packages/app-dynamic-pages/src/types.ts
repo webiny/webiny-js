@@ -1,4 +1,4 @@
-// Element styles copied from app-page-builder for now
+// Element types copied from app-page-builder for now
 // because it creates import loop when importing from that package
 export interface PbElement {
     id: string;
@@ -21,3 +21,17 @@ export interface PbEditorElement {
 
     [key: string]: any;
 }
+
+export type Filter = {
+    filters: {
+        path: string;
+        condition: string;
+        value: string;
+    }[];
+    filterCondition: string;
+};
+
+export type Sort = {
+    path: string;
+    direction: string;
+};

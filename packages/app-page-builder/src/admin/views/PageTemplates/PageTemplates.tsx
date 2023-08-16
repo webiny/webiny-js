@@ -39,8 +39,8 @@ const PageTemplates: React.FC = () => {
 
     const existingDynamicTemplateModelIds = useMemo(() => {
         return pageTemplatesData
-            .filter(template => template.templatePageData?.modelId)
-            .map(template => template.templatePageData?.modelId as string);
+            .filter(template => template.dynamicSource?.modelId)
+            .map(template => template.dynamicSource?.modelId as string);
     }, [pageTemplatesData]);
 
     const { canCreate, canUpdate, canDelete } = useTemplatesPermissions();
@@ -73,7 +73,7 @@ const PageTemplates: React.FC = () => {
     const onCreateDynamicPageTemplate = useCallback(
         async (model: CmsModel) => {
             const existingDynamicTemplate = pageTemplatesData.find(
-                template => template.templatePageData?.modelId === model.modelId
+                template => template.dynamicSource?.modelId === model.modelId
             );
 
             if (existingDynamicTemplate) {
@@ -97,7 +97,7 @@ const PageTemplates: React.FC = () => {
                         tags: [],
                         layout: "static",
                         pageCategory: "static",
-                        templatePageData: {
+                        dynamicSource: {
                             modelId: model.modelId
                         }
                     }

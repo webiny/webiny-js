@@ -67,7 +67,7 @@ const containsValidator = (condition: Filter, value: string, contains = true) =>
 // For now we have filters only for those fields that we support
 // Except for filter condition "between, not_between", "in, not_in"
 // because it's unclear what components should we use for those conditions
-// and what those filter conditions should acctualy do
+// and what those filter conditions should actually do
 // "in & not_in" condition accept an array of strings or numbers
 // "between & not_between" also accept an array of numbers
 // P.S This is an initial implementation just to see whether it works as expected

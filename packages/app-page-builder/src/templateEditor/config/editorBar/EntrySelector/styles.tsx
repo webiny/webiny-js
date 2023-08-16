@@ -6,8 +6,6 @@ export const EntrySelectorWrapper = styled.div`
 `;
 
 export const SelectEntry = styled.div`
-    position: relative;
-    width: 100%;
     height: 25px;
 
     margin-left: 15px;

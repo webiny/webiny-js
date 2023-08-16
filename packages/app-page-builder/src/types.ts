@@ -897,7 +897,7 @@ export interface PbPageTemplate {
     description: string;
     layout: string;
     content: any;
-    templatePageData?: {
+    dynamicSource?: {
         modelId?: string;
         entryId?: string;
     };

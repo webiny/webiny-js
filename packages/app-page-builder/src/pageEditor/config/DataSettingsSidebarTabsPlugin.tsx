@@ -225,9 +225,9 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
             .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
             .filter(pl => pl.elementType === element?.type);
 
+        const modelId = dynamicParent?.data?.dynamicSource?.modelId;
         const isNotReferenceBlock = element.type === "block" && !element.data.blockId;
-        const canHaveDynamicSource =
-            pageElementPlugin.allowDynamicSource && dynamicParent?.data?.dynamicSource?.modelId;
+        const canHaveDynamicSource = pageElementPlugin.allowDynamicSource && modelId;
 
         return (
             <Tabs {...props}>
@@ -246,8 +246,7 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
                                                 "pb-editor-page-element-data-settings",
                                                 {
                                                     ...formProps,
-                                                    sourceModelId:
-                                                        dynamicParent?.data?.dynamicSource?.modelId,
+                                                    sourceModelId: modelId,
                                                     onUnlink: onUnlinkDynamic,
                                                     onChangeSource: onChangeDynamic,
                                                     allowedFields: pageElementPlugin?.allowedFields
@@ -267,8 +266,7 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
                                                 "pb-editor-page-element-parent-data-settings",
                                                 {
                                                     ...formProps,
-                                                    sourceModelId:
-                                                        dynamicParent?.data?.dynamicSource?.modelId,
+                                                    sourceModelId: modelId,
                                                     allowedFields: pageElementPlugin?.allowedFields,
                                                     addVariant,
                                                     removeVariant

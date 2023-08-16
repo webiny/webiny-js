@@ -2,8 +2,11 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../app/tsconfig.build.json" },
     { "path": "../app-headless-cms/tsconfig.build.json" },
-    { "path": "../form/tsconfig.build.json" }
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

@@ -1,10 +1,10 @@
 import ApolloClient from "apollo-client";
-import { GET_CONTENT_MODEL } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import { plugins } from "@webiny/plugins";
 import {
     CmsModelFieldTypePlugin,
     CmsModelField,
-    CmsDynamicZoneTemplate
+    CmsDynamicZoneTemplate,
+    CmsModel
 } from "@webiny/app-headless-cms/types";
 
 const resolveFieldPlugin = (type: string) => {
@@ -21,13 +21,12 @@ export type NestingItem = {
     pathPart?: string;
 };
 
+// Creates array of data needed for dynamic page data inputs.
 export const getNestingByPath = async (
     client: ApolloClient<any>,
-    modelId: string,
+    model: CmsModel,
     path: string
 ) => {
-    const { data } = await client.query({ query: GET_CONTENT_MODEL, variables: { modelId } });
-    const model = data.getContentModel.data;
     const nesting: NestingItem[] = [
         {
             name: model.name,

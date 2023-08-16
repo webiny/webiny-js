@@ -63,8 +63,7 @@ export const Select: React.VFC<Props> = ({ entry, selected, onChange }) => {
     const onIconClick = useCallback(() => {
         onChange({
             id: entry.id,
-            modelId: entry.model.modelId,
-            title: entry.title
+            modelId: entry.model.modelId
         });
     }, [entry, onChange]);
     return (

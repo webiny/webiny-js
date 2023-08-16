@@ -128,6 +128,13 @@ export const LIST_CONTENT_MODELS = gql`
     }
 `;
 
+export interface GetCmsModelQueryResponse {
+    getContentModel: {
+        data: CmsModel;
+        error?: CmsErrorResponse;
+    };
+}
+
 export const GET_CONTENT_MODEL = gql`
     query CmsGetContentModel($modelId: ID!) {
         getContentModel(modelId: $modelId) {

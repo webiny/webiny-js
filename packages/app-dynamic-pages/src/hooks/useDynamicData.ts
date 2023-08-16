@@ -3,17 +3,16 @@ import get from "lodash/get";
 import isEqual from "lodash/isEqual";
 import { useApolloClient } from "@apollo/react-hooks";
 
-import { useDynamicDataQuery } from "~/hooks/useDynamicDataQuery";
 import { useIsDynamicElement } from "~/hooks/useIsDynamicElement";
 import { getChildrenPaths } from "~/utils/getChildrenPaths";
-import { RUN_QUERY } from "~/graphql";
-import { PbElement } from "~/types";
+import { GET_DYNAMIC_PAGE_DATA } from "~/graphql";
+import { Filter, Sort, PbElement } from "~/types";
 
 export const usePaths = (paths?: string[]) => {
-    const [prevPaths, setPrevPaths] = useState<string[]>();
+    const [prevPaths, setPrevPaths] = useState<string[]>([]);
 
     useEffect(() => {
-        if (!isEqual(prevPaths, paths)) {
+        if (paths?.length && !isEqual(prevPaths.sort(), paths.sort())) {
             setPrevPaths(paths);
         }
     }, [paths]);
@@ -21,33 +20,40 @@ export const usePaths = (paths?: string[]) => {
     return prevPaths;
 };
 
+// Loads dynamic page data for website from "read" CMS endpoint.
 export const useDynamicData = (element?: PbElement) => {
+    const isDynamic = useIsDynamicElement(element);
+    const paths = usePaths(isDynamic ? getChildrenPaths(element?.elements) : undefined);
+    const { modelId, filter, sortRules: sort, limit } = element?.data?.dynamicSource || {};
+
     const { data, loading, error } = useLoadDynamicData({
-        modelId: element?.data?.dynamicSource?.modelId,
-        query: element?.data?.dynamicSource?.query
+        modelId,
+        paths,
+        filter,
+        sort,
+        limit
     });
 
     return { data, loading, error };
 };
 
+// Loads one dynamic page data entry for editors (page editor, template editor) from "preview" CMS endpoint.
 export const useDynamicDataForEditor = (
     element?: PbElement,
     templateWhereField?: Record<string, string>
 ) => {
     const isDynamic = useIsDynamicElement(element);
     const paths = usePaths(isDynamic ? getChildrenPaths(element?.elements) : undefined);
-    const { data: query } = useDynamicDataQuery({
-        paths,
-        modelId: element?.data?.dynamicSource?.modelId,
-        filter: element?.data?.dynamicSource?.filter,
-        sort: element?.data?.dynamicSource?.sortRules,
-        limit: 1,
-        templateWhereField
-    });
+    const { modelId, filter, sortRules: sort } = element?.data?.dynamicSource || {};
 
     const { data, loading, error } = useLoadDynamicData({
-        modelId: element?.data?.dynamicSource?.modelId,
-        query
+        modelId,
+        paths,
+        filter,
+        sort,
+        limit: 1,
+        ...(templateWhereField ? { where: templateWhereField } : {}),
+        isPreviewEndpoint: true
     });
 
     return { data: data?.[0], loading, error };
@@ -55,10 +61,25 @@ export const useDynamicDataForEditor = (
 
 type UseLoadDynamicDataParams = {
     modelId: string;
-    query: string | null;
+    paths?: string[];
+    filter?: Filter;
+    sort?: Sort[];
+    limit?: number;
+    where?: {
+        entryId?: string;
+    };
+    isPreviewEndpoint?: boolean;
 };
 
-export const useLoadDynamicData = ({ modelId, query }: UseLoadDynamicDataParams) => {
+export const useLoadDynamicData = ({
+    modelId,
+    paths,
+    filter,
+    sort,
+    limit,
+    where,
+    isPreviewEndpoint
+}: UseLoadDynamicDataParams) => {
     const isMounted = useRef(true);
     const [data, setData] = useState<JSON[] | null>(null);
     const [error, setError] = useState<Error | null>(null);
@@ -67,7 +88,7 @@ export const useLoadDynamicData = ({ modelId, query }: UseLoadDynamicDataParams)
     const apolloClient = useApolloClient();
 
     useEffect(() => {
-        if (!modelId || !query) {
+        if (!modelId || !paths) {
             return;
         }
 
@@ -78,10 +99,15 @@ export const useLoadDynamicData = ({ modelId, query }: UseLoadDynamicDataParams)
         const execute = async () => {
             try {
                 const listQuery = await apolloClient.query({
-                    query: RUN_QUERY,
-                    variables: { query }
+                    query: GET_DYNAMIC_PAGE_DATA,
+                    variables: { modelId, paths, filter, sort, limit, where, isPreviewEndpoint }
                 });
-                const newData = get(listQuery, `data.runQuery.data.data.result.data`, null);
+
+                const newData = get(
+                    listQuery,
+                    `data.getDynamicPageData.data.data.result.data`,
+                    null
+                );
 
                 if (!isMounted.current) {
                     return;
@@ -99,9 +125,9 @@ export const useLoadDynamicData = ({ modelId, query }: UseLoadDynamicDataParams)
         };
 
         execute();
-    }, [modelId, query]);
+    }, [modelId, paths, filter, sort, limit, where, isPreviewEndpoint]);
 
-    // To prevent setting state on unmounted component
+    // To prevent setting state on unmounted component.
     useEffect(() => {
         return () => {
             isMounted.current = false;

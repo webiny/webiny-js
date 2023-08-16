@@ -94,7 +94,7 @@ export const saveTemplateAction: TemplateEventActionCallable<SaveTemplateActionA
         description: state.template?.description || "",
         layout: state.template?.layout || "",
         pageCategory: state.template?.pageCategory || "",
-        templatePageData: state.template?.templatePageData,
+        dynamicSource: state.template?.dynamicSource,
         content: syncTemplateVariables({ ...content, elements })
     };
 

@@ -5,6 +5,7 @@
     "@emotion/styled": "^11.10.6",
     "@material-design-icons/svg": "^0.14.2",
     "@webiny/app-admin": "0.0.0",
+    "@webiny/app-dynamic-pages": "0.0.0",
     "@webiny/app-page-builder": "0.0.0",
     "@webiny/app-page-builder-elements": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
