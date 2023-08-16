@@ -54,9 +54,11 @@ interface GetValueCallableParams {
     type: string;
     defaultValue: string | number;
 }
+
 interface GetValueCallable {
     (params: GetValueCallableParams): string | number;
 }
+
 const getValue: GetValueCallable = ({ value, defaultValue, type }) => {
     if (type === "number") {
         return isNaN(value as number) ? defaultValue : value;
@@ -73,8 +75,10 @@ interface InputBoxProps {
     className?: string;
     validation?: Validation;
     type?: "string" | "number";
+
     [key: string]: any;
 }
+
 const InputField: React.FC<InputBoxProps> = ({
     className,
     value,
@@ -91,7 +95,7 @@ const InputField: React.FC<InputBoxProps> = ({
 
     useEffect(() => {
         if (localValue !== value) {
-            setLocalValue(localValue);
+            setLocalValue(value);
         }
     }, [value]);
 
