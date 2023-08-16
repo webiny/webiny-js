@@ -91,6 +91,16 @@ const InputField: React.FC<InputBoxProps> = ({
     defaultValue = "",
     ...props
 }) => {
+    // We introduced the local value concept in order to fix the cursor positioning issue.
+    // Basically, users would type into the field, and the cursor would jump to the end of the input field.
+    // This is because the value was being set from the outside, and the component was re-rendering.
+    // By introducing the local value, we can control when the value is updated.
+    // Original PR: https://github.com/webiny/webiny-js/pull/3146
+
+    // Also note that we've tried to get rid of this and fix the root issue that's causing
+    // the cursor to jump to the end of the input field, but we couldn't find a solution.
+    // This was mainly because of the async nature of the onChange callback. For example,
+    // if we removed the async validation in PropertySettings.tsx, the cursor would no longer jump.
     const [localValue, setLocalValue] = useState(value);
 
     useEffect(() => {
