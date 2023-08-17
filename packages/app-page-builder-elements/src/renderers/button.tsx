@@ -145,18 +145,24 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
             if (isLinkAction) {
                 let href = "";
+
+                // In case the `action.actionType` is `scrollToElement`, the flag will remain false.
+                let newTab = false;
+
                 if (link?.href) {
                     href = link.href;
+                    newTab = link?.newTab;
                 } else {
                     if (action.actionType === "link") {
                         href = action.href;
+                        newTab = action.newTab;
                     }
-                    if (action.actionType === "scrollToElement" && action?.scrollToElement) {
+
+                    if (action.actionType === "scrollToElement") {
                         href = "#" + action.scrollToElement;
                     }
                 }
 
-                const newTab = link?.newTab || action?.newTab;
                 return (
                     <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
                         <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
