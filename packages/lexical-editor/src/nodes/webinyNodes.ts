@@ -43,7 +43,7 @@ export const WebinyNodes: ReadonlyArray<
     FontColorNode,
     TypographyElementNode,
 
-    // The following code replaces the built-in Lexical nodes with our custom nodes. The built-in nodes are
+    // The following code replaces the built-in Lexical nodes with our custom ones. The built-in nodes are
     // imported from the Lexical package, and then replaced with our custom nodes. This is the only way to
     // replace the built-in nodes.
     // https://lexical.dev/docs/concepts/node-replacement
