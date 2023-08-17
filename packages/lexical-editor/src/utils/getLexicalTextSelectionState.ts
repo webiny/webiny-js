@@ -11,7 +11,7 @@ import {
 } from "lexical";
 import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils";
 import { getSelectedNode } from "~/utils/getSelectedNode";
-import { $isLinkNode } from "@lexical/link";
+import { $isLinkNode as $isBaseLinkNode } from "@lexical/link";
 import { $isListNode, ListNode } from "~/nodes/ListNode";
 import { $isHeadingNode as $isBaseHeadingNode } from "@lexical/rich-text";
 import { $isTypographyElementNode } from "~/nodes/TypographyElementNode";
@@ -20,6 +20,7 @@ import { $isParagraphNode } from "~/nodes/ParagraphNode";
 import { $isHeadingNode } from "~/nodes/HeadingNode";
 import { $isQuoteNode } from "~/nodes/QuoteNode";
 import { $isParentElementRTL } from "@lexical/selection";
+import { $isLinkNode } from "~/nodes/link-node";
 
 export const getSelectionTextFormat = (selection: RangeSelection | undefined): TextFormatting => {
     return !$isRangeSelection(selection)
@@ -75,7 +76,12 @@ export const getToolbarState = (
     state.isRTL = $isParentElementRTL(selection);
 
     // link
-    state.link.isSelected = $isLinkNode(parent) || $isLinkNode(node);
+    state.link.isSelected =
+        $isBaseLinkNode(parent) ||
+        $isBaseLinkNode(node) ||
+        // custom link node
+        $isLinkNode(parent) ||
+        $isLinkNode(node);
     if (state.link.isSelected) {
         state.textType = "link";
     }
