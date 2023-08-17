@@ -168,7 +168,7 @@ function FloatingLinkEditor({
                                 setLinkUrl({ ...linkUrl, target: linkUrl.target ? null : "_blank" })
                             }
                         />{" "}
-                        <span>Open in new page</span>
+                        <span>New tab</span>
                     </div>
                     <input
                         ref={inputRef}
@@ -200,7 +200,7 @@ function FloatingLinkEditor({
                 <>
                     <div className={"link-editor-target-checkbox"}>
                         <input type={"checkbox"} checked={linkUrl.target === "_blank"} readOnly />{" "}
-                        <span>Open in new page</span>
+                        <span>New tab</span>
                     </div>
                     <div className="link-input">
                         <a href={linkUrl.url} target="_blank" rel="noopener noreferrer">
