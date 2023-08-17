@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { LinkComponent } from "~/types";
 import styled, { CSSObject } from "@emotion/styled";
@@ -137,8 +137,13 @@ export const createButton = (params: CreateButtonParams = {}) => {
                 );
             }
 
-            const linkActions = ["link", "scrollToElement"];
-            if (link?.href || linkActions.includes(action?.actionType)) {
+            // The `link` property is a legacy property, and it's not used anymore,
+            // but we still need to support it in order to not break existing pages.
+            const isLinkAction = useMemo(() => {
+                return link?.href || ["link", "scrollToElement"].includes(action?.actionType);
+            }, [link?.href, action?.actionType]);
+
+            if (isLinkAction) {
                 let href = "";
                 if (link?.href) {
                     href = link.href;
