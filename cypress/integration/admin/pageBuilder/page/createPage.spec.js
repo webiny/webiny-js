@@ -9,9 +9,13 @@ context("Page Builder Page Creation", () => {
         const id = uniqid();
 
         afterEach(() => {
-            // Here we can pass id (this id is the part of the page title) instead of full page title,
-            // because query can search not only by a full title, but also by some specific symbols in our case it is an id.
-            cy.pbDeleteSpecificPage(id);
+            cy.pbListPages({
+                search: {
+                    query: id
+                }
+            }).then(pages => {
+                pages.forEach(page => cy.pbDeletePage({ id: page.id }));
+            });
         });
 
         it("should be able to create page, publish page and check whether it exists in the list of the pages", () => {
@@ -21,7 +25,7 @@ context("Page Builder Page Creation", () => {
 
             // Button is hidden so we need to force click it.
             cy.findByTestId("new-page-button").click({ force: true });
-            // Redirects us to the Page Builder Editor page (route "/page-builder/editor/").
+            // After clicking on create blank page button, we should be redirected to the page editor of that newly created page.
             cy.findByTestId("create-blank-page-button").click();
             // Check if we got redirected to the Page Builder Editor (route "/page-builder/editor/").
             cy.url().should("includes", "/page-builder/editor/");

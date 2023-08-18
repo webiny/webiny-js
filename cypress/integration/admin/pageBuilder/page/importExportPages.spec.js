@@ -1,3 +1,5 @@
+import uniqid from "uniqid";
+
 // We need this to grant Cypress access to the clipboard.
 Cypress.automation("remote:debugger:protocol", {
     command: "Browser.grantPermissions",
@@ -11,10 +13,31 @@ context("Export & Import Pages", () => {
     beforeEach(() => cy.login());
 
     describe("When exporting and importing page", () => {
+        const id = uniqid();
         const pageTitle1 = `Test published page 1`;
 
+        beforeEach(() => {
+            cy.pbCreatePage({ category: "static" }).then(page => {
+                cy.pbUpdatePage({
+                    id: page.id,
+                    data: {
+                        category: "static",
+                        path: `/page-${id}`,
+                        title: pageTitle1
+                    }
+                });
+                cy.pbPublishPage({ id: page.id });
+            });
+        });
+
         afterEach(() => {
-            cy.pbDeleteSpecificPage(pageTitle1);
+            cy.pbListPages({
+                search: {
+                    query: pageTitle1
+                }
+            }).then(pages => {
+                pages.forEach(page => cy.pbDeletePage({ id: page.id }));
+            });
         });
 
         const searchForPage = title => {
@@ -31,30 +54,6 @@ context("Export & Import Pages", () => {
 
         it("should be able to export and import a page", () => {
             cy.visit("/page-builder/pages");
-
-            // Button is hidden so we need to force click it.
-            cy.findByTestId("new-page-button").click({ force: true });
-            // Redirects us to the Page Builder Editor page (route "/page-builder/editor/").
-            cy.findByTestId("create-blank-page-button").click();
-            // Check if we got redirected to the Page Builder Editor (route "/page-builder/editor/").
-            cy.url().should("includes", "/page-builder/editor/");
-
-            // Editing title for the page.
-            cy.findByTestId("pb-editor-page-title").click();
-            cy.get(`input[value="Untitled"]`).clear().type(pageTitle1).blur();
-            cy.findByText("Page title updated successfully!");
-
-            // Publishing newly create page.
-            cy.findByTestId("pb.editor.header.publish.button").click();
-
-            // Confirming that we want to publish the page.
-            cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
-                cy.findByTestId("confirmationdialog-confirm-action").click();
-            });
-
-            // We should be able to see it in case page was published successfully,
-            // and we also should be redirected to the "/page-builder/pages" route.
-            cy.findByText("Your page was published successfully!");
 
             searchForPage(pageTitle1);
             // Select first page in the list for the export

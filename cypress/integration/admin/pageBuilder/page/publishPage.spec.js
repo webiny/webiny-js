@@ -14,7 +14,7 @@ context(
 
                 // Button is hidden so we need to force click it.
                 cy.findByTestId("new-page-button").click({ force: true });
-                // Redirects us to the Page Builder Editor page (route "/page-builder/editor/").
+                // After clicking on create blank page button, we should be redirected to the page editor of that newly created page.
                 cy.findByTestId("create-blank-page-button").click();
                 // Check if we got redirected to the Page Builder Editor (route "/page-builder/editor/").
                 cy.url().should("includes", "/page-builder/editor/");
