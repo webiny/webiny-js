@@ -18,7 +18,7 @@ export function createFieldsList({
 
     const typePrefix = graphQLTypePrefix ?? model.singularApiName;
 
-    return fields
+    const allFields = fields
         .map(field => {
             if (!fieldPlugins[field.type]) {
                 console.log(`Unknown field plugin for field type "${field.type}".`);
@@ -45,6 +45,15 @@ export function createFieldsList({
 
             return field.fieldId;
         })
-        .filter(Boolean)
-        .join("\n");
+        .filter(Boolean);
+
+    /**
+     * If there are no fields for a given type, we add a dummy `_empty` field, which will also be present in the schema
+     * on the API side, to protect the schema from invalid types.
+     */
+    if (!allFields.length) {
+        allFields.push("_empty");
+    }
+
+    return allFields.join("\n");
 }
