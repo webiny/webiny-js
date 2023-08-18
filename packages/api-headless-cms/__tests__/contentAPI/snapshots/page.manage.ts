@@ -19,6 +19,7 @@ export default /* GraphQL */ `
         reference: PageModelApiName_Reference
         references1: PageModelApiName_References1
         references2: [PageModelApiName_References2!]
+        ghostObject: PageModelApiName_GhostObject
         # Advanced Content Organization - make required in 5.38.0
         wbyAco_location: WbyAcoLocation
     }
@@ -217,6 +218,14 @@ export default /* GraphQL */ `
         _templateId: ID!
     }
 
+    type PageModelApiName_GhostObject {
+        _empty: String
+    }
+
+    input PageModelApiName_GhostObjectWhereInput {
+        _empty: String
+    }
+
     input PageModelApiName_Content_HeroInput {
         title: String!
     }
@@ -315,6 +324,10 @@ export default /* GraphQL */ `
         Author: PageModelApiName_References2_AuthorInput
     }
 
+    input PageModelApiName_GhostObjectInput {
+        _empty: String
+    }
+
     input PageModelApiNameInput {
         id: ID
         wbyAco_location: WbyAcoLocationInput
@@ -324,6 +337,7 @@ export default /* GraphQL */ `
         reference: PageModelApiName_ReferenceInput
         references1: PageModelApiName_References1Input
         references2: [PageModelApiName_References2Input]
+        ghostObject: PageModelApiName_GhostObjectInput
     }
 
     input PageModelApiNameGetWhereInput {
@@ -367,6 +381,7 @@ export default /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
+        ghostObject: PageModelApiName_GhostObjectWhereInput
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }

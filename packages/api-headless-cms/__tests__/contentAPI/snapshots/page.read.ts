@@ -16,6 +16,7 @@ export default /* GraphQL */ `
         reference: PageModelApiName_Reference
         references1: PageModelApiName_References1
         references2: [PageModelApiName_References2!]
+        ghostObject: PageModelApiName_GhostObject
     }
 
     union PageModelApiName_Content =
@@ -153,6 +154,14 @@ export default /* GraphQL */ `
         author(populate: Boolean = true): AuthorApiModel
     }
 
+    type PageModelApiName_GhostObject {
+        _empty: String
+    }
+
+    input PageModelApiName_GhostObjectWhereInput {
+        _empty: String
+    }
+
     input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String
@@ -189,6 +198,7 @@ export default /* GraphQL */ `
         ownedBy_not: String
         ownedBy_in: [String!]
         ownedBy_not_in: [String!]
+        ghostObject: PageModelApiName_GhostObjectWhereInput
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }

@@ -1,7 +1,18 @@
 const { version: webinyVersion } = require("@webiny/cli/package.json");
-import { CmsModel as BaseCmsModel, CmsModelField as BaseCmsModelField } from "~/types";
+import {
+    CmsModel as BaseCmsModel,
+    CmsModelField as BaseCmsModelField,
+    CmsModelFieldSettings as BaseCmsModelFieldSettings
+} from "~/types";
 
-type CmsModelField = Omit<BaseCmsModelField, "storageId">;
+type CmsModelField = Omit<BaseCmsModelField, "storageId" | "settings"> & {
+    settings: CmsModelFieldSettings;
+};
+
+interface CmsModelFieldSettings extends Omit<BaseCmsModelFieldSettings, "fields"> {
+    fields?: CmsModelField[];
+}
+
 interface CmsModel extends Omit<BaseCmsModel, "fields"> {
     fields: CmsModelField[];
 }
@@ -28,7 +39,8 @@ export const pageModel: CmsModel = {
         ["t4pfesadsa"],
         ["ahterwfesi2"],
         ["rethawfesi2"],
-        ["ahterwfesi3"]
+        ["ahterwfesi3"],
+        ["ngrejnoxj0wax"]
     ],
     tags: ["type:model"],
     fields: [
@@ -552,6 +564,30 @@ export const pageModel: CmsModel = {
                                 }
                             }
                         ]
+                    }
+                ]
+            }
+        },
+        /**
+         *  Dynamic zone without templates will be skipped in the SDL generation process.
+         *  This means that the parent `object` field will have 0 child fields.
+         *  For that reason, we expect a GQL type with an `_empty: String` field.
+         */
+        {
+            id: "ngrejnoxj0wax",
+            fieldId: "ghostObject",
+            type: "object",
+            label: "Object that will generate a type with an _empty field.",
+            settings: {
+                fields: [
+                    {
+                        id: "rghpiuehpgtie",
+                        fieldId: "emptyDynamicZone",
+                        type: "dynamicZone",
+                        label: "Dynamic zone without templates",
+                        settings: {
+                            templates: []
+                        }
                     }
                 ]
             }
