@@ -51,12 +51,7 @@ const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     return (
         <ModelProvider model={contentModel}>
             <ContentEntryForm
-                onSubmit={data => {
-                    /**
-                     * We know that data is CmsContentEntry.
-                     */
-                    return onCreate(data as unknown as CmsContentEntry);
-                }}
+                onSubmit={data => onCreate(data)}
                 onForm={form => setFormRef(form)}
                 entry={{}}
                 addEntryToListCache={false}

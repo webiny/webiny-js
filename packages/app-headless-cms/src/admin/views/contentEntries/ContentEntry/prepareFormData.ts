@@ -1,4 +1,4 @@
-import { CmsModelField, CmsFieldValueTransformer } from "~/types";
+import { CmsModelField, CmsFieldValueTransformer, CmsContentEntry } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 interface AvailableFieldTransformers {
@@ -57,7 +57,7 @@ const createTransformationRunner = (): TransformationRunnerCallable => {
 export const prepareFormData = (
     input: Record<string, any>,
     fields: CmsModelField[]
-): Record<string, any> => {
+): CmsContentEntry => {
     const runTransformation = createTransformationRunner();
 
     return fields.reduce<Record<string, any>>((output, field) => {
