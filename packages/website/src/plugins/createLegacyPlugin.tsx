@@ -10,6 +10,7 @@ export function createLegacyPlugin<TProps, TPlugin = {}>(
     };
 
     LegacyPlugin.createLegacyPlugin = create;
+    LegacyPlugin.displayName = 'OPA_DELA';
 
     return LegacyPlugin;
 }

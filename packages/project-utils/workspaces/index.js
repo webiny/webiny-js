@@ -6,7 +6,7 @@ const hasPackageJson = p => fs.existsSync(p + "/package.json");
 const allWorkspaces = () => {
     const { getProject } = require("@webiny/cli/utils");
     const projectPackageJson = require(getProject().root + "/package.json");
-    if (!Array.isArray(projectPackageJson.workspaces)) {
+    if (!Array.isArray(projectPackageJson.workspaces) && !Array.isArray(projectPackageJson?.workspaces.packages)) {
         return [];
     }
 

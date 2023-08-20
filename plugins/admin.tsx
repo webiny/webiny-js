@@ -1,5 +1,6 @@
 import React from "react";
 import { Theme, PageLayout, FormLayout, Cognito } from "@webiny/admin";
+import path from "path";
 
 import theme from "./themes/default";
 import StaticLayout from "./layouts/pages/Static";
@@ -13,5 +14,7 @@ export default () => (
         <FormLayout name={"default"} title={"Default form layout"} component={DefaultFormLayout} />
 
         <Cognito />
+
+        <Api.ContextPlugin apply={() => { console.log('APPLYING CONTEXT PLUGIN') }} />
     </>
 );

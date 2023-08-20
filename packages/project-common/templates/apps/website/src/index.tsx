@@ -5,20 +5,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { App } from "@webiny/project-common/apps/website";
 
-import projectPlugins from "../../../../plugins/website";
-
-const projectLegacyPlugins = projectPlugins()
-    // @ts-ignore
-    .props.children.filter(component => typeof component.type.createLegacyPlugin === "function")
-    // @ts-ignore
-    .map(component => component.type.createLegacyPlugin(component.props));
-
-const projectLatestPlugins = projectPlugins()
-    // @ts-ignore
-    .props.children.filter(component => !component.type.createLegacyPlugin);
+import plugins from "./plugins";
+import legacyPlugins from "./legacyPlugins";
 
 const render = module.hot ? ReactDOM.render : ReactDOM.hydrate;
-render(
-    <App plugins={projectLatestPlugins} legacyPlugins={projectLegacyPlugins} />,
-    document.getElementById("root")
-);
+render(<App plugins={plugins} legacyPlugins={legacyPlugins} />, document.getElementById("root"));

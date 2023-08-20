@@ -89,6 +89,7 @@
     "node-fetch": "^2.6.1",
     "pm2": "^4.5.4",
     "prettier": "^2.8.3",
+    "react-test-renderer": "^17",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "semver": "^6.3.0",
@@ -227,5 +228,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "dependencies": {
+    "debounce": "^1.2.1",
+    "jsdom": "^22.1.0"
   }
 }
