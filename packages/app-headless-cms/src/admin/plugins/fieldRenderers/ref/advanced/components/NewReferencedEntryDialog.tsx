@@ -45,6 +45,25 @@ const ModalRightPanel = styled(RightPanel)`
     }
 `;
 
+const ModalFullWidthDialog = styled(FullWidthDialog)`
+    .webiny-ui-dialog__content {
+        height: 100%;
+        > div {
+            max-height: inherit;
+            height: inherit;
+            .mdc-layout-grid__inner {
+                height: 100%;
+                max-height: inherit;
+                .webiny-split-view__left-panel, .webiny-split-view__right-panel{
+                    height: inherit;
+                    max-height: inherit;
+                    overflow: scroll;
+                }
+            }
+        }
+    }
+`;
+
 interface EntryFormProps {
     onCreate: (entry: CmsContentEntry) => void;
 }
@@ -153,7 +172,7 @@ export const NewReferencedEntryDialog: React.VFC<Props> = ({
             <FoldersProvider type={`cms:${model.modelId}`}>
                 <NavigateFolderProvider modelId={model.modelId}>
                     <ContentEntryProvider isNewEntry={() => true} getContentId={() => null}>
-                        <FullWidthDialog open={true} onClose={onClose}>
+                        <ModalFullWidthDialog open={true} onClose={onClose}>
                             <DialogTitle>
                                 {t`New {modelName} Entry`({ modelName: model.name })}
                             </DialogTitle>
@@ -164,7 +183,7 @@ export const NewReferencedEntryDialog: React.VFC<Props> = ({
                                 <DialogCancel>{t`Cancel`}</DialogCancel>
                                 <DialogSaveButton />
                             </DialogActions>
-                        </FullWidthDialog>
+                        </ModalFullWidthDialog>
                     </ContentEntryProvider>
                 </NavigateFolderProvider>
             </FoldersProvider>
