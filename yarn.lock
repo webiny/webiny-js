@@ -13084,7 +13084,7 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
-    jsonwebtoken: ^8.5.1
+    jsonwebtoken: ^9.0.0
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
@@ -13937,7 +13937,7 @@ __metadata:
     "@webiny/handler": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
-    jsonwebtoken: ^8.5.1
+    jsonwebtoken: ^9.0.0
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
@@ -13979,7 +13979,7 @@ __metadata:
     "@webiny/error": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
-    jsonwebtoken: ^8.5.1
+    jsonwebtoken: ^9.0.0
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
