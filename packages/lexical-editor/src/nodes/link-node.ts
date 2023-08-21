@@ -25,6 +25,14 @@ export class LinkNode extends BaseLinkNode {
         return "link-node";
     }
 
+    static override clone(node: LinkNode): LinkNode {
+        return new LinkNode(
+            node.__url,
+            { rel: node.__rel, target: node.__target, title: node.__title },
+            node.__key
+        );
+    }
+
     override createDOM(config: EditorConfig): HTMLAnchorElement {
         const element = document.createElement("a");
         element.href = sanitizeUrl(this.__url);
@@ -70,14 +78,6 @@ export class LinkNode extends BaseLinkNode {
             type: "link-node",
             version: 1
         };
-    }
-
-    static override clone(node: LinkNode): LinkNode {
-        return new LinkNode(
-            node.__url,
-            { rel: node.__rel, target: node.__target, title: node.__title },
-            node.__key
-        );
     }
 }
 
