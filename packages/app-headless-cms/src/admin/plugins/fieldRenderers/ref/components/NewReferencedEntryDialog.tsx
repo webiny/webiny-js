@@ -54,7 +54,8 @@ const ModalFullWidthDialog = styled(FullWidthDialog)`
             .mdc-layout-grid__inner {
                 height: 100%;
                 max-height: inherit;
-                .webiny-split-view__left-panel, .webiny-split-view__right-panel{
+                .webiny-split-view__left-panel,
+                .webiny-split-view__right-panel {
                     height: inherit;
                     max-height: inherit;
                     overflow: scroll;
