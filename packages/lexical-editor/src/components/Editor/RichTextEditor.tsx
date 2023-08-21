@@ -31,7 +31,7 @@ import {
 
 const EditorContainer = styled.div`
     position: relative;
-`
+`;
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
