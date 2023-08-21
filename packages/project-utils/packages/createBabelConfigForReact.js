@@ -3,18 +3,23 @@ module.exports = ({ path, esm }) => ({
         [
             "@babel/preset-env",
             {
-                targets: {
-                    browsers: ["last 2 versions", "safari >= 7"]
-                },
+                targets: ["last 1 chrome version"],
                 // Allow importing core-js in entrypoint and use browserlist to select polyfills
-                useBuiltIns: "entry",
+                // useBuiltIns: "entry",
                 // Set the corejs version we are using to avoid warnings in console
                 // This will need to change once we upgrade to corejs@3
-                corejs: 3,
+                // corejs: 3,
                 // Do not transform modules to CJS
-                modules: esm ? false : "auto",
-                // Exclude transforms that make all code slower
-                exclude: ["transform-typeof-symbol"]
+                modules: esm ? false : "auto"
+                // // Exclude transforms that make all code slower
+                // exclude: [
+                //     "transform-typeof-symbol",
+                //     "@babel/plugin-proposal-optional-chaining",
+                //     "@babel/plugin-proposal-nullish-coalescing-operator",
+                //     "@babel/plugin-transform-async-to-generator",
+                //     "@babel/plugin-transform-regenerator",
+                //     "@babel/plugin-transform-template-literals"
+                // ]
             }
         ],
         ["@babel/preset-react", { useBuiltIns: true }],
@@ -22,7 +27,6 @@ module.exports = ({ path, esm }) => ({
     ],
     plugins: [
         "babel-plugin-macros",
-        "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-throw-expressions",
         [
             "@babel/plugin-transform-runtime",
@@ -33,8 +37,6 @@ module.exports = ({ path, esm }) => ({
                 useESModules: false
             }
         ],
-        "@babel/plugin-proposal-optional-chaining",
-        "@babel/plugin-proposal-nullish-coalescing-operator",
         ["babel-plugin-emotion", { autoLabel: true }],
         [
             "@babel/plugin-proposal-object-rest-spread",

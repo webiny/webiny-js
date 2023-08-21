@@ -29,6 +29,7 @@
     "@webiny/telemetry": "0.0.0",
     "assert-browserify": "^2.0.0",
     "babel-loader": "9.1.2",
+    "browserslist": "^4.21.5",
     "buffer": "^6.0.3",
     "camelcase": "5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.4.0",

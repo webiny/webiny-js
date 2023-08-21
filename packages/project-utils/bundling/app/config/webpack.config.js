@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const browserslist = require("browserslist");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -294,7 +295,15 @@ module.exports = function (webpackEnv, { paths, options }) {
                             options: babelCustomizer({
                                 sourceType: "unambiguous",
                                 presets: [
-                                    require.resolve("@babel/preset-env"),
+                                    [
+                                        require.resolve("@babel/preset-env"),
+                                        {
+                                            debug: true, // isEnvDevelopment,
+                                            targets: browserslist(null, {
+                                                path: paths.appPath
+                                            })
+                                        }
+                                    ],
                                     require.resolve("@babel/preset-react"),
                                     require.resolve("@babel/preset-typescript")
                                 ],
