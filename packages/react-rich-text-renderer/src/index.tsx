@@ -3,10 +3,14 @@ import classNames from "classnames";
 import { OutputBlockData as BaseOutputBlockData } from "@editorjs/editorjs";
 import sanitize from "sanitize-html";
 
-let sanitizeGlobalConfig: sanitize.IOptions | undefined = undefined;
+let sanitizeGlobalOptions: sanitize.IOptions | undefined = undefined;
 
+/*
+ * Set global sanitization configuration options.
+ * You can find more about sanitize configuration options here: https://github.com/apostrophecms/sanitize-html
+ * */
 export function configureSanitization(sanitizeOptions?: sanitize.IOptions) {
-    sanitizeGlobalConfig = sanitizeOptions;
+    sanitizeGlobalOptions = sanitizeOptions;
 }
 
 interface OutputBlockData extends BaseOutputBlockData {
@@ -46,7 +50,7 @@ const renderParagraph = (
             {...props}
             className={classNames("rte-block-paragraph", props.className)}
             dangerouslySetInnerHTML={{
-                __html: sanitize(block.data.text, { ...sanitizeGlobalConfig, ...sanitizeOptions })
+                __html: sanitize(block.data.text, { ...sanitizeGlobalOptions, ...sanitizeOptions })
             }}
         />
     );
@@ -84,7 +88,7 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                     )}
                     dangerouslySetInnerHTML={{
                         __html: sanitize(block.data.text, {
-                            ...sanitizeGlobalConfig,
+                            ...sanitizeGlobalOptions,
                             ...sanitizeOptions
                         })
                     }}
@@ -101,7 +105,7 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                     )}
                     dangerouslySetInnerHTML={{
                         __html: sanitize(block.data.text, {
-                            ...sanitizeGlobalConfig,
+                            ...sanitizeGlobalOptions,
                             ...sanitizeOptions
                         })
                     }}
@@ -118,7 +122,7 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                     )}
                     dangerouslySetInnerHTML={{
                         __html: sanitize(block.data.text, {
-                            ...sanitizeGlobalConfig,
+                            ...sanitizeGlobalOptions,
                             ...sanitizeOptions
                         })
                     }}
@@ -135,7 +139,7 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                     )}
                     dangerouslySetInnerHTML={{
                         __html: sanitize(block.data.text, {
-                            ...sanitizeGlobalConfig,
+                            ...sanitizeGlobalOptions,
                             ...sanitizeOptions
                         })
                     }}
@@ -152,7 +156,7 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                     )}
                     dangerouslySetInnerHTML={{
                         __html: sanitize(block.data.text, {
-                            ...sanitizeGlobalConfig,
+                            ...sanitizeGlobalOptions,
                             ...sanitizeOptions
                         })
                     }}
@@ -169,7 +173,7 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                     )}
                     dangerouslySetInnerHTML={{
                         __html: sanitize(block.data.text, {
-                            ...sanitizeGlobalConfig,
+                            ...sanitizeGlobalOptions,
                             ...sanitizeOptions
                         })
                     }}
@@ -185,10 +189,10 @@ function renderImage(block: OutputBlockData, sanitizeOptions?: sanitize.IOptions
         <img
             className={"rte-block-image"}
             alt={sanitize(block.data.caption || "", {
-                ...sanitizeGlobalConfig,
+                ...sanitizeGlobalOptions,
                 ...sanitizeOptions
             })}
-            src={sanitize(block.data.file || "", { ...sanitizeGlobalConfig, ...sanitizeOptions })}
+            src={sanitize(block.data.file || "", { ...sanitizeGlobalOptions, ...sanitizeOptions })}
         />
     );
 }
@@ -242,7 +246,9 @@ interface RichTextRendererProps {
     data: OutputBlockData[];
     renderers?: Record<string, RichTextBlockRenderer>;
     /*
-     * You can find more about sanitize configuration here: https://github.com/apostrophecms/sanitize-html
+     * Set sanitation configuration options for this component.
+     * Note: Global configuration options will be overridden if they exist.
+     * You can find more about sanitize configuration options here: https://github.com/apostrophecms/sanitize-html
      * */
     sanitizationConfig?: sanitize.IOptions;
 }
