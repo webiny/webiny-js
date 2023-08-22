@@ -3,6 +3,12 @@ import classNames from "classnames";
 import { OutputBlockData as BaseOutputBlockData } from "@editorjs/editorjs";
 import sanitize from "sanitize-html";
 
+let sanitizeGlobalConfig: sanitize.IOptions | undefined = undefined;
+
+export function configureSanitization(sanitizeOptions?: sanitize.IOptions) {
+    sanitizeGlobalConfig = sanitizeOptions;
+}
+
 interface OutputBlockData extends BaseOutputBlockData {
     data: {
         className?: string;
@@ -39,7 +45,9 @@ const renderParagraph = (
         <p
             {...props}
             className={classNames("rte-block-paragraph", props.className)}
-            dangerouslySetInnerHTML={{ __html: sanitize(block.data.text, sanitizeOptions) }}
+            dangerouslySetInnerHTML={{
+                __html: sanitize(block.data.text, { ...sanitizeGlobalConfig, ...sanitizeOptions })
+            }}
         />
     );
 };
@@ -75,7 +83,10 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                         "rte-block-heading rte-block-heading--h1"
                     )}
                     dangerouslySetInnerHTML={{
-                        __html: sanitize(block.data.text, sanitizeOptions)
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalConfig,
+                            ...sanitizeOptions
+                        })
                     }}
                 />
             );
@@ -89,7 +100,10 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                         "rte-block-heading rte-block-heading--h2"
                     )}
                     dangerouslySetInnerHTML={{
-                        __html: sanitize(block.data.text, sanitizeOptions)
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalConfig,
+                            ...sanitizeOptions
+                        })
                     }}
                 />
             );
@@ -103,7 +117,10 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                         "rte-block-heading rte-block-heading--h3"
                     )}
                     dangerouslySetInnerHTML={{
-                        __html: sanitize(block.data.text, sanitizeOptions)
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalConfig,
+                            ...sanitizeOptions
+                        })
                     }}
                 />
             );
@@ -117,7 +134,10 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                         "rte-block-heading rte-block-heading--h4"
                     )}
                     dangerouslySetInnerHTML={{
-                        __html: sanitize(block.data.text, sanitizeOptions)
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalConfig,
+                            ...sanitizeOptions
+                        })
                     }}
                 />
             );
@@ -131,7 +151,10 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                         "rte-block-heading rte-block-heading--h5"
                     )}
                     dangerouslySetInnerHTML={{
-                        __html: sanitize(block.data.text, sanitizeOptions)
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalConfig,
+                            ...sanitizeOptions
+                        })
                     }}
                 />
             );
@@ -145,7 +168,10 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
                         "rte-block-heading rte-block-heading--h6"
                     )}
                     dangerouslySetInnerHTML={{
-                        __html: sanitize(block.data.text, sanitizeOptions)
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalConfig,
+                            ...sanitizeOptions
+                        })
                     }}
                 />
             );
@@ -154,8 +180,17 @@ const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOption
     }
 };
 
-function renderImage(block: OutputBlockData) {
-    return <img className={"rte-block-image"} alt={block.data.caption} src={block.data.file} />;
+function renderImage(block: OutputBlockData, sanitizeOptions?: sanitize.IOptions) {
+    return (
+        <img
+            className={"rte-block-image"}
+            alt={sanitize(block.data.caption || "", {
+                ...sanitizeGlobalConfig,
+                ...sanitizeOptions
+            })}
+            src={sanitize(block.data.file || "", { ...sanitizeGlobalConfig, ...sanitizeOptions })}
+        />
+    );
 }
 
 function renderList(block: OutputBlockData) {
