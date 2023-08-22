@@ -82,7 +82,7 @@ class MyCustomNode extends LexicalNode {
 <RichTextLexicalRenderer value={content} nodes={[MyCustomNode]}/>;
 ```
 
-## Default theme typography
+## Default theme typography 1
 
 We have default webiny theme.
 
