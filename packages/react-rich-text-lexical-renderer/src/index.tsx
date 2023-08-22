@@ -1,7 +1,8 @@
 import React from "react";
-import { LexicalNode, LexicalValue, Klass } from "@webiny/lexical-editor/types";
+import { Klass, LexicalNode, LexicalValue } from "@webiny/lexical-editor/types";
 import { LexicalHtmlRenderer } from "@webiny/lexical-editor";
-import { ThemeProvider, useTheme } from "@webiny/app-theme";
+import { ThemeProvider } from "./ThemeProvider";
+import { useTheme } from "./useTheme";
 
 type RendererLexicalValue = LexicalValue | Record<string, any> | null | undefined;
 
