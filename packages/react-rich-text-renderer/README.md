@@ -44,7 +44,7 @@ const content = [
     }
 ];
 
-// Mount the component
+// Mount the component.
 <RichTextRenderer data={content}/>;
 ```
 
@@ -60,7 +60,7 @@ const customRenderers: Record<string, RichTextBlockRenderer> = {
     delimiter: block => {
         return <div data-type={block.type} className={"my-custom-delimiter"}/>;
     },
-    // Add a renderer for "youtube" block
+    // Add a renderer for "youtube" block.
     youtube: block => {
         return (
             <iframe
@@ -77,7 +77,7 @@ const customRenderers: Record<string, RichTextBlockRenderer> = {
 };
 
 const content = [
-    // This block will use the default renderer
+    // This block will use the default renderer.
     {
         type: "paragraph",
         data: {
@@ -86,11 +86,11 @@ const content = [
             className: ""
         }
     },
-    // This block will use the custom "delimiter" renderer
+    // This block will use the custom "delimiter" renderer.
     {
         type: "delimiter"
     },
-    // This block will use the new "youtube" renderer
+    // This block will use the new "youtube" renderer.
     {
         type: "youtube",
         data: {
@@ -100,7 +100,7 @@ const content = [
     }
 ];
 
-// Mount the component
+// Mount the component.
 <RichTextRenderer data={content} renderers={customRenderers}/>;
 ```
 
@@ -108,9 +108,9 @@ const content = [
 
 We are using [sanitize-html](https://www.npmjs.com/package/sanitize-html) package for content sanitization.
 
-Use configureSanitization function to set your global sanitization preference.
+Use `configureSanitization` function to set your global sanitization preference.
 
-To provide sanitize configuration to specific component, use sanitizationConfig prop.
+To provide sanitize configuration to specific component, use `sanitizationConfig` prop.
 
 Please check `sanitize-html` configuration options on
 their [GitHub page](https://github.com/apostrophecms/sanitize-html).
@@ -129,7 +129,7 @@ const globalSanitizaionConfig = {
     allowedIframeHostnames: ["www.youtube.com"],
 };
 
-/* This is global configuration */
+// This is global configuration.
 configureSanitization(globalSanitizaionConfig);
 
 /*
@@ -137,7 +137,7 @@ configureSanitization(globalSanitizaionConfig);
 * Note: Provided configuration will override your global configuration options.
 * */
 const sanitizationConfig = {
-    // change the configuration only for this component
+    // change the configuration only for this option.
     allowedIframeHostnames: ["www.webiny.com"],
 };
 
