@@ -82,10 +82,6 @@ class MyCustomNode extends LexicalNode {
 <RichTextLexicalRenderer value={content} nodes={[MyCustomNode]}/>;
 ```
 
-## Default theme typography 123456
-
-We have default webiny theme.
-
 ## Adding your custom typography theme.
 
 You can override Webiny default typography theme that is used by lexical editor by providing your custom typography
