@@ -16555,7 +16555,6 @@ __metadata:
     "@webiny/theme": 0.0.0
     identity-obj-proxy: ^3.0.0
     prettier: ^2.8.3
-    react: 17.0.2
     theme: 0.0.0
   languageName: unknown
   linkType: soft

@@ -1,8 +1,7 @@
 import React from "react";
 import { Klass, LexicalNode, LexicalValue } from "@webiny/lexical-editor/types";
 import { LexicalHtmlRenderer } from "@webiny/lexical-editor";
-import { theme } from "./theme";
-import { assignStyles } from "~/utils";
+import { ThemeProvider, useTheme } from "@webiny/app-theme";
 
 type RendererLexicalValue = LexicalValue | Record<string, any> | null | undefined;
 
@@ -13,6 +12,8 @@ interface RichTextLexicalRenderer {
 }
 
 const LexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
+    const { theme } = useTheme();
+
     const getValue = (value: RendererLexicalValue): string | null => {
         if (!value) {
             return null;
@@ -23,18 +24,16 @@ const LexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
     return (
         <LexicalHtmlRenderer
             value={getValue(props?.value)}
-            theme={{ ...theme, ...props?.theme }}
-            nodes={props?.nodes || []}
-            themeStylesTransformer={styles => {
-                return assignStyles({
-                    breakpoints: theme.breakpoints,
-                    styles
-                });
-            }}
+            theme={{ ...props?.theme, ...theme }}
+            nodes={props.nodes}
         />
     );
 };
 
 export const RichTextLexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
-    return <LexicalRenderer {...props} />;
+    return (
+        <ThemeProvider>
+            <LexicalRenderer {...props} />
+        </ThemeProvider>
+    );
 };

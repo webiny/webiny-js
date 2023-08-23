@@ -14,8 +14,7 @@
     "@types/react": "17.0.39",
     "@webiny/app-theme": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
-    "@webiny/theme": "0.0.0",
-    "react": "17.0.2"
+    "@webiny/theme": "0.0.0"
   },
   "devDependencies": {
     "@testing-library/react": "^12.1.5",
