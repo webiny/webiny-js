@@ -11636,21 +11636,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:8.5.1":
-  version: 8.5.1
-  resolution: "@types/jsonwebtoken@npm:8.5.1"
-  dependencies:
-    "@types/node": "*"
-  checksum: 740581b0d1e18f31ce9332e26702ae2704af86f0cb0bb914ee3554517e514e97392610525f9349ea8fe3742d0f816eb86d7ab864ddbd19cef55b2db4a43883a1
-  languageName: node
-  linkType: hard
-
 "@types/jsonwebtoken@npm:^9.0.0":
   version: 9.0.1
   resolution: "@types/jsonwebtoken@npm:9.0.1"
   dependencies:
     "@types/node": "*"
   checksum: a7f0925e9a42ad3ae970364c63c5986d40da5c83d51d3f4e624eb0f064a380376f9e3fb3f2f837390a9ab80143f5d75fd51866da30e110f6b486a3379e1c768f
+  languageName: node
+  linkType: hard
+
+"@types/jsonwebtoken@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "@types/jsonwebtoken@npm:9.0.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: 3bb8d40e78d7eb53e427db6e9f0f22e0890cfee80965dcf741d08341814913afb211306de6e9847c6d241cc8e36f8a59090cbfdcc510ab7c81af9d650c5afe0e
   languageName: node
   linkType: hard
 
@@ -12931,7 +12931,7 @@ __metadata:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
     "@commodo/fields": 1.1.2-beta.20
-    "@types/jsonwebtoken": 8.5.1
+    "@types/jsonwebtoken": ^9.0.2
     "@types/md5": ^2.3.2
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
@@ -13079,12 +13079,12 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
-    "@types/jsonwebtoken": 8.5.1
+    "@types/jsonwebtoken": ^9.0.2
     "@types/jwk-to-pem": ^2.0.1
     "@types/node-fetch": ^2.6.1
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
-    jsonwebtoken: ^8.5.1
+    jsonwebtoken: ^9.0.1
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
@@ -13925,7 +13925,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
-    "@types/jsonwebtoken": 8.5.1
+    "@types/jsonwebtoken": ^9.0.2
     "@types/jwk-to-pem": ^2.0.1
     "@types/node-fetch": ^2.6.1
     "@webiny/api-i18n": 0.0.0
@@ -13937,7 +13937,7 @@ __metadata:
     "@webiny/handler": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
-    jsonwebtoken: ^8.5.1
+    jsonwebtoken: ^9.0.1
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
@@ -13952,7 +13952,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
-    "@types/jsonwebtoken": 8.5.1
+    "@types/jsonwebtoken": ^9.0.2
     "@webiny/api": 0.0.0
     "@webiny/api-cognito-authenticator": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -13979,7 +13979,7 @@ __metadata:
     "@webiny/error": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
-    jsonwebtoken: ^8.5.1
+    jsonwebtoken: ^9.0.1
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
@@ -30865,7 +30865,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:8.5.1, jsonwebtoken@npm:^8.5.1":
+"jsonwebtoken@npm:8.5.1":
   version: 8.5.1
   resolution: "jsonwebtoken@npm:8.5.1"
   dependencies:
@@ -30892,6 +30892,18 @@ __metadata:
     ms: ^2.1.1
     semver: ^7.3.8
   checksum: b9181cecf9df99f1dc0253f91ba000a1aa4d91f5816d1608c0dba61a5623726a0bfe200b51df25de18c1a6000825d231ad7ce2788aa54fd48dcb760ad9eb9514
+  languageName: node
+  linkType: hard
+
+"jsonwebtoken@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "jsonwebtoken@npm:9.0.1"
+  dependencies:
+    jws: ^3.2.2
+    lodash: ^4.17.21
+    ms: ^2.1.1
+    semver: ^7.3.8
+  checksum: 0eafe268896f4e8f9ab1f0f20e8c645721b7a9cddc41c0aba1e58da5c34564e8c9990817c1a5b646d795bcbb1339350826fe57c4569b5379ba9eea4a9aa5bbd0
   languageName: node
   linkType: hard
 
