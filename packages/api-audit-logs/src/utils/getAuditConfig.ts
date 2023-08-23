@@ -11,6 +11,10 @@ export const getAuditConfig = (audit: AuditAction) => {
     ) => {
         const { aco, security } = context;
 
+        if (!aco) {
+            return;
+        }
+
         const identity = security.getIdentity();
 
         const auditLogPayload = {
@@ -21,7 +25,7 @@ export const getAuditConfig = (audit: AuditAction) => {
             action: audit.action.type,
             data: JSON.stringify(data),
             timestamp: new Date(),
-            initiator: identity.id
+            initiator: identity?.id
         };
 
         // context.auditLogs.createAuditLog(auditLogPayload);
