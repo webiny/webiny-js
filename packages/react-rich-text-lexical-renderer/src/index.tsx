@@ -2,6 +2,7 @@ import React from "react";
 import { Klass, LexicalNode, LexicalValue } from "@webiny/lexical-editor/types";
 import { LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { theme } from "./theme";
+import { assignStyles } from "~/utils";
 
 type RendererLexicalValue = LexicalValue | Record<string, any> | null | undefined;
 
@@ -24,6 +25,12 @@ const LexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
             value={getValue(props?.value)}
             theme={{ ...theme, ...props?.theme }}
             nodes={props.nodes}
+            themeStylesTransformer={styles => {
+                return assignStyles({
+                    breakpoints: theme.breakpoints,
+                    styles
+                });
+            }}
         />
     );
 };
