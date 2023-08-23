@@ -24,7 +24,7 @@ const LexicalRenderer: React.FC<RichTextLexicalRenderer> = props => {
         <LexicalHtmlRenderer
             value={getValue(props?.value)}
             theme={{ ...theme, ...props?.theme }}
-            nodes={props.nodes}
+            nodes={props?.nodes || []}
             themeStylesTransformer={styles => {
                 return assignStyles({
                     breakpoints: theme.breakpoints,
