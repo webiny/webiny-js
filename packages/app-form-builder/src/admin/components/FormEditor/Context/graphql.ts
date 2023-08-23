@@ -79,7 +79,11 @@ export const GET_FORM = gql`
                     fields {
                         ${FIELDS_FIELDS}
                     }
-                    layout
+                    steps {
+                        title
+                        layout
+                        rules
+                    }
                     settings ${SETTINGS_FIELDS}
                     triggers
                     published
@@ -118,7 +122,11 @@ export const UPDATE_REVISION = gql`
                     fields {
                         ${FIELDS_FIELDS}
                     }
-                    layout
+                    steps {
+                        title
+                        layout
+                        rules
+                    }
                     settings ${SETTINGS_FIELDS}
                     triggers
                 }

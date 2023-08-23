@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { css } from "emotion";
 import styled from "@emotion/styled";
+
 import {
     Dialog,
     DialogContent,
@@ -13,13 +14,16 @@ import {
 import { Form, FormOnSubmit } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
+import { i18n } from "@webiny/app/i18n";
+
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
+import { RulesTab } from "./EditFieldDialog/RulesTab";
 import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
-import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormEditor.EditFieldDialog");
 import { useFormEditor } from "../../Context";
 import { FbBuilderFieldPlugin, FbFormModelField } from "~/types";
+
+const t = i18n.namespace("FormEditor.EditFieldDialog");
 
 const dialogBody = css({
     "&.webiny-ui-dialog__content": {
@@ -94,6 +98,11 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                         {fieldPluginFieldValidators.length > 0 && (
                                             <Tab label={"Validators"}>
                                                 <ValidatorsTab form={form} field={current} />
+                                            </Tab>
+                                        )}
+                                        {field?.type === "condition-group" && (
+                                            <Tab label={"Rules"}>
+                                                <RulesTab form={form} field={current} />
                                             </Tab>
                                         )}
                                     </Tabs>

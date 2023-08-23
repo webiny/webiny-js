@@ -119,6 +119,11 @@ export const Fields: React.FC<FieldsProps> = ({ onFieldDragStart }) => {
                 onFieldDragStart={onFieldDragStart}
             />
 
+            <Field
+                fieldType={{ name: "conditionGroup", label: "Condition Group" }}
+                onFieldDragStart={onFieldDragStart}
+            />
+
             <Accordion elevation={0}>
                 {getGroups().map(group => (
                     <AccordionItem

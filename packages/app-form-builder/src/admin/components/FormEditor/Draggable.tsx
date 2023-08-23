@@ -11,7 +11,7 @@ export type DraggableChildrenFunction = (params: {
 }) => ReactElement;
 
 interface BeginDragProps {
-    ui?: "row" | "field";
+    ui?: "row" | "field" | "step";
     pos?: {
         row: number;
         index?: number;
@@ -24,7 +24,7 @@ type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
 
 export interface DraggableProps extends BeginDragProps {
     children: DraggableChildrenFunction;
-    beginDrag?: BeginDrag | BeginDragProps;
+    beginDrag?: BeginDrag | BeginDragProps | any;
     endDrag?: EndDrag;
     target?: string[];
 }

@@ -1,13 +1,14 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./FormRender/components";
 import {
     createFormSubmission,
     handleFormTriggers,
     reCaptchaEnabled,
     termsOfServiceEnabled,
-    onFormMounted
+    onFormMounted,
+    getNextStepIndex
 } from "./FormRender/functions";
-
 import {
     FormLayoutComponent as FormLayoutComponentType,
     FormData,
@@ -75,7 +76,16 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return <div>Selected form component not found.</div>;
     }
 
-    const { layout, fields, settings } = formData;
+    const { fields, settings, steps } = formData;
+
+    // We need to add indexes to the steps,
+    // so we can get propper steps in case rules conditions are met.
+    const stepsWithIndex = steps.map((step, index) => ({
+        ...step,
+        index
+    }));
+
+    const [modifiedSteps, setModifiedSteps] = useState(stepsWithIndex);
 
     const getFieldById = (id: string): FormDataField | null => {
         return fields.find(field => field._id === id) || null;
@@ -85,8 +95,34 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (): FormRenderComponentDataField[][] => {
-        const fieldLayout = structuredClone(layout) as FormDataFieldsLayout;
+    const resolvedSteps = React.useMemo(() => {
+        return modifiedSteps || stepsWithIndex;
+    }, [stepsWithIndex, modifiedSteps]);
+
+    const validateStepConditions = (formData: Record<string, any>, stepIndex: number) => {
+        const currentStep = resolvedSteps[stepIndex];
+        const nextStepIndex = getNextStepIndex({ formData, rules: currentStep.rules });
+        const initialStepIndex = stepsWithIndex.findIndex(step => step.index === currentStep.index);
+
+        if (nextStepIndex === "submit") {
+            setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
+        } else if (nextStepIndex !== "") {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...stepsWithIndex.slice(+nextStepIndex)
+            ]);
+        } else {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...stepsWithIndex.slice(initialStepIndex + 1)
+            ]);
+        }
+    };
+
+    const getFields = (stepIndex: number): FormRenderComponentDataField[][] => {
+        const fieldLayout = structuredClone(
+            resolvedSteps[stepIndex].layout
+        ) as FormDataFieldsLayout;
 
         return fieldLayout.map(row => {
             return row.map(id => {
@@ -201,10 +237,12 @@ const FormRender: React.FC<FormRenderProps> = props => {
         getFields,
         submit,
         formData,
+        resolvedSteps,
         ReCaptcha,
         reCaptchaEnabled: reCaptchaEnabled(formData),
         TermsOfService,
-        termsOfServiceEnabled: termsOfServiceEnabled(formData)
+        termsOfServiceEnabled: termsOfServiceEnabled(formData),
+        validateStepConditions
     };
 
     return (

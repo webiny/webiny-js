@@ -23,7 +23,11 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
                         }
                         settings
                     }
-                    layout
+                    steps {
+                        title
+                        layout
+                        rules
+                    }
                     triggers
                     settings {
                         reCaptcha {

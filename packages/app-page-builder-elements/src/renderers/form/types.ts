@@ -43,12 +43,36 @@ export interface FormDataRevision {
     createdBy: FormDataCreatedBy;
 }
 
+export interface FbFormStep {
+    id: string;
+    index: number;
+    title: string;
+    layout: string[][];
+    rules: any[];
+}
+
+export type FbFormStepRule = {
+    action: string;
+    chain: string;
+    id: string;
+    title: string;
+    conditions: FbFormStepCondition[];
+    isValid: boolean;
+};
+
+export type FbFormStepCondition = {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
+};
+
 export interface FormData {
     id: string;
     formId: string;
     version: number;
-    layout: FormDataFieldsLayout;
     fields: FormDataField[];
+    steps: FbFormStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -77,14 +101,16 @@ export interface ErrorResponse {
 export type FormLayoutComponentProps<T = any> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => FormRenderComponentDataField[][];
+    getFields: (stepIndex: number) => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
+    validateStepConditions: (formData: Record<string, any>, stepIndex: number) => void;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
     termsOfServiceEnabled: boolean;
     submit: (data: T) => Promise<FormSubmissionResponse>;
     formData: FormData;
+    resolvedSteps: FbFormStep[];
 };
 
 export type FormLayoutComponent = React.ComponentType<FormLayoutComponentProps>;

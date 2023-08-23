@@ -1,16 +1,18 @@
-import { plugins } from "@webiny/plugins";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import cloneDeep from "lodash/cloneDeep";
-import React, { useEffect, useRef } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+
+import { plugins } from "@webiny/plugins";
+
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
     createFormSubmission,
     handleFormTriggers,
     onFormMounted,
     reCaptchaEnabled,
-    termsOfServiceEnabled
+    termsOfServiceEnabled,
+    getNextStepIndex
 } from "./functions";
-
 import {
     FormRenderPropsType,
     FbFormRenderComponentProps,
@@ -63,7 +65,13 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     }
 
     const formData: FbFormModel = cloneDeep(data);
-    const { layout, fields, settings } = formData;
+    const { fields, settings, steps } = formData;
+
+    const [modifiedSteps, setModifiedSteps] = useState(steps);
+
+    useEffect(() => {
+        setModifiedSteps(steps);
+    }, [fields.length]);
 
     const getFieldById = (id: string): FbFormModelField | null => {
         return fields.find(field => field._id === id) || null;
@@ -73,8 +81,38 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (): FormRenderFbFormModelField[][] => {
-        const fieldLayout = cloneDeep(layout);
+    const resolvedSteps = useMemo(() => {
+        return modifiedSteps || steps;
+    }, [steps, modifiedSteps]);
+
+    const validateStepConditions = (formData: Record<string, any>, stepIndex: number) => {
+        const currentStep = resolvedSteps[stepIndex];
+        const nextStepIndex = getNextStepIndex({ formData, rules: currentStep.rules });
+        const initialStepIndex = steps.findIndex(step => step.index === currentStep.index);
+
+        if (nextStepIndex === "submit") {
+            setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
+        } else if (nextStepIndex !== "") {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...steps.slice(+nextStepIndex)
+            ]);
+        } else {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...steps.slice(initialStepIndex + 1)
+            ]);
+        }
+    };
+
+    // We need to have "stepIndex" prop in order to get corresponding fields for the current step.
+    const getFields = (stepIndex: number): FormRenderFbFormModelField[][] => {
+        // We need this check in case we deleted last step and at the same time we were previewing it.
+        const stepFields =
+            resolvedSteps[stepIndex] === undefined
+                ? resolvedSteps[resolvedSteps.length - 1]
+                : resolvedSteps[stepIndex];
+        const fieldLayout = cloneDeep(stepFields.layout.filter(Boolean));
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 
@@ -206,10 +244,12 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         getFields,
         submit,
         formData,
+        resolvedSteps,
         ReCaptcha,
         reCaptchaEnabled: reCaptchaEnabled(formData),
         TermsOfService,
-        termsOfServiceEnabled: termsOfServiceEnabled(formData)
+        termsOfServiceEnabled: termsOfServiceEnabled(formData),
+        validateStepConditions
     };
 
     return (

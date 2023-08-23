@@ -31,6 +31,8 @@ export const Field: React.FC<{
             return <HiddenField {...props} />;
         case "datetime":
             return <DateTimeField {...props} />;
+        case "condition-group":
+            return <div>Hello</div>;
         default:
             return <span>Cannot render field.</span>;
     }

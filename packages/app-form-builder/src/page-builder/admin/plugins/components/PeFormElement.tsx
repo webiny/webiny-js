@@ -48,6 +48,7 @@ const PeForm: FormRenderer = props => {
                         .then(({ data }) => data.formBuilder.saveFormView);
                 }
             },
+            // @ts-ignore
             formLayoutComponents: () => {
                 const registeredPlugins = plugins.byType<FbFormLayoutPlugin>("form-layout");
 

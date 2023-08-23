@@ -1,11 +1,11 @@
-import { FbFormModel, FbFormModelField, FieldIdType, FieldLayoutPositionType } from "~/types";
+import { FbFormModelField, FieldIdType, FieldLayoutPositionType } from "~/types";
 
 interface GetFieldPositionResult extends Omit<FieldLayoutPositionType, "index"> {
     index: number;
 }
 interface GetFieldPositionParams {
     field: FbFormModelField | FieldIdType;
-    data: FbFormModel;
+    data: any;
 }
 
 export default ({ field, data }: GetFieldPositionParams): GetFieldPositionResult | null => {

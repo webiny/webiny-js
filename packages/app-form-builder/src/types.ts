@@ -84,10 +84,52 @@ export type FbFormFieldValidatorPlugin = Plugin & {
 export type FieldIdType = string;
 export type FbFormModelFieldsLayout = FieldIdType[][];
 
+export interface MoveFieldParams {
+    field: FieldIdType | FbFormModelField;
+    position: FieldLayoutPositionType;
+    targetStepId: string;
+    sourceStepId: string;
+}
+
 export interface FieldLayoutPositionType {
     row: number;
     index: number | null;
 }
+
+export interface StepLayoutPositionType {
+    row: {
+        title: string;
+        id: string;
+        layout: string[][];
+        rules: any[];
+        index: number;
+    };
+    index: number | null;
+}
+
+export interface FbFormStep {
+    id: string;
+    index: number;
+    title: string;
+    layout: FbFormModelFieldsLayout;
+    rules: FbFormStepRule[];
+}
+
+export type FbFormStepRule = {
+    action: string;
+    chain: string;
+    id: string;
+    title: string;
+    conditions: FbFormStepCondition[];
+    isValid: boolean;
+};
+
+export type FbFormStepCondition = {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
+};
 
 export type FbBuilderFieldPlugin = Plugin & {
     type: "form-editor-field-type";
@@ -148,8 +190,8 @@ export interface FbFormModel {
     id: FieldIdType;
     formId: string;
     version: number;
-    layout: FbFormModelFieldsLayout;
     fields: FbFormModelField[];
+    steps: FbFormStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -182,6 +224,7 @@ export interface FbFormModelField {
     settings: {
         defaultValue?: string | string[];
         rows?: number;
+        rules?: FbFormStepRule[];
         [key: string]: any;
     };
 }
@@ -204,7 +247,7 @@ export interface FbFormSubmissionData {
         name: string;
         version: number;
         fields: FbFormModelField[];
-        layout: string[][];
+        steps: FbFormStep[];
     };
 }
 
@@ -273,12 +316,14 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => FormRenderFbFormModelField[][];
+    getFields: (stepIndex: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
+    validateStepConditions: (formData: Record<string, any>, stepIndex: number) => void;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
     termsOfServiceEnabled: boolean;
+    resolvedSteps: FbFormStep[];
     submit: (data: T) => Promise<FormSubmitResponseType>;
     formData: FbFormModel;
 };
@@ -394,7 +439,7 @@ export interface FbReCaptchaInput {
 }
 
 export interface FbFormSettingsInput {
-    layout: FbFormSettingsLayoutInput;
+    steps: FbFormStep[];
     submitButtonLabel: string;
     fullWidthSubmitButton: boolean;
     successMessage: Record<string, string>;
@@ -405,7 +450,7 @@ export interface FbFormSettingsInput {
 export interface FbUpdateFormInput {
     name?: string;
     fields?: FbFormFieldInput[];
-    layout?: FbFormModelFieldsLayout;
+    steps?: FbFormStep[];
     settings?: FbFormSettingsInput;
     triggers?: Record<string, string>;
 }
