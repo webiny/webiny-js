@@ -2,6 +2,7 @@ import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { plugins } from "@webiny/plugins";
 import { OnCreateActions, PbEditorElement, PbEditorPageElementPlugin } from "~/types";
+import { PreviewBlock } from "~/admin/components/PreviewBlock";
 import Title from "./components/Title";
 
 /**
@@ -34,15 +35,7 @@ export default (el: PbEditorElement): void => {
             },
             group: "pb-editor-element-group-saved",
             preview() {
-                return (
-                    <img
-                        // @ts-ignore
-                        src={el.preview.src}
-                        // @ts-ignore
-                        alt={el.name}
-                        style={{ width: "100%", height: "auto", backgroundColor: "#fff" }}
-                    />
-                );
+                return <PreviewBlock element={el} />;
             }
         },
 

@@ -15,7 +15,6 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     category: String
                     type: String
                     content: JSON
-                    preview: JSON
                 }
 
                 input PbCreatePageElementInput {
@@ -23,7 +22,6 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     type: String!
                     category: String!
                     content: JSON!
-                    preview: JSON!
                 }
 
                 input PbUpdatePageElementInput {
@@ -31,7 +29,6 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     type: String
                     category: String
                     content: JSON
-                    preview: JSON
                 }
 
                 # Response types

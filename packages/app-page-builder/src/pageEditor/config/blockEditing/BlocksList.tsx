@@ -127,7 +127,10 @@ const BlocksList: React.FC<BlocksListProps> = props => {
                                     blocks,
                                     addBlock: props.addBlock,
                                     onEdit: props.onEdit,
-                                    onDelete: props.onDelete
+                                    onDelete: props.onDelete,
+                                    style: {
+                                        position: "static"
+                                    }
                                 });
                             }}
                             scrollTop={scrollTop}
