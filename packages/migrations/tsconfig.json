@@ -3,15 +3,15 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-elasticsearch" },
-    { "path": "../api-headless-cms" },
-    { "path": "../api-headless-cms-ddb-es" },
     { "path": "../data-migration" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../ioc" },
     { "path": "../utils" },
-    { "path": "../plugins" },
-    { "path": "../handler-aws" }
+    { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-ddb-es" },
+    { "path": "../handler-aws" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -22,10 +22,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
-      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/api-headless-cms-ddb-es/*": ["../api-headless-cms-ddb-es/src/*"],
-      "@webiny/api-headless-cms-ddb-es": ["../api-headless-cms-ddb-es/src"],
       "@webiny/data-migration/*": ["../data-migration/src/*"],
       "@webiny/data-migration": ["../data-migration/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
@@ -36,10 +32,14 @@
       "@webiny/ioc": ["../ioc/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-ddb-es/*": ["../api-headless-cms-ddb-es/src/*"],
+      "@webiny/api-headless-cms-ddb-es": ["../api-headless-cms-ddb-es/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

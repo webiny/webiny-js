@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { ClassNames, CSSObject } from "@emotion/react";
-import styled from "@emotion/styled";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -28,10 +27,6 @@ import {
     LexicalEditorWithConfig,
     useLexicalEditorConfig
 } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
-
-const EditorContainer = styled.div`
-    position: relative;
-`;
 
 export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
@@ -154,9 +149,9 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
         <LexicalComposer initialConfig={initialConfig}>
             <>
                 {staticToolbar && staticToolbar}
-                <EditorContainer
+                <div
                     ref={scrollRef}
-                    style={{ ...styles, ...sizeStyle, overflow: "auto" }}
+                    style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
                 >
                     {/* data */}
                     <OnChangePlugin onChange={handleOnChange} />
@@ -184,7 +179,7 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
                     />
                     {/* Toolbar */}
                     {floatingAnchorElem && toolbar}
-                </EditorContainer>
+                </div>
             </>
         </LexicalComposer>
     );
