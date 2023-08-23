@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app-theme/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
-    { "path": "../theme/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" }
   ],
   "compilerOptions": {

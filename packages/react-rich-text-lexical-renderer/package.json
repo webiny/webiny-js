@@ -10,19 +10,20 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.22.6",
-    "@emotion/react": "11.10.6",
-    "@webiny/app-theme": "^5.38.0-local-npm.18",
-    "@webiny/lexical-editor": "^5.38.0-local-npm.18",
-    "@webiny/theme": "^5.38.0-local-npm.18"
+    "@webiny/app-theme": "0.0.0",
+    "@webiny/lexical-editor": "0.0.0"
   },
   "devDependencies": {
     "@testing-library/react": "^12.1.5",
-    "@webiny/cli": "^5.38.0-local-npm.18",
-    "@webiny/project-utils": "^5.38.0-local-npm.18",
-    "@webiny/react-composition": "^5.38.0-local-npm.18",
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/react-composition": "0.0.0",
     "identity-obj-proxy": "^3.0.0",
     "prettier": "^2.8.3",
     "theme": "0.0.0"
+  },
+  "peerDependencies": {
+    "react": "17.0.2"
   },
   "publishConfig": {
     "access": "public",
