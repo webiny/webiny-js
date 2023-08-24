@@ -14,6 +14,9 @@ import {
 import { AuditLogsContext } from "~/types";
 
 export const createApwHooks = (context: AuditLogsContext) => {
+    if (!context.apw) {
+        return;
+    }
     onChangeRequestAfterCreateHook(context);
     onChangeRequestAfterUpdateHook(context);
     onChangeRequestAfterDeleteHook(context);
