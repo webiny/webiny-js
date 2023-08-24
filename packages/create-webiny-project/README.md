@@ -18,8 +18,8 @@ npx create-webiny-project@local-npm my-test-project --tag local-npm
 #### Advanced:
 
 ```
-npx create-webiny-project@beta my-test-project
-          --tag beta --no-interactive
+npx create-webiny-project@local-npm my-test-project
+          --tag local-npm --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1","vpc":false}'
 ```
@@ -115,7 +115,7 @@ Once you're done, do the following:
 | Set Verdaccio as the NPM registry | `npm config set registry http://localhost:4873`                                                                                                                             |
 | Reset NPM registry                | `npm config set registry https://registry.npmjs.org/`                                                                                                                       |
 | Start Verdaccio                   | `yarn verdaccio:start`                                                                                                                                                      |
-| Release to Verdaccio              | `yarn release --type=verdaccio (--no-gitReset)`                                                                                                                             | `--no-gitReset `                                                                                                                                  |
+| Release to Verdaccio              | `yarn release --type=verdaccio`                                                                                                                                             |                                                                                                                                 |
 | Create a new Webiny project       | `npx create-webiny-project@local-npm my-test-project --tag local-npm --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}` |
 | Revert versioning commit          | `git reset HEAD~ && git reset --hard HEAD`                                                                                                                                  |
 
