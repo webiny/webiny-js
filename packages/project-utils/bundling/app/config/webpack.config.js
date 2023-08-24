@@ -402,9 +402,19 @@ module.exports = function (webpackEnv, { paths, options }) {
                         // ** STOP ** Are you adding a new loader?
                         // Make sure to add the new loader(s) before the "file" loader.
                     ]
-                }
-            ]
+                },
+                shouldUseSourceMap
+                    ? {
+                          enforce: "pre",
+                          exclude: /@babel(?:\/|\\{1,2})runtime/,
+                          include: [paths.appSrc, paths.appIndexJs, ...paths.allWorkspaces],
+                          test: /\.js/,
+                          loader: "source-map-loader"
+                      }
+                    : null
+            ].filter(Boolean)
         },
+        ignoreWarnings: [/Failed to parse source map/],
         plugins: [
             new webpack.ProvidePlugin({
                 Buffer: ["buffer", "Buffer"]
