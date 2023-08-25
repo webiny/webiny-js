@@ -110,3 +110,33 @@ const myTheme = {
 // Mount the component
 <RichTextLexicalRenderer value={content} theme={myTheme} nodes={[MyCustomNode]}/>;
 ```
+
+## Resolve the mismatch of the versions in the React v18 application
+
+This component is using React `v17.0.2`, and it's possible to have an error in your React application that uses
+version `18.x.x`.
+
+You will see this error message on the screen:
+
+```
+You might have mismatching versions of React and the renderer (such as react dom).
+```
+
+To resolve that problem, open the `package.json` file in your project, add the `resolutions` field, and next,
+set the `react` package name with the version of the React you have in the `dependencies` field.
+
+```json package.json
+{
+  "dependences": {
+    "react": "18.2.0",
+    ...
+  },
+  ...
+  "resolutions": {
+    "react": "18.2.0"
+  },
+  ...
+}
+```
+
+Then run `yarn install`.
