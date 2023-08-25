@@ -16545,6 +16545,7 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.22.6
     "@testing-library/react": ^12.1.5
+    "@types/react": 17.0.39
     "@webiny/app-theme": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
@@ -16552,9 +16553,8 @@ __metadata:
     "@webiny/react-composition": 0.0.0
     identity-obj-proxy: ^3.0.0
     prettier: ^2.8.3
-    theme: 0.0.0
-  peerDependencies:
     react: 17.0.2
+    theme: 0.0.0
   languageName: unknown
   linkType: soft
 
