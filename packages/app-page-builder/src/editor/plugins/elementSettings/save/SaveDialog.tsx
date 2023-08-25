@@ -66,7 +66,7 @@ const SaveDialog = (props: Props) => {
         setTimeout(async () => {
             setPbElement((await getElementTree({ element })) as PbElement);
         });
-    });
+    }, []);
 
     const blockCategoriesOptions = plugins
         .byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
