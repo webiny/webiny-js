@@ -31,6 +31,9 @@ data {
         entryId
         title
     }
+    wbyAco_location {
+        folderId
+    }
 }
 error {
     code

@@ -1,7 +1,6 @@
 import React from "react";
-import { CmsContentEntry, CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import ContentEntriesMultiAutocomplete from "./components/ContentEntriesMultiAutoComplete";
-import { NewRefEntryDialogContextProvider } from "./hooks/useNewRefEntryDialog";
 
 import { i18n } from "@webiny/app/i18n";
 import { BindComponentRenderProp } from "@webiny/form";
@@ -15,7 +14,7 @@ const getKey = (
     return bind.form.data.id + "." + field.fieldId;
 };
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-ref-inputs",
     renderer: {
@@ -30,13 +29,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return (
                 <Bind>
                     {bind => (
-                        <NewRefEntryDialogContextProvider>
-                            <ContentEntriesMultiAutocomplete
-                                key={getKey(props.field, bind as any)}
-                                {...props}
-                                bind={bind}
-                            />
-                        </NewRefEntryDialogContextProvider>
+                        <ContentEntriesMultiAutocomplete
+                            key={getKey(props.field, bind as any)}
+                            {...props}
+                            bind={bind}
+                        />
                     )}
                 </Bind>
             );

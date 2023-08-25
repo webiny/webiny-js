@@ -44,7 +44,7 @@ const content = [
     }
 ];
 
-// Mount the component
+// Mount the component.
 <RichTextRenderer data={content}/>;
 ```
 
@@ -60,7 +60,7 @@ const customRenderers: Record<string, RichTextBlockRenderer> = {
     delimiter: block => {
         return <div data-type={block.type} className={"my-custom-delimiter"}/>;
     },
-    // Add a renderer for "youtube" block
+    // Add a renderer for "youtube" block.
     youtube: block => {
         return (
             <iframe
@@ -77,7 +77,7 @@ const customRenderers: Record<string, RichTextBlockRenderer> = {
 };
 
 const content = [
-    // This block will use the default renderer
+    // This block will use the default renderer.
     {
         type: "paragraph",
         data: {
@@ -86,11 +86,11 @@ const content = [
             className: ""
         }
     },
-    // This block will use the custom "delimiter" renderer
+    // This block will use the custom "delimiter" renderer.
     {
         type: "delimiter"
     },
-    // This block will use the new "youtube" renderer
+    // This block will use the new "youtube" renderer.
     {
         type: "youtube",
         data: {
@@ -100,36 +100,46 @@ const content = [
     }
 ];
 
-// Mount the component
+// Mount the component.
 <RichTextRenderer data={content} renderers={customRenderers}/>;
 ```
 
-## Resolve the mismatch of the versions in the React v18 application
+## Sanitization configuration
 
-This component is using React `v17.0.2`, and it's possible to have an error in your React application that uses
-version `18.x.x`.
+We are using [sanitize-html](https://www.npmjs.com/package/sanitize-html) package for content sanitization.
 
-You will see this error message on the screen:
+Use `configureSanitization` function to set your global sanitization preference.
 
+To provide sanitize configuration to specific component, use `sanitizationConfig` prop.
+
+Please check `sanitize-html` configuration options on
+their [GitHub page](https://github.com/apostrophecms/sanitize-html).
+
+```tsx
+import {
+    RichTextRenderer,
+    configureSanitization,
+} from "@webiny/react-rich-text-renderer";
+
+const globalSanitizaionConfig = {
+    allowedTags: ["b", "i", "em", "strong", "a"],
+    allowedAttributes: {
+        a: ["href"],
+    },
+    allowedIframeHostnames: ["www.youtube.com"],
+};
+
+// This is global configuration.
+configureSanitization(globalSanitizaionConfig);
+
+/*
+* Set sanitization configuration options for specific component. 
+* Note: Provided configuration will override your global configuration options.
+* */
+const sanitizationConfig = {
+    // change the configuration only for this option.
+    allowedIframeHostnames: ["www.webiny.com"],
+};
+
+<RichTextRenderer sanitizationConfig={sanitizationConfig}/>;
 ```
-You might have mismatching versions of React and the renderer (such as react dom).
-```
-
-To resolve that problem, open the `package.json` file in your project, add the `resolutions` field, and next,
-set the `react` package name with the version of the React you have in the `dependencies` field.
-
-```json package.json
-{
-  "dependences": {
-    "react": "18.2.0",
-    ...
-  },
-  ...
-  "resolutions": {
-    "react": "18.2.0"
-  },
-  ...
-}
-```
-
-Then run `yarn install`.
