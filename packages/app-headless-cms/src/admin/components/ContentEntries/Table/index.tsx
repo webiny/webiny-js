@@ -93,15 +93,21 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
             },
             enableSorting: true
         },
-        savedOn: {
-            header: "Last modified",
-            className: "cms-aco-list-savedOn",
-            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+        createdOn: {
+            header: "Created",
+            className: "cms-aco-list-createdOn",
+            cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
             enableSorting: true
         },
         createdBy: {
             header: "Author",
             className: "cms-aco-list-createdBy"
+        },
+        savedOn: {
+            header: "Modified",
+            className: "cms-aco-list-savedOn",
+            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+            enableSorting: true
         },
         status: {
             header: "Status",
@@ -114,6 +120,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 }
             }
         },
+
         original: {
             header: "",
             meta: {
@@ -181,17 +188,6 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
         }
     };
 
-    const tableSorting = useMemo(() => {
-        if (!Array.isArray(sorting) || sorting.length === 0) {
-            return [
-                {
-                    id: "savedOn",
-                    desc: true
-                }
-            ];
-        }
-        return sorting;
-    }, [sorting]);
     return (
         <div ref={ref}>
             <DataTable<Entry>
@@ -199,7 +195,13 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 data={data}
                 loadingInitial={loading}
                 stickyRows={1}
-                sorting={tableSorting}
+                sorting={sorting}
+                initialSorting={[
+                    {
+                        id: "createdOn",
+                        desc: true
+                    }
+                ]}
                 onSortingChange={onSortingChange}
             />
             {selectedFolder && (

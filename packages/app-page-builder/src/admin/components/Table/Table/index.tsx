@@ -19,7 +19,7 @@ import { RecordActionMove } from "./Row/Record/RecordActionMove";
 import { RecordActionPreview } from "./Row/Record/RecordActionPreview";
 import { RecordActionPublish } from "./Row/Record/RecordActionPublish";
 import { statuses as statusLabels } from "~/admin/constants";
-import { PbPageDataItem } from "~/types";
+import { PbPageDataItem, PbPageDataStatus } from "~/types";
 import { actionsColumnStyles, menuStyles } from "./styled";
 
 export interface TableProps {
@@ -33,27 +33,24 @@ export interface TableProps {
     onSortingChange: OnSortingChange;
 }
 
-interface PageEntry {
-    $type: "RECORD";
+interface BaseEntry {
     $selectable: boolean;
     id: string;
     title: string;
     createdBy: string;
+    createdOn: string;
     savedOn: string;
-    status?: string;
-    version?: number;
-    original: PbPageDataItem;
 }
 
-interface FolderEntry {
-    $type: "FOLDER";
-    $selectable: boolean;
-    id: string;
-    title: string;
-    createdBy: string;
-    savedOn: string;
-    status?: string;
+interface PageEntry extends BaseEntry {
+    $type: "RECORD";
+    original: PbPageDataItem;
+    status: PbPageDataStatus;
     version?: number;
+}
+
+interface FolderEntry extends BaseEntry {
+    $type: "FOLDER";
     original: FolderItem;
 }
 
@@ -67,6 +64,7 @@ const createRecordsData = (items: SearchRecordItem<PbPageDataItem>[]): PageEntry
             id: data.pid,
             title: data.title,
             createdBy: data.createdBy?.displayName || "-",
+            createdOn: data.createdOn,
             savedOn: data.savedOn,
             status: data.status,
             version: data.version,
@@ -83,6 +81,7 @@ const createFoldersData = (items: FolderItem[]): FolderEntry[] => {
             id: item.id,
             title: item.title,
             createdBy: item.createdBy?.displayName || "-",
+            createdOn: item.createdOn,
             savedOn: item.createdOn,
             original: item
         };
@@ -128,19 +127,25 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             },
             enableSorting: true
         },
-        savedOn: {
-            header: "Last modified",
-            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+        createdOn: {
+            header: "Created",
+            cell: ({ createdOn }: Entry) => <TimeAgo datetime={createdOn} />,
             enableSorting: true
         },
         createdBy: {
             header: "Author"
         },
+        savedOn: {
+            header: "Modified",
+            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+            enableSorting: true
+        },
         status: {
             header: "Status",
-            cell: ({ status, version }: Entry) => {
-                if (status && version) {
-                    return `${statusLabels[status]} (v${version})`;
+            cell: (entry: Entry) => {
+                if (isPageEntry(entry)) {
+                    const { status, version } = entry;
+                    return `${statusLabels[status]}${version ? ` (v${version})` : ""}`;
                 }
                 return "-";
             }
@@ -205,6 +210,12 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 selectedRows={data.filter(record => selectedRows.includes(record.id))}
                 isRowSelectable={row => row.original.$selectable}
                 onSortingChange={onSortingChange}
+                initialSorting={[
+                    {
+                        id: "createdOn",
+                        desc: true
+                    }
+                ]}
             />
             {selectedFolder && (
                 <>
