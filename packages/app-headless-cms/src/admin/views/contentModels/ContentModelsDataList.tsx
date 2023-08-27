@@ -212,7 +212,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const filteredData = filter === "" ? models : models.filter(filterData);
     const contentModels = sortData(filteredData);
 
-    const { handleModelsExport } = useModelExport(contentModels);
+    const { handleModelsExport, handleModelExport } = useModelExport(contentModels);
 
     const onRefreshClick = useCallback(() => {
         refresh();
@@ -284,22 +284,31 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                 </UIL.ListItemText>
                                 <UIL.ListItemMeta className={rightAlign}>
                                     <UIL.ListActions>
+                                        <Tooltip
+                                            content={t`{message}`({ message })}
+                                            placement={"top"}
+                                        >
+                                            <IconButton
+                                                data-testid={"cms-view-content-model-button"}
+                                                icon={<ViewListIcon />}
+                                                label={t`View entries`}
+                                                onClick={viewContentEntries(contentModel)}
+                                                disabled={disableViewContent}
+                                            />
+                                        </Tooltip>
+                                        <Tooltip
+                                            content={t`Export content model`}
+                                            placement={"top"}
+                                        >
+                                            <IconButton
+                                                data-testid={"cms-export-content-model-button"}
+                                                icon={<DownloadFileIcon />}
+                                                label={t`Export content model`}
+                                                onClick={handleModelExport(contentModel)}
+                                            />
+                                        </Tooltip>
                                         {canEdit(contentModel, "cms.contentModel") && (
                                             <>
-                                                <Tooltip
-                                                    content={t`{message}`({ message })}
-                                                    placement={"top"}
-                                                >
-                                                    <IconButton
-                                                        data-testid={
-                                                            "cms-view-content-model-button"
-                                                        }
-                                                        icon={<ViewListIcon />}
-                                                        label={t`View entries`}
-                                                        onClick={viewContentEntries(contentModel)}
-                                                        disabled={disableViewContent}
-                                                    />
-                                                </Tooltip>
                                                 {contentModel.plugin ? (
                                                     <Tooltip
                                                         content={t`Content model is registered via a plugin.`}
@@ -332,7 +341,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                             <IconButton
                                                 data-testid={"cms-clone-content-model-button"}
                                                 icon={<CloneIcon />}
-                                                label={t`View entries`}
+                                                label={t`Clone content model`}
                                                 onClick={() => onClone(contentModel)}
                                             />
                                         </Tooltip>

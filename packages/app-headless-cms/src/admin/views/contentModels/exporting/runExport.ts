@@ -4,6 +4,7 @@ import { EXPORT_MODELS_QUERY } from "./graphql";
 
 interface Params {
     client: ApolloClient<any>;
+    models?: string[];
 }
 
 interface ResponseData {
@@ -16,9 +17,12 @@ interface Response {
     data?: ResponseData;
 }
 
-export const runExport = async ({ client }: Params): Promise<Response> => {
+export const runExport = async ({ client, models }: Params): Promise<Response> => {
     const result = await client.query({
-        query: EXPORT_MODELS_QUERY
+        query: EXPORT_MODELS_QUERY,
+        variables: {
+            models
+        }
     });
 
     if (result.errors?.length) {

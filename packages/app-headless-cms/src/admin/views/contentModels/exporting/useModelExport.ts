@@ -9,21 +9,35 @@ export const useModelExport = (models: CmsModel[]) => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
-    const handleModelsExport = useCallback(() => {
-        (async () => {
-            const result = await runExport({
-                client
-            });
-            if (result.error) {
-                return showSnackbar(result.error.message);
-            } else if (!result.data) {
-                return showSnackbar("No data returned from the exportCmsStructure query.");
-            }
-            download(result.data);
-        })();
-    }, [models]);
+    const handleModelsExport = useCallback(
+        (models?: string[]) => {
+            (async () => {
+                const result = await runExport({
+                    client,
+                    models
+                });
+                if (result.error) {
+                    return showSnackbar(result.error.message);
+                } else if (!result.data?.models?.length) {
+                    return showSnackbar("No data returned from the exportCmsStructure query.");
+                }
+                download(result.data);
+            })();
+        },
+        [models]
+    );
+
+    const handleModelExport = useCallback(
+        (model: CmsModel) => {
+            return () => {
+                handleModelsExport([model.modelId]);
+            };
+        },
+        [handleModelsExport]
+    );
 
     return {
-        handleModelsExport
+        handleModelsExport,
+        handleModelExport
     };
 };
