@@ -196,6 +196,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             setValueEntry(() => {
                 return entry;
             });
+
             bind.onChange({
                 modelId: entry.modelId,
                 id: entry.id

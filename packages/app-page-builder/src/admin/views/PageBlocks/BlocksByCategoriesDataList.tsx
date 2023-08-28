@@ -299,7 +299,10 @@ const BlocksByCategoriesDataList = ({
                 actions={
                     <DataListActionsWrapper>
                         {canCreate ? (
-                            <ButtonSecondary onClick={handleNewBlockClick}>
+                            <ButtonSecondary
+                                onClick={handleNewBlockClick}
+                                data-testid={"pb-blocks-list-new-block-btn"}
+                            >
                                 <ButtonIcon icon={<AddIcon />} /> {t`New Block`}
                             </ButtonSecondary>
                         ) : null}
@@ -418,6 +421,7 @@ const BlocksByCategoriesDataList = ({
                 </DialogContent>
                 <DialogActions>
                     <ButtonDefault
+                        data-testid={"pb-blocks-list-new-block-category-btn"}
                         onClick={() => history.push("/page-builder/block-categories?new=true")}
                     >
                         + Create a new block category

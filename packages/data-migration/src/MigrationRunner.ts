@@ -1,5 +1,5 @@
 import { coerce } from "semver";
-import { Logger } from "pino";
+import { Logger } from "@webiny/logger";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { executeWithRetry, mdbid } from "@webiny/utils";
 import {
