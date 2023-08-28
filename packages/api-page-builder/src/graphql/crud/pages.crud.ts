@@ -765,10 +765,26 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             const publishedPage = publishedPageRaw ? await decompressPage(publishedPageRaw) : null;
 
             /**
+             * Load page revisions, we'll need these to determinate if we are going to delete a single revision or multiple ones
+             */
+            const revisions = await storageOperations.pages.listRevisions({
+                where: {
+                    pid: pageId,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
+                },
+                sort: ["version_DESC"],
+                limit: 2,
+                after: undefined
+            });
+
+            /**
              * We can either delete all the records connected to the given page, or a single revision.
              */
-            const deleteMethod: "deleteAll" | "delete" =
-                page.version === 1 ? "deleteAll" : "delete";
+            let deleteMethod: "delete" | "deleteAll" = "delete";
+            if (pageId === id || revisions.length === 1) {
+                deleteMethod = "deleteAll";
+            }
 
             if (typeof storageOperations.pages[deleteMethod] !== "function") {
                 throw new WebinyError(
@@ -784,7 +800,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageBeforeDelete.publish({
                     page: await decompressPage(page),
                     latestPage,
-                    publishedPage
+                    publishedPage,
+                    deleteMethod
                 });
 
                 const [resultPageRaw, resultLatestPageRaw] = await storageOperations.pages[
@@ -804,7 +821,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageAfterDelete.publish({
                     page: resultPage,
                     latestPage,
-                    publishedPage
+                    publishedPage,
+                    deleteMethod
                 });
 
                 /**
@@ -814,7 +832,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 /**
                  * 7. Done. We return both the deleted page, and the new latest one (if there is one).
                  */
-                if (page.version === 1) {
+                if (deleteMethod === "deleteAll") {
                     return [resultPage, null] as any;
                 }
                 return [resultPage, latestPage] as any;

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { DialogHeader } from "./dialog/DialogHeader";
 import { Search } from "./Search";
 import { Entry } from "./Entry";
 import { DialogActions, DialogContent as BaseDialogContent } from "~/admin/components/Dialog";
@@ -9,10 +8,11 @@ import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin";
 import { parseIdentifier } from "@webiny/utils";
-import { Dialog } from "./dialog/Dialog";
 import { AbsoluteLoader } from "~/admin/plugins/fieldRenderers/ref/advanced/components/Loader";
 import { useEntries } from "~/admin/plugins/fieldRenderers/ref/advanced/hooks/useEntries";
 import { Entries } from "./Entries";
+import { Dialog } from "~/admin/plugins/fieldRenderers/ref/components/dialog/Dialog";
+import { DialogHeader } from "~/admin/plugins/fieldRenderers/ref/components/dialog/DialogHeader";
 
 const Container = styled("div")({
     width: "100%",

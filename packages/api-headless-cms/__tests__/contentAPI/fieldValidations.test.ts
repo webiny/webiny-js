@@ -763,7 +763,7 @@ describe("fieldValidations", () => {
                         dateTimeZ: defaultFruitData.dateTimeZ,
                         rating: null,
                         isSomething: null,
-                        description: "",
+                        description: null,
                         slug: "apple"
                     },
                     error: null

@@ -5,6 +5,7 @@
     { "path": "../db-dynamodb" },
     { "path": "../handler-aws" },
     { "path": "../ioc" },
+    { "path": "../logger" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -20,6 +21,8 @@
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/ioc/*": ["../ioc/src/*"],
       "@webiny/ioc": ["../ioc/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },

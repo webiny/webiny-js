@@ -119,99 +119,101 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         return [...createFoldersData(folders), ...createRecordsData(records, selectableItems)];
     }, [folders, records]);
 
-    const columns: Columns<Entry> = {
-        name: {
-            header: "Name",
-            enableSorting: true,
-            size: 400,
-            cell: (item: Entry) => {
-                if (isFileEntry(item)) {
-                    return (
-                        <FileName
-                            name={item.name}
-                            id={item.id}
-                            type={item.type}
-                            onClick={onRecordClick}
-                        />
-                    );
+    const columns: Columns<Entry> = useMemo(() => {
+        return {
+            name: {
+                header: "Name",
+                enableSorting: true,
+                size: 400,
+                cell: (item: Entry) => {
+                    if (isFileEntry(item)) {
+                        return (
+                            <FileName
+                                name={item.name}
+                                id={item.id}
+                                type={item.type}
+                                onClick={onRecordClick}
+                            />
+                        );
+                    }
+                    return <FolderName name={item.title} id={item.id} onClick={onFolderClick} />;
                 }
-                return <FolderName name={item.title} id={item.id} onClick={onFolderClick} />;
-            }
-        },
-        type: {
-            header: "Type",
-            cell: (item: Entry) => {
-                if (isFileEntry(item)) {
-                    return item.type;
-                }
-                return "-";
-            }
-        },
-        size: {
-            header: "Size",
-            enableSorting: true,
-            cell: (item: Entry) => {
-                if (isFileEntry(item)) {
-                    return bytes.format(item.size, { unitSeparator: " " });
-                }
-                return "-";
-            }
-        },
-        savedOn: {
-            header: "Last modified",
-            cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
-            enableSorting: true
-        },
-        createdBy: {
-            header: "Author"
-        },
-        original: {
-            header: "",
-            meta: {
-                alignEnd: true
             },
-            size: 60,
-            cell: (item: Entry) => {
-                if (!item.original) {
-                    return <></>;
-                } else if (isFileEntry(item)) {
+            type: {
+                header: "Type",
+                cell: (item: Entry) => {
+                    if (isFileEntry(item)) {
+                        return item.type;
+                    }
+                    return "-";
+                }
+            },
+            size: {
+                header: "Size",
+                enableSorting: true,
+                cell: (item: Entry) => {
+                    if (isFileEntry(item)) {
+                        return bytes.format(item.size, { unitSeparator: " " });
+                    }
+                    return "-";
+                }
+            },
+            savedOn: {
+                header: "Last modified",
+                cell: ({ savedOn }: Entry) => <TimeAgo datetime={savedOn} />,
+                enableSorting: true
+            },
+            createdBy: {
+                header: "Author"
+            },
+            original: {
+                header: "",
+                meta: {
+                    alignEnd: true
+                },
+                size: 60,
+                cell: (item: Entry) => {
+                    if (!item.original) {
+                        return <></>;
+                    } else if (isFileEntry(item)) {
+                        const { original } = item;
+                        return (
+                            <FileProvider file={original}>
+                                <Menu
+                                    className={menuStyles}
+                                    handle={<IconButton icon={<MoreIcon />} />}
+                                >
+                                    <RecordActionCopy record={original} />
+                                    <RecordActionEdit id={original.id} onClick={onRecordClick} />
+                                    <RecordActionMove />
+                                    <RecordActionDelete record={original} />
+                                </Menu>
+                            </FileProvider>
+                        );
+                    }
+
                     const { original } = item;
+
                     return (
-                        <FileProvider file={original}>
-                            <Menu
-                                className={menuStyles}
-                                handle={<IconButton icon={<MoreIcon />} />}
-                            >
-                                <RecordActionCopy record={original} />
-                                <RecordActionEdit id={original.id} onClick={onRecordClick} />
-                                <RecordActionMove />
-                                <RecordActionDelete record={original} />
-                            </Menu>
-                        </FileProvider>
+                        <Menu handle={<IconButton icon={<MoreIcon />} />}>
+                            <FolderActionEdit
+                                onClick={() => {
+                                    setUpdateDialogOpen(true);
+                                    setSelectedFolder(original);
+                                }}
+                            />
+                            <FolderActionDelete
+                                onClick={() => {
+                                    setDeleteDialogOpen(true);
+                                    setSelectedFolder(original);
+                                }}
+                            />
+                        </Menu>
                     );
                 }
-
-                const { original } = item;
-
-                return (
-                    <Menu handle={<IconButton icon={<MoreIcon />} />}>
-                        <FolderActionEdit
-                            onClick={() => {
-                                setUpdateDialogOpen(true);
-                                setSelectedFolder(original);
-                            }}
-                        />
-                        <FolderActionDelete
-                            onClick={() => {
-                                setDeleteDialogOpen(true);
-                                setSelectedFolder(original);
-                            }}
-                        />
-                    </Menu>
-                );
             }
-        }
-    };
+        };
+    }, []);
 
     return (
         <div ref={ref}>
