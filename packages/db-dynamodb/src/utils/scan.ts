@@ -18,15 +18,37 @@ export interface ScanResponse<T> {
     error: any;
 }
 
-const convertResult = <T>(result: any): ScanResponse<T> => {
+interface DdbScanResult<T> {
+    Items: T[];
+    Count: number;
+    ScannedCount: number;
+    LastEvaluatedKey?: DocumentClient.Key;
+    next?: () => Promise<DdbScanResult<T>>;
+    error?: any;
+    $response?: {
+        requestId: string;
+    };
+}
+
+const createNext = <T>(result: DdbScanResult<T>) => {
+    if (!result?.LastEvaluatedKey || !result.next) {
+        return undefined;
+    }
+    return async () => {
+        const response = await result!.next!();
+        return convertResult(response);
+    };
+};
+
+const convertResult = <T>(result: DdbScanResult<T>): ScanResponse<T> => {
     return {
-        items: result.Items as T[],
+        items: result.Items,
         count: result.Count,
         scannedCount: result.ScannedCount,
         lastEvaluatedKey: result.LastEvaluatedKey,
-        next: result.LastEvaluatedKey ? result.next : undefined,
+        next: result.LastEvaluatedKey ? createNext<T>(result) : undefined,
         error: result.error,
-        requestId: result.$response.requestId
+        requestId: result.$response?.requestId || ""
     };
 };
 
@@ -56,7 +78,7 @@ export const scanWithCallback = async <T>(
     await callback(result);
 
     while (result.next) {
-        result = convertResult(await result.next());
+        result = await result.next();
         await callback(result);
         if (!result.next) {
             return;
