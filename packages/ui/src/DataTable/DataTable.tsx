@@ -4,7 +4,6 @@ import {
     DataTableContent,
     DataTableHead,
     DataTableRow,
-    DataTableHeadCell,
     DataTableBody,
     DataTableCell,
     DataTableCellProps
@@ -26,7 +25,14 @@ import { Checkbox } from "~/Checkbox";
 import { Skeleton } from "~/Skeleton";
 
 import "@rmwc/data-table/data-table.css";
-import { ColumnDirectionIcon, ColumnDirectionWrapper, ColumnHeaderWrapper, Table } from "./styled";
+import {
+    ColumnDirectionIcon,
+    ColumnDirectionWrapper,
+    ColumnHeaderWrapper,
+    Resizer,
+    Table,
+    TableHeadCell
+} from "./styled";
 
 interface Column<T> {
     /*
@@ -41,6 +47,10 @@ interface Column<T> {
      * Additional props to add to both header and row cells. Refer to RMWC documentation.
      */
     meta?: DataTableCellProps;
+    /*
+     * Column size.
+     */
+    size?: number;
     /*
      * Column class names.
      */
@@ -141,7 +151,7 @@ const defineColumns = <T,>(
         }));
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
-            const { id, header, meta, cell, enableSorting = false, className } = column;
+            const { id, header, meta, cell, enableSorting = false, className, size = 200 } = column;
 
             return {
                 accessorKey: id,
@@ -157,7 +167,8 @@ const defineColumns = <T,>(
                 meta: {
                     ...meta,
                     className
-                }
+                },
+                size
             };
         });
 
@@ -193,10 +204,11 @@ const defineColumns = <T,>(
                           );
                       },
                       meta: {
-                          hasFormControl: true,
-                          className: "datatable-select-column"
+                          hasFormControl: true
                       },
-                      enableSorting: false
+                      enableSorting: false,
+                      enableResizing: false,
+                      size: 56
                   }
               ]
             : [];
@@ -270,6 +282,8 @@ export const DataTable = <T extends Object & DefaultData>({
     const table = useReactTable({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, { canSelectAllRows, onSelectRow, loadingInitial }),
+        enableColumnResizing: true,
+        columnResizeMode: "onChange",
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         state: {
@@ -290,8 +304,21 @@ export const DataTable = <T extends Object & DefaultData>({
                     {table.getHeaderGroups().map(headerGroup => (
                         <DataTableRow key={headerGroup.id}>
                             {headerGroup.headers.map(
-                                ({ id, isPlaceholder, column, getContext }) => (
-                                    <DataTableHeadCell key={id} {...column.columnDef.meta}>
+                                ({
+                                    id,
+                                    isPlaceholder,
+                                    column,
+                                    getContext,
+                                    colSpan,
+                                    getSize,
+                                    getResizeHandler
+                                }) => (
+                                    <TableHeadCell
+                                        key={id}
+                                        {...column.columnDef.meta}
+                                        colSpan={colSpan}
+                                        style={{ width: getSize() }}
+                                    >
                                         {isPlaceholder ? null : (
                                             <ColumnHeaderWrapper
                                                 onClick={column.getToggleSortingHandler()}
@@ -303,7 +330,14 @@ export const DataTable = <T extends Object & DefaultData>({
                                                 />
                                             </ColumnHeaderWrapper>
                                         )}
-                                    </DataTableHeadCell>
+                                        {column.getCanResize() && (
+                                            <Resizer
+                                                onMouseDown={getResizeHandler()}
+                                                onTouchStart={getResizeHandler()}
+                                                isResizing={column.getIsResizing()}
+                                            />
+                                        )}
+                                    </TableHeadCell>
                                 )
                             )}
                         </DataTableRow>
@@ -313,7 +347,11 @@ export const DataTable = <T extends Object & DefaultData>({
                     {table.getRowModel().rows.map(row => (
                         <DataTableRow key={row.id} selected={row.getIsSelected()}>
                             {row.getVisibleCells().map(cell => (
-                                <DataTableCell key={cell.id} {...cell.column.columnDef.meta}>
+                                <DataTableCell
+                                    key={cell.id}
+                                    {...cell.column.columnDef.meta}
+                                    style={{ width: cell.column.getSize() }}
+                                >
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </DataTableCell>
                             ))}

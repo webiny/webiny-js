@@ -18,7 +18,7 @@ import { RecordActionCopy } from "./RecordActionCopy";
 import { RecordActionDelete } from "./RecordActionDelete";
 import { RecordActionEdit } from "./RecordActionEdit";
 import { RecordActionMove } from "./RecordActionMove";
-import { actionsColumnStyles, menuStyles } from "./styled";
+import { menuStyles } from "./styled";
 import { FileItem } from "@webiny/app-admin/types";
 import { Settings } from "~/types";
 import { FileProvider } from "~/contexts/FileProvider";
@@ -123,6 +123,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         name: {
             header: "Name",
             enableSorting: true,
+            size: 400,
             cell: (item: Entry) => {
                 if (isFileEntry(item)) {
                     return (
@@ -169,7 +170,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             meta: {
                 alignEnd: true
             },
-            className: actionsColumnStyles,
+            size: 60,
             cell: (item: Entry) => {
                 if (!item.original) {
                     return <></>;
