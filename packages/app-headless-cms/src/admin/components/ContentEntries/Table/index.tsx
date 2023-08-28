@@ -117,6 +117,7 @@ export const Table = forwardRef<HTMLDivElement, Props>((props, ref) => {
                     alignEnd: true
                 },
                 size: 60,
+                enableResizing: false,
                 cell: (record: Entry) => {
                     if (isRecordEntry(record)) {
                         return (

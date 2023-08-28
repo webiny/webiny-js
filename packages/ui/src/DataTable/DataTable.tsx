@@ -60,6 +60,10 @@ interface Column<T> {
      * Enable column sorting.
      */
     enableSorting?: boolean;
+    /*
+     * Enable column resizing.
+     */
+    enableResizing?: boolean;
 }
 
 export type Columns<T> = {
@@ -152,7 +156,16 @@ const defineColumns = <T,>(
         }));
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
-            const { id, header, meta, cell, enableSorting = false, className, size = 200 } = column;
+            const {
+                cell,
+                className,
+                enableResizing = true,
+                enableSorting = false,
+                header,
+                id,
+                meta,
+                size = 200
+            } = column;
 
             return {
                 accessorKey: id,
@@ -169,6 +182,7 @@ const defineColumns = <T,>(
                     ...meta,
                     className
                 },
+                enableResizing,
                 size
             };
         });
