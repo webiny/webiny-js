@@ -4,6 +4,7 @@ import { PbPageData } from "~/types";
 import { useConfirmationDialog, useDialog, useSnackbar } from "@webiny/app-admin";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { useRecords } from "@webiny/app-aco";
+import { parseIdentifier } from "@webiny/utils";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/dialogs/dialog-delete-page");
 
@@ -35,8 +36,7 @@ export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
     const openDialogDeletePage = useCallback(
         () =>
             showConfirmation(async () => {
-                const [uniquePageId] = page.id.split("#");
-                const id = `${uniquePageId}#0001`;
+                const { id } = parseIdentifier(page.id);
                 /**
                  * Delete page using pageBuilder deletePage hook.
                  */
@@ -64,7 +64,7 @@ export const useDeletePage = ({ page, onDelete }: UseDeletePageParams) => {
                 }
 
                 // Sync ACO record - retrieve the most updated record from network
-                await getRecord(uniquePageId);
+                await getRecord(id);
 
                 showSnackbar(
                     t`The page "{title}" was deleted successfully.`({

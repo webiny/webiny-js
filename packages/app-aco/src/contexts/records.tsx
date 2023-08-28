@@ -1,5 +1,4 @@
 import React, { ReactNode, useMemo, useState } from "react";
-import dotPropImmutable from "dot-prop-immutable";
 import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
@@ -37,7 +36,7 @@ import {
     UpdateSearchRecordResponse,
     UpdateSearchRecordVariables
 } from "~/types";
-import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
+import { validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks";
 import { parseIdentifier } from "@webiny/utils";
 
@@ -83,41 +82,6 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
-const mergeRecords = (
-    oldRecords: SearchRecordItem[],
-    newRecords: SearchRecordItem[]
-): SearchRecordItem[] => {
-    if (!newRecords.length) {
-        return oldRecords;
-    }
-
-    const mergedRecords = newRecords.reduce(
-        (items, record) => {
-            const index = items.findIndex(item => item.id === record.id);
-            if (index === -1) {
-                items.push(record);
-                return items;
-            }
-            items[index] = record;
-            return items;
-        },
-        [...oldRecords]
-    ); // merge the two arrays
-
-    return sortBy(mergedRecords, ["title"]);
-};
-
-const getRecordCount = (
-    records: SearchRecordItem[],
-    folderIdPath: string,
-    folderId?: string | null
-) => {
-    if (!folderId) {
-        return records.length;
-    }
-    return records.filter(record => dotPropImmutable.get(record, folderIdPath) === folderId).length;
-};
-
 const mergeAndSortTags = (oldTagItems: TagItem[], newTags: string[]): TagItem[] => {
     if (!newTags.length) {
         return oldTagItems;
@@ -143,7 +107,7 @@ const defaultMeta: ListMeta = {
 };
 
 export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
-    const { app, client, mode, folderIdPath } = useAcoApp();
+    const { app, client, mode } = useAcoApp();
     const { model } = app;
 
     const [records, setRecords] = useState<SearchRecordItem[]>([]);
@@ -211,21 +175,13 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             async listRecords(params) {
                 const { after, limit, sort: sorting, search, where } = params;
 
-                const folderId = dotPropImmutable.get(where, folderIdPath);
-
                 /**
                  * Avoiding to fetch records in case they have already been fetched.
                  * This happens when visiting a list with all records loaded and receives "after" param.
                  */
-                const recordsCount = getRecordCount(records, folderIdPath, folderId);
                 const totalCount = meta?.totalCount || 0;
-                if (after && recordsCount === totalCount) {
+                if (after && records.length === totalCount) {
                     return records;
-                }
-
-                // Remove records in case of sorting change and not a paginated request.
-                if (sorting && !after) {
-                    setRecords([]);
                 }
 
                 const action = after ? "LIST_MORE" : "LIST";
@@ -263,11 +219,17 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
                 }
 
                 setRecords(prev => {
-                    /**
-                     * In case of paginated request, we merge the fetched records with the existing ones, and then sort them.
-                     * Otherwise, we sort the fetched records and set them as the new records.
-                     */
-                    return sortTableItems(mergeRecords(after ? prev : [], data), sort);
+                    // If no data received, return the previous state
+                    if (!data.length) {
+                        return prev;
+                    }
+
+                    // If there's no cursor, it means we're receiving a new list of records from scratch.
+                    if (!after) {
+                        return data;
+                    }
+
+                    return [...prev, ...data];
                 });
 
                 setMeta(() => responseMeta);

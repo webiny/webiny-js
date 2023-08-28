@@ -150,7 +150,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     onClick={list.listMoreRecords}
                                 />
                             </Scrollbar>
-                            {list.isListLoadingMore && <LoadingMore />}
+                            <LoadingMore show={list.isListLoadingMore} />
                         </>
                     )}
                 </Wrapper>
