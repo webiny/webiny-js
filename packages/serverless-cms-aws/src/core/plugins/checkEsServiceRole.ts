@@ -1,18 +1,15 @@
-const IAM = require("aws-sdk/clients/iam");
-const ora = require("ora");
-const { green } = require("chalk");
+import IAM from "aws-sdk/clients/iam";
+import ora from "ora";
+import { green } from "chalk";
+import { CliContext } from "@webiny/cli/types";
 
 const NO_SUCH_ENTITY_IAM_ERROR = "NoSuchEntity";
 
-module.exports = {
+export const checkEsServiceRole = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-es-service-role",
-    async hook({ projectApplication }, context) {
-        if (projectApplication.id !== "api") {
-            return;
-        }
-
-        const spinner = new ora();
+    async hook({ projectApplication }: Record<string, any>, context: CliContext) {
+        const spinner = ora();
         spinner.start(`Checking Elastic Search service role...`);
         const iam = new IAM();
         try {
@@ -20,7 +17,7 @@ module.exports = {
                 .getRole({ RoleName: "AWSServiceRoleForAmazonElasticsearchService" })
                 .promise();
 
-            spinner.stop({
+            spinner.stopAndPersist({
                 symbol: green("✔"),
                 text: `Found Elastic Search service role!`
             });
