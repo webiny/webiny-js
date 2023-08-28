@@ -1,13 +1,9 @@
 import { ArticleCmsEntry, DynamoDbRecord } from "./types";
-import {
-    getESLatestEntryData,
-    getESPublishedEntryData
-} from "@webiny/api-headless-cms-ddb-es/operations/entry";
 import { PluginsContainer } from "@webiny/plugins";
 import { StorageOperationsCmsModel } from "@webiny/api-headless-cms/types";
 import { entryToStorageTransform } from "@webiny/api-headless-cms";
-import { prepareEntryToIndex } from "@webiny/api-headless-cms-ddb-es/helpers";
 import { getRecordIndexName } from "~tests/migrations/5.37.0/002/ddb-es/helpers";
+import { createTransformer } from "@webiny/api-headless-cms-ddb-es/operations/entry/transformations";
 
 interface ElasticsearchRecord {
     index: string;
@@ -108,23 +104,11 @@ export const createDynamoDbElasticsearchRecords = async (params: CreateRecordsPa
     );
     const { entryId, tenant, locale, modelId } = entry;
 
-    const esEntry = prepareEntryToIndex({
-        plugins,
+    const transformer = createTransformer({
         model,
-        entry: {
-            ...entry,
-            values: model.convertValueKeyToStorage({
-                fields: model.fields,
-                values: entry.values
-            })
-        },
-        storageEntry: {
-            ...storageEntry,
-            values: model.convertValueKeyToStorage({
-                fields: model.fields,
-                values: storageEntry.values
-            })
-        }
+        plugins,
+        entry,
+        storageEntry
     });
     /**
      * Elasticsearch Data
@@ -134,8 +118,8 @@ export const createDynamoDbElasticsearchRecords = async (params: CreateRecordsPa
         locale,
         modelId
     });
-    const latestData = await getESLatestEntryData(plugins, esEntry);
-    const publishedData = await getESPublishedEntryData(plugins, esEntry);
+    const latestData = await transformer.getElasticsearchLatestEntryData();
+    const publishedData = await transformer.getElasticsearchPublishedEntryData();
     records.push({
         PK: `T#${tenant}#L#${locale}#CMS#CME#${entryId}`,
         SK: `L`,
