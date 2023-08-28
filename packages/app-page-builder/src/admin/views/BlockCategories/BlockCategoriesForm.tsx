@@ -239,6 +239,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                             >{t`Cancel`}</ButtonDefault>
                             {canSave && (
                                 <ButtonPrimary
+                                    data-testid={"pb-block-categories-form-save-block-category-btn"}
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}

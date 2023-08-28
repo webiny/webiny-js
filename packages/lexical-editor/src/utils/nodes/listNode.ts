@@ -69,7 +69,7 @@ export function isNestedListNode(node: LexicalNode | null | undefined): boolean 
 }
 
 // TODO: rewrite with $findMatchingParent or *nodeOfType
-export function findNearestWebinyListItemNode(node: LexicalNode): ListItemNode | null {
+export function findNearestListItemNode(node: LexicalNode): ListItemNode | null {
     let currentNode: LexicalNode | null = node;
 
     while (currentNode !== null) {
@@ -82,7 +82,7 @@ export function findNearestWebinyListItemNode(node: LexicalNode): ListItemNode |
     return null;
 }
 
-export function getUniqueWebinyListItemNodes(nodeList: Array<LexicalNode>): Array<ListItemNode> {
+export function getUniqueListItemNodes(nodeList: Array<LexicalNode>): Array<ListItemNode> {
     const keys = new Set<ListItemNode>();
 
     for (let i = 0; i < nodeList.length; i++) {

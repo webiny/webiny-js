@@ -50,7 +50,11 @@ const DefaultSaveBlockButton: React.FC = () => {
     }, [block.name]);
 
     return (
-        <ButtonPrimary onClick={saveChanges} disabled={loading}>
+        <ButtonPrimary
+            onClick={saveChanges}
+            disabled={loading}
+            data-testid={"pb-blocks-editor-save-changes-btn"}
+        >
             {loading && (
                 <ButtonIcon
                     icon={
