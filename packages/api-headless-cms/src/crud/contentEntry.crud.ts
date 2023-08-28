@@ -707,6 +707,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             storageEntry = await entryToStorageTransform(context, model, entry);
+
             const result = await storageOperations.entries.create(model, {
                 entry,
                 storageEntry
@@ -719,7 +720,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 input
             });
 
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryCreateError.publish({
                 error: ex,
@@ -848,7 +849,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 original: originalEntry,
                 storageEntry: result
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryCreateRevisionError.publish({
                 entry,
@@ -973,7 +974,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 input,
                 original: originalEntry
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryUpdateError.publish({
                 entry,
@@ -1057,15 +1058,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
-        /**
-         * We can only process published entries.
-         */
-        if (originalEntry.status !== "published") {
-            throw new WebinyError("Entry with given ID is not published!", "NOT_PUBLISHED_ERROR", {
-                id,
-                original: originalEntry
-            });
-        }
 
         const values = await referenceFieldsMapping({
             context,
@@ -1076,6 +1068,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const entry: CmsEntry = {
             ...originalEntry,
+            status: STATUS_PUBLISHED,
+            publishedOn: originalEntry.publishedOn || new Date().toISOString(),
             savedOn: new Date().toISOString(),
             webinyVersion: context.WEBINY_VERSION,
             values
@@ -1116,9 +1110,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             await onEntryAfterRepublish.publish({
                 entry,
                 model,
-                storageEntry
+                storageEntry: result
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryRepublishError.publish({
                 entry,
@@ -1392,7 +1386,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 storageEntry: result,
                 model
             });
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryPublishError.publish({
                 entry,
@@ -1464,7 +1458,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 model
             });
 
-            return result;
+            return entry;
         } catch (ex) {
             await onEntryUnpublishError.publish({
                 entry,

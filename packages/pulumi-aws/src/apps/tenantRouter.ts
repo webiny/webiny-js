@@ -81,7 +81,8 @@ export function applyTenantRouter(
                     }
                 ]
             }
-        }
+        },
+        meta: { isLambdaFunctionRole: true }
     });
 
     const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
