@@ -227,7 +227,8 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
 
         const modelId = dynamicParent?.data?.dynamicSource?.modelId;
         const isNotReferenceBlock = element.type === "block" && !element.data.blockId;
-        const canHaveDynamicSource = pageElementPlugin.allowDynamicSource && modelId;
+        const canHaveDynamicSource = pageElementPlugin.dynamicDataSource?.enabled && modelId;
+        const allowedFields = pageElementPlugin.dynamicDataSource?.allowedFields;
 
         return (
             <Tabs {...props}>
@@ -249,7 +250,7 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
                                                     sourceModelId: modelId,
                                                     onUnlink: onUnlinkDynamic,
                                                     onChangeSource: onChangeDynamic,
-                                                    allowedFields: pageElementPlugin?.allowedFields
+                                                    allowedFields
                                                 },
                                                 {
                                                     wrapper: false,
@@ -267,7 +268,7 @@ export const DataSettingsSidebarTabsPlugin = createComponentPlugin(EditorSidebar
                                                 {
                                                     ...formProps,
                                                     sourceModelId: modelId,
-                                                    allowedFields: pageElementPlugin?.allowedFields,
+                                                    allowedFields,
                                                     addVariant,
                                                     removeVariant
                                                 },

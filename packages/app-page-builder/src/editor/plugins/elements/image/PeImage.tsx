@@ -9,6 +9,7 @@ import { ReactComponent as AddImageIcon } from "@webiny/ui/ImageUpload/icons/rou
 import { Typography } from "@webiny/ui/Typography";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
+import { DynamicSourceContext } from "@webiny/app-dynamic-pages/contexts/DynamicSource";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
 const RenderBlank = (props: { onClick?: () => void }) => {
@@ -64,6 +65,7 @@ const PeImage = createRenderer(() => {
                         onClick={() => showFileManager()}
                         renderEmpty={<RenderBlank onClick={showFileManager} />}
                         value={variableValue}
+                        dynamicSourceContext={DynamicSourceContext}
                         // Even if the link might've been applied via the right sidebar, we still don't
                         // want to have it rendered in the editor. Because, otherwise, user wouldn't be
                         // able to click again on the component and bring back the file manager overlay.
@@ -78,6 +80,7 @@ const PeImage = createRenderer(() => {
         <ImageRendererComponent
             renderEmpty={<RenderBlank />}
             value={variableValue}
+            dynamicSourceContext={DynamicSourceContext}
             // Even if the link might've been applied via the right sidebar, we still don't
             // want to have it rendered in the editor. Because, otherwise, user wouldn't be
             // able to click again on the component and bring back the file manager overlay.

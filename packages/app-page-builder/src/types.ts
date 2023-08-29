@@ -550,6 +550,11 @@ export type PbEditorPageElementPlugin = Plugin & {
         width: number;
         height: number;
     }) => ReactElement;
+    // Can the element have dynamic data source? And which field types are allowed.
+    dynamicDataSource?: {
+        enabled: boolean;
+        allowedFields: string[];
+    };
 };
 
 export enum OnCreateActions {

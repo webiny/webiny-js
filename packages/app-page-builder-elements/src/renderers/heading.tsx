@@ -1,14 +1,11 @@
 import React from "react";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { useDynamicValue } from "@webiny/app-dynamic-pages/hooks/useDynamicValue";
 import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { usePageElements } from "~/hooks/usePageElements";
 import { assignStyles } from "~/utils";
 
-const useDynamicHeadingValue = (content?: string, path?: string) => {
-    const dynamicValue = useDynamicValue(path);
-
+const getDynamicHeadingValue = (content?: string, dynamicValue?: string) => {
     if (!dynamicValue || !content) {
         return content;
     }
@@ -34,19 +31,24 @@ const useDynamicHeadingValue = (content?: string, path?: string) => {
 
 export type HeadingRenderer = ReturnType<typeof createHeading>;
 
-export const createHeading = () => {
+type CreateHeadingProps = {
+    dynamicSourceContext: React.Context<any>;
+};
+
+export const createHeading = (props: CreateHeadingProps) => {
     return createRenderer(() => {
         const { getElement } = useRenderer();
         const element = getElement();
         const elementContent = element?.data?.text?.data?.text;
-        const { theme } = usePageElements();
-        const dynamicValue = useDynamicHeadingValue(
-            elementContent,
+        const { theme, useDynamicValue } = usePageElements();
+        const dynamicValue = useDynamicValue(
+            props.dynamicSourceContext,
             element.data?.dynamicSource?.resolvedPath
         );
+        const dynamicContent = getDynamicHeadingValue(elementContent, dynamicValue);
 
         const tag = element.data.text.desktop.tag || "h1";
-        const __html = dynamicValue || elementContent;
+        const __html = dynamicContent || elementContent;
 
         if (isValidLexicalData(__html)) {
             return (

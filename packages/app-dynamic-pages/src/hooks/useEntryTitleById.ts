@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import get from "lodash/get";
 
 import { parseIdentifier } from "@webiny/utils";
 import { useCms } from "@webiny/app-headless-cms";
-import { createReadQuery } from "@webiny/app-headless-cms-common";
+import { createReadQuery, CmsEntryGetQueryResponse } from "@webiny/app-headless-cms-common";
 import { CmsModel } from "@webiny/app-headless-cms/types";
 
 export const useEntryTitleById = (model?: CmsModel, revisionId?: string) => {
@@ -34,17 +33,15 @@ export const useEntryTitleById = (model?: CmsModel, revisionId?: string) => {
         const execute = async () => {
             try {
                 const entryId = parseIdentifier(revisionId).id;
-                const getQuery = await apolloClient.query({
+                const getQuery = await apolloClient.query<CmsEntryGetQueryResponse>({
                     query: READ_CONTENT,
                     variables: { entryId }
                 });
 
-                const title = get(getQuery, `data.content.data.meta.title`, null);
-
                 if (!isMounted.current) {
                     return;
                 }
-                setData(title);
+                setData(getQuery.data.content.data?.meta.title || null);
                 setLoading(false);
             } catch (err) {
                 if (!isMounted.current) {

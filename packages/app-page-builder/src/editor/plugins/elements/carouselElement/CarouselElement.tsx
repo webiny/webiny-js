@@ -1,5 +1,6 @@
 import React from "react";
 import { PbEditorElement } from "~/types";
+
 import PeCarouselElement from "./PeCarouselElement";
 import { Element } from "@webiny/app-page-builder-elements/types";
 

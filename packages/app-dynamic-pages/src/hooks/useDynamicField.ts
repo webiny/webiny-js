@@ -6,6 +6,10 @@ import { useModelById } from "@webiny/app-headless-cms/admin/hooks";
 
 import { getNestingByPath } from "~/utils/getNestingByPath";
 
+function isBasicField(field: CmsModelField) {
+    return !["dynamicZone", "ref", "object"].includes(field.type);
+}
+
 export const useDynamicField = (modelId: string, path: string) => {
     const isMounted = useRef(true);
     const [data, setData] = useState<CmsModelField | null>(null);
@@ -31,11 +35,8 @@ export const useDynamicField = (modelId: string, path: string) => {
                     return;
                 }
                 const [{ selectedField }] = nesting.slice(-1);
-                const { type: fieldsType } = selectedField || {};
-                const isBasicField =
-                    fieldsType !== "dynamicZone" && fieldsType !== "ref" && fieldsType !== "object";
 
-                if (selectedField && isBasicField) {
+                if (selectedField && isBasicField(selectedField)) {
                     setData(selectedField);
                 } else {
                     setError(new Error("Latest path item is not basic field"));

@@ -1,11 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import get from "lodash/get";
 import isEqual from "lodash/isEqual";
 import { useApolloClient } from "@apollo/react-hooks";
 
 import { useIsDynamicElement } from "~/hooks/useIsDynamicElement";
 import { getChildrenPaths } from "~/utils/getChildrenPaths";
-import { GET_DYNAMIC_PAGE_DATA } from "~/graphql";
+import { GET_DYNAMIC_PAGE_DATA, GetDynamicPageDataQueryResponse } from "~/graphql";
 import { Filter, Sort, PbElement } from "~/types";
 
 export const usePaths = (paths?: string[]) => {
@@ -98,21 +97,15 @@ export const useLoadDynamicData = ({
 
         const execute = async () => {
             try {
-                const listQuery = await apolloClient.query({
+                const listQuery = await apolloClient.query<GetDynamicPageDataQueryResponse>({
                     query: GET_DYNAMIC_PAGE_DATA,
                     variables: { modelId, paths, filter, sort, limit, where, isPreviewEndpoint }
                 });
 
-                const newData = get(
-                    listQuery,
-                    `data.getDynamicPageData.data.data.result.data`,
-                    null
-                );
-
                 if (!isMounted.current) {
                     return;
                 }
-                setData(newData);
+                setData(listQuery.data.getDynamicPageData.data?.data.result.data || null);
                 setLoading(false);
             } catch (err) {
                 if (!isMounted.current) {

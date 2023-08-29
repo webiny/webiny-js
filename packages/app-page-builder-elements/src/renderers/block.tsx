@@ -2,12 +2,9 @@ import React from "react";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { DynamicSourceProvider } from "@webiny/app-dynamic-pages/contexts/DynamicSource";
-import { useBlockVariant } from "@webiny/app-dynamic-pages/hooks/useBlockVariant";
 import { Props as ElementProps } from "~/components/Element";
-import { Element } from "~/types";
 
-const Block = createRenderer(
+export const Block = createRenderer(
     () => {
         const { getElement } = useRenderer();
         const element = getElement();
@@ -32,31 +29,18 @@ const Block = createRenderer(
     }
 );
 
-const VariantBlock = (props: ElementProps) => {
-    const { element, ...rest } = props;
-    const variant = useBlockVariant(element);
-
-    if (!element.data.isVariantBlock) {
-        return <Block element={element} {...rest} />;
-    }
-
-    if (variant) {
-        return <Block element={variant as Element} {...rest} />;
-    }
-
-    return null;
-};
-
 export type BlockRenderer = ReturnType<typeof createBlock>;
 
-export const createBlock = () => {
+type CreateBlockParams = {
+    blockComponent?: (props: ElementProps) => JSX.Element | null;
+};
+
+export const createBlock = (params: CreateBlockParams) => {
+    const BlockComponent = params.blockComponent || Block;
+
     return function BlockElement(props: ElementProps) {
         const { element, ...rest } = props;
 
-        return (
-            <DynamicSourceProvider element={element}>
-                <VariantBlock element={element} {...rest} />
-            </DynamicSourceProvider>
-        );
+        return <BlockComponent element={element} {...rest} />;
     };
 };

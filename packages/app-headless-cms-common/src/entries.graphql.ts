@@ -57,7 +57,7 @@ const ERROR_FIELD = /* GraphQL */ `
  */
 export interface CmsEntryGetQueryResponse {
     content: {
-        data: CmsContentEntry;
+        data: CmsContentEntry | null;
         error: CmsErrorResponse | null;
     };
 }

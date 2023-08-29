@@ -8,6 +8,29 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+export interface ErrorResponse {
+    message: string;
+    code?: string | null;
+    data?: Record<string, any>;
+}
+
+/**
+ * ##############################
+ * Get Dynamic Page Data Query Response
+ */
+export interface GetDynamicPageDataQueryResponse {
+    getDynamicPageData: {
+        data: {
+            data: {
+                result: {
+                    data: JSON[];
+                };
+            };
+        } | null;
+        error: ErrorResponse | null;
+    };
+}
+
 export const GET_DYNAMIC_PAGE_DATA = gql`
     query GetDynamicPageData(
         $modelId: String!

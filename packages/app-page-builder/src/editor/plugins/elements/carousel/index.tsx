@@ -60,7 +60,11 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         create: () => {
             const defaultValue = {
                 type: elementType,
-                elements: [createElement("carousel-element")],
+                elements: [
+                    createElement("carousel-element"),
+                    createElement("carousel-element"),
+                    createElement("carousel-element")
+                ],
                 data: {
                     settings: {
                         carousel: {

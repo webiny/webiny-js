@@ -1,14 +1,11 @@
 import React from "react";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { useDynamicValue } from "@webiny/app-dynamic-pages/hooks/useDynamicValue";
 import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
 import { usePageElements } from "~/hooks/usePageElements";
 import { assignStyles } from "~/utils";
 
-const useDynamicParagraphValue = (content?: string, path?: string) => {
-    const dynamicValue = useDynamicValue(path);
-
+const getDynamicParagraphValue = (content?: string, dynamicValue?: string) => {
     if (!dynamicValue || !content) {
         return content;
     }
@@ -32,18 +29,23 @@ const useDynamicParagraphValue = (content?: string, path?: string) => {
     return JSON.stringify(contentObject);
 };
 
-export const createParagraph = () => {
+type CreateParagraphProps = {
+    dynamicSourceContext: React.Context<any>;
+};
+
+export const createParagraph = (props: CreateParagraphProps) => {
     return createRenderer(() => {
         const { getElement } = useRenderer();
         const element = getElement();
         const elementContent = element?.data?.text?.data?.text;
-        const { theme } = usePageElements();
-        const dynamicValue = useDynamicParagraphValue(
-            elementContent,
+        const { theme, useDynamicValue } = usePageElements();
+        const dynamicValue = useDynamicValue(
+            props.dynamicSourceContext,
             element.data?.dynamicSource?.resolvedPath
         );
+        const dynamicParagraphValue = getDynamicParagraphValue(elementContent, dynamicValue);
 
-        const __html = dynamicValue || elementContent;
+        const __html = dynamicParagraphValue || elementContent;
         if (isValidLexicalData(__html)) {
             return (
                 <LexicalHtmlRenderer
