@@ -39,7 +39,7 @@ export const ApiGraphql = createAppModule({
         const graphql = app.addResource(aws.lambda.Function, {
             name: "graphql",
             config: {
-                runtime: "nodejs14.x",
+                runtime: "nodejs16.x",
                 handler: "handler.handler",
                 role: role.output.arn,
                 timeout: 30,

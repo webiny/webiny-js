@@ -33,7 +33,7 @@ export const ApiFileManager = createAppModule({
             config: {
                 handler: "handler.handler",
                 timeout: 30,
-                runtime: "nodejs14.x",
+                runtime: "nodejs16.x",
                 memorySize: 1600,
                 role: role.output.arn,
                 description: "Performs image optimization, resizing, etc.",
@@ -57,7 +57,7 @@ export const ApiFileManager = createAppModule({
             name: "fm-manage",
             config: {
                 role: role.output.arn,
-                runtime: "nodejs14.x",
+                runtime: "nodejs16.x",
                 handler: "handler.handler",
                 timeout: 30,
                 memorySize: 512,
@@ -81,7 +81,7 @@ export const ApiFileManager = createAppModule({
             name: "fm-download",
             config: {
                 role: role.output.arn,
-                runtime: "nodejs14.x",
+                runtime: "nodejs16.x",
                 handler: "handler.handler",
                 timeout: 30,
                 memorySize: 512,

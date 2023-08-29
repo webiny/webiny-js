@@ -104,7 +104,7 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
         name: EXECUTE_ACTION_LAMBDA,
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: "nodejs16.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
@@ -207,7 +207,7 @@ function createScheduleActionLambda(
         name: CREATE_RULE_LAMBDA,
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: "nodejs16.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,

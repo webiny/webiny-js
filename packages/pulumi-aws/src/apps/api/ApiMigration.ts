@@ -25,7 +25,7 @@ export const ApiMigration = createAppModule({
             config: {
                 handler: "handler.handler",
                 timeout: 900,
-                runtime: "nodejs14.x",
+                runtime: "nodejs16.x",
                 memorySize: 3008,
                 role: role.output.arn,
                 description: "Performs data migrations.",
