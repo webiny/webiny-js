@@ -113,30 +113,61 @@ const myTheme = {
 
 ## Resolve the mismatch of the versions in the React v18 application
 
-This component is using React `v17.0.2`. When utilizing `v18.x.x` in your React application, it's possible to encounter
-errors.
+When you try to use `RichTextLexicalRenderer` component in React `v18` application you will see this error on the
+screen:
 
-You will see this error message on the screen:
+![React application error for mismatch of the React versions](./images/react-renderer-versisons-conflict-error.png)
 
-```
-You might have mismatching versions of React and the renderer (such as react dom).
-```
+This is because our `@webiny/react-rich-text-lexical-renderer` package and the React application have
+different versions of React. Our rich text renderer component is using `v17.0.2`, and the React application is
+using `v18.x.x`.
 
-To resolve that problem, open your project's `package.json` file. Add the `resolutions` field. Next, set the
-property `react` with the version of the React you have in the `dependencies` field.
+> You can check the React version dependencies by running following command:
+> - `yarn why react` for `yarn` users.
+> - `npm ls react` for `npm` users.
+
+To resolve this problem, we need to define the versions of the `@webiny/react-rich-text-lexical-renderer`
+package, and it's dependencies from `v17.0.2` to `v18.x.x`.
+
+### Instructions for `yarn` users
+
+To define the `v18.x.x` of React to all package dependencies that use the old version of React, we need to
+add `resolutions` field in `package.json` file.
 
 ```json package.json
 {
-  "dependences": {
-    "react": "18.2.0",
-    ...
-  },
   ...
   "resolutions": {
-    "react": "18.2.0"
+    "react": "18.x.x"
   },
   ...
 }
 ```
 
-Then run `yarn install`.
+After, run `yarn install` in your terminal, and `@webiny/react-rich-text-lexical-renderer` package and inside
+dependencies will be at your specified `v18.x.x` version.
+
+To learn more about the `resolutions` field, please check
+this [yarn documentation article](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/).
+
+### Instructions for `npm` users
+
+The `npm` supports the same functionality with the `overrides` field name. You need to add `overrides`
+field in `package.json` file.
+
+```json package.json
+{
+  ...
+  "overrides": {
+    "react": "^18.x.x"
+  },
+  ...
+}
+```
+
+After, run `npm install` in your terminal, and `@webiny/react-rich-text-lexical-renderer` package and inside
+dependencies will be at your specified `v18.x.x` version.
+
+To learn more about the `overrides` field, please check
+this [npm documentation article](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides).
+
