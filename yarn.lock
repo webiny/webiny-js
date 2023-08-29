@@ -10346,6 +10346,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sparticuz/chrome-aws-lambda@npm:^17.1.3":
+  version: 17.1.3
+  resolution: "@sparticuz/chrome-aws-lambda@npm:17.1.3"
+  dependencies:
+    tar-fs: ^2.1.1
+  peerDependencies:
+    puppeteer-core: 17.1.3
+  checksum: 170319d6dad57bb11bbca59b4764aad0e00a9a4d06d16d7b75363a2d479e5fcbfbc46de11c8ba8b57698c468debe66af67dad3402e12ec0da83195820ebc6519
+  languageName: node
+  linkType: hard
+
+"@sparticuz/chromium@npm:^109.0.6":
+  version: 109.0.6
+  resolution: "@sparticuz/chromium@npm:109.0.6"
+  dependencies:
+    tar-fs: ^2.1.1
+  checksum: fe7ad15cac07916d9efba2aed10c626a0ab99fa645e12d3a4a7af04c8bd28ee26d183d9461a85b27de61b878dfb5b5abdcc94330bb0de15731e24cb110a79ff3
+  languageName: node
+  linkType: hard
+
 "@storybook/addon-info@npm:^5.2.8":
   version: 5.3.21
   resolution: "@storybook/addon-info@npm:5.3.21"
@@ -11767,9 +11787,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^16.0.0":
-  version: 16.18.12
-  resolution: "@types/node@npm:16.18.12"
-  checksum: fc3271182414f8593018ef8f00b4718116a92f463f619081bd399d9460e7861e1dd7eebc7cf94c23567e418ff397babed077011711aae8d47171b5a81c5bd71d
+  version: 16.18.46
+  resolution: "@types/node@npm:16.18.46"
+  checksum: 1aed3fe9693f2098b8dac8c76c809c1925a456da00dd6f06c1ccb55c62ccfbbe7ec43ccfd12001f9cb4ff84e138292ae53456435dfecd5c4bb1324394c3e09c7
   languageName: node
   linkType: hard
 
@@ -13901,6 +13921,8 @@ __metadata:
     "@babel/preset-env": ^7.22.7
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
+    "@sparticuz/chrome-aws-lambda": ^17.1.3
+    "@sparticuz/chromium": ^109.0.6
     "@types/object-hash": ^2.2.1
     "@types/puppeteer-core": ^5.4.0
     "@webiny/api": 0.0.0
@@ -13912,7 +13934,6 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
-    chrome-aws-lambda: ^5.5.0
     lodash: ^4.17.20
     object-hash: ^2.1.1
     pluralize: ^8.0.0
@@ -20661,17 +20682,6 @@ __metadata:
   version: 2.0.0
   resolution: "chownr@npm:2.0.0"
   checksum: c57cf9dd0791e2f18a5ee9c1a299ae6e801ff58fee96dc8bfd0dcb4738a6ce58dd252a3605b1c93c6418fe4f9d5093b28ffbf4d66648cb2a9c67eaef9679be2f
-  languageName: node
-  linkType: hard
-
-"chrome-aws-lambda@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "chrome-aws-lambda@npm:5.5.0"
-  dependencies:
-    lambdafs: ^2.0.0
-  peerDependencies:
-    puppeteer-core: 5.5.x
-  checksum: 3251e41f4aea981f9053b6fbf01f65e82c7de20060cca2527f143ddf72226bfd99630714fa334adad084ae316b8d7c218091e2fc7415f51d16870408f36da976
   languageName: node
   linkType: hard
 
@@ -31134,17 +31144,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lambdafs@npm:^2.0.0":
-  version: 2.1.1
-  resolution: "lambdafs@npm:2.1.1"
-  dependencies:
-    tar-fs: "*"
-  bin:
-    lambdafs: bin/brotli.js
-  checksum: e277462851769dbb9062096e793d0da67f8bada78be9988bb177ddab91f9335ba1f67ea9fc0768c966dc52381301575945211b6e34061a068b82f127e6848e4e
-  languageName: node
-  linkType: hard
-
 "lazy-ass@npm:1.6.0, lazy-ass@npm:^1.6.0":
   version: 1.6.0
   resolution: "lazy-ass@npm:1.6.0"
@@ -41439,7 +41438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-fs@npm:*, tar-fs@npm:^2.0.0":
+"tar-fs@npm:^2.0.0, tar-fs@npm:^2.1.1":
   version: 2.1.1
   resolution: "tar-fs@npm:2.1.1"
   dependencies:

@@ -1,4 +1,8 @@
-import chromium from "chrome-aws-lambda";
+// TODO figure out which chromium to use
+import chromium from "@sparticuz/chromium";
+// TODO puppeteer needs to be updated to support newer chromium versions
+// https://pptr.dev/chromium-support
+import puppeteer, { Browser, Page } from "puppeteer-core";
 import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
 /**
@@ -20,7 +24,6 @@ import {
     RenderUrlParams,
     RenderUrlPostHtmlParams
 } from "./types";
-import { Browser, Page } from "puppeteer-core";
 import { TagPathLink } from "~/types";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
@@ -131,10 +134,12 @@ export const defaultRenderUrlFunction = async (
     let browser!: Browser;
 
     try {
-        browser = await chromium.puppeteer.launch({
+        // TODO figure out the executable path
+        const executablePath = await chromium.executablePath();
+        browser = await puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
+            executablePath,
             headless: chromium.headless,
             ignoreHTTPSErrors: true
         });
