@@ -375,11 +375,15 @@ export const useFormEditorFactory = (
                 });
             },
             updateStep: (stepTitle, id) => {
-                self.setData(data => {
-                    const stepIndex = data.steps.findIndex(step => step.id === id);
-                    data.steps[stepIndex].title = stepTitle;
-                    return data;
-                });
+                if (!stepTitle) {
+                    showSnackbar("Step title cannot be empty");
+                } else {
+                    self.setData(data => {
+                        const stepIndex = data.steps.findIndex(step => step.id === id);
+                        data.steps[stepIndex].title = stepTitle;
+                        return data;
+                    });
+                }
             },
             /**
              * Inserts a new field into the target position.

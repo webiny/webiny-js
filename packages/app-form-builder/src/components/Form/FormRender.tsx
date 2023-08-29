@@ -3,6 +3,7 @@ import cloneDeep from "lodash/cloneDeep";
 import React, { useEffect, useRef, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
+import { FormAPI } from "@webiny/form";
 import {
     createFormSubmission,
     handleFormTriggers,
@@ -61,7 +62,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     // we will simpy change currentStep to the first step.
     useEffect(() => {
         setCurrentStep(0);
-    }, [data.steps]);
+    }, [data.steps.length]);
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
@@ -70,16 +71,19 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return null;
     }
 
-    const handleNextStep = () => {
+    const goToNextStep = () => {
         setCurrentStep(prevStep => (prevStep += 1));
     };
 
-    const handlePrevStep = () => {
+    const goToPreviousStep = () => {
         setCurrentStep(prevStep => (prevStep -= 1));
     };
 
     const formData: FbFormModel = cloneDeep(data);
     const { fields, settings, steps } = formData;
+
+    // Check if the form is a multi step.
+    const isMultiStepForm = formData.steps.length > 1;
 
     const getFieldById = (id: string): FbFormModelField | null => {
         return fields.find(field => field._id === id) || null;
@@ -90,8 +94,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     };
 
     // We need to have "stepIndex" prop in order to get corresponding fields for the current step.
-    const getFields = (stepIndex: number): FormRenderFbFormModelField[][] => {
-        // We need this check in case we deleted last step and at the same time we were previewing it.
+    const getFields = (stepIndex = 0): FormRenderFbFormModelField[][] => {
         const stepFields =
             steps[stepIndex] === undefined ? steps[steps.length - 1] : steps[stepIndex];
         const fieldLayout = cloneDeep(stepFields.layout.filter(Boolean));
@@ -194,6 +197,16 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return formSubmission;
     };
 
+    const validateCurrentStepFields = (form: FormAPI) => {
+        const { validate } = form;
+
+        validate().then(isValid => {
+            if (isValid) {
+                goToNextStep();
+            }
+        });
+    };
+
     const layouts: Array<FbFormLayout> = React.useMemo(() => {
         return plugins.byType<FbFormLayoutPlugin>(FbFormLayoutPlugin.type).map(pl => pl.layout);
     }, []);
@@ -225,9 +238,10 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         getDefaultValues,
         getFields,
         submit,
-        handleNextStep,
-        handlePrevStep,
+        goToPreviousStep,
+        validateCurrentStepFields,
         currentStep,
+        isMultiStepForm,
         formData,
         ReCaptcha,
         reCaptchaEnabled: reCaptchaEnabled(formData),

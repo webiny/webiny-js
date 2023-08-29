@@ -152,9 +152,9 @@ export const EditTab: React.FC = () => {
                                 style={{
                                     opacity: isDragging ? 0.3 : 1,
                                     border: "none",
-                                    background: "transparent",
                                     boxShadow: "none",
-                                    marginBottom: 0
+                                    marginBottom: 0,
+                                    padding: "10px"
                                 }}
                             >
                                 <div ref={drag}>
@@ -209,8 +209,8 @@ export const EditTab: React.FC = () => {
                             </RowContainer>
                             {data.steps[data.steps.length - 1].id === formStep.id && (
                                 <AddStepBtn onClick={addStep} data-testid="add-step-action">
-                                    Add new step
                                     <IconButton icon={<AddIcon />} />
+                                    Add new step
                                 </AddStepBtn>
                             )}
                         </RowContainerWrapper>

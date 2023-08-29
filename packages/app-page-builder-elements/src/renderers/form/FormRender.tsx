@@ -22,6 +22,7 @@ import {
     CreateFormParamsFormLayoutComponent,
     CreateFormParamsValidator
 } from "./types";
+import { FormAPI } from "@webiny/form";
 
 interface FieldValidator {
     (value: string): Promise<boolean>;
@@ -38,11 +39,14 @@ const FormRender: React.FC<FormRenderProps> = props => {
     const { preview = false, formLayoutComponents = [] } = createFormParams;
     const [currentStep, setCurrentStep] = useState<number>(0);
 
-    const handleNextStep = () => {
+    // Check if the form is a multi step.
+    const isMultiStepForm = formData.steps.length > 1;
+
+    const goToNextStep = () => {
         setCurrentStep(prevStep => (prevStep += 1));
     };
 
-    const handlePrevStep = () => {
+    const goToPreviousStep = () => {
         setCurrentStep(prevStep => (prevStep -= 1));
     };
 
@@ -94,7 +98,7 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (stepIndex: number): FormRenderComponentDataField[][] => {
+    const getFields = (stepIndex = 0): FormRenderComponentDataField[][] => {
         const fieldLayout = structuredClone(steps[stepIndex].layout) as FormDataFieldsLayout;
 
         return fieldLayout.map(row => {
@@ -191,6 +195,16 @@ const FormRender: React.FC<FormRenderProps> = props => {
         return formSubmission;
     };
 
+    const validateCurrentStepFields = (form: FormAPI) => {
+        const { validate } = form;
+
+        validate().then(isValid => {
+            if (isValid) {
+                goToNextStep();
+            }
+        });
+    };
+
     const ReCaptcha = createReCaptchaComponent({
         createFormParams,
         formData,
@@ -209,8 +223,9 @@ const FormRender: React.FC<FormRenderProps> = props => {
         getDefaultValues,
         getFields,
         submit,
-        handleNextStep,
-        handlePrevStep,
+        goToPreviousStep,
+        validateCurrentStepFields,
+        isMultiStepForm,
         currentStep,
         formData,
         ReCaptcha,

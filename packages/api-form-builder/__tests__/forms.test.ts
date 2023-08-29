@@ -84,7 +84,7 @@ describe('Form Builder "Form" Test', () => {
             name: "New name",
             steps: [
                 {
-                    title: null,
+                    title: "Test Step",
                     layout: [["QIspyfQRx", "AVoKqyAuH"], ["fNJag3ZdX"]]
                 }
             ]
@@ -370,7 +370,7 @@ describe('Form Builder "Form" Test', () => {
         // Add fields definitions
         await updateRevision({
             revision: id,
-            data: { fields, steps: [{ title: "", layout: [] }] }
+            data: { fields, steps: [{ title: "Test Step", layout: [] }] }
         });
 
         await publishRevision({ revision: id });

@@ -19,10 +19,15 @@ const DialogHeader = styled.div`
     height: 30px;
     background-color: #00ccb0;
     padding: 20px 20px;
+
+    & span {
+        vertical-align: middle;
+    }
 `;
 
 const DialogBody = styled.div`
     padding: 20px 20px;
+    min-height: 75px;
 `;
 
 const DialogActions = styled.div`
@@ -70,7 +75,15 @@ export const EditFormStepDialog = ({
                     <span>Change Step Title</span>
                 </DialogHeader>
                 <DialogBody>
-                    <Input label="Change Step Title" value={stepTitle} onChange={setStepTitle} />
+                    <Input
+                        label="Change Step Title"
+                        value={stepTitle}
+                        onChange={setStepTitle}
+                        validation={{
+                            isValid: stepTitle.length >= 1,
+                            message: "Step title cannot be empty"
+                        }}
+                    />
                 </DialogBody>
                 <DialogActions>
                     <ButtonSecondary onClick={() => setIsEditStep({ isOpened: false, id: null })}>
@@ -79,7 +92,9 @@ export const EditFormStepDialog = ({
                     <ButtonPrimary
                         onClick={() => {
                             updateStep(stepTitle, isEditStep.id);
-                            setIsEditStep({ isOpened: false, id: null });
+                            if (stepTitle.length >= 1) {
+                                setIsEditStep({ isOpened: false, id: null });
+                            }
                         }}
                     >
                         Save

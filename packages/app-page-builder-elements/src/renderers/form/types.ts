@@ -1,5 +1,6 @@
 import React from "react";
 import { GetFormDataLoader, LogFormViewDataLoader, SubmitFormDataLoader } from "./dataLoaders";
+import { FormAPI } from "@webiny/form";
 
 export type FieldIdType = string;
 export type FormDataFieldsLayout = FieldIdType[][];
@@ -85,8 +86,9 @@ export type FormLayoutComponentProps<T = any> = {
     getFieldByFieldId: Function;
     getFields: (stepIndex: number) => FormRenderComponentDataField[][];
     getDefaultValues: () => { [key: string]: any };
-    handleNextStep: () => void;
-    handlePrevStep: () => void;
+    goToPreviousStep: () => void;
+    validateCurrentStepFields: (form: FormAPI) => void;
+    isMultiStepForm: boolean;
     currentStep: number;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;

@@ -148,7 +148,7 @@ describe("Forms Submission Security Test", () => {
                 fields: mocks.fields,
                 steps: [
                     {
-                        title: "",
+                        title: "Test Step",
                         layout: []
                     }
                 ]
@@ -164,7 +164,7 @@ describe("Forms Submission Security Test", () => {
                             fields: expect.any(Array),
                             steps: [
                                 {
-                                    title: "",
+                                    title: "Test Step",
                                     layout: []
                                 }
                             ]
@@ -189,7 +189,7 @@ describe("Forms Submission Security Test", () => {
                             fields: expect.any(Array),
                             steps: [
                                 {
-                                    title: null,
+                                    title: "Test Step",
                                     layout: []
                                 }
                             ],
@@ -220,7 +220,7 @@ describe("Forms Submission Security Test", () => {
                 fields: mocks.fields,
                 steps: [
                     {
-                        title: null,
+                        title: "Test Step",
                         layout: []
                     }
                 ]

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, FormAPI } from "@webiny/form";
+import { Form } from "@webiny/form";
 import { FormLayoutComponent } from "@webiny/app-form-builder/types";
 import styled from "@emotion/styled";
 import { Row } from "./DefaultFormLayout/Row";
@@ -47,8 +47,9 @@ const DefaultFormLayout: FormLayoutComponent = ({
     getFields,
     getDefaultValues,
     submit,
-    handleNextStep,
-    handlePrevStep,
+    validateCurrentStepFields,
+    goToPreviousStep,
+    isMultiStepForm,
     currentStep,
     formData,
     ReCaptcha,
@@ -64,34 +65,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
 
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields(currentStep);
-
-    // Check if the form is a multi step.
-    const isMultiStepForm = formData.steps.length > 1;
-
-    // Validate fields for current step with "form.validateInput" function,
-    // if current step is invalid then we should block posibility to move to the next step,
-    // but if step is valid then user can switch to the next step.
-    const validateCurrentStepFields = (form: FormAPI) => {
-        const { validateInput } = form;
-
-        // Because fields it's an array of arrays, we want to lift inner arrays to the first level,
-        // so we won't need to use extra map method.
-        const fieldsToValidate: Promise<any>[] = fields
-            .map(row => {
-                return row.map(field => validateInput(field.fieldId));
-            })
-            .flat(1);
-
-        // validateInput returns promise as a result.
-        Promise.all(fieldsToValidate).then(result => {
-            // Here we have check on boolean because if field is required and the user hasn't entered data,
-            // then the validation for that field will be marked as false.
-            const isStepInvalid: boolean = result.some(isValid => typeof isValid === "boolean");
-            if (isStepInvalid === false) {
-                handleNextStep();
-            }
-        });
-    };
 
     /**
      * Once the data is successfully submitted, we show a success message.
@@ -139,7 +112,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                     */}
                     {isMultiStepForm && (
                         <ButtonsWrapper>
-                            <DefaultButton onClick={handlePrevStep} disabled={currentStep === 0}>
+                            <DefaultButton onClick={goToPreviousStep} disabled={currentStep === 0}>
                                 Previous Step
                             </DefaultButton>
                             {currentStep === formData.steps.length - 1 ? (
