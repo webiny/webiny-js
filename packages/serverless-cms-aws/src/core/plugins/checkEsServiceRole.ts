@@ -8,7 +8,7 @@ const NO_SUCH_ENTITY_IAM_ERROR = "NoSuchEntity";
 export const checkEsServiceRole = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-es-service-role",
-    async hook({ projectApplication }: Record<string, any>, context: CliContext) {
+    async hook(params: Record<string, any>, context: CliContext) {
         const spinner = ora();
         spinner.start(`Checking Elastic Search service role...`);
         const iam = new IAM();
