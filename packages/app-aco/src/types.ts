@@ -177,3 +177,5 @@ export interface AcoApp {
     model: AcoModel;
     getFields: () => AcoModelField[];
 }
+
+export { Field } from "./components/AdvancedSearch/types";

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Drawer as RmwcDrawer } from "@webiny/ui/Drawer";
 
-export const Drawer = styled(RmwcDrawer)`
+export const Content = styled(RmwcDrawer)`
     width: 60vw;
 `;
 
