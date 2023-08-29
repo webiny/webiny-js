@@ -127,7 +127,7 @@ using `v18.x.x`.
 > - `npm ls react` for `npm` users.
 
 To resolve this problem, we need to define the versions of the `@webiny/react-rich-text-lexical-renderer`
-package, and it's dependencies from `v17.0.2` to `v18.x.x`.
+package, and it's dependencies to `v18.x.x`.
 
 ### Instructions for `yarn` users
 
