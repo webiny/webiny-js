@@ -152,7 +152,7 @@ this [yarn documentation article](https://classic.yarnpkg.com/lang/en/docs/selec
 
 ### Instructions for `npm` users
 
-The `npm` supports the same functionality with the `overrides` field name. You need to add `overrides`
+The `npm` supports the same functionality as `yarn` with the `overrides` field name. You need to add `overrides`
 field in `package.json` file.
 
 ```json package.json
