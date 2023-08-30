@@ -6,7 +6,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { FilterManager } from "./FilterManager";
 import { Row } from "./Row";
 
-import { Field } from "./types";
+import { Field, Filter } from "./types";
 
 interface FormProps {
     fields: Field[];
@@ -16,42 +16,41 @@ const Form: React.VFC<FormProps> = ({ fields }) => {
     const [filterManager] = useState(new FilterManager());
 
     useEffect(() => {
-        filterManager.addFilter();
+        filterManager.createFilter();
 
         return () => {
-            filterManager.removeAllFilters();
+            filterManager.deleteAllFilters();
         };
     }, []);
 
-    const onChange = (id: string, data: any) => {
+    const onChange = (id: string, data: Filter) => {
         filterManager.updateFilter({
-            id,
-            ...data
+            ...data,
+            id
         });
     };
 
     const onSubmit = () => {
-        const filters = filterManager.getFilters();
+        const filters = filterManager.listFilters();
         console.log("filters", filters);
         const filtersOutput = filterManager.getFiltersOutput();
-        console.log("filtersOutput", filtersOutput);
+        console.log("filtersOutput", JSON.stringify(filtersOutput));
     };
 
     return (
         <>
-            {filterManager.getFilters().map((filter, index) => (
+            {filterManager.listFilters().map(filter => (
                 <Row
-                    position={index}
                     key={filter.id}
                     id={filter.id}
                     fields={fields}
-                    onRemove={() => filterManager.removeFilter(filter.id)}
+                    onRemove={() => filterManager.deleteFilter(filter.id)}
                     onChange={onChange}
                 />
             ))}
             <ButtonPrimary
                 onClick={() => {
-                    filterManager.addFilter();
+                    filterManager.createFilter();
                 }}
             >
                 Add a field

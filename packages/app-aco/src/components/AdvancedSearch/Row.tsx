@@ -1,45 +1,20 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/delete.svg";
-import { Bind, Form as DefaultForm } from "@webiny/form";
+import { Form as DefaultForm } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { validation } from "@webiny/validation";
-import { Input } from "@webiny/ui/Input";
 import { IconButton } from "@webiny/ui/Button";
 
-import { Field } from "~/components/AdvancedSearch/types";
+import { Field, Filter } from "~/components/AdvancedSearch/types";
+import { InputField } from "~/components/AdvancedSearch/InputField";
 
 interface RowProps {
     id: string;
-    position: number;
     fields: Field[];
     onChange: (id: string, data: any) => void;
-    onRemove: () => void;
+    onRemove: (id: string) => void;
 }
-
-interface InputFieldProps {
-    field?: Field;
-}
-
-const InputField: React.VFC<InputFieldProps> = ({ field }) => {
-    const type = useMemo(() => {
-        if (field?.type === "datetime") {
-            return field.settings?.type;
-        }
-
-        return field?.type || "text";
-    }, [field]);
-
-    if (!field || field.type === "boolean") {
-        return null;
-    }
-
-    return (
-        <Bind name={"value"} validators={[validation.create("required")]}>
-            <Input label={"Value"} type={type} />
-        </Bind>
-    );
-};
 
 export const Row: React.VFC<RowProps> = ({ id, fields, onRemove, onChange }) => {
     const getFieldOptions = useCallback(
@@ -53,12 +28,27 @@ export const Row: React.VFC<RowProps> = ({ id, fields, onRemove, onChange }) => 
 
     const getConditionOptions = useCallback((field?: Field) => {
         console.log("field", field);
+
         if (!field) {
             return [];
         }
 
         switch (field.type) {
             case "text": {
+                // Predefined values
+                if (field.predefinedValues?.enabled) {
+                    return [
+                        {
+                            label: "contains",
+                            value: "_in"
+                        },
+                        {
+                            label: "doesn't contain",
+                            value: "_not_in"
+                        }
+                    ];
+                }
+
                 return [
                     {
                         label: "is equal to",
@@ -103,11 +93,11 @@ export const Row: React.VFC<RowProps> = ({ id, fields, onRemove, onChange }) => 
             case "boolean": {
                 return [
                     {
-                        label: "is selected",
+                        label: "is",
                         value: " "
                     },
                     {
-                        label: "is not selected",
+                        label: "is not",
                         value: "_not"
                     }
                 ];
@@ -191,17 +181,13 @@ export const Row: React.VFC<RowProps> = ({ id, fields, onRemove, onChange }) => 
     }, []);
 
     return (
-        <DefaultForm onChange={data => onChange(id, data)}>
-            {({ form, Bind }) => (
+        <DefaultForm<Filter> onChange={data => onChange(id, data)}>
+            {({ Bind, data }) => (
                 <>
                     <Grid>
                         <Cell span={2}>
                             <Bind name={"operation"} defaultValue={"AND"}>
-                                <Select
-                                    label={"Operation"}
-                                    options={["AND", "OR"]}
-                                    size={"medium"}
-                                />
+                                <Select label={"Operation"} options={["AND", "OR"]} />
                             </Bind>
                         </Cell>
                     </Grid>
@@ -211,9 +197,8 @@ export const Row: React.VFC<RowProps> = ({ id, fields, onRemove, onChange }) => 
                                 <Select label={"Field"} options={getFieldOptions()} />
                             </Bind>
                         </Cell>
-
                         <Cell span={3}>
-                            {form.data.field && (
+                            {data.field && (
                                 <Bind
                                     name={"condition"}
                                     validators={[validation.create("required")]}
@@ -221,23 +206,19 @@ export const Row: React.VFC<RowProps> = ({ id, fields, onRemove, onChange }) => 
                                     <Select
                                         label={"Condition"}
                                         options={getConditionOptions(
-                                            fields.find(field => field.id === form.data.field)
+                                            fields.find(field => field.id === data.field)
                                         )}
                                     />
                                 </Bind>
                             )}
                         </Cell>
-
                         <Cell span={4}>
-                            {form.data.condition && (
-                                <InputField
-                                    field={fields.find(field => field.id === form.data.field)}
-                                />
+                            {data.condition && (
+                                <InputField field={fields.find(field => field.id === data.field)} />
                             )}
                         </Cell>
-
                         <Cell span={1}>
-                            <IconButton icon={<DeleteIcon />} onClick={onRemove} />
+                            <IconButton icon={<DeleteIcon />} onClick={() => onRemove(id)} />
                         </Cell>
                     </Grid>
                 </>

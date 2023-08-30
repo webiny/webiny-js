@@ -1,44 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { generateId } from "@webiny/utils";
 
-/**
- * Represents possible operations for combining filters.
- */
-export enum FilterOperation {
-    AND = "AND",
-    OR = "OR"
-}
-
-/**
- * Represents possible values for filters.
- */
-export type FilterValue = string | number | boolean | undefined;
-
-/**
- * Represents a filter configuration.
- */
-export interface Filter {
-    /**
-     * Unique identifier for the filter.
-     */
-    id: string;
-    /**
-     * Field to which the filter applies.
-     */
-    field?: string;
-    /**
-     * Condition for the filter.
-     */
-    condition?: string;
-    /**
-     * Value to compare against.
-     */
-    value?: FilterValue;
-    /**
-     * Operation to combine filters.
-     */
-    operation?: FilterOperation;
-}
+import { Filter, FilterOperation, FilterValue } from "~/components/AdvancedSearch/types";
 
 /**
  * Manages a collection of filters.
@@ -57,7 +20,7 @@ export class FilterManager {
      * Retrieves an array of all filters currently managed.
      * @returns An array of Filter objects.
      */
-    getFilters(): Filter[] {
+    listFilters(): Filter[] {
         return Array.from(this._filters.values());
     }
 
@@ -83,7 +46,7 @@ export class FilterManager {
     /**
      * Adds a new filter to the manager
      */
-    addFilter(): void {
+    createFilter(): void {
         const id = generateId();
         this._filters.set(id, { id });
     }
@@ -106,7 +69,7 @@ export class FilterManager {
      * @param filterId - The ID of the filter to remove.
      * @throws Error if the provided filter ID does not exist.
      */
-    removeFilter(filterId: string): void {
+    deleteFilter(filterId: string): void {
         if (this._filters.has(filterId)) {
             this._filters.delete(filterId);
         } else {
@@ -117,7 +80,7 @@ export class FilterManager {
     /**
      * Removes all filters from the manager.
      */
-    removeAllFilters(): void {
+    deleteAllFilters(): void {
         this._filters.clear();
     }
 }

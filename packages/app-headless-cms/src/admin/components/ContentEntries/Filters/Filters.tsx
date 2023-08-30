@@ -11,7 +11,45 @@ import { Field } from "@webiny/app-aco/types";
 const excludedFieldTypes = ["rich-text", "file", "object", "dynamicZone"];
 
 const parseModelFields = (modelFields: CmsModelField[]): Field[] => {
-    return modelFields
+    const defaultFields: Field[] = [
+        {
+            id: "status",
+            type: "text",
+            label: "Status",
+            multipleValues: true,
+            predefinedValues: {
+                enabled: true,
+                values: [
+                    {
+                        label: "Draft",
+                        value: "draft"
+                    },
+                    {
+                        label: "Published",
+                        value: "published"
+                    },
+                    {
+                        label: "Unpublished",
+                        value: "unpublished"
+                    }
+                ]
+            }
+        },
+        {
+            id: "createdOn",
+            type: "datetime",
+            label: "Created on",
+            settings: { type: "dateTimeWithoutTimezone" }
+        },
+        {
+            id: "savedOn",
+            type: "datetime",
+            label: "Modified on",
+            settings: { type: "dateTimeWithoutTimezone" }
+        }
+    ];
+
+    const fields = modelFields
         .filter(modelField => !excludedFieldTypes.includes(modelField.type))
         .map(modelField => {
             return {
@@ -23,6 +61,8 @@ const parseModelFields = (modelFields: CmsModelField[]): Field[] => {
                 settings: modelField.settings
             };
         });
+
+    return [...fields, ...defaultFields];
 };
 
 export const Filters = () => {
