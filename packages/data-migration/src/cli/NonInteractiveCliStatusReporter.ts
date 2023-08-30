@@ -12,16 +12,16 @@ export class NonInteractiveCliStatusReporter implements MigrationStatusReporter 
     }
 
     async report(migrationStatus: MigrationStatus) {
-        if (this.firstCall) {
-            this.firstCall = false;
-            process.stdout.write(`\n---------- MIGRATION LOGS START ----------\n\n`);
-        }
-
         const { status, context } = migrationStatus;
 
         const currentLogStreamName = context?.logStreamName;
+
         if (currentLogStreamName) {
             this.logReporter.initializeStream(currentLogStreamName);
+            if (this.firstCall) {
+                this.logReporter.printLogStreamLinks();
+                process.stdout.write(`\n---------- MIGRATION LOGS START ----------\n\n`);
+            }
             await this.logReporter.printLogs(currentLogStreamName);
         }
 
@@ -31,8 +31,12 @@ export class NonInteractiveCliStatusReporter implements MigrationStatusReporter 
                 setTimeout(resolve, 10000);
             });
 
-            await this.logReporter.printLogs(currentLogStreamName);
-            process.stdout.write(`\n---------- MIGRATION LOGS END ----------\n`);
+            if (currentLogStreamName) {
+                await this.logReporter.printLogs(currentLogStreamName);
+                process.stdout.write(`\n---------- MIGRATION LOGS END ----------\n`);
+            }
         }
+
+        this.firstCall = false;
     }
 }
