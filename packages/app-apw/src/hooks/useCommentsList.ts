@@ -11,6 +11,7 @@ import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
 interface UseCommentsListResult {
     loading: boolean;
     comments: Array<ApwComment>;
+    refetch: () => void;
 }
 
 /**
@@ -40,17 +41,30 @@ export const useListCommentsVariables = () => {
 
 export const useCommentsList = (): UseCommentsListResult => {
     const variables = useListCommentsVariables();
-    const { data, loading } = useQuery<ListCommentsQueryResponse, ListCommentsQueryVariables>(
-        LIST_COMMENTS_QUERY,
-        {
-            variables
-        }
-    );
+
+    const { data, loading, refetch } = useQuery<
+        ListCommentsQueryResponse,
+        ListCommentsQueryVariables
+    >(LIST_COMMENTS_QUERY, {
+        variables,
+        fetchPolicy: "cache-and-network"
+    });
 
     const comments = dotPropImmutable.get(data, "apw.listComments.data", []);
 
+    const refetchList = () => {
+        if (refetch) {
+            refetch({ ...variables }).catch(e => {
+                // Do nothing.
+                console.warn("Could not refetch the comments:");
+                console.log(e);
+            });
+        }
+    };
+
     return {
         comments,
-        loading
+        loading,
+        refetch: refetchList
     };
 };

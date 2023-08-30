@@ -33,6 +33,7 @@ interface UseChangeRequestsListHook {
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
         editContentReview: (id: string) => void;
+        refetch: () => void;
     };
 }
 
@@ -49,12 +50,22 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         }
     };
 
-    const { data, loading } = useQuery<
+    const { data, loading, refetch } = useQuery<
         ListChangeRequestsQueryResponse,
         ListChangeRequestsQueryVariables
     >(LIST_CHANGE_REQUESTS_QUERY, {
         variables
     });
+
+    const refetchList = () => {
+        if (refetch) {
+            refetch({ ...variables }).catch(e => {
+                // Do nothing.
+                console.warn("Could not refetch the request list:");
+                console.log(e);
+            });
+        }
+    };
 
     const changeRequests = data ? data.apw.listChangeRequests.data : [];
 
@@ -70,6 +81,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         sort,
         setSort,
         serializeSorters,
-        editContentReview
+        editContentReview,
+        refetch: refetchList
     };
 };
