@@ -20,9 +20,11 @@ import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/ut
 import {
     $handleIndent,
     $handleOutdent,
+    mergeLists,
     updateChildrenListItemValue
 } from "~/nodes/ListNode/formatList";
 import { $createParagraphNode, $isParagraphNode } from "~/nodes/ParagraphNode";
+import { isNestedListNode } from "~/utils/nodes/listNode";
 
 export type SerializedWebinyListItemNode = Spread<
     {
@@ -127,41 +129,40 @@ export class ListItemNode extends ElementNode {
         return this;
     }
 
-    override replace<N extends LexicalNode>(replaceWithNode: N): N {
+    override replace<N extends LexicalNode>(replaceWithNode: N, includeChildren?: boolean): N {
         if ($isListItemNode(replaceWithNode)) {
             return super.replace(replaceWithNode);
         }
-
+        this.setIndent(0);
         const list = this.getParentOrThrow();
-
-        if ($isListNode(list)) {
-            const childrenKeys = list.__children;
-            const childrenLength = childrenKeys.length;
-            const index = childrenKeys.indexOf(this.__key);
-
-            if (index === 0) {
-                list.insertBefore(replaceWithNode);
-            } else if (index === childrenLength - 1) {
-                list.insertAfter(replaceWithNode);
-            } else {
-                // Split the list
-                const newList = $createListNode(list.getListType(), list.getStyleId());
-                const children = list.getChildren();
-
-                for (let i = index + 1; i < childrenLength; i++) {
-                    const child = children[i];
-                    newList.append(child);
-                }
-                list.insertAfter(replaceWithNode);
-                replaceWithNode.insertAfter(newList);
-            }
-            this.remove();
-
-            if (childrenLength === 1) {
-                list.remove();
-            }
+        if (!$isListNode(list)) {
+            return replaceWithNode;
         }
-
+        if (list.__first === this.getKey()) {
+            list.insertBefore(replaceWithNode);
+        } else if (list.__last === this.getKey()) {
+            list.insertAfter(replaceWithNode);
+        } else {
+            // Split the list
+            const newList = $createListNode(list.getListType());
+            let nextSibling = this.getNextSibling();
+            while (nextSibling) {
+                const nodeToAppend = nextSibling;
+                nextSibling = nextSibling.getNextSibling();
+                newList.append(nodeToAppend);
+            }
+            list.insertAfter(replaceWithNode);
+            replaceWithNode.insertAfter(newList);
+        }
+        if (includeChildren) {
+            this.getChildren().forEach((child: LexicalNode) => {
+                replaceWithNode.append(child);
+            });
+        }
+        this.remove();
+        if (list.getChildrenSize() === 0) {
+            list.remove();
+        }
         return replaceWithNode;
     }
 
@@ -217,10 +218,19 @@ export class ListItemNode extends ElementNode {
     }
 
     override remove(preserveEmptyParent?: boolean): void {
+        const prevSibling = this.getPreviousSibling();
         const nextSibling = this.getNextSibling();
         super.remove(preserveEmptyParent);
 
-        if (nextSibling !== null) {
+        if (
+            prevSibling &&
+            nextSibling &&
+            isNestedListNode(prevSibling) &&
+            isNestedListNode(nextSibling)
+        ) {
+            mergeLists(prevSibling.getFirstChild(), nextSibling.getFirstChild());
+            nextSibling.remove();
+        } else if (nextSibling) {
             const parent = nextSibling.getParent();
 
             if ($isListNode(parent)) {

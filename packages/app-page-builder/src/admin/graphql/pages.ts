@@ -28,6 +28,7 @@ export const DATA_FIELDS = `
     status
     revisions {
         id
+        pid
         savedOn
         locked
         title

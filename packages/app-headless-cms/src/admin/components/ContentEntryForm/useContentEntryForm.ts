@@ -16,10 +16,10 @@ import {
 } from "@webiny/app-headless-cms-common";
 import { useCms, useModel, useMutation } from "~/admin/hooks";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
+import { CmsContentEntry, CmsModelFieldRendererPlugin, CmsModelField } from "~/types";
 import { plugins } from "@webiny/plugins";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { useRecords } from "@webiny/app-aco";
+import { useNavigateFolder, useRecords } from "@webiny/app-aco";
 import { ROOT_FOLDER } from "~/admin/constants";
 
 /**
@@ -45,16 +45,16 @@ interface UseContentEntryForm {
     data: Record<string, any>;
     loading: boolean;
     setLoading: Dispatch<SetStateAction<boolean>>;
-    onChange: FormOnSubmit;
-    onSubmit: FormOnSubmit;
+    onChange: FormOnSubmit<CmsContentEntry>;
+    onSubmit: FormOnSubmit<CmsContentEntry>;
     invalidFields: Record<string, string>;
-    renderPlugins: CmsEditorFieldRendererPlugin[];
+    renderPlugins: CmsModelFieldRendererPlugin[];
 }
 
 export interface UseContentEntryFormParams {
     entry: Partial<CmsContentEntry>;
-    onChange?: FormOnSubmit;
-    onSubmit?: FormOnSubmit;
+    onChange?: FormOnSubmit<CmsContentEntry>;
+    onSubmit?: FormOnSubmit<CmsContentEntry>;
     addEntryToListCache: boolean;
 }
 
@@ -88,6 +88,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const { model } = useModel();
     const { history, search: routerSearch } = useRouter();
     const [query] = routerSearch;
+    const { currentFolderId } = useNavigateFolder();
     const { showSnackbar } = useSnackbar();
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -96,7 +97,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const { addRecordToCache, updateRecordInCache } = useRecords();
 
     const renderPlugins = useMemo(
-        () => plugins.byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
+        () => plugins.byType<CmsModelFieldRendererPlugin>("cms-editor-field-renderer"),
         []
     );
 
@@ -150,7 +151,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         setInvalidFields(() => ({}));
     };
 
-    const createContent: FormOnSubmit = useCallback(
+    const createContent: FormOnSubmit<CmsContentEntry> = useCallback(
         async (formData, form) => {
             setLoading(true);
             const response = await createMutation({
@@ -162,7 +163,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                          * TODO: introduce hook like onEntryPublish, or similar.
                          */
                         wbyAco_location: {
-                            folderId: query.get("folderId") || ROOT_FOLDER
+                            folderId: currentFolderId || ROOT_FOLDER
                         }
                     }
                 },
@@ -201,7 +202,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             goToRevision(entry.id);
             return entry;
         },
-        [model.modelId, params.onSubmit, params.addEntryToListCache, query]
+        [model.modelId, params.onSubmit, params.addEntryToListCache, query, currentFolderId]
     );
 
     const updateContent = useCallback(
@@ -270,14 +271,14 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         [model.modelId]
     );
 
-    const onChange: FormOnSubmit = (data, form) => {
+    const onChange: FormOnSubmit<CmsContentEntry> = (data, form) => {
         if (!params.onChange) {
             return;
         }
         return params.onChange(data, form);
     };
 
-    const onSubmit: FormOnSubmit = async (data, form) => {
+    const onSubmit: FormOnSubmit<CmsContentEntry> = async (data, form) => {
         const fieldsIds = model.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
 
