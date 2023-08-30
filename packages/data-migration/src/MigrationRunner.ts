@@ -33,6 +33,12 @@ const getRunItemDuration = (runItem: MigrationRunItem) => {
     return new Date(runItem.finishedOn).getTime() - new Date(runItem.startedOn).getTime();
 };
 
+const shouldForceExecute = (mig: DataMigration) => {
+    const key = `WEBINY_MIGRATION_FORCE_EXECUTE_${mig.getId().replace(/[\.\-]/g, "_")}`;
+
+    return process.env[key] === "true";
+};
+
 class MigrationNotFinished extends Error {}
 class MigrationInProgress extends Error {}
 
@@ -41,6 +47,7 @@ export class MigrationRunner {
     private readonly migrations: DataMigration[];
     private readonly repository: MigrationRepository;
     private readonly timeLimiter: ExecutionTimeLimiter;
+    private context: Record<string, any> = {};
 
     constructor(
         repository: MigrationRepository,
@@ -56,6 +63,10 @@ export class MigrationRunner {
             logger = createPinoLogger();
         }
         this.logger = logger;
+    }
+
+    setContext(context: Record<string, any>) {
+        this.context = context;
     }
 
     async execute(projectVersion: string, isApplicable?: IsMigrationApplicable) {
@@ -113,6 +124,10 @@ export class MigrationRunner {
 
         const executableMigrations = this.migrations
             .filter(mig => {
+                if (shouldForceExecute(mig)) {
+                    return true;
+                }
+
                 if (!isMigrationApplicable(mig)) {
                     this.setRunItem(lastRun, {
                         id: mig.getId(),
@@ -136,6 +151,7 @@ export class MigrationRunner {
             return this.timeLimiter() < 120000;
         };
 
+        //
         for (const migration of executableMigrations) {
             const runItem = this.getOrCreateRunItem(lastRun, migration);
             const checkpoint = await this.repository.getCheckpoint(migration.getId());
@@ -160,7 +176,10 @@ export class MigrationRunner {
                 }
             };
             try {
-                const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
+                const shouldExecute =
+                    checkpoint || shouldForceExecute(migration)
+                        ? true
+                        : await migration.shouldExecute(context);
 
                 if (!shouldExecute) {
                     this.logger.info(`Skipping migration %s.`, migration.getId());
@@ -301,7 +320,8 @@ export class MigrationRunner {
                 status: "init",
                 startedOn: getCurrentISOTime(),
                 finishedOn: "",
-                migrations: []
+                migrations: [],
+                context: this.context
             };
 
             await this.repository.saveRun(lastRun);

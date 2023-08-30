@@ -16,6 +16,7 @@ export interface MigrationRun {
     finishedOn: string;
     status: "init" | "running" | "pending" | "done" | "error";
     migrations: MigrationRunItem[];
+    context?: Record<string, any>;
     error?: {
         message: string;
         name?: string;
