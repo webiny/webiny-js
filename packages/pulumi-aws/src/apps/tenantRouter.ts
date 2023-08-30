@@ -81,8 +81,7 @@ export function applyTenantRouter(
                     }
                 ]
             }
-        },
-        meta: { isLambdaFunctionRole: true }
+        }
     });
 
     const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
@@ -107,7 +106,10 @@ export function applyTenantRouter(
         // the environment is destroyed. Users need to delete the function manually. We decided to use
         // this option here because it enables us to avoid annoying AWS Lambda function replication
         // errors upon destroying the stack (see https://github.com/pulumi/pulumi-aws/issues/2178).
-        opts: { provider: awsUsEast1, retainOnDelete: true }
+        opts: { provider: awsUsEast1, retainOnDelete: true },
+        meta: {
+            canUseVpc: false
+        }
     });
 
     cloudfront.config.defaultCacheBehavior(value => {
