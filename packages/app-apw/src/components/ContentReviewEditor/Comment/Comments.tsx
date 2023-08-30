@@ -9,7 +9,7 @@ import { useCommentsList } from "~/hooks/useCommentsList";
 import { AuthorName, richTextWrapperStyles, TypographyBody, TypographySecondary } from "../Styled";
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
-import { useInterval } from "~/hooks/useIntervalHook";
+import { useInterval } from "~/hooks/useInterval";
 
 const HEADER_HEIGHT = "65px";
 const CR_DETAIL_HEIGHT = "179px";

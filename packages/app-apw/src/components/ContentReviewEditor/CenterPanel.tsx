@@ -17,7 +17,7 @@ import { Box } from "../Layout";
 import { PanelBox } from "./Styled";
 import { RightPanel } from "./RightPanel";
 import { PlaceholderBox } from "./PlaceholderBox";
-import { useInterval } from "~/hooks/useIntervalHook";
+import { useInterval } from "~/hooks/useInterval";
 
 const t = i18n.ns("app-apw/admin/content-reviews/editor");
 
