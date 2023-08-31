@@ -28,7 +28,7 @@ import {
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
-import { createFieldsList } from "@webiny/app-headless-cms/admin/graphql/createFieldsList";
+import { createFieldsList } from "@webiny/app-headless-cms-common";
 import { useFileModel } from "~/hooks/useFileModel";
 import omit from "lodash/omit";
 

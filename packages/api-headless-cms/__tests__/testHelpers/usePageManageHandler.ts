@@ -19,12 +19,33 @@ const pageFields = `
         }
         ...on ${singularPageApiName}_Content_Objecting {
             nestedObject {
+                __typename
                 objectTitle
                 objectNestedObject {
                     nestedObjectNestedTitle
                 }
             }
             _templateId
+            dynamicZone {
+                __typename
+                ... on ${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject {
+                    authors {
+                        id
+                        modelId
+                    }
+                }
+            }
+            __typename
+        }
+        ...on ${singularPageApiName}_Content_Author {
+            author {
+                id
+                modelId
+            }
+            authors {
+                id
+                modelId
+            }
             __typename
         }
     }
@@ -61,8 +82,18 @@ const pageFields = `
             }
         }
     }
-    references {
-        ...on ${singularPageApiName}_References_Author {
+    references1 {
+        ...on ${singularPageApiName}_References1_Authors {
+            authors {
+                id
+                modelId
+                __typename
+            }
+            __typename
+        }
+    }
+    references2 {
+        ...on ${singularPageApiName}_References2_Author {
             author {
                 id
                 modelId
@@ -130,6 +161,19 @@ const createPageMutation = (model: CmsModel) => {
     `;
 };
 
+const updatePageMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdatePage($revision: ID!, $data: ${model.singularApiName}Input!) {
+            updatePage: update${model.singularApiName}(revision: $revision, data: $data) {
+                data {
+                    ${pageFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
 export const usePageManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
 
@@ -155,6 +199,12 @@ export const usePageManageHandler = (params: GraphQLHandlerParams) => {
         async createPage(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createPageMutation(model), variables },
+                headers
+            });
+        },
+        async updatePage(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: updatePageMutation(model), variables },
                 headers
             });
         }
