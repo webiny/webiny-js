@@ -61,7 +61,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         if (refetch) {
             refetch({ ...variables }).catch(e => {
                 // Do nothing.
-                console.warn("Could not refetch the request list:");
+                console.warn("Could not re-fetch the change requests lists:");
                 console.log(e);
             });
         }

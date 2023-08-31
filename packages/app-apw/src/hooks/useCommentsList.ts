@@ -56,7 +56,7 @@ export const useCommentsList = (): UseCommentsListResult => {
         if (refetch) {
             refetch({ ...variables }).catch(e => {
                 // Do nothing.
-                console.warn("Could not refetch the comments:");
+                console.warn("Could not re-fetch the comments list:");
                 console.log(e);
             });
         }
