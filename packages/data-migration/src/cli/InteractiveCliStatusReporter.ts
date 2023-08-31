@@ -56,6 +56,8 @@ export class InteractiveCliStatusReporter implements MigrationStatusReporter {
                 process.stdout.write(`\n---------- MIGRATION LOGS END ----------\n`);
             }
         }
+
+        this.firstCall = false;
     }
 
     private clearLine() {
