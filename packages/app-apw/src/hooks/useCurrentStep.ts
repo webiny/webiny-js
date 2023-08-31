@@ -2,11 +2,14 @@ import { useMemo } from "react";
 import { useContentReview } from "~/hooks/useContentReview";
 import { useContentReviewId, useCurrentStepId } from "./useContentReviewId";
 import { ApwContentReviewStep } from "~/types";
+import { useInterval } from "react-interval-hook";
 
 interface UseCurrentStepResult {
     currentStep: ApwContentReviewStep | null;
     changeRequestsPending: boolean;
 }
+
+const CONTENT_REVIEW_REFRESH_INTERVAL = 10000; // 10s
 
 export const useCurrentStep = (): UseCurrentStepResult => {
     const contentReviewId = useContentReviewId();
@@ -17,7 +20,11 @@ export const useCurrentStep = (): UseCurrentStepResult => {
         };
     }
     const { id: stepId } = useCurrentStepId();
-    const { contentReview } = useContentReview({ id: contentReviewId.id });
+    const { contentReview, refetch } = useContentReview({ id: contentReviewId.id });
+
+    useInterval(() => {
+        refetch();
+    }, CONTENT_REVIEW_REFRESH_INTERVAL);
 
     const currentStep = useMemo(() => {
         let currentStep;
