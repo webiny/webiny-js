@@ -17,6 +17,7 @@ context("Export & Import Pages", () => {
         const pageTitle1 = `Test published page 1`;
 
         beforeEach(() => {
+            cy.pbDeleteAllPages();
             cy.pbCreatePage({ category: "static" }).then(page => {
                 cy.pbUpdatePage({
                     id: page.id,
@@ -27,16 +28,6 @@ context("Export & Import Pages", () => {
                     }
                 });
                 cy.pbPublishPage({ id: page.id });
-            });
-        });
-
-        afterEach(() => {
-            cy.pbListPages({
-                search: {
-                    query: pageTitle1
-                }
-            }).then(pages => {
-                pages.forEach(page => cy.pbDeletePage({ id: page.id }));
             });
         });
 

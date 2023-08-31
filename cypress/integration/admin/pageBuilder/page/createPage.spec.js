@@ -8,16 +8,6 @@ context("Page Builder Page Creation", () => {
     describe("When creating new page", () => {
         const id = uniqid();
 
-        afterEach(() => {
-            cy.pbListPages({
-                search: {
-                    query: id
-                }
-            }).then(pages => {
-                pages.forEach(page => cy.pbDeletePage({ id: page.id }));
-            });
-        });
-
         it("should be able to create page, publish page and check whether it exists in the list of the pages", () => {
             const newPageTitle = `Test page ${id}`;
 
@@ -32,7 +22,7 @@ context("Page Builder Page Creation", () => {
             // Check if we are on the Page Builder Editor page (route "/page-builder/editor/") and it is empty.
             cy.findByTestId("pb-content-add-block-button", { timeout: 15000 });
 
-            // Changing default name for the page (because default name is Undefined) so we can use it in the query to find it's id,
+            // Changing default name for the page (because default name is Undefined) so we can use it in the query to find its ID,
             // so we can use that id to delete the page.
             cy.findByTestId("pb-editor-page-title").click();
             cy.get(`input[value="Untitled"]`).clear().type(newPageTitle).blur();
@@ -58,6 +48,20 @@ context("Page Builder Page Creation", () => {
 
             // Checking whether we have new page in the the list of pages.
             cy.findByText(`${newPageTitle}`, { timeout: 15000 });
+
+            // Opening preview drawer for the Page.
+            cy.findByText(`${newPageTitle}`).click({ force: true });
+
+            // // Clicking on delete page button.
+            cy.findByTestId("pb-page-details-header-delete-button").click();
+
+            // Confirming that we want to delete Page.
+            cy.findByTestId("pb-page-details-header-delete-dialog").within(() => {
+                cy.findByTestId("confirmationdialog-confirm-action").click({ force: true });
+            });
+
+            // Checking that the page was deleted.
+            cy.findByText(`Test page`).should("not.exist");
         });
     });
 });
