@@ -16,6 +16,7 @@ export interface MigrationRun {
     finishedOn: string;
     status: "init" | "running" | "pending" | "done" | "error";
     migrations: MigrationRunItem[];
+    context?: Record<string, any>;
     error?: {
         message: string;
         name?: string;
@@ -46,6 +47,7 @@ export interface DataMigrationContext<TCheckpoint = any> {
     projectVersion: string;
     logger: Logger;
     checkpoint?: TCheckpoint;
+    forceExecute: boolean;
     runningOutOfTime: () => boolean;
     createCheckpoint: (data: TCheckpoint) => void;
     createCheckpointAndExit: (data: TCheckpoint) => void;
