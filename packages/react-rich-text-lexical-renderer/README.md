@@ -126,13 +126,12 @@ using `v18.x.x`.
 > - `yarn why react` for `yarn` users.
 > - `npm ls react` for `npm` users.
 
-To resolve this problem, we need to define the versions of the `@webiny/react-rich-text-lexical-renderer`
-package, and it's dependencies to `v18.x.x`.
+To resolve this problem, we need to force all dependencies to use the same version of React.
 
 ### Instructions for `yarn` users
 
-To define the `v18.x.x` of React to all package dependencies that use the old version of React, we need to
-add `resolutions` field in `package.json` file.
+To force `yarn` to resolve dependencies across the project to the exact versions we're looking for, use
+the `resolutions` field in the root `package.json` file.
 
 ```json package.json
 {
@@ -144,8 +143,7 @@ add `resolutions` field in `package.json` file.
 }
 ```
 
-After, run `yarn install` in your terminal, and `@webiny/react-rich-text-lexical-renderer` package and inside
-dependencies will be at your specified `v18.x.x` version.
+Once the `resolutions` field is defined, run `yarn` to apply the new config.
 
 To learn more about the `resolutions` field, please check
 this [yarn documentation article](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/).
@@ -165,8 +163,7 @@ field in `package.json` file.
 }
 ```
 
-After, run `npm install` in your terminal, and `@webiny/react-rich-text-lexical-renderer` package and inside
-dependencies will be at your specified `v18.x.x` version.
+Once the `overrides` field is defined, run `npm install` to apply the new config.
 
 To learn more about the `overrides` field, please check
 this [npm documentation article](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides).
