@@ -122,7 +122,7 @@ This is because our `@webiny/react-rich-text-lexical-renderer` package and the R
 different versions of React. Our rich text renderer component is using `v17.0.2`, and the React application is
 using `v18.x.x`.
 
-> You can check the React version dependencies by running following command:
+> You can check which React versions are requested by various dependencies by running the following command:
 > - `yarn why react` for `yarn` users.
 > - `npm ls react` for `npm` users.
 
