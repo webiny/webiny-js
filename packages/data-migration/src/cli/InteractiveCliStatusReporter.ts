@@ -34,7 +34,6 @@ export class InteractiveCliStatusReporter implements MigrationStatusReporter {
                     `Running data migration ${currentMigration.id} (${duration})...`
                 );
             }
-            return;
         }
 
         if (status === "init") {
