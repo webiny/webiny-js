@@ -9,6 +9,7 @@ export interface OptionItem {
     published: string | null;
     latest: string | null;
     status: CmsContentEntryStatusType;
+    folderId?: string;
 }
 
 export interface OptionItemCollection {

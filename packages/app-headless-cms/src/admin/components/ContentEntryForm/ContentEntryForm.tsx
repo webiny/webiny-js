@@ -5,7 +5,7 @@ import { Form } from "@webiny/form";
 import { FormAPI, FormRenderPropParams } from "@webiny/form/types";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { CmsContentFormRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsContentFormRendererPlugin } from "~/types";
 import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntryForm";
 import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";
@@ -116,7 +116,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
     );
 
     return (
-        <Form
+        <Form<CmsContentEntry>
             onChange={(data, form) => {
                 const different = isDifferent(data, initialData);
                 if (isDirty !== different) {

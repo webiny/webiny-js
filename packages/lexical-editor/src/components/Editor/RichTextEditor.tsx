@@ -1,9 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
-import { Placeholder } from "~/ui/Placeholder";
-import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
-import { EditorState } from "lexical/LexicalEditorState";
+import { ClassNames, CSSObject } from "@emotion/react";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
+import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
@@ -11,17 +9,19 @@ import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { makeComposable } from "@webiny/react-composition";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
+import { LexicalValue, ThemeEmotionMap, ToolbarActionPlugin } from "~/types";
+import { Placeholder } from "~/ui/Placeholder";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { WebinyNodes } from "~/nodes/webinyNodes";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { ClassNames, CSSObject } from "@emotion/react";
 import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
 import {
     LexicalEditorWithConfig,
@@ -150,9 +150,8 @@ const BaseRichTextEditor: React.FC<RichTextEditorProps> = ({
             <>
                 {staticToolbar && staticToolbar}
                 <div
-                    className={"editor-shell"}
                     ref={scrollRef}
-                    style={{ ...styles, ...sizeStyle, overflow: "auto" }}
+                    style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
                 >
                     {/* data */}
                     <OnChangePlugin onChange={handleOnChange} />

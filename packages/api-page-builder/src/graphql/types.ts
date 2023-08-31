@@ -115,6 +115,7 @@ export interface OnPageBeforeDeleteTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
     publishedPage: TPage | null;
+    deleteMethod: "deleteAll" | "delete";
 }
 /**
  * @category Lifecycle events
@@ -123,6 +124,7 @@ export interface OnPageAfterDeleteTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage | null;
     publishedPage: TPage | null;
+    deleteMethod: "deleteAll" | "delete";
 }
 /**
  * @category Lifecycle events
