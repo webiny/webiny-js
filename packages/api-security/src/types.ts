@@ -176,6 +176,18 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
         params: GetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
 
+    // Identity profiles.
+    createIdentityProfiles(params: CreateIdentityProfileParams[]): Promise<void>;
+
+    updateIdentityProfiles(params: UpdateIdentityProfileParams[]): Promise<void>;
+
+    deleteIdentityProfiles(params: DeleteIdentityProfileParams[]): Promise<void>;
+
+    listIdentityProfiles<TLink extends IdentityProfile = IdentityProfile>(
+        params: ListIdentityProfilesByTypeParams
+    ): Promise<TLink[]>;
+
+
     // System
     getVersion(): Promise<string | null>;
 
