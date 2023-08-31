@@ -245,7 +245,7 @@ export class CmsEntriesRootFolder_5_37_0_002
                             `Skipping record "${esRecord.PK}" as it is not a valid CMS entry...`
                         );
                         continue;
-                    } else if (decompressedData.location?.folderId) {
+                    } else if (!context.forceExecute && decompressedData.location?.folderId) {
                         logger.trace(
                             `Skipping record "${decompressedData.entryId}" as it already has folderId defined...`
                         );
@@ -258,10 +258,12 @@ export class CmsEntriesRootFolder_5_37_0_002
                             folderId: "root"
                         }
                     });
+                    const modified = new Date().toISOString();
                     ddbEsItems.push(
                         this.ddbEsEntryEntity.putBatch({
                             ...esRecord,
-                            data: compressedData
+                            data: compressedData,
+                            modified
                         })
                     );
                 }
