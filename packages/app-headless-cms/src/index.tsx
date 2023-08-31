@@ -4,6 +4,7 @@ export * from "./HeadlessCMS";
 export * from "./admin/hooks";
 export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig";
 export { RenderFieldElement } from "~/admin/components/ContentEntryForm/RenderFieldElement";
+export { ModelProvider } from "~/admin/components/ModelProvider";
 import { ContentEntryEditorConfig, ContentEntryListConfig } from "./admin/config/contentEntries";
 export { ContentEntryEditorConfig, ContentEntryListConfig };
 
