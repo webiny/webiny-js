@@ -227,6 +227,15 @@ Resources:
                   - arn:aws:iam::*:role/wby-*
                   - arn:aws:iam::*:policy/wby-*
 
+              # AWS Identity and Access Management (IAM) - Service-Linked Roles
+              # Only needed for the "Amazon DynamoDB + Amazon Elasticsearch" database setup.
+              # https://www.webiny.com/docs/architecture/introduction#different-database-setups
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService
+
               # AWS Lambda
               - Effect: Allow
                 Action:
