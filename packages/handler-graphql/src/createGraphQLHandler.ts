@@ -13,9 +13,24 @@ const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
 const createCacheKey = (context: Context) => {
     const plugins = getSchemaPlugins(context);
-    // TODO: in the near future, we have to assign a fixed name to every GraphQLSchema plugin,
-    // to be able to create a reliable cache key.
-    return plugins.length.toString();
+    // TODO: in the near future, we have to assign a fixed name to every
+    // TODO: GraphQLSchema plugin, to be able to create a reliable cache key.
+
+    // @ts-ignore TODO: `getCurrentTenant` should be injected as a parameter.
+    // @ts-ignore TODO: We should not be accessing `context` like this here.
+    const tenant = context.tenancy?.getCurrentTenant();
+
+    // @ts-ignore TODO: `getContentLocale` should be injected as a parameter.
+    // @ts-ignore TODO: We should not be accessing `context` like this here.
+    const contentLocale = context.i18n?.getContentLocale();
+
+    return [
+        tenant ? `tenant:${tenant.id}` : null,
+        contentLocale ? `locale:${contentLocale.code}` : null,
+        plugins.length.toString()
+    ]
+        .filter(Boolean)
+        .join("#");
 };
 
 const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {

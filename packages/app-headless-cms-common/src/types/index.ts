@@ -32,6 +32,10 @@ interface Position {
     index: number;
 }
 
+interface Location {
+    folderId: string;
+}
+
 export interface DragSource extends DragObjectWithType {
     parent?: string;
     pos?: Partial<Position>;
@@ -341,6 +345,7 @@ export interface CmsContentEntry {
     savedOn: string;
     modelId: string;
     createdBy: CmsIdentity;
+    wbyAco_location: Location;
     meta: {
         title: string;
         description?: string;
@@ -358,6 +363,7 @@ export interface CmsContentEntryRevision {
     savedOn: string;
     modelId: string;
     createdBy: CmsIdentity;
+    wbyAco_location: Location;
     meta: {
         title: string;
         publishedOn: string;

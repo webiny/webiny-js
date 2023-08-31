@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { memo, ReactElement, useMemo } from "react";
 
 import {
     DataTableContent,
@@ -19,7 +19,8 @@ import {
     OnChangeFn,
     SortingState,
     RowSelectionState,
-    Row
+    Row,
+    Cell
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
@@ -238,6 +239,37 @@ const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | nu
     return null;
 };
 
+const typedMemo: <T>(component: T) => T = memo;
+
+interface TableCellProps<T> {
+    cell: Cell<T, unknown>;
+}
+
+const TableCell = <T,>({ cell }: TableCellProps<T>) => (
+    <DataTableCell {...cell.column.columnDef.meta}>
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    </DataTableCell>
+);
+
+const MemoTableCell = typedMemo(TableCell);
+
+interface TableRowProps<T> {
+    row: Row<T>;
+    selected: boolean;
+}
+
+const TableRow = <T,>({ row, selected }: TableRowProps<T>) => {
+    return (
+        <DataTableRow selected={selected}>
+            {row.getVisibleCells().map(cell => (
+                <MemoTableCell<T> key={cell.id} cell={cell} />
+            ))}
+        </DataTableRow>
+    );
+};
+
+const MemoTableRow = typedMemo(TableRow);
+
 export const DataTable = <T extends Object & DefaultData>({
     data,
     columns,
@@ -311,17 +343,12 @@ export const DataTable = <T extends Object & DefaultData>({
                 </DataTableHead>
                 <DataTableBody>
                     {table.getRowModel().rows.map(row => (
-                        <DataTableRow
-                            key={row.id}
+                        <MemoTableRow<T>
+                            key={row.original.id || row.id}
+                            row={row}
                             selected={row.getIsSelected()}
                             data-testid="datatable-row"
-                        >
-                            {row.getVisibleCells().map(cell => (
-                                <DataTableCell key={cell.id} {...cell.column.columnDef.meta}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </DataTableCell>
-                            ))}
-                        </DataTableRow>
+                        />
                     ))}
                 </DataTableBody>
             </DataTableContent>
