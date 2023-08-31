@@ -47,6 +47,7 @@ export interface DataMigrationContext<TCheckpoint = any> {
     projectVersion: string;
     logger: Logger;
     checkpoint?: TCheckpoint;
+    forceExecute: boolean;
     runningOutOfTime: () => boolean;
     createCheckpoint: (data: TCheckpoint) => void;
     createCheckpointAndExit: (data: TCheckpoint) => void;

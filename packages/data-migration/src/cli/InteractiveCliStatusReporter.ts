@@ -5,19 +5,25 @@ import { LogReporter } from "~/cli/LogReporter";
 
 export class InteractiveCliStatusReporter implements MigrationStatusReporter {
     private logReporter: LogReporter;
+    private firstCall = true;
 
     constructor(logReporter: LogReporter) {
         this.logReporter = logReporter;
         console.log(`Using "InteractiveCliStatusReporter".`);
     }
 
-    report(migrationStatus: MigrationStatus): void {
+    async report(migrationStatus: MigrationStatus) {
         const { status, migrations, context } = migrationStatus;
         this.clearLine();
 
         const currentLogStreamName = context?.logStreamName;
         if (currentLogStreamName) {
             this.logReporter.initializeStream(currentLogStreamName);
+            if (this.firstCall) {
+                this.logReporter.printLogStreamLinks();
+                process.stdout.write(`\n---------- MIGRATION LOGS START ----------\n\n`);
+            }
+            await this.logReporter.printLogs(currentLogStreamName);
         }
 
         if (status === "running") {
@@ -35,8 +41,20 @@ export class InteractiveCliStatusReporter implements MigrationStatusReporter {
             process.stdout.write(`Checking data migrations...`);
         }
 
-        if (status === "done") {
+        if (["done", "error"].includes(status)) {
             this.clearLine();
+            process.stdout.write(`Migration run finished, waiting for latest logs...`);
+
+            // We want to give AWS some time for the latest log events to become available.
+            await new Promise(resolve => {
+                setTimeout(resolve, 8000);
+            });
+
+            if (currentLogStreamName) {
+                this.clearLine();
+                await this.logReporter.printLogs(currentLogStreamName);
+                process.stdout.write(`\n---------- MIGRATION LOGS END ----------\n`);
+            }
         }
     }
 

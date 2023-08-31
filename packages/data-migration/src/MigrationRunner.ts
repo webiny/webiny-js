@@ -165,6 +165,7 @@ export class MigrationRunner {
                 projectVersion,
                 logger,
                 checkpoint,
+                forceExecute: shouldForceExecute(migration),
                 runningOutOfTime: shouldCreateCheckpoint,
                 createCheckpoint: async (data: unknown) => {
                     await this.createCheckpoint(migration, data);
