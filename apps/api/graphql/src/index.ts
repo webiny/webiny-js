@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createApiGatewayHandler as createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-aws/gateway";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
@@ -8,7 +8,7 @@ import {
     createPageBuilderContext,
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
-import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -16,43 +16,50 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/cli
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import {
-    createFileManagerContext,
-    createFileManagerGraphQL,
-    createFileModelModifier
-} from "@webiny/api-file-manager";
+import elasticsearchClientContext, {
+    createElasticsearchClient,
+    createGzipCompression
+} from "@webiny/api-elasticsearch";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
-import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import securityPlugins from "./security";
-import tenantManager from "@webiny/api-tenant-manager";
-import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
-import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import securityPlugins from "./security";
+import tenantManager from "@webiny/api-tenant-manager";
+/**
+ * APW
+ */
+import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
+import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
-import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 
 const debug = process.env.DEBUG === "true";
+
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
     region: process.env.AWS_REGION
 });
 
+const elasticsearchClient = createElasticsearchClient({
+    endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+});
+
 export const handler = createHandler({
     plugins: [
-        createBenchmarkEnablePlugin(),
         createWcpContext(),
         createWcpGraphQL(),
         dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
+        elasticsearchClientContext(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
@@ -63,7 +70,9 @@ export const handler = createHandler({
         i18nDynamoDbStorageOperations(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
-                documentClient
+                documentClient,
+                elasticsearch: elasticsearchClient,
+                plugins: []
             })
         }),
         createHeadlessCmsGraphQL(),
@@ -79,7 +88,9 @@ export const handler = createHandler({
         }),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
-                documentClient
+                documentClient,
+                elasticsearch: elasticsearchClient,
+                plugins: []
             })
         }),
         createPageBuilderGraphQL(),
@@ -89,37 +100,18 @@ export const handler = createHandler({
         }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
-                documentClient
+                documentClient,
+                elasticsearch: elasticsearchClient
             })
         }),
+        createGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        scaffoldsPlugins(),
-        createFileModelModifier(({ modifier }) => {
-            modifier.addField({
-                id: "carMake",
-                fieldId: "carMake",
-                label: "Car Make",
-                type: "text",
-                renderer: {
-                    name: "text-input"
-                }
-            });
-
-            modifier.addField({
-                id: "year",
-                fieldId: "year",
-                label: "Year of manufacturing",
-                type: "number",
-                renderer: {
-                    name: "number-input"
-                }
-            });
-        })
+        scaffoldsPlugins()
     ],
     http: { debug }
 });
