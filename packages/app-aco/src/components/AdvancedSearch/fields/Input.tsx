@@ -8,9 +8,10 @@ import { Field } from "~/components/AdvancedSearch/types";
 
 interface InputProps {
     field: Field;
+    name: string;
 }
 
-export const Input: React.VFC<InputProps> = ({ field }) => {
+export const Input: React.VFC<InputProps> = ({ field, name }) => {
     const type = useMemo(() => {
         if (field.type === "datetime") {
             return field.settings?.type;
@@ -20,7 +21,7 @@ export const Input: React.VFC<InputProps> = ({ field }) => {
     }, [field]);
 
     return (
-        <Bind name={"value"} validators={[validation.create("required")]}>
+        <Bind name={name} validators={[validation.create("required")]}>
             <BaseInput label={"Value"} type={type} />
         </Bind>
     );

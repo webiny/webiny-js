@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { Button } from "~/components/AdvancedSearch/Button";
-import { Drawer } from "~/components/AdvancedSearch/Drawer";
+import Drawer from "~/components/AdvancedSearch/Drawer";
 
 import { Field } from "./types";
 

@@ -8,9 +8,10 @@ import { Field } from "~/components/AdvancedSearch/types";
 
 interface MultipleValuesProps {
     field: Field;
+    name: string;
 }
 
-export const MultipleValues: React.VFC<MultipleValuesProps> = ({ field }) => {
+export const MultipleValues: React.VFC<MultipleValuesProps> = ({ field, name }) => {
     const predefinedValues = useMemo(() => {
         if (!field.predefinedValues?.values) {
             return [];
@@ -23,7 +24,7 @@ export const MultipleValues: React.VFC<MultipleValuesProps> = ({ field }) => {
     }, [field]);
 
     return (
-        <Bind name={"value"} validators={[validation.create("required")]}>
+        <Bind name={name} validators={[validation.create("required")]}>
             <CheckboxGroup label="Values">
                 {({ onChange, getValue }) => (
                     <>

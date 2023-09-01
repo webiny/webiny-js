@@ -1,13 +1,13 @@
 import { makeAutoObservable } from "mobx";
 import { generateId } from "@webiny/utils";
 
-import { Filter, FilterOperation, FilterValue } from "~/components/AdvancedSearch/types";
+import { TFilter, FilterOperation, FilterValue } from "~/components/AdvancedSearch/types";
 
 /**
  * Manages a collection of filters.
  */
 export class FilterManager {
-    private _filters: Map<string, Filter> = new Map();
+    private _filters: Map<string, TFilter> = new Map();
 
     /**
      * Creates a new FilterManager instance.
@@ -20,7 +20,7 @@ export class FilterManager {
      * Retrieves an array of all filters currently managed.
      * @returns An array of Filter objects.
      */
-    listFilters(): Filter[] {
+    listFilters(): TFilter[] {
         return Array.from(this._filters.values());
     }
 
@@ -56,7 +56,7 @@ export class FilterManager {
      * @param updatedFilter - The updated filter object.
      * @throws Error if the provided filter ID does not exist.
      */
-    updateFilter(updatedFilter: Filter): void {
+    updateFilter(updatedFilter: TFilter): void {
         if (this._filters.has(updatedFilter.id)) {
             this._filters.set(updatedFilter.id, updatedFilter);
         } else {

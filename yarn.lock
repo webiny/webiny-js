@@ -14215,6 +14215,7 @@ __metadata:
     react: 17.0.2
     react-dnd: ^16.0.1
     react-dom: 17.0.2
+    react-hotkeyz: ^1.0.4
     rimraf: ^3.0.2
     slugify: ^1.2.9
     store: ^2.0.12

@@ -24,7 +24,7 @@ export type FilterValue = string | number | boolean | undefined;
 /**
  * Represents a filter configuration.
  */
-export interface Filter {
+export interface TFilter {
     /**
      * Unique identifier for the filter.
      */

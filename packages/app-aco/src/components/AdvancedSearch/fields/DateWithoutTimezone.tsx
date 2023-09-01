@@ -4,9 +4,13 @@ import { useBind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
 
-export const DateWithoutTimezone = () => {
+interface DateWithoutTimezoneProps {
+    name: string;
+}
+
+export const DateWithoutTimezone: React.VFC<DateWithoutTimezoneProps> = ({ name }) => {
     const { onChange, validate } = useBind({
-        name: "value",
+        name,
         validators: [validation.create("required")]
     });
 

@@ -4,9 +4,13 @@ import { Bind } from "@webiny/form";
 import { Switch } from "@webiny/ui/Switch";
 import { validation } from "@webiny/validation";
 
-export const Boolean = () => {
+interface BooleanProps {
+    name: string;
+}
+
+export const Boolean: React.VFC<BooleanProps> = ({ name }) => {
     return (
-        <Bind name={"value"} validators={[validation.create("required")]}>
+        <Bind name={name} validators={[validation.create("required")]}>
             <Switch label={"Selected"} />
         </Bind>
     );

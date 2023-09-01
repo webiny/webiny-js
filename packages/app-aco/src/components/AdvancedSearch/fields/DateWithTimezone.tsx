@@ -6,12 +6,16 @@ import { Select } from "@webiny/ui/Select";
 import { UTC_TIMEZONES } from "@webiny/utils";
 import { validation } from "@webiny/validation";
 
-export const DateWithTimezone = () => {
+interface DateWithTimezoneProps {
+    name: string;
+}
+
+export const DateWithTimezone: React.VFC<DateWithTimezoneProps> = ({ name }) => {
     const [dateTime, setDateTime] = useState("");
     const [timeZone, setTimeZone] = useState("+00:00");
 
     const { onChange, validate } = useBind({
-        name: "value",
+        name,
         validators: [validation.create("required")]
     });
 
