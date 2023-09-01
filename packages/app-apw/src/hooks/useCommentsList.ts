@@ -11,7 +11,7 @@ import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
 interface UseCommentsListResult {
     loading: boolean;
     comments: Array<ApwComment>;
-    refetch: () => void;
+    refetch: () => Promise<Record<string, any>> | null;
 }
 
 /**
@@ -52,14 +52,11 @@ export const useCommentsList = (): UseCommentsListResult => {
 
     const comments = dotPropImmutable.get(data, "apw.listComments.data", []);
 
-    const refetchList = () => {
+    const refetchList = (): Promise<Record<string, any>> | null => {
         if (refetch) {
-            refetch({ ...variables }).catch(e => {
-                // Do nothing.
-                console.warn("Could not re-fetch the comments list:");
-                console.log(e);
-            });
+            return refetch({ ...variables });
         }
+        return null;
     };
 
     return {

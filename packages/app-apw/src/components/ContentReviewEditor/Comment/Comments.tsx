@@ -9,7 +9,7 @@ import { useCommentsList } from "~/hooks/useCommentsList";
 import { AuthorName, richTextWrapperStyles, TypographyBody, TypographySecondary } from "../Styled";
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
-import { useInterval } from "react-interval-hook";
+import { useFetchInterval } from "~/hooks/useFetchInterval";
 
 const HEADER_HEIGHT = "65px";
 const CR_DETAIL_HEIGHT = "179px";
@@ -74,9 +74,10 @@ const COMMENTS_REFRESH_INTERVAL = 10000; // 10s
 export const Comments = React.forwardRef<HTMLDivElement>(function comments(_, ref) {
     const { comments, refetch } = useCommentsList();
 
-    useInterval(() => {
-        refetch();
-    }, COMMENTS_REFRESH_INTERVAL);
+    useFetchInterval({
+        fetchCallback: refetch,
+        fetchInterval: COMMENTS_REFRESH_INTERVAL
+    });
 
     return (
         <CommentsBox space={6} paddingX={6} paddingY={5}>
