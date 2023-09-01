@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 
-import { Drawer as RmwcDrawer } from "@webiny/ui/Drawer";
 import { IconButton } from "@webiny/ui/Button";
+import { Drawer as RmwcDrawer } from "@webiny/ui/Drawer";
+import React from "react";
 
 export const CloseButton = styled(IconButton)`
     position: absolute;
@@ -28,6 +29,12 @@ export const DrawerContainer = styled(RmwcDrawer)`
     }
 `;
 
+export const FilterWrapper = styled("div")`
+    &:first-of-type {
+        margin-top: 24px;
+    }
+`;
+
 interface PossibleHiddenFieldProps {
     hidden: boolean;
 }
@@ -35,3 +42,44 @@ interface PossibleHiddenFieldProps {
 export const PossibleHiddenField = styled("div")<PossibleHiddenFieldProps>`
     display: ${props => (props.hidden ? "none" : "visible")};
 `;
+
+interface CellInnerProps {
+    align: "left" | "center" | "right";
+}
+
+export const CellInner = styled(`div`)<CellInnerProps>`
+    text-align: ${props => props.align || "left"};
+`;
+
+export const GridOuter = styled("div")`
+    margin: 0 24px;
+    border: 4px dashed var(--mdc-theme-background);
+`;
+
+const Horizontal = styled.div`
+    display: flex;
+    height: calc(100vh - 166px);
+`;
+
+const Grow = styled.div`
+    flex: 1;
+    overflow: scroll;
+`;
+
+interface ContentProps {
+    children: React.ReactNode;
+}
+
+export const Content = ({ children }: ContentProps) => {
+    return <Horizontal>{children}</Horizontal>;
+};
+
+interface PanelProps {
+    children: React.ReactNode;
+}
+
+const Panel = ({ children }: PanelProps) => {
+    return <Grow data-role={"panel"}>{children}</Grow>;
+};
+
+Content.Panel = Panel;

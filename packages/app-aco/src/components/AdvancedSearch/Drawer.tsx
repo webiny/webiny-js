@@ -10,13 +10,12 @@ import { observer } from "mobx-react-lite";
 // @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 
-import { Content } from "./Content";
-import { FilterManager } from "./FilterManager";
+import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Filter } from "./Filter";
 
-import { DrawerContainer } from "./styled";
+import { CellInner, Content, DrawerContainer } from "./styled";
 
 import { Field, TFilter } from "./types";
 
@@ -31,14 +30,14 @@ interface FormProps {
 }
 
 export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
-    const { current: filterManager } = useRef(new FilterManager());
-    const filters = filterManager.listFilters();
+    const { current: advancedSearchPresenter } = useRef(new AdvancedSearchPresenter());
+    const filters = advancedSearchPresenter.listFilters();
 
     useEffect(() => {
-        filterManager.createFilter();
+        advancedSearchPresenter.createFilter();
 
         return () => {
-            filterManager.deleteAllFilters();
+            advancedSearchPresenter.deleteAllFilters();
         };
     }, []);
 
@@ -48,7 +47,7 @@ export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
         }
 
         for (const filter of filters) {
-            filterManager.updateFilter(filter);
+            advancedSearchPresenter.updateFilter(filter);
         }
     };
 
@@ -61,10 +60,10 @@ export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
     });
 
     const onSubmit = () => {
-        const filters = filterManager.listFilters();
+        const filters = advancedSearchPresenter.listFilters();
         console.log("filters", JSON.stringify(filters));
 
-        const filtersOutput = filterManager.getFiltersOutput();
+        const filtersOutput = advancedSearchPresenter.getFiltersOutput();
         console.log("filtersOutput", JSON.stringify(filtersOutput));
     };
 
@@ -86,24 +85,26 @@ export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
                                                 fields={fields}
                                                 onRemove={() => {
                                                     data.filters.splice(index, 1);
-                                                    filterManager.deleteFilter(filter.id);
+                                                    advancedSearchPresenter.deleteFilter(filter.id);
                                                 }}
                                             />
                                         ))}
                                         <Grid>
                                             <Cell span={12}>
-                                                <Tooltip
-                                                    content={"Add filter"}
-                                                    placement={"bottom"}
-                                                >
-                                                    <IconButton
-                                                        icon={<AddIcon />}
-                                                        onClick={() => {
-                                                            filterManager.createFilter();
-                                                        }}
-                                                        label={"Add field"}
-                                                    />
-                                                </Tooltip>
+                                                <CellInner align={"center"}>
+                                                    <Tooltip
+                                                        content={"Add field"}
+                                                        placement={"bottom"}
+                                                    >
+                                                        <IconButton
+                                                            icon={<AddIcon />}
+                                                            onClick={() => {
+                                                                advancedSearchPresenter.createFilter();
+                                                            }}
+                                                            label={"Add field"}
+                                                        />
+                                                    </Tooltip>
+                                                </CellInner>
                                             </Cell>
                                         </Grid>
                                     </Content.Panel>

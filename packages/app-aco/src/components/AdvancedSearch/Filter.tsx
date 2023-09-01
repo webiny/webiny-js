@@ -5,11 +5,13 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { validation } from "@webiny/validation";
 import { IconButton } from "@webiny/ui/Button";
-
-import { Field, TFilter } from "~/components/AdvancedSearch/types";
-import { InputField } from "~/components/AdvancedSearch/InputField";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
-import { PossibleHiddenField } from "~/components/AdvancedSearch/styled";
+
+import { InputField } from "./InputField";
+
+import { CellInner, FilterWrapper, GridOuter, PossibleHiddenField } from "./styled";
+
+import { Field, TFilter } from "./types";
 
 interface FilterProps {
     filter: TFilter;
@@ -181,66 +183,72 @@ export const Filter: React.VFC<FilterProps> = ({ filter, fields, onRemove, index
     }, []);
 
     return (
-        <>
+        <FilterWrapper>
             <Bind name={`filters.${index}.id`} defaultValue={filter.id}></Bind>
             <PossibleHiddenField hidden={index === 0}>
                 <Grid>
                     <Cell span={12} align={"middle"}>
-                        <Bind name={`filters.${index}.operation`} defaultValue={"AND"}>
-                            <RadioGroup label="Operation">
-                                {({ onChange, getValue }) => (
-                                    <>
-                                        {["AND", "OR"].map(option => (
-                                            <Radio
-                                                key={option}
-                                                label={option}
-                                                value={getValue(option)}
-                                                onChange={onChange(option)}
-                                            />
-                                        ))}
-                                    </>
-                                )}
-                            </RadioGroup>
-                        </Bind>
+                        <CellInner align={"center"}>
+                            <Bind name={`filters.${index}.operation`} defaultValue={"AND"}>
+                                <RadioGroup>
+                                    {({ onChange, getValue }) => (
+                                        <>
+                                            {["AND", "OR"].map(option => (
+                                                <Radio
+                                                    key={option}
+                                                    label={option}
+                                                    value={getValue(option)}
+                                                    onChange={onChange(option)}
+                                                />
+                                            ))}
+                                        </>
+                                    )}
+                                </RadioGroup>
+                            </Bind>
+                        </CellInner>
                     </Cell>
                 </Grid>
             </PossibleHiddenField>
-            <Grid>
-                <Cell span={4}>
-                    <Bind
-                        name={`filters.${index}.field`}
-                        validators={[validation.create("required")]}
-                    >
-                        <Select label={"Field"} options={getFieldOptions()} />
-                    </Bind>
-                </Cell>
-                <Cell span={3}>
-                    {filter.field && (
+            <GridOuter>
+                <Grid>
+                    <Cell span={4}>
                         <Bind
-                            name={`filters.${index}.condition`}
+                            name={`filters.${index}.field`}
                             validators={[validation.create("required")]}
                         >
-                            <Select
-                                label={"Condition"}
-                                options={getConditionOptions(
-                                    fields.find(field => field.id === filter.field)
-                                )}
-                            />
+                            <Select label={"Field"} options={getFieldOptions()} />
                         </Bind>
-                    )}
-                </Cell>
-                <Cell span={4} align={"middle"}>
-                    {filter.condition && (
-                        <InputField
-                            name={`filters.${index}.value`}
-                            field={fields.find(field => field.id === filter.field)}
-                        />
-                    )}
-                </Cell>
-                <Cell span={1} align={"middle"}>
-                    <IconButton icon={<DeleteIcon />} onClick={() => onRemove(filter.id)} />
-                </Cell>
-            </Grid>
-        </>
+                    </Cell>
+                    <Cell span={3}>
+                        {filter.field && (
+                            <Bind
+                                name={`filters.${index}.condition`}
+                                validators={[validation.create("required")]}
+                            >
+                                <Select
+                                    label={"Condition"}
+                                    options={getConditionOptions(
+                                        fields.find(field => field.id === filter.field)
+                                    )}
+                                />
+                            </Bind>
+                        )}
+                    </Cell>
+                    <Cell span={4} align={"middle"}>
+                        {filter.condition && (
+                            <InputField
+                                name={`filters.${index}.value`}
+                                field={fields.find(field => field.id === filter.field)}
+                            />
+                        )}
+                    </Cell>
+                    <Cell span={1} align={"middle"}>
+                        <CellInner align={"center"}>
+                            <IconButton icon={<DeleteIcon />} onClick={() => onRemove(filter.id)} />
+                        </CellInner>
+                    </Cell>
+                </Grid>
+            </GridOuter>
+        </FilterWrapper>
     );
 };
