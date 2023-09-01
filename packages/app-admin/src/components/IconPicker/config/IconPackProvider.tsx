@@ -1,10 +1,10 @@
 import React from "react";
 import { Property } from "@webiny/react-properties";
 
-import { Icon, IconConfig } from "./Icon";
+import { Icon, IconProps } from "./Icon";
 
 export type IconPackProviderProps = {
-    provider: () => IconConfig[];
+    provider: () => IconProps[];
 };
 
 export const IconPackProvider = ({ provider }: IconPackProviderProps) => {

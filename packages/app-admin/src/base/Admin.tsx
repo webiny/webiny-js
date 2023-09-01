@@ -8,6 +8,7 @@ import { createUiStateProvider } from "./providers/UiStateProvider";
 import { SearchProvider } from "./ui/Search";
 import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
+import { DefaultIcons } from "~/components/IconPicker/config";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ThemeProvider } from "@webiny/app-theme";
 
@@ -31,6 +32,7 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
                         <Provider hoc={SearchProvider} />
                         <Provider hoc={UserMenuProvider} />
                         <Provider hoc={NavigationProvider} />
+                        <DefaultIcons />
                         <Base />
                         {children}
                     </App>

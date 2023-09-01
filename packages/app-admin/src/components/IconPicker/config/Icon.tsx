@@ -1,20 +1,13 @@
 import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
-export interface IconConfig {
-    type: string;
-    name: string;
-    color?: string;
-    skinTone?: string;
-    value: string;
-}
-
 export interface IconProps {
     type: string;
     name: string;
-    color?: string;
-    skinTone?: string;
+    skinToneSupport?: boolean;
+    category?: string;
     value: string;
+    width?: number;
     remove?: boolean;
     before?: string;
     after?: string;
@@ -23,9 +16,10 @@ export interface IconProps {
 export const Icon: React.FC<IconProps> = ({
     type,
     name,
-    color,
-    skinTone,
+    skinToneSupport,
+    category,
     value,
+    width,
     after = undefined,
     before = undefined,
     remove = false
@@ -46,10 +40,17 @@ export const Icon: React.FC<IconProps> = ({
         >
             <Property id={getId(name, "type")} name={"type"} value={type} />
             <Property id={getId(name, "name")} name={"name"} value={name} />
-            {color ? <Property id={getId(name, "color")} name={"color"} value={color} /> : null}
-            {skinTone ? (
-                <Property id={getId(name, "skinTone")} name={"skinTone"} value={skinTone} />
+            {typeof skinToneSupport !== "undefined" ? (
+                <Property
+                    id={getId(name, "skinToneSupport")}
+                    name={"skinToneSupport"}
+                    value={skinToneSupport}
+                />
             ) : null}
+            {category ? (
+                <Property id={getId(name, "category")} name={"category"} value={category} />
+            ) : null}
+            {width ? <Property id={getId(name, "width")} name={"width"} value={width} /> : null}
             <Property id={getId(name, "value")} name={"value"} value={value} />
         </Property>
     );
