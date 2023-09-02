@@ -9,6 +9,7 @@ import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "../common";
 import { getAwsAccountId } from "~/apps/awsUtils";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 export type ApiFileManager = PulumiAppModule<typeof ApiFileManager>;
 
@@ -33,7 +34,7 @@ export const ApiFileManager = createAppModule({
             config: {
                 handler: "handler.handler",
                 timeout: 30,
-                runtime: "nodejs16.x",
+                runtime: LAMBDA_RUNTIME,
                 memorySize: 1600,
                 role: role.output.arn,
                 description: "Performs image optimization, resizing, etc.",
@@ -57,7 +58,7 @@ export const ApiFileManager = createAppModule({
             name: "fm-manage",
             config: {
                 role: role.output.arn,
-                runtime: "nodejs16.x",
+                runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
                 timeout: 30,
                 memorySize: 512,
@@ -81,7 +82,7 @@ export const ApiFileManager = createAppModule({
             name: "fm-download",
             config: {
                 role: role.output.arn,
-                runtime: "nodejs16.x",
+                runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
                 timeout: 30,
                 memorySize: 512,

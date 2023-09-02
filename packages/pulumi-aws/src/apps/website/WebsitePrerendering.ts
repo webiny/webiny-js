@@ -10,6 +10,7 @@ import { getLayerArn } from "@webiny/aws-layers";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "../common";
 import { getAwsAccountId } from "../awsUtils";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 interface PreRenderingServiceParams {
     dbTableName: pulumi.Output<string>;
@@ -97,7 +98,7 @@ function createRenderSubscriber(
         name: "ps-render-subscriber-lambda",
         config: {
             role: role.output.arn,
-            runtime: "nodejs16.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 30,
             memorySize: 512,
@@ -178,7 +179,7 @@ function createRenderer(
         name: "ps-render-lambda",
         config: {
             role: role.output.arn,
-            runtime: "nodejs16.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 300,
             memorySize: 2048,
@@ -232,7 +233,7 @@ function createFlushService(
         name: "ps-flush-lambda",
         config: {
             role: role.output.arn,
-            runtime: "nodejs16.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 30,
             memorySize: 512,
