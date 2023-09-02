@@ -16,8 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.22.6",
-    "@sparticuz/chrome-aws-lambda": "^17.1.3",
-    "@sparticuz/chromium": "^109.0.6",
+    "@sparticuz/chromium": "109.0.0",
     "@webiny/api": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
@@ -30,7 +29,7 @@
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",
     "posthtml-plugin-link-preload": "^1.0.0",
-    "puppeteer-core": "^5.5.0",
+    "puppeteer-core": "19.4.1",
     "shortid": "^2.2.16",
     "srcset": "^4.0.0"
   },

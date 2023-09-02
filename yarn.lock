@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 5
+  version: 6
   cacheKey: 8
 
 "@4tw/cypress-drag-drop@npm:^1.4.0":
@@ -7502,7 +7502,7 @@ __metadata:
 
 "@lerna/publish@patch:@lerna/publish@npm:3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67::locator=root-workspace-0b6124%40workspace%3A.":
   version: 3.22.1
-  resolution: "@lerna/publish@patch:@lerna/publish@npm%3A3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67::version=3.22.1&hash=ba03d4&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@lerna/publish@patch:@lerna/publish@npm%3A3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67::version=3.22.1&hash=05f114&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@evocateur/libnpmaccess": ^3.1.2
     "@evocateur/npm-registry-fetch": ^4.0.0
@@ -7699,7 +7699,7 @@ __metadata:
 
 "@lerna/version@patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd::locator=root-workspace-0b6124%40workspace%3A.":
   version: 3.22.1
-  resolution: "@lerna/version@patch:@lerna/version@npm%3A3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd::version=3.22.1&hash=3225b1&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@lerna/version@patch:@lerna/version@npm%3A3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd::version=3.22.1&hash=f0cd00&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@lerna/check-working-tree": 3.16.5
     "@lerna/child-process": 3.16.5
@@ -10346,23 +10346,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sparticuz/chrome-aws-lambda@npm:^17.1.3":
-  version: 17.1.3
-  resolution: "@sparticuz/chrome-aws-lambda@npm:17.1.3"
+"@sparticuz/chromium@npm:109.0.0":
+  version: 109.0.0
+  resolution: "@sparticuz/chromium@npm:109.0.0"
   dependencies:
     tar-fs: ^2.1.1
-  peerDependencies:
-    puppeteer-core: 17.1.3
-  checksum: 170319d6dad57bb11bbca59b4764aad0e00a9a4d06d16d7b75363a2d479e5fcbfbc46de11c8ba8b57698c468debe66af67dad3402e12ec0da83195820ebc6519
-  languageName: node
-  linkType: hard
-
-"@sparticuz/chromium@npm:^109.0.6":
-  version: 109.0.6
-  resolution: "@sparticuz/chromium@npm:109.0.6"
-  dependencies:
-    tar-fs: ^2.1.1
-  checksum: fe7ad15cac07916d9efba2aed10c626a0ab99fa645e12d3a4a7af04c8bd28ee26d183d9461a85b27de61b878dfb5b5abdcc94330bb0de15731e24cb110a79ff3
+  checksum: b8d3fb5c91ba944b2bc0117e501ce16eb8981ecbee1267f78457e5fa4fadd7457020ca46e63c00a4c1f789112592b259b97030c751f43a00721e97577a90abd4
   languageName: node
   linkType: hard
 
@@ -13921,8 +13910,7 @@ __metadata:
     "@babel/preset-env": ^7.22.7
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
-    "@sparticuz/chrome-aws-lambda": ^17.1.3
-    "@sparticuz/chromium": ^109.0.6
+    "@sparticuz/chromium": 109.0.0
     "@types/object-hash": ^2.2.1
     "@types/puppeteer-core": ^5.4.0
     "@webiny/api": 0.0.0
@@ -13941,7 +13929,7 @@ __metadata:
     posthtml-noopener: ^1.0.5
     posthtml-plugin-link-preload: ^1.0.0
     prettier: ^2.8.3
-    puppeteer-core: ^5.5.0
+    puppeteer-core: 19.4.1
     rimraf: ^3.0.2
     shortid: ^2.2.16
     srcset: ^4.0.0
@@ -17307,13 +17295,6 @@ __metadata:
   dependencies:
     es6-promisify: ^5.0.0
   checksum: 0c10891060e579c67efafd6b62223666c4b4129b521eac3e9ad272a137545bcedb54ce352273b7ad21a0024060e4f1360ae9a465ac87e2af18883c937d39979f
-  languageName: node
-  linkType: hard
-
-"agent-base@npm:5":
-  version: 5.1.1
-  resolution: "agent-base@npm:5.1.1"
-  checksum: 61ae789f3019f1dc10e8cba6d3ae9826949299a4e54aaa1cfa2fa37c95a108e70e95423b963bb987d7891a703fd9a5c383a506f4901819f3ee56f3147c0aa8ab
   languageName: node
   linkType: hard
 
@@ -22051,7 +22032,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.0.6":
+"cross-fetch@npm:3.1.5, cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.0.6":
   version: 3.1.5
   resolution: "cross-fetch@npm:3.1.5"
   dependencies:
@@ -22809,7 +22790,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1":
+"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -23337,10 +23318,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devtools-protocol@npm:0.0.818844":
-  version: 0.0.818844
-  resolution: "devtools-protocol@npm:0.0.818844"
-  checksum: a05c8588950c30e5262152c63ad8eef3eb208816c412599465b223e4a1795b7f3f78447d0c8149cc135b9816b3d3467b00ce30dc5b4ba49f6db05f206a364077
+"devtools-protocol@npm:0.0.1068969":
+  version: 0.0.1068969
+  resolution: "devtools-protocol@npm:0.0.1068969"
+  checksum: 53b9c8d661e4148eaf8e990f03902fb3a2cceb06044f661013b6c92dd48ece397ef49fd18401775823c9a33069b4b535502f2559d4f99c74a6bdcb71582b6c8a
   languageName: node
   linkType: hard
 
@@ -25499,7 +25480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"extract-zip@npm:2.0.1, extract-zip@npm:^2.0.0":
+"extract-zip@npm:2.0.1":
   version: 2.0.1
   resolution: "extract-zip@npm:2.0.1"
   dependencies:
@@ -26669,7 +26650,7 @@ __metadata:
 
 "fsevents@patch:fsevents@*#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.0.7#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -26678,7 +26659,7 @@ __metadata:
 
 "fsevents@patch:fsevents@^1.2.7#~builtin<compat/fsevents>":
   version: 1.2.13
-  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=d11327"
   dependencies:
     bindings: ^1.5.0
     nan: ^2.12.1
@@ -28241,7 +28222,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:5, https-proxy-agent@npm:^5.0.0, https-proxy-agent@npm:^5.0.1":
+"https-proxy-agent@npm:5, https-proxy-agent@npm:5.0.1, https-proxy-agent@npm:^5.0.0, https-proxy-agent@npm:^5.0.1":
   version: 5.0.1
   resolution: "https-proxy-agent@npm:5.0.1"
   dependencies:
@@ -28258,16 +28239,6 @@ __metadata:
     agent-base: ^4.3.0
     debug: ^3.1.0
   checksum: 5fa8eab256b117a8badb5747bedf8b3a9de1fbabdccb26ff3132385426fdc3ad3c8b092ce52a1b74c70229b971df623f4f5a0c17f78e6a8fe5d10fc65d6ed8b8
-  languageName: node
-  linkType: hard
-
-"https-proxy-agent@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "https-proxy-agent@npm:4.0.0"
-  dependencies:
-    agent-base: 5
-    debug: 4
-  checksum: 19471d5aae3e747b1c98b17556647e2a1362e68220c6b19585a8527498f32e62e03c41d2872d059d8720d56846bd7460a80ac06f876bccfa786468ff40dd5eef
   languageName: node
   linkType: hard
 
@@ -36680,13 +36651,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"progress@npm:^2.0.1":
-  version: 2.0.3
-  resolution: "progress@npm:2.0.3"
-  checksum: f67403fe7b34912148d9252cb7481266a354bd99ce82c835f79070643bb3c6583d10dbcfda4d41e04bbc1d8437e9af0fb1e1f2135727878f5308682a579429b7
-  languageName: node
-  linkType: hard
-
 "promise-inflight@npm:^1.0.1":
   version: 1.0.1
   resolution: "promise-inflight@npm:1.0.1"
@@ -36866,7 +36830,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-from-env@npm:^1.0.0":
+"proxy-from-env@npm:1.1.0, proxy-from-env@npm:^1.0.0":
   version: 1.1.0
   resolution: "proxy-from-env@npm:1.1.0"
   checksum: ed7fcc2ba0a33404958e34d95d18638249a68c430e30fcb6c478497d72739ba64ce9810a24f53a7d921d0c065e5b78e3822759800698167256b04659366ca4d4
@@ -36978,23 +36942,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "puppeteer-core@npm:5.5.0"
+"puppeteer-core@npm:19.4.1":
+  version: 19.4.1
+  resolution: "puppeteer-core@npm:19.4.1"
   dependencies:
-    debug: ^4.1.0
-    devtools-protocol: 0.0.818844
-    extract-zip: ^2.0.0
-    https-proxy-agent: ^4.0.0
-    node-fetch: ^2.6.1
-    pkg-dir: ^4.2.0
-    progress: ^2.0.1
-    proxy-from-env: ^1.0.0
-    rimraf: ^3.0.2
-    tar-fs: ^2.0.0
-    unbzip2-stream: ^1.3.3
-    ws: ^7.2.3
-  checksum: b50e55dd6e88524e50fa6b71dd45b32d7ff556e21f60f4ec0cf0ca686248959abcb14d98e5bb7324210ac822b041b773d9bd17c49ea95641f9c7a1f66ed88eec
+    cross-fetch: 3.1.5
+    debug: 4.3.4
+    devtools-protocol: 0.0.1068969
+    extract-zip: 2.0.1
+    https-proxy-agent: 5.0.1
+    proxy-from-env: 1.1.0
+    rimraf: 3.0.2
+    tar-fs: 2.1.1
+    unbzip2-stream: 1.4.3
+    ws: 8.11.0
+  checksum: f4db1aa1d1e642356744bed2dc49ff7960a8b530d147ace1fe067937433ae40234ea973260b9b264d53a2f2297f53df796d008d4756f735b3f0a64a69724eaba
   languageName: node
   linkType: hard
 
@@ -39071,7 +39033,7 @@ __metadata:
 
 "resolve@patch:resolve@1.12.2#~builtin<compat/resolve>":
   version: 1.12.2
-  resolution: "resolve@patch:resolve@npm%3A1.12.2#~builtin<compat/resolve>::version=1.12.2&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A1.12.2#~builtin<compat/resolve>::version=1.12.2&hash=c3c19d"
   dependencies:
     path-parse: ^1.0.6
   checksum: bcced97f4105a3b44e73ae4f1f088435fc3679c6056f6cf2f331f19d0586375c612a1d9812e33d12941566ec2ac3face0ed0c656b55f82c13666c28b801d6882
@@ -39080,7 +39042,7 @@ __metadata:
 
 "resolve@patch:resolve@>=1.9.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.7.1#~builtin<compat/resolve>":
   version: 1.22.1
-  resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"
   dependencies:
     is-core-module: ^2.9.0
     path-parse: ^1.0.7
@@ -39093,7 +39055,7 @@ __metadata:
 
 "resolve@patch:resolve@^2.0.0-next.4#~builtin<compat/resolve>":
   version: 2.0.0-next.4
-  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=c3c19d"
   dependencies:
     is-core-module: ^2.9.0
     path-parse: ^1.0.7
@@ -41438,7 +41400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-fs@npm:^2.0.0, tar-fs@npm:^2.1.1":
+"tar-fs@npm:2.1.1, tar-fs@npm:^2.1.1":
   version: 2.1.1
   resolution: "tar-fs@npm:2.1.1"
   dependencies:
@@ -42572,11 +42534,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>":
   version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=ddd1e8"
+  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 96d3030cb01143570567cb4f3a616b10df65f658f0e74e853e77a089a6a954e35c800be7db8b9bfe9a1ae05d9c2897e281359f65e4caa1caf266368e1c4febd3
+  checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
   languageName: node
   linkType: hard
 
@@ -42629,7 +42591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unbzip2-stream@npm:^1.0.9, unbzip2-stream@npm:^1.3.3":
+"unbzip2-stream@npm:1.4.3, unbzip2-stream@npm:^1.0.9":
   version: 1.4.3
   resolution: "unbzip2-stream@npm:1.4.3"
   dependencies:
@@ -44131,7 +44093,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.0.0, ws@npm:^7.2.0, ws@npm:^7.2.3":
+"ws@npm:8.11.0":
+  version: 8.11.0
+  resolution: "ws@npm:8.11.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 316b33aba32f317cd217df66dbfc5b281a2f09ff36815de222bc859e3424d83766d9eb2bd4d667de658b6ab7be151f258318fb1da812416b30be13103e5b5c67
+  languageName: node
+  linkType: hard
+
+"ws@npm:^7.0.0, ws@npm:^7.2.0":
   version: 7.5.9
   resolution: "ws@npm:7.5.9"
   peerDependencies:

@@ -1,7 +1,4 @@
-// TODO figure out which chromium to use
 import chromium from "@sparticuz/chromium";
-// TODO puppeteer needs to be updated to support newer chromium versions
-// https://pptr.dev/chromium-support
 import puppeteer, { Browser, Page } from "puppeteer-core";
 import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
@@ -133,13 +130,14 @@ export const defaultRenderUrlFunction = async (
 ): Promise<RenderResult> => {
     let browser!: Browser;
 
+    // NOTE: For the next upgrade (once we have a newer AWS layer for chromium), this issue contains some useful information:
+    // https://github.com/Sparticuz/chromium/issues/85
+
     try {
-        // TODO figure out the executable path
-        const executablePath = await chromium.executablePath();
         browser = await puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
-            executablePath,
+            executablePath: await chromium.executablePath,
             headless: chromium.headless,
             ignoreHTTPSErrors: true
         });
@@ -223,7 +221,16 @@ export const defaultRenderUrlFunction = async (
         };
     } finally {
         if (browser) {
+            // We need to close all open pages first, to prevent browser from hanging when closed.
+            const pages = await browser.pages();
+            for (const page of pages) {
+                await page.close();
+            }
+
+            // Now we can attempt to close the browser.
+            console.log("Closing browser...");
             await browser.close();
+            console.log("Browser closed!");
         }
     }
 
