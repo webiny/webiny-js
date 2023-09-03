@@ -7,11 +7,13 @@ import {
 } from "~/graphql/comment.gql";
 import { ApwComment } from "~/types";
 import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
+import { NetworkStatus } from "apollo-client";
 
 interface UseCommentsListResult {
     loading: boolean;
     comments: Array<ApwComment>;
     refetch: () => Promise<Record<string, any>> | null;
+    networkStatus: NetworkStatus;
 }
 
 /**
@@ -42,7 +44,7 @@ export const useListCommentsVariables = () => {
 export const useCommentsList = (): UseCommentsListResult => {
     const variables = useListCommentsVariables();
 
-    const { data, loading, refetch } = useQuery<
+    const { data, loading, refetch, networkStatus } = useQuery<
         ListCommentsQueryResponse,
         ListCommentsQueryVariables
     >(LIST_COMMENTS_QUERY, {
@@ -62,6 +64,7 @@ export const useCommentsList = (): UseCommentsListResult => {
     return {
         comments,
         loading,
-        refetch: refetchList
+        refetch: refetchList,
+        networkStatus
     };
 };
