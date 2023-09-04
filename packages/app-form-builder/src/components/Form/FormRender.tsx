@@ -3,7 +3,6 @@ import cloneDeep from "lodash/cloneDeep";
 import React, { useEffect, useRef, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
-import { FormAPI } from "@webiny/form";
 import {
     createFormSubmission,
     handleFormTriggers,
@@ -44,7 +43,7 @@ interface FieldValidator {
 const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
-    const [currentStep, setCurrentStep] = useState<number>(0);
+    const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
 
     useEffect((): void => {
         if (!data.id) {
@@ -61,7 +60,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     // so it won't trigger an error when we trying to view the step that we have deleted,
     // we will simpy change currentStep to the first step.
     useEffect(() => {
-        setCurrentStep(0);
+        setCurrentStepIndex(0);
     }, [data.steps.length]);
 
     const reCaptchaResponseToken = useRef("");
@@ -72,11 +71,11 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     }
 
     const goToNextStep = () => {
-        setCurrentStep(prevStep => (prevStep += 1));
+        setCurrentStepIndex(prevStep => (prevStep += 1));
     };
 
     const goToPreviousStep = () => {
-        setCurrentStep(prevStep => (prevStep -= 1));
+        setCurrentStepIndex(prevStep => (prevStep -= 1));
     };
 
     const formData: FbFormModel = cloneDeep(data);
@@ -84,6 +83,12 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
 
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
+
+    // We need this check in case we deleted last step and at the same time we were previewing it.
+    const currentStep =
+        steps[currentStepIndex] === undefined
+            ? steps[formData.steps.length - 1]
+            : steps[currentStepIndex];
 
     const getFieldById = (id: string): FbFormModelField | null => {
         return fields.find(field => field._id === id) || null;
@@ -197,16 +202,6 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return formSubmission;
     };
 
-    const validateCurrentStepFields = (form: FormAPI) => {
-        const { validate } = form;
-
-        validate().then(isValid => {
-            if (isValid) {
-                goToNextStep();
-            }
-        });
-    };
-
     const layouts: Array<FbFormLayout> = React.useMemo(() => {
         return plugins.byType<FbFormLayoutPlugin>(FbFormLayoutPlugin.type).map(pl => pl.layout);
     }, []);
@@ -238,8 +233,9 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         getDefaultValues,
         getFields,
         submit,
+        goToNextStep,
         goToPreviousStep,
-        validateCurrentStepFields,
+        currentStepIndex,
         currentStep,
         isMultiStepForm,
         formData,

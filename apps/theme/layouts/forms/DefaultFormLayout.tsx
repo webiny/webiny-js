@@ -27,7 +27,7 @@ const ButtonsWrapper = styled.div`
         height: 45px;
     }
 
-    & button:first-child {
+    & button:first-of-type {
         margin-right: 15px;
     }
 `;
@@ -47,9 +47,10 @@ const DefaultFormLayout: FormLayoutComponent = ({
     getFields,
     getDefaultValues,
     submit,
-    validateCurrentStepFields,
+    goToNextStep,
     goToPreviousStep,
     isMultiStepForm,
+    currentStepIndex,
     currentStep,
     formData,
     ReCaptcha,
@@ -64,17 +65,20 @@ const DefaultFormLayout: FormLayoutComponent = ({
     const [formSuccess, setFormSuccess] = useState(false);
 
     // All form fields - an array of rows where each row is an array that contain fields.
-    const fields = getFields(currentStep);
-
+    const fields = getFields(currentStepIndex);
     /**
      * Once the data is successfully submitted, we show a success message.
      */
     const submitForm = async (data: Record<string, any>): Promise<void> => {
-        setLoading(true);
-        const result = await submit(data);
-        setLoading(false);
-        if (result.error === null) {
-            setFormSuccess(true);
+        if (isMultiStepForm && currentStepIndex !== formData.steps.length - 1) {
+            goToNextStep();
+        } else {
+            setLoading(true);
+            const result = await submit(data);
+            setLoading(false);
+            if (result.error === null) {
+                setFormSuccess(true);
+            }
         }
     };
 
@@ -82,19 +86,13 @@ const DefaultFormLayout: FormLayoutComponent = ({
         return <SuccessMessage formData={formData} />;
     }
 
-    // We need this check in case we deleted last step and at the same time we were previewing it.
-    const stepTitle: string =
-        formData.steps[currentStep] === undefined
-            ? formData.steps[formData.steps.length - 1].title
-            : formData.steps[currentStep].title;
-
     return (
         /* "onSubmit" callback gets triggered once all the fields are valid. */
         /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
-            {({ submit, form }) => (
+            {({ submit }) => (
                 <Wrapper>
-                    <StepTitle>{stepTitle}</StepTitle>
+                    <StepTitle>{currentStep?.title}</StepTitle>
                     {fields.map((row, rowIndex) => (
                         <Row key={rowIndex}>
                             {row.map(field => (
@@ -112,21 +110,18 @@ const DefaultFormLayout: FormLayoutComponent = ({
                     */}
                     {isMultiStepForm && (
                         <ButtonsWrapper>
-                            <DefaultButton onClick={goToPreviousStep} disabled={currentStep === 0}>
+                            <DefaultButton
+                                onClick={goToPreviousStep}
+                                disabled={currentStepIndex === 0}
+                            >
                                 Previous Step
                             </DefaultButton>
-                            {currentStep === formData.steps.length - 1 ? (
+                            {currentStepIndex === formData.steps.length - 1 ? (
                                 <SubmitButton onClick={submit} loading={loading} fullWidth={false}>
                                     {formData.settings.submitButtonLabel || "Submit"}
                                 </SubmitButton>
                             ) : (
-                                <SubmitButton
-                                    onClick={() => {
-                                        validateCurrentStepFields(form);
-                                    }}
-                                    loading={loading}
-                                    fullWidth={false}
-                                >
+                                <SubmitButton onClick={submit} loading={loading} fullWidth={false}>
                                     Next Step
                                 </SubmitButton>
                             )}

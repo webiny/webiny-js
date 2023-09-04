@@ -12,7 +12,14 @@ import {
 import Draggable from "../../../Draggable";
 import EditFieldDialog from "../EditFieldDialog";
 import Field from "../Field";
-import { rowHandle, fieldHandle, fieldContainer, Row, RowContainer } from "../Styled";
+import {
+    rowHandle,
+    fieldHandle,
+    fieldContainer,
+    Row,
+    RowContainer,
+    StyledAccordionItem
+} from "../Styled";
 
 import { Icon } from "@webiny/ui/Icon";
 import { Accordion } from "@webiny/ui/Accordion";
@@ -134,7 +141,7 @@ export const FormStep = ({
                 <div className={rowHandle}>
                     <Icon icon={<HandleIcon />} />
                 </div>
-                <AccordionItem
+                <StyledAccordionItem
                     title={title}
                     open={true}
                     actions={
@@ -291,7 +298,7 @@ export const FormStep = ({
                             editField(null);
                         }}
                     />
-                </AccordionItem>
+                </StyledAccordionItem>
             </Accordion>
         </div>
     );

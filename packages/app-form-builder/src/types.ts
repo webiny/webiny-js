@@ -295,12 +295,13 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: (stepIndex: number) => FormRenderFbFormModelField[][];
+    getFields: (stepIndex?: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
+    goToNextStep: () => void;
     goToPreviousStep: () => void;
-    validateCurrentStepFields: (form: FormAPI) => void;
     isMultiStepForm: boolean;
-    currentStep: number;
+    currentStepIndex: number;
+    currentStep: FbFormStep;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;

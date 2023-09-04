@@ -22,7 +22,6 @@ import {
     CreateFormParamsFormLayoutComponent,
     CreateFormParamsValidator
 } from "./types";
-import { FormAPI } from "@webiny/form";
 
 interface FieldValidator {
     (value: string): Promise<boolean>;
@@ -37,18 +36,23 @@ export interface FormRenderProps {
 const FormRender: React.FC<FormRenderProps> = props => {
     const { formData, createFormParams } = props;
     const { preview = false, formLayoutComponents = [] } = createFormParams;
-    const [currentStep, setCurrentStep] = useState<number>(0);
+    const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
 
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
 
     const goToNextStep = () => {
-        setCurrentStep(prevStep => (prevStep += 1));
+        setCurrentStepIndex(prevStep => (prevStep += 1));
     };
 
     const goToPreviousStep = () => {
-        setCurrentStep(prevStep => (prevStep -= 1));
+        setCurrentStepIndex(prevStep => (prevStep -= 1));
     };
+
+    const currentStep =
+        formData.steps[currentStepIndex] === undefined
+            ? formData.steps[formData.steps.length - 1]
+            : formData.steps[currentStepIndex];
 
     const fieldValidators = useMemo<CreateFormParamsValidator[]>(() => {
         let validators: CreateFormParamsValidator[] = [];
@@ -184,7 +188,6 @@ const FormRender: React.FC<FormRenderProps> = props => {
                 }
             };
         }
-
         const formSubmission = await createFormSubmission({
             props,
             formSubmissionFieldValues,
@@ -193,16 +196,6 @@ const FormRender: React.FC<FormRenderProps> = props => {
 
         await handleFormTriggers({ props, formSubmissionData: formSubmissionFieldValues });
         return formSubmission;
-    };
-
-    const validateCurrentStepFields = (form: FormAPI) => {
-        const { validate } = form;
-
-        validate().then(isValid => {
-            if (isValid) {
-                goToNextStep();
-            }
-        });
     };
 
     const ReCaptcha = createReCaptchaComponent({
@@ -223,9 +216,10 @@ const FormRender: React.FC<FormRenderProps> = props => {
         getDefaultValues,
         getFields,
         submit,
+        goToNextStep,
         goToPreviousStep,
-        validateCurrentStepFields,
         isMultiStepForm,
+        currentStepIndex,
         currentStep,
         formData,
         ReCaptcha,
