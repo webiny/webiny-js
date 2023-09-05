@@ -212,7 +212,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const filteredData = filter === "" ? models : models.filter(filterData);
     const contentModels = sortData(filteredData);
 
-    const { handleModelsExport, handleModelExport } = useModelExport(contentModels);
+    const { handleModelsExport, handleModelExport } = useModelExport();
 
     const onRefreshClick = useCallback(() => {
         refresh();

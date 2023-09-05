@@ -15,7 +15,11 @@ export const createExportStructureContext = (context: CmsContext): HeadlessCmsEx
          */
         const models = (await context.cms.listModels())
             .filter(model => {
-                if (!modelIdList?.length) {
+                if (model.isPrivate) {
+                    return false;
+                } else if (!model.fields?.length) {
+                    return false;
+                } else if (!modelIdList?.length) {
                     return true;
                 }
                 return modelIdList.includes(model.modelId);
@@ -28,12 +32,12 @@ export const createExportStructureContext = (context: CmsContext): HeadlessCmsEx
                 return sanitizeModel(group, model);
             })
             .filter((model): model is SanitizedCmsModel => {
-                return model !== null;
+                return !!model;
             });
 
         return {
             groups: groups.filter(group => {
-                return models.some(model => model.group.id === group.id);
+                return models.some(model => model.group === group.id);
             }),
             models
         };
