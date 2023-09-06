@@ -10,7 +10,7 @@ export const CloseButton = styled(IconButton)`
 `;
 
 export const DrawerContainer = styled(RmwcDrawer)`
-    width: 50vw;
+    width: 1000px;
     /* Fix for the dir=rtl when a form is inside a drawer placed on the right side */
     .mdc-floating-label {
         transform-origin: left top !important;

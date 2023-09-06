@@ -11,10 +11,10 @@ import { InputField } from "./InputField";
 
 import { CellInner, FilterWrapper, GridOuter, PossibleHiddenField } from "./styled";
 
-import { Field, TFilter } from "./types";
+import { Field, IFilter } from "./types";
 
 interface FilterProps {
-    filter: TFilter;
+    filter: IFilter;
     fields: Field[];
     index: number;
     onRemove: (id: string) => void;

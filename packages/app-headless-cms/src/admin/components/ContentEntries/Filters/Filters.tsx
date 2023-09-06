@@ -83,6 +83,14 @@ export const Filters = () => {
         list.setFilters(convertedFilters);
     };
 
+    const applyAdvancedSearch = (data: any) => {
+        if (!Object.keys(data).length) {
+            return;
+        }
+
+        list.setFilters(data);
+    };
+
     return (
         <>
             <BaseFilters
@@ -91,7 +99,10 @@ export const Filters = () => {
                 data={{}}
                 onChange={applyFilters}
             />
-            <AdvancedSearch fields={parseModelFields(model.fields)} />
+            <AdvancedSearch
+                fields={parseModelFields(model.fields)}
+                onSubmit={applyAdvancedSearch}
+            />
         </>
     );
 };

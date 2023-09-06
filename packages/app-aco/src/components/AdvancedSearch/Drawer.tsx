@@ -17,19 +17,20 @@ import { Filter } from "./Filter";
 
 import { CellInner, Content, DrawerContainer } from "./styled";
 
-import { Field, TFilter } from "./types";
+import { Field, IFilter } from "./types";
 
 interface DrawerProps {
     open: boolean;
     onClose: () => void;
+    onSubmit: (data: any) => void;
     fields: Field[];
 }
 
 interface FormProps {
-    filters: TFilter[];
+    filters: IFilter[];
 }
 
-export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
+export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields, onSubmit }) => {
     const { current: advancedSearchPresenter } = useRef(new AdvancedSearchPresenter());
     const filters = advancedSearchPresenter.listFilters();
 
@@ -41,7 +42,7 @@ export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
         };
     }, []);
 
-    const onChange = (filters: TFilter[]) => {
+    const onChange = (filters: IFilter[]) => {
         if (!filters || !filters.length) {
             return;
         }
@@ -59,32 +60,37 @@ export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
         }
     });
 
-    const onSubmit = () => {
+    const onFormSubmit = () => {
         const filters = advancedSearchPresenter.listFilters();
         console.log("filters", JSON.stringify(filters));
 
         const filtersOutput = advancedSearchPresenter.getFiltersOutput();
         console.log("filtersOutput", JSON.stringify(filtersOutput));
+
+        onSubmit(filtersOutput);
     };
 
     return (
         <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
             <DrawerContent dir="ltr">
-                <Form<FormProps> onChange={data => onChange(data.filters)} onSubmit={onSubmit}>
+                <Form<FormProps>
+                    data={{ filters }}
+                    onChange={data => onChange(data.filters)}
+                    onSubmit={onFormSubmit}
+                >
                     {({ data }) => (
                         <DrawerContent dir="ltr">
                             <div className={"container"}>
                                 <Header onClose={onClose} />
                                 <Content>
                                     <Content.Panel>
-                                        {filters.map((filter, index) => (
+                                        {data.filters.map((filter, index) => (
                                             <Filter
                                                 key={filter.id}
                                                 index={index}
                                                 filter={filter}
                                                 fields={fields}
                                                 onRemove={() => {
-                                                    data.filters.splice(index, 1);
                                                     advancedSearchPresenter.deleteFilter(filter.id);
                                                 }}
                                             />
@@ -97,11 +103,11 @@ export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields }) => {
                                                         placement={"bottom"}
                                                     >
                                                         <IconButton
+                                                            label={"Add field"}
                                                             icon={<AddIcon />}
                                                             onClick={() => {
                                                                 advancedSearchPresenter.createFilter();
                                                             }}
-                                                            label={"Add field"}
                                                         />
                                                     </Tooltip>
                                                 </CellInner>
