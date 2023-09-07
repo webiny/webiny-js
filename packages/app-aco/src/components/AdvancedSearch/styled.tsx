@@ -27,6 +27,19 @@ export const DrawerContainer = styled(RmwcDrawer)`
         padding-left: 16px !important;
         padding-right: 52px !important;
     }
+
+    .mdc-switch__native-control {
+        left: initial !important;
+        right: 0 !important;
+    }
+
+    .mdc-switch__thumb-underlay {
+        left: -18px;
+    }
+
+    .mdc-switch--checked .mdc-switch__thumb-underlay {
+        transform: translateX(20px);
+    }
 `;
 
 export const FilterWrapper = styled("div")`
