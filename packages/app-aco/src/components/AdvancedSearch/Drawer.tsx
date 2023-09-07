@@ -66,7 +66,8 @@ const Drawer: React.VFC<DrawerProps> = ({ presenter, open, onClose, fields, onSu
     return (
         <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
             <DrawerContent dir="ltr">
-                <Form<SearchConfiguration>
+                <Form<any>
+                    data={{ groups }}
                     onChange={data => onChange(data)}
                     onSubmit={onFormSubmit}
                 >
@@ -74,14 +75,15 @@ const Drawer: React.VFC<DrawerProps> = ({ presenter, open, onClose, fields, onSu
                         <DrawerContent dir="ltr">
                             <div className={"container"}>
                                 <Header onClose={onClose} />
-                                {groups.map((group, index) => (
-                                    <div key={`group-${index}`}>
+                                {data.groups.map((group, groupIndex) => (
+                                    <div key={`group-${groupIndex}`}>
                                         {"Group"}
-                                        {group.filters.map((filter, index) => (
+                                        {group.filters.map((filter, filterIndex) => (
                                             <Content key={filter.id}>
                                                 <Content.Panel>
                                                     <Filter
-                                                        index={index}
+                                                        groupIndex={groupIndex}
+                                                        filterIndex={filterIndex}
                                                         filter={filter}
                                                         fields={fields}
                                                         onRemove={() => {
