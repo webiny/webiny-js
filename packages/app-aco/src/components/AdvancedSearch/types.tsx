@@ -46,3 +46,15 @@ export interface IFilter {
      */
     operation?: FilterOperation;
 }
+
+interface Groups {
+    operation: FilterOperation;
+    filters: IFilter[];
+}
+
+interface SearchConfiguration {
+    id: string;
+    name: string;
+    operation: FilterOperation;
+    groups: Groups[];
+}

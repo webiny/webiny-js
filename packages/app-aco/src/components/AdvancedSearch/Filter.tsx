@@ -12,6 +12,7 @@ import { InputField } from "./InputField";
 import { CellInner, FilterWrapper, GridOuter, PossibleHiddenField } from "./styled";
 
 import { Field, IFilter } from "./types";
+import { observer } from "mobx-react-lite";
 
 interface FilterProps {
     filter: IFilter;
@@ -20,7 +21,7 @@ interface FilterProps {
     onRemove: (id: string) => void;
 }
 
-export const Filter: React.VFC<FilterProps> = ({ filter, fields, onRemove, index }) => {
+export const Filter: React.VFC<FilterProps> = observer(({ filter, fields, onRemove, index }) => {
     const getFieldOptions = useCallback(
         () =>
             fields.map(field => ({
@@ -251,4 +252,4 @@ export const Filter: React.VFC<FilterProps> = ({ filter, fields, onRemove, index
             </GridOuter>
         </FilterWrapper>
     );
-};
+});

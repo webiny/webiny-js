@@ -18,8 +18,11 @@ import { Filter } from "./Filter";
 import { CellInner, Content, DrawerContainer } from "./styled";
 
 import { Field, IFilter } from "./types";
+import { SearchConfigurationPresenter } from "~/components/AdvancedSearch/SearchConfigurationPresenter";
+import { SearchConfiguration } from "~/components/AdvancedSearch/SearchConfiguration";
 
 interface DrawerProps {
+    presenter: SearchConfigurationPresenter;
     open: boolean;
     onClose: () => void;
     onSubmit: (data: any) => void;
@@ -30,26 +33,16 @@ interface FormProps {
     filters: IFilter[];
 }
 
-export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields, onSubmit }) => {
-    const { current: advancedSearchPresenter } = useRef(new AdvancedSearchPresenter());
-    const filters = advancedSearchPresenter.listFilters();
+const Drawer: React.VFC<DrawerProps> = ({ presenter, open, onClose, fields, onSubmit }) => {
+    const { addGroup, groups } = presenter.viewModel;
+    console.log("configuration", groups);
 
-    useEffect(() => {
-        advancedSearchPresenter.createFilter();
+    const onChange = (data: SearchConfiguration) => {
+        console.log("SearchConfiguration", data);
 
-        return () => {
-            advancedSearchPresenter.deleteAllFilters();
-        };
-    }, []);
-
-    const onChange = (filters: IFilter[]) => {
-        if (!filters || !filters.length) {
-            return;
-        }
-
-        for (const filter of filters) {
-            advancedSearchPresenter.updateFilter(filter);
-        }
+        // for (const filter of filters) {
+        //     advancedSearchPresenter.updateFilter(filter);
+        // }
     };
 
     useHotkeys({
@@ -61,60 +54,86 @@ export const Drawer: React.VFC<DrawerProps> = ({ open, onClose, fields, onSubmit
     });
 
     const onFormSubmit = () => {
-        const filters = advancedSearchPresenter.listFilters();
-        console.log("filters", JSON.stringify(filters));
-
-        const filtersOutput = advancedSearchPresenter.getFiltersOutput();
-        console.log("filtersOutput", JSON.stringify(filtersOutput));
-
-        onSubmit(filtersOutput);
+        // const filters = advancedSearchPresenter.listFilters();
+        // console.log("filters", JSON.stringify(filters));
+        //
+        // const filtersOutput = advancedSearchPresenter.getFiltersOutput();
+        // console.log("filtersOutput", JSON.stringify(filtersOutput));
+        //
+        // onSubmit(filtersOutput);
     };
 
     return (
         <DrawerContainer modal open={open} onClose={onClose} dir="rtl">
             <DrawerContent dir="ltr">
-                <Form<FormProps>
-                    data={{ filters }}
-                    onChange={data => onChange(data.filters)}
+                <Form<SearchConfiguration>
+                    onChange={data => onChange(data)}
                     onSubmit={onFormSubmit}
                 >
                     {({ data }) => (
                         <DrawerContent dir="ltr">
                             <div className={"container"}>
                                 <Header onClose={onClose} />
-                                <Content>
-                                    <Content.Panel>
-                                        {data.filters.map((filter, index) => (
-                                            <Filter
-                                                key={filter.id}
-                                                index={index}
-                                                filter={filter}
-                                                fields={fields}
-                                                onRemove={() => {
-                                                    advancedSearchPresenter.deleteFilter(filter.id);
-                                                }}
-                                            />
+                                {groups.map((group, index) => (
+                                    <div key={`group-${index}`}>
+                                        {"Group"}
+                                        {group.filters.map((filter, index) => (
+                                            <Content key={filter.id}>
+                                                <Content.Panel>
+                                                    <Filter
+                                                        index={index}
+                                                        filter={filter}
+                                                        fields={fields}
+                                                        onRemove={() => {
+                                                            console.log("Remove", filter);
+                                                        }}
+                                                    />
+
+                                                    <Grid>
+                                                        <Cell span={12}>
+                                                            <CellInner align={"center"}>
+                                                                <Tooltip
+                                                                    content={"Add field"}
+                                                                    placement={"bottom"}
+                                                                >
+                                                                    <IconButton
+                                                                        label={"Add field"}
+                                                                        icon={<AddIcon />}
+                                                                        onClick={() => {
+                                                                            group.addFilter();
+                                                                        }}
+                                                                    />{" "}
+                                                                    Add Filter
+                                                                </Tooltip>
+                                                            </CellInner>
+                                                        </Cell>
+                                                    </Grid>
+                                                </Content.Panel>
+                                            </Content>
                                         ))}
+
                                         <Grid>
                                             <Cell span={12}>
                                                 <CellInner align={"center"}>
                                                     <Tooltip
-                                                        content={"Add field"}
+                                                        content={"Add group"}
                                                         placement={"bottom"}
                                                     >
                                                         <IconButton
-                                                            label={"Add field"}
+                                                            label={"Add group"}
                                                             icon={<AddIcon />}
                                                             onClick={() => {
-                                                                advancedSearchPresenter.createFilter();
+                                                                addGroup();
                                                             }}
-                                                        />
+                                                        />{" "}
+                                                        Add Group
                                                     </Tooltip>
                                                 </CellInner>
                                             </Cell>
                                         </Grid>
-                                    </Content.Panel>
-                                </Content>
+                                    </div>
+                                ))}
+
                                 <Footer onClose={onClose} />
                             </div>
                         </DrawerContent>

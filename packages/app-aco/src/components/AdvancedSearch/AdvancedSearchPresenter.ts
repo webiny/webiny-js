@@ -1,13 +1,13 @@
 import { makeAutoObservable } from "mobx";
 import { generateId } from "@webiny/utils";
 
-import { TFilter, FilterOperation, FilterValue } from "~/components/AdvancedSearch/types";
+import { IFilter, FilterOperation, FilterValue } from "~/components/AdvancedSearch/types";
 
 /**
  * Manages a collection of filters.
  */
 class FilterCollection {
-    private _filters: Map<string, TFilter> = new Map();
+    private _filters: Map<string, IFilter> = new Map();
 
     constructor() {
         makeAutoObservable(this);
@@ -17,7 +17,7 @@ class FilterCollection {
      * Retrieves an array of all filters currently managed.
      * @returns An array of Filter objects.
      */
-    public list(): TFilter[] {
+    public list(): IFilter[] {
         return Array.from(this._filters.values());
     }
 
@@ -34,7 +34,7 @@ class FilterCollection {
      * @param filter - The updated filter object.
      * @throws Error if the provided filter ID does not exist.
      */
-    public update(filter: TFilter): void {
+    public update(filter: IFilter): void {
         if (this._filters.has(filter.id)) {
             this._filters.set(filter.id, filter);
         } else {
@@ -73,7 +73,7 @@ export class AdvancedSearchPresenter {
         this._filterCollection = new FilterCollection();
     }
 
-    public listFilters(): TFilter[] {
+    public listFilters(): IFilter[] {
         return this._filterCollection.list();
     }
 
@@ -81,7 +81,7 @@ export class AdvancedSearchPresenter {
         this._filterCollection.create();
     }
 
-    public updateFilter(filter: TFilter): void {
+    public updateFilter(filter: IFilter): void {
         this._filterCollection.update(filter);
     }
 
