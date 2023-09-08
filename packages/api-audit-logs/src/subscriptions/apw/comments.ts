@@ -9,7 +9,7 @@ export const onCommentAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.APW.COMMENT.CREATE);
 
-            createAuditLog("Comment created", comment, comment.id, context);
+            await createAuditLog("Comment created", comment, comment.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onCommentAfterCreateHook hook",

@@ -9,7 +9,12 @@ export const onContentReviewAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.APW.CONTENT_REVIEW.CREATE);
 
-            createAuditLog("Content review created", contentReview, contentReview.id, context);
+            await createAuditLog(
+                "Content review created",
+                contentReview,
+                contentReview.id,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onContentReviewAfterCreateHook hook",

@@ -9,7 +9,7 @@ export const onPageRevisionAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_REVISION.CREATE);
 
-            createAuditLog("Page revision created", page, page.id, context);
+            await createAuditLog("Page revision created", page, page.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPageRevisionAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onPageRevisionAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_REVISION.UPDATE);
 
-            createAuditLog(
+            await await createAuditLog(
                 "Page revision updated",
                 { before: original, after: page },
                 page.id,
@@ -45,11 +45,11 @@ export const onPageRevisionAfterDeleteHook = (context: AuditLogsContext) => {
             if (page.version === 1) {
                 const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE.DELETE);
 
-                createAuditLog("Page deleted", page, page.pid, context);
+                await createAuditLog("Page deleted", page, page.pid, context);
             } else {
                 const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_REVISION.DELETE);
 
-                createAuditLog("Page revision deleted", page, page.id, context);
+                await createAuditLog("Page revision deleted", page, page.id, context);
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -65,7 +65,7 @@ export const onPageRevisionAfterPublishHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_REVISION.PUBLISH);
 
-            createAuditLog("Page revision published", page, page.id, context);
+            await createAuditLog("Page revision published", page, page.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPageRevisionAfterPublishHook hook",
@@ -80,7 +80,7 @@ export const onPageRevisionAfterUnpublishHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_REVISION.UNPUBLISH);
 
-            createAuditLog("Page revision unpublished", page, page.id, context);
+            await createAuditLog("Page revision unpublished", page, page.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPageRevisionAfterUnpublishHook hook",

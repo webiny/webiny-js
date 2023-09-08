@@ -9,7 +9,12 @@ export const onChangeRequestAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.APW.CHANGE_REQUEST.CREATE);
 
-            createAuditLog("Change request created", changeRequest, changeRequest.id, context);
+            await createAuditLog(
+                "Change request created",
+                changeRequest,
+                changeRequest.id,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onChangeRequestAfterCreateHook hook",
@@ -28,7 +33,7 @@ export const onChangeRequestAfterUpdateHook = (context: AuditLogsContext) => {
                 if (resolved === true) {
                     const createAuditLog = getAuditConfig(AUDIT.APW.CHANGE_REQUEST.MARK_RESOLVED);
 
-                    createAuditLog(
+                    await createAuditLog(
                         "Change request marked as resolved",
                         { before: original, after: changeRequest },
                         changeRequest.id,
@@ -37,7 +42,7 @@ export const onChangeRequestAfterUpdateHook = (context: AuditLogsContext) => {
                 } else if (typeof resolved === "boolean" && resolved === false) {
                     const createAuditLog = getAuditConfig(AUDIT.APW.CHANGE_REQUEST.MARK_UNRESOLVED);
 
-                    createAuditLog(
+                    await createAuditLog(
                         "Change request marked as unresolved",
                         { before: original, after: changeRequest },
                         changeRequest.id,
@@ -46,7 +51,7 @@ export const onChangeRequestAfterUpdateHook = (context: AuditLogsContext) => {
                 } else {
                     const createAuditLog = getAuditConfig(AUDIT.APW.CHANGE_REQUEST.UPDATE);
 
-                    createAuditLog(
+                    await createAuditLog(
                         "Change request updated",
                         { before: original, after: changeRequest },
                         changeRequest.id,
@@ -68,7 +73,12 @@ export const onChangeRequestAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.APW.CHANGE_REQUEST.DELETE);
 
-            createAuditLog("Change request deleted", changeRequest, changeRequest.id, context);
+            await createAuditLog(
+                "Change request deleted",
+                changeRequest,
+                changeRequest.id,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onChangeRequestAfterDeleteHook hook",

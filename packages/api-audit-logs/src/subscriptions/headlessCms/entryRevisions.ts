@@ -2,14 +2,19 @@ import WebinyError from "@webiny/error";
 
 import { AUDIT } from "~/config";
 import { getAuditConfig } from "~/utils/getAuditConfig";
+import { isSearchModelEntry } from "./utils/isSearchModelEntry";
 import { AuditLogsContext } from "~/types";
 
 export const onEntryRevisionAfterCreateHook = (context: AuditLogsContext) => {
     context.cms.onEntryRevisionAfterCreate.subscribe(async ({ entry }) => {
         try {
+            if (isSearchModelEntry(entry.modelId)) {
+                return;
+            }
+
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.CREATE);
 
-            createAuditLog("Entry revision created", entry, entry.id, context);
+            await createAuditLog("Entry revision created", entry, entry.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onEntryRevisionAfterCreateHook hook",
@@ -22,9 +27,13 @@ export const onEntryRevisionAfterCreateHook = (context: AuditLogsContext) => {
 export const onEntryRevisionAfterUpdateHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterUpdate.subscribe(async ({ entry, original }) => {
         try {
+            if (isSearchModelEntry(entry.modelId)) {
+                return;
+            }
+
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Entry revision updated",
                 { before: original, after: entry },
                 entry.id,
@@ -42,9 +51,13 @@ export const onEntryRevisionAfterUpdateHook = (context: AuditLogsContext) => {
 export const onEntryRevisionAfterDeleteHook = (context: AuditLogsContext) => {
     context.cms.onEntryRevisionAfterDelete.subscribe(async ({ entry }) => {
         try {
+            if (isSearchModelEntry(entry.modelId)) {
+                return;
+            }
+
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.DELETE);
 
-            createAuditLog("Entry revision deleted", entry, entry.id, context);
+            await createAuditLog("Entry revision deleted", entry, entry.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onEntryRevisionAfterDeleteHook hook",
@@ -59,7 +72,7 @@ export const onEntryRevisionAfterPublishHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.PUBLISH);
 
-            createAuditLog("Entry revision published", entry, entry.id, context);
+            await createAuditLog("Entry revision published", entry, entry.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onEntryRevisionAfterPublishHook hook",
@@ -74,7 +87,7 @@ export const onEntryRevisionAfterUnpublishHook = (context: AuditLogsContext) => 
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.UNPUBLISH);
 
-            createAuditLog("Entry revision unpublished", entry, entry.id, context);
+            await createAuditLog("Entry revision unpublished", entry, entry.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onEntryRevisionAfterUnpublishHook hook",

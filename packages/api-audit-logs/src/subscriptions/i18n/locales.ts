@@ -9,7 +9,7 @@ export const onLocaleAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.I18N.LOCALE.CREATE);
 
-            createAuditLog("Locale created", locale, locale.code, context);
+            await createAuditLog("Locale created", locale, locale.code, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onLocaleAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onLocaleAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.I18N.LOCALE.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Locale updated",
                 { before: original, after: locale },
                 locale.code,
@@ -44,7 +44,7 @@ export const onLocaleAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.I18N.LOCALE.DELETE);
 
-            createAuditLog("Locale deleted", locale, locale.code, context);
+            await createAuditLog("Locale deleted", locale, locale.code, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onLocaleAfterDeleteHook hook",

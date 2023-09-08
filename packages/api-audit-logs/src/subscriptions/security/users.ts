@@ -9,7 +9,7 @@ export const onUserAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.CREATE);
 
-            createAuditLog("User created", user, user.id, context);
+            await createAuditLog("User created", user, user.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onUserAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onUserAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "User updated",
                 { before: originalUser, after: updatedUser },
                 updatedUser.id,
@@ -44,7 +44,7 @@ export const onUserAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.DELETE);
 
-            createAuditLog("User deleted", user, user.id, context);
+            await createAuditLog("User deleted", user, user.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onUserAfterDeleteHook hook",

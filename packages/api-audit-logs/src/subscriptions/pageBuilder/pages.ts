@@ -9,7 +9,7 @@ export const onPageAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE.CREATE);
 
-            createAuditLog("Page created", page, page.pid, context);
+            await createAuditLog("Page created", page, page.pid, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPageAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onPagesAfterExportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE.EXPORT);
 
-            createAuditLog("Pages exported", params, "-", context);
+            await createAuditLog("Pages exported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPagesAfterExportHook hook",
@@ -39,7 +39,7 @@ export const onPagesAfterImportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE.IMPORT);
 
-            createAuditLog("Pages imported", params, "-", context);
+            await createAuditLog("Pages imported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPagesAfterImportHook hook",

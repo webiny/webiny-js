@@ -9,7 +9,7 @@ export const onFileAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.CREATE);
 
-            createAuditLog("File created", file, file.id, context);
+            await createAuditLog("File created", file, file.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFileAfterCreateHook hook",
@@ -24,7 +24,12 @@ export const onFileAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.UPDATE);
 
-            createAuditLog("File updated", { before: original, after: file }, file.id, context);
+            await createAuditLog(
+                "File updated",
+                { before: original, after: file },
+                file.id,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFileAfterUpdateHook hook",
@@ -39,7 +44,7 @@ export const onFileAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.DELETE);
 
-            createAuditLog("File deleted", file, file.id, context);
+            await createAuditLog("File deleted", file, file.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFileAfterDeleteHook hook",
