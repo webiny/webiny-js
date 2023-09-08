@@ -9,7 +9,7 @@ export const onBlockAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK.CREATE);
 
-            createAuditLog("Block created", pageBlock, pageBlock.id, context);
+            await createAuditLog("Block created", pageBlock, pageBlock.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onBlockAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onBlockAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Block updated",
                 { before: original, after: pageBlock },
                 pageBlock.id,
@@ -44,7 +44,7 @@ export const onBlockAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK.DELETE);
 
-            createAuditLog("Block deleted", pageBlock, pageBlock.id, context);
+            await createAuditLog("Block deleted", pageBlock, pageBlock.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onBlockAfterDeleteHook hook",
@@ -59,7 +59,7 @@ export const onBlocksAfterExportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK.EXPORT);
 
-            createAuditLog("Blocks exported", params, "-", context);
+            await createAuditLog("Blocks exported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onBlocksAfterExportHook hook",
@@ -74,7 +74,7 @@ export const onBlocksAfterImportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK.IMPORT);
 
-            createAuditLog("Blocks imported", params, "-", context);
+            await createAuditLog("Blocks imported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onBlocksAfterImportHook hook",

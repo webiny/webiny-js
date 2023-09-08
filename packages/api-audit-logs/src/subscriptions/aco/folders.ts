@@ -9,13 +9,13 @@ export const onFolderAfterCreateHook = (context: AuditLogsContext) => {
         try {
             if (folder.type === "PbPage") {
                 const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_FOLDER.CREATE);
-                createAuditLog("Folder created", folder, folder.id, context);
+                await createAuditLog("Folder created", folder, folder.id, context);
             } else if (folder.type === "FmFile") {
                 const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.CREATE);
-                createAuditLog("Folder created", folder, folder.id, context);
+                await createAuditLog("Folder created", folder, folder.id, context);
             } else if (folder.type.startsWith("cms:")) {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.CREATE);
-                createAuditLog("Folder created", folder, folder.id, context);
+                await createAuditLog("Folder created", folder, folder.id, context);
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -31,7 +31,7 @@ export const onFolderAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             if (folder.type === "PbPage") {
                 const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_FOLDER.UPDATE);
-                createAuditLog(
+                await createAuditLog(
                     "Folder updated",
                     { before: original, after: folder },
                     folder.id,
@@ -39,7 +39,7 @@ export const onFolderAfterUpdateHook = (context: AuditLogsContext) => {
                 );
             } else if (folder.type === "FmFile") {
                 const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.UPDATE);
-                createAuditLog(
+                await createAuditLog(
                     "Folder updated",
                     { before: original, after: folder },
                     folder.id,
@@ -47,7 +47,7 @@ export const onFolderAfterUpdateHook = (context: AuditLogsContext) => {
                 );
             } else if (folder.type.startsWith("cms:")) {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.UPDATE);
-                createAuditLog(
+                await createAuditLog(
                     "Folder updated",
                     { before: original, after: folder },
                     folder.id,
@@ -68,13 +68,13 @@ export const onFolderAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             if (folder.type === "PbPage") {
                 const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_FOLDER.DELETE);
-                createAuditLog("Folder deleted", folder, folder.id, context);
+                await createAuditLog("Folder deleted", folder, folder.id, context);
             } else if (folder.type === "FmFile") {
                 const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.DELETE);
-                createAuditLog("Folder deleted", folder, folder.id, context);
+                await createAuditLog("Folder deleted", folder, folder.id, context);
             } else if (folder.type.startsWith("cms:")) {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.DELETE);
-                createAuditLog("Folder deleted", folder, folder.id, context);
+                await createAuditLog("Folder deleted", folder, folder.id, context);
             }
         } catch (error) {
             throw WebinyError.from(error, {

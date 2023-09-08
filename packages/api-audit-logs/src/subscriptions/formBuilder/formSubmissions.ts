@@ -9,7 +9,7 @@ export const onFormSubmissionsAfterExportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM_SUBMISSION.EXPORT);
 
-            createAuditLog("Form submissions exported", result, "-", context);
+            await createAuditLog("Form submissions exported", result, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormSubmissionsAfterExportHook hook",

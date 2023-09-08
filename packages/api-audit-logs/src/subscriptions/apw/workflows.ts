@@ -9,7 +9,7 @@ export const onWorkflowAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.APW.WORKFLOW.CREATE);
 
-            createAuditLog("Workflow created", workflow, workflow.id, context);
+            await createAuditLog("Workflow created", workflow, workflow.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onWorkflowAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onWorkflowAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.APW.WORKFLOW.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Workflow updated",
                 { before: original, after: workflow },
                 workflow.id,
@@ -44,7 +44,7 @@ export const onWorkflowAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.APW.WORKFLOW.DELETE);
 
-            createAuditLog("Workflow deleted", workflow, workflow.id, context);
+            await createAuditLog("Workflow deleted", workflow, workflow.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onWorkflowAfterDeleteHook hook",
