@@ -77,9 +77,9 @@ export const useAuditLogsList = (hasAccessToUsers: boolean): UseAuditLogs => {
                 return;
             }
 
-            if (searchQuery !== search) {
-                setSearchQuery(search);
+            setSearchQuery(search);
 
+            if (searchQuery !== search) {
                 if (!search) {
                     // In case of empty `search` - remove it from `querystring`
                     query.delete("search");
