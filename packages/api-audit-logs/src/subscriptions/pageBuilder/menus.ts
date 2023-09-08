@@ -9,7 +9,7 @@ export const onMenuAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.MENU.CREATE);
 
-            createAuditLog("Menu created", menu, menu.slug, context);
+            await createAuditLog("Menu created", menu, menu.slug, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onMenuAfterCreateHook hook",
@@ -24,7 +24,12 @@ export const onMenuAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.MENU.UPDATE);
 
-            createAuditLog("Menu updated", { before: original, after: menu }, menu.slug, context);
+            await createAuditLog(
+                "Menu updated",
+                { before: original, after: menu },
+                menu.slug,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onMenuAfterUpdateHook hook",
@@ -39,7 +44,7 @@ export const onMenuAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.MENU.DELETE);
 
-            createAuditLog("Menu deleted", menu, menu.slug, context);
+            await createAuditLog("Menu deleted", menu, menu.slug, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onMenuAfterDeleteHook hook",

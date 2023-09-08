@@ -9,7 +9,7 @@ export const onFormAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM.CREATE);
 
-            createAuditLog("Form created", form, form.id, context);
+            await createAuditLog("Form created", form, form.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onFormAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM.DELETE);
 
-            createAuditLog("Form deleted", form, form.id, context);
+            await createAuditLog("Form deleted", form, form.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormAfterDeleteHook hook",
@@ -39,7 +39,7 @@ export const onFormsAfterExportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM.EXPORT);
 
-            createAuditLog("Forms exported", params, "-", context);
+            await createAuditLog("Forms exported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormsAfterExportHook hook",
@@ -54,7 +54,7 @@ export const onFormsAfterImportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM.IMPORT);
 
-            createAuditLog("Forms imported", params, "-", context);
+            await createAuditLog("Forms imported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormsAfterImportHook hook",

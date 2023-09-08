@@ -9,7 +9,7 @@ export const onTeamAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.TEAM.CREATE);
 
-            createAuditLog("Team created", team, team.id, context);
+            await createAuditLog("Team created", team, team.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onTeamAfterCreateHook hook",
@@ -24,7 +24,12 @@ export const onTeamAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.TEAM.UPDATE);
 
-            createAuditLog("Team updated", { before: original, after: team }, team.id, context);
+            await createAuditLog(
+                "Team updated",
+                { before: original, after: team },
+                team.id,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onTeamAfterUpdateHook hook",
@@ -39,7 +44,7 @@ export const onTeamAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.TEAM.DELETE);
 
-            createAuditLog("Team deleted", team, team.id, context);
+            await createAuditLog("Team deleted", team, team.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onTeamAfterDeleteHook hook",

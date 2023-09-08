@@ -9,7 +9,12 @@ export const onBlockCategoryAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK_CATEGORY.CREATE);
 
-            createAuditLog("Block category created", blockCategory, blockCategory.slug, context);
+            await createAuditLog(
+                "Block category created",
+                blockCategory,
+                blockCategory.slug,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onBlockCategoryAfterCreateHook hook",
@@ -25,7 +30,7 @@ export const onBlockCategoryAfterUpdateHook = (context: AuditLogsContext) => {
             try {
                 const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK_CATEGORY.UPDATE);
 
-                createAuditLog(
+                await createAuditLog(
                     "Block category updated",
                     { before: original, after: blockCategory },
                     blockCategory.slug,
@@ -46,7 +51,12 @@ export const onBlockCategoryAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.BLOCK_CATEGORY.DELETE);
 
-            createAuditLog("Block category deleted", blockCategory, blockCategory.slug, context);
+            await createAuditLog(
+                "Block category deleted",
+                blockCategory,
+                blockCategory.slug,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onBlockCategoryAfterDeleteHook hook",

@@ -2,14 +2,19 @@ import WebinyError from "@webiny/error";
 
 import { AUDIT } from "~/config";
 import { getAuditConfig } from "~/utils/getAuditConfig";
+import { isSearchModelEntry } from "./utils/isSearchModelEntry";
 import { AuditLogsContext } from "~/types";
 
 export const onEntryAfterCreateHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterCreate.subscribe(async ({ entry }) => {
         try {
+            if (isSearchModelEntry(entry.modelId)) {
+                return;
+            }
+
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.CREATE);
 
-            createAuditLog("Entry created", entry, entry.entryId, context);
+            await createAuditLog("Entry created", entry, entry.entryId, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onEntryAfterCreateHook hook",
@@ -22,9 +27,13 @@ export const onEntryAfterCreateHook = (context: AuditLogsContext) => {
 export const onEntryAfterDeleteHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterDelete.subscribe(async ({ entry }) => {
         try {
+            if (isSearchModelEntry(entry.modelId)) {
+                return;
+            }
+
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.DELETE);
 
-            createAuditLog("Entry deleted", entry, entry.entryId, context);
+            await createAuditLog("Entry deleted", entry, entry.entryId, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onEntryAfterDeleteHook hook",
