@@ -9,7 +9,12 @@ export const onSettingsAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.MAILER.SETTINGS.UPDATE);
 
-            createAuditLog("Settings updated", { before: original, after: settings }, "-", context);
+            await createAuditLog(
+                "Settings updated",
+                { before: original, after: settings },
+                "-",
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onSettingsAfterUpdateHook hook",

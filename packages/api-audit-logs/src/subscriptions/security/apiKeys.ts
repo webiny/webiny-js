@@ -9,7 +9,7 @@ export const onApiKeyAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);
 
-            createAuditLog("API key created", apiKey, apiKey.id, context);
+            await createAuditLog("API key created", apiKey, apiKey.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onApiKeyAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onApiKeyAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "API key updated",
                 { before: original, after: apiKey },
                 apiKey.id,
@@ -44,7 +44,7 @@ export const onApiKeyAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.DELETE);
 
-            createAuditLog("API key deleted", apiKey, apiKey.id, context);
+            await createAuditLog("API key deleted", apiKey, apiKey.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onApiKeyAfterDeleteHook hook",

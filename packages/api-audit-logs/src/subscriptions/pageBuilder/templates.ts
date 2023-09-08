@@ -9,7 +9,7 @@ export const onTemplateAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.TEMPLATE.CREATE);
 
-            createAuditLog("Template created", pageTemplate, pageTemplate.id, context);
+            await createAuditLog("Template created", pageTemplate, pageTemplate.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onTemplateAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onTemplateAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.TEMPLATE.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Template updated",
                 { before: original, after: pageTemplate },
                 pageTemplate.id,
@@ -44,7 +44,7 @@ export const onTemplateAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.TEMPLATE.DELETE);
 
-            createAuditLog("Template deleted", pageTemplate, pageTemplate.id, context);
+            await createAuditLog("Template deleted", pageTemplate, pageTemplate.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onTemplateAfterDeleteHook hook",
@@ -59,7 +59,7 @@ export const onTemplatesAfterExportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.TEMPLATE.EXPORT);
 
-            createAuditLog("Templates exported", params, "-", context);
+            await createAuditLog("Templates exported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onTemplatesAfterExportHook hook",
@@ -74,7 +74,7 @@ export const onTemplatesAfterImportHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.TEMPLATE.IMPORT);
 
-            createAuditLog("Templates imported", params, "-", context);
+            await createAuditLog("Templates imported", params, "-", context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onTemplatesAfterImportHook hook",

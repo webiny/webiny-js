@@ -9,7 +9,7 @@ export const onModelAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL.CREATE);
 
-            createAuditLog("Model created", model, model.modelId, context);
+            await createAuditLog("Model created", model, model.modelId, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onModelAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onModelAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Model updated",
                 { before: original, after: model },
                 model.modelId,
@@ -44,7 +44,7 @@ export const onModelAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL.DELETE);
 
-            createAuditLog("Model deleted", model, model.modelId, context);
+            await createAuditLog("Model deleted", model, model.modelId, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onModelAfterDeleteHook hook",

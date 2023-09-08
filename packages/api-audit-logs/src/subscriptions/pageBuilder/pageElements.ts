@@ -9,7 +9,7 @@ export const onPageElementAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_ELEMENT.CREATE);
 
-            createAuditLog("Page element created", pageElement, pageElement.id, context);
+            await createAuditLog("Page element created", pageElement, pageElement.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPageElementAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onPageElementAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_ELEMENT.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Page element updated",
                 { before: original, after: pageElement },
                 pageElement.id,
@@ -44,7 +44,7 @@ export const onPageElementAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_ELEMENT.DELETE);
 
-            createAuditLog("Page element deleted", pageElement, pageElement.id, context);
+            await createAuditLog("Page element deleted", pageElement, pageElement.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onPageElementAfterDeleteHook hook",

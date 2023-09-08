@@ -9,7 +9,7 @@ export const onFormRevisionAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM_REVISION.CREATE);
 
-            createAuditLog("Form revision created", form, form.id, context);
+            await createAuditLog("Form revision created", form, form.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormRevisionAfterCreateHook hook",
@@ -24,7 +24,7 @@ export const onFormRevisionAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM_REVISION.UPDATE);
 
-            createAuditLog(
+            await createAuditLog(
                 "Form revision updated",
                 { before: original, after: form },
                 form.id,
@@ -44,7 +44,7 @@ export const onFormRevisionAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM_REVISION.DELETE);
 
-            createAuditLog("Form revision deleted", form, form.id, context);
+            await createAuditLog("Form revision deleted", form, form.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormRevisionAfterDeleteHook hook",
@@ -59,7 +59,7 @@ export const onFormRevisionAfterPublishHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM_REVISION.PUBLISH);
 
-            createAuditLog("Form revision published", form, form.id, context);
+            await createAuditLog("Form revision published", form, form.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormRevisionAfterPublishHook hook",
@@ -74,7 +74,7 @@ export const onFormRevisionAfterUnpublishHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.FORM_BUILDER.FORM_REVISION.UNPUBLISH);
 
-            createAuditLog("Form revision unpublished", form, form.id, context);
+            await createAuditLog("Form revision unpublished", form, form.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFormRevisionAfterUnpublishHook hook",

@@ -9,7 +9,7 @@ export const onRoleAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.ROLE.CREATE);
 
-            createAuditLog("Role created", group, group.id, context);
+            await createAuditLog("Role created", group, group.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onRoleAfterCreateHook hook",
@@ -24,7 +24,12 @@ export const onRoleAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.ROLE.UPDATE);
 
-            createAuditLog("Role updated", { before: original, after: group }, group.id, context);
+            await createAuditLog(
+                "Role updated",
+                { before: original, after: group },
+                group.id,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onRoleAfterUpdateHook hook",
@@ -39,7 +44,7 @@ export const onRoleAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.ROLE.DELETE);
 
-            createAuditLog("Role deleted", group, group.id, context);
+            await createAuditLog("Role deleted", group, group.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onRoleAfterDeleteHook hook",

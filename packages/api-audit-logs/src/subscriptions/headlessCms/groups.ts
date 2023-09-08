@@ -9,7 +9,7 @@ export const onGroupAfterCreateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.GROUP.CREATE);
 
-            createAuditLog("Group created", group, group.id, context);
+            await createAuditLog("Group created", group, group.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onGroupAfterCreateHook hook",
@@ -24,7 +24,12 @@ export const onGroupAfterUpdateHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.GROUP.UPDATE);
 
-            createAuditLog("Group updated", { before: original, after: group }, group.id, context);
+            await createAuditLog(
+                "Group updated",
+                { before: original, after: group },
+                group.id,
+                context
+            );
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onGroupAfterUpdateHook hook",
@@ -39,7 +44,7 @@ export const onGroupAfterDeleteHook = (context: AuditLogsContext) => {
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.GROUP.DELETE);
 
-            createAuditLog("Group deleted", group, group.id, context);
+            await createAuditLog("Group deleted", group, group.id, context);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onGroupAfterDeleteHook hook",

@@ -264,7 +264,7 @@ export const auditLogsApps: App[] = [
                 },
                 actions: [
                     commonActions.CREATE,
-                    commonActions.UPDATE,
+                    { ...commonActions.UPDATE, newEntryDelay: 60 },
                     commonActions.DELETE,
                     publishActions.PUBLISH,
                     publishActions.UNPUBLISH
